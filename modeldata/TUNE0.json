@@ -1,0 +1,142 @@
+// Model parameters ("tune0")
+//
+// mikael.mieskolainen@cern.ch, 2019
+{
+
+  // ----------------------------------------------------------------------
+  // Global soft model parameters (eikonal screening, elastic, SD, DD)
+  "PARAM_SOFT" : {
+    
+    // Pomeron trajectory
+    "DELTA_P"  : 0.098,         // Intercept
+    "ALPHA_P"  : 0.065,         // Bare slope, GeV^{-2} (+ pion loop insert)
+
+    // Couplings
+    "gN_P"     : 8.20,          // Pomeron-proton GeV^{-1}
+    "g3P"      : 0.18,          // Triple Pomeron coupling (/gn_P) (for SD/DD)
+    "gamma"    : 0.45,          // Eikonal matrix coupling [0 ... 1] (CURRENTLY NOT USED)
+    
+    // Form factor parameters
+    "fc1"      : 0.35,          // Proton form factor param 1 (GeV^2)
+    "fc2"      : 3.6,           // Proton form factor param 2 (GeV^2)
+    "fc3"      : 5.0            // Pion loop (GeV^2)
+  },
+  
+  
+  // ----------------------------------------------------------------------
+  // Parameters for flat (DEBUG/ANALYSIS) amplitudes
+  "PARAM_FLAT" : {
+    "b" : 6                     // t-slope [GeV^{-2}], |M|^2 ~ exp(bt_1)exp(b_t2)
+  },
+  
+  
+  // ----------------------------------------------------------------------
+  // Monopolium process parameters
+  // N.B. Monopole mass is read from PDG file
+  "PARAM_MONOPOLE" : {
+
+    // Energy level (>= 13) controlling bound state (negative) binding energy
+    "n"  : 47,
+    
+    // Monopolium (MMbar) bare width (GeV)
+    "Gamma0" : 10,
+
+    // Coupling scheme: Beta-Dirac = 1 (Default), Pure-Dirac = 2
+    "coupling" : 1
+  },
+  
+  // -----------------------------------------------------------------------
+  // Regge amplitude parameters (used for central system)
+  
+  // Regge-trajectory parameters (pomeron, f2, a2)
+  "PARAM_REGGE" : {
+      
+      "a0"  : [1.088, 0.55, 0.55], // Intercept (alpha_0 = 1 + DELTA)
+      "ap"  : [0.20, 0.93, 0.93],  // Slope (alpha') [GeV^{-2}]
+      "sgn" : [1, -1, 1],          // Regge signature (sigma) (+-1)
+      "s0"  : 1.0,                 // Normalization scale (GeV^2)
+      
+      // Off-shell t_hat/u_hat channel form factor: 1 = "exp", 2 = "orear", 3 = "pow"
+      "offshellFF" : 1,
+      
+      // Form factor parameters
+      "b_EXP" :   0.57,    // GeV^-2
+      "a_OREAR" : 0.46,    // GeV^-1
+      "b_OREAR" : 1.20,    // GeV^-1
+      "b_POW" :   0.67,    // GeV^2
+      
+      // Intermediate off-shell meson M* propagator "Reggeization"
+      // (NOT IMPLEMENTED CURRENTLY)
+      "reggeize" : false
+  },
+
+  // ---------------------------------------------------------------------
+  // Continuum amplitude couplings:
+  //
+  // For coupling constants see e.g.
+  //   pipi: Phys. Rev. D81 (2010) 036003
+  //   KK:   Phys. Rev. D85 (2012) 014026
+  //
+  // Originating from fits by: A. Donnachie and P.V. Landshoff, Phys. Lett.B296 (1992) 227.
+  // Note that these couplings are technically only compatible with the same Pomeron/Reggeon
+  // linear trajectory parameters as used by Donnachie-Landshoff.
+  //
+  // Fixed final state couplings [in GeV^{-2}] (1 mb = 2.56819 GeV^{-2}]
+  // 
+  // These DL-couplings are transformed inside the program by:
+  // gpi_P = PARAM_REGGE::c[0] / PARAM_SOFT::gN_P
+  
+  // pion
+  "PARAM_PI" : {
+    "c" : [35.00184, 81.63672, 10.86264],
+    "n" : [true, false, false]  // Which Reggeons are exchanged (pomeron, f2, a2) 
+  },
+  
+  // kaon
+  "PARAM_K" : {
+    "c" : [30.35376, 44.31084, 23.38164],
+    "n" : [true, false, false]
+  },
+
+  // proton (ansatz) (here one can compare with gN_P above)
+  "PARAM_P" : {
+    "c" : [27.35376, 44.31084, 23.38164],
+    "n" : [true, false, false]
+  },
+
+  // other (ansatz)
+  "PARAM_X" : {
+    "c" : [27.35376, 44.31084, 23.38164],
+    "n" : [true, false, false]
+  },
+    
+
+  // -----------------------------------------------------------------------
+  // Good-Walker proton excitation parametrization
+
+  "PARAM_NSTAR" : {
+    // Relative (N*, N**, N***) couplings (are normalized to one)
+    "rc" : [0.5, 0.3, 0.2]
+  },
+
+  // -----------------------------------------------------------------------
+  // Durham QCD parameters
+
+  "PARAM_DURHAM_QCD" : {
+
+    // Gluon loop momentum bounds (keep inside MSudakov class bounds)
+    "qt2_MIN" : 0.4,   // GeV^2
+    "qt2_MAX" : 100.0, // GeV^2
+
+    // Gluon skewed PDF scale choise scheme [MIN (default), MAX, IN, EX, AVG]
+    "PDF_scale" : "MIN",
+    
+    // Alpha_s scale choise (Q^2 = M^2/value, default = 1.0, other common 4.0)
+    "alphas_scale" : 1.0,
+
+    // Technical parameters: Gluon loop numerical discretization (keep a factor of 3)
+    "N_phi" : 36,
+    "N_qt"  : 24
+  }
+  
+}

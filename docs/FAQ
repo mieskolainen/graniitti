@@ -1,0 +1,15 @@
+FAQ
+-----------
+
+Q:  This is beta version.
+
+Q:  Integrated cross section seems very high?
+A:  Turn on screening integral (pomeron loop).
+
+Q:  What are <C> and <F> phase space classes?
+A:  Different ways to organize phase space sampling.
+    With equivalent generation+fiducial cuts, they produce identical
+    results. However, one can be faster or more numerically stable
+    with difficult amplitudes, than the other one.
+
+...

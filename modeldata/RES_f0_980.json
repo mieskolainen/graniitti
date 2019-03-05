@@ -1,0 +1,46 @@
+// Resonance parameters
+//
+// mikael.mieskolainen@cern.ch, 2017
+{
+
+  "PARAM_RES" : {
+
+    // PDG identifier
+    "PDG"   : 9010221,
+    
+    // Mass, width, spin (0,1/2,1,3/2,2...), parity (1,-1)
+    "M0" : 0.980,
+    "Gamma" : 0.060,
+    "J" : 0,
+    "P" : 1,
+    
+    // "Glueball state" (orthogonal transverse geometry)
+    "glue" : false,
+
+    // Breit-Wigner propagator type
+    // 1 = fixed width relativistic
+    // 2 = running width relativistic
+    // 3 = spin barrier relativistic
+    "BW" : 2,
+
+    // Set 0 for density matrix below, or an integer > 0 for a random sampled
+    // Different integers give different matrices.
+    "random_rho" : 0,
+
+    // Production coupling constant at amplitude level
+    "g_A"   :  0.09,
+    "g_phi" : -2.5,
+
+    // Lorentz frame of spin polarization density
+    "FRAME" : "HE",
+    
+    // Resonance spin-density (von Neumann) matrix (Re and Im parts)
+    "rho_real" : [ [ 0.0,  0,  0] ,
+                   [ 0,  0.0,  0] ,
+                   [ 0,  0,  0.0] ],
+    "rho_imag" : [ [  0,      0,      0] ,
+                   [  0,      0,      0] ,
+                   [  0,      0,      0] ],
+  }
+
+}
