@@ -9,3 +9,6 @@ https://arxiv.org/abs/1811.01730
 
 ### Installation and introduction at:
 ## www.mv.helsinki.fi/home/mmieskol
+
+
+mikael.mieskolainen@cern.ch, 2017-2019
