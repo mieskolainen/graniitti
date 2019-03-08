@@ -42,27 +42,27 @@ extern bool HILJAA;
 
 // Simple MC parameters
 struct MCPARAM {
-	double PRECISION = 0.05;   // Integral relative precision
-	uint MIN_EVENTS = 1000000; // Minimum number of events to be sampled
+	double PRECISION = 0.05;    // Integral relative precision
+	uint MIN_EVENTS  = 1000000; // Minimum number of events to be sampled
 };
 
 
 // Vegas MC default parameters
 struct VEGASPARAM {
 
-	uint BINS = 128;           // Maximum number of bins per dimension (EVEN NUMBER!)
-	double LAMBDA = 1.5;       // Regularization parameter
+	uint BINS = 128;            // Maximum number of bins per dimension (EVEN NUMBER!)
+	double LAMBDA = 1.5;        // Regularization parameter
 
 	// Initialization
-	uint NCALL = 20000;        // Number of calls per iteration
-	uint ITER = 15;            // Number of iterations
-	double CHI2MAX = 10.0;     // Maximum chi2 in initialization
-	double PRECISION = 0.01;   // Maximum relative error of cross section integral
-	int DEBUG = -1;            // Debug mode
+	uint NCALL = 20000;         // Number of calls per iteration
+	uint ITER = 15;             // Number of iterations
+	double CHI2MAX = 10.0;      // Maximum chi2 in initialization
+	double PRECISION = 0.01;    // Maximum relative error of cross section integral
+	int DEBUG = -1;             // Debug mode
 
 	// User cannot set these
-	uint MAXFDIM = 100;        // Maximum integral dimension
-	double EPS = 1.0e-30;      // Epsilon parameter
+	uint MAXFDIM = 100;         // Maximum integral dimension
+	double EPS = 1.0e-30;       // Epsilon parameter
 };
 
 
@@ -354,7 +354,7 @@ public:
 	double GetMaxweight() const;
 	
 	// Get number of CPU cores
-	void SetCores(uint N) {
+	void SetCores(int N) {
 		CORES = N;
 		if (CORES == 0) { // SETUP number of threads automatically
 			CORES = std::round(std::thread::hardware_concurrency() * 1.5);
@@ -369,7 +369,7 @@ public:
 			throw std::invalid_argument(str);
 		}
 	}
-	uint GetCores() const {
+	int GetCores() const {
 		return CORES;
 	}
 	void SetIntegrator(const std::string& integrator) {
@@ -404,7 +404,7 @@ public:
 	}
 	
 	// Set number of (un)weighted events to be generated
-	void SetNumberOfEvents(uint n) {
+	void SetNumberOfEvents(int n) {
 		if (n < 0) {
 			throw std::invalid_argument(
 			    "MGraniitti::SetNumberOfEvents():: Error: Number "
@@ -412,7 +412,7 @@ public:
 		}
 		NEVENTS = n;
 	}
-	uint GetNumberOfEvents() const {
+	int GetNumberOfEvents() const {
 		return NEVENTS;
 	}
 
@@ -443,8 +443,8 @@ public:
 	std::string PROCESS = "";    // Physics process identifier
 	
 	bool WEIGHTED = false;       // Unweighted or weighted event generation
-	uint NEVENTS = 0;            // Number of events to be generated
-	uint CORES   = 0;            // Number of CPU cores (threads) in use
+	int NEVENTS = 0;             // Number of events to be generated
+	int CORES   = 0;             // Number of CPU cores (threads) in use
 	std::string INTEGRATOR = ""; // Integrator (VEGAS, FLAT, ...)
 
 private:

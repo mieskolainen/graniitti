@@ -213,7 +213,7 @@ void MGraniitti::InitMultiMemory() {
 	pvec.resize(CORES, nullptr);
 
 	// Copy process objects for each thread
-	for (std::size_t i = 0; i < CORES; ++i) {
+	for (int i = 0; i < CORES; ++i) {
 		if        (proc_Q.ProcessExist(PROCESS)) {
 			pvec[i] = new MQuasiElastic(proc_Q);
 		} else if (proc_F.ProcessExist(PROCESS)) {
@@ -224,7 +224,7 @@ void MGraniitti::InitMultiMemory() {
 	}
 
 	// RANDOM SEED PER THREAD (IMPORTANT!)
-	for (std::size_t i = 0; i < CORES; ++i) {
+	for (int i = 0; i < CORES; ++i) {
 		const uint tid = i + 1;
 		// Deterministic seed
 		const uint thread_seed = static_cast<uint>(
@@ -969,7 +969,7 @@ std::vector<uint> MGraniitti::VEGASGetLocalCalls(uint calls) {
 
 	std::vector<uint> LOCALcalls(CORES, 0.0);
 	uint sum = 0;
-	for (std::size_t k = 0; k < CORES; ++k) {
+	for (int k = 0; k < CORES; ++k) {
 		LOCALcalls[k] = std::floor(calls / CORES);
 		sum += LOCALcalls[k];
 	}
@@ -1050,7 +1050,7 @@ int MGraniitti::Vegas(uint init, uint calls, uint itermin, uint N) {
 		// SPAWN PARALLEL PROCESSING HERE
 
 		std::vector<std::thread> threads;
-		for (std::size_t tid = 0; tid < CORES; ++tid) {
+		for (int tid = 0; tid < CORES; ++tid) {
 			threads.push_back(std::thread([=] {
 				VEGASMultiThread(N, tid, init, LOCALcalls[tid]);
 			}));
@@ -1259,7 +1259,7 @@ void MGraniitti::VEGASMultiThread(uint N, uint THREAD_ID, uint init, uint LOCALc
 			if (GMODE == 1) {
 
 				// Enough events
-				if (stat.generated == GetNumberOfEvents()) { break; }
+				if (stat.generated == (uint)GetNumberOfEvents()) { break; }
 				
 				// Event trial
 				SaveEvent(pvec[THREAD_ID], f, stat.maxf, aux);
@@ -1530,7 +1530,7 @@ int MGraniitti::SaveEvent(MProcess* pr, double weight, double MAXWEIGHT, const g
 		gra::aux::g_mutex.lock();   
 		
 		// ** This is a multithreading race-condition treatment **
-		if (stat.generated == GetNumberOfEvents()) {
+		if (stat.generated == (uint) GetNumberOfEvents()) {
 			stat.trials -= 1; // Correct statistics, unnecessary trial
 			gra::aux::g_mutex.unlock();
 			return 1;

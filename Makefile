@@ -48,7 +48,7 @@
 # =======================================================================
 # Detect compiler version if using by default g++
 
-ifneq ($(CXX),clang)
+ifeq ($(CXX),g++)
 
 #KERNEL_GCC_VERSION := $(shell cat /proc/version | sed -n 's/.*gcc version \([[:digit:]]\.[[:digit:]]\.[[:digit:]]\).*/\1/p')
 #$(info Info KERNEL_GCC_VERSION = $(KERNEL_GCC_VERSION))
@@ -81,7 +81,7 @@ endif
 
 
 ifeq ($(HEPMC3SYS),)
-$(error Please set HEPMC3SYS environment variable and paths [perhaps source ./install/setenv.sh])
+$(error Please set HEPMC3SYS environment variable and paths [perhaps; source ./install/setenv.sh])
 else
 $(info Found HEPMC3SYS = $(HEPMC3SYS))
 endif
@@ -161,9 +161,6 @@ INCLUDES += -Ilibs/Eigen/unsupported/
 # External libraries
 INCLUDES += -I$(HEPMC3SYS)/include
 INCLUDES += -I$(LHAPDFSYS)/include
-ifeq ($(ROOT),TRUE)
-INCLUDES += -I$(ROOTSYS)/include 
-endif
 
 
 # -----------------------------------------------------------------------
@@ -225,6 +222,9 @@ OBJ_1       = $(SRC_1:$(SRC_DIR_1)/%.cc=$(OBJ_DIR)/%.o)
 DEP_1       = $(OBJ_1:$(OBJ_DIR)/%.o=.d)
 ## ======================================================================
 
+# Create collection of all library objects
+OBJ = $(OBJ_0) $(OBJ_1)
+
 # =======================================================================
 ifeq ($(ROOT),TRUE)
 SRC_DIR_2   = src/Analysis
@@ -243,16 +243,7 @@ DEP_3       = $(OBJ_3:$(OBJ_DIR)/%.o=.d)
 endif
 # =======================================================================
 
-# Create collection of all library objects
-OBJ = $(OBJ_0) $(OBJ_1)
-ifeq ($(ROOT),TRUE)
-OBJ += $(OBJ_2)
-endif
 
-# Do not put this, because catch2 creates a main .o -> collapse
-#ifeq ($(TEST),TRUE)
-#OBJ += $(OBJ_3)
-#endif
 
 # -----------------------------------------------------------------------
 # PROGRAM compiled against the library
@@ -283,6 +274,7 @@ endif
 # =======================================================================
 
 
+
 # -----------------------------------------------------------------------
 # External libraries to be linked
 
@@ -290,11 +282,6 @@ LDLIBS  = $(HEPMC3lib)
 LDLIBS += $(LHAPDF6lib)
 LDLIBS += $(PYTORCHlib)
 
-# If ROOT
-ifeq ($(ROOT),TRUE)
-LDLIBS += $(ROOTlib)
-#LDLIBS += $(GSLlib)
-endif
 
 # -----------------------------------------------------------------------
 # PROGRAM
@@ -311,7 +298,6 @@ PROGRAM        = $(EXE_NAMES:%=$(BIN_DIR)/%)
 ifeq ($(ROOT),TRUE)
 EXE_ROOT_NAMES = analyze fitsoft fitcentral fitharmonic
 PROGRAM_ROOT   = $(EXE_ROOT_NAMES:%=$(BIN_DIR)/%)
-PROGRAM       += $(PROGRAM_ROOT)
 endif
 
 PROGRAM_TEST   = 
@@ -323,18 +309,21 @@ endif
 # Multicore
 #export MAKEFLAGS="-j $(grep -c ^processor /proc/cpuinfo)"
 
-all: $(PROGRAM) $(PROGRAM_TEST)
+all: $(PROGRAM) $(PROGRAM_ROOT) $(PROGRAM_TEST)
 	@echo " "
-	@echo "PROGRAM:" $(PROGRAM) $(PROGRAM_TEST)
+	@echo "PROGRAM:" $(PROGRAM) $(PROGRAM_ROOT) $(PROGRAM_TEST)
 	@echo " "
 	@echo "Compilation of '$@' done."
 
-$(PROGRAM): $(OBJ) $(OBJ_PROGRAM) $(OBJ_PROGRAM_ROOT)
+$(PROGRAM): $(OBJ) $(OBJ_PROGRAM)
 	$(CXX) $(OBJ_DIR)/$@.o $(OBJ) -o $@ $(CXXFLAGS) $(LDLIBS)
+
+$(PROGRAM_ROOT): $(OBJ) $(OBJ_2) $(OBJ_PROGRAM_ROOT)
+	$(CXX) $(OBJ_DIR)/$@.o $(OBJ) $(OBJ_2) -o $@ $(CXXFLAGS) $(LDLIBS) -I$(ROOTSYS)/include $(ROOTlib)
 
 # Unit tests (note, we use catchmain.o from $(OBJ_3) for linking with catch2)
 $(PROGRAM_TEST): $(OBJ) $(OBJ_3) $(OBJ_PROGRAM_TEST)
-	$(CXX) $(OBJ_DIR)/$@.o $(OBJ) $(OBJ_3) -o $@ $(CXXFLAGS) -std=c++17 $(LDLIBS)
+	$(CXX) $(OBJ_DIR)/$@.o $(OBJ) $(OBJ_3) -o $@ $(CXXFLAGS) $(LDLIBS)
 
 
 # -----------------------------------------------------------------------
@@ -346,28 +335,28 @@ $(PROGRAM_TEST): $(OBJ) $(OBJ_3) $(OBJ_PROGRAM_TEST)
 $(OBJ_DIR)/%.o: $(SRC_DIR_0)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) -c $< -o $@ $(CXXFLAGS) -std=c++17
+	$(CXX) -std=c++17 -c $< -o $@ $(CXXFLAGS)
 # =======================================================================
 
 # =======================================================================
 $(OBJ_DIR)/%.o: $(SRC_DIR_1)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) -c $< -o $@ $(CXXFLAGS) -std=c++17
+	$(CXX) -std=c++17 -c $< -o $@ $(CXXFLAGS)
 # =======================================================================
 
 # =======================================================================
 $(OBJ_DIR)/%.o: $(SRC_DIR_2)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) -c $< -o $@ $(CXXFLAGS) -std=c++14
+	$(CXX) -std=c++14 -c $< -o $@ $(CXXFLAGS) -I$(ROOTSYS)/include
 # =======================================================================
 
 # =======================================================================
 $(OBJ_DIR)/%.o: $(SRC_DIR_3)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) -c $< -o $@ $(CXXFLAGS) -std=c++17
+	$(CXX) -std=c++17 -c $< -o $@ $(CXXFLAGS)
 # =======================================================================
 
 # PROGRAM objects
@@ -376,21 +365,21 @@ $(OBJ_DIR)/%.o: $(SRC_DIR_3)/%.cc
 $(OBJ_DIR)/$(BIN_DIR)/%.o: $(SRC_DIR_PROGRAM)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) -c $< -o $@ $(CXXFLAGS) -std=c++17
+	$(CXX) -std=c++17 -c $< -o $@ $(CXXFLAGS)
 # =======================================================================
 
 # =======================================================================
 $(OBJ_DIR)/$(BIN_DIR)/%.o: $(SRC_DIR_PROGRAM_ROOT)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) -c $< -o $@ $(CXXFLAGS) -std=c++14
+	$(CXX) -std=c++14 -c $< -o $@ $(CXXFLAGS) -I$(ROOTSYS)/include
 # =======================================================================
 
 # =======================================================================
 $(OBJ_DIR)/$(BIN_DIR)/%.o: $(SRC_DIR_PROGRAM_TEST)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) -c $< -o $@ $(CXXFLAGS) -std=c++17
+	$(CXX) -std=c++17 -c $< -o $@ $(CXXFLAGS)
 # =======================================================================
 
 # -----------------------------------------------------------------------

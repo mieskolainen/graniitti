@@ -32,8 +32,8 @@ namespace kinematics {
     thread_local std::uniform_real_distribution<double> flat; // Default [0,1)
     return a + (b - a) * flat(rng);
   }
-
-
+  
+  
   // A non-linear system of equations for forward proton kinematics:
   //
   // p1z + p2z + pz = 0
@@ -47,7 +47,7 @@ namespace kinematics {
   // solved using MATLAB symbolic algebra.
   //
   // Serious speed optimization TBD.
-  constexpr double SolvepPZ1(double m1, double m2, double pt1, double pt2, double pz, double pE, double sqrt_s) {
+  inline double SolvepPZ1(double m1, double m2, double pt1, double pt2, double pz, double pE, double sqrt_s) {
 
     using gra::math::pow2;
     using gra::math::pow3;
@@ -100,7 +100,7 @@ namespace kinematics {
   // Then integrating phi: dcostheta dphi / (16*pi^2) = dcostheta/(8*pi), gives
   // dsigma/dt (s,t) = 1/(16*pi*s^2 * p_{cm}^2) |M(s,t)|^2
   // 
-  constexpr double pcm2(double s, double m1, double m2) {
+  inline double pcm2(double s, double m1, double m2) {
     return 1/(4.0*s) * (s - gra::math::pow2(m1+m2)) * (s - gra::math::pow2(m1-m2));
   }
 
@@ -125,7 +125,7 @@ namespace kinematics {
   //
   // with E^2 = p^2 + m^2
   //
-  constexpr double dPhi1(double MAX, double m) {
+  inline double dPhi1(double MAX, double m) {
 
     using gra::math::pow2;
 
@@ -136,7 +136,7 @@ namespace kinematics {
 
   // Two-body Lorentz invariant phase space volume, evaluated in the rest frame
   // p_norm is the result given by DecayMomentum()
-  constexpr double dPhi2(double E, double p_norm) {
+  inline double dPhi2(double E, double p_norm) {
     // Sampling box volume cos(theta) ~ [-1, 1], phi ~ [0,2pi]
     const double V = 2.0 * 2.0 * gra::math::PI;
     return V * p_norm / (16.0 * gra::math::pow2(gra::math::PI) * E);
@@ -150,14 +150,14 @@ namespace kinematics {
   // 1 / lambda^(1/2)(s,m_a^2,m_b^2) -> 1/(2s) when s >> m_a^2, m_b^2
   //
   // Note x,y,z are Lorentz scalars (ENERGY squared variables)
-  constexpr double SqrtKallenLambda(double x, double y, double z) {
+  inline double SqrtKallenLambda(double x, double y, double z) {
     // Hyperboloid formula
     return gra::math::msqrt(x * x + y * y + z * z - 2.0 * (x * y + x * z + y * z));
     //    return msqrt( pow2( x - y - z) - 4.0*y*z ); // numerically unstable
   }
   
   
-  constexpr double beta12(double s, double m1, double m2) {
+  inline double beta12(double s, double m1, double m2) {
     return SqrtKallenLambda(s, gra::math::pow2(m1), gra::math::pow2(m2)) / s;
   }
 
@@ -166,7 +166,7 @@ namespace kinematics {
   // This is same as: SqrtKallenLambda(x^2, y^2, z^2) / (2x)
   //
   // Note x,y,z [mother, daughter1, daughter2] in units of ENERGY (not ENERGY^2)
-  constexpr double DecayMomentum(double x, double y, double z) {
+  inline double DecayMomentum(double x, double y, double z) {
 
     //return SqrtKallenLambda(x*x, y*y, z*z) / (2*x);
     // numerically stable
@@ -175,7 +175,7 @@ namespace kinematics {
 
 
   // Massive two body phase space integral volume PS^{2}(M^2; m_A^2, m_B^2)
-  constexpr double PS2Massive(double M2, double mA2, double mB2) {
+  inline double PS2Massive(double M2, double mA2, double mB2) {
     return SqrtKallenLambda(M2, mA2, mB2) / (8.0 * gra::math::PI * M2);
   }
 
@@ -186,7 +186,7 @@ namespace kinematics {
   // Gives 1/(8*PI) for n = 2 case, regardless of M^2
   //
   // tgamma is C++/11 math Gamma function
-  constexpr double PSnMassless(double M2, int n) {
+  inline double PSnMassless(double M2, int n) {
     //const double denom = tgamma(n) * tgamma(n - 1.0);
     const double denom = gra::math::factorial(n-1) * gra::math::factorial(n - 2);
     const double E = gra::math::msqrt(M2);
@@ -208,23 +208,23 @@ namespace kinematics {
   //        Final state symmetry factor S
   // 
   // [REFERENCE: Alwall et al, https://arxiv.org/abs/1402.1178]
-  constexpr double PDW2body(double M0_2, double m1_2, double m2_2, double MatElem2,
+  inline double PDW2body(double M0_2, double m1_2, double m2_2, double MatElem2,
                   double S_factor) {
     return SqrtKallenLambda(M0_2, m1_2, m2_2) * MatElem2 /
            (16.0 * gra::math::PI * S_factor * gra::math::pow3(gra::math::msqrt(M0_2)));
   }
 
-
+  
   // Relativistic velocity of a particle with m^2
   // in the system with invariant shat
-  constexpr double Beta(double m2, double shat) {
+  inline double Beta(double m2, double shat) {
     return gra::math::msqrt(1.0 - 4.0 * m2 / shat);
   }
   
   
   // 2->2 Scattering E1 + E2 -> E3 + E4 angle as a function of (s,t,m_i^2)
   // [REFERENCE: Kallen, Elementary Particle Physics, Addison-Wesley, 1964]
-  constexpr double CosthetaStar(double s, double t, double E1, double E2, double E3,
+  inline double CosthetaStar(double s, double t, double E1, double E2, double E3,
                       double E4) {
     const double numer =
         s * s + s * (2.0 * t - E1 - E2 - E3 - E4) + (E1 - E2) * (E3 - E4);
@@ -237,7 +237,7 @@ namespace kinematics {
   // 2->2 Scattering E1 + E2 -> E3 + E4 Mandelstam t-limits (physical boundaries)
   // [REFERENCE: Kallen, Elementary Particle Physics, Addison-Wesley, 1964]
   // [REFERENCE: Sjostrand, Mrenna, Skands, https://arxiv.org/abs/hep-ph/0603175]
-  constexpr void Two2TwoLimit(double s, double E1, double E2, double E3, double E4,
+  inline void Two2TwoLimit(double s, double E1, double E2, double E3, double E4,
                     double& tmin, double& tmax) {
 
     // Triangle function

@@ -134,7 +134,7 @@ std::vector<double> h1Multiplet::SaveFig(const std::string& fullpath) const {
 
 	for (const auto& i : indices(h)) {
 
-		double res[N_] = {0.0};
+		double res[N_];
 		printf("%s [%lu] :: \n", legendtext_[i].c_str(), i);
 		double c2ndf = h[0]->Chi2Test(h[i], "WW P CHI2/NDF", res);
 		chi2ndf[i] = c2ndf;
@@ -184,7 +184,7 @@ std::vector<double> h1Multiplet::SaveFig(const std::string& fullpath) const {
 	for (const auto& i : indices(h)) {
 
 		h[i]->SetLineColor(color[i]);
-		h[i]->SetLineWidth(2.5);
+		h[i]->SetLineWidth(2);
 		h[i]->SetMarkerColor(color[i]);
 		h[i]->SetMarkerStyle(20+i);
 		h[i]->SetMarkerSize(0.73);

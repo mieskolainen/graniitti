@@ -209,7 +209,7 @@ constexpr int sgn(T val) {
 }
 
 // Floating point rounding safe square root
-constexpr double msqrt(double x) {
+inline double msqrt(double x) {
 	return std::sqrt(std::max(0.0, x));
 }
 
