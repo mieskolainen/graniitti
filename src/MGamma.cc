@@ -92,22 +92,21 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 
 	// e+e-, mu+mu-, tau+tau-
 	double COUPL = 16.0 * pow2(gra::math::PI) * gra::form::alpha_EM(lts.t1) *
-	               gra::form::alpha_EM(lts.t2); // = e^4
+	               gra::form::alpha_EM(lts.t2);   // = e^4
 	const double mass  = lts.decaytree[0].p4.M(); // lepton, quark (or monopole) mass
 	const double mass2 = pow2(mass);
 	const bool MONOPOLE_MODE = (lts.decaytree[0].p.pdg == 992) ? true : false;
 	
 	// qqbar (apply color factor 3)
 	// ... [NOT IMPLEMENTED]
-
-
+	
 	// Monopole-Antimonopole coupling
 	if (MONOPOLE_MODE) { // MMbar
-
+		
 		const double g = (1.0 / (2.0 * gra::form::alpha_EM(0))) * gra::form::e_EM();
-
+		
 		if (PARAM_MONOPOLE::coupling == 1) { // Beta-Dirac coupling
-
+			
 			// Calculate beta (velocity)
 			// const M4Vec px = pfinal[3] + pfinal[4];
 			// M4Vec p3 = pfinal[3];
@@ -115,22 +114,22 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 			// CM frame of M\bar{M} pair
 			// double beta = std::sqrt( p3.Px()*p3.Px() +
 			// p3.Py()*p3.Py() + p3.Pz()*p3.Pz()) / p3.E();
-
+			
 			// Faster way
 			const double beta = msqrt(
 			    1.0 - 4.0 * pow2(PARAM_MONOPOLE::M0) / lts.s_hat);
 			COUPL = pow4(g * beta);
-
+			
 		} else if (PARAM_MONOPOLE::coupling == 2) { // Pure-Dirac coupling
-
+			
 			COUPL = pow4(g);
-
+			
 		} else {
 			throw std::invalid_argument(
 			    "MGamma::yyMMbar: Unknown PARAM_MONOPOLE::coupling " +
 			    std::to_string(PARAM_MONOPOLE::coupling));
 		}
-
+		
 		// Get photon fluxes
 		const double gammaflux1 = gra::form::CohFlux(lts.x1, lts.t1, lts.qt1);
 		const double gammaflux2 = gra::form::CohFlux(lts.x2, lts.t2, lts.qt2);
@@ -184,6 +183,16 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 // [REFERENCE: Barrie, Sugamoto, Yamashita, https://arxiv.org/abs/1607.03987v3]
 // [REFERENCE: Reis, Sauter, https://arxiv.org/abs/1707.04170v1]
 //
+//
+// Generic on-shell yy -> X cross section goes as follows in terms of partial decay widths:
+//
+// \sigma(yy -> X) = 8\pi^2/M_X \Gamma(X -> yy) \delta(s - M_X^2) (1 + h1h2)
+//                 = (8 * \pi) * \Gamma(X -> yy) \Gamma_X (1 + h1h2) / ((s - M_X^2)^2 + M_X^2\Gamma_X^2),
+// 
+// where h1,h2 = +- gamma helicities (no longitudinal here considered)
+//
+// [REFERENCE: https://arxiv.org/pdf/0903.4978.pdf]
+//
 std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR& lts) const {
 
 	// Monopolium nominal mass and width parameters
@@ -213,37 +222,42 @@ std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR& lts) const {
 		    std::to_string(PARAM_MONOPOLE::coupling));
 	}
 
-	// Magnetic coupling, depends on kinematics
+	// Magnetic coupling
 	const double alpha_g = pow2(beta * g) / (4.0 * gra::math::PI);
 
-	// Running width, depends on kinematics
+	// Running width
 	const double Gamma_E =
 	    PARAM_MONOPOLE::GammaMP(PARAM_MONOPOLE::n, alpha_g);
 
-	// yy->Monopolium sub-cross section
+	// Normalization factor at amplitude level
+	double norm = sqrt( 8* gra::math::PI );
+
+	/*
+	// yy->Monopolium sub-cross section turned to amplitude level
 	const std::complex<double> amplitude =
-	    msqrt(8 * gra::math::PI * pow2(M) * Gamma_E * Gamma_M) *
-	    gra::form::CBW_FW(lts.s_hat, M, Gamma_M);
+	    msqrt(pow2(M) * Gamma_E * Gamma_M) * gra::form::CBW_FW(lts.s_hat, M, Gamma_M);
 
     // Photon fluxes
 	std::complex<double> A = gra::form::CohFlux(lts.x1, lts.t1, lts.qt1) *
-	                         amplitude *
-	                         gra::form::CohFlux(lts.x2, lts.t2, lts.qt2);	
-	/*
-	double sigma_hat =
-	                 (8*PI * pow2(M) * Gamma_E*Gamma_M ) /
-	                 (pow2(lts.s_hat - pow2(M)) + pow2(M)*pow2(Gamma_M) );
+	                         norm * amplitude *
+	                         gra::form::CohFlux(lts.x2, lts.t2, lts.qt2);
+    */
 
-	const std::complex<double> A =
+	// Same expression as above
+	
+	double sigma_hat = (pow2(M) * Gamma_E*Gamma_M ) /
+	                   (pow2(lts.s_hat - pow2(M)) + pow2(M)*pow2(Gamma_M) );
+
+	std::complex<double> A =
 	                 gra::form::CohFlux(lts.x1, lts.t1, lts.qt1)
-	               * msqrt(sigma_hat)
-	               * gra::form::CohFlux(lts.x2, lts.t2, lts.qt2)
-	               * msqrt(lts.s / lts.s_hat); // phasespace
-	*/
+	               * norm * msqrt(sigma_hat)
+	               * gra::form::CohFlux(lts.x2, lts.t2, lts.qt2);
+
 	// Phasespace flux
 	A *= msqrt(lts.s / lts.s_hat);
 	
 	return A;
 }
+
 
 } // gra namespace
