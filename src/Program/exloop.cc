@@ -191,7 +191,7 @@ void experiment(bool screening) {
     }
 
     fprintf(fout, "sqrts\t\txstot\t\txsin\t\txsel");
-    for (uint k = 0; k < input.size(); ++k) {
+    for (unsigned int k = 0; k < input.size(); ++k) {
 		fprintf(fout, "\txs%d", k);
     }
     fprintf(fout, "\n");

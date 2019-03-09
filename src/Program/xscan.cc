@@ -94,7 +94,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	fprintf(fout, "sqrts\t\txstot\t\txsin\t\txsel");
-	for (uint k = 0; k < jsinput.size(); ++k) {
+	for (unsigned int k = 0; k < jsinput.size(); ++k) {
 	    fprintf(fout, "\txs%d", k);
 	}
 	fprintf(fout, "\n");
@@ -143,7 +143,7 @@ int main(int argc, char* argv[]) {
 	    fprintf(fout_latex, "%0.3E & %0.3E & %0.3E & %0.3E", energy.at(i),
 	            xs_tot, xs_in, xs_el);
 
-	    for (uint k = 0; k < jsinput.size(); ++k) {
+	    for (unsigned int k = 0; k < jsinput.size(); ++k) {
 			fprintf(fout, "\t\t%0.3E", xs0.at(k));
 			fprintf(fout_latex, " & %0.3E", xs0.at(k));
 	    }

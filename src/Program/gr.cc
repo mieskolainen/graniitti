@@ -45,20 +45,20 @@ int main(int argc, char* argv[]) {
 	options.add_options("GENERALPARAM")
   		("o,OUTPUT",     "Output name",                  cxxopts::value<std::string>() )
   		("f,FORMAT",     "Output format",                cxxopts::value<std::string>() )
-  		("n,NEVENT",     "Number of events",             cxxopts::value<uint>() )
+  		("n,NEVENT",     "Number of events",             cxxopts::value<unsigned int>() )
   		("g,INTEGRATOR", "Integrator",                   cxxopts::value<std::string>() )
   		("w,WEIGHTED",   "Weighted events (true/false)", cxxopts::value<std::string>() )
-  		("c,CORES",      "Number of CPU cores/threads",  cxxopts::value<uint>() )
+  		("c,CORES",      "Number of CPU cores/threads",  cxxopts::value<unsigned int>() )
   		;
   		
  	options.add_options("PROCESSPARAM")
  		("p,PROCESS",  "Process",                cxxopts::value<std::string>() )
   		("l,POMLOOP",  "Screening Pomeron loop", cxxopts::value<std::string>() )
-	  	("s,NSTARS",   "Excite protons (0,1,2)", cxxopts::value<uint>() )
+	  	("s,NSTARS",   "Excite protons (0,1,2)", cxxopts::value<unsigned int>() )
 	  	("q,LHAPDF",   "Set LHAPDF",             cxxopts::value<std::string>() )
-	  	("h,HIST",     "Histogramming",          cxxopts::value<uint>() )
-	  	("a,FLATAMP",  "Flat matrix element",    cxxopts::value<uint>() )
-	  	("r,RNDSEED",  "Random seed",            cxxopts::value<uint>() )
+	  	("h,HIST",     "Histogramming",          cxxopts::value<unsigned int>() )
+	  	("a,FLATAMP",  "Flat matrix element",    cxxopts::value<unsigned int>() )
+	  	("r,RNDSEED",  "Random seed",            cxxopts::value<unsigned int>() )
   		;
 		
 	auto r = options.parse(argc, argv);
@@ -94,7 +94,7 @@ int main(int argc, char* argv[]) {
 	// Quick custom parameters
 	
 	// General parameters (order is important)
-	if (r.count("n"))   { gen->SetNumberOfEvents(r["n"].as<uint>()); }
+	if (r.count("n"))   { gen->SetNumberOfEvents(r["n"].as<unsigned int>()); }
 	if (r.count("o") && r.count("f"))   {
 		gen->SetOutput(r["o"].as<std::string>());
 		gen->SetFormat(r["f"].as<std::string>());	
@@ -110,7 +110,7 @@ int main(int argc, char* argv[]) {
 		const std::string val = r["w"].as<std::string>();
 		gen->SetWeighted(val == "true");
 	}
-	if (r.count("c"))   { gen->SetCores(r["c"].as<uint>()); }
+	if (r.count("c"))   { gen->SetCores(r["c"].as<unsigned int>()); }
 	
 	// Process parameters (adding more might be involved due to initialization in MProcess...)
 	if (r.count("l"))  { 
@@ -118,11 +118,11 @@ int main(int argc, char* argv[]) {
 		gen->proc->SetScreening(val == "true");
 	}
 	
-	if (r.count("s"))  { gen->proc->SetExcitation(r["s"].as<uint>()); }
+	if (r.count("s"))  { gen->proc->SetExcitation(r["s"].as<unsigned int>()); }
 	if (r.count("q"))  { gen->proc->SetLHAPDF(r["q"].as<std::string>()); }
-	if (r.count("h"))  { gen->proc->SetHistograms(r["h"].as<uint>()); }
-	if (r.count("a"))  { gen->proc->SetFlatAmp(r["a"].as<uint>()); }
-	if (r.count("r"))  { gen->proc->random.SetSeed(r["r"].as<uint>()); }
+	if (r.count("h"))  { gen->proc->SetHistograms(r["h"].as<unsigned int>()); }
+	if (r.count("a"))  { gen->proc->SetFlatAmp(r["a"].as<unsigned int>()); }
+	if (r.count("r"))  { gen->proc->random.SetSeed(r["r"].as<unsigned int>()); }
 
 	// Always after process setup
 	gen->proc->post_Constructor();

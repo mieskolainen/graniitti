@@ -96,7 +96,7 @@ int main(int argc, char* argv[]) {
 			}
 
 			// First calculate screened SD and DD integrated cross section
-			for (uint i = 0; i < 2; ++i) {
+			for (unsigned int i = 0; i < 2; ++i) {
 
 			    gra::MGraniitti g;
 				

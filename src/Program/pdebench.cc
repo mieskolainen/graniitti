@@ -49,7 +49,7 @@ void CNAB2(std::valarray<std::complex<double>>& u, int Lx, double dt, int Nt, in
 
     // Wavenumbers: exp(2*pi*i*kx*x/L)
     std::valarray<std::complex<double>> kx(Nx);
-    uint j = 0;
+    unsigned int j = 0;
     for (int i = 0; i <= Nx/2-1; ++i) {
         kx[j] = i; ++j;
     }
@@ -177,13 +177,13 @@ void CNAB2(std::valarray<std::complex<double>>& u, int Lx, double dt, int Nt, in
             const std::vector<std::string> asciiart = {" ", ".", ":", "-", "=",
                                                        "+", "*", "#", "%", "@"};
             double maxval = 0;
-            for (uint i = 0; i < temp2.size(); ++i) {
+            for (unsigned int i = 0; i < temp2.size(); ++i) {
                 maxval = gra::math::abs2(temp2[i]) > maxval ? gra::math::abs2(temp2[i]) : maxval;
             }
             std::cout << n << " ";
-            for (uint i = 0; i < temp2.size(); ++i) {
+            for (unsigned int i = 0; i < temp2.size(); ++i) {
                 const double w = gra::math::abs2(temp2[i]) / (maxval + 1e-9);
-                uint ind = std::round(w * 9);
+                unsigned int ind = std::round(w * 9);
                 if (ind < 0) ind = 0;
                 if (ind > 9) ind = 9;
                 std::cout << rang::fg::red << asciiart[ind];
@@ -198,20 +198,20 @@ void CNAB2(std::valarray<std::complex<double>>& u, int Lx, double dt, int Nt, in
 void testfft() {
 
     // FFT test
-    std::valarray<float> xxx = gra::math::linspace<std::valarray>((float)0.0, (float)10.0, (uint)16);
+    std::valarray<float> xxx = gra::math::linspace<std::valarray>((float)0.0, (float)10.0, (unsigned int)16);
 
     std::valarray<std::complex<double>> X(xxx.size());
-    for (uint i = 0; i < xxx.size(); ++i) {
+    for (unsigned int i = 0; i < xxx.size(); ++i) {
         X[i] = xxx[i];
     }
     MFFT::fft(X);
     std::cout << "FFT:" << std::endl;
-    for (uint i = 0; i < X.size(); ++i) {
+    for (unsigned int i = 0; i < X.size(); ++i) {
         std::cout << X[i] << std::endl;
     }
     MFFT::ifft(X);
     std::cout << "IFFT:" << std::endl;
-    for (uint i = 0; i < X.size(); ++i) {
+    for (unsigned int i = 0; i < X.size(); ++i) {
         std::cout << X[i] << std::endl;
     }
 }
