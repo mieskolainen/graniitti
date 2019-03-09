@@ -173,7 +173,10 @@ void experiment(bool screening) {
 
     // ...
     input.push_back(MEASUREMENT("gg2gg.json",   0, 0, 0));
-
+    
+    // ...
+    input.push_back(MEASUREMENT("yy2Higgs.json",   0, 0, 0));
+    
     // ...
     input.push_back(MEASUREMENT("monopolepair.json", 0, 0, 0));
 
@@ -276,6 +279,6 @@ void experiment(bool screening) {
 	    input[i].syst, xs0[i][0], xs0[i][0] / input[i].value, xs0[i][1],
 	    xs0[i][1] / input[i].value, xs0[i][1] / xs0[i][0]);
     }
-    
+
     printf("\n");
 }

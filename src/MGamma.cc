@@ -173,7 +173,6 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 	}
 }
 
-
 // --------------------------------------------------------------------------------------------
 // A Monopolium (monopole-antimonopole) bound state process
 //
@@ -182,16 +181,6 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 // [REFERENCE: Epele, Franchiotti, Garcia, Canal, Vento, https://arxiv.org/abs/hep-ph/0701133v2]
 // [REFERENCE: Barrie, Sugamoto, Yamashita, https://arxiv.org/abs/1607.03987v3]
 // [REFERENCE: Reis, Sauter, https://arxiv.org/abs/1707.04170v1]
-//
-//
-// Generic on-shell yy -> X cross section goes as follows in terms of partial decay widths:
-//
-// \sigma(yy -> X) = 8\pi^2/M_X \Gamma(X -> yy) \delta(s - M_X^2) (1 + h1h2)
-//                 = (8 * \pi) * \Gamma(X -> yy) \Gamma_X (1 + h1h2) / ((s - M_X^2)^2 + M_X^2\Gamma_X^2),
-// 
-// where h1,h2 = +- gamma helicities (no longitudinal here considered)
-//
-// [REFERENCE: https://arxiv.org/pdf/0903.4978.pdf]
 //
 std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR& lts) const {
 
@@ -223,14 +212,13 @@ std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR& lts) const {
 	}
 
 	// Magnetic coupling
-	const double alpha_g = pow2(beta * g) / (4.0 * gra::math::PI);
+	const double alpha_g = pow2(beta * g) / (4.0 * math::PI);
 
 	// Running width
-	const double Gamma_E =
-	    PARAM_MONOPOLE::GammaMP(PARAM_MONOPOLE::n, alpha_g);
+	const double Gamma_E = PARAM_MONOPOLE::GammaMP(PARAM_MONOPOLE::n, alpha_g);
 
 	// Normalization factor at amplitude level
-	double norm = sqrt( 8* gra::math::PI );
+	double norm = sqrt( 8* math::PI );
 
 	/*
 	// yy->Monopolium sub-cross section turned to amplitude level
@@ -259,5 +247,53 @@ std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR& lts) const {
 	return A;
 }
 
+// --------------------------------------------------------------------------------------------
+// Gamma-Gamma to SM-Higgs 0++ helicity amplitudes
+//
+// Generic narrow width yy -> X cross section in terms of partial decay widths:
+//
+// \sigma(yy -> X) = 8\pi^2/M_X (2J+1) \Gamma(X -> yy) \delta(shat - M_X^2) (1 + h1h2)
+//                 = (8 * \pi)  (2J+1) \Gamma(X -> yy) \Gamma_X (1 + h1h2) / ((shat - M_X^2)^2 + M_X^2\Gamma_X^2),
+//
+// where h1,h2 = +- gamma helicities (no small longitudinal contribution here considered)
+//
+// [REFERENCE: https://arxiv.org/pdf/0903.4978.pdf]
+// [REFERENCE: https://www.slac.stanford.edu/pubs/slacpubs/13750/slac-pub-13786.pdf]
+// [REFERENCE: KMR, https://arxiv.org/abs/hep-ph/0111078]
+//
+std::complex<double> MGamma::yyHiggs(gra::LORENTZSCALAR& lts) const {
+
+	lts.hamp.resize(4);
+	
+	const double          M = 125.18;            // Higgs mass measured (GeV)
+	const double    Gamma_X = 0.00415;           // Higgs total width calculated (GeV)
+	const double Gamma_X_yy = 2.27E-3 * Gamma_X; // Higgs to gamma-gamma calculated (GeV) 
+
+	// Helicity amplitudes for different initial state polarizations
+	const double norm = 4 * math::PI;
+
+	lts.hamp[0] = msqrt( norm * lts.s_hat * Gamma_X_yy * Gamma_X / (pow2(lts.s_hat - M*M) + pow2(M*Gamma_X)) ); // --
+	lts.hamp[1] = 0.0;         // -+
+	lts.hamp[2] = 0.0;         // +-
+	lts.hamp[3] = lts.hamp[0]; // ++
+
+	// Apply photon fluxes and phase space flux
+	const double factor = gra::form::CohFlux(lts.x1, lts.t1, lts.qt1)
+       				    * gra::form::CohFlux(lts.x2, lts.t2, lts.qt2)
+       				    * msqrt(lts.s / lts.s_hat);
+
+	for (std::size_t i = 0; i < 4; ++i) {
+		lts.hamp[i] *= factor;
+	}
+
+	// Sum over helicity amplitudes
+	double sumA2 = 0.0;
+	for (std::size_t i = 0; i < 4; ++i) {
+		sumA2 += gra::math::abs2(lts.hamp[i]);
+	}
+	sumA2 /= 4; // Initial state polarization average
+
+	return msqrt(sumA2); // We take square later
+}
 
 } // gra namespace

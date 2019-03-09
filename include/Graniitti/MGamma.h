@@ -36,12 +36,16 @@ public:
 	// yy->resonance X
 	std::complex<double> yyX(const gra::LORENTZSCALAR& lts, gra::PARAM_RES& resonance) const;
 	
-	// yy->monopolium
-	std::complex<double> yyMP(const gra::LORENTZSCALAR& lts) const;
-
 	// yy->lepton pair, or monopole antimonopole amplitude
 	std::complex<double> yyffbar(gra::LORENTZSCALAR& lts);
 	
+	// yy->SM Higgs
+	std::complex<double> yyHiggs(gra::LORENTZSCALAR& lts) const;
+
+	// yy->monopolium
+	std::complex<double> yyMP(const gra::LORENTZSCALAR& lts) const;
+
+
 protected:
 
 	// MADGRAPH amplitudes added here

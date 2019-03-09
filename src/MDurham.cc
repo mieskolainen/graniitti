@@ -120,7 +120,7 @@ std::complex<double> MDurham::DurhamQCD(gra::LORENTZSCALAR& lts, const std::stri
 			gra::aux::sudakov.Init(lts.sqrt_s, gra::form::LHAPDF, true);
 		} catch (std::invalid_argument e) {
 			gra::aux::g_mutex.unlock(); // need to release here,
-			                        // otherwise get infinite lock
+			                            // otherwise get infinite lock
 			throw(e);
 		}
 	}
@@ -175,8 +175,7 @@ std::complex<double> MDurham::DurhamQCD(gra::LORENTZSCALAR& lts, const std::stri
 	// ------------------------------------------------------------
 
 	} else {
-		std::string str =
-		    "MDurham::Durham: Unknown subprocess: " + process;
+		std::string str = "MDurham::Durham: Unknown subprocess: " + process;
 		throw std::invalid_argument(str);
 	}
 }
@@ -447,12 +446,12 @@ void MDurham::Dgg2chi0(const gra::LORENTZSCALAR& lts, std::vector<std::vector<st
 	gra::aux::g_mutex.unlock();
 	// @@ MUTEX LOCK @@
 
-	const double gs2 = 4.0 * PI * alpha_s; // coupling
-	const double K_NLO = 1.68;             // NLO correction
-	const double M0 = 3.41475;             // chi_c(0+) mass (GeV)
-	const double W0 = 0.0108;              // chi_c(0+) width (GeV)
-	const double NC = 3.0;                 // #colors
-
+	const double gs2   = 4.0 * PI * alpha_s;  // coupling
+	const double K_NLO = 1.68;                // NLO correction
+	const double M0    = 3.41475;             // chi_c(0+) mass (GeV)
+	const double W0    = 0.0108;              // chi_c(0+) width (GeV)
+	const double NC    = 3.0;                 // #colors
+	
 	// Gluonic width \Gamma(\chi_c(0+) -> gg), see references
 	std::complex<double> A = K_NLO * 8.0 * gra::math::zi * gs2 / M0 * msqrt(0.075) / msqrt(PI * M0 * NC);
 

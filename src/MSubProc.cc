@@ -86,6 +86,7 @@ void MSubProc::ConstructDescriptions(const std::string& first) {
 
 		std::map<std::string, std::string> channels;
 		channels.insert(std::pair<std::string, std::string>("RES",           "Gamma-Gamma to resonance [EPA] x [EPA]"));
+		channels.insert(std::pair<std::string, std::string>("Higgs",         "Gamma-Gamma to SM Higgs [EPA] x [EPA] (UNDER CONSTRUCTION)"));
 		channels.insert(std::pair<std::string, std::string>("monopolium(0)", "Gamma-Gamma to Monopolium J=0 bound state [EPA] x [EPA] (UNDER CONSTRUCTION)"));
 		channels.insert(std::pair<std::string, std::string>("CON",           "Gamma-Gamma to l+l-, w+w-, monopole pair continuum [EPA] x [EPA]"));
 		channels.insert(std::pair<std::string, std::string>("QED",           "Gamma-Gamma qq -> q l+ l- q [FULL QED]"));
@@ -240,6 +241,9 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy(gra::LORENTZSCALAR& lt
 
 	if (CHANNEL == "RES") {
 		A = yyX(lts, lts.RESONANCES.begin()->second);
+	}
+	else if (CHANNEL == "Higgs") {
+		A = yyHiggs(lts);
 	}
 	else if (CHANNEL == "monopolium(0)") {
 		A = yyMP(lts);
