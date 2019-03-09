@@ -612,7 +612,5 @@ void CreateDirectory(std::string fullpath) {
 	}
 }
 
-
-} // MAux namespace ends
-
+} // aux namespace ends
 } // gra namespace ends
