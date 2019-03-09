@@ -95,8 +95,8 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 	               gra::form::alpha_EM(lts.t2); // = e^4
 	const double mass  = lts.decaytree[0].p4.M(); // lepton, quark (or monopole) mass
 	const double mass2 = pow2(mass);
-	const bool MONOPOLE_MODE = (lts.decaytree[0].p.pdg == 990) ? true : false;
-
+	const bool MONOPOLE_MODE = (lts.decaytree[0].p.pdg == 992) ? true : false;
+	
 	// qqbar (apply color factor 3)
 	// ... [NOT IMPLEMENTED]
 
@@ -121,20 +121,16 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 			    1.0 - 4.0 * pow2(PARAM_MONOPOLE::M0) / lts.s_hat);
 			COUPL = pow4(g * beta);
 
-		} else if (PARAM_MONOPOLE::coupling ==
-		           2) { // Pure-Dirac coupling,
+		} else if (PARAM_MONOPOLE::coupling == 2) { // Pure-Dirac coupling
 
 			COUPL = pow4(g);
 
 		} else {
 			throw std::invalid_argument(
-			    "MGamma::yyMMbar: Unknown "
-			    "PARAM_MONOPOLE::coupling " +
+			    "MGamma::yyMMbar: Unknown PARAM_MONOPOLE::coupling " +
 			    std::to_string(PARAM_MONOPOLE::coupling));
 		}
-	}
 
-	if (MONOPOLE_MODE) {
 		// Get photon fluxes
 		const double gammaflux1 = gra::form::CohFlux(lts.x1, lts.t1, lts.qt1);
 		const double gammaflux2 = gra::form::CohFlux(lts.x2, lts.t2, lts.qt2);
