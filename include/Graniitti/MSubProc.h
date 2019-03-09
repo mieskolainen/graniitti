@@ -34,7 +34,7 @@ public:
 	MSubProc(const std::string& _ISTATE, const std::string& _CHANNEL, const MPDG& _PDG);
 	MSubProc(const std::vector<std::string>& first);
 	void ConstructDescriptions(const std::string& first);
-	void SetTechnicalBoundaries(gra::GENCUT& gcuts, uint EXCITATION);
+	void SetTechnicalBoundaries(gra::GENCUT& gcuts, unsigned int EXCITATION);
 	
 	MSubProc() {}
 	~MSubProc(){}
@@ -43,7 +43,7 @@ public:
 
 	std::string ISTATE;  // "PP","yy","gg" etc.
 	std::string CHANNEL; // "CON", "RES" etc.
-	uint LIPSDIM  = 0;
+	unsigned int LIPSDIM  = 0;
 	bool UW       = false;
 
 	// -------------------------------------------------------------------

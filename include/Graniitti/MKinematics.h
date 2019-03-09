@@ -507,7 +507,7 @@ namespace kinematics {
     if (unweight == false) { w_max = 0; }
 
     // Accceptance-Rejection
-    const uint MAXTRIAL = 1e8;
+    const unsigned int MAXTRIAL = 1e8;
     std::vector<double> pnorm = {0.0, 0.0};
     double m12 = 0;
     MCW x;
@@ -557,7 +557,7 @@ namespace kinematics {
                  std::vector<double>& pnorm, bool unweight, T2& rng) {
 
     // Decay multiplicity (1 -> N decay)
-    const uint N = m.size();
+    const unsigned int N = m.size();
     std::vector<double> randvec(N-2, 0.0);
 
     // Random variables functor
@@ -606,7 +606,7 @@ namespace kinematics {
 
     if (unweight == false) { w_max = 0; }
 
-    const uint MAXTRIAL = 1e8;
+    const unsigned int MAXTRIAL = 1e8;
     MCW x;
     double w = 0.0;
     do {
@@ -1292,13 +1292,13 @@ struct MParticle {
   double tau = 0.0; // hbar / width
 
   // J^PC
-  uint J = 0;
+  unsigned int J = 0;
   int  P = 0;
   int  C = 0;
-  uint L = 0; // For Mesons/Baryons
+  unsigned int L = 0; // For Mesons/Baryons
   bool glue = false; // Glueball state
   
-  void setPCL(int _P, int _C, uint _L) {
+  void setPCL(int _P, int _C, unsigned int _L) {
     P = _P;
     C = _C;
     L = _L;
@@ -1339,7 +1339,7 @@ struct MDecayBranch {
 struct HELMatrix {
   
   void InitAlphaToZero() {
-    const uint N = 20;
+    const unsigned int N = 20;
     alpha     = MMatrix<std::complex<double>> (N,N,0.0);
     alpha_set = MMatrix<bool> (N,N,true);
   }

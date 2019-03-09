@@ -83,7 +83,7 @@ public:
 	// Angular observables
 	std::unique_ptr<TProfile> hPl[8];
 
-	const uint NFR = 6; // number of frames
+	const unsigned int NFR = 6; // number of frames
 
 	std::unique_ptr<TH2D> h2CosTheta[6][6];
 	std::unique_ptr<TH2D> h2Phi[6][6];
@@ -96,11 +96,11 @@ public:
 	
 	// HepMC3 reader
 	double HepMC3_OracleFill(
-	    const std::string inputfile, uint multiplicity, int finalPDG, uint MAXEVENTS,
+	    const std::string inputfile, unsigned int multiplicity, int finalPDG, unsigned int MAXEVENTS,
 	    std::map<std::string, std::unique_ptr<h1Multiplet> >& h1,
 	    std::map<std::string, std::unique_ptr<h2Multiplet> >& h2,
 	    std::map<std::string, std::unique_ptr<hProfMultiplet> >& hP,
-	    uint SID);
+	    unsigned int SID);
 	
 	
 	// Plot out all local histograms

@@ -66,7 +66,7 @@ void MH2::Print() const {
 	const double maxw = GetMaxWeight();
 
 	std::cout << "          |"; // Empty top left corner
-	for (std::size_t i = 0; i < static_cast<uint>(XBINS); ++i) {
+	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
 		std::cout << "=";
 	}
 	std::cout << "| " << std::endl;
@@ -74,7 +74,7 @@ void MH2::Print() const {
 	for (int j = YBINS-1; j > -1; --j) { // Must be int, we index down to negative
 		const double binwidth = (YMAX - YMIN) / YBINS;
 		printf("%9.2E |", binwidth * (j + 1) - binwidth / 2.0 + YMIN);
-		for (std::size_t i = 0; i < static_cast<uint>(XBINS); ++i) {
+		for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
 			const double w = (maxw > 0) ? weights[i][j] / maxw : 0;
 			const int ind = std::round(w * 9);
 			std::cout << rang::fg::yellow << ascziart[ind] << rang::fg::reset;
@@ -83,7 +83,7 @@ void MH2::Print() const {
 		std::cout << std::endl;
 	}
 	std::cout << "          |"; // Empty bottom left corner
-	for (std::size_t i = 0; i < static_cast<uint>(XBINS); ++i) {
+	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
 		std::cout << "=";
 	}
 	std::cout << "|" << std::endl;
@@ -92,7 +92,7 @@ void MH2::Print() const {
 	for (int k = -1; k < 50; ++k) {
 		std::cout << "           ";
 		int empty = 0;
-		for (std::size_t i = 0; i < static_cast<uint>(XBINS); ++i) {
+		for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
 			const double binvalue = binwidth * (i + 1) - binwidth / 2.0 + XMIN;
 			const std::string let = gra::aux::ToString(std::abs(binvalue), 2);
 			const std::string sgn = (binvalue >= 0.0) ? "+" : "-";
@@ -167,8 +167,8 @@ void MH2::Fill(double xvalue, double yvalue, double weight) {
 }
 
 void MH2::Clear() {
-	for (std::size_t i = 0; i < static_cast<uint>(XBINS); ++i) {
-		for (std::size_t j = 0; j < static_cast<uint>(YBINS); ++j) {
+	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
+		for (std::size_t j = 0; j < static_cast<unsigned int>(YBINS); ++j) {
 			weights[i][j]  = 0;
 			weights2[i][j] = 0;
 			counts[i][j]   = 0;
@@ -181,8 +181,8 @@ void MH2::Clear() {
 
 double MH2::SumWeights() const {
 	double sum = 0.0;
-	for (std::size_t i = 0; i < static_cast<uint>(XBINS); ++i) {
-		for (std::size_t j = 0; j < static_cast<uint>(YBINS); ++j) {
+	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
+		for (std::size_t j = 0; j < static_cast<unsigned int>(YBINS); ++j) {
 			sum += weights[i][j];
 		}
 	}
@@ -191,8 +191,8 @@ double MH2::SumWeights() const {
 
 double MH2::SumWeights2() const {
 	double sum = 0.0;
-	for (std::size_t i = 0; i < static_cast<uint>(XBINS); ++i) {
-		for (std::size_t j = 0; j < static_cast<uint>(YBINS); ++j) {
+	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
+		for (std::size_t j = 0; j < static_cast<unsigned int>(YBINS); ++j) {
 			sum += weights2[i][j];
 		}
 	}
@@ -201,8 +201,8 @@ double MH2::SumWeights2() const {
 
 long long int MH2::SumBinCounts() const {
 	long long int sum = 0;
-	for (std::size_t i = 0; i < static_cast<uint>(XBINS); ++i) {
-		for (std::size_t j = 0; j < static_cast<uint>(YBINS); ++j) {
+	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
+		for (std::size_t j = 0; j < static_cast<unsigned int>(YBINS); ++j) {
 			sum += counts[i][j];
 		}
 	}
@@ -211,8 +211,8 @@ long long int MH2::SumBinCounts() const {
 
 double MH2::GetMaxWeight() const {
 	double maxval = 0;
-	for (std::size_t i = 0; i < static_cast<uint>(XBINS); ++i) {
-		for (std::size_t j = 0; j < static_cast<uint>(YBINS); ++j) {
+	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
+		for (std::size_t j = 0; j < static_cast<unsigned int>(YBINS); ++j) {
 			if (weights[i][j] > maxval) {
 				maxval = weights[i][j];
 			}
@@ -223,8 +223,8 @@ double MH2::GetMaxWeight() const {
 
 double MH2::GetMinWeight() const {
 	double minval = 1e128;
-	for (std::size_t i = 0; i < static_cast<uint>(XBINS); ++i) {
-		for (std::size_t j = 0; j < static_cast<uint>(YBINS); ++j) {
+	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
+		for (std::size_t j = 0; j < static_cast<unsigned int>(YBINS); ++j) {
 			if (weights[i][j] < minval) {
 				minval = weights[i][j];
 			}
@@ -294,15 +294,15 @@ int MH2::GetIdx(double value, double minval, double maxval, int nbins, bool logb
 double MH2::ShannonEntropy() const {
 
 	double sum = 0.0;
-	for (std::size_t i = 0; i < static_cast<uint>(XBINS); ++i) {
-		for (std::size_t j = 0; j < static_cast<uint>(YBINS); ++j) {
+	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
+		for (std::size_t j = 0; j < static_cast<unsigned int>(YBINS); ++j) {
 			sum += weights[i][j];
 		}
 	}
 	if (sum > 0) {
 		double S = 0.0;
-		for (std::size_t i = 0; i < static_cast<uint>(XBINS); ++i) {
-			for (std::size_t j = 0; j < static_cast<uint>(YBINS); ++j) {
+		for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
+			for (std::size_t j = 0; j < static_cast<unsigned int>(YBINS); ++j) {
 				if (weights[i][j] > 0) {
 					S += weights[i][j]/sum * std::log2(weights[i][j]/sum);
 				}

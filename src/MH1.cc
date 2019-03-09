@@ -70,7 +70,7 @@ void MH1<T>::Print(double width) const {
 	}
 	std::cout << "| " << std::endl;
 
-	for (std::size_t idx = 0; idx < static_cast<uint>(XBINS); ++idx) {
+	for (std::size_t idx = 0; idx < static_cast<unsigned int>(XBINS); ++idx) {
 		
 		const int boundary = 0; // (lower,center,upper)
 		printf("%9.2E |", GetBinXVal(idx,boundary));
@@ -151,7 +151,7 @@ template <class T>
 void MH1<T>::GetXPositiveDefinite(std::valarray<double>& x, std::valarray<double>& y) const {
 	x.resize(XBINS);
 	y.resize(XBINS);
-	for (std::size_t i = 0; i < static_cast<uint>(XBINS); ++i) {
+	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
 		x[i] = GetBinXVal(i, 0); // Get center value
 		y[i] = GetPositiveDefinite(i);
 	}
@@ -164,7 +164,7 @@ double MH1<T>::GetMean() const {
 	double norm = 0.0; // Normalization
 	const double binwidth = (XMAX - XMIN) / XBINS;
 
-	for (std::size_t i = 0; i < static_cast<uint>(XBINS); ++i) {
+	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
 		const double value =
 		    binwidth * (i + 1) - binwidth / 2.0 + XMIN;
 		const double weight = GetPositiveDefinite(i);
@@ -186,7 +186,7 @@ double MH1<T>::GetSquareMean() const {
 	double norm = 0.0; // Normalization
 	const double binwidth = (XMAX - XMIN) / XBINS;
 
-	for (std::size_t i = 0; i < static_cast<uint>(XBINS); ++i) {
+	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
 		const double value =
 		    std::pow(binwidth * (i + 1) - binwidth / 2.0 + XMIN, 2);
 		const double weight = GetPositiveDefinite(i);
@@ -238,7 +238,7 @@ void MH1<T>::Fill(double xvalue, T weight) {
 		buff_values.push_back(xvalue);
 		buff_weights.push_back(weight);
 
-		if (buff_values.size() > static_cast<uint>(AUTOBUFFSIZE)) {
+		if (buff_values.size() > static_cast<unsigned int>(AUTOBUFFSIZE)) {
 			FlushBuffer();
 		}
 	}
@@ -327,7 +327,7 @@ void MH1<T>::ResetBounds(int xbins, double xmin, double xmax) {
 // Clear the histogram data but keep the bounds
 template <class T>
 void MH1<T>::Clear() {
-	for (std::size_t i = 0; i < static_cast<uint>(XBINS); ++i) {
+	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
 		weights[i]  = 0.0;
 		weights2[i] = 0.0;
 		counts[i]   = 0;
@@ -341,7 +341,7 @@ void MH1<T>::Clear() {
 template <class T>
 T MH1<T>::SumWeights() const {
 	T sum = 0.0;
-	for (std::size_t i = 0; i < static_cast<uint>(XBINS); ++i) {
+	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
 		sum += weights[i];
 	}
 	return sum;
@@ -351,7 +351,7 @@ T MH1<T>::SumWeights() const {
 template <class T>
 T MH1<T>::SumWeights2() const {
 	T sum = 0.0;
-	for (std::size_t i = 0; i < static_cast<uint>(XBINS); ++i) {
+	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
 		sum += weights2[i];
 	}
 	return sum;
@@ -362,7 +362,7 @@ T MH1<T>::SumWeights2() const {
 template <class T>
 long long int MH1<T>::SumBinCounts() const {
 	long long int sum = 0;
-	for (std::size_t i = 0; i < static_cast<uint>(XBINS); ++i) {
+	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
 		sum += counts[i];
 	}
 	return sum;
@@ -373,7 +373,7 @@ long long int MH1<T>::SumBinCounts() const {
 template <class T>
 double MH1<T>::GetMaxWeight() const {
 	double maxval = 0;
-	for (std::size_t i = 0; i < static_cast<uint>(XBINS); ++i) {
+	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
 		if (GetPositiveDefinite(i) > maxval) {
 			maxval = GetPositiveDefinite(i);
 		}
@@ -385,7 +385,7 @@ double MH1<T>::GetMaxWeight() const {
 template <class T>
 double MH1<T>::GetMinWeight() const {
 	double minval = 1e128;
-	for (std::size_t i = 0; i < static_cast<uint>(XBINS); ++i) {
+	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
 		if (GetPositiveDefinite(i) < minval) {
 			minval = GetPositiveDefinite(i);
 		}

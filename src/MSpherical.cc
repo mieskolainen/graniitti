@@ -313,14 +313,14 @@ std::vector<double> SphericalMoments(const std::vector<Omega>& input,
                                      const std::vector<std::size_t>& ind, int LMAX, int mode) {
 
   const double V = sqrt(4.0 * PI); // Normalization volume
-  const uint NCOEF = (LMAX + 1) * (LMAX + 1);
+  const unsigned int NCOEF = (LMAX + 1) * (LMAX + 1);
   std::vector<double> t(NCOEF, 0.0);
 
   for (int l = 0; l <= LMAX; ++l) {
     for (int m = -l; m <= l; ++m) {
 
       double sum = 0;
-      const uint index = LinearInd(l, m);
+      const unsigned int index = LinearInd(l, m);
       for (const auto& k : ind) {
 
         // Check is this event selected by cuts
@@ -358,7 +358,7 @@ MMatrix<double> YLM(const std::vector<Omega>& events, int LMAX) {
 
   std::cout << "YLM:" << std::endl;
 
-  const uint NCOEFF = (LMAX+1)*(LMAX+1);
+  const unsigned int NCOEFF = (LMAX+1)*(LMAX+1);
   MMatrix<double> Y_lm(events.size(), NCOEFF, 0.0);
   
   // Loop over events
@@ -414,7 +414,7 @@ void PrintOutMoments(const std::vector<double>& x, const std::vector<double>& x_
 	for (int l = 0; l <= LMAX; ++l) {
 		for (int m = -l; m <= l; ++m) {
 
-			const uint index = LinearInd(l,m);
+			const unsigned int index = LinearInd(l,m);
 			printf("t_%d%d \t= %8.1f +- %5.1f   ", l, m, x[index], x_error[index]);
 
 			if (ACTIVE[index]) {
@@ -465,7 +465,7 @@ std::vector<std::size_t> GetIndices(const std::vector<Omega>& events,
 void TestSphericalIntegrals(int LMAX) {
 
 	MRandom random;
-	const uint NCOEF = (LMAX+1)*(LMAX+1);
+	const unsigned int NCOEF = (LMAX+1)*(LMAX+1);
 	std::cout << "TestSphericalIntegrals: " << std::endl << std::endl;
 
 	// Construct the efficiency coefficients EPSILON_LM with linear indexing

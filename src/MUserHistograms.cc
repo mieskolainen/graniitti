@@ -25,7 +25,7 @@ namespace gra {
 void MUserHistograms::InitHistograms() {
 
 	// Level 1
-	uint Nbins = 40;
+	unsigned int Nbins = 40;
 
 	h1["M"]        = MH1<double>(Nbins, "System M (GeV)");
 	h1["Rap"]      = MH1<double>(Nbins, "System Rap"); h1["Rap"].SetAutoSymmetry(true);

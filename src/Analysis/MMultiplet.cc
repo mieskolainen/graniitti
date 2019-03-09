@@ -61,7 +61,7 @@ std::vector<int> CreateColorMap(int COLORSCHEME = 1) {
 }
 
 
-void GetLegendPosition(uint N, double& x1, double& x2, double& y1, double& y2, const std::string& legendposition) {
+void GetLegendPosition(unsigned int N, double& x1, double& x2, double& y1, double& y2, const std::string& legendposition) {
 
 	// North-East
 	x1 = 0.70;

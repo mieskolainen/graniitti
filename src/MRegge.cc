@@ -216,8 +216,8 @@ std::complex<double> MRegge::ME3HEL(gra::LORENTZSCALAR& lts, gra::PARAM_RES& res
 	int J = resonance.p.J;
 	
 	// --------------------------------------------------------------------------
-	uint number = 0;
-	const uint N = 16*(2*J+1);
+	unsigned int number = 0;
+	const unsigned int N = 16*(2*J+1);
 
 	// C++11 quarantees a local static variable initialization thread safety!
 	static std::vector<std::vector<double>> lambda(N, std::vector<double> (5));
@@ -252,7 +252,7 @@ std::complex<double> MRegge::ME3HEL(gra::LORENTZSCALAR& lts, gra::PARAM_RES& res
 		PropOnly(lts.s2, lts.t2) * PARAM_SOFT::gN_P * FF_B;
 	
 	lts.hamp.clear();
-	uint ok = 0;
+	unsigned int ok = 0;
 	for (std::size_t i = 0; i < N; ++i) {
 
 		/*
@@ -542,10 +542,10 @@ std::complex<double> MRegge::ME6(gra::LORENTZSCALAR& lts) const {
 	// Loop over different final state permutations (max #16)
 	for (const auto& i : indices(permutations4_)) {
 
-		const uint a = permutations4_[i][0];
-		const uint b = permutations4_[i][1];
-		const uint c = permutations4_[i][2];
-		const uint d = permutations4_[i][3];
+		const unsigned int a = permutations4_[i][0];
+		const unsigned int b = permutations4_[i][1];
+		const unsigned int c = permutations4_[i][2];
+		const unsigned int d = permutations4_[i][3];
 
 		// Calculate t-type Lorentz scalars here [no need, done already]
 		// const double tt_ab = (pbeam1_pfinal1 - pfinal[a]).M2();
@@ -633,12 +633,12 @@ std::complex<double> MRegge::ME8(gra::LORENTZSCALAR& lts) const {
 	// Loop over different permutations (max #288)
 	for (const auto& i : indices(permutations6_)) {
 
-		const uint a = permutations6_[i][0];
-		const uint b = permutations6_[i][1];
-		const uint c = permutations6_[i][2];
-		const uint d = permutations6_[i][3];
-		const uint e = permutations6_[i][4];
-		const uint f = permutations6_[i][5];
+		const unsigned int a = permutations6_[i][0];
+		const unsigned int b = permutations6_[i][1];
+		const unsigned int c = permutations6_[i][2];
+		const unsigned int d = permutations6_[i][3];
+		const unsigned int e = permutations6_[i][4];
+		const unsigned int f = permutations6_[i][5];
 
 		// t-type Lorentz scalars [no need here, already calculated]
 		// const double tt_ab = (pbeam1_pfinal1 - pfinal[a]).M2();
@@ -887,7 +887,7 @@ std::vector<bool> n;   // on/off
 void PrintParam() {
 	std::cout << "PARAM_REGGE:: Sub-amplitude parameters:" << std::endl
 	          << std::endl;
-	for (uint i = 0; i < a0.size(); ++i) {
+	for (unsigned int i = 0; i < a0.size(); ++i) {
 		printf(
 		    "- Reggeon[%d]: trajectory alpha(t) = %0.3f + %0.3f "
 		    "[GeV^{-2}] t, sgn = %0.0f \n",
@@ -912,7 +912,7 @@ void PrintParam() {
 	std::cout << std::endl << std::endl;
 
 	std::cout << "Couplings:" << std::endl;
-	for (uint i = 0; i < c.size(); ++i) {
+	for (unsigned int i = 0; i < c.size(); ++i) {
 		printf("- Reggeon[%d]: c = %0.3f [GeV^{-2}]", i, c[i]);
 		if (n[i]) {
 			std::cout << rang::fg::green << " [on]"
@@ -936,12 +936,12 @@ void PrintParam() {
 //
 std::complex<double> JPC_CS_coupling(const gra::LORENTZSCALAR& lts, const gra::PARAM_RES& resonance) {
 
-	const uint PP = 0; // +1 +1
-	const uint PM = 1; // +1 -1
-	const uint LL = 2; //  0  0
+	const unsigned int PP = 0; // +1 +1
+	const unsigned int PM = 1; // +1 -1
+	const unsigned int LL = 2; //  0  0
 
-	const uint PL = 3; // +1  0
-	const uint LP = 4; //  0 +1
+	const unsigned int PL = 3; // +1  0
+	const unsigned int LP = 4; //  0 +1
 	
 	std::vector<double> A(5, 0.0);
 

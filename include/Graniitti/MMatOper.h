@@ -98,7 +98,7 @@ inline T VecVecMultiply(const std::vector<T>& A, const std::vector<T>& B) {
 // Y is (1 x n)
 template <typename T>
 inline std::vector<T> VecDagger(const std::vector<T>& X) {
-    const uint n = X.size();
+    const unsigned int n = X.size();
     std::vector<T> Y(n, 0.0);
     
     // Conjugate element by element
@@ -156,8 +156,8 @@ inline std::vector<T> Plus(const std::vector<T>& a, const std::vector<T>& b) {
 template <typename T>
 inline MMatrix<T> OuterProd(const std::vector<T>& u, const std::vector<T>& v) {
 
-    const uint m = u.size();
-    const uint n = v.size();
+    const unsigned int m = u.size();
+    const unsigned int n = v.size();
     MMatrix<T> out(m,n);
 
     for (std::size_t i = 0; i < m; ++i) {
@@ -177,10 +177,10 @@ inline MMatrix<T> OuterProd(const std::vector<T>& u, const std::vector<T>& v) {
 template <typename T>
 inline MMatrix<T> TensorProd(const MMatrix<T>& A, const MMatrix<T>& B) {
 
-    const uint rowA = A.size_row();
-    const uint rowB = B.size_row();
-    const uint colA = A.size_col();
-    const uint colB = B.size_col();
+    const unsigned int rowA = A.size_row();
+    const unsigned int rowB = B.size_row();
+    const unsigned int colA = A.size_col();
+    const unsigned int colB = B.size_col();
 
     MMatrix<T> C(rowA*rowB, colA*colB);
 

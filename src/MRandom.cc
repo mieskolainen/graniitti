@@ -19,7 +19,7 @@ namespace gra {
 // Poisson distributed random numbers with mean lambda
 int MRandom::PoissonRandom(double lambda) {
 
-	const uint ALGO = 2;
+	const unsigned int ALGO = 2;
 
 	// Knuth algorithm
 	if (ALGO == 1) {
@@ -119,7 +119,7 @@ double MRandom::CauchyRandom(double m0, double Gamma, double LIMIT) {
 // K-dimensional Dirichlet distribution with parameter vector alpha of length K
 void MRandom::DirRandom(const std::vector<double>& alpha, std::vector<double>& y) {
 
-	uint K = alpha.size();
+	unsigned int K = alpha.size();
 
 	// Draw K independent samples from Gamma(shape = alpha_i, scale = 1)
 	y.resize(K, 0.0);
@@ -151,13 +151,13 @@ double MRandom::NBDpdf(int n, double avgN, double k) {
 // Random sample from NBD distribution with parameters avgN and k
 int MRandom::NBDRandom(double avgN, double k, int maxvalue) {
 
-	const uint MAXTRIAL = 1e7;
+	const unsigned int MAXTRIAL = 1e7;
 
 	// Random integer from [0,NBins-1]
 	std::uniform_int_distribution<int> RANDI(1, maxvalue);
 
 	// Acceptance-Rejection
-	uint trials = 0;
+	unsigned int trials = 0;
 	while (true) {
 	    const int n = RANDI(rng);
 	    const double val = NBDpdf(n, avgN, k);

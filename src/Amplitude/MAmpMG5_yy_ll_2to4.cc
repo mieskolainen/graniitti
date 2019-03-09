@@ -174,7 +174,7 @@ std::complex<double> MAmpMG5_yy_ll_2to4::CalcAmp(gra::LORENTZSCALAR& lts) {
 	// {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}; // All
 	std::vector<int> nonzero; // High energy limit / Helicity conserving
 	if (nonzero.size() == 0) {
-		for (uint i = 0; i < ncomb; ++i) {
+		for (unsigned int i = 0; i < ncomb; ++i) {
 			nonzero.push_back(i);
 		}
 	}

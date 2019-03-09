@@ -43,25 +43,25 @@ extern bool HILJAA;
 // Simple MC parameters
 struct MCPARAM {
 	double PRECISION = 0.05;    // Integral relative precision
-	uint MIN_EVENTS  = 1000000; // Minimum number of events to be sampled
+	unsigned int MIN_EVENTS  = 1000000; // Minimum number of events to be sampled
 };
 
 
 // Vegas MC default parameters
 struct VEGASPARAM {
 
-	uint BINS = 128;            // Maximum number of bins per dimension (EVEN NUMBER!)
+	unsigned int BINS = 128;            // Maximum number of bins per dimension (EVEN NUMBER!)
 	double LAMBDA = 1.5;        // Regularization parameter
 
 	// Initialization
-	uint NCALL = 20000;         // Number of calls per iteration
-	uint ITER = 15;             // Number of iterations
+	unsigned int NCALL = 20000;         // Number of calls per iteration
+	unsigned int ITER = 15;             // Number of iterations
 	double CHI2MAX = 10.0;      // Maximum chi2 in initialization
 	double PRECISION = 0.01;    // Maximum relative error of cross section integral
 	int DEBUG = -1;             // Debug mode
 
 	// User cannot set these
-	uint MAXFDIM = 100;         // Maximum integral dimension
+	unsigned int MAXFDIM = 100;         // Maximum integral dimension
 	double EPS = 1.0e-30;       // Epsilon parameter
 };
 
@@ -70,7 +70,7 @@ struct VEGASPARAM {
 struct VEGASData {
 
 	// VEGAS initialization function
-	void Init(uint init, const VEGASPARAM& param) {
+	void Init(unsigned int init, const VEGASPARAM& param) {
 
 		// First initialization: Create the grid and initial data
 		if (init == 0) {
@@ -111,9 +111,9 @@ struct VEGASData {
 	}
 
 	// VEGAS rebinning function (algorithm adapted from Numerical Recipes)
-	void Rebin(double ac, uint j, const VEGASPARAM& param) {
+	void Rebin(double ac, unsigned int j, const VEGASPARAM& param) {
 
-		uint    k = 0;
+		unsigned int    k = 0;
 		double dr = 0.0;
 		double zn = 0.0;
 		double zo = 0.0;
@@ -174,7 +174,7 @@ struct VEGASData {
 	}
 
 	// Initialize sampling region [0,1] x [0,1] x ... x [0,1]
-	void InitRegion(uint fdim) {
+	void InitRegion(unsigned int fdim) {
 
 		FDIM = fdim;
 		region.resize(2 * FDIM, 0.0);
@@ -230,8 +230,8 @@ struct VEGASData {
 	}
 
 	// VEGAS scalars
-	uint BINS_prev   = 0;
-	uint FDIM        = 0;
+	unsigned int BINS_prev   = 0;
+	unsigned int FDIM        = 0;
 
 	double fsum      = 0.0;
 	double f2sum     = 0.0;
@@ -293,8 +293,8 @@ public:
 	double evaluations    = 0.0; // Integrand evaluations
 	double trials         = 0.0; // Event generation trials
 	
-	uint   generated      = 0.0; // Event generation
-	uint   N_overflow     = 0.0; // Weight overflows
+	unsigned int   generated      = 0.0; // Event generation
+	unsigned int   N_overflow     = 0.0; // Weight overflows
 
 	// Cross section and its error
 	double sigma       = 0.0;
@@ -328,7 +328,7 @@ public:
 	void ReadInput(const std::string& inputfile, const std::string cmd_PROCESS = "null");
 
 	// Initialize memory
-	void InitProcessMemory(std::string process, uint RNDSEED);
+	void InitProcessMemory(std::string process, unsigned int RNDSEED);
 	void InitMultiMemory();
 	
 	// Set simple MC parameters
@@ -492,7 +492,7 @@ private:
 	// Process MC integration generic variables
 
 	// Generation mode (integration = 0, event generation = 1)
-	uint GMODE = 0;
+	unsigned int GMODE = 0;
 
 	// -----------------------------------------------
 	// FLAT MC
@@ -507,10 +507,10 @@ private:
 	// DATA
 	VEGASData VD;
 
-	int  Vegas(uint init, uint calls, uint iter, uint N);
-	void VEGASInit(uint init, uint calls);
-	void VEGASMultiThread(uint N, uint tid, uint init, uint LOCALcalls);
-	std::vector<uint> VEGASGetLocalCalls(uint calls);
+	int  Vegas(unsigned int init, unsigned int calls, unsigned int iter, unsigned int N);
+	void VEGASInit(unsigned int init, unsigned int calls);
+	void VEGASMultiThread(unsigned int N, unsigned int tid, unsigned int init, unsigned int LOCALcalls);
+	std::vector<unsigned int> VEGASGetLocalCalls(unsigned int calls);
 
 	// -----------------------------------------------
 
@@ -521,16 +521,16 @@ private:
 	double VegasWrapper(std::vector<double>& randvec, double wgt);
 
 	// Event sampling/generation
-	void CallIntegrator(uint N);
-	void SampleVegas(uint N);
-	void SampleFlat(uint N);
-	void SampleNeuro(uint N);
+	void CallIntegrator(unsigned int N);
+	void SampleVegas(unsigned int N);
+	void SampleFlat(unsigned int N);
+	void SampleNeuro(unsigned int N);
 
 	// Helper functions
 	void PrintInit() const;
 	int  SaveEvent(MProcess* pr, double W, double MAXW, const gra::AuxIntData& aux);
-	void PrintStatus(uint events, uint N, MTimer& tictoc, double timercut);
-	void PrintStatistics(uint N);
+	void PrintStatus(unsigned int events, unsigned int N, MTimer& tictoc, double timercut);
+	void PrintStatistics(unsigned int N);
 	gra::PARAM_RES ReadFactorized(const std::string& resparam_str);
 	void InitFileOutput();
 

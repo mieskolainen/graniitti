@@ -28,27 +28,27 @@ namespace MEikonalNumerics {
 
 	extern const double MinKT2;
 	extern const double MaxKT2;
-	extern uint NumberKT2;
+	extern unsigned int NumberKT2;
 	extern bool logKT2;
 
 	extern const double MinBT;
 	extern const double MaxBT;
-	extern uint NumberBT;
+	extern unsigned int NumberBT;
 	extern bool logBT;
 
 	extern const double MinLoopKT;
 	extern double MaxLoopKT;
 
-	extern uint NumberLoopKT;
-	extern uint NumberLoopPHI;
+	extern unsigned int NumberLoopKT;
+	extern unsigned int NumberLoopPHI;
 	
 	extern const double FBIntegralMinKT;
 	extern const double FBIntegralMaxKT;
-	extern const uint FBIntegralN;
+	extern const unsigned int FBIntegralN;
 
 	std::string GetHashString();
 
-	void SetLoopDiscretization(uint ND);
+	void SetLoopDiscretization(unsigned int ND);
 	void ReadParameters();
 }
 
@@ -63,7 +63,7 @@ public:
 	std::string name;
 	double    MIN = 0;
 	double    MAX = 0;
-	uint        N = 0;
+	unsigned int        N = 0;
 	double   STEP = 0;
 	bool    islog = false;
 
@@ -121,8 +121,8 @@ public:
 	bool ReadArray(const std::string& filename);
 	std::complex<double> Interpolate1D(double a) const;
 
-	static const uint X = 0;
-	static const uint Y = 1;
+	static const unsigned int X = 0;
+	static const unsigned int Y = 1;
 };
 
 
@@ -155,7 +155,7 @@ public:
 
 	// Get random number of cut Pomerons
 	template <typename T>
-	void S3GetRandomCutsBt(uint& m, double& bt, T& rng) {
+	void S3GetRandomCutsBt(unsigned int& m, double& bt, T& rng) {
 
 		const double STEP = (MEikonalNumerics::MaxBT - MEikonalNumerics::MinBT)
 					       / MEikonalNumerics::NumberBT;
@@ -163,11 +163,11 @@ public:
 		// Numerical integral loop over impact parameter (b_t) space  
 		// C++11, thread_local is also static
 		thread_local std::uniform_real_distribution<double> flat(0,1);
-		thread_local std::uniform_int_distribution<uint>  randbt(0, MEikonalNumerics::NumberBT);
-		thread_local std::uniform_int_distribution<uint>   randm(1, MCUT-1); // 1,2,...
+		thread_local std::uniform_int_distribution<unsigned int>  randbt(0, MEikonalNumerics::NumberBT);
+		thread_local std::uniform_int_distribution<unsigned int>   randm(1, MCUT-1); // 1,2,...
 
 		// Acceptance-Rejection
-		uint n = 0;
+		unsigned int n = 0;
 		while (true) {
 			
 			// Draw random impact parameter flat
@@ -184,16 +184,16 @@ public:
 
 	// Get random number of cut Pomerons
 	template <typename T>
-	uint S3GetRandomCuts(T& rng) {
+	unsigned int S3GetRandomCuts(T& rng) {
 		
 		// Random integer from [1,NBins-1]
 		// C++11, thread_local is also static
 		thread_local std::uniform_real_distribution<double> flat(0,1);
-		thread_local std::uniform_int_distribution<uint> RANDI(1, P_cut.size()-1);
+		thread_local std::uniform_int_distribution<unsigned int> RANDI(1, P_cut.size()-1);
 		
 		// Acceptance-Rejection
 		while (true) {
-		    const uint m = RANDI(rng);
+		    const unsigned int m = RANDI(rng);
 		    if (flat(rng) < P_cut[m]) {
 		    	return m; // m cut Pomerons
 		    }
@@ -206,7 +206,7 @@ public:
 
 private:
 
-	static const uint MCUT = 25; // Maximum number of cut Pomerons
+	static const unsigned int MCUT = 25; // Maximum number of cut Pomerons
 	
 	// S3 soft survival initialized
 	bool S3INIT = false;
@@ -233,8 +233,8 @@ private:
 	// Two-Channel eikonal based cross sections
 	double sigma_diff[4] = {0.0};
 
-	static const uint X = 0;
-	static const uint Y = 1;
+	static const unsigned int X = 0;
+	static const unsigned int Y = 1;
 };
 
 

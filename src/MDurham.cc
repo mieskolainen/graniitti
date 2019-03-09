@@ -48,8 +48,8 @@ enum SPINPARITY { P0, M0, P2, M2 }; // Implicit conversion to int
 // Durham loop integral discretization technical parameters
 namespace Durham {
 
-	uint N_qt = 0;      // Number of qt discretization intervals
-	uint N_phi = 0;     // Number of phi discretization intervals
+	unsigned int N_qt = 0;      // Number of qt discretization intervals
+	unsigned int N_phi = 0;     // Number of phi discretization intervals
 	
 	double qt2_MIN = 0; // Loop momentum qt^2 minimum (GeV^2)
 	double qt2_MAX = 0; // Loop momentum qt^2 maximum (GeV^2)
@@ -191,8 +191,8 @@ inline void MDurham::DHelicity(const std::vector<double>& q1,
                           	   const std::vector<double>& q2,
                           	   std::vector<std::complex<double>>& JzP) const {
 	
-	const uint X = 0; // component for readability
-	const uint Y = 1;
+	const unsigned int X = 0; // component for readability
+	const unsigned int Y = 1;
 
 	// 1/2  q1_t dot q2_t
 	JzP[P0] = - 0.5 * (q1[X] * q2[X] + q1[Y] * q2[Y]);
@@ -545,7 +545,7 @@ void MDurham::Dgg2gg(const gra::LORENTZSCALAR& lts,
 	// TEST amplitude squared WITH MADGRAPH (UNDER IMPLEMENTATION)
 	double  madsum = 0.0;
 	double thissum = 0.0;
-	for (uint i = 0; i < 16; ++i) {
+	for (unsigned int i = 0; i < 16; ++i) {
 		printf("i=%2d : |mad|^2 = %0.3f , |amp|^2 = %0.3f \n", i, gra::math::abs2(lts.hamp[i]), gra::math::abs2(dualAmp[i]));
 		madsum  += gra::math::abs2(lts.hamp[i]);
 		thissum += gra::math::abs2(dualAmp[i]); 

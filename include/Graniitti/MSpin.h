@@ -21,9 +21,9 @@ namespace spin {
 	// Amplitude squared
 	std::complex<double> SpinAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES& resonance);
 	
-	MMatrix<std::complex<double>> DMatrix(uint J, double theta_mother, double phi_mother);
+	MMatrix<std::complex<double>> DMatrix(unsigned int J, double theta_mother, double phi_mother);
 	MMatrix<std::complex<double>> fMatrix(const MMatrix<std::complex<double>>& T,
-										  uint J, double s1, double s2, double theta, double phi);
+										  unsigned int J, double s1, double s2, double theta, double phi);
 	std::vector<double> SpinProjections(double J);
 	void InitTMatrix(gra::HELMatrix& hc, const gra::MParticle& p, const gra::MParticle& p1, const gra::MParticle& p2);
 	
@@ -44,8 +44,8 @@ namespace spin {
 	double WignerSmalld(double theta, double m, double mp, double J);
 
 	// Density matrix functions
-	bool Positivity(const MMatrix<std::complex<double>>& rho, uint J);
-	MMatrix<std::complex<double>> RandomRho(uint J, bool parity, std::mt19937_64& rng);
+	bool Positivity(const MMatrix<std::complex<double>>& rho, unsigned int J);
+	MMatrix<std::complex<double>> RandomRho(unsigned int J, bool parity, std::mt19937_64& rng);
 	double VonNeumannEntropy(const MMatrix<std::complex<double>>& rho);
 
 } // spin namespace

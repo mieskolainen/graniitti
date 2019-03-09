@@ -33,12 +33,12 @@ public:
 	std::string name[2];
 	double    MIN[2] = {0};
 	double    MAX[2] = {0};
-	uint        N[2] = {0};
+	unsigned int        N[2] = {0};
 	double   STEP[2] = {0};
 	bool    islog[2] = {false};
 	
 	// Setup discretization
-	void Set(uint VAR, std::string _name, double _min, double _max, double _N, double _logarithmic) {
+	void Set(unsigned int VAR, std::string _name, double _min, double _max, double _N, double _logarithmic) {
 
 		// Out of index
 		if (VAR > 1) { throw std::invalid_argument("IArray2D::Set: Error: VAR = " + std::to_string(VAR) + " > 1"); }

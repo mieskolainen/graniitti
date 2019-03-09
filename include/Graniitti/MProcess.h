@@ -122,7 +122,7 @@ public:
 	}
 
 	// Phase space dimension
-	uint GetdLIPSDim() {
+	unsigned int GetdLIPSDim() {
 		return ProcPtr.LIPSDIM;
 	}
 
@@ -153,7 +153,7 @@ public:
 	void SetFidCuts(const gra::FIDCUT& in) {
 		fcuts = in;
 	}
-	void SetUserCuts(uint in) {
+	void SetUserCuts(unsigned int in) {
 		USERCUTS = in;
 	}
 	void SetVetoCuts(const gra::VETOCUT& in) {
@@ -165,7 +165,7 @@ public:
 	}
 
 	// Set proton excitation to low-mass N*
-	void SetExcitation(uint in) {
+	void SetExcitation(unsigned int in) {
 		if (in > 2) {
 			std::string str =
 			    "MProcess::SetExcitation: Not valid input "
@@ -177,7 +177,7 @@ public:
 	}
 
 	// Set flat matrix element mode
-	void SetFlatAmp(uint in) {
+	void SetFlatAmp(unsigned int in) {
 		FLATAMPLITUDE = in;
 	}
 	// pp invariant Moller flux (high energy limit)
@@ -262,7 +262,7 @@ protected:
 	void GetOffShellMass(const gra::MDecayBranch& branch, double& mass);
 	
 	// Lorentz scalars
-	bool GetLorentzScalars(uint Nf);
+	bool GetLorentzScalars(unsigned int Nf);
 	
 	// Regge amplitude initialization
 	void InitReggeAmplitude(const std::string& MODELPARAM);
@@ -300,8 +300,8 @@ protected:
 		}
 		return true;
 	}
-	uint N_inf = 0;
-	uint N_nan = 0;
+	unsigned int N_inf = 0;
+	unsigned int N_nan = 0;
 	
 	// Initial states
 	gra::MParticle beam1;
@@ -322,9 +322,9 @@ protected:
 	std::string PROCESS;      // Process identifier string
 	std::string DECAYMODE;    // Decaymode identifier string
 	bool SCREENING = false;   // Pomeron loop on/off
-	uint EXCITATION = 0;      // Forward proton excitation (0 = off, 1 = single, 2 = double)
-	uint USERCUTS = 0;        // User custom cuts identifier
-	uint FLATAMPLITUDE = 0;   // Flat matrix element mode
+	unsigned int EXCITATION = 0;      // Forward proton excitation (0 = off, 1 = single, 2 = double)
+	unsigned int USERCUTS = 0;        // User custom cuts identifier
+	unsigned int FLATAMPLITUDE = 0;   // Flat matrix element mode
 	
 	// ----------------------------------------------------------------------
 	// Phase-space control

@@ -127,7 +127,7 @@ std::complex<double> MTensorPomeron::ME4(gra::LORENTZSCALAR& lts) const {
 	
 	
 	// DEDUCE mode
-	uint SPINMODE = 0;
+	unsigned int SPINMODE = 0;
 	if      (lts.decaytree[0].p.spinX2 == 0 && lts.decaytree[1].p.spinX2 == 0) {
 		SPINMODE = 0;
 	}

@@ -112,8 +112,8 @@ void MContinuum::post_Constructor() {
 bool MContinuum::LoopKinematics(const std::vector<double>& p1p,
                                 const std::vector<double>& p2p) {
 
-	const uint Kf = lts.decaytree.size(); // Number of central particles
-	const uint Nf = Kf + 2;               // Number of final states
+	const unsigned int Kf = lts.decaytree.size(); // Number of central particles
+	const unsigned int Nf = Kf + 2;               // Number of final states
 
 	// SET new proton pT degrees of freedom
 	lts.pfinal[1].SetPxPy(p1p[0],p1p[1]);
@@ -124,7 +124,7 @@ bool MContinuum::LoopKinematics(const std::vector<double>& p1p,
 	BLinearSystem(p, pkt_, lts.pfinal[1], lts.pfinal[2]);
 
 	// Set central particles px,py,pz,e
-	const uint offset = 3; // indexing
+	const unsigned int offset = 3; // indexing
 	M4Vec sumP(0,0,0,0);
 	for (std::size_t i = 0; i < Kf; ++i) {
 
@@ -296,15 +296,15 @@ void MContinuum::PrintInit(bool silent) const {
 
 
 // (3*Nf-4)-dimensional phase space vector initialization
-bool MContinuum::BNRandomKin(uint Nf, const std::vector<double>& randvec) {
+bool MContinuum::BNRandomKin(unsigned int Nf, const std::vector<double>& randvec) {
 
-	const uint Kf = Nf - 2; // Central system multiplicity
+	const unsigned int Kf = Nf - 2; // Central system multiplicity
 
 	const double pt1  = gcuts.forward_pt_min + (gcuts.forward_pt_max - gcuts.forward_pt_min) * randvec[0];
 	const double pt2  = gcuts.forward_pt_min + (gcuts.forward_pt_max - gcuts.forward_pt_min) * randvec[1];
 	const double phi1 = 2.0 * gra::math::PI * randvec[2];
 	const double phi2 = 2.0 * gra::math::PI * randvec[3];
-	const uint offset = 4; // 4 variables above
+	const unsigned int offset = 4; // 4 variables above
 
 	// Decay product masses
 	// ==============================================================
@@ -343,10 +343,10 @@ bool MContinuum::BNRandomKin(uint Nf, const std::vector<double>& randvec) {
 }
 
 // Build kinematics of 2->N
-bool MContinuum::BNBuildKin(uint Nf, double pt1, double pt2, double phi1, double phi2,
+bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1, double phi2,
 	const std::vector<double>& kt, const std::vector<double>& phi, const std::vector<double>& y) {
 
-	const uint Kf = Nf - 2; // Central system multiplicity
+	const unsigned int Kf = Nf - 2; // Central system multiplicity
 
 	if (lts.decaytree.size() != Kf) {
 		std::string str =
@@ -405,7 +405,7 @@ bool MContinuum::BNBuildKin(uint Nf, double pt1, double pt2, double phi1, double
 	lts.pfinal[0] = sumP;  // Central system
 
 	double sumM = 0;
-	const uint offset = 3;
+	const unsigned int offset = 3;
 	for (const auto& i : indices(p)) {
 		lts.decaytree[i].p4  = p[i];
 		lts.pfinal[i+offset] = p[i];
@@ -526,7 +526,7 @@ void MContinuum::BLinearSystem(std::vector<M4Vec>& p, const std::vector<M4Vec>& 
 	};
 
 	// Construct vector b
-	const uint Kf = p.size(); // Number of central system particles
+	const unsigned int Kf = p.size(); // Number of central system particles
 	std::vector<M4Vec> b(Kf);
 	const M4Vec p1p2sum = p1f + p2f;
 
@@ -539,7 +539,7 @@ void MContinuum::BLinearSystem(std::vector<M4Vec>& p, const std::vector<M4Vec>& 
 	}
 
 	// Apply linear system p = Ab to get px,py components for each p[i]
-	const uint index = Kf-2; // -2 because of C++
+	const unsigned int index = Kf-2; // -2 because of C++
 	for (const auto& i : indices(p)) {
 		for (const auto& j : indices(b)) {
 			p[i] += b[j] * A[index][i][j]; // notice plus
@@ -617,7 +617,7 @@ fprintf('};\n');
 double MContinuum::BNIntegralVolume() const {
 
 	// Number of central states
-	const uint Kf = pkt_.size() + 1;
+	const unsigned int Kf = pkt_.size() + 1;
 
 	return pow2(2.0 * PI) * 
 		   pow2(gcuts.forward_pt_max - gcuts.forward_pt_min) *
@@ -635,7 +635,7 @@ double MContinuum::BNPhaseSpaceWeight() const {
 	             lts.pfinal[2].Pz() / lts.pfinal[2].E());
 
     // Number of final states
-    const uint Nf = lts.decaytree.size()+2;
+    const unsigned int Nf = lts.decaytree.size()+2;
 
 	// Intermediate "difference"
 	// kt factors from \prod_i d^2 k_i = \prod_i dphi_i kt_i dkt_i

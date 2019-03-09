@@ -136,7 +136,7 @@ void TrimExtraSpace(std::string& value);
 
 // Number to string with formatting
 template <typename T>
-std::string ToString(const T value, const uint n = 6) {
+std::string ToString(const T value, const unsigned int n = 6) {
     std::ostringstream out;
     out.precision(n);
     out << std::fixed << value;
@@ -189,7 +189,7 @@ void PrintFlashScreen(rang::fg pcolor);
 void PrintVersion();
 
 // Bar print
-void PrintBar(std::string str, uint N = 74);
+void PrintBar(std::string str, unsigned int N = 74);
 
 // Create directory
 void CreateDirectory(std::string fullpath);

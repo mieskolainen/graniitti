@@ -41,17 +41,17 @@ namespace MEikonalNumerics {
 
 	const double MinKT2 = 1E-6;
 	const double MaxKT2 = 25.0;
-	uint NumberKT2 = 0;
+	unsigned int NumberKT2 = 0;
 	bool    logKT2 = false;
 	
 	const double MinBT = 1E-6;
 	const double MaxBT = 10.0 / PDG::GeV2fm;
-	uint NumberBT = 0;
+	unsigned int NumberBT = 0;
 	bool    logBT = false;
 
 	const double FBIntegralMinKT = 1E-9;
 	const double FBIntegralMaxKT = 30.0;
-	const uint   FBIntegralN = 10000;
+	const unsigned int   FBIntegralN = 10000;
 
 	const double MinLoopKT = 1E-4;
 	double       MaxLoopKT = 1.75;
@@ -110,10 +110,10 @@ void ReadParameters() {
 // -----------------------------------------
 
 // Screening loop (default values)
-uint NumberLoopKT  = 3 * 8; // Number of kt steps
-uint NumberLoopPHI = 3 * 8; // Number of phi steps
+unsigned int NumberLoopKT  = 3 * 8; // Number of kt steps
+unsigned int NumberLoopPHI = 3 * 8; // Number of phi steps
 
-void SetLoopDiscretization(uint ND) {
+void SetLoopDiscretization(unsigned int ND) {
 	NumberLoopKT  = 3 * ND;
 	NumberLoopPHI = 3 * ND;
 }
@@ -334,7 +334,7 @@ void MEikonal::S3CalcXS() {
 	std::cout << "MEikonal::S3CalcXS:" << std::endl << std::endl;
 
 	// Local discretization
-	const uint N = 2 * 3000; // even number
+	const unsigned int N = 2 * 3000; // even number
 	const double STEP = (MEikonalNumerics::MaxBT - MEikonalNumerics::MinBT) / N;
 
 	// Two channel eikonal eigenvalue solutions obtained via symbolic
@@ -532,7 +532,7 @@ bool IArray1D::ReadArray(const std::string& filename) {
 		return false;
 	}
 	std::string line;
-	uint fills = 0;
+	unsigned int fills = 0;
 	std::cout << "IArray1D::ReadArray: ";
 	
 	for (std::size_t i = 0; i < F.size_row(); ++i) {
@@ -583,7 +583,7 @@ std::complex<double> IArray1D::Interpolate1D(double a) const {
 	int i = std::floor((a - MIN) / STEP);
 
 	// Boundary protection
-	if (i < 0)  { i = 0; } // Int needed for this, instead of uint
+	if (i < 0)  { i = 0; } // Int needed for this, instead of unsigned int
 	if (i >= (int)N) { i = N-1; } // We got N+1 elements in F
 
 	// y = y0 + (x - x0)*[(y1 - y0)/(x1 - x0)]

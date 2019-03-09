@@ -67,7 +67,7 @@ MGraniitti::MGraniitti() {
 MGraniitti::~MGraniitti() {
 
 	// Destroy processes
-	//for (uint i = 0; i < pvec.size(); ++i) {
+	//for (unsigned int i = 0; i < pvec.size(); ++i) {
 	//	delete pvec[i];
 	//}
 }
@@ -170,7 +170,7 @@ std::vector<std::string> MGraniitti::GetProcessNumbers() const {
 }
 
 // (Re-)assign the pointers to the local memory space
-void MGraniitti::InitProcessMemory(std::string process, uint seed) {
+void MGraniitti::InitProcessMemory(std::string process, unsigned int seed) {
 	
 	// These must be here!
 	PROCESS = process;
@@ -225,9 +225,9 @@ void MGraniitti::InitMultiMemory() {
 
 	// RANDOM SEED PER THREAD (IMPORTANT!)
 	for (int i = 0; i < CORES; ++i) {
-		const uint tid = i + 1;
+		const unsigned int tid = i + 1;
 		// Deterministic seed
-		const uint thread_seed = static_cast<uint>(
+		const unsigned int thread_seed = static_cast<unsigned int>(
 			std::max(0, (int)pvec[i]->random.GetSeed()) * tid);
 		pvec[i]->random.SetSeed(thread_seed);
 	}
@@ -493,7 +493,7 @@ void MGraniitti::ReadIntegralParam(const std::string& inputfile) {
 	// FLAT (naive) MC parameters
 	MCPARAM mpam;
 	mpam.PRECISION  = j[XID]["FLAT"]["PRECISION"];  AssertRange(mpam.PRECISION,  {0.0, 1.0},      "FLAT::PRECISION",  true);
-	mpam.MIN_EVENTS = j[XID]["FLAT"]["MIN_EVENTS"]; AssertRange(mpam.MIN_EVENTS, {10, (uint)1e9}, "FLAT::MIN_EVENTS", true);
+	mpam.MIN_EVENTS = j[XID]["FLAT"]["MIN_EVENTS"]; AssertRange(mpam.MIN_EVENTS, {10, (unsigned int)1e9}, "FLAT::MIN_EVENTS", true);
 	SetMCParam(mpam);
 
 	try {
@@ -505,12 +505,12 @@ void MGraniitti::ReadIntegralParam(const std::string& inputfile) {
 
 	// VEGAS parameters
 	VEGASPARAM vpam;
-	vpam.BINS      = j[XID]["VEGAS"]["BINS"];      AssertRange(vpam.BINS,      {0, (uint)1e9}, "VEGAS::BINS",      true);
+	vpam.BINS      = j[XID]["VEGAS"]["BINS"];      AssertRange(vpam.BINS,      {0, (unsigned int)1e9}, "VEGAS::BINS",      true);
 	if ((vpam.BINS % 2) != 0) { throw std::invalid_argument("VEGAS::BINS = " + std::to_string(vpam.BINS) + " should be even number"); }
 
 	vpam.LAMBDA    = j[XID]["VEGAS"]["LAMBDA"];    AssertRange(vpam.LAMBDA,    {1.0, 10.0},    "VEGAS::LAMBDA",    true);
-	vpam.NCALL     = j[XID]["VEGAS"]["NCALL"];     AssertRange(vpam.NCALL,     {50,(uint)1e9}, "VEGAS::NCALL",     true);
-	vpam.ITER      = j[XID]["VEGAS"]["ITER"];      AssertRange(vpam.ITER,      {1, (uint)1e9}, "VEGAS::ITER",      true);
+	vpam.NCALL     = j[XID]["VEGAS"]["NCALL"];     AssertRange(vpam.NCALL,     {50,(unsigned int)1e9}, "VEGAS::NCALL",     true);
+	vpam.ITER      = j[XID]["VEGAS"]["ITER"];      AssertRange(vpam.ITER,      {1, (unsigned int)1e9}, "VEGAS::ITER",      true);
 	vpam.CHI2MAX   = j[XID]["VEGAS"]["CHI2MAX"];   AssertRange(vpam.CHI2MAX,   {0.0,  1e3},    "VEGAS::CHI2MAX",   true);
 	vpam.PRECISION = j[XID]["VEGAS"]["PRECISION"]; AssertRange(vpam.PRECISION, {0.0,  1.0},    "VEGAS::PRECISION", true);
 	vpam.DEBUG     = j[XID]["VEGAS"]["DEBUG"];     AssertSet(vpam.DEBUG,       {-1, 0, 1},     "VEGAS::DEBUG",     true);
@@ -876,7 +876,7 @@ void MGraniitti::Initialize(const MEikonal& eikonal_in) {
 }
 
 
-void MGraniitti::CallIntegrator(uint N) {
+void MGraniitti::CallIntegrator(unsigned int N) {
 
 	// Initialize global clock
 	if (N == 0) { global_tictoc = MTimer(true); }
@@ -899,7 +899,7 @@ void MGraniitti::CallIntegrator(uint N) {
 
 
 // Initialize and generate events using VEGAS MC
-void MGraniitti::SampleVegas(uint N) {
+void MGraniitti::SampleVegas(unsigned int N) {
 
 	if (N == 0) {
 		InitMultiMemory();
@@ -919,11 +919,11 @@ void MGraniitti::SampleVegas(uint N) {
 	// Pure integration mode
 	if (GMODE == 0) {
 
-		uint BURNIN_ITER = 3; // BURN-IN iterations (default)!
+		unsigned int BURNIN_ITER = 3; // BURN-IN iterations (default)!
 
 		// Initialize GRID
 		do {
-			uint init = 0;
+			unsigned int init = 0;
 			int factor = 0;
 
 			do { // Loop until stable
@@ -938,7 +938,7 @@ void MGraniitti::SampleVegas(uint N) {
 				const double time_per_iter = itertime / vparam.NCALL;
 
 				// Max, because this is only minimum condition
-				vparam.NCALL = std::max((uint) vparam.NCALL, (uint)(MINTIME / time_per_iter));
+				vparam.NCALL = std::max((unsigned int) vparam.NCALL, (unsigned int)(MINTIME / time_per_iter));
 				Vegas(init, vparam.NCALL, BURNIN_ITER, N);				
 			}
 
@@ -957,18 +957,18 @@ void MGraniitti::SampleVegas(uint N) {
 
 	// Event generation mode
 	if (GMODE == 1) {
-		const uint init = 2;
-		const uint itermin = 1E9;
+		const unsigned int init = 2;
+		const unsigned int itermin = 1E9;
 		Vegas(init, vparam.NCALL * 10, itermin, N);
 	}
 }
 
 
 // Create number of calls per thread, they need to sum to calls
-std::vector<uint> MGraniitti::VEGASGetLocalCalls(uint calls) {
+std::vector<unsigned int> MGraniitti::VEGASGetLocalCalls(unsigned int calls) {
 
-	std::vector<uint> LOCALcalls(CORES, 0.0);
-	uint sum = 0;
+	std::vector<unsigned int> LOCALcalls(CORES, 0.0);
+	unsigned int sum = 0;
 	for (int k = 0; k < CORES; ++k) {
 		LOCALcalls[k] = std::floor(calls / CORES);
 		sum += LOCALcalls[k];
@@ -987,7 +987,7 @@ std::vector<uint> MGraniitti::VEGASGetLocalCalls(uint calls) {
 // [REFERENCE: Lepage, G.P. Journal of Computational Physics, 1978]
 // https://en.wikipedia.org/wiki/VEGAS_algorithm
 
-int MGraniitti::Vegas(uint init, uint calls, uint itermin, uint N) {
+int MGraniitti::Vegas(unsigned int init, unsigned int calls, unsigned int itermin, unsigned int N) {
 
 	// First the initialization
 	VD.Init(init, vparam);
@@ -1025,7 +1025,7 @@ int MGraniitti::Vegas(uint init, uint calls, uint itermin, uint N) {
 
 	// -------------------------------------------------------------------
 	// Create number of calls per thread, their sum == calls
-	std::vector<uint> LOCALcalls = VEGASGetLocalCalls(calls);
+	std::vector<unsigned int> LOCALcalls = VEGASGetLocalCalls(calls);
 
 	MTimer gridtic;
 
@@ -1173,7 +1173,7 @@ stop: // We jump here once finished (GOTO point)
 }
 
 // This is called once for every VEGAS grid iteration
-void MGraniitti::VEGASMultiThread(uint N, uint THREAD_ID, uint init, uint LOCALcalls) {
+void MGraniitti::VEGASMultiThread(unsigned int N, unsigned int THREAD_ID, unsigned int init, unsigned int LOCALcalls) {
 
 	double zn = 0.0;
 	double zo = 0.0;
@@ -1194,7 +1194,7 @@ void MGraniitti::VEGASMultiThread(uint N, uint THREAD_ID, uint init, uint LOCALc
 
 				// Draw random number
 				zn        = pvec[THREAD_ID]->random.U(0,1) * vparam.BINS + 1.0;
-				indvec[j] = std::max((uint)1, std::min((uint)zn, (uint)vparam.BINS));
+				indvec[j] = std::max((unsigned int)1, std::min((unsigned int)zn, (unsigned int)vparam.BINS));
 
 				if (indvec[j] > 1) {
 					zo = VD.xmat[indvec[j] - 1][j] - VD.xmat[indvec[j] - 2][j];
@@ -1259,7 +1259,7 @@ void MGraniitti::VEGASMultiThread(uint N, uint THREAD_ID, uint init, uint LOCALc
 			if (GMODE == 1) {
 
 				// Enough events
-				if (stat.generated == (uint)GetNumberOfEvents()) { break; }
+				if (stat.generated == (unsigned int)GetNumberOfEvents()) { break; }
 				
 				// Event trial
 				SaveEvent(pvec[THREAD_ID], f, stat.maxf, aux);
@@ -1282,7 +1282,7 @@ void MGraniitti::VEGASMultiThread(uint N, uint THREAD_ID, uint init, uint LOCALc
 
 
 // Generate events using plain simple MC (for reference/DEBUG purposes)
-void MGraniitti::SampleFlat(uint N) {
+void MGraniitti::SampleFlat(unsigned int N) {
 
 	// Integration mode
 	if (N == 0) {
@@ -1295,7 +1295,7 @@ void MGraniitti::SampleFlat(uint N) {
 	}
 
 	// Get dimension of the phase space
-	const uint dim = proc->GetdLIPSDim();
+	const unsigned int dim = proc->GetdLIPSDim();
 	std::vector<double> randvec(dim, 0.0);
 
 	// Reset local timer
@@ -1366,7 +1366,7 @@ void MGraniitti::SampleFlat(uint N) {
 
 
 // Neural net Monte Carlo (small scale PROTOTYPE)
-void MGraniitti::SampleNeuro(uint N) {
+void MGraniitti::SampleNeuro(unsigned int N) {
 
 	// Integration mode
 	if (N == 0) {
@@ -1379,7 +1379,7 @@ void MGraniitti::SampleNeuro(uint N) {
 	}
 
 	// Get dimension of the phase space
-	const uint D = proc->GetdLIPSDim();
+	const unsigned int D = proc->GetdLIPSDim();
 
 	// Reset timers
 	local_tictoc = MTimer(true);
@@ -1530,7 +1530,7 @@ int MGraniitti::SaveEvent(MProcess* pr, double weight, double MAXWEIGHT, const g
 		gra::aux::g_mutex.lock();   
 		
 		// ** This is a multithreading race-condition treatment **
-		if (stat.generated == (uint) GetNumberOfEvents()) {
+		if (stat.generated == (unsigned int) GetNumberOfEvents()) {
 			stat.trials -= 1; // Correct statistics, unnecessary trial
 			gra::aux::g_mutex.unlock();
 			return 1;
@@ -1577,7 +1577,7 @@ int MGraniitti::SaveEvent(MProcess* pr, double weight, double MAXWEIGHT, const g
 
 
 // Intermediate statistics
-void MGraniitti::PrintStatus(uint events, uint N, MTimer& tictoc, double timercut) {
+void MGraniitti::PrintStatus(unsigned int events, unsigned int N, MTimer& tictoc, double timercut) {
 
 	if (tictoc.ElapsedSec() > timercut) {
 		tictoc.Reset();
@@ -1614,7 +1614,7 @@ void MGraniitti::PrintStatus(uint events, uint N, MTimer& tictoc, double timercu
 
 
 // Final statistics
-void MGraniitti::PrintStatistics(uint N) {
+void MGraniitti::PrintStatistics(unsigned int N) {
 
 	gra::aux::ClearProgress(); // Clear progressbar
 
@@ -1631,7 +1631,7 @@ void MGraniitti::PrintStatistics(uint N) {
 			std::cout << std::endl << std::endl;
 		}
 
-		uint N_leg = proc->lts.decaytree.size() + 2;
+		unsigned int N_leg = proc->lts.decaytree.size() + 2;
 		if (proc->GetIsolate()) { N_leg = 3; } // Isolated 2->3 process with <F> phase space
 
 		printf("{2->%d cross section}:             %0.3E +- %0.3E barn \n", N_leg, stat.sigma, stat.sigma_err);

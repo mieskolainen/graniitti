@@ -86,7 +86,7 @@ private:
 
 	// Active moments bookkeeping here
 	std::vector<bool> ACTIVE;
-	uint ACTIVENDF = 0;
+	unsigned int ACTIVENDF = 0;
 
 	// Tensor data:
 	//

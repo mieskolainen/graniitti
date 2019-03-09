@@ -69,11 +69,11 @@ void InitTMatrix(gra::HELMatrix& hc, const gra::MParticle& p, const gra::MPartic
 	// -------------------------------------------------------------------
 	// Helicity decay amplitude matrix
 
-	hc.T = MMatrix<std::complex<double>> (static_cast<uint>(2*s1+1), static_cast<uint>(2*s2+1), 0.0);
+	hc.T = MMatrix<std::complex<double>> (static_cast<unsigned int>(2*s1+1), static_cast<unsigned int>(2*s2+1), 0.0);
 
 	MMatrix<bool> need_to_set(20, 20, false);
 	bool tag_set = false;
-	uint nonzero = 0;
+	unsigned int nonzero = 0;
 	
 	// Construct T-matrix (2s1 + 1) x (2s2 + 1) elements
 	std::cout << "gra::spin:: "
@@ -206,8 +206,8 @@ bool FermiSymmetry(int l, int s) {
 // 
 std::complex<double> SpinAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES& resonance) {
 	
-	const uint B = 0;
-	const uint C = 1;
+	const unsigned int B = 0;
+	const unsigned int C = 1;
 	
 	MMatrix<std::complex<double>> fA;
 	MMatrix<std::complex<double>> fB;
@@ -245,15 +245,15 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES& reso
 	// B -> B1 + B2
 	if (lts.decaytree[B].legs.size() == 2) {
 		
-		const uint B1 = 0;
-		const uint B2 = 1;
+		const unsigned int B1 = 0;
+		const unsigned int B2 = 1;
 
 		// Get daughter spins and parities
 		const double s1 = lts.decaytree[B].legs[B1].p.spinX2 / 2.0;
 		const double s2 = lts.decaytree[B].legs[B2].p.spinX2 / 2.0;
 
  		// Constant 1.0 for now (solid for "Magic Decays", i.e., which have T == 1)
-		const MMatrix<std::complex<double>> T((uint)(2*s1 + 1), (uint)(2*s2 + 1), 1.0);
+		const MMatrix<std::complex<double>> T((unsigned int)(2*s1 + 1), (unsigned int)(2*s2 + 1), 1.0);
 
 		// Rotate and boost daughters to the frame where z-spanned by B-flight direction (B-helicity rest frame)
 		std::vector<M4Vec> daughter = {lts.decaytree[B].legs[B1].p4, lts.decaytree[B].legs[B2].p4};
@@ -266,15 +266,15 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES& reso
 	// C -> C1 + C2
 	if (lts.decaytree[C].legs.size() == 2) {
 
-		const uint C1 = 0;
-		const uint C2 = 1;
+		const unsigned int C1 = 0;
+		const unsigned int C2 = 1;
 
 		// Get daughter spins and parities
 		const double s1 = lts.decaytree[C].legs[C1].p.spinX2 / 2.0;
 		const double s2 = lts.decaytree[C].legs[C2].p.spinX2 / 2.0;
 
 		// Constant 1.0 for now (solid for "Magic Decays", i.e., which have T == 1)
-		const MMatrix<std::complex<double>> T((uint)(2*s1 + 1), (uint)(2*s2 + 1), 1.0);
+		const MMatrix<std::complex<double>> T((unsigned int)(2*s1 + 1), (unsigned int)(2*s2 + 1), 1.0);
 
 		// Rotate and boost daughters to the frame where z-spanned by C-flight direction (C-helicity rest frame)
 		std::vector<M4Vec> daughter = {lts.decaytree[C].legs[C1].p4, lts.decaytree[C].legs[C2].p4};
@@ -374,14 +374,14 @@ std::vector<double> SpinProjections(double J) {
 // [REFERENCE: Jacob, Wick, On the general theory of particles with spin, 1959]
 // [REFERENCE: Amsler, Bizot, Simulation of angular distributions, 1983]
 MMatrix<std::complex<double>> fMatrix(const MMatrix<std::complex<double>>& T,
-									  uint J, double s1, double s2, double theta, double phi) {
+									  unsigned int J, double s1, double s2, double theta, double phi) {
 	
-	if (T.size_row() != static_cast<uint>(2*s1+1) || T.size_col() != static_cast<uint>(2*s2+1)) {
+	if (T.size_row() != static_cast<unsigned int>(2*s1+1) || T.size_col() != static_cast<unsigned int>(2*s2+1)) {
 		throw std::invalid_argument("gra::spin::fMatrix: Input T matrix (2s1+1)x(2s2+1) with wrong dimensions: "
 			+ std::to_string(T.size_row()) + " x " + std::to_string(T.size_col()));
 	}
 	// Number of final state configurations
-	const uint N = static_cast<uint>(2*s1 + 1) * static_cast<uint>(2*s2 + 1);
+	const unsigned int N = static_cast<unsigned int>(2*s1 + 1) * static_cast<unsigned int>(2*s2 + 1);
 
 	// Initial state projections
 	const std::vector<double> M = SpinProjections(J);
@@ -391,9 +391,9 @@ MMatrix<std::complex<double>> fMatrix(const MMatrix<std::complex<double>>& T,
 
 	// For indexing T matrix
 	MMatrix<double> lambda_values(N, 2, 0.0);
-	MMatrix<uint>    lambda_index(N, 2, 0);
+	MMatrix<unsigned int>    lambda_index(N, 2, 0);
 
-	uint i = 0;
+	unsigned int i = 0;
 	for (int mu = 0; mu < static_cast<int>(2*s1 + 1); ++mu) {
 	    for (int nu = 0; nu < static_cast<int>(2*s2 + 1); ++nu) { 
 	        lambda_values[i][0] = -s1 + static_cast<double>(mu);
@@ -436,7 +436,7 @@ MMatrix<std::complex<double>> fMatrix(const MMatrix<std::complex<double>>& T,
 
 
 // Construct Wigner D-matrix for a spin-space operator rotation
-MMatrix<std::complex<double>> DMatrix(uint J, double theta_rotation, double phi_rotation) {
+MMatrix<std::complex<double>> DMatrix(unsigned int J, double theta_rotation, double phi_rotation) {
 
 	// Create spin projections
 	const std::vector<double> M = SpinProjections(J);
@@ -694,7 +694,7 @@ bool W3jrules(double j1, double j2, double j3, double m1, double m2, double m3) 
 // Calculate quantum mechanical von Neumann entropy of a density matrix
 double VonNeumannEntropy(const MMatrix<std::complex<double>>& rho) {
 	
-	const uint N = rho.size_col();
+	const unsigned int N = rho.size_col();
 	Eigen::MatrixXcd A(N, N);
 
 	// Collect matrix elements
@@ -800,9 +800,9 @@ std::complex<double> WignerD(double theta, double phi, double m, double mp, doub
 // TBD, write down generalization for any spin (e.g. done with Eigen library
 // eigenvalues)
 
-bool Positivity(const MMatrix<std::complex<double>>& rho, uint J) {
+bool Positivity(const MMatrix<std::complex<double>>& rho, unsigned int J) {
 
-	const uint n = rho.size_row();
+	const unsigned int n = rho.size_row();
 	
 	// Dimensions
 	if ((n - 1) / 2 != J) {
@@ -1018,7 +1018,7 @@ bool Positivity(const MMatrix<std::complex<double>>& rho, uint J) {
 //
 // TBD, write down the generalization of parity conservation constaint for any
 // spin.
-MMatrix<std::complex<double>> RandomRho(uint J, bool parity, std::mt19937_64& rng) {
+MMatrix<std::complex<double>> RandomRho(unsigned int J, bool parity, std::mt19937_64& rng) {
 
 	// Gaussian random numbers
 	std::normal_distribution<double> gauss(0, 1);
@@ -1030,7 +1030,7 @@ MMatrix<std::complex<double>> RandomRho(uint J, bool parity, std::mt19937_64& rn
 	// usually
 	while (true) {
 		// Create random complex matrix (n x n)
-		const uint n = 2*J + 1;
+		const unsigned int n = 2*J + 1;
 		MMatrix<std::complex<double>> r(n,n);
 
 		for (std::size_t i = 0; i < n; ++i) {

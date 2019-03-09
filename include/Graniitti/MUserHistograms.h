@@ -30,7 +30,7 @@ public:
 	void InitHistograms();
 	void FillHistograms(double totalweight, const gra::LORENTZSCALAR& scalar);
 	void PrintHistograms();
-	void SetHistograms(uint in) {
+	void SetHistograms(unsigned int in) {
 		HIST = in;
 	}
 	void FillCosThetaPhi(double totalweight, const gra::LORENTZSCALAR& scalar);
@@ -39,7 +39,7 @@ public:
 	std::map<std::string, MH1<double>> h1;
 	std::map<std::string, MH2> h2;
 
-	uint HIST = 0;          // Histogramming level
+	unsigned int HIST = 0;          // Histogramming level
 };
 
 

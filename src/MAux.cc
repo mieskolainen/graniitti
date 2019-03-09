@@ -597,7 +597,7 @@ void PrintFlashScreen(rang::fg pcolor) {
 }
 
 // Print horizontal bar
-void PrintBar(std::string str, uint N) {
+void PrintBar(std::string str, unsigned int N) {
 
 	for (std::size_t k = 0; k < N; ++k) {
 		std::cout << str;

@@ -369,7 +369,7 @@ std::vector<std::complex<double>> MDirac::vDirac(const M4Vec& p, int spin) const
 
 
 // Return Hermitician angular momentum operators J_i = 1/2 \sigma_i, i = 1,2,3
-MMatrix<std::complex<double>> MDirac::J_operator(uint i) const {
+MMatrix<std::complex<double>> MDirac::J_operator(unsigned int i) const {
 
 	if (i == 1) {
 		return sigma_x * 0.5;

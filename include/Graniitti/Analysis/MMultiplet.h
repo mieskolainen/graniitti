@@ -27,14 +27,14 @@ namespace gra {
 class h1Bound {
 
 public:
-    h1Bound(uint _N, double _min, double _max) {
+    h1Bound(unsigned int _N, double _min, double _max) {
         N   = _N;
         min = _min;
         max = _max;
     }
     ~h1Bound() {}
 
-    uint     N = 0;
+    unsigned int     N = 0;
     double min = 0.0;
     double max = 0.0;
 };

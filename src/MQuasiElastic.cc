@@ -240,7 +240,7 @@ bool MQuasiElastic::EventRecord(HepMC::GenEvent& evt) {
 		for (const auto& i : indices(etree)) {
 
 			// One Pomeron is cut in N chains
-			const uint NCHAIN = 1;
+			const unsigned int NCHAIN = 1;
 			for (std::size_t c = 0; c < NCHAIN; ++c) {
 
 				// Initial state protons (4-momentum, pdg-id, status code)
@@ -511,7 +511,7 @@ std::complex<double> MQuasiElastic::PolySoft(const std::vector<double>& randvec)
 	const int MAXTRIAL = 1e4;
 	
 	// Get the random number of inelastic cut Pomerons
-	uint N = 0;
+	unsigned int N = 0;
 
 	if (!Eikonal.IsInitialized()) {
 		throw std::invalid_argument("MQuasiElastic::PolySoft: Set POMLOOP = true");

@@ -48,8 +48,8 @@ private:
 	void ConstructProcesses();
 	
 	// 3*N-4 dimensional phase space, 2->N
-	bool BNRandomKin(uint Nf, const std::vector<double>& randvec);
-	bool BNBuildKin(uint Nf, double pt1, double pt2, double phi1, double phi2,
+	bool BNRandomKin(unsigned int Nf, const std::vector<double>& randvec);
+	bool BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1, double phi2,
 	              const std::vector<double>& kt, const std::vector<double>& phi,
 	              const std::vector<double>& y);
 

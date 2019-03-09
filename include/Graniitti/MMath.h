@@ -240,7 +240,7 @@ inline double l2norm(const std::vector<T>& v) {
 template <template<typename T> class container_type, class value_type>
 inline void PrintArray(container_type<value_type> x, std::string name) {
     std::cout << "PrintArray: " << name << std::endl;
-    for (uint i = 0; i < x.size(); ++i) {
+    for (unsigned int i = 0; i < x.size(); ++i) {
         std::cout << x[i];
     }
     std::cout << std::endl << std::endl;
@@ -426,7 +426,7 @@ inline T Simpson38Integral2D(const MMatrix<T>& f, const MMatrix<double>& W,
 // 1    4    2    4    2    4    2    4    1
 
 // Simpson's 1/3 rule weight vector dim[N+1]
-inline std::vector<double> Simpson13Weight(uint N) {
+inline std::vector<double> Simpson13Weight(unsigned int N) {
 	if (N % 2 != 0) { // Must be even
 		std::string str = "FATAL ERROR: gra::math::SimpsonWeight N = " +
 		                  std::to_string(N) + " is not even!";
@@ -445,7 +445,7 @@ inline std::vector<double> Simpson13Weight(uint N) {
 }
 
 // Simpson's 3/8 rule weight vector dim[N+1]
-inline std::vector<double> Simpson38Weight(uint N) {
+inline std::vector<double> Simpson38Weight(unsigned int N) {
 	if (N % 3 != 0) { // Must be multiple of 3
 		std::string str = "FATAL ERROR: gra::math::SimpsonWeight N = " +
 		                  std::to_string(N) + " is not multiple of 3!";
@@ -465,7 +465,7 @@ inline std::vector<double> Simpson38Weight(uint N) {
 
 
 // Create a weight matrix dim[M+1, N+1] for 2D-Simpson's 1/3 rule
-inline MMatrix<double> Simpson13Weight2D(uint M, uint N) {
+inline MMatrix<double> Simpson13Weight2D(unsigned int M, unsigned int N) {
 	MMatrix<double> W(M + 1, N + 1, 0.0);
 	const std::vector<double> U = Simpson13Weight(M);
 	const std::vector<double> V = Simpson13Weight(N);
@@ -481,7 +481,7 @@ inline MMatrix<double> Simpson13Weight2D(uint M, uint N) {
 }
 
 // Create a weight matrix dim[M+1, N+1] for 2D-Simpson's 3/8 rule
-inline MMatrix<double> Simpson38Weight2D(uint M, uint N) {
+inline MMatrix<double> Simpson38Weight2D(unsigned int M, unsigned int N) {
 	MMatrix<double> W(M + 1, N + 1, 0.0);
 	const std::vector<double> U = Simpson38Weight(M);
 	const std::vector<double> V = Simpson38Weight(N);
@@ -501,7 +501,7 @@ inline MMatrix<double> Simpson38Weight2D(uint M, uint N) {
 // Construct binary reflect Gray code (BRGC) 
 // which is the Hamiltonian Path on a N-dim unit hypercube (2^N Boolean vector space)
 // The operator ^ is Exclusive OR (XOR) and the operator >> is bit shift right
-constexpr uint Binary2Gray(uint number) {
+constexpr unsigned int Binary2Gray(unsigned int number) {
 
    return number ^ (number >> 1);
 }
@@ -509,9 +509,9 @@ constexpr uint Binary2Gray(uint number) {
 
 // Convert BRGC (binary reflect Gray code) to a binary number
 // Gray code is obtained as XOR (^) with all more significant bits
-constexpr uint Gray2Binary(uint number) {
+constexpr unsigned int Gray2Binary(unsigned int number) {
 
-  for (uint mask = number >> 1; mask != 0; mask = mask >> 1) {
+  for (unsigned int mask = number >> 1; mask != 0; mask = mask >> 1) {
     number = number ^ mask;
   }
   return number;
@@ -541,7 +541,7 @@ inline int Vec2Ind(std::vector<bool> vec) {
 // [the normal order: 0 ~ 00, 1 ~ 01, 2 ~ 10, 3 ~ 11 ...]
 // Input: x = index representation
 //        d = Boolean vector space dimension
-inline std::vector<bool> Ind2Vec(uint ind, uint d) {
+inline std::vector<bool> Ind2Vec(unsigned int ind, unsigned int d) {
 
 	std::vector<bool> ret;
 
@@ -566,10 +566,10 @@ inline std::vector<bool> Ind2Vec(uint ind, uint d) {
 
 // OEIS.org A030109 sequence of left-right bit reversed sequence
 // Input: dim = Boolean vector space dimension
-inline std::vector<uint> LRsequence(uint dim) {
+inline std::vector<unsigned int> LRsequence(unsigned int dim) {
 
 	// The sequence
-	std::vector<uint> seq(std::pow(2,dim), 0);
+	std::vector<unsigned int> seq(std::pow(2,dim), 0);
 
 	for (std::size_t i = 0; i < seq.size(); ++i) {
 
@@ -588,10 +588,10 @@ inline std::vector<uint> LRsequence(uint dim) {
 
 
 // Construct binary matrix in normal binary order
-inline std::vector<std::vector<int>> BinaryMatrix(uint d) {
+inline std::vector<std::vector<int>> BinaryMatrix(unsigned int d) {
 
 	std::vector<std::vector<int>> B;
-	uint N = std::pow(2,d);
+	unsigned int N = std::pow(2,d);
 
 	// First initialize
 	std::vector<int> rvec(d, 0);
@@ -605,7 +605,7 @@ inline std::vector<std::vector<int>> BinaryMatrix(uint d) {
 		// Get binary expansion (vector) for this i = 0...2^d-1
 		std::vector<bool> binvec = Ind2Vec(i, d);
 
-		for (uint j = 0; j < d; ++j) {
+		for (unsigned int j = 0; j < d; ++j) {
 			B[i][j] = binvec[j]; 
 		}
 	}
@@ -838,8 +838,8 @@ inline std::vector<std::vector<int>> Permutations(std::vector<int>& input) {
 		set[l] = temp;
 
 		// Reverse from j+1 to the end
-		uint swaps = (N - j - 1) / 2;
-		for (uint i = 0; i < swaps; ++i) {
+		unsigned int swaps = (N - j - 1) / 2;
+		for (unsigned int i = 0; i < swaps; ++i) {
 			if ((j + 1 + i) < N) {
 				temp = set[(j + 1) + i];
 				set[(j + 1) + i] = set[N - 1 - i];
@@ -921,7 +921,7 @@ inline std::vector<std::vector<int>> GetAmpPerm(int N, int type) {
 
 // Ordinary Legendre polynomials P_l(x) to cross check algorithmic implementation
 // x usually cos(theta)
-inline double LegendrePl(uint l, double x) {
+inline double LegendrePl(unsigned int l, double x) {
 	
 	if        (l == 0) {
 		return 1;

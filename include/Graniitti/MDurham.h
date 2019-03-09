@@ -30,8 +30,8 @@ namespace gra {
 // Durham loop integral discretization technicals
 namespace Durham {
 
-	extern uint N_qt;  // (> 30)
-	extern uint N_phi; // (> 10)
+	extern unsigned int N_qt;  // (> 30)
+	extern unsigned int N_phi; // (> 10)
 
 	extern double qt2_MIN; // Loop momentum qt^2 minimum (GeV^2)
 	extern double qt2_MAX; // Loop momentum qt^2 maximum (GeV^2)

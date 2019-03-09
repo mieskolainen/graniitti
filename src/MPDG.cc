@@ -265,8 +265,8 @@ void MPDG::ReadParticleData(const std::string& filepath) {
 				if (std::to_string(p.pdg).length() == 3 || std::to_string(p.pdg).length() == 5 ||
 					std::to_string(p.pdg).length() == 6 || std::to_string(p.pdg).length() == 7) {
 
-					uint N = std::to_string(p.pdg).length();
-					uint m = 0;
+					unsigned int N = std::to_string(p.pdg).length();
+					unsigned int m = 0;
 
 					if (N == 5) { m = 0; }
 					if (N == 6) { m = 1; }
@@ -381,8 +381,8 @@ void MPDG::ReadParticleData(const std::string& filepath) {
 				    std::to_string(p.pdg).length() == 6 || std::to_string(p.pdg).length() == 7) {
 
 					// [code   J^P]
-					uint N = std::to_string(p.pdg).length();
-					uint m = 0;
+					unsigned int N = std::to_string(p.pdg).length();
+					unsigned int m = 0;
 
 					if (N == 6) { m = 0; }
 					if (N == 7) { m = 1; }
@@ -544,8 +544,8 @@ void MPDG::TokenizeProcess(const std::string& str, int depth, std::vector<gra::M
 			std::vector<std::string::size_type> R;
 
 			// Now find the
-			uint a = 0;
-			uint b = 0;
+			unsigned int a = 0;
+			unsigned int b = 0;
 			for (std::string::size_type j = i + 1; j < str.size();
 			     ++j) {
 				if (str[j] == '{') {
@@ -597,7 +597,7 @@ void MPDG::PrintPDGTable() const {
 
 	std::map<int, gra::MParticle>::const_iterator it = PDG_table.begin();
 	
-	uint counter = 0;
+	unsigned int counter = 0;
     while (it != PDG_table.end()) {
 		const gra::MParticle p = it->second;
 

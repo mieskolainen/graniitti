@@ -38,7 +38,7 @@ public:
 		RNDSEED = seed;
 	}
 	// Return current random seed
-	uint GetSeed() const {
+	unsigned int GetSeed() const {
 		return RNDSEED;
 	}
 	
@@ -61,7 +61,7 @@ public:
 	std::uniform_real_distribution<double> flat;
 	std::normal_distribution<double> gaussian;
 
-	uint RNDSEED = 0;    // Random seed set
+	unsigned int RNDSEED = 0;    // Random seed set
 
 private:
 	// Nothing

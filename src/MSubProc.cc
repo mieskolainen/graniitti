@@ -102,7 +102,7 @@ void MSubProc::ConstructDescriptions(const std::string& first) {
 
 // This is called last by the initialization routines
 // as the last step before event generation.
-void MSubProc::SetTechnicalBoundaries(gra::GENCUT& gcuts, uint EXCITATION) {
+void MSubProc::SetTechnicalBoundaries(gra::GENCUT& gcuts, unsigned int EXCITATION) {
 	
 	if (gcuts.forward_pt_min < 0.0) { // Not set yet
 		gcuts.forward_pt_min = 0.0;

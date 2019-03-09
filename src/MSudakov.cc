@@ -47,16 +47,16 @@ namespace MSudakovNumerics {
 	const double x_MAX  = 1.0 - 1E-9;
 
 	// Numerical integral discretization [SET HERE]
-	const uint SudakovIntegralN = 1000;
-	const uint ShuvaevIntegralN = 400;
+	const unsigned int SudakovIntegralN = 1000;
+	const unsigned int ShuvaevIntegralN = 400;
 	
 	// Logarithmic stepping true/false
 	std::vector<bool> SUDA_log_ON;
 	std::vector<bool> SHUV_log_ON;
 
 	// Number of discrete intervals
-	std::vector<uint> SUDA_N;
-	std::vector<uint> SHUV_N;
+	std::vector<unsigned int> SUDA_N;
+	std::vector<unsigned int> SHUV_N;
 
 	// CMS energy
 	double sqrts = 0.0;
@@ -89,8 +89,8 @@ namespace MSudakovNumerics {
 			std::vector<bool> yy = j[XID]["SHUV"]["log_ON"]; SHUV_log_ON = yy;
 
 			// Number of node points [assign needed for <cast>]
-			std::vector<uint> nn = j[XID]["SUDA"]["N"]; SUDA_N = nn;
-			std::vector<uint> mm = j[XID]["SHUV"]["N"]; SHUV_N = mm;
+			std::vector<unsigned int> nn = j[XID]["SUDA"]["N"]; SUDA_N = nn;
+			std::vector<unsigned int> mm = j[XID]["SHUV"]["N"]; SHUV_N = mm;
 
 			// Discretization
 			//ShuvaevIntegralN  = j[XID]["ShuvaevIntegralN"];
@@ -594,7 +594,7 @@ bool IArray2D::ReadArray(const std::string& filename) {
 	}
 
 	std::string line;
-	uint fills = 0;
+	unsigned int fills = 0;
 	std::cout << "IArray2D::ReadArray: ";
 	
 	for (const auto& i : indices(F)) {
@@ -654,7 +654,7 @@ std::pair<double,double> IArray2D::Interpolate2D(double a, double b) const {
 	int j = std::floor((b - MIN[1]) / STEP[1]);
 
 	// Lower boundary protection
-	if (i < 0) { i = 0; } // Int needed for this (not uint)
+	if (i < 0) { i = 0; } // Int needed for this (not unsigned int)
 	if (j < 0) { j = 0; }
 
 	// Upper boundary protection
@@ -662,8 +662,8 @@ std::pair<double,double> IArray2D::Interpolate2D(double a, double b) const {
 	if (j >= (int)N[1]) { j = N[1]-1; }
 	
 	// Aux variables for readability
-	const uint X = 0;
-	const uint Y = 1;
+	const unsigned int X = 0;
+	const unsigned int Y = 1;
 
 	const double x1 = F[i][j][X];
 	const double x2 = F[i + 1][j][X];

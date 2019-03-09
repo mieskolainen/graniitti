@@ -506,9 +506,9 @@ void MProcess::SetDecayMode(std::string str) {
 	// 1. Syntax check, we must have same amount of left { and right } brackets
 	std::vector<std::string> words = gra::aux::Extract(str);
 
-	uint arrows = 0;
-	uint L = 0;
-	uint R = 0;
+	unsigned int arrows = 0;
+	unsigned int L = 0;
+	unsigned int R = 0;
 	for (std::string::size_type i = 0; i < str.size(); ++i) {
 		if (str[i] == '{')
 			++L;
@@ -634,7 +634,7 @@ void MProcess::SetupBranching() {
 
 			// Try to find the decaymode
 			bool found_decay_mode = false;
-			const uint MAXDECAYS = 500;
+			const unsigned int MAXDECAYS = 500;
 			for (std::size_t i = 0; i < MAXDECAYS; ++i) {
 
 				const std::string SID = std::to_string(i);
@@ -666,8 +666,8 @@ void MProcess::SetupBranching() {
 					// Allow 50 coupling parameter (l,s) pairs (more than enough)
 					for (std::size_t a = 0; a < 50; ++a) {
 						try {
-							const uint    l = j[PDG_STR][SID]["alpha_ls"][a][0];
-							const uint    s = j[PDG_STR][SID]["alpha_ls"][a][1];
+							const unsigned int    l = j[PDG_STR][SID]["alpha_ls"][a][0];
+							const unsigned int    s = j[PDG_STR][SID]["alpha_ls"][a][1];
 							const double Re = j[PDG_STR][SID]["alpha_ls"][a][2];
 							const double Im = j[PDG_STR][SID]["alpha_ls"][a][3];
 
@@ -729,7 +729,7 @@ void MProcess::SetupBranching() {
 					// Try again with higher mother mass, we might
 					// be trying purely off-shell decay (such as
 					// f0(980) -> K+K- )
-					const uint N_width = 3;
+					const unsigned int N_width = 3;
 					for (std::size_t i = 1; i <= N_width; ++i) {
 						gamma_1 = gra::kinematics::PDW2body(
 						    pow2(res.p.mass + i * res.p.width),
@@ -800,8 +800,8 @@ void MProcess::GetOffShellMass(const gra::MDecayBranch& branch, double& mass) {
 	}
 
 	// Pick offshell mass
-	uint trials = 0;
-	const uint MAXTRIAL = 1e6;
+	unsigned int trials = 0;
+	const unsigned int MAXTRIAL = 1e6;
 	while (true) {
 		mass = random.BreitWignerRandom(branch.p.mass, branch.p.width);
 		++trials;
@@ -1451,7 +1451,7 @@ bool MProcess::B5Getgra::LORENTZSCALARs() {
 
 // Build and check Lorentz scalars
 // Input as the number of final states
-bool MProcess::GetLorentzScalars(uint Nf) {
+bool MProcess::GetLorentzScalars(unsigned int Nf) {
 	
 	// Example Nf = 4 gives 8 Lorentz scalars:
 	//

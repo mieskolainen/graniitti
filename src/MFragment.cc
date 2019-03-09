@@ -73,8 +73,8 @@ void MFragment::GetDecayStatus(const std::vector<int>& pdgcode, std::vector<bool
 void MFragment::ExpPowRND(double q, double T, double maxpt, 
 	const std::vector<double>& mass, std::vector<double>& x, std::mt19937_64& rng) {
 
-	const uint MAXTRIAL = 1e4; // Safety break
-	const uint Nbins    = 1e4;
+	const unsigned int MAXTRIAL = 1e4; // Safety break
+	const unsigned int Nbins    = 1e4;
 	const double ptstep = maxpt / Nbins;
 
 	// Calculate pt-bin values
@@ -111,7 +111,7 @@ void MFragment::ExpPowRND(double q, double T, double maxpt,
 	for (const auto& p : indices(mass)) {
 
 		// Find the best distribution
-		uint best = 0;
+		unsigned int best = 0;
 		double mindist = 1e32;
 		for (std::size_t k = 0; k < fixmass.size(); ++k) {
 			const double dist = std::abs(fixmass[k] - mass[p]);
@@ -122,7 +122,7 @@ void MFragment::ExpPowRND(double q, double T, double maxpt,
 		}
 
 		// Acceptance-Rejection
-		uint trials = 0;
+		unsigned int trials = 0;
 		while (true) {
 		    const int BIN = RANDI(rng);
 		    if (U(0.0, 1.0, rng)*maxval[best] < dsdpt[best][BIN]) {
@@ -153,10 +153,10 @@ double MFragment::TubeFragment(const M4Vec& mother, double M0, const std::vector
 	std::vector<M4Vec>& p, double q, double T, double maxpt, std::mt19937_64& rng) {
 
 	// Number of re-trials in a case of failing kinematics
-	const uint MAXTRIAL = 30;
-	uint trials = 0;
+	const unsigned int MAXTRIAL = 30;
+	unsigned int trials = 0;
 
-	const uint N = m.size();
+	const unsigned int N = m.size();
 	std::valarray<double> m2(N);
 	for (const auto& i : indices(m)) {
 		m2[i] = pow2(m[i]);
@@ -260,7 +260,7 @@ bool MFragment::SolveAlpha(double& alpha, double M0, const std::vector<double>& 
 			const std::valarray<double>& mt, const std::valarray<double>& y) {
 
 	const double STOP_EPS = 1e-8;
-	const uint MAXITER    = 20;
+	const unsigned int MAXITER    = 20;
 
 	// Starting value
 	const int N = m.size();
@@ -268,7 +268,7 @@ bool MFragment::SolveAlpha(double& alpha, double M0, const std::vector<double>& 
 	alpha = C - std::log(m[0]*m[N-1]);
 	std::vector<double> E = {0, 0, 0, 0};
 
-	uint iter = 0;
+	unsigned int iter = 0;
 	while (true) {
 		const std::valarray<double> x = exp(alpha * y);
 
@@ -360,7 +360,7 @@ void MFragment::NstarDecayTable(double M0, std::vector<int>& pdgcode, std::mt199
 
 // Return excited forward proton masses
 void MFragment::GetForwardMass(double& mass1, double& mass2, bool& excite1,
-                              bool& excite2, uint excite, MRandom& random) {
+                              bool& excite2, unsigned int excite, MRandom& random) {
 
 	if (excite == 0) {        // Fully elastic
 		mass1 = PDG::mp;
@@ -427,10 +427,10 @@ void MFragment::GetSingleForwardMass(double& mass, MRandom& random) {
 
 // Simple statistical toy particle pick-up, nothing more
 //
-int MFragment::PickParticles(double M, uint N, int B, int S, int Q,
+int MFragment::PickParticles(double M, unsigned int N, int B, int S, int Q,
 		std::vector<double>& mass, std::vector<int>& pdgcode, const MPDG& PDG, std::mt19937_64& rng) {
 
-	const uint MAXTRIAL = 1e5;
+	const unsigned int MAXTRIAL = 1e5;
 	
 	// C++11, thread_local is also static
 	thread_local std::uniform_int_distribution<int> RANDI3(0,2);
@@ -456,13 +456,13 @@ int MFragment::PickParticles(double M, uint N, int B, int S, int Q,
 	std::vector<int> Bcharges(N, 0);
 	std::vector<int> Scharges(N, 0);
 
-	uint trials = 0;
+	unsigned int trials = 0;
 	const double QProb = 2.0/3.0;
 	const double DOUBLE = 0.9;
 
 	while (true) {
     	
-    	uint i = 0;
+    	unsigned int i = 0;
 		
     	do { // Hadron picking
 

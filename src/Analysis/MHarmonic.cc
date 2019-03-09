@@ -302,9 +302,9 @@ void MHarmonic::HyperLoop(void (*fitfunc)(int&, double*, double&, double*, int),
 
 	double chi2 = 0.0;
 
-	const uint MASScellS  = 50;
-	const uint PTcellS    = 1;
-	const uint YcellS     = 1;
+	const unsigned int MASScellS  = 50;
+	const unsigned int PTcellS    = 1;
+	const unsigned int YcellS     = 1;
 
 	ful = MTensor<gra::spherical::SH>({MASScellS, PTcellS, YcellS});
 	fid = MTensor<gra::spherical::SH>({MASScellS, PTcellS, YcellS});
@@ -350,7 +350,7 @@ void MHarmonic::HyperLoop(void (*fitfunc)(int&, double*, double&, double*, int),
 
 		DATA_ind = gra::spherical::GetIndices(DATA_events, {M_min, M_max}, {Pt_min, Pt_max}, {Y_min, Y_max});
 
-		const uint MINEVENTS = 75;
+		const unsigned int MINEVENTS = 75;
 		if (DATA_ind.size() < MINEVENTS) {
 			std::cout << rang::fg::red << "WARNING: Less than "
 					  << MINEVENTS << " in the cell!" << rang::fg::reset << std::endl;
@@ -457,7 +457,7 @@ void MHarmonic::HyperLoop(void (*fitfunc)(int&, double*, double&, double*, int),
 			if (DATA_events[l].fiducial && DATA_events[l].selected) { ++selected; }
 		}
 		std::cout << std::endl;
-		printf("cf. Synthetic data events generated               = %u \n", (uint) DATA_ind.size());
+		printf("cf. Synthetic data events generated               = %u \n", (unsigned int) DATA_ind.size());
 		printf("    Synthetic data events fiducial                = %d (acceptance %0.1f percent) \n",
 			fiducial, fiducial / (double) DATA_ind.size() * 100);
 		printf("    Synthetic data events fiducial and selected   = %d (efficiency %0.1f percent) \n", 
@@ -745,7 +745,7 @@ void MHarmonic::logLfunc(int& npar, double* gin, double& f, double* par, int ifl
 
 	// L1-norm regularization (Laplace prior), -> + ln(P_laplace)
 	double l1term = 0.0;
-	const uint START = 1;
+	const unsigned int START = 1;
 	for (std::size_t i = START; i < T.size(); ++i) {
 		l1term += std::abs(T[i]);
 	}

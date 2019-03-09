@@ -37,11 +37,11 @@ public:
 
 	static void GetDecayStatus(const std::vector<int>& pdgcode, std::vector<bool>& isstable);
 	
-	static void GetForwardMass(double& mass1, double& mass2, bool& excite1, bool& excite2, uint excite, MRandom& random);
+	static void GetForwardMass(double& mass1, double& mass2, bool& excite1, bool& excite2, unsigned int excite, MRandom& random);
 	static void GetSingleForwardMass(double& mass, MRandom& random);
 	static void NstarDecayTable(double m0, std::vector<int>& pdgcode, std::mt19937_64& rng);
 
-	static int PickParticles(double M, uint N, int B, int S, int Q,
+	static int PickParticles(double M, unsigned int N, int B, int S, int Q,
 					  std::vector<double>& mass, std::vector<int>& pdgcode, const MPDG& PDG, std::mt19937_64& rng);
 
 	// Uniform random numbers from [a,b)

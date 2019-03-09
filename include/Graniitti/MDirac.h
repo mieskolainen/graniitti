@@ -74,7 +74,7 @@ public:
 	MMatrix<std::complex<double>> PL() const;
 
 	// Angular Momentum operators
-	MMatrix<std::complex<double>> J_operator(uint i) const;
+	MMatrix<std::complex<double>> J_operator(unsigned int i) const;
 
     bool   SpinorHELimit(const M4Vec& p1, const M4Vec& p2) const;
 	bool   DiracSpinorComplete(const M4Vec& p, const std::string& type, const std::string& basis) const;

@@ -50,7 +50,7 @@ namespace gra {
 namespace neurojac {
 
 MRandom randx;
-uint BATCHSIZE   = 0;
+unsigned int BATCHSIZE   = 0;
 bool FLAT_TARGET = false;
 
 // declare a pointer to member function
@@ -175,15 +175,15 @@ VectorXdual G_net(const VectorXdual& x) {
 
 	// Network input
 	VectorXdual in(x.size());
-	for (std::size_t i = 0; i < (uint) x.size(); ++i) {
+	for (std::size_t i = 0; i < (unsigned int) x.size(); ++i) {
 		in[i] = x[i];
 	}
 
 	// Network layers
 	for (std::size_t l = 0; l < par.L.size() - 1; ++l) {
 		VectorXdual out(par.L[l].w.rows());
-		for (std::size_t i = 0; i < (uint) par.L[l].w.rows(); ++i) {
-			for (std::size_t j = 0; j < (uint) par.L[l].w.cols(); ++j) {
+		for (std::size_t i = 0; i < (unsigned int) par.L[l].w.rows(); ++i) {
+			for (std::size_t j = 0; j < (unsigned int) par.L[l].w.cols(); ++j) {
 				out[i] += par.L[l].w(i,j) * in[j];
 			}
 			out[i] = hypertanh(out[i] + par.L[l].b[i])*beta + (1.0-beta)*out[i];
@@ -192,10 +192,10 @@ VectorXdual G_net(const VectorXdual& x) {
 	}
 
 	// Output layer compression to [0,1] range
-	const uint last = par.L.size()-1;
+	const unsigned int last = par.L.size()-1;
 	VectorXdual out(par.L[last].w.rows());
-	for (std::size_t i = 0; i < (uint) par.L[last].w.rows(); ++i) {
-		for (std::size_t j = 0; j < (uint) par.L[last].w.cols(); ++j) {
+	for (std::size_t i = 0; i < (unsigned int) par.L[last].w.rows(); ++i) {
+		for (std::size_t j = 0; j < (unsigned int) par.L[last].w.cols(); ++j) {
 			out[i] += par.L[last].w(i,j) * in[j];
 		}
 		out[i] = logexp(out[i] + par.L[last].b[i]);
@@ -215,8 +215,8 @@ public:
 
 		std::size_t k = 0;
 		for (std::size_t l = 0; l < par.L.size(); ++l) {
-			for (std::size_t i = 0; i < (uint)par.L[l].w.rows(); ++i) {
-				for (std::size_t j = 0; j < (uint)par.L[l].w.cols(); ++j) {
+			for (std::size_t i = 0; i < (unsigned int)par.L[l].w.rows(); ++i) {
+				for (std::size_t j = 0; j < (unsigned int)par.L[l].w.cols(); ++j) {
 					par.L[l].w(i,j) = w[k];
 					++k;
 				}
@@ -224,7 +224,7 @@ public:
 		}
 
 		for (std::size_t l = 0; l < par.L.size(); ++l) {
-			for (std::size_t j = 0; j < (uint)par.L[l].b.size(); ++j) {
+			for (std::size_t j = 0; j < (unsigned int)par.L[l].b.size(); ++j) {
 				par.L[l].b(j) = w[k];
 				++k;
 			}
@@ -235,12 +235,12 @@ public:
 	std::vector<double> RandomInit(NetParams& par, double sigma) {
 
 		std::vector<double> w(par.size_param());
-		uint k = 0;
+		unsigned int k = 0;
 
 		// Connection matrices with random initialization
 		for (std::size_t l = 0; l < par.L.size(); ++l) {
-		    for (std::size_t i = 0; i < (uint) par.L[l].w.rows(); ++i)  {
-		    	for (std::size_t j = 0; j < (uint) par.L[l].w.cols(); ++j) {
+		    for (std::size_t i = 0; i < (unsigned int) par.L[l].w.rows(); ++i)  {
+		    	for (std::size_t j = 0; j < (unsigned int) par.L[l].w.cols(); ++j) {
 		        	w[k] = randx.G(0, sigma) * sqrt(2.0 / par.L[l].w.cols()); // He-et all style
 			    	++k;
 		    	}
@@ -248,7 +248,7 @@ public:
 		}
 	    // Bias initialized to zero
 	    for (std::size_t l = 0; l < par.L.size(); ++l) {
-		    for (std::size_t i = 0; i < (uint) par.L[l].b.size(); ++i) {
+		    for (std::size_t i = 0; i < (unsigned int) par.L[l].b.size(); ++i) {
 		    	w[k] = 0.0;
 		    	++k;
 		    }    	
@@ -290,7 +290,7 @@ public:
 		// ==============================================================
 	    // Evaluate integrand function
 		std::vector<double> u_(u.size());
-		for (std::size_t i = 0; i < (uint) u.size(); ++i) {
+		for (std::size_t i = 0; i < (unsigned int) u.size(); ++i) {
 			u_[i] = val(u[i]);
 		}
 	    double fG = func(u_);
@@ -326,7 +326,7 @@ public:
 		while (true) {
 
 			// Pick prior p(z) distribution samples
-			for (std::size_t i = 0; i < (uint)par.D; ++i) {
+			for (std::size_t i = 0; i < (unsigned int)par.D; ++i) {
 				z[i] = Z[k];
 				++k;
 			}
@@ -343,7 +343,7 @@ public:
 
 		// Generate new virtual batch from noise distribution (prior)
 		VectorXdual Z(BATCHSIZE * par.D);
-		for (std::size_t i = 0; i < (uint) Z.size(); ++i) {
+		for (std::size_t i = 0; i < (unsigned int) Z.size(); ++i) {
 			Z[i] = randx.G(0,1);
 		}
 
@@ -359,8 +359,8 @@ public:
 		const double h = 1e-4;
 		
 		for (std::size_t l = 0; l < par.L.size(); ++l) {
-			for (std::size_t i = 0; i < (uint)par.L[l].w.rows(); ++i) {
-				for (std::size_t j = 0; j < (uint)par.L[l].w.cols(); ++j) {
+			for (std::size_t i = 0; i < (unsigned int)par.L[l].w.rows(); ++i) {
+				for (std::size_t j = 0; j < (unsigned int)par.L[l].w.cols(); ++j) {
 
 					par.L[l].w(i,j) = w[k] + h;
 					const double f_pos     = val(loss(Z, par));
@@ -376,7 +376,7 @@ public:
 		}
 
 		for (std::size_t l = 0; l < par.L.size(); ++l) {
-			for (std::size_t j = 0; j < (uint)par.L[l].b.size(); ++j) {
+			for (std::size_t j = 0; j < (unsigned int)par.L[l].b.size(); ++j) {
 
 				par.L[l].b(j) = w[k] + h;
 				const double f_pos   = val(loss(Z, par));
@@ -396,12 +396,12 @@ public:
 
 
 	// Naive gradient descent
-	void NaiveGradDesc(std::vector<double>& w, uint MAXITER, double rate) {
+	void NaiveGradDesc(std::vector<double>& w, unsigned int MAXITER, double rate) {
 
 	    // -----------------------------------------------------------------------
 		// Gradient Descent
 		// w_n+1 = w_n - gamma*Grad(F(w_n))
-		uint iter = 0;
+		unsigned int iter = 0;
 
 		// gradvient vector
 		std::vector<double> gradv(w.size(), 0.0);
@@ -444,7 +444,7 @@ public:
 	  	// By Jacobi formula: d/dt ln det A(t) = tr[A(t)^{-1} d/dt A]
 		// ------------------------------------------------------------------
 
-	    const uint n = w.size();
+	    const unsigned int n = w.size();
 
 	    LBFGSParam<double> param;
 
@@ -502,11 +502,11 @@ private:
 			std::vector<double>     w(x.size(), 0.0);
 			std::vector<double> gradv(x.size(), 0.0);
 
-			for (std::size_t i = 0; i < (uint) x.size(); ++i) { w[i] = x[i]; }
+			for (std::size_t i = 0; i < (unsigned int) x.size(); ++i) { w[i] = x[i]; }
 
 			fx = CostGrad(w, gradv);
 
-			for (std::size_t i = 0; i < (uint) x.size(); ++i) { grad[i] = gradv[i]; }		
+			for (std::size_t i = 0; i < (unsigned int) x.size(); ++i) { grad[i] = gradv[i]; }		
 
 			return fx;
 		}

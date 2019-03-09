@@ -111,7 +111,7 @@ void MFactorized::post_Constructor() {
 bool MFactorized::LoopKinematics(const std::vector<double>& p1p,
                                    const std::vector<double>& p2p) {
 
-	const uint Nf = lts.decaytree.size() + 2; // Number of final states
+	const unsigned int Nf = lts.decaytree.size() + 2; // Number of final states
 
 	// SET new final states pT degrees of freedom
 	lts.pfinal[1].SetPxPy(p1p[0], p1p[1]);
@@ -293,8 +293,8 @@ bool MFactorized::B51RandomKin(const std::vector<double>& randvec) {
 
 	// Pick daughter masses, can fail due to off-shelliness, then
 	// retry
-	uint trials = 0;
-	const uint MAXTRIAL = 1e5;
+	unsigned int trials = 0;
+	const unsigned int MAXTRIAL = 1e5;
 	while (true) {
 		double M_sum = 0.0;
 		
@@ -426,7 +426,7 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
 	lts.DW = w;
 
 	// Collect decay products
-	const uint offset = 3;
+	const unsigned int offset = 3;
 	for (const auto& i : indices(lts.decaytree)) {
 		lts.decaytree[i].p4  = products[i];
 		lts.pfinal[i+offset] = products[i]; 
@@ -444,7 +444,7 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
 	// ==============================================================================
 	// Check that we are above mass threshold -> not necessary, this is
 	// done in mass sampling function
-	const uint Nf = lts.decaytree.size() + 2;
+	const unsigned int Nf = lts.decaytree.size() + 2;
 	return GetLorentzScalars(Nf);
 }
 

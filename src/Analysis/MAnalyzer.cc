@@ -183,10 +183,10 @@ bool MAnalyzer::FiducialCuts(HepMC::GenEvent& ) {
 // Oracle here means that in this function we use event tree information (unphysical),
 // not just pure fiducial final state information (physical).
 //
-double MAnalyzer::HepMC3_OracleFill(const std::string input, uint multiplicity, int finalPDG, uint MAXEVENTS,
+double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multiplicity, int finalPDG, unsigned int MAXEVENTS,
     std::map<std::string, std::unique_ptr<h1Multiplet>>& h1,
     std::map<std::string, std::unique_ptr<h2Multiplet>>& h2,
-    std::map<std::string, std::unique_ptr<hProfMultiplet>>& hP, uint SID) {
+    std::map<std::string, std::unique_ptr<hProfMultiplet>>& hP, unsigned int SID) {
 	
 	inputfile = input;
 	const std::string totalpath = gra::aux::GetBasePath(2) + "/output/" + input + ".hepmc3";
@@ -197,7 +197,7 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, uint multiplicity, 
 	}
 
 	// Event loop
-	uint events_read  = 0;
+	unsigned int events_read  = 0;
 
 	// Variables for calculating selection efficiency
 	double totalW = 0;
@@ -264,7 +264,7 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, uint multiplicity, 
 			M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
 			// Check that ancestor is central system
 			HepMC::FindParticles search_ancestor(p1, HepMC::FIND_ALL_ANCESTORS, HepMC::PDG_ID == PDG::PDG_system);
-			const uint found = search_ancestor.results().size();
+			const unsigned int found = search_ancestor.results().size();
 			if (found) {
 				pip.push_back(pvec);	
 			}
@@ -273,14 +273,14 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, uint multiplicity, 
 			M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
 			// Check that ancestor is central system
 			HepMC::FindParticles search_ancestor(p1, HepMC::FIND_ALL_ANCESTORS, HepMC::PDG_ID == PDG::PDG_system);
-			const uint found = search_ancestor.results().size();
+			const unsigned int found = search_ancestor.results().size();
 			if (found) {
 				pim.push_back(pvec);	
 			}
 		}
 
 		// CHECK CONDITION
-		if (pip.size() + pim.size() != (uint)multiplicity) {
+		if (pip.size() + pim.size() != (unsigned int)multiplicity) {
 			printf("MAnalyzer::ReadHepMC3:: Multiplicity condition not filled %lu %lu %d! \n",
 				pip.size(), pim.size(), multiplicity);
 			continue; // skip event
@@ -317,9 +317,9 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, uint multiplicity, 
 
 			// Check that ancestor is NOT excited forward system or central system
 			HepMC::FindParticles search_ancestor1(p1, HepMC::FIND_ALL_ANCESTORS, HepMC::PDG_ID == PDG::PDG_NSTAR);
-			uint found1 = search_ancestor1.results().size();
+			unsigned int found1 = search_ancestor1.results().size();
 			HepMC::FindParticles search_ancestor2(p1, HepMC::FIND_ALL_ANCESTORS, HepMC::PDG_ID == PDG::PDG_system);
-			uint found2 = search_ancestor2.results().size();
+			unsigned int found2 = search_ancestor2.results().size();
 
 			if (!found1 && !found2) {
 				if (pvec.Rap() > 0) {
@@ -465,7 +465,7 @@ void MAnalyzer::FrameObservables(double W, HepMC::GenEvent& evt, const M4Vec& p_
 	const std::vector<M4Vec>& pip, const std::vector<M4Vec>& pim) {
 
 	// GJ-frame direction
-	const uint direction = 1;
+	const unsigned int direction = 1;
 	M4Vec propagator;
 
 	// Calculate propagator (=Pomeron) 4-vector
@@ -500,7 +500,7 @@ void MAnalyzer::FrameObservables(double W, HepMC::GenEvent& evt, const M4Vec& p_
 
 	// Legendre polynomials P_l cos(theta)
 	const M4Vec system = twopions[0] + twopions[1];
-	const uint FRAMENUMBER = 5; // Non-rotated frame
+	const unsigned int FRAMENUMBER = 5; // Non-rotated frame
 	for (std::size_t l = 0; l < 8; ++l) { // note l+1
 		double value = gra::math::LegendrePl((l + 1), pions[FRAMENUMBER][0].CosTheta()); // cos(theta)
 		hPl[l]->Fill(system.M(), value, W);
@@ -569,7 +569,7 @@ void MAnalyzer::NStarObservables(double W, HepMC::GenEvent& evt) {
 
 		// Check that ancestor is excited forward system
 		HepMC::FindParticles search_ancestor(p1, HepMC::FIND_ALL_ANCESTORS, HepMC::PDG_ID == PDG::PDG_NSTAR);
-		uint found = search_ancestor.results().size();
+		unsigned int found = search_ancestor.results().size();
 		if (found) {
 			hEta_Gamma->Fill(pvec.Eta(), W);
 			hE_Gamma->Fill(pvec.E(), W);
