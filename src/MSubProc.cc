@@ -60,9 +60,9 @@ void MSubProc::ConstructDescriptions(const std::string& first) {
 
 		std::map<std::string, std::string> channels;
 		channels.insert(std::pair<std::string, std::string>("EL",  "Elastic [Eikonal Pomeron]"));
-		channels.insert(std::pair<std::string, std::string>("SD",  "Single Diffractive [Triple Pomeron] (TEST / UNDER CONSTRUCTION)"));
-		channels.insert(std::pair<std::string, std::string>("DD",  "Double Diffractive [Triple Pomeron] (TEST / UNDER CONSTRUCTION)"));
-		channels.insert(std::pair<std::string, std::string>("ND",  "Non-Diffractive [Multiple Soft Pomeron cuts] (TEST / UNDER CONSTRUCTION)"));
+		channels.insert(std::pair<std::string, std::string>("SD",  "Single Diffractive [Triple Pomeron] @@<UNDER CONSTRUCTION>@@"));
+		channels.insert(std::pair<std::string, std::string>("DD",  "Double Diffractive [Triple Pomeron] @@<UNDER CONSTRUCTION>@@"));
+		channels.insert(std::pair<std::string, std::string>("ND",  "Non-Diffractive [Multiple Soft Pomeron cuts] @@<UNDER CONSTRUCTION>@@"));
 			descriptions.insert(std::pair<std::string, std::map<std::string,std::string>>("X", channels));
 	}
 	else if (first == "PP") {
@@ -73,7 +73,7 @@ void MSubProc::ConstructDescriptions(const std::string& first) {
 		channels.insert(std::pair<std::string, std::string>("CON-",      "Continuum 2-body with negative subamplitude (2-body) [Pomeron] x [Pomeron]"));
 		channels.insert(std::pair<std::string, std::string>("RES+CON",   "Resonances + Continuum 2-body (interfering) [Pomeron] x [Gamma/Pomeron]"));
 		channels.insert(std::pair<std::string, std::string>("RES",       "Resonance [Pomeron] x [Pomeron]"));
-		channels.insert(std::pair<std::string, std::string>("RESHEL",    "Resonance with 'sliding helicity amplitudes' (TEST / UNDER CONSTRUCTION)"));
+		channels.insert(std::pair<std::string, std::string>("RESHEL",    "Resonance with 'sliding helicity amplitudes' @@<UNDER CONSTRUCTION>@@"));
 			descriptions.insert(std::pair<std::string, std::map<std::string,std::string>>("PP", channels));
 	}
 	else if (first == "yP") {
@@ -86,8 +86,8 @@ void MSubProc::ConstructDescriptions(const std::string& first) {
 
 		std::map<std::string, std::string> channels;
 		channels.insert(std::pair<std::string, std::string>("RES",           "Gamma-Gamma to resonance [EPA] x [EPA]"));
-		channels.insert(std::pair<std::string, std::string>("Higgs",         "Gamma-Gamma to SM Higgs [EPA] x [EPA] (UNDER CONSTRUCTION)"));
-		channels.insert(std::pair<std::string, std::string>("monopolium(0)", "Gamma-Gamma to Monopolium J=0 bound state [EPA] x [EPA] (UNDER CONSTRUCTION)"));
+		channels.insert(std::pair<std::string, std::string>("Higgs",         "Gamma-Gamma to SM Higgs [EPA] x [EPA]"));
+		channels.insert(std::pair<std::string, std::string>("monopolium(0)", "Gamma-Gamma to Monopolium J=0 bound state [EPA] x [EPA] @@<UNDER CONSTRUCTION>@@"));
 		channels.insert(std::pair<std::string, std::string>("CON",           "Gamma-Gamma to l+l-, w+w-, monopole pair continuum [EPA] x [EPA]"));
 		channels.insert(std::pair<std::string, std::string>("QED",           "Gamma-Gamma qq -> q l+ l- q [FULL QED]"));
 			descriptions.insert(std::pair<std::string, std::map<std::string,std::string>>("yy", channels));
