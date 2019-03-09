@@ -197,9 +197,10 @@ std::string SystemName() {
 
 // Get system hostname
 std::string HostName() {
-	char hostname[HOST_NAME_MAX];
-	gethostname(hostname, HOST_NAME_MAX);
 
+	char hostname[2048];
+	gethostname(hostname, 2048);
+	
 	std::string str(hostname);
 	return str;
 }
