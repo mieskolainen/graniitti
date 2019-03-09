@@ -321,16 +321,16 @@ private:
     static constexpr const double c = 2.99792458E8; 
 
     // Indices
-    static constexpr const uint E_ = 0;
-    static constexpr const uint X_ = 1;
-    static constexpr const uint Y_ = 2;
-    static constexpr const uint Z_ = 3;
+    static const int E_ = 0;
+    static const int X_ = 1;
+    static const int Y_ = 2;
+    static const int Z_ = 3;
 
     // Safe sqrt
     double msqrt(double x) const {
         return std::sqrt(std::max(0.0, x));
     }
-    // x,y,z,t
+    // 4-vector
     std::vector<double> k;
 };
 
