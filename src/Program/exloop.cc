@@ -138,17 +138,14 @@ void experiment(bool screening) {
 
     const std::string BASEPATH = "./tests/experiment/";
 
-    // <ATLAS W+W->
-    input.push_back(MEASUREMENT("ATLAS_WW.json",     0, 0, 0));
-
     // https://arxiv.org/pdf/hep-ex/0611040.pdf
-    input.push_back(MEASUREMENT("CDF07_ee.json",     1.6e-12, 0.5e-12, 0.3e-12));
+    input.push_back(MEASUREMENT("CDF07_ee.json",     1.6e-12,   0.5e-12,   0.3e-12));
 
     // <https://arxiv.org/pdf/1112.0858.pdf>
-    input.push_back(MEASUREMENT("CDF11_ee.json",     2.88e-12, 0.57e-12, 0.63e-12));
+    input.push_back(MEASUREMENT("CDF11_ee.json",     2.88e-12,  0.57e-12,  0.63e-12));
 
     // <https://arxiv.org/abs/1111.5536>
-    input.push_back(MEASUREMENT("CMS11_mumu.json",   3.38e-12, 0.58e-12, 0.21e-12));
+    input.push_back(MEASUREMENT("CMS11_mumu.json",   3.38e-12,  0.58e-12,  0.21e-12));
 
     // <https://arxiv.org/abs/1506.07098>
     input.push_back(MEASUREMENT("ATLAS15_ee.json",   0.428e-12, 0.035e-12, 0.018e-12));
@@ -157,10 +154,10 @@ void experiment(bool screening) {
     input.push_back(MEASUREMENT("ATLAS15_mumu.json", 0.628e-12, 0.032e-12, 0.021e-12));
 
     // <https://arxiv.org/abs/1708.04053>
-    input.push_back(MEASUREMENT("ATLAS17_mumu.json", 3.12e-12, 0.07e-12, 0.14e-12));
+    input.push_back(MEASUREMENT("ATLAS17_mumu.json", 3.12e-12,  0.07e-12,  0.14e-12));
 
     // <https://discoverycenter.nbi.ku.dk/teaching/thesis_page/MasterEmilBolsFinal.pdf>
-    input.push_back(MEASUREMENT("ATLAS17_2pi.json",  18.75e-6, 0.048e-6, 0.770e-6));
+    input.push_back(MEASUREMENT("ATLAS17_2pi.json",  18.75e-6,  0.048e-6,  0.770e-6));
 
     // <ALICE 7 TeV PWA, |y(pi+pi-)| < 0.9
     //input.push_back(MEASUREMENT("./tests/experiment/ALICE_2pi_PWA.json", 31e-6, 0.5e-6, 2e-6));
@@ -168,11 +165,21 @@ void experiment(bool screening) {
     // <https://arxiv.org/pdf/1806.04079.pdf>
     //input.push_back(MEASUREMENT("./tests/experiment/LHCb18_jpsi.json", 399e-12, 16e-12, 19e-12));
 
+    // <ATLAS W+W->
+    input.push_back(MEASUREMENT("ATLAS_WW.json",     0, 0, 0));
+
 	// <https://arxiv.org/pdf/1806.04079.pdf>
     input.push_back(MEASUREMENT("gg2chi0.json", 0, 0, 0));
 
     // ...
-    input.push_back(MEASUREMENT("gg2gg.json", 0, 0, 0));
+    input.push_back(MEASUREMENT("gg2gg.json",   0, 0, 0));
+
+    // ...
+    input.push_back(MEASUREMENT("monopolepair.json", 0, 0, 0));
+
+    // ...
+    input.push_back(MEASUREMENT("monopolium.json",   0, 0, 0));
+
 
     // ------------------------------------------------------------------
     /*
@@ -258,17 +265,17 @@ void experiment(bool screening) {
     } // Process loop
 
     std::cout << std::endl;
-    printf("burn:: Finished in %0.1f sec \n", timer.ElapsedSec());
+    printf("Finished in %0.1f sec \n\n", timer.ElapsedSec());
 
     // Loop over processes
     for (const auto& i : indices(input)) {
 	printf(
-	    "[%20s] DATA = %0.2E +- %0.2E (stat) +- %0.2E (syst) | BARE = "
-	    "%0.3E (ratio = %0.2f) | SCRN = %0.3E (ratio = %0.2f) | <S^2> = %0.3f \n",
+	    "[%20s] DATA = %0.2E +- %0.2E (stat) +- %0.2E (syst) | MC BARE = "
+	    "%0.3E (ratio = %0.2f) | MC SRCN = %0.3E (ratio = %0.2f) | <S^2> = %0.3f \n",
 	    input[i].card.c_str(), input[i].value, input[i].stat,
 	    input[i].syst, xs0[i][0], xs0[i][0] / input[i].value, xs0[i][1],
 	    xs0[i][1] / input[i].value, xs0[i][1] / xs0[i][0]);
     }
-
+    
     printf("\n");
 }
