@@ -5,14 +5,26 @@ mikael.mieskolainen@cern.ch
 
 Q:  This is a beta version.
 
+
 Q:  Integrated cross section seems very high?
 A:  Turn on screening integral (pomeron loop).
+    The effect can be very high, depending on the process.
+
+
+Q:  How do choose the final state?
+A:  After -> arrow, write down the final state in terms of PDG
+    numbers such as '22 22' or their names such as 'gamma gamma'.
+    Events are distributed according to the phase space, in the case
+    if no amplitude is explicitly constructed for that particular
+    decay. Any (cascade) final state is possible wihin phase space.
+
 
 Q:  What are <C> and <F> phase space classes?
 A:  Different ways to organize phase space sampling.
     With equivalent generation+fiducial cuts, they produce identical
     results. However, one can be faster or more numerically stable
     with difficult amplitudes, than the other one.
+
 
 Q:  What are -> versus &> operators?
 A:  The -> uses full 2->N phase space volume in the cross section
@@ -21,5 +33,6 @@ A:  The -> uses full 2->N phase space volume in the cross section
     [2->3] + [unweighted 1->(N-2) decays].
     Thus, &> operator is useful to use with isolated resonance
     processes, for example yy[Higgs]<F>. Try it out and see the output!
+
 
 ...
