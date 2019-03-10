@@ -328,7 +328,7 @@ void MGraniitti::ReadModelParam(const std::string& inputfile) {
 	PARAM_FLAT::b = j["PARAM_FLAT"]["b"];
 
 	// Monopole production
-	PARAM_MONOPOLE::n        = j["PARAM_MONOPOLE"]["n"];
+	PARAM_MONOPOLE::En       = j["PARAM_MONOPOLE"]["En"];
 	PARAM_MONOPOLE::Gamma0   = j["PARAM_MONOPOLE"]["Gamma0"];
 	PARAM_MONOPOLE::coupling = j["PARAM_MONOPOLE"]["coupling"];
 

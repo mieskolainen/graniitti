@@ -192,7 +192,7 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 //
 // See e.g.
 //
-// [REFERENCE: http://www.theory.caltech.edu/~preskill/pubs/preskill-1984-monopoles.pdf]
+// [REFERENCE: Preskill, http://www.theory.caltech.edu/~preskill/pubs/preskill-1984-monopoles.pdf]
 // [REFERENCE: Epele, Franchiotti, Garcia, Canal, Vento, https://arxiv.org/abs/hep-ph/0701133v2]
 // [REFERENCE: Barrie, Sugamoto, Yamashita, https://arxiv.org/abs/1607.03987v3]
 // [REFERENCE: Fanchiotti, Canal, Vento, https://arxiv.org/pdf/1703.06649.pdf]
@@ -213,7 +213,7 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR& lts) const {
 
 	// Monopolium nominal mass and width parameters
-	static const double M = 2.0 * PARAM_MONOPOLE::M0 + PARAM_MONOPOLE::EnergyMP(PARAM_MONOPOLE::n);
+	static const double M = 2.0 * PARAM_MONOPOLE::M0 + PARAM_MONOPOLE::EnergyMP(PARAM_MONOPOLE::En);
 	static const double Gamma_M = PARAM_MONOPOLE::Gamma0;
 
 	if (M < 0) {
@@ -226,9 +226,9 @@ std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR& lts) const {
 	static const double g = 2 * math::PI / form::e_EM(); // With n = 1	
 	double beta = 0.0;
 
-	if (PARAM_MONOPOLE::coupling == 1) {        // Beta-Dirac coupling
+	if        (PARAM_MONOPOLE::coupling == 1) {  // Beta-Dirac coupling
 		beta = msqrt(1.0 - pow2(M) / lts.s_hat);
-	} else if (PARAM_MONOPOLE::coupling == 2) { // Pure-Dirac coupling
+	} else if (PARAM_MONOPOLE::coupling == 2) {  // Pure-Dirac coupling
 		beta = 1.0;
 	} else {
 		throw std::invalid_argument(
@@ -240,7 +240,7 @@ std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR& lts) const {
 	const double alpha_g = pow2(beta * g) / (4.0 * math::PI);
 
 	// Running width
-	const double Gamma_E = PARAM_MONOPOLE::GammaMP(PARAM_MONOPOLE::n, alpha_g);
+	const double Gamma_E = PARAM_MONOPOLE::GammaMP(PARAM_MONOPOLE::En, alpha_g);
 
 	//printf("alpha_g = %0.3E, Gamma_E = %0.3E, Gamma_M = %0.3E, Psi_MP = %0.3E \n",
 	//	alpha_g, Gamma_E, Gamma_M, PARAM_MONOPOLE::PsiMP(PARAM_MONOPOLE::n));

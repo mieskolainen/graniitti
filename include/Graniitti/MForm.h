@@ -54,7 +54,7 @@ extern double b;
 // Monopole wave functions and parameters
 namespace PARAM_MONOPOLE {
 
-extern int n;         // Ladder level
+extern int En;        // Bound state energy level
 extern double M0;     // Monopole mass
 extern double Gamma0; // Monopolium width
 extern int coupling;  // Coupling scenarios

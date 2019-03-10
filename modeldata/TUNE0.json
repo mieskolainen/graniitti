@@ -36,7 +36,7 @@
   "PARAM_MONOPOLE" : {
     
     // Energy level (>= 13) controlling bound state (negative) binding energy
-    "n"  : 30,
+    "En"  : 30,
     
     // Monopolium (MMbar) bare width (GeV)
     "Gamma0" : 10.0,

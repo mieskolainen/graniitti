@@ -87,7 +87,7 @@ double b = 0.0;
 // Monopole parameters
 namespace PARAM_MONOPOLE {
 
-int n = 0;           // Ladder level
+int En = 0;          // Bound state energy level
 double M0 = 0.0;     // Monopole mass
 double Gamma0 = 0.0; // Monopolium width
 int coupling = 0;    // Coupling scenarios
@@ -100,23 +100,21 @@ bool initialized = false;
 //
 // Monopolium binding energy eigenvalues
 // -> Monopolium system sits at lower energy than monopole + antimonopole
-//
-// [REFERENCE: https://journals.aps.org/prd/pdf/10.1103/PhysRevD.96.075031]
 
 // Monopolium running width
 double GammaMP(double n, double alpha_g) {
-	return (8.0 * PI * pow2(alpha_g)) / pow2(M0) * math::abs2(PsiMP(n));
+	return (8.0 * PI * pow2(alpha_g)) / pow2(PARAM_MONOPOLE::M0) * math::abs2(PsiMP(n));
 }
 
 // Binding energy
 double EnergyMP(double n) {
-	return -pow2(1 / (8.0 * form::alpha_EM(0))) * M0 / (n*n);
+	return -pow2(1 / (8.0 * form::alpha_EM(0))) * PARAM_MONOPOLE::M0 / (n*n);
 	//return -2.0*M0/15.0; // DEBUG
 }
 
 // Monopolium wavefunction in the origin of the bound system
 double PsiMP(double n) {
-	return (1.0 / msqrt(PI)) * std::pow(M0 / (8.0 * form::alpha_EM(0) * n), 3.0/2.0);
+	return (1.0 / msqrt(PI)) * std::pow(PARAM_MONOPOLE::M0 / (8.0 * form::alpha_EM(0) * n), 3.0/2.0);
 }
 
 void PrintParam(double sqrts) {
@@ -125,13 +123,13 @@ void PrintParam(double sqrts) {
 	          << std::endl
 	          << std::endl;
 
-	printf("- m = %0.3f GeV \n", M0);
-	printf("- n = %d \n",        n);
-	printf("- W = %0.3f GeV \n", Gamma0);
+	printf("- m = %0.3f GeV \n", PARAM_MONOPOLE::M0);
+	printf("- n = %d \n",        PARAM_MONOPOLE::En);
+	printf("- W = %0.3f GeV \n", PARAM_MONOPOLE::Gamma0);
 
-	const double M = 2*PARAM_MONOPOLE::M0 + EnergyMP(n);
-	printf("\nGives monopolium mass: M = %0.3f GeV (Binding Energy = %0.3f GeV) \n", M, M - 2*M0);
-	std::cout << std::endl;
+	const double M = 2*PARAM_MONOPOLE::M0 + EnergyMP(PARAM_MONOPOLE::En);
+	printf("\nGives monopolium mass: M = %0.3f GeV (Binding Energy = %0.3f GeV) \n\n",
+		M, M - 2*PARAM_MONOPOLE::M0);
 	
 	// Check we have enough energy
 	if (M > sqrts) {
@@ -141,7 +139,7 @@ void PrintParam(double sqrts) {
 		throw std::invalid_argument(str);
 	}
 
-	if (PARAM_MONOPOLE::coupling == 1) {
+	if        (PARAM_MONOPOLE::coupling == 1) {
 		std::cout << "Coupling scheme = 1 (Beta-Dirac)" << std::endl;
 	} else if (PARAM_MONOPOLE::coupling == 2) {
 		std::cout << "Coupling scheme = 2 (Pure-Dirac)" << std::endl;
