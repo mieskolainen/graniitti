@@ -58,7 +58,7 @@
       "s0"  : 1.0,                 // Normalization scale (GeV^2)
       
       // Off-shell t_hat/u_hat channel form factor: 1 = "exp", 2 = "orear", 3 = "pow"
-      "offshellFF" : 1,
+      "offshellFF" : 2,
       
       // Form factor parameters
       "b_EXP" :   0.57,    // GeV^-2

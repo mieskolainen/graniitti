@@ -5,10 +5,10 @@
 //
 // mikael.mieskolainen@cern.ch, 2019
 {
-  
+
   // ----------------------------------------------------------------------
   // GENERAL setup
-  
+
   "GENERALPARAM" : {
 
     "OUTPUT"     : "test",      // Output filename
@@ -19,8 +19,7 @@
     "WEIGHTED"   : false,       // Weighted events (default false)
     "MODELPARAM" : "TUNE0"      // General model tune
   },
-  
-  
+
   // ----------------------------------------------------------------------
   // Process setup
 
@@ -37,8 +36,7 @@
     "FLATAMP" : 0,             // For flat matrix element (default 0)
     "RNDSEED" : 12345678       // Random seed (int32)
   },
-  
-  
+
   // ----------------------------------------------------------------------
   // Monte Carlo integrator setup
 
@@ -48,7 +46,7 @@
     "POMLOOP" : {
       "ND" : 3                // Loop integral discretization
     },
-    
+
     // VEGAS integrator
     "VEGAS" : {
 
@@ -86,7 +84,7 @@
       "Xi"  : [0, 0.05]    // Invariant scale M^2/s (forward excitation)
     }
   },
-  
+
   // ----------------------------------------------------------------------
   // Central system fiducial cuts
   // All central system particles need to fullfill the conditions
@@ -103,7 +101,7 @@
       "Pt"   : [0.1, 100000.0], // Transverse momentum
       "Et"   : [0.0, 100000.0]  // Transverse energy
     },
-    
+
     // Central system
     "SYSTEM" : {
 
@@ -117,7 +115,7 @@
       "M"    : [0.0, 100000.0], // Mass
       "t"    : [0.0, 100000.0], // Forward protons/N* Mandelstam t (absolute value) (GeV^2)
     },
-    
+
     // Custom user cuts (default false, otherwise identifier ID)
     "USERCUTS" : false
   },
@@ -136,23 +134,15 @@
       "Eta" : [-8.0, -2.51],
       "Pt"  : [0.05, 100000.0]
     },
-    
+
     // Domain 1
     "1" : {
 
       "Eta" : [2.51, 8.0],
-      "Pt"  : [0.05, 100000.0]     
+      "Pt"  : [0.05, 100000.0]
     }
     // Domain 2 (add arbitrary one more here) ...
   }
-
-//[{
-//  "label": "blue",
-//  "value": 18
-//}, {
-//  "label": "red",
-//  "value": 20
-//}]
 
 
 }
