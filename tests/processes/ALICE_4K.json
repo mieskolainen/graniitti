@@ -12,12 +12,12 @@
     "GENERALPARAM" : {
 
         "OUTPUT"  : "ALICE_4K",    // Output filename
-        "FORMAT"  : "hepmc3",       // hepmc3, hepmc2, hepevt
-        "CORES"   : 0,              // Number of CPU threads (0 for automatic)
-        "NEVENTS" : 100000,         // Number of events
-        "INTEGRATOR" : "VEGAS",     // "VEGAS" (default), "FLAT" (for debug),
-        "WEIGHTED": false,          // Weighted events (default false)
-        "MODELPARAM" : "TUNE0"      // General model tune
+        "FORMAT"  : "hepmc3",      // hepmc3, hepmc2, hepevt
+        "CORES"   : 0,             // Number of CPU threads (0 for automatic)
+        "NEVENTS" : 100000,        // Number of events
+        "INTEGRATOR" : "VEGAS",    // "VEGAS" (default), "FLAT" (for debug),
+        "WEIGHTED": false,         // Weighted events (default false)
+        "MODELPARAM" : "TUNE0"     // General model tune
     },
     
 

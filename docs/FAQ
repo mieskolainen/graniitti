@@ -27,9 +27,11 @@ A:  Write down something (dummy) after the '->' arrow,
 
 Q:  What are '<C>' and '<F>' phase space classes?
 A:  Different ways to organize phase space sampling.
-    With equivalent generation+fiducial cuts, they produce
+    With equivalent generation+fiducial cuts, they should produce
     identical results. However, the (other) one can be faster
-    or more numerically stable with difficult amplitudes.
+    or more numerically stable with difficult amplitudes. In general,
+    we recommend '<C>' for continuum / continuum+resonance processes
+    and '<F>' for isolated resonances.
 
 
 Q:  What are '->' versus '&>' operators?

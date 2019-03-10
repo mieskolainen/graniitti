@@ -181,11 +181,10 @@ double MFactorized::EventWeight(const std::vector<double>& randvec, AuxIntData& 
 
 		double C_space = 1.0;
 		if (lts.decaytree.size() != 0 && !ISOLATE) { // We have some legs in the central system
-			C_space = (lts.DW.Integral()/(2*PI));
+			C_space = (lts.DW.Integral()/(2*PI));    // /(2*PI) from phase space factorization
 		}
 		
 		// ** EVENT WEIGHT **
-		// /(2*PI) from phase space factorization
 		W = C_space * (1.0 / S_factor) * B51PhaseSpaceWeight() * B51IntegralVolume() * MatESQ *
 		    GeV2barn / MollerFlux(); // Total weight: phase-space x |M|^2 x barn units
 	}
