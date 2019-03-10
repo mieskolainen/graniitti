@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) {
     if (r.count("help") || NARGC == 0) {
         std::cout << options.help({""}) << std::endl;
         std::cout << "Example:" << std::endl;
-        std::cout << "  " << argv[0] << " -l true"
+        std::cout << "  " << argv[0] << " -l false"
                   << std::endl << std::endl;
         return EXIT_FAILURE;
     }
