@@ -1,14 +1,15 @@
-GRANIITTI FAQ: 10.3.2019
+GRANIITTI 0.1 (BETA) FAQ: 10.3.2019
 
 mikael.mieskolainen@cern.ch
 -----------
 
-Q:  This is a beta version.
+First run ./bin/gr
 
 
 Q:  Integrated cross section seems very high?
 A:  Turn on screening integral (pomeron loop).
     The effect can be very high, depending on the process.
+    Also, take care of branching ratios and phase space volumes (see below).
 
 
 Q:  How do I choose the final state?
