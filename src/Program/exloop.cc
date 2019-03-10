@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) {
 
     gra::aux::PrintFlashScreen(rang::fg::green);
     std::cout << rang::style::bold
-              << "GRANIITTI - Fiducial Measurements vs Monte Carlo"
+              << "GRANIITTI - Fiducial Measurements vs Monte Carlo Processes"
               << rang::style::reset << std::endl
               << std::endl;
     gra::aux::PrintVersion();
@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) {
 
     cxxopts::Options options(argv[0], "");
     options.add_options()
-        ("l,POMLOOP", "Screening Pomeron loop", cxxopts::value<std::string>() )
+        ("l,POMLOOP", "Screening Pomeron loop (slow)", cxxopts::value<std::string>() )
         ("H,help",    "Help")
         ;
     auto r = options.parse(argc, argv);
