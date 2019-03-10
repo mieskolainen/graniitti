@@ -69,14 +69,6 @@ double func(std::vector<double>& x) {
 	aux.burn_in_mode = false;
 	double y = (gra::neurojac::procptr->*gra::neurojac::ptfptr) (x, aux);
 
-/*
-	double u = 0.5;
-	double y = exp(-(5 * abs( x[0] - u ) + 5 * abs( x[1] - u )) );
-*/
-//	double y = std::pow(x[0]*x[1], -0.5);
-
-	// ------------------------------------------------------------------
-
 	// Numerical protection
 	if (std::isnan(y) || std::isinf(y)) {
 		y = 0.0;
@@ -93,7 +85,6 @@ inline dual elu(dual z) {
 	}
 }
 
-
 // Hyperbolic functions
 inline dual hypersinh(dual z) {
 	return (exp(z) - exp(-z)) / 2;
@@ -101,7 +92,6 @@ inline dual hypersinh(dual z) {
 inline dual hypertanh(dual z) {
 	return (exp(2.0*z) - 1.0) / (exp(2.0*z) + 1.0);
 }
-
 
 // Sigmoid
 inline dual sigmoid(dual z) {
@@ -159,10 +149,8 @@ struct NetParams {
 	dual alpha;
 };
 
-
 // Global parameters
 NetParams par;
-
 
 // Neural network function G: D^N -> D^N, D = [0 ... 1]
 //
@@ -315,7 +303,6 @@ public:
 	    return KL;
 	}
 
-
 	static dual loss(VectorXdual& Z, const NetParams& par) {
 
 		VectorXdual z(par.D);
@@ -333,10 +320,8 @@ public:
 			sumloss = sumloss + singleloss(z,par);
 		    if (k == Z.size()) break;
 		}
-
 		return sumloss;
 	}
-
 
 	// Evaluate loss and gradient vector
 	static double CostGrad(const std::vector<double>& w, std::vector<double>& gradv) {
@@ -394,7 +379,6 @@ public:
 		return cost;
 	}
 
-
 	// Naive gradient descent
 	void NaiveGradDesc(std::vector<double>& w, unsigned int MAXITER, double rate) {
 
@@ -420,7 +404,6 @@ public:
 		}
 	}
 
-
 	// Test network dimensions
 	void TestNetworkDimensions() {
 		for (std::size_t l = 0; l < par.L.size()-1; ++l) {
@@ -428,9 +411,7 @@ public:
 				throw std::invalid_argument("Network layer dimension mismatch!");
 			}
 		}
-
 	}
-
 
 	// Optimize network
 	void Optimize() {
@@ -484,7 +465,6 @@ public:
 	    std::cout << "f(x) = " << fx << std::endl;   
 	}
 
-
 private:
 
 	class Neurocost {
@@ -514,7 +494,7 @@ private:
 
 }; // MNeuroJacobian
 
-} // Namespace neurojac
-} // Namespace gra
+}  // Namespace neurojac
+}  // Namespace gra
 
 #endif
