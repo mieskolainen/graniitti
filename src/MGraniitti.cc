@@ -919,8 +919,9 @@ void MGraniitti::SampleVegas(unsigned int N) {
 	// Pure integration mode
 	if (GMODE == 0) {
 
+		const double MINTIME = 0.1;   // Seconds
 		unsigned int BURNIN_ITER = 3; // BURN-IN iterations (default)!
-
+		
 		// Initialize GRID
 		do {
 			unsigned int init = 0;
@@ -933,7 +934,6 @@ void MGraniitti::SampleVegas(unsigned int N) {
 			} while (true);
 
 			// Increase CALLS and re-run, if too fast
-			const double MINTIME = 0.3; // seconds
 			if (itertime < MINTIME) {
 				const double time_per_iter = itertime / vparam.NCALL;
 
