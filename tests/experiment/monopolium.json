@@ -44,19 +44,19 @@
 
     // Loop integration
     "POMLOOP" : {
-      "ND" : 10             // Loop integral discretization  
+      "ND" : 10                 // Loop integral discretization  
     },
     
     // VEGAS integrator
     "VEGAS" : {
 
-      "BINS" : 128,         // Maximum number of bins per dimension (NOTE: EVEN NUMBER)
-      "LAMBDA" : 1.5,       // Regularization parameter
-      "NCALL" : 100000,     // Number of function calls per initialization iteration (5000 or more)
-      "ITER"  : 10,         // Number of initialization iteration (10 or more)
-      "CHI2MAX" : 10.0,     // Maximum Chi^2 in initialization
-      "PRECISION"  : 0.01,  // Integral relative precision target
-      "DEBUG" : -1          // Debug output (default -1)
+      "BINS" : 128,             // Maximum number of bins per dimension (NOTE: EVEN NUMBER)
+      "LAMBDA" : 1.5,           // Regularization parameter
+      "NCALL" : 100000,         // Number of function calls per initialization iteration (5000 or more)
+      "ITER"  : 10,             // Number of initialization iteration (10 or more)
+      "CHI2MAX" : 10.0,         // Maximum Chi^2 in initialization
+      "PRECISION"  : 0.01,      // Integral relative precision target
+      "DEBUG" : -1              // Debug output (default -1)
     },
 
     // FLAT integrator
@@ -77,7 +77,7 @@
     },
     "<F>" : {
       "Rap" : [-9.0, 9.0], // Rapidity boundaries of the system (<F> class)
-      "M" : [0.0, 13000.0] // System mass
+      "M" : [0, 13000.0]   // System mass
     },
     "<Q>" : {
       "Xi" : [0, 0.05]     // Invariant scale M^2/s (forward excitation)

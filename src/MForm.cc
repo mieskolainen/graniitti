@@ -92,6 +92,7 @@ double M0 = 0.0;     // Monopole mass
 double Gamma0 = 0.0; // Monopolium width
 int coupling = 0;    // Coupling scenarios
 
+bool initialized = false;
 
 // Functions as a solution to radial Schroedinger equation with Coulomb type
 // potential
@@ -101,23 +102,21 @@ int coupling = 0;    // Coupling scenarios
 // -> Monopolium system sits at lower energy than monopole + antimonopole
 //
 // [REFERENCE: https://journals.aps.org/prd/pdf/10.1103/PhysRevD.96.075031]
+
+// Binding energy
 double EnergyMP(double n) {
-	return -pow2(1 / (8.0 * gra::form::alpha_EM(0))) * PARAM_MONOPOLE::M0 /
-	       (n * n);
-	// return - 2*PARAM_MONOPOLE::M0 / 15.0;
+	return -pow2(1 / (8.0 * form::alpha_EM(0))) * M0 / (n*n);
+	//return -2.0*M0/15.0; // DEBUG
 }
 
 // Monopolium running width
 double GammaMP(double n, double alpha_g) {
-	return (8.0 * PI * pow2(alpha_g)) / (pow2(PARAM_MONOPOLE::M0)) *
-	       abs2(PsiMP(n));
+	return (8.0 * PI * pow2(alpha_g)) / pow2(M0) * math::abs2(PsiMP(n));
 }
 
-// Monopolium wavefunction in the origin Psi_n(0)
+// Monopolium wavefunction in the origin of the bound system
 double PsiMP(double n) {
-	return (1.0 / (msqrt(PI))) *
-	       std::pow(PARAM_MONOPOLE::M0 / (8.0 * gra::form::alpha_EM(0) * n),
-	                3.0 / 2.0);
+	return (1.0 / msqrt(PI)) * std::pow(M0 / (8.0 * form::alpha_EM(0) * n), 3.0/2.0);
 }
 
 void PrintParam(double sqrts) {
@@ -130,7 +129,7 @@ void PrintParam(double sqrts) {
 	printf("- n = %d \n",        n);
 	printf("- W = %0.3f GeV \n", Gamma0);
 
-	const double M = 2.0 * PARAM_MONOPOLE::M0 + PARAM_MONOPOLE::EnergyMP(n);
+	const double M = 2*PARAM_MONOPOLE::M0 + EnergyMP(n);
 	printf("\nGives monopolium mass: M = %0.3f GeV (Binding Energy = %0.3f GeV) \n", M, M - 2*M0);
 	std::cout << std::endl;
 	

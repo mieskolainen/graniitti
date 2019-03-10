@@ -36,14 +36,15 @@
   "PARAM_MONOPOLE" : {
     
     // Energy level (>= 13) controlling bound state (negative) binding energy
-    "n"  : 13,
+    "n"  : 47,
     
     // Monopolium (MMbar) bare width (GeV)
-    "Gamma0" : 1.0,
+    "Gamma0" : 10.0,
 
     // Coupling scheme: Beta-Dirac = 1 (Default), Pure-Dirac = 2
     "coupling" : 1
   },
+  
   
   // -----------------------------------------------------------------------
   // Regge amplitude parameters (used for central system)

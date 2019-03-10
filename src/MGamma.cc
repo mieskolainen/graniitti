@@ -106,9 +106,9 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 	// ... [NOT IMPLEMENTED]
 	
 	// Monopole-Antimonopole coupling
-	if (MONOPOLE_MODE) { // MMbar
+	if (MONOPOLE_MODE) {
 		
-		const double g = (1.0 / (2.0 * gra::form::alpha_EM(0))) * gra::form::e_EM();
+		const double g = gra::form::e_EM() / (2.0 * gra::form::alpha_EM(0));
 		
 		if (PARAM_MONOPOLE::coupling == 1) { // Beta-Dirac coupling
 			
@@ -121,8 +121,7 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 			// p3.Py()*p3.Py() + p3.Pz()*p3.Pz()) / p3.E();
 			
 			// Faster way
-			const double beta = msqrt(
-			    1.0 - 4.0 * pow2(PARAM_MONOPOLE::M0) / lts.s_hat);
+			const double beta = msqrt(1.0 - 4.0 * pow2(PARAM_MONOPOLE::M0) / lts.s_hat);
 			COUPL = pow4(g * beta);
 			
 		} else if (PARAM_MONOPOLE::coupling == 2) { // Pure-Dirac coupling
@@ -134,10 +133,6 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 			    "MGamma::yyMMbar: Unknown PARAM_MONOPOLE::coupling " +
 			    std::to_string(PARAM_MONOPOLE::coupling));
 		}
-		
-		// Get photon fluxes
-		const double gammaflux1 = gra::form::CohFlux(lts.x1, lts.t1, lts.qt1);
-		const double gammaflux2 = gra::form::CohFlux(lts.x2, lts.t2, lts.qt2);
 
 		// QED tree level amplitude squared |M|^2, spin averaged and
 		// summed
@@ -164,10 +159,11 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 
 		// printf("%0.15f %0.15f \n", amp2, amp2_);
 
+		// Apply fluxes
 		double A = msqrt(amp2);
-		A *= gammaflux1;               // Gammaflux
-		A *= gammaflux2;               // Gammaflux
-		A *= msqrt(lts.s / lts.s_hat); // Phasespace flux
+		A *= gra::form::CohFlux(lts.x1, lts.t1, lts.qt1); // Gammaflux
+		A *= gra::form::CohFlux(lts.x2, lts.t2, lts.qt2); // Gammaflux
+		A *= msqrt(lts.s / lts.s_hat);                    // Phasespace flux
 
 		return A;
 
@@ -185,6 +181,7 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 //
 // [REFERENCE: Epele, Franchiotti, Garcia, Canal, Vento, https://arxiv.org/abs/hep-ph/0701133v2]
 // [REFERENCE: Barrie, Sugamoto, Yamashita, https://arxiv.org/abs/1607.03987v3]
+// [REFERENCE: Fanchiotti, Canal, Vento, https://arxiv.org/pdf/1703.06649.pdf]
 // [REFERENCE: Reis, Sauter, https://arxiv.org/abs/1707.04170v1]
 //
 std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR& lts) const {
@@ -196,17 +193,16 @@ std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR& lts) const {
 	if (M < 0) {
 		throw std::invalid_argument(
 		    "MGamma::yyMP: Increase ladder parameter n. Monopolium "
-		    "nominal mass " +
-		    std::to_string(M) + " < 0!");
+		    "nominal mass " + std::to_string(M) + " < 0!");
 	}
 	// Two coupling scenarios:
 	// Dirac:     alpha_g = g^2/(4pi)
 	// Beta-dirac alpha_g = (g*beta)^2 / (4pi)
-
-	const double g = (1.0 / (2.0 * gra::form::alpha_EM(0))) * gra::form::e_EM();
+	
+	const double g = gra::form::e_EM() / (2.0 * gra::form::alpha_EM(0));
 	double beta = 0.0;
 
-	if (PARAM_MONOPOLE::coupling == 1) { // Beta-Dirac coupling
+	if (PARAM_MONOPOLE::coupling == 1) {        // Beta-Dirac coupling
 		beta = msqrt(1.0 - pow2(M) / lts.s_hat);
 	} else if (PARAM_MONOPOLE::coupling == 2) { // Pure-Dirac coupling
 		beta = 1.0;
@@ -222,12 +218,15 @@ std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR& lts) const {
 	// Running width
 	const double Gamma_E = PARAM_MONOPOLE::GammaMP(PARAM_MONOPOLE::n, alpha_g);
 
+	//printf("alpha_g = %0.3E, Gamma_E = %0.3E, Gamma_M = %0.3E, Psi_MP = %0.3E \n",
+	//	alpha_g, Gamma_E, Gamma_M, PARAM_MONOPOLE::PsiMP(PARAM_MONOPOLE::n));
+
 	// Normalization
 	double norm = 4 * math::PI * M*M;
 
 	double sigma_hat = norm * (Gamma_E * Gamma_M ) /
 	                   (pow2(lts.s_hat - M*M) + pow2(M * Gamma_M));
-
+	                   
 	// Photon fluxes
 	std::complex<double> A =
 	                 gra::form::CohFlux(lts.x1, lts.t1, lts.qt1)
