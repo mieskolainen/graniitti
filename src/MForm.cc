@@ -103,15 +103,15 @@ bool initialized = false;
 //
 // [REFERENCE: https://journals.aps.org/prd/pdf/10.1103/PhysRevD.96.075031]
 
+// Monopolium running width
+double GammaMP(double n, double alpha_g) {
+	return (8.0 * PI * pow2(alpha_g)) / pow2(M0) * math::abs2(PsiMP(n));
+}
+
 // Binding energy
 double EnergyMP(double n) {
 	return -pow2(1 / (8.0 * form::alpha_EM(0))) * M0 / (n*n);
 	//return -2.0*M0/15.0; // DEBUG
-}
-
-// Monopolium running width
-double GammaMP(double n, double alpha_g) {
-	return (8.0 * PI * pow2(alpha_g)) / pow2(M0) * math::abs2(PsiMP(n));
 }
 
 // Monopolium wavefunction in the origin of the bound system

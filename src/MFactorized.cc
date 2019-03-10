@@ -369,9 +369,9 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
 	double p2z = -(pX.Pz() + p1z); // by momentum conservation
 
 	// *** Enforce scattering direction +p -> +p, -p -> -p *** (RARE POLYNOMIAL BRANCH FLIP)
-	p1z = std::abs(p1z);
+	p1z =  std::abs(p1z);
 	p2z = -std::abs(p2z);
-
+	
 	// Pz and E of forward protons/N*
 	p1.SetPzE(p1z, msqrt(pow2(m1) + pow2(pt1) + pow2(p1z)));
 	p2.SetPzE(p2z, msqrt(pow2(m2) + pow2(pt2) + pow2(p2z)));

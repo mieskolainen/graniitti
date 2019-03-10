@@ -74,26 +74,40 @@ std::complex<double> MGamma::yyX(const gra::LORENTZSCALAR& lts, gra::PARAM_RES& 
 //
 // This is the same amplitude as yy -> e+e- (two diagrams)
 // obtained by crossing e+e- -> yy annihilation, see:
-//
 // 
+// [REFERENCE: Rajantie, https://physicstoday.scitation.org/doi/pdf/10.1063/PT.3.3328]
 // [REFERENCE: Dougall, Wick, https://arxiv.org/abs/0706.1042]
 // [REFERENCE: Rels, Sauter, https://arxiv.org/abs/1707.04170v1]
 //
 // http://theory.sinp.msu.ru/comphep_old/tutorial/QED/node4.html
 //
 // beta = v/c of the monopole (or antimonopole) in their CM system
-
+// 
+// 
+// *************************************************************
+// Dirac quantization condition:
+//
+// g = 2\pi \hbar / (\mu_0 e) n,    where n = 1,2,3,...
+// where alpha = e^2/(4*PI) is the running QED coupling
+//
+//
+// Numerical values:
+// alpha_g  = g^2 / (4*PI) ~ 34  (when n = 1)
+// alpha_em = e^2 / (4*PI) ~ 1/137
+// *************************************************************
+//
+// From lepton pair to monopole pair:
+// replace e -> g*beta
+//
+// 16 * pow2(PI * alpha_EM) -> pow(g*beta, 4)
+//
+// *************************************************************
+// Coupling schemes:
+//
+// Dirac:     alpha_g = g^2/(4pi)
+// Beta-dirac alpha_g = (g*beta)^2 / (4pi)
+//
 std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
-
-	// Magnetic charge g_Dirac = 1/(2e) ~= 137 / 2 = 68.5,
-	// where e^2/(4PI) = alpha_EM = 1/137 with quantization condition n = 1
-	//
-	// From lepton pair to monopole pair, replace e -> g*beta = e*beta /
-	// (2*alpha)
-	// 16*PI*PI*pow2(alpha_EM) -> pow(g*beta, 4)
-	//
-	// alpha_g  = g^2 / (4*PI) ~ 34  (when n = 1)
-	// alpha_em = e^2 / (4*PI) ~ 1/137
 
 	// e+e-, mu+mu-, tau+tau-
 	double COUPL = 16.0 * pow2(gra::math::PI) * gra::form::alpha_EM(lts.t1) *
@@ -107,9 +121,9 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 	
 	// Monopole-Antimonopole coupling
 	if (MONOPOLE_MODE) {
-		
-		const double g = gra::form::e_EM() / (2.0 * gra::form::alpha_EM(0));
-		
+
+		static const double g = 2 * math::PI / form::e_EM(); // With n = 1
+
 		if (PARAM_MONOPOLE::coupling == 1) { // Beta-Dirac coupling
 			
 			// Calculate beta (velocity)
@@ -136,8 +150,7 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 
 		// QED tree level amplitude squared |M|^2, spin averaged and
 		// summed
-		const double amp2 =
-		    2.0 * COUPL *
+		const double amp2 = 2.0 * COUPL *
 		    ((lts.u_hat - mass2) / (lts.t_hat - mass2) +
 		     (lts.t_hat - mass2) / (lts.u_hat - mass2) + 1.0 -
 		     pow2(1.0 + (2.0 * mass2) / (lts.t_hat - mass2) +
@@ -179,10 +192,23 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 //
 // See e.g.
 //
+// [REFERENCE: http://www.theory.caltech.edu/~preskill/pubs/preskill-1984-monopoles.pdf]
 // [REFERENCE: Epele, Franchiotti, Garcia, Canal, Vento, https://arxiv.org/abs/hep-ph/0701133v2]
 // [REFERENCE: Barrie, Sugamoto, Yamashita, https://arxiv.org/abs/1607.03987v3]
 // [REFERENCE: Fanchiotti, Canal, Vento, https://arxiv.org/pdf/1703.06649.pdf]
 // [REFERENCE: Reis, Sauter, https://arxiv.org/abs/1707.04170v1]
+//
+// *************************************************************
+// Dirac quantization condition:
+//
+// g = 2\pi \hbar / (\mu_0 e) n,    where n = 1,2,3,...
+// where alpha = e^2/(4*PI) is the running QED coupling
+//
+//
+// Numerical values:
+// alpha_g  = g^2 / (4*PI) ~ 34  (when n = 1)
+// alpha_em = e^2 / (4*PI) ~ 1/137
+// *************************************************************
 //
 std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR& lts) const {
 
@@ -195,11 +221,9 @@ std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR& lts) const {
 		    "MGamma::yyMP: Increase ladder parameter n. Monopolium "
 		    "nominal mass " + std::to_string(M) + " < 0!");
 	}
+
 	// Two coupling scenarios:
-	// Dirac:     alpha_g = g^2/(4pi)
-	// Beta-dirac alpha_g = (g*beta)^2 / (4pi)
-	
-	const double g = gra::form::e_EM() / (2.0 * gra::form::alpha_EM(0));
+	static const double g = 2 * math::PI / form::e_EM(); // With n = 1	
 	double beta = 0.0;
 
 	if (PARAM_MONOPOLE::coupling == 1) {        // Beta-Dirac coupling
@@ -226,7 +250,7 @@ std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR& lts) const {
 
 	double sigma_hat = norm * (Gamma_E * Gamma_M ) /
 	                   (pow2(lts.s_hat - M*M) + pow2(M * Gamma_M));
-	                   
+
 	// Photon fluxes
 	std::complex<double> A =
 	                 gra::form::CohFlux(lts.x1, lts.t1, lts.qt1)
