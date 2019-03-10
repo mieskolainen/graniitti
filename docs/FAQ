@@ -34,16 +34,16 @@ A:  Different ways to organize phase space sampling.
 
 Q:  What are '->' versus '&>' operators?
 A:  The '->' uses full 2->N phase space volume in the cross section
-    integration. The &> operator (with <F> phase space) decouples
+    integration. The &> operator (with '<F>' phase space) decouples
     the central system phase space, and the process will be
-    [2->3] + [unweighted 1->(N-2) decays]. Thus, &> operator is
+    [2->3] + [unweighted 1->(N-2) decays]. Thus, the '&>' operator is
     useful to use with isolated resonance processes, for example
-    yy[Higgs]<F>. Try it out and see the output!
+    'yy[Higgs]<F>'. Try it out and see the output!
 
 
 Q:  What do generation cuts versus fiducial cuts mean?
-A:  Generation cuts are applied at the level of phase space sampling,
-    completely necessary. Fiducial cuts are applied after the event
-    kinematics has been constructed - this is optional.
+A:  Generation cuts are applied at the level of phase space sampling
+    kinematic construction, completely necessary. Fiducial cuts are
+    applied after the event kinematics has been constructed - this is optional.
 
 ...
