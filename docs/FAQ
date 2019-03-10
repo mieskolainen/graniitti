@@ -7,9 +7,9 @@ First run ./bin/gr
 
 
 Q:  Integrated cross section seems very high?
-A:  Turn on screening integral (pomeron loop).
-    The effect can be very high, depending on the process.
-    Also, take care of branching ratios and phase space volumes (see below).
+A:  Turn on screening integral (pomeron loop). The effect can be
+    very high, depending on the process. Also, take care of branching
+    ratios and phase space volumes (see below).
 
 
 Q:  How do I choose the final state?
@@ -21,24 +21,24 @@ A:  After the '->' arrow, write down the final state in terms of PDG
 
 
 Q:  How do I know the PDG numbers/names?
-A:  Write down something (dummy) after the '->' arrow, and try to generate.
-    You will get a list of all particles.
+A:  Write down something (dummy) after the '->' arrow,
+    and try to generate. You will get a list of all particles.
 
 
 Q:  What are '<C>' and '<F>' phase space classes?
 A:  Different ways to organize phase space sampling.
-    With equivalent generation+fiducial cuts, they produce identical
-    results. However, one can be faster or more numerically stable
-    with difficult amplitudes, than the other one.
+    With equivalent generation+fiducial cuts, they produce
+    identical results. However, the (other) one can be faster
+    or more numerically stable with difficult amplitudes.
 
 
 Q:  What are '->' versus '&>' operators?
 A:  The '->' uses full 2->N phase space volume in the cross section
     integration. The &> operator (with <F> phase space) decouples
     the central system phase space, and the process will be
-    [2->3] + [unweighted 1->(N-2) decays].
-    Thus, &> operator is useful to use with isolated resonance
-    processes, for example yy[Higgs]<F>. Try it out and see the output!
+    [2->3] + [unweighted 1->(N-2) decays]. Thus, &> operator is
+    useful to use with isolated resonance processes, for example
+    yy[Higgs]<F>. Try it out and see the output!
 
 
 Q:  What do generation cuts versus fiducial cuts mean?
