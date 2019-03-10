@@ -13,27 +13,27 @@ A:  Turn on screening integral (pomeron loop).
 
 
 Q:  How do I choose the final state?
-A:  After -> arrow, write down the final state in terms of PDG
+A:  After the '->' arrow, write down the final state in terms of PDG
     numbers such as '22 22' or their names such as 'gamma gamma'.
-    Events are distributed according to the phase space, in the case
-    if no amplitude is explicitly constructed for that particular
+    Events are distributed according to the phase space in the case
+    no amplitude is explicitly constructed for that particular
     decay. Any (cascade) final state is possible wihin phase space.
 
 
 Q:  How do I know the PDG numbers/names?
-A:  Write down something (dummy) after -> arrow, and try to generate. You
-    will get a list of all particles.
+A:  Write down something (dummy) after the '->' arrow, and try to generate.
+    You will get a list of all particles.
 
 
-Q:  What are <C> and <F> phase space classes?
+Q:  What are '<C>' and '<F>' phase space classes?
 A:  Different ways to organize phase space sampling.
     With equivalent generation+fiducial cuts, they produce identical
     results. However, one can be faster or more numerically stable
     with difficult amplitudes, than the other one.
 
 
-Q:  What are -> versus &> operators?
-A:  The -> uses full 2->N phase space volume in the cross section
+Q:  What are '->' versus '&>' operators?
+A:  The '->' uses full 2->N phase space volume in the cross section
     integration. The &> operator (with <F> phase space) decouples
     the central system phase space, and the process will be
     [2->3] + [unweighted 1->(N-2) decays].
@@ -43,7 +43,7 @@ A:  The -> uses full 2->N phase space volume in the cross section
 
 Q:  What do generation cuts versus fiducial cuts mean?
 A:  Generation cuts are applied at the level of phase space sampling,
-    completely necessary. Fiducial cuts are applied after the event kinematics
-    has been constructed - this is optional.
+    completely necessary. Fiducial cuts are applied after the event
+    kinematics has been constructed - this is optional.
 
 ...
