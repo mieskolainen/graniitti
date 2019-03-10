@@ -1,7 +1,7 @@
-FAQ
+GRANIITTI FAQ: 10.3.2019
 -----------
 
-Q:  This is beta version.
+Q:  This is a beta version.
 
 Q:  Integrated cross section seems very high?
 A:  Turn on screening integral (pomeron loop).
@@ -11,5 +11,12 @@ A:  Different ways to organize phase space sampling.
     With equivalent generation+fiducial cuts, they produce identical
     results. However, one can be faster or more numerically stable
     with difficult amplitudes, than the other one.
+
+Q:  What are -> versus &> operators?
+A:  The -> uses full 2->N phase space volume in the cross section
+    integration. The &> operator decouples the central system phase space,
+    and the process will be 2->3 + unweighted 1->(N-2). Thus, &> operator
+    is useful to use with isolated resonance processes, for example.
+    Try and see the output!
 
 ...
