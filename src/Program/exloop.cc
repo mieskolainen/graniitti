@@ -127,16 +127,16 @@ void experiment(bool screening) {
     std::vector<MEASUREMENT> input;
 
     /*
-      input.push_back(MEASUREMENT("./tests/experiment/el.json",            1.6e-12, 0.5e-12, 0.3e-12));
+      input.push_back(MEASUREMENT("./tests/processes/el.json",            1.6e-12, 0.5e-12, 0.3e-12));
 
       // <https://cds.cern.ch/record/1495761/files/CERN-PH-EP-2012-353.pdf>
-      input.push_back(MEASUREMENT("./tests/experiment/TOTEM12_.json",      1.6e-12, 0.5e-12, 0.3e-12));
+      input.push_back(MEASUREMENT("./tests/processes/TOTEM12_.json",      1.6e-12, 0.5e-12, 0.3e-12));
 
       // <https://arxiv.org/abs/1712.06153>
-      input.push_back(MEASUREMENT("./tests/experiment/TOTEM17_total.json", 1.6e-12, 0.5e-12, 0.3e-12));
+      input.push_back(MEASUREMENT("./tests/processes/TOTEM17_total.json", 1.6e-12, 0.5e-12, 0.3e-12));
     */
 
-    const std::string BASEPATH = "./tests/experiment/";
+    const std::string BASEPATH = "./tests/processes/";
 
     // https://arxiv.org/pdf/hep-ex/0611040.pdf
     input.push_back(MEASUREMENT("CDF07_ee.json",     1.6e-12,   0.5e-12,   0.3e-12));
