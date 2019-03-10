@@ -27,8 +27,8 @@
   "PROCESSPARAM" : {
 
     "BEAM" :   ["p+","p+"],    // Beam PDG-ID / Name
-    "ENERGY" : [3500, 3500],   // Beam energy in the lab (GeV)
-    "PROCESS" : "PP[RES+CON]<C> -> pi+ pi-", // Process mode
+    "ENERGY" : [6500, 6500],   // Beam energy in the lab (GeV)
+    "PROCESS" : "PP[RES+CON]<F> -> pi+ pi-", // Process mode
     "RES" : ["f0_500", "rho_770", "f0_980", "phi_1020", "f2_1270", "f0_1500", "f2_1525", "f0_1710"],
     "POMLOOP" : true,          // Eikonal Pomeron loop screening
     "NSTARS"  : 0,             // N* excitation (0 = elastic, 1 = single, 2 = double)
@@ -80,7 +80,7 @@
     },
     "<F>" : {
       "Rap" : [-0.9, 0.9], // Rapidity boundaries of the system (<F> class)
-      "M"   : [0, 5.0]
+      "M"   : [0, 7.0]
     },
     "<Q>" : {
       "Xi"  : [0, 0.05]    // Invariant scale M^2/s (forward excitation)

@@ -41,6 +41,11 @@ namespace gra {
 //      $
 // ===========
 //
+// For Narrow-Width approximation, see:
+//
+// [REFERENCE: Uhlemann, Kauer, Narrow-width approximation accuracy, https://arxiv.org/pdf/0807.4112.pdf]
+//
+//
 std::complex<double> MGamma::yyX(const gra::LORENTZSCALAR& lts, gra::PARAM_RES& resonance) const {
 
 	// Factor of 2 x from (identical) initial state boson statistics
@@ -217,28 +222,16 @@ std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR& lts) const {
 	// Running width
 	const double Gamma_E = PARAM_MONOPOLE::GammaMP(PARAM_MONOPOLE::n, alpha_g);
 
-	// Normalization factor at amplitude level
-	double norm = sqrt( 8* math::PI );
+	// Normalization
+	double norm = 4 * math::PI * M*M;
 
-	/*
-	// yy->Monopolium sub-cross section turned to amplitude level
-	const std::complex<double> amplitude =
-	    msqrt(pow2(M) * Gamma_E * Gamma_M) * gra::form::CBW_FW(lts.s_hat, M, Gamma_M);
+	double sigma_hat = norm * (Gamma_E * Gamma_M ) /
+	                   (pow2(lts.s_hat - M*M) + pow2(M * Gamma_M));
 
-    // Photon fluxes
-	std::complex<double> A = gra::form::CohFlux(lts.x1, lts.t1, lts.qt1) *
-	                         norm * amplitude *
-	                         gra::form::CohFlux(lts.x2, lts.t2, lts.qt2);
-    */
-
-	// Same expression as above
-	
-	double sigma_hat = (pow2(M) * Gamma_E*Gamma_M ) /
-	                   (pow2(lts.s_hat - pow2(M)) + pow2(M)*pow2(Gamma_M) );
-
+	// Photon fluxes
 	std::complex<double> A =
 	                 gra::form::CohFlux(lts.x1, lts.t1, lts.qt1)
-	               * norm * msqrt(sigma_hat)
+	               * msqrt(sigma_hat)
 	               * gra::form::CohFlux(lts.x2, lts.t2, lts.qt2);
 
 	// Phasespace flux
@@ -265,14 +258,15 @@ std::complex<double> MGamma::yyHiggs(gra::LORENTZSCALAR& lts) const {
 
 	lts.hamp.resize(4);
 	
-	const double          M = 125.18;            // Higgs mass measured (GeV)
-	const double    Gamma_X = 0.00415;           // Higgs total width calculated (GeV)
-	const double Gamma_X_yy = 2.27E-3 * Gamma_X; // Higgs to gamma-gamma calculated (GeV) 
+	const double        M = 125.18;          // Higgs mass measured (GeV)
+	const double    Gamma = 0.00415;         // Higgs total width calculated (GeV)
+	const double Gamma_yy = 2.27E-3 * Gamma; // Higgs to gamma-gamma calculated (GeV) 
 
-	// Helicity amplitudes for different initial state polarizations
-	const double norm = 4 * math::PI;
-
-	lts.hamp[0] = msqrt( norm * lts.s_hat * Gamma_X_yy * Gamma_X / (pow2(lts.s_hat - M*M) + pow2(M*Gamma_X)) ); // --
+	// Normalization
+	const double norm = 4 * math::PI * M*M;
+	
+	// Effective helicity amplitudes
+	lts.hamp[0] = msqrt( norm * Gamma_yy * Gamma / (pow2(lts.s_hat - M*M) + pow2(M*Gamma)) ); // --
 	lts.hamp[1] = 0.0;         // -+
 	lts.hamp[2] = 0.0;         // +-
 	lts.hamp[3] = lts.hamp[0]; // ++

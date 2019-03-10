@@ -159,24 +159,36 @@ void experiment(bool screening) {
     // <https://discoverycenter.nbi.ku.dk/teaching/thesis_page/MasterEmilBolsFinal.pdf>
     input.push_back(MEASUREMENT("ATLAS17_2pi.json",  18.75e-6,  0.048e-6,  0.770e-6));
 
+
+    // ALICE fiducial
+    input.push_back(MEASUREMENT("ALICE_2pi.json",    0, 0, 0));
+
+    input.push_back(MEASUREMENT("ALICE_2K.json",     0, 0, 0));
+
+    input.push_back(MEASUREMENT("ALICE_4pi.json",    0, 0, 0));
+
+    input.push_back(MEASUREMENT("ALICE_4K.json",     0, 0, 0));
+    
+    
     // <ALICE 7 TeV PWA, |y(pi+pi-)| < 0.9
     //input.push_back(MEASUREMENT("./tests/experiment/ALICE_2pi_PWA.json", 31e-6, 0.5e-6, 2e-6));
-    
+            
     // <https://arxiv.org/pdf/1806.04079.pdf>
     //input.push_back(MEASUREMENT("./tests/experiment/LHCb18_jpsi.json", 399e-12, 16e-12, 19e-12));
+
 
     // <ATLAS W+W->
     input.push_back(MEASUREMENT("ATLAS_WW.json",     0, 0, 0));
 
 	// <https://arxiv.org/pdf/1806.04079.pdf>
-    input.push_back(MEASUREMENT("gg2chi0.json", 0, 0, 0));
+    input.push_back(MEASUREMENT("gg2chi0.json",      0, 0, 0));
 
     // ...
-    input.push_back(MEASUREMENT("gg2gg.json",   0, 0, 0));
-    
+    input.push_back(MEASUREMENT("gg2gg.json",        0, 0, 0));
+
     // ...
-    input.push_back(MEASUREMENT("yy2Higgs.json",   0, 0, 0));
-    
+    input.push_back(MEASUREMENT("yy2Higgs.json",     0, 0, 0));
+
     // ...
     input.push_back(MEASUREMENT("monopolepair.json", 0, 0, 0));
 
