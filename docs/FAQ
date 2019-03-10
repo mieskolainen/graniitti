@@ -11,12 +11,17 @@ A:  Turn on screening integral (pomeron loop).
     The effect can be very high, depending on the process.
 
 
-Q:  How do choose the final state?
+Q:  How do I choose the final state?
 A:  After -> arrow, write down the final state in terms of PDG
     numbers such as '22 22' or their names such as 'gamma gamma'.
     Events are distributed according to the phase space, in the case
     if no amplitude is explicitly constructed for that particular
     decay. Any (cascade) final state is possible wihin phase space.
+
+
+Q:  How do I know the PDG numbers/names?
+A:  Write down something (dummy) after -> arrow, and try to generate. You
+    will get a list of all particles.
 
 
 Q:  What are <C> and <F> phase space classes?
@@ -34,5 +39,10 @@ A:  The -> uses full 2->N phase space volume in the cross section
     Thus, &> operator is useful to use with isolated resonance
     processes, for example yy[Higgs]<F>. Try it out and see the output!
 
+
+Q:  What do generation cuts versus fiducial cuts mean?
+A:  Generation cuts are applied at the level of phase space sampling,
+    completely necessary. Fiducial cuts are applied after the event kinematics
+    has been constructed - this is optional.
 
 ...
