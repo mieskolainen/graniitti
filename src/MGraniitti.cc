@@ -1686,7 +1686,7 @@ void MGraniitti::PrintStatistics(unsigned int N) {
 			printf("{2->3 cross section ~=~ [2->%u / (1->%lu LIPS) x 2PI]}:       %0.3E barn \n",
 				N_leg, proc->lts.decaytree.size(), stat.sigma / proc->lts.DW_sum.Integral() * (2*PI) );
 			std::cout << std::endl;
-			printf("** You may try also with &> tag instead of -> for phase space isolation ** \n");
+			printf("** Remember to use &> operator instead of -> for phase space isolation ** \n");
 			}
 		}
 		gra::aux::PrintBar("-");
@@ -1704,10 +1704,10 @@ void MGraniitti::PrintStatistics(unsigned int N) {
 		}
 
 		printf("\n");
-		printf("Amplitude success rate:           %0.3E \n", stat.amplitude_ok / stat.evaluations);
-		printf("Kinematics success rate:          %0.3E \n", stat.kinematics_ok / stat.evaluations);
-		printf("Fiducial cuts success rate:       %0.3E \n", stat.fidcuts_ok / stat.evaluations);	
-		printf("Veto cuts success rate:           %0.3E \n", stat.vetocuts_ok / stat.evaluations);	
+		printf("Amplitude passing rate:           %0.3E \n", stat.amplitude_ok / stat.evaluations);
+		printf("Kinematics passing rate:          %0.3E \n", stat.kinematics_ok / stat.evaluations);
+		printf("Fiducial cuts passing rate:       %0.3E \n", stat.fidcuts_ok / stat.evaluations);	
+		printf("Veto cuts passing rate:           %0.3E \n", stat.vetocuts_ok / stat.evaluations);	
 		printf("\n");
 
 		std::cout << std::endl;
