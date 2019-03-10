@@ -123,10 +123,10 @@ void PrintParam(double sqrts) {
 	          << std::endl
 	          << std::endl;
 
-	printf("- m = %0.3f GeV \n", PARAM_MONOPOLE::M0);
-	printf("- n = %d \n",        PARAM_MONOPOLE::En);
-	printf("- W = %0.3f GeV \n", PARAM_MONOPOLE::Gamma0);
-
+	printf("- M0     = %0.3f GeV \n", PARAM_MONOPOLE::M0);
+	printf("- Gamma0 = %0.3f GeV \n", PARAM_MONOPOLE::Gamma0);
+	printf("- En     = %d \n",        PARAM_MONOPOLE::En);
+	
 	const double M = 2*PARAM_MONOPOLE::M0 + EnergyMP(PARAM_MONOPOLE::En);
 	printf("\nGives monopolium mass: M = %0.3f GeV (Binding Energy = %0.3f GeV) \n\n",
 		M, M - 2*PARAM_MONOPOLE::M0);
