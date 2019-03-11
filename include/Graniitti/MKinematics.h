@@ -201,7 +201,7 @@ namespace kinematics {
   inline double PDW2body(double M0_2, double m1_2, double m2_2, double MatElem2,
                   double S_factor) {
     return SqrtKallenLambda(M0_2, m1_2, m2_2) * MatElem2 /
-           (16.0 * gra::math::PI * S_factor * gra::math::pow3(gra::math::msqrt(M0_2)));
+           (16.0 * gra::math::PI * S_factor * math::pow3(math::msqrt(M0_2)));
   }
 
   

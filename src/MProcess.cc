@@ -587,7 +587,7 @@ void MProcess::CalculateSymmetryFactor() {
 // Read resonance branching fractions
 void MProcess::SetupBranching() {
 
-	std::cout << "MProcess::SetupBranching: " << std::endl;
+	aux::PrintBar(".");
 	
 	if (lts.RESONANCES.size() == 0) { // Empty one is not treated
 		std::cout << rang::fg::red << "MProcess::SetupBranching: lts.RESONANCES.size() == 0 !" << rang::fg::reset << std::endl;
@@ -677,7 +677,8 @@ void MProcess::SetupBranching() {
 							// Mark it set
 							alpha_set[l][s] = true;
 
-							std::cout << "MProcess::SetupBranching: Resonance PDG = " + std::to_string(res.p.pdg) + ", Found ls-coupling: "
+							std::cout << "MProcess::SetupBranching: Resonance PDG = " + std::to_string(res.p.pdg) << std::endl;
+							std::cout << "Found ls-coupling: "
 									  << "[l=" << l << ",s=" << s << "] = " << alpha[l][s] << " (Re,Im)" << std::endl;
 
 						} catch (...) {
@@ -716,39 +717,45 @@ void MProcess::SetupBranching() {
 
 			// ----------------------------------------------------------------------------
 			// Calculate equivalent decay coupling for 2-body cases
+			//
+			// In 2-body case, the decay phase space and decay amplitude squared factorize
 
 			if (lts.decaytree.size() == 2) {
 
-				// Calculate partial decay width with |M_decay|^2 = 1
-				double gamma_1 = gra::kinematics::PDW2body(
+				// Calculate phase space part:
+				// Gamma = PS * |A_decay|^2 then with |A_decay|^2 = 1 <=> Gamma = PS
+
+				const double amp2 = 1.0;
+				const double sym  = 1.0;
+
+				double PS = gra::kinematics::PDW2body(
 				    pow2(res.p.mass),
 				    pow2(lts.decaytree[0].p.mass),
-				    pow2(lts.decaytree[1].p.mass), 1.0, 1.0);
+				    pow2(lts.decaytree[1].p.mass), amp2, sym);
 
-				if (std::abs(gamma_1) < 1e-9) {
+				if (std::abs(PS) < 1e-9) {
+
 					// Try again with higher mother mass, we might
-					// be trying purely off-shell decay (such as
-					// f0(980) -> K+K- )
+					// be trying purely off-shell decay (such as f0(980) -> K+K- )
 					const unsigned int N_width = 3;
 					for (std::size_t i = 1; i <= N_width; ++i) {
-						gamma_1 = gra::kinematics::PDW2body(
-						    pow2(res.p.mass + i * res.p.width),
+						PS = gra::kinematics::PDW2body(
+							pow2(res.p.mass + i * res.p.width),
 						    pow2(lts.decaytree[0].p.mass),
 						    pow2(lts.decaytree[1].p.mass),
-						    1.0, 1.0);
+						    amp2, sym);
 
-						if (gamma_1 > 1e-9)
-							break;
+						if (PS > 1e-9) { break; }
 					}
 				}
-
-				// Try now:
-				// (gamma_partial * |M|^2) / resonance_.p.width =
-				// resonance_.p.BR
-				// <=> |M|^2 = resonance_.BR * resonance_.p.width /
-				// gamma_1
-				res.g_decay = msqrt(res.BR * res.p.width / gamma_1);
-
+ 				
+				// BR \equiv Gamma/Gamma_tot = (PS * |A_decay|^2) / Gamma_tot (factorization on the numerator)
+				// <=>
+				// |A|^2 = BR * Gamma_tot / Gamma_PS and sqrt to get 'amplitude level'
+				//
+				// ** GeV unit can be obtained by inspecting PDW2body function **
+				res.g_decay = msqrt(res.BR * res.p.width / PS);
+				
 				if (std::isnan(res.g_decay) || std::isinf(res.g_decay)) {
 					std::string str =
 					    "MProcess::SetupBranching:: Kinematic coupling problem to '"
@@ -763,8 +770,14 @@ void MProcess::SetupBranching() {
 				res.g_decay = 1.0; // For the rest, put 1.0
 			}
 
+			printf("(Mass, Full width):                (%0.3E, %0.3E GeV) \n",  res.p.mass, res.p.width);
+			printf("Branching ratio || Partial width:   %0.3E || %0.3E GeV \n", res.BR, res.BR * res.p.width);
+			printf("=> Effective decay coupling:        %0.3E GeV \n", res.g_decay);
+
 			// Set resonance
 			lts.RESONANCES[xpoint.first] = res;
+
+			aux::PrintBar(".");
 
 		} else {
 			std::string str =
