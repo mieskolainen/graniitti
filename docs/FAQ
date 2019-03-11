@@ -17,7 +17,8 @@ A:  Turn on screening integral (pomeron loop). The effect can be
 
 
 Q:  MC integral does not converge (stat. error estimate is very high)
-A:  This can happen if the generation cuts are too loose and VEGAS
+A:  This can happen if the generation cuts are too loose, the process
+    is localized into spesific regime of phase space and VEGAS
     cannot find suitable binning -> manually tighten up the generation cuts.
     For example, if you generate an isolated resonance with mass M,
     use '<F>' phase space and put the mass boundaries around the
