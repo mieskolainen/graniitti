@@ -14,6 +14,7 @@
 
 // Own
 #include "Graniitti/MKinematics.h"
+#include "Graniitti/MRandom.h"
 
 namespace gra {
 namespace spin {
@@ -42,12 +43,12 @@ namespace spin {
 	double TriangleCoeff(double j1, double j2, double j3);
 	std::complex<double> WignerD(double theta, double phi, double m, double mp, double J);
 	double WignerSmalld(double theta, double m, double mp, double J);
-
+	
 	// Density matrix functions
 	bool Positivity(const MMatrix<std::complex<double>>& rho, unsigned int J);
-	MMatrix<std::complex<double>> RandomRho(unsigned int J, bool parity, std::mt19937_64& rng);
+	MMatrix<std::complex<double>> RandomRho(unsigned int J, bool parity, MRandom& rng);
 	double VonNeumannEntropy(const MMatrix<std::complex<double>>& rho);
-
+	
 } // spin namespace
 } // gra namespace
 

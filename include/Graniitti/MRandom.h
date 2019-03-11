@@ -15,13 +15,14 @@
 
 namespace gra {
 
-
 class MRandom  {
 
 public:
 	
 	// Calling constructors of member functions
-	MRandom() : flat(0,1), gaussian(0,1) {}
+	MRandom() : flat(0,1), gaussian(0,1) {
+		rng.seed(); // Default initialization
+	}
 	~MRandom() {}
 
 	// Set random number engine seed
@@ -29,14 +30,14 @@ public:
 		
 		const int SEEDMAX = 2147483647;
 		if (seed > SEEDMAX) {
-			std::string str =
-			    "MRandom::SetSeed: Invalid input seed: " +
-			    std::to_string(seed) + " > SEEDMAX = " + std::to_string(SEEDMAX);
+			std::string str = "MRandom::SetSeed: Invalid input seed: " +
+				std::to_string(seed) + " > SEEDMAX = " + std::to_string(SEEDMAX);
 			throw std::invalid_argument(str);
 		}
 		rng.seed(seed);
 		RNDSEED = seed;
 	}
+	
 	// Return current random seed
 	unsigned int GetSeed() const {
 		return RNDSEED;
@@ -57,14 +58,17 @@ public:
 	double NBDpdf(int n, double avgN, double k);
 	double Logpdf(int k, double p);
 
-	std::mt19937_64 rng; // 64-bit Mersenne Twister by Matsumoto and Nishimura, 2000 (fast)
-	
+	// 64-bit Mersenne Twister by Matsumoto and Nishimura, 2000 (fast)
+	//std::mt19937_64 rng; 
+
+	// RANLUX
+	std::ranlux48 rng;
+
 	// Distribution engines
 	std::uniform_real_distribution<double> flat;
 	std::normal_distribution<double> gaussian;
-
 	unsigned int RNDSEED = 0;    // Random seed set
-
+	
 private:
 	// Nothing
 };

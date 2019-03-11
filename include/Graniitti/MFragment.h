@@ -25,7 +25,7 @@ public:
 	
 	MFragment()  {}
 	~MFragment() {}
-
+	
 	static double TubeFragment(const M4Vec& mother, double M0, const std::vector<double>& m,
 		std::vector<M4Vec>& p, double q, double T, double maxpt, MRandom& rng);
 

@@ -1018,10 +1018,8 @@ bool Positivity(const MMatrix<std::complex<double>>& rho, unsigned int J) {
 //
 // TBD, write down the generalization of parity conservation constaint for any
 // spin.
-MMatrix<std::complex<double>> RandomRho(unsigned int J, bool parity, std::mt19937_64& rng) {
+MMatrix<std::complex<double>> RandomRho(unsigned int J, bool parity, MRandom& rng) {
 
-	// Gaussian random numbers
-	std::normal_distribution<double> gauss(0, 1);
 
 	const std::complex<double> zi(0, 1); // imag unit
 	MMatrix<std::complex<double>> rho;
@@ -1035,9 +1033,9 @@ MMatrix<std::complex<double>> RandomRho(unsigned int J, bool parity, std::mt1993
 
 		for (std::size_t i = 0; i < n; ++i) {
 			for (std::size_t j = 0; j < n; ++j) {
-				r[i][j] = gauss(rng) +
-				    	  zi * gauss(rng); // real and imag part from
-				                     		 // normal distribution
+				r[i][j] = rng.G(0,1) +
+				    	  zi * rng.G(0,1); // real and imag part from
+				                     	   // normal distribution
 			}
 		}
 		// Take product (outer product per vector): r*r^\dagger

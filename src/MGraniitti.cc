@@ -442,7 +442,7 @@ void MGraniitti::ReadProcessParam(const std::string& inputfile, const std::strin
 		const std::vector<std::string> RES = j[XID]["RES"];
 		for (std::size_t i = 0; i < RES.size(); ++i) {
 			const std::string str = "RES_" + RES[i] + ".json";
-			RESONANCES[RES[i]] = gra::form::ReadResonance(str, proc->random.rng);
+			RESONANCES[RES[i]] = gra::form::ReadResonance(str, proc->random);
 		}
 		proc->SetResonances(RESONANCES);
 		

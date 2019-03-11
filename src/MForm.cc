@@ -159,7 +159,7 @@ namespace form {
 std::string LHAPDF;
 
 // Read resonance parameters
-gra::PARAM_RES ReadResonance(const std::string& resparam_str, std::mt19937_64& rng) {
+gra::PARAM_RES ReadResonance(const std::string& resparam_str, MRandom& rng) {
 
 	std::cout << "gra::form::ReadResonance: Reading " + resparam_str + " ";
 

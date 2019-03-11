@@ -18,6 +18,7 @@
 // Keep this here to avoid backward/forward declaration problem
 #include "Graniitti/MKinematics.h"
 #include "Graniitti/MAux.h"
+#include "Graniitti/MRandom.h"
 #include "Graniitti/M4Vec.h"
 
 
@@ -82,7 +83,7 @@ extern std::string LHAPDF;
 // ----------------------------------------------------------------------
 
 // Read resonance
-gra::PARAM_RES ReadResonance(const std::string& resparam_str, std::mt19937_64& rng);
+gra::PARAM_RES ReadResonance(const std::string& resparam_str, MRandom& rng);
 
 // Regge signature
 std::complex<double> ReggeEta(double alpha_t, double sigma);
