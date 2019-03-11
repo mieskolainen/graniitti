@@ -31,6 +31,7 @@ A:  After the '->' arrow, write down the final state in terms of PDG
     Events are distributed according to the phase space in the case
     no amplitude is explicitly constructed for that particular
     decay. Any (cascade) final state is possible wihin phase space.
+    For example '-> A > {A1 > {A11 A12} A2 A3} B > {B1 B2 > {B21 B22} B3}'.
 
 
 Q:  How do I know the PDG numbers/names?
