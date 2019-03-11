@@ -197,7 +197,7 @@ private:
 	std::vector<T> buff_weights;
 
 	bool FILLBUFF     = false;
-	int AUTOBUFFSIZE  = 1000; // Default AUTOBUFFSIZE
+	int AUTOBUFFSIZE  = 10000; // Default AUTOBUFFSIZE
 	bool AUTOSYMMETRY = false;
 	
 	// Boundary conditions

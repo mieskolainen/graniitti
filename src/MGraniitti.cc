@@ -82,19 +82,21 @@ void MGraniitti::HistogramFusion() {
 
 	if (hist_fusion_done == false) {
 
-		// pvec[0] points to base instance -> fuse histograms to that
+		if (pvec.size() > 1) {
+		std::cout << "MGraniitti::HistogramFusion: \n";
+		std::cout << "<Warning: Multithreaded histogram fusion can result in convolution with adaptive histogram bounds> \n\n";
+		}
 
-		// START with process index 1
+		// START with process index 1, because 0 is the base
 		for (std::size_t i = 1; i < pvec.size(); ++i) {
+
 			// Loop over all 1D histograms
-			for (auto const& xpoint : pvec[0]->h1) {
-				pvec[0]->h1[xpoint.first] = pvec[0]->h1[xpoint.first] +
-				                           	pvec[i]->h1[xpoint.first];
+			for (auto const& xpoint : proc->h1) {
+				proc->h1[xpoint.first] = proc->h1[xpoint.first] + pvec[i]->h1[xpoint.first];
 			}
 			// Loop over all 2D histograms
-			for (auto const& xpoint : pvec[0]->h2) {
-				pvec[0]->h2[xpoint.first] = pvec[0]->h2[xpoint.first] +
-				                           	pvec[i]->h2[xpoint.first];
+			for (auto const& xpoint : proc->h2) {
+				proc->h2[xpoint.first] = proc->h2[xpoint.first] + pvec[i]->h2[xpoint.first];
 			}
 		}
 		hist_fusion_done = true;
