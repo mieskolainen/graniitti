@@ -58,6 +58,6 @@ A:  Generation cuts are applied at the level of phase space sampling
 
 
 Q:  Something seems just weird.
-A:  Turn of multithreading first with: ./bin/gr ... --CORES 1
+A:  Just email mikael.mieskolainen@cern.ch
 
 ...
