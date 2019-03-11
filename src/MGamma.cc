@@ -246,7 +246,7 @@ std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR& lts) const {
 	//	alpha_g, Gamma_E, Gamma_M, PARAM_MONOPOLE::PsiMP(PARAM_MONOPOLE::n));
 
 	// Normalization
-	double norm = 4 * math::PI * M*M;
+	double norm = 2.0*math::PI * M*M;
 
 	double sigma_hat = norm * (Gamma_E * Gamma_M ) /
 	                   (pow2(lts.s_hat - M*M) + pow2(M * Gamma_M));
