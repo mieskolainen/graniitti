@@ -7,12 +7,12 @@ First run ./bin/gr
 
 
 Q:  Where are examples of .json steering cards?
-A:  Under /tests/processes folder. Make a copy to ./input and modify.
+A:  Under /tests/processes folder. Make a copy to /input and modify.
 
 
 Q:  Integrated cross section seems very high?
 A:  Turn on screening integral (pomeron loop). The effect can be
-    very high, depending on the process (less for gamma-gamma processes).
+    very high, depending on the process - less for gamma-gamma processes.
     Also, take care of the branching ratios and phase space volumes (see below).
 
 
@@ -63,7 +63,7 @@ A:  The '->' uses full 2->N phase space volume in the cross section
     the central system phase space, and the process will be
     [2->3] + [unweighted 1->(N-2) decays]. Thus, the '&>' operator is
     useful to use with isolated resonance processes, for example
-    'yy[Higgs]<F>'. Try it out and see the output!
+    'yy[Higgs]<F>'. Be careful, however, one should not use it without care.
 
 
 Q:  What do generation cuts versus fiducial cuts mean?
