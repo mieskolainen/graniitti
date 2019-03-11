@@ -868,7 +868,7 @@ int MProcess::ExciteContinuum(const M4Vec& nstar,
 
 		std::vector<double> mass;
 		std::vector<int> pdgcode;
-		if (MFragment::PickParticles(M, N, B, 0, Q, mass, pdgcode, PDG, random.rng) == 1) {
+		if (MFragment::PickParticles(M, N, B, 0, Q, mass, pdgcode, PDG, random) == 1) {
 			++outertrials;
 			continue;
 		}
@@ -887,7 +887,7 @@ int MProcess::ExciteContinuum(const M4Vec& nstar,
 			T *= std::pow(1/(bt*bt), 0.10);
 		}
 		const double maxpt = 15.0;         // Maximum Pt per particle
-		const double W = MFragment::TubeFragment(nstar, M, mass, products, q, T, maxpt, random.rng);
+		const double W = MFragment::TubeFragment(nstar, M, mass, products, q, T, maxpt, random);
 		
 	    if (W  <= 0 ) {
 	    	++outertrials;
@@ -962,7 +962,7 @@ void MProcess::BranchForwardSystem(const std::vector<M4Vec>& p,
 			// Decay
 			std::vector<double> m = {0.0, 0.0};
 			std::vector<M4Vec> pgamma;
-			gra::kinematics::TwoBodyPhaseSpace(p[i], p[i].M(), m, pgamma, random.rng);
+			gra::kinematics::TwoBodyPhaseSpace(p[i], p[i].M(), m, pgamma, random);
 
 			// Gammas
 			HepMC::GenParticlePtr gen_p1 =
@@ -991,7 +991,7 @@ void MProcess::ExciteNstar(const M4Vec& nstar, gra::MDecayBranch& forward) {
 
 	// Find random decaymode
 	std::vector<int> pdgcode;
-	MFragment::NstarDecayTable(nstar.M(), pdgcode, random.rng);
+	MFragment::NstarDecayTable(nstar.M(), pdgcode, random);
 
 	// Get corresponding masses
 	std::vector<gra::MParticle> p(pdgcode.size());
@@ -1007,11 +1007,11 @@ void MProcess::ExciteNstar(const M4Vec& nstar, gra::MDecayBranch& forward) {
 
 	// Do the 2 or 3-body isotropic decay
 	if (mass.size() == 2) {
-		gra::kinematics::TwoBodyPhaseSpace(nstar, nstar.M(), mass, p4, random.rng);
+		gra::kinematics::TwoBodyPhaseSpace(nstar, nstar.M(), mass, p4, random);
 	}
 	if (mass.size() == 3) {
 		const bool UNWEIGHT = true;
-		gra::kinematics::ThreeBodyPhaseSpace(nstar, nstar.M(), mass, p4, UNWEIGHT, random.rng);
+		gra::kinematics::ThreeBodyPhaseSpace(nstar, nstar.M(), mass, p4, UNWEIGHT, random);
 	}
 
 	// ------------------------------------------------------------------
@@ -1038,7 +1038,7 @@ void MProcess::ExciteNstar(const M4Vec& nstar, gra::MDecayBranch& forward) {
 			// Decay
 			std::vector<double> mgamma = {0.0, 0.0};
 			std::vector<M4Vec> pgamma;
-			gra::kinematics::TwoBodyPhaseSpace(branch.p4, branch.p4.M(), mgamma, pgamma, random.rng);
+			gra::kinematics::TwoBodyPhaseSpace(branch.p4, branch.p4.M(), mgamma, pgamma, random);
 
 			// Add gamma legs
 			branch.legs.resize(2);
@@ -1245,15 +1245,15 @@ bool MProcess::ConstructDecayKinematics(gra::MDecayBranch& branch) {
 		gra::kinematics::MCW w;
 		if (branch.legs.size() == 2) {
 			w = gra::kinematics::TwoBodyPhaseSpace(
-				branch.p4, branch.p4.M(), masses, p, random.rng);
+				branch.p4, branch.p4.M(), masses, p, random);
 		// 3-body
 		} else if (branch.legs.size() == 3) {
 			w = gra::kinematics::ThreeBodyPhaseSpace(
-			    branch.p4, branch.p4.M(), masses, p, UNWEIGHT, random.rng);
+			    branch.p4, branch.p4.M(), masses, p, UNWEIGHT, random);
 		// N-body
 		} else {
 			w = gra::kinematics::NBodyPhaseSpace(
-			    branch.p4, branch.p4.M(), masses, p, UNWEIGHT, random.rng);
+			    branch.p4, branch.p4.M(), masses, p, UNWEIGHT, random);
 		}
 		if (w.GetW() < 0) {
 			std::string str = "MProcess::ConstructDecayKinematics: Fatal error: Weight < 0 (Check your decay tree)";

@@ -408,15 +408,15 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
 	// 2-body
 	if        (lts.decaytree.size() == 2) {
 		w = gra::kinematics::TwoBodyPhaseSpace(
-		    lts.pfinal[0], msqrt(m2X), masses, products, random.rng);
+		    lts.pfinal[0], msqrt(m2X), masses, products, random);
 	// 3-body
 	} else if (lts.decaytree.size() == 3) {
 		w = gra::kinematics::ThreeBodyPhaseSpace(
-		    lts.pfinal[0], msqrt(m2X), masses, products, UNWEIGHT, random.rng);
+		    lts.pfinal[0], msqrt(m2X), masses, products, UNWEIGHT, random);
 	// N-body
 	} else if (lts.decaytree.size() > 3) {
 		w = gra::kinematics::NBodyPhaseSpace(
-		    lts.pfinal[0], msqrt(m2X), masses, products, UNWEIGHT, random.rng);
+		    lts.pfinal[0], msqrt(m2X), masses, products, UNWEIGHT, random);
 	}
 	
 	if (w.GetW() < 0){

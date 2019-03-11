@@ -30,7 +30,7 @@ public:
 		const int SEEDMAX = 2147483647;
 		if (seed > SEEDMAX) {
 			std::string str =
-			    "MProcess::SetSeed: Invalid input seed: " +
+			    "MRandom::SetSeed: Invalid input seed: " +
 			    std::to_string(seed) + " > SEEDMAX = " + std::to_string(SEEDMAX);
 			throw std::invalid_argument(str);
 		}
@@ -58,6 +58,8 @@ public:
 	double Logpdf(int k, double p);
 
 	std::mt19937_64 rng; // 64-bit Mersenne Twister by Matsumoto and Nishimura, 2000 (fast)
+	
+	// Distribution engines
 	std::uniform_real_distribution<double> flat;
 	std::normal_distribution<double> gaussian;
 

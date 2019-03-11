@@ -48,4 +48,8 @@ A:  Generation cuts are applied at the level of phase space sampling
     kinematic construction, completely necessary. Fiducial cuts are
     applied after the event kinematics has been constructed - this is optional.
 
+
+Q:  Something seems just weird.
+A:  Turn of multithreading first with: ./bin/gr ... --CORES 1
+
 ...

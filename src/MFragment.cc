@@ -71,7 +71,7 @@ void MFragment::GetDecayStatus(const std::vector<int>& pdgcode, std::vector<bool
 //   n = 1/(q-1)
 // 
 void MFragment::ExpPowRND(double q, double T, double maxpt, 
-	const std::vector<double>& mass, std::vector<double>& x, std::mt19937_64& rng) {
+	const std::vector<double>& mass, std::vector<double>& x, MRandom& rng) {
 
 	const unsigned int MAXTRIAL = 1e4; // Safety break
 	const unsigned int Nbins    = 1e4;
@@ -124,8 +124,8 @@ void MFragment::ExpPowRND(double q, double T, double maxpt,
 		// Acceptance-Rejection
 		unsigned int trials = 0;
 		while (true) {
-		    const int BIN = RANDI(rng);
-		    if (U(0.0, 1.0, rng)*maxval[best] < dsdpt[best][BIN]) {
+		    const int BIN = RANDI(rng.rng);
+		    if (rng.U(0.0, 1.0)*maxval[best] < dsdpt[best][BIN]) {
 		        x[p] = ptval[BIN];
 		        break;
 		    }
@@ -150,7 +150,7 @@ void MFragment::ExpPowRND(double q, double T, double maxpt,
 // Return: 1.0 for a valid fragmentation and -1.0 for a kinematically impossible
 
 double MFragment::TubeFragment(const M4Vec& mother, double M0, const std::vector<double>& m,
-	std::vector<M4Vec>& p, double q, double T, double maxpt, std::mt19937_64& rng) {
+	std::vector<M4Vec>& p, double q, double T, double maxpt, MRandom& rng) {
 
 	// Number of re-trials in a case of failing kinematics
 	const unsigned int MAXTRIAL = 30;
@@ -179,12 +179,12 @@ double MFragment::TubeFragment(const M4Vec& mother, double M0, const std::vector
 		for (const auto& i : indices(pt)) {
 
 			// Sample angle, px, py
-		  	const double phi = U(0, 2.0*gra::math::PI, rng);
+		  	const double phi = rng.U(0, 2.0*gra::math::PI);
 			px[i] = pt[i]*std::cos(phi);
 			py[i] = pt[i]*std::sin(phi);
 			
 			// Rapidity
-			y[i] = U(0.0, 1.0, rng);
+			y[i] = rng.U(0.0, 1.0);
 		}
 		std::sort(begin(y), end(y)); // Rapidity ordering
 
@@ -259,8 +259,8 @@ double MFragment::TubeFragment(const M4Vec& mother, double M0, const std::vector
 bool MFragment::SolveAlpha(double& alpha, double M0, const std::vector<double>& m,
 			const std::valarray<double>& mt, const std::valarray<double>& y) {
 
-	const double STOP_EPS = 1e-8;
-	const unsigned int MAXITER    = 20;
+	const double STOP_EPS      = 1e-8;
+	const unsigned int MAXITER = 20;
 
 	// Starting value
 	const int N = m.size();
@@ -289,7 +289,7 @@ bool MFragment::SolveAlpha(double& alpha, double M0, const std::vector<double>& 
 
 // N* decay table [set manually according to experimental data]
 // M0 is the N* mass
-void MFragment::NstarDecayTable(double M0, std::vector<int>& pdgcode, std::mt19937_64& rng) {
+void MFragment::NstarDecayTable(double M0, std::vector<int>& pdgcode, MRandom& rng) {
 
 	int decaymode = 0;
 
@@ -304,7 +304,7 @@ void MFragment::NstarDecayTable(double M0, std::vector<int>& pdgcode, std::mt199
 		thread_local std::discrete_distribution<> d(
 		    {0.60,
 		     0.40}); // 2->body / 3-body branching ratios from PDG
-		decaymode = d(rng); // Draw random
+		decaymode = d(rng.rng); // Draw random
 	}
 
 	// ----------------------------------------------------------------------
@@ -321,7 +321,7 @@ void MFragment::NstarDecayTable(double M0, std::vector<int>& pdgcode, std::mt199
 		thread_local std::discrete_distribution<> subd(
 		    {2.0 / 3.0,
 		     1.0 / 3.0}); // Branching ratios from Clebsch-Gordan
-		const int channel = subd(rng);
+		const int channel = subd(rng.rng);
 
 		// PDG-ID of subchannels
 		const std::vector<std::vector<int>> ID = {
@@ -340,7 +340,7 @@ void MFragment::NstarDecayTable(double M0, std::vector<int>& pdgcode, std::mt199
 		thread_local std::discrete_distribution<> subd(
 		    {1.0 / 3.0, 1.0 / 3.0,
 		     1.0 / 3.0}); // Braching ratios ansatz
-		const int channel = subd(rng);
+		const int channel = subd(rng.rng);
 
 		// PDG-ID of subchannels
 		const std::vector<std::vector<int>> ID = {
@@ -428,7 +428,7 @@ void MFragment::GetSingleForwardMass(double& mass, MRandom& random) {
 // Simple statistical toy particle pick-up, nothing more
 //
 int MFragment::PickParticles(double M, unsigned int N, int B, int S, int Q,
-		std::vector<double>& mass, std::vector<int>& pdgcode, const MPDG& PDG, std::mt19937_64& rng) {
+		std::vector<double>& mass, std::vector<int>& pdgcode, const MPDG& PDG, MRandom& rng) {
 
 	const unsigned int MAXTRIAL = 1e5;
 	
@@ -467,21 +467,20 @@ int MFragment::PickParticles(double M, unsigned int N, int B, int S, int Q,
     	do { // Hadron picking
 
         	 // Charged
-            if (U(0,1,rng) < QProb) {
+            if (rng.U(0,1) < QProb) {
             	
             	// Charged pair
-	            if (U(0,1,rng) < DOUBLE && i <= N-2) {
+	            if (rng.U(0,1) < DOUBLE && i <= N-2) {
 
 	            	// Sample particle flavour
 	            	while (true) {
-		        		const int bin = RANDI3(rng);
+		        		const int bin = RANDI3(rng.rng);
 						
-		        		if (U(0,1,rng) < ratio3[bin]) {
+		        		if (rng.U(0,1) < ratio3[bin]) {
 
 		        			Qcharges[i] = 1;
 		        			Bcharges[i] = charged_B[bin];
 		        			Scharges[i] = charged_S[bin];
-		        			
 		        			pdgcode[i]  = charged_pdg[bin];
 		        			++i; // Next slot
 
@@ -498,12 +497,12 @@ int MFragment::PickParticles(double M, unsigned int N, int B, int S, int Q,
 	        	} else {
 	        		
 	            	while (true) {
-		        		const int bin = RANDI3(rng);
+		        		const int bin = RANDI3(rng.rng);
 		        		
-		        		if (U(0,1,rng) < ratio3[bin]) {
+		        		if (rng.U(0,1) < ratio3[bin]) {
 
 		        			int sign = 0;
-		        			sign = (U(0,1,rng) < 0.5) ? 1 : -1;
+		        			sign = (rng.U(0,1) < 0.5) ? 1 : -1;
 
 		        			Qcharges[i] = sign;
 		        			Bcharges[i] = sign*charged_B[bin];
@@ -520,8 +519,8 @@ int MFragment::PickParticles(double M, unsigned int N, int B, int S, int Q,
                 	
             	while (true) {
 				// Sample particle flavour
-				const int bin = RANDI3(rng);
-				if (U(0,1,rng) < ratio3[bin]) {
+				const int bin = RANDI3(rng.rng);
+				if (rng.U(0,1) < ratio3[bin]) {
         			Qcharges[i] = 0;
         			Bcharges[i] = neutral_B[bin];
         			Scharges[i] = neutral_S[bin];

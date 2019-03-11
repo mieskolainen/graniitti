@@ -6,7 +6,7 @@
 #include <catch.hpp>
 #include <random>
 
-
+#include "Graniitti/MRandom.h"
 #include "Graniitti/MMath.h"
 #include "Graniitti/MMatrix.h"
 #include "Graniitti/MKinematics.h"
@@ -17,11 +17,8 @@ using namespace gra;
 // Phase space functions
 bool PhaseSpaceTest(uint N, double m0, double& a, double& b, double& c) {
 	
-    // Seed here
-    std::random_device rd;
-
-    // Standard mersenne_twister_engine seeded with rd()
-    std::mt19937_64 rng(rd());
+    MRandom rng;
+    rng.SetSeed(123456);
 
 	// Test routine
 	printf("Phase space volume test \n");

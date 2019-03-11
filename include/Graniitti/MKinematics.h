@@ -24,16 +24,6 @@
 namespace gra {
 namespace kinematics {
 
-  // Uniform random numbers from [a,b)
-  template <typename T>
-  inline double U(double a, double b, T& rng) {
-
-    // C++11 thread_local is also static
-    thread_local std::uniform_real_distribution<double> flat; // Default [0,1)
-    return a + (b - a) * flat(rng);
-  }
-  
-  
   // A non-linear system of equations for forward proton kinematics:
   //
   // p1z + p2z + pz = 0
@@ -419,12 +409,12 @@ namespace kinematics {
   // Flat variables in spherical coordinates
   template <typename T2>
   inline void FlatIsotropic(double& costheta, double& sintheta, double& phi, T2& rng) {
-    costheta = U(-1.0, 1.0, rng);        // cos(theta) flat [-1,1]
+    costheta = rng.U(-1.0, 1.0);        // cos(theta) flat [-1,1]
     sintheta = gra::math::msqrt(1.0 - gra::math::pow2(costheta));
-    phi = U(0.0, 2.0 * gra::math::PI, rng);  // phi flat [0,2pi]
+    phi = rng.U(0.0, 2.0 * gra::math::PI);  // phi flat [0,2pi]
   }
-
-
+  
+  
   // Isotropic decay 0 -> 1 + 2 in spherical coordinates with flat cos(theta),phi
   template <typename T1, typename T2>
   inline void Isotropic(double pnorm, T1& p1, T1& p2, double m1, double m2, T2& rng) {
@@ -512,14 +502,15 @@ namespace kinematics {
     double m12 = 0;
     MCW x;
     do {
-      m12      = U(m12bound[0], m12bound[1], rng); // Flat mass (in GeV, not GeV^2)
+      m12      = rng.U(m12bound[0], m12bound[1]); // Flat mass (in GeV, not GeV^2)
       pnorm[0] = DecayMomentum(M0,  m[0],  m12);
       pnorm[1] = DecayMomentum(m12, m[1], m[2]);
 
       const double w = (m12 / gra::math::PI) * dPhi2(M0, pnorm[0]) * dPhi2(m12, pnorm[1]);
       x.Push(w);
       if (x.GetN() > MAXTRIAL) { return MCW(-1,0,0); } // Impossible kinematics
-    } while ((pnorm[0]*pnorm[1]) < U(0.0, w_max, rng));
+
+    } while ((pnorm[0]*pnorm[1]) < rng.U(0.0, w_max));
 
     // pM -> p0 + p12 in the pM r.f. and p12 -> p1 + p2 in the p12 r.f.
     Isotropic(pnorm[0], p[0],  p12, m[0],  m12, rng);
@@ -561,7 +552,7 @@ namespace kinematics {
     std::vector<double> randvec(N-2, 0.0);
 
     // Random variables functor
-    auto fillrandom = [&] (double& value) -> void { value = U(0,1,rng); };
+    auto fillrandom = [&] (double& value) -> void { value = rng.U(0,1); };
     
     // Effective (intermediate) masses
     M_eff[0]   = m[0];       // First daughter
@@ -624,7 +615,7 @@ namespace kinematics {
 
       x.Push(w);
       if (x.GetN() > MAXTRIAL) { return MCW(-1,0,0); } // Impossible kinematics
-    } while (w < U(0.0, w_max, rng));
+    } while (w < rng.U(0.0, w_max));
 
     // Normalize the phase space integral
     const double volume = 1.0 / (2.0 * std::pow(2.0 * gra::math::PI, 2*N - 3))
