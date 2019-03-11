@@ -59,16 +59,16 @@ public:
 	double Logpdf(int k, double p);
 
 	// 64-bit Mersenne Twister by Matsumoto and Nishimura, 2000 (fast)
-	//std::mt19937_64 rng; 
+	std::mt19937_64 rng; 
 
-	// RANLUX
-	std::ranlux48 rng;
-
+	// 48-bit RANLUX (slow)
+	//std::ranlux48 rng;
+	
 	// Distribution engines
 	std::uniform_real_distribution<double> flat;
 	std::normal_distribution<double> gaussian;
 	unsigned int RNDSEED = 0;    // Random seed set
-	
+
 private:
 	// Nothing
 };
