@@ -144,7 +144,7 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 			
 		} else {
 			throw std::invalid_argument(
-			    "MGamma::yyMMbar: Unknown PARAM_MONOPOLE::coupling " +
+			    "MGamma::yyffbar: Unknown PARAM_MONOPOLE::coupling " +
 			    std::to_string(PARAM_MONOPOLE::coupling));
 		}
 
@@ -258,7 +258,7 @@ std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR& lts) const {
 	               * msqrt(sigma_hat)
 	               * gra::form::CohFlux(lts.x2, lts.t2, lts.qt2)
 	               * msqrt(lts.s / lts.s_hat);
-	               	
+
 	return A;
 }
 
@@ -288,7 +288,8 @@ std::complex<double> MGamma::yyHiggs(gra::LORENTZSCALAR& lts) const {
 	const double norm = 2.0*math::PI * M*M;
 	
 	// Effective helicity amplitudes
-	lts.hamp[0] = msqrt( norm * Gamma_yy * Gamma * (1 + 1) / (pow2(lts.s_hat - M*M) + pow2(M*Gamma)) ); // --
+	lts.hamp[0] = msqrt( norm * Gamma_yy * Gamma * (1 + 1) /
+				 (pow2(lts.s_hat - M*M) + pow2(M*Gamma)) ); // --
 	lts.hamp[1] = 0.0;         // -+
 	lts.hamp[2] = 0.0;         // +-
 	lts.hamp[3] = lts.hamp[0]; // ++
