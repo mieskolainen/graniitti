@@ -6,6 +6,10 @@ mikael.mieskolainen@cern.ch
 First run ./bin/gr
 
 
+Q:  Where are examples of .json steering cards?
+A:  Under /tests/processes folder. Make a copy and modify.
+
+
 Q:  Integrated cross section seems very high?
 A:  Turn on screening integral (pomeron loop). The effect can be
     very high, depending on the process. Also, take care of branching
