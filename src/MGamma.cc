@@ -299,13 +299,13 @@ std::complex<double> MGamma::yyHiggs(gra::LORENTZSCALAR& lts) const {
        				    * gra::form::CohFlux(lts.x2, lts.t2, lts.qt2)
        				    * msqrt(lts.s / lts.s_hat);
 
-	for (std::size_t i = 0; i < 4; ++i) {
+	for (const auto& i : aux::indices(lts.hamp)) {
 		lts.hamp[i] *= factor;
 	}
-
+	
 	// Sum over helicity amplitudes squared
 	double sumA2 = 0.0;
-	for (std::size_t i = 0; i < 4; ++i) {
+	for (const auto& i : aux::indices(lts.hamp)) {
 		sumA2 += gra::math::abs2(lts.hamp[i]);
 	}
 	sumA2 /= 4; // Initial state polarization average
