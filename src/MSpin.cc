@@ -322,8 +322,8 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES& reso
 
 	} else {
 		// Throw exception
-		std::string str = "gra::spin::SpinAmp2: Unknown Lorentz FRAME parameter: \""
-						  + resonance.hc.FRAME + "\" (valid options: \"HE\", \"SR\", \"CS\")";
+		std::string str = "gra::spin::SpinAmp2: Unknown polarization Lorentz rest FRAME chosen: \""
+						  + resonance.hc.FRAME + "\" (valid are: \"SR\" (no rotation), \"HE\" (helicity), \"CS\" (Collins-Soper) )";
 		throw std::invalid_argument(str);
 	}
 	

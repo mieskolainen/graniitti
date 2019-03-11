@@ -32,7 +32,8 @@
     "g_phi" : -1.87,
 
     // Lorentz frame of spin polarization density
-    "FRAME" : "HE",
+    // (SR ~ no rotation, HE ~ helicity, CS ~ Collins-Soper)
+    "FRAME" : "SR",
     
     // Resonance spin-density (von Neumann) matrix (Re and Im parts)
 
