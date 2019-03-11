@@ -273,9 +273,9 @@ std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR& lts) const {
 //
 // where h1,h2 = +- gamma helicities (no small longitudinal contribution here considered)
 //
-// [REFERENCE: https://arxiv.org/pdf/0903.4978.pdf]
-// [REFERENCE: https://www.slac.stanford.edu/pubs/slacpubs/13750/slac-pub-13786.pdf]
-// [REFERENCE: KMR, https://arxiv.org/abs/hep-ph/0111078]
+// [REFERENCE: Khoze, Martin, Ryskin, https://arxiv.org/abs/hep-ph/0111078]
+// [REFERENCE: Bernal, Lopez-Val, Sola, https://arxiv.org/pdf/0903.4978.pdf]
+// [REFERENCE: Enterria, Lansberg, https://www.slac.stanford.edu/pubs/slacpubs/13750/slac-pub-13786.pdf]
 //
 std::complex<double> MGamma::yyHiggs(gra::LORENTZSCALAR& lts) const {
 
