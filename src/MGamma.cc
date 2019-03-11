@@ -31,42 +31,6 @@ namespace gra {
 
 
 // ============================================================================
-// Simple matrix element ansatz for gamma-gamma resonances
-//
-// ===========
-//      $
-//      $
-//      x---->
-//      $
-//      $
-// ===========
-//
-// For Narrow-Width approximation, see:
-//
-// [REFERENCE: Uhlemann, Kauer, Narrow-width approximation accuracy, https://arxiv.org/pdf/0807.4112.pdf]
-//
-//
-std::complex<double> MGamma::yyX(const gra::LORENTZSCALAR& lts, gra::PARAM_RES& resonance) const {
-
-	// Factor of 2 x from (identical) initial state boson statistics
-	const std::complex<double> A_prod =
-	    2.0 *
-	    gra::form::CohFlux(lts.x1, lts.t1, lts.qt1) *
-	    	gra::form::CBW(lts, resonance) * resonance.g *
-	    	PARAM_REGGE::JPCoupling(lts, resonance) *
-	    gra::form::CohFlux(lts.x2, lts.t2, lts.qt2);
-	    
-	// Spin and decay part
-	const std::complex<double> A_decay = gra::spin::SpinAmp(lts, resonance);
-	
-	// Phase space flux
-	const double PS = msqrt(lts.s / lts.s_hat);
-	
-	return A_prod * A_decay * PS;
-}
-
-
-// ============================================================================
 // (yy -> fermion-antifermion pair)
 // yy -> e+e-, mu+mu-, tau+tau-, qqbar or Monopole-Antimonopole (spin-1/2 monopole)
 // production 
@@ -313,4 +277,44 @@ std::complex<double> MGamma::yyHiggs(gra::LORENTZSCALAR& lts) const {
 	return msqrt(sumA2); // We take square later
 }
 
+
+// ============================================================================
+// Simple matrix element ansatz for gamma-gamma resonances
+//
+// ===========
+//      $
+//      $
+//      x---->
+//      $
+//      $
+// ===========
+//
+// For Narrow-Width approximations, see:
+//
+// [REFERENCE: Uhlemann, Kauer, Narrow-width approximation accuracy, https://arxiv.org/pdf/0807.4112.pdf]
+//
+//
+std::complex<double> MGamma::yyX(const gra::LORENTZSCALAR& lts, gra::PARAM_RES& resonance) const {
+
+	// Factor of 2 x from (identical) initial state boson statistics
+	const std::complex<double> A_prod =
+	    2.0 *
+	    gra::form::CohFlux(lts.x1, lts.t1, lts.qt1) *
+	    	gra::form::CBW(lts, resonance) * resonance.g *
+	    	PARAM_REGGE::JPCoupling(lts, resonance) *
+	    gra::form::CohFlux(lts.x2, lts.t2, lts.qt2);
+	    
+	// Spin and decay part
+	const std::complex<double> A_decay = gra::spin::SpinAmp(lts, resonance);
+	
+	// Phase space flux
+	const double PS = msqrt(lts.s / lts.s_hat);
+	
+	return A_prod * A_decay * PS;
+}
+
+
 } // gra namespace
+
+
+
