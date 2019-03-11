@@ -11,13 +11,13 @@
   
   "GENERALPARAM" : {
 
-    "OUTPUT"  : "ALICE_ppbar",  // Output filename
-    "FORMAT"  : "hepmc3",       // hepmc3, hepmc2, hepevt
-    "CORES"   : 0,              // Number of CPU threads (0 for automatic)
-    "NEVENTS" : 10000,          // Number of events
-    "INTEGRATOR" : "VEGAS",     // "VEGAS" (default), "FLAT" (for debug),
-    "WEIGHTED": false,          // Weighted events (default false)
-    "MODELPARAM" : "TUNE0"      // General model tune
+    "OUTPUT"  : "ALICE_ppbar_NEG", // Output filename
+    "FORMAT"  : "hepmc3",          // hepmc3, hepmc2, hepevt
+    "CORES"   : 0,                 // Number of CPU threads (0 for automatic)
+    "NEVENTS" : 10000,             // Number of events
+    "INTEGRATOR" : "VEGAS",        // "VEGAS" (default), "FLAT" (for debug),
+    "WEIGHTED": false,             // Weighted events (default false)
+    "MODELPARAM" : "TUNE0"         // General model tune
   },
   
   
@@ -28,9 +28,9 @@
     
     "BEAM" :   ["p+","p+"],    // Beam PDG-ID / Name
     "ENERGY" : [6500, 6500],   // Beam energy in the lab (GeV)
-    "PROCESS" : "PP[CON]<C> -> p+ p-", // Process mode
+    "PROCESS" : "PP[CON-]<C> -> p+ p-", // Process mode
     "RES" : ["f0_500", "rho_770", "f0_980", "phi_1020", "f2_1270", "f0_1500", "f2_1525", "f0_1710"],
-    "POMLOOP" : false,         // Eikonal Pomeron loop screening
+    "POMLOOP" : false,          // Eikonal Pomeron loop screening
     "NSTARS"  : 0,             // N* excitation (0 = elastic, 1 = single, 2 = double)
     "LHAPDF"  : "CT10nlo",     // LHAPDF parton distribution set
     "HIST"    : 2,             // On-the-flight histograms (0 = off,1,2)
