@@ -1,7 +1,7 @@
 // GRANIITTI - Monte Carlo event generator for high energy diffraction
 // https://github.com/mieskolainen/graniitti
 // 
-// <NeuroJacobian>
+// <NeuroJacobian neural net prototype>
 //
 //
 // (c) 2017-2019 Mikael Mieskolainen
