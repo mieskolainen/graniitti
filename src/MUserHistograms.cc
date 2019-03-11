@@ -33,7 +33,7 @@ void MUserHistograms::InitHistograms() {
 	h1["dPhi_pp"]  = MH1<double>(Nbins, 0.0, gra::math::PI, "Forward deltaphi (rad)");
 	h1["pPt"]      = MH1<double>(Nbins, 0.0, 2.5, "Forward Pt (GeV)");
 	h2["rap1rap2"] = MH2(Nbins, Nbins, "Rapidity1 vs Rapidity2"); h2["rap1rap2"].SetAutoSymmetry({true, true});
-
+	
 	// Level 2
 	Nbins = 40;
 
