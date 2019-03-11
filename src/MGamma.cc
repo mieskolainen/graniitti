@@ -122,7 +122,7 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 	// Monopole-Antimonopole coupling
 	if (MONOPOLE_MODE) {
 
-		static const double g = 2 * math::PI / form::e_EM(); // With n = 1
+		static const double g = 2.0 * math::PI / form::e_EM(); // With Dirac n = 1
 
 		if (PARAM_MONOPOLE::coupling == 1) { // Beta-Dirac coupling
 			
@@ -223,7 +223,7 @@ std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR& lts) const {
 	}
 
 	// Two coupling scenarios:
-	static const double g = 2 * math::PI / form::e_EM(); // With n = 1	
+	static const double g = 2.0 * math::PI / form::e_EM(); // With Dirac n = 1	
 	double beta = 0.0;
 
 	if        (PARAM_MONOPOLE::coupling == 1) {  // Beta-Dirac coupling
@@ -248,18 +248,17 @@ std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR& lts) const {
 	// Normalization
 	double norm = 2.0*math::PI * M*M;
 
+	// Sub process
 	double sigma_hat = norm * (Gamma_E * Gamma_M ) /
 	                   (pow2(lts.s_hat - M*M) + pow2(M * Gamma_M));
 
-	// Photon fluxes
+	// Apply fluxes
 	std::complex<double> A =
 	                 gra::form::CohFlux(lts.x1, lts.t1, lts.qt1)
 	               * msqrt(sigma_hat)
-	               * gra::form::CohFlux(lts.x2, lts.t2, lts.qt2);
-
-	// Phasespace flux
-	A *= msqrt(lts.s / lts.s_hat);
-	
+	               * gra::form::CohFlux(lts.x2, lts.t2, lts.qt2)
+	               * msqrt(lts.s / lts.s_hat);
+	               	
 	return A;
 }
 
