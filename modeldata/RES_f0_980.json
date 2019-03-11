@@ -28,7 +28,7 @@
     "random_rho" : 0,
 
     // Production coupling constant at amplitude level
-    "g_A"   :  0.09,
+    "g_A"   :  0.08,
     "g_phi" : -2.5,
 
     // Lorentz frame of spin polarization density

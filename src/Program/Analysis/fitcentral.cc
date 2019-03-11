@@ -96,11 +96,11 @@ void SetSoftParam(std::map<std::string, gra::PARAM_RES>& RESONANCES, double* par
     	double phi = par[++k];
     	RESONANCES[x.first].g = A * std::exp(gra::math::zi * phi);
 
-    	printf("[%s] \t A = %0.3f \t phi = %0.3f (%0.0f deg)\n",
+    	printf("[%s] \t A = %0.6f \t phi = %0.6f (%0.0f deg)\n",
     	       x.first.c_str(), A, phi, phi / (2 * gra::math::PI) * 360);
     }
     printf("\n");
-
+    
     // Continuum form factors
     if (offshellFF == 1) {
 	PARAM_REGGE::b_EXP = par[++k];

@@ -30,7 +30,7 @@
     // Production coupling constant at amplitude level
     "g_A"   : 0.008,
     "g_phi" : -0.5,
-
+    
     // Lorentz frame of spin polarization density
     // (SR ~ no rotation, HE ~ helicity, CS ~ Collins-Soper)
     "FRAME" : "SR",
