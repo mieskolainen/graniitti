@@ -755,7 +755,7 @@ void MProcess::SetupBranching() {
 				//
 				// ** GeV unit can be obtained by inspecting PDW2body function **
 				res.g_decay = msqrt(res.BR * res.p.width / PS);
-				
+
 				if (std::isnan(res.g_decay) || std::isinf(res.g_decay)) {
 					std::string str =
 					    "MProcess::SetupBranching:: Kinematic coupling problem to '"
@@ -765,11 +765,11 @@ void MProcess::SetupBranching() {
 					throw std::invalid_argument(str);
 				}
 
-			// 3,4,... body cases
+			// 3,4,... body cases [NOT TREATED YET, phase space and matrix element do not factorize there]
 			} else {
 				res.g_decay = 1.0; // For the rest, put 1.0
 			}
-
+			
 			printf("(Mass, Full width):                (%0.3E, %0.3E GeV) \n",  res.p.mass, res.p.width);
 			printf("Branching ratio || Partial width:   %0.3E || %0.3E GeV \n", res.BR, res.BR * res.p.width);
 			printf("=> Effective decay coupling:        %0.3E GeV \n", res.g_decay);
