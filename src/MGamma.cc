@@ -286,10 +286,10 @@ std::complex<double> MGamma::yyHiggs(gra::LORENTZSCALAR& lts) const {
 	const double Gamma_yy = 2.27E-3 * Gamma; // Higgs to gamma-gamma calculated (GeV) 
 
 	// Normalization
-	const double norm = 4 * math::PI * M*M;
+	const double norm = 2.0*math::PI * M*M;
 	
 	// Effective helicity amplitudes
-	lts.hamp[0] = msqrt( norm * Gamma_yy * Gamma / (pow2(lts.s_hat - M*M) + pow2(M*Gamma)) ); // --
+	lts.hamp[0] = msqrt( norm * Gamma_yy * Gamma * (1 + 1) / (pow2(lts.s_hat - M*M) + pow2(M*Gamma)) ); // --
 	lts.hamp[1] = 0.0;         // -+
 	lts.hamp[2] = 0.0;         // +-
 	lts.hamp[3] = lts.hamp[0]; // ++
@@ -303,7 +303,7 @@ std::complex<double> MGamma::yyHiggs(gra::LORENTZSCALAR& lts) const {
 		lts.hamp[i] *= factor;
 	}
 
-	// Sum over helicity amplitudes
+	// Sum over helicity amplitudes squared
 	double sumA2 = 0.0;
 	for (std::size_t i = 0; i < 4; ++i) {
 		sumA2 += gra::math::abs2(lts.hamp[i]);
