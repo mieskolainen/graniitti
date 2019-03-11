@@ -12,8 +12,8 @@ A:  Under /tests/processes folder. Make a copy to ./input and modify.
 
 Q:  Integrated cross section seems very high?
 A:  Turn on screening integral (pomeron loop). The effect can be
-    very high, depending on the process (less for gamma-gamma).
-    Also, take care of branching ratios and phase space volumes (see below).
+    very high, depending on the process (less for gamma-gamma processes).
+    Also, take care of the branching ratios and phase space volumes (see below).
 
 
 Q:  How well are the soft parameters tuned/fitted?
@@ -21,9 +21,8 @@ A:  Central production amplitude parameters are such that an approximate
     match with LHC data can be obtained. More high precision, fully exclusive
     but also semi-exclusive (proton dissociative) data is needed. The same
     words also for the PDG resonance branching ratios, which are not too well known
-    in all cases (see BRANCHING.json).
-    Elastic "eikonal pomeron" parameters are tuned with better accuracy
-    to high energy elastic dsigma/dt.
+    in all cases (see /modeldata/BRANCHING.json). Elastic "eikonal pomeron"
+    parameters are tuned with better accuracy to high energy elastic dsigma/dt.
 
 
 Q:  MC integral does not converge (stat. error estimate is very high)
