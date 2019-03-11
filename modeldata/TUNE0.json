@@ -52,13 +52,8 @@
   // Regge-trajectory parameters (pomeron, f2, a2)
   "PARAM_REGGE" : {
       
-      "a0"  : [1.088, 0.55, 0.55], // Intercept (alpha_0 = 1 + DELTA)
-      "ap"  : [0.20, 0.93, 0.93],  // Slope (alpha') [GeV^{-2}]
-      "sgn" : [1, -1, 1],          // Regge signature (sigma) (+-1)
-      "s0"  : 1.0,                 // Normalization scale (GeV^2)
-      
       // Off-shell t_hat/u_hat channel form factor: 1 = "exp", 2 = "orear", 3 = "pow"
-      "offshellFF" : 2,
+      "offshellFF" : 3,
       
       // Form factor parameters
       "b_EXP" :   0.57,    // GeV^-2
@@ -66,6 +61,13 @@
       "b_OREAR" : 1.20,    // GeV^-1
       "b_POW" :   0.67,    // GeV^2
       
+
+      "a0"  : [1.088, 0.55, 0.55], // Intercept (alpha_0 = 1 + DELTA)
+      "ap"  : [0.20, 0.93, 0.93],  // Slope (alpha') [GeV^{-2}]
+      "sgn" : [1, -1, 1],          // Regge signature (sigma) (+-1)
+      "s0"  : 1.0,                 // Normalization scale (GeV^2)
+      
+            
       // Intermediate off-shell meson M* propagator "Reggeization"
       // (NOT IMPLEMENTED CURRENTLY)
       "reggeize" : false

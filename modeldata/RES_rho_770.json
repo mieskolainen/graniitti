@@ -26,9 +26,9 @@
     // Set 0 for density matrix below, or an integer > 0 for a random sampled
     // Different integers give different matrices.
     "random_rho" : 0,
-
+    
     // Production coupling constant at amplitude level
-    "g_A"   :  0.332,
+    "g_A"   :  0.2,
     "g_phi" : -1.87,
 
     // Lorentz frame of spin polarization density

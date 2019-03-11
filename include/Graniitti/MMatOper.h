@@ -253,7 +253,7 @@ inline void PrintMatrixSeparate(const MMatrix<T>& A) {
         }
         std::cout << std::endl;
     }
-    std::cout << std::endl << std::endl;
+    std::cout << std::endl;
 }
 
 } // matoper namespace ends

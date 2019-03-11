@@ -1378,9 +1378,9 @@ public:
     std::cout << std::endl;
     printf("<Decay> \n");
     printf("- BR:          %0.3E\n", BR);
-    printf("- Effective vertex constant g_f:    %0.3E\n (calculated from BR and total width W)", g_decay);
+    printf("- Effective vertex constant g_f:  %0.3E", g_decay);
     std::cout << std::endl << std::endl;
-
+    
     if (p.J != 0) {
 
       std::cout << "- Polarization Lorentz frame: " << hc.FRAME << std::endl;

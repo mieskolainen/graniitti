@@ -632,6 +632,8 @@ void MProcess::SetupBranching() {
 
 		if (found == true) {
 
+			std::cout << "MProcess::SetupBranching: Resonance PDG = " + std::to_string(res.p.pdg) << std::endl;
+
 			// Try to find the decaymode
 			bool found_decay_mode = false;
 			const unsigned int MAXDECAYS = 500;
@@ -677,7 +679,6 @@ void MProcess::SetupBranching() {
 							// Mark it set
 							alpha_set[l][s] = true;
 
-							std::cout << "MProcess::SetupBranching: Resonance PDG = " + std::to_string(res.p.pdg) << std::endl;
 							std::cout << "Found ls-coupling: "
 									  << "[l=" << l << ",s=" << s << "] = " << alpha[l][s] << " (Re,Im)" << std::endl;
 
@@ -748,8 +749,8 @@ void MProcess::SetupBranching() {
 						if (PS > 1e-9) { break; }
 					}
 				}
- 				
-				// BR \equiv Gamma/Gamma_tot = (PS * |A_decay|^2) / Gamma_tot (factorization on the numerator)
+
+				// BR \equiv Gamma/Gamma_tot = (PS * |A_decay|^2) / Gamma_tot
 				// <=>
 				// |A|^2 = BR * Gamma_tot / Gamma_PS and sqrt to get 'amplitude level'
 				//
@@ -769,10 +770,10 @@ void MProcess::SetupBranching() {
 			} else {
 				res.g_decay = 1.0; // For the rest, put 1.0
 			}
-			
+
 			printf("(Mass, Full width):                (%0.3E, %0.3E GeV) \n",  res.p.mass, res.p.width);
 			printf("Branching ratio || Partial width:   %0.3E || %0.3E GeV \n", res.BR, res.BR * res.p.width);
-			printf("=> Effective decay coupling:        %0.3E GeV \n", res.g_decay);
+			printf("=> Effective decay vertex:          %0.3E GeV \n", res.g_decay);
 
 			// Set resonance
 			lts.RESONANCES[xpoint.first] = res;

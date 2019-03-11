@@ -76,10 +76,13 @@ void InitTMatrix(gra::HELMatrix& hc, const gra::MParticle& p, const gra::MPartic
 	unsigned int nonzero = 0;
 	
 	// Construct T-matrix (2s1 + 1) x (2s2 + 1) elements
+	std::cout << std::endl;
 	std::cout << "gra::spin:: "
 			  << " Particle 1: " << (is_boson1 ? "boson" : "fermion")
-			  << " Particle 2: " << (is_boson2 ? "boson" : "fermion") << std::endl;
+			  << " , Particle 2: " << (is_boson2 ? "boson" : "fermion") << std::endl;
 	
+	std::cout << "gra::spin::InitTMatrix: Calculating SU(2) decomposition: " << std::endl;
+
 	for (int s = 0; s <= static_cast<int>(s1 + s2); ++s) {
 		for (int l = 0; l <= static_cast<int>(J + s); ++l) 	{
 
@@ -134,7 +137,7 @@ void InitTMatrix(gra::HELMatrix& hc, const gra::MParticle& p, const gra::MPartic
 							need_to_set[l][s] = true;
 							tag_set = true;
 						}
-						printf("gra::spin::InitTMatrix: (l=%d,s=%d), lambda1 = %0.1f, lambda2 = %0.1f : cg1*cg2 = %0.3f \n", l,s, lambda1,lambda2, cg1*cg2);
+						printf("[l=%d,s=%d] :: lambda1 = %4.1f, lambda2 = %4.1f : cg1*cg2 = %6.3f \n", l,s, lambda1,lambda2, cg1*cg2);
 						++nonzero;
 					}
 				}
