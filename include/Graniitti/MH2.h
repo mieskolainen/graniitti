@@ -22,6 +22,8 @@ class MH2 {
 public:
 	MH2(int xbins, double xmin, double xmax,
 		int ybins, double ymin, double ymax, std::string namestr = "noname");
+
+	MH2(int xbins, int ybins, std::string namestr = "noname");
 	MH2();
 	~MH2();
 
@@ -81,9 +83,34 @@ public:
 		return h;
 	}
 
+	// AUTOBUFFSIZE for autorange buffer size
+	void SetAutoBuffSize(int n) {
+		AUTOBUFFSIZE = n;
+	}
+	void FlushBuffer();
+	
+	// Symmetric bounds
+	void SetAutoSymmetry(const std::vector<bool>& in) {
+		if (in.size() != 2) {
+			throw std::invalid_argument("MH2::SetAutoSymmetry: Input should be size 2 boolean vector");
+		}
+		AUTOSYMMETRY = in;
+	}
+
+
 private:
 
    	std::string name; // Histogram name
+
+   	// -----------------------------------------------------------
+	// For autorange
+	std::vector<std::vector<double>> buff_values;
+	std::vector<double> buff_weights;
+
+	bool FILLBUFF                  = false;
+	int  AUTOBUFFSIZE              = 10000; // Default AUTOBUFFSIZE
+	std::vector<bool> AUTOSYMMETRY = {false, false};
+	// -----------------------------------------------------------
 
 	// Boundary conditions
 	double XMIN = 0.0;
@@ -105,11 +132,11 @@ private:
 	bool ValidBin(int xbin, int ybin) const;
 	int  GetIdx(double value, double minval, double maxval, int nbins, bool logbins) const;
 	
-	// weights (in unweighted case weights = counts)
+	// Weights (in unweighted case weights = counts)
 	MMatrix<double> weights;
 	MMatrix<double> weights2;
 
-	// counts
+	// Counts
 	MMatrix<long long int> counts;
 };
 

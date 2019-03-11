@@ -192,6 +192,7 @@ private:
 
    	std::string name; // Histogram name
 
+   	// -----------------------------------------------------------
 	// For autorange
 	std::vector<double> buff_values;
 	std::vector<T> buff_weights;
@@ -199,6 +200,7 @@ private:
 	bool FILLBUFF     = false;
 	int AUTOBUFFSIZE  = 10000; // Default AUTOBUFFSIZE
 	bool AUTOSYMMETRY = false;
+   	// -----------------------------------------------------------
 	
 	// Boundary conditions
 	double XMIN = 0.0;

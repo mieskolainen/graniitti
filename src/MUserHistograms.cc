@@ -32,9 +32,8 @@ void MUserHistograms::InitHistograms() {
 	h1["Pt"]       = MH1<double>(Nbins, 0.0, 2.5, "System Pt (GeV)");
 	h1["dPhi_pp"]  = MH1<double>(Nbins, 0.0, gra::math::PI, "Forward deltaphi (rad)");
 	h1["pPt"]      = MH1<double>(Nbins, 0.0, 2.5, "Forward Pt (GeV)");
-	h2["rap1rap2"] = MH2(Nbins, -2, 2, Nbins, -2, 2, "Rapidity1 vs Rapidity2");
-	//h1["m0"]       = MH1<double>(Nbins, "Central leg[0] M (GeV)");
-	
+	h2["rap1rap2"] = MH2(Nbins, Nbins, "Rapidity1 vs Rapidity2"); h2["rap1rap2"].SetAutoSymmetry({true, true});
+
 	// Level 2
 	Nbins = 40;
 
@@ -78,6 +77,7 @@ void MUserHistograms::FillHistograms(double totalweight, const gra::LORENTZSCALA
 		FillCosThetaPhi(totalweight, lts);
 	}
 }
+
 
 // (costheta,phi) of daughter in different Lorentz frames, input as the total event weight
 void MUserHistograms::FillCosThetaPhi(double totalweight, const gra::LORENTZSCALAR& lts) {

@@ -25,10 +25,22 @@ MH2::MH2(int xbins, double xmin, double xmax,
 		 int ybins, double ymin, double ymax, std::string namestr) {
 	name = namestr;
 	ResetBounds(xbins, xmin, xmax, ybins, ymin, ymax);
+	FILLBUFF = false;
+}
+
+// Constructor with only number of bins
+MH2::MH2(int xbins, int ybins, std::string namestr) {
+	name     = namestr;
+	XBINS    = xbins;
+	YBINS    = ybins;
+	FILLBUFF = true;
 }
 
 // Empty constructor
 MH2::MH2() {
+	XBINS    = 50; // Default
+	YBINS    = 50;
+	FILLBUFF = true;
 }
 
 // Destructor
@@ -147,22 +159,34 @@ void MH2::Fill(double xvalue, double yvalue) {
 
 void MH2::Fill(double xvalue, double yvalue, double weight) {
 	
-	++fills;
-	
-	// Find out bins
-	const int xbin = GetIdx(xvalue, XMIN, XMAX, XBINS, LOGX);
-	const int ybin = GetIdx(yvalue, YMIN, YMAX, YBINS, LOGY);
+	if (!FILLBUFF) { // Normal filling
 
-	if (xbin == -1) { underflow[0] += 1; }
-	if (ybin == -1) { underflow[1] += 1; }
-	
-	if (xbin == -2) {  overflow[0] += 1; }
-	if (ybin == -2) {  overflow[1] += 1; }
+		++fills;
+		
+		// Find out bins
+		const int xbin = GetIdx(xvalue, XMIN, XMAX, XBINS, LOGX);
+		const int ybin = GetIdx(yvalue, YMIN, YMAX, YBINS, LOGY);
 
-	if (ValidBin(xbin, ybin)) {
-		weights[xbin][ybin]  += weight;
-		weights2[xbin][ybin] += weight*weight;
-		counts[xbin][ybin]   += 1;
+		if (xbin == -1) { underflow[0] += 1; }
+		if (ybin == -1) { underflow[1] += 1; }
+		
+		if (xbin == -2) {  overflow[0] += 1; }
+		if (ybin == -2) {  overflow[1] += 1; }
+
+		if (ValidBin(xbin, ybin)) {
+			weights[xbin][ybin]  += weight;
+			weights2[xbin][ybin] += weight*weight;
+			counts[xbin][ybin]   += 1;
+		}
+
+	} else { // Autorange initialization
+
+		buff_values.push_back({xvalue,yvalue});
+		buff_weights.push_back(weight);
+
+		if (buff_values.size() > static_cast<unsigned int>(AUTOBUFFSIZE)) {
+			FlushBuffer();
+		}
 	}
 }
 
@@ -178,6 +202,74 @@ void MH2::Clear() {
 		}
 	}
 }
+
+
+// Automatic histogram range algorithm
+void MH2::FlushBuffer() {
+
+	FILLBUFF = false; // no more filling buffer
+
+	std::vector<double> min = {0.0, 0.0};
+	std::vector<double> max = {0.0, 0.0};	
+
+	// Loop over dimensions
+	for (std::size_t dim = 0; dim < 2; ++dim) {
+
+		// Find out mean
+		double mu = 0;
+		double sumW = 0;
+		for (std::size_t i = 0; i < buff_values.size(); ++i) {
+			mu += std::abs(buff_values[i][dim] * buff_weights[i]);
+			sumW += std::abs(buff_weights[i]);
+		}
+		if (sumW > 0) { mu /= sumW; }
+		
+		// Variance
+		double var = 0;
+		for (std::size_t i = 0; i < buff_values.size(); ++i) {
+			var += std::abs(buff_weights[i]) *
+			       std::pow(buff_values[i][dim] - mu, 2);
+		}
+		if (sumW > 0) { var /= sumW; }
+
+		// Find minimum
+		double minval = 1e64;
+		for (std::size_t i = 0; i < buff_values.size(); ++i) {
+			if (buff_values[i][dim] < minval) { minval = buff_values[i][dim]; }
+		}
+		
+		// Set new histogram bounds
+		const double std = std::sqrt(std::abs(var));
+		double xmin = mu - 2.5 * std;
+		double xmax = mu + 2.5 * std;
+
+		// If symmetric setup set by user
+		if (AUTOSYMMETRY[dim]) {
+			double val = (std::abs(xmin) + std::abs(xmax)) / 2.0;
+			xmin = -val;
+			xmax =  val;
+		}
+
+		// We have only positive values, such as invariant mass
+		if (minval > 0.0) { xmin = std::max(0.0, xmin); }
+
+		min[dim] = xmin;
+		max[dim] = xmax;
+	}
+
+	// New histogram bounds
+	ResetBounds(XBINS, min[0], max[0], YBINS, min[1], max[1]);
+
+	// Fill buffered events
+	for (std::size_t i = 0; i < buff_values.size(); ++i) {
+		Fill(buff_values[i][0], buff_values[i][1], buff_weights[i]);
+	}
+
+	// Clear buffers
+	buff_values.clear();
+	buff_weights.clear();
+}
+
 
 double MH2::SumWeights() const {
 	double sum = 0.0;

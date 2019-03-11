@@ -250,7 +250,7 @@ template <class T>
 void MH1<T>::FlushBuffer() {
 	FILLBUFF = false; // no more filling buffer
 
-	// Find out mean and central moment
+	// Find out mean
 	double mu = 0;
 	double sumW = 0;
 	for (std::size_t i = 0; i < buff_values.size(); ++i) {
@@ -258,7 +258,7 @@ void MH1<T>::FlushBuffer() {
 		sumW += std::abs(buff_weights[i]);
 	}
 	if (sumW > 0) { mu /= sumW; }
-
+	
 	// Variance
 	double var = 0;
 	for (std::size_t i = 0; i < buff_values.size(); ++i) {
@@ -270,7 +270,7 @@ void MH1<T>::FlushBuffer() {
 	// Minimum
 	auto it = std::min_element(buff_values.begin(), buff_values.end());
 	const double minval = *it;
-
+	
 	// Set new histogram bounds
 	const double std = std::sqrt(std::abs(var));
 	double xmin = mu - 2.5 * std;
