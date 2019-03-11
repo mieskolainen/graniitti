@@ -38,10 +38,6 @@ namespace gra {
 //
 // This is the same amplitude as yy -> e+e- (two diagrams)
 // obtained by crossing e+e- -> yy annihilation, see:
-// 
-// [REFERENCE: Rajantie, https://physicstoday.scitation.org/doi/pdf/10.1063/PT.3.3328]
-// [REFERENCE: Dougall, Wick, https://arxiv.org/abs/0706.1042]
-// [REFERENCE: Rels, Sauter, https://arxiv.org/abs/1707.04170v1]
 //
 // http://theory.sinp.msu.ru/comphep_old/tutorial/QED/node4.html
 //
@@ -70,6 +66,10 @@ namespace gra {
 //
 // Dirac:     alpha_g = g^2/(4pi)
 // Beta-dirac alpha_g = (g*beta)^2 / (4pi)
+//
+// [REFERENCE: Rajantie, https://physicstoday.scitation.org/doi/pdf/10.1063/PT.3.3328]
+// [REFERENCE: Dougall, Wick, https://arxiv.org/abs/0706.1042]
+// [REFERENCE: Rels, Sauter, https://arxiv.org/abs/1707.04170v1]
 //
 std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 
