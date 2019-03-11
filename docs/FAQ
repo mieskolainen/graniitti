@@ -1,4 +1,4 @@
-GRANIITTI 0.1 (BETA) FAQ: 10.3.2019
+GRANIITTI 0.1 (BETA) FAQ: 11.3.2019
 
 mikael.mieskolainen@cern.ch
 -----------
@@ -10,6 +10,14 @@ Q:  Integrated cross section seems very high?
 A:  Turn on screening integral (pomeron loop). The effect can be
     very high, depending on the process. Also, take care of branching
     ratios and phase space volumes (see below).
+
+
+Q:  MC integral does not converge (stat. error estimate is very high)
+A:  This can happen if the generation cuts are too loose and VEGAS
+    cannot find suitable binning -> manually tighten up the generation cuts.
+    For example, if you generate an isolated resonance with mass M,
+    use '<F>' phase space and put the mass boundaries around the
+    resonance peak M +- N full widths.
 
 
 Q:  How do I choose the final state?
