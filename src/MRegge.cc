@@ -843,7 +843,7 @@ std::complex<double> MRegge::PropOnly(double s, double t) const {
 	for (std::size_t k = 0; k < PARAM_REGGE::a0.size(); ++k) {
 		
 		if (PARAM_REGGE::n[k] == true) { // Trajectory active
-
+			
 			double alpha = 0.0;
 
 			if (k == 0) { // Pomeron
