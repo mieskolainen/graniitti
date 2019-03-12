@@ -209,7 +209,7 @@ std::complex<double> MRegge::ME2(gra::LORENTZSCALAR& lts, int mode) const {
 //  lambda2    lambda4
 //
 //
-// [Check Sakai-Sugimoto model based eta,eta': https://arxiv.org/pdf/1406.7010.pdf]
+// [Check Witten-Sakai-Sugimoto model based holographic eta,eta': https://arxiv.org/pdf/1406.7010.pdf]
 //
 std::complex<double> MRegge::ME3HEL(gra::LORENTZSCALAR& lts, gra::PARAM_RES& resonance) const {
 
@@ -527,7 +527,7 @@ std::complex<double> MRegge::ME6(gra::LORENTZSCALAR& lts) const {
 	double (*ff)(double,double); 
 	double (*prop)(double,double); 
 
-	double sign = 1;
+	const double sign = 1;
 
 	if (sign > 0) { // positive sign amplitudes
 
@@ -619,7 +619,7 @@ std::complex<double> MRegge::ME8(gra::LORENTZSCALAR& lts) const {
 	double (*ff)(double,double); 
 	double (*prop)(double,double); 
 
-	double sign = 1;
+	const double sign = 1;
 
 	if (sign > 0) { // positive sign amplitudes
 
