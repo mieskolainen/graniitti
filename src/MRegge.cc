@@ -841,13 +841,15 @@ std::complex<double> MRegge::PropOnly(double s, double t) const {
 
 	// Loop over Pomeron, Reggeon, Reggeon... exchanges
 	for (std::size_t k = 0; k < PARAM_REGGE::a0.size(); ++k) {
-		if (PARAM_REGGE::n[k] == true) {
-			double alpha = 0.0; // Pomeron/Reggeon Trajectory
+		
+		if (PARAM_REGGE::n[k] == true) { // Trajectory active
+
+			double alpha = 0.0;
 
 			if (k == 0) { // Pomeron
 				//alpha = S3PomAlpha(t); // Non-Linear trajectory
 				alpha = PARAM_REGGE::a0[k] + t * PARAM_REGGE::ap[k];
-			} else { // Reggeons
+			} else {      // Reggeons
 				alpha = PARAM_REGGE::a0[k] + t * PARAM_REGGE::ap[k];
 			}
 			
@@ -855,9 +857,10 @@ std::complex<double> MRegge::PropOnly(double s, double t) const {
 			// (cannot be used with linear trajectory due to poles)
 			//const std::complex<double> eta = ReggeEta(alpha, PARAM_REGGE::sgn[k]);
 			
-			// Fixed one
-			const std::complex<double> eta(0,1);
+			// Evaluate at t = 0 to avoid poles
+			const std::complex<double> eta = ReggeEta(PARAM_REGGE::a0[k], PARAM_REGGE::sgn[k]);
 			
+			// Add to the sum
 			M += eta * std::pow(s / PARAM_REGGE::s0, alpha);
 		}
 	}
