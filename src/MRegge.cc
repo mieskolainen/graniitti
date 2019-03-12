@@ -397,10 +397,9 @@ std::complex<double> MRegge::gik_Vertex(double t1, double t2, double phi, int la
 //        *
 //        * P
 //        *
-//        FF----- pi+/K+,p,rho0 ...
+//        ff ----> pi+/K+,p,rho0 ...
 //        |
-//        |
-//        FF----- pi-/K-,pbar,rho0 ...
+//        ff ----> pi-/K-,pbar,rho0 ...
 //        *
 //        * P
 //        *
@@ -436,7 +435,7 @@ std::complex<double> MRegge::ME4(gra::LORENTZSCALAR& lts, double sign) const {
 	const double FF_A  = lts.excite1 ? gra::form::S3FINEL(lts.t1) : gra::form::S3F(lts.t1);
 	const double FF_B  = lts.excite2 ? gra::form::S3FINEL(lts.t2) : gra::form::S3F(lts.t2);
 	
-	// Particle-Pomeron coupling transformed from DL-couplings
+	// Particle-Particle-Pomeron coupling
 	const double gpp_P = PARAM_REGGE::c[0] / PARAM_SOFT::gN_P;
 
 	const std::complex<double> M_t =
@@ -542,7 +541,9 @@ std::complex<double> MRegge::ME6(gra::LORENTZSCALAR& lts) const {
 
 	const double FF_A  = lts.excite1 ? gra::form::S3FINEL(lts.t1) : gra::form::S3F(lts.t1);
 	const double FF_B  = lts.excite2 ? gra::form::S3FINEL(lts.t2) : gra::form::S3F(lts.t2);	
-	const double gpi_P = PARAM_REGGE::c[0] / PARAM_SOFT::gN_P;
+
+	// Particle-Particle-Pomeron coupling
+	const double gpp_P = PARAM_REGGE::c[0] / PARAM_SOFT::gN_P;
 
 	// Loop over different final state permutations (max #16)
 	for (const auto& i : indices(permutations4_)) {
@@ -565,13 +566,13 @@ std::complex<double> MRegge::ME6(gra::LORENTZSCALAR& lts) const {
 
 		const std::complex<double> subamp =
 	      PropOnly(lts.ss[1][a], lts.t1) * PARAM_SOFT::gN_P * FF_A *
-	      	(*ff)(tt_ab, M2_A) * gpi_P *
+	      	(*ff)(tt_ab, M2_A) * gpp_P *
       		prop(tt_ab, M2_A) *
-	      	(*ff)(tt_bc, M2_A) * gpi_P *
+	      	(*ff)(tt_bc, M2_A) * gpp_P *
 	      PropOnly(lts.ss[b][c], tt_bc) *
-	      	(*ff)(tt_bc, M2_B) * gpi_P *
+	      	(*ff)(tt_bc, M2_B) * gpp_P *
 	      	prop(tt_cd, M2_B) *
-	      	(*ff)(tt_cd, M2_B) * gpi_P *
+	      	(*ff)(tt_cd, M2_B) * gpp_P *
 	      PropOnly(lts.ss[2][d], lts.t2) * PARAM_SOFT::gN_P * FF_B;
 	    
        	M += subamp;
@@ -633,7 +634,9 @@ std::complex<double> MRegge::ME8(gra::LORENTZSCALAR& lts) const {
 	}
 	const double FF_A  = lts.excite1 ? gra::form::S3FINEL(lts.t1) : gra::form::S3F(lts.t1);
 	const double FF_B  = lts.excite2 ? gra::form::S3FINEL(lts.t2) : gra::form::S3F(lts.t2);	
-	const double gpi_P = PARAM_REGGE::c[0] / PARAM_SOFT::gN_P;
+	
+	// Particle-Particle-Pomeron coupling
+	const double gpp_P = PARAM_REGGE::c[0] / PARAM_SOFT::gN_P;
 
 	// Loop over different permutations (max #288)
 	for (const auto& i : indices(permutations6_)) {
@@ -661,17 +664,17 @@ std::complex<double> MRegge::ME8(gra::LORENTZSCALAR& lts) const {
 
 		const std::complex<double> subamp =
 	      PropOnly(lts.ss[1][a], lts.t1) * PARAM_SOFT::gN_P * FF_A *
-	      	(*ff)(tt_ab, M2_A) * gpi_P *
+	      	(*ff)(tt_ab, M2_A) * gpp_P *
       		prop(tt_ab, M2_A) *
-	      	(*ff)(tt_bc, M2_A) * gpi_P *
+	      	(*ff)(tt_bc, M2_A) * gpp_P *
 	      PropOnly(lts.ss[b][c], tt_bc) *
-	      	(*ff)(tt_bc, M2_B) * gpi_P *
+	      	(*ff)(tt_bc, M2_B) * gpp_P *
       		prop(tt_cd, M2_B) *
-	      	(*ff)(tt_de, M2_B) * gpi_P *
+	      	(*ff)(tt_de, M2_B) * gpp_P *
 	      PropOnly(lts.ss[d][e], tt_de) *
-	      	(*ff)(tt_de, M2_C) * gpi_P *
+	      	(*ff)(tt_de, M2_C) * gpp_P *
 	      	prop(tt_ef, M2_C) *
-	      	(*ff)(tt_ef, M2_C) * gpi_P *
+	      	(*ff)(tt_ef, M2_C) * gpp_P *
 	      PropOnly(lts.ss[2][f], lts.t2) * PARAM_SOFT::gN_P * FF_B;
 
 	    M += subamp;
