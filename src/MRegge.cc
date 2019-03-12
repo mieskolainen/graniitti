@@ -490,14 +490,14 @@ std::complex<double> MRegge::ME4RES(gra::LORENTZSCALAR& lts,
 //  ======F======>
 //        *
 //        *
-//        FF-----> a
+//        ff-----> a
 //        |
-//        x------> b
+//        ff-----> b
 //        *
 //        *
-//        x------> c
+//        ff-----> c
 //        |
-//        FF-----> d
+//        ff-----> d
 //        *
 //        *
 //  ======F======>
@@ -586,19 +586,19 @@ std::complex<double> MRegge::ME6(gra::LORENTZSCALAR& lts) const {
 //  ======F======>
 //        *
 //        *
-//        FF-----> a
+//        ff-----> a
 //        |
-//        x------> b
+//        ff-----> b
 //        *
 //        *
-//        x------> c
+//        ff-----> c
 //        |
-//        x------> d
+//        ff-----> d
 //        *
 //        *
-//        x------> e
+//        ff-----> e
 //        |
-//        FF-----> f
+//        ff-----> f
 //        *
 //        *
 //  ======F======>
@@ -841,9 +841,9 @@ std::complex<double> MRegge::PropOnly(double s, double t) const {
 
 	// Loop over Pomeron, Reggeon, Reggeon... exchanges
 	for (std::size_t k = 0; k < PARAM_REGGE::a0.size(); ++k) {
-		
+
 		if (PARAM_REGGE::n[k] == true) { // Trajectory active
-			
+
 			double alpha = 0.0;
 
 			if (k == 0) { // Pomeron
