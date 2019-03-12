@@ -437,7 +437,7 @@ std::complex<double> MRegge::ME4(gra::LORENTZSCALAR& lts, double sign) const {
 	
 	// Particle-Particle-Pomeron coupling
 	const double gpp_P = PARAM_REGGE::c[0] / PARAM_SOFT::gN_P;
-
+	
 	const std::complex<double> M_t =
 	      PropOnly(lts.ss[1][3], lts.t1) * PARAM_SOFT::gN_P * FF_A *
 	      (*ff)(lts.t_hat, M2_) * gpp_P *
