@@ -503,10 +503,15 @@ std::complex<double> MRegge::ME4RES(gra::LORENTZSCALAR& lts,
 //  ======F======>
 //
 // For many similar amplitudes, see the literature of the era
-// "pre-superstring/generalized Veneziano amplitude"
+// "pre-superstring/generalized Veneziano amplitude". For example:
+//
+// [REFERENCE: Bardakci, Ruegg, https://journals.aps.org/pr/pdf/10.1103/PhysRev.181.1884]
+// 
 //
 // Numerically, one may compare with:
+// 
 // [REFERENCE: Kycia, Lebiedowicz, Szczurek, Turnau, https://arxiv.org/abs/1702.07572]
+//
 //
 std::complex<double> MRegge::ME6(gra::LORENTZSCALAR& lts) const {
 	const std::complex<double> nullc(0, 0);
