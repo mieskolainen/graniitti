@@ -299,10 +299,7 @@ std::vector<double> h1Multiplet::SaveFig(const std::string& fullpath) const {
 	// -------------------------------------------------------------------
 
     // Create output directory if it does not exist
-    struct stat st = {0};
-    if (stat(fullpath.c_str(), &st) == -1) {
-        mkdir(fullpath.c_str(), 0700);
-    }
+    aux::CreateDirectory(fullpath);
 
 	// Save pdf
 	std::string fullfile = fullpath + name_ + ".pdf";
@@ -411,10 +408,7 @@ double h2Multiplet::SaveFig(const std::string& fullpath) const {
 	}
 
     // Create output directory if it does not exist
-    struct stat st = {0};
-    if (stat(fullpath.c_str(), &st) == -1) {
-        mkdir(fullpath.c_str(), 0700);
-    }
+    aux::CreateDirectory(fullpath);
 
 	// Save pdf
 	std::string fullfile = fullpath + name_ + ".pdf";
@@ -563,10 +557,7 @@ double hProfMultiplet::SaveFig(const std::string& fullpath) const {
 	// -------------------------------------------------------------------
 
     // Create output directory if it does not exist
-    struct stat st = {0};
-    if (stat(fullpath.c_str(), &st) == -1) {
-        mkdir(fullpath.c_str(), 0700);
-    }
+    aux::CreateDirectory(fullpath);
 
 	// Save pdf
 	std::string fullfile = fullpath + name_ + ".pdf";

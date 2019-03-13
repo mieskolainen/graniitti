@@ -195,9 +195,9 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 	HepMC3::ReaderAscii input_file(totalpath);
 	
 	if (input_file.failed()) {
-		throw std::invalid_argument("MAnalyzer::HepMC33Read: Cannot open file " + totalpath);
+		throw std::invalid_argument("MAnalyzer::HepMC3Read: Cannot open file " + totalpath);
 	}
-
+	
 	// Event loop
 	unsigned int events_read  = 0;
 
@@ -214,7 +214,7 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 		// Reading failed
 		if (input_file.failed()) {
 			if (events_read == 0) {
-				throw std::invalid_argument("MAnalyzer::HepMC33Read: File " + totalpath + " is empty!");
+				throw std::invalid_argument("MAnalyzer::HepMC3Read: File " + totalpath + " is empty!");
 			} else { break; }
 		}
 		if (events_read == 0) {
@@ -276,7 +276,7 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 
 		// CHECK CONDITION
 		if (pip.size() + pim.size() != (unsigned int)multiplicity) {
-			printf("MAnalyzer::ReadHepMC33:: Multiplicity condition not filled %lu %lu %d! \n", pip.size(), pim.size(), multiplicity);
+			printf("MAnalyzer::ReadHepMC3:: Multiplicity condition not filled %lu %lu %d! \n", pip.size(), pim.size(), multiplicity);
 			continue; // skip event
 		}
 
@@ -391,14 +391,14 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 			}
 
 		} catch (...) {
-			throw std::invalid_argument("MAnalyzer::HepMC33Read: Problem filling histogram!");
+			throw std::invalid_argument("MAnalyzer::HepMC3Read: Problem filling histogram!");
 		}
 
 		// << SUPERPLOTTER
 		// **************************************************************
 
 		if (events_read >= MAXEVENTS){
-			std::cout << "MAnalyzer::HepMC33Read: Maximum event count " << MAXEVENTS << " reached!";
+			std::cout << "MAnalyzer::HepMC3Read: Maximum event count " << MAXEVENTS << " reached!";
 			break; // Enough events
 		}
 
@@ -411,19 +411,19 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 		selecW += W;
 	}
 	std::cout << std::endl;
-	std::cout << "MAnalyzer::HepMC33Read: Events processed in total: "
+	std::cout << "MAnalyzer::HepMC3Read: Events processed in total: "
 			  << events_read << std::endl;
 
 	// Close HepMC3 file
 	input_file.close();
 
 	if (selecW == 0.0) {
-		throw std::invalid_argument("MAnalyzer::HepMC33Read:: Valid events in <"
+		throw std::invalid_argument("MAnalyzer::HepMC3Read:: Valid events in <"
 			+ totalpath + ">"+ " == 0 out of " + std::to_string(events_read));
 	}
 	// Take into account extra fiducial cut efficiency here
 	double efficiency = selecW / totalW;
-	printf("MAnalyzer::HepMC33Read: Fiducial cut efficiency: %0.3f \n", efficiency);
+	printf("MAnalyzer::HepMC3Read: Fiducial cut efficiency: %0.3f \n", efficiency);
 	std::cout << std::endl;
 
 	return cross_section * efficiency;
@@ -677,6 +677,11 @@ double exponential(double* x, double* par) {
 
 // Plotter
 void MAnalyzer::PlotAll() {
+
+    // Create output directory if it does not exist
+	const std::string FOLDER = gra::aux::GetBasePath(2) + "/figs/" + inputfile;
+   	aux::CreateDirectory(FOLDER);
+
 
 	// FIT FUNCTIONS
 	TF1* fb = new TF1("exp_fit", exponential, 0.05, 0.5, 2);
