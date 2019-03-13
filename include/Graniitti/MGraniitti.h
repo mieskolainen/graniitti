@@ -14,10 +14,11 @@
 #include <thread>
 #include <vector>
 
-// HepMC
-#include "HepMC/WriterHEPEVT.h"
-#include "HepMC/WriterAscii.h"
-#include "HepMC/WriterAsciiHepMC2.h"
+// HepMC3
+#include "HepMC3/GenEvent.h"
+#include "HepMC3/WriterHEPEVT.h"
+#include "HepMC3/WriterAscii.h"
+#include "HepMC3/WriterAsciiHepMC2.h"
 
 // Own
 #include "Graniitti/MAux.h"
@@ -319,7 +320,7 @@ public:
 	MGraniitti();
 	~MGraniitti();
 
-	// For cross-section for HepMC output
+	// For cross-section for HepMC3 output
 	void ForceXS(double xs) {
 		xsforced = xs;
 	}
@@ -338,17 +339,17 @@ public:
 	void SetVegasParam(const VEGASPARAM& in);
 
 	// Set external file handle
-	void SetHepMC2Output(std::shared_ptr<HepMC::WriterAsciiHepMC2>& hepmc, const std::string& OUTPUTNAME) {
+	void SetHepMC2Output(std::shared_ptr<HepMC3::WriterAsciiHepMC2>& hepmc, const std::string& OUTPUTNAME) {
 		OUTPUT = OUTPUTNAME;
 		FORMAT = "hepmc2";
 		outputHepMC2 = hepmc;
-	}	
-	void SetHepMC3Output(std::shared_ptr<HepMC::WriterAscii>& hepmc, const std::string& OUTPUTNAME) {
+	}
+	void SetHepMC3Output(std::shared_ptr<HepMC3::WriterAscii>& hepmc, const std::string& OUTPUTNAME) {
 		OUTPUT = OUTPUTNAME;
 		FORMAT = "hepmc3";
 		outputHepMC3 = hepmc;
 	}
-
+	
 	// Maximum weight set/get
 	void   SetMaxweight(double w);
 	double GetMaxweight() const;
@@ -461,15 +462,18 @@ private:
 	// Histogram fusion
 	bool hist_fusion_done = false;
 
+	// Input string
+	std::string FULL_INPUT_STR = "";
+
 	// HepMC outputfile
 	std::string FULL_OUTPUT_STR = "";
 	std::string OUTPUT = "";
 	std::string FORMAT = "";   // hepmc3 or hepmc2 or hepevt
 	
-	// HepMC3 output
-	std::shared_ptr<HepMC::WriterAscii>       outputHepMC3 = nullptr;
-	std::shared_ptr<HepMC::WriterAsciiHepMC2> outputHepMC2 = nullptr;
-	std::shared_ptr<HepMC::WriterHEPEVT>      outputHEPEVT = nullptr;
+	std::shared_ptr<HepMC3::GenRunInfo> runinfo             = nullptr;
+	std::shared_ptr<HepMC3::WriterAscii>       outputHepMC3 = nullptr;
+	std::shared_ptr<HepMC3::WriterAsciiHepMC2> outputHepMC2 = nullptr;
+	std::shared_ptr<HepMC3::WriterHEPEVT>      outputHEPEVT = nullptr;
 
 	// VEGAS creates copies here
 	std::vector<MProcess*> pvec;
@@ -477,7 +481,7 @@ private:
 	MFactorized   proc_F;
 	MQuasiElastic proc_Q;
 
-	// Forced cross-section for HepMC output
+	// Forced cross-section for HepMC3 output
 	double xsforced = -1;
 
 	// Global timing

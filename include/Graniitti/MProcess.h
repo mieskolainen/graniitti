@@ -12,10 +12,10 @@
 #include <random>
 #include <vector>
 
-// HepMC3
-#include "HepMC/FourVector.h"
-#include "HepMC/GenEvent.h"
-#include "HepMC/GenParticle.h"
+// HepMC33
+#include "HepMC3/FourVector.h"
+#include "HepMC3/GenEvent.h"
+#include "HepMC3/GenParticle.h"
 
 // Own
 #include "Graniitti/MSubProc.h"
@@ -92,7 +92,7 @@ public:
 
 	virtual double operator ()(const std::vector<double>& randvec, AuxIntData& aux) = 0;
 	virtual double EventWeight(const std::vector<double>& randvec, AuxIntData& aux) = 0;
-	virtual   bool EventRecord(HepMC::GenEvent& evt) = 0;
+	virtual   bool EventRecord(HepMC3::GenEvent& evt) = 0;
 
 	std::vector<std::string> PrintProcesses() const;
 	std::string GetProcessDescriptor(std::string process) const;
@@ -246,15 +246,15 @@ protected:
 	// -------------------------------------------------------
 	// Recursive function to treat decay trees
 
-	bool CommonRecord(HepMC::GenEvent& evt);
+	bool CommonRecord(HepMC3::GenEvent& evt);
 	bool VetoCuts() const;
 	bool CommonCuts() const;
 	void FindDecayCuts(const gra::MDecayBranch& branch, bool& ok) const;
 	void FindVetoCuts(const gra::MDecayBranch& branch, bool& ok) const;
 	bool ConstructDecayKinematics(gra::MDecayBranch& branch);
 	void WriteDecayKinematics(gra::MDecayBranch& branch,
-	                          HepMC::GenParticlePtr& mother,
-	                          HepMC::GenEvent& evt);
+	                          HepMC3::GenParticlePtr& mother,
+	                          HepMC3::GenEvent& evt);
 	void PrintFiducialCuts() const;
 	
 	
@@ -272,12 +272,12 @@ protected:
 
 	void ExciteNstar(const M4Vec& nstar, gra::MDecayBranch& forward);
 
-	int  ExciteContinuum(const M4Vec& nstar, const HepMC::GenParticlePtr gen_nstar,
-						HepMC::GenEvent& evt, double Q2_scale, int B_sum, int Q_sum);
+	int  ExciteContinuum(const M4Vec& nstar, const HepMC3::GenParticlePtr gen_nstar,
+						HepMC3::GenEvent& evt, double Q2_scale, int B_sum, int Q_sum);
 
 	void BranchForwardSystem(const std::vector<M4Vec>& products,
 							 const std::vector<int>& pdgcode, const std::vector<bool>& isstable,
-							 const HepMC::GenParticlePtr gen_nstar, HepMC::GenEvent& evt);
+							 const HepMC3::GenParticlePtr gen_nstar, HepMC3::GenEvent& evt);
 
 	// ---------------------------------------------------------
 	

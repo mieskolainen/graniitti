@@ -1,7 +1,7 @@
 // GRANIITTI - Monte Carlo event generator for high energy diffraction
 // https://github.com/mieskolainen/graniitti
 //
-// <HepMC3 to LHE (.xml) format converter>
+// <HepMC33 to LHE (.xml) format converter>
 //
 // (c) 2017-2019 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
@@ -11,16 +11,18 @@
 #include <fstream>
 #include <iomanip>
 
-// HepMC3
-#include "HepMC/FourVector.h"
-#include "HepMC/GenEvent.h"
-#include "HepMC/GenParticle.h"
-#include "HepMC/GenVertex.h"
-#include "HepMC/LHEFAttributes.h"
-#include "HepMC/Print.h"
-#include "HepMC/ReaderAscii.h"
-#include "HepMC/Search/FindParticles.h"
-#include "HepMC/WriterAscii.h"
+// HepMC33
+#include "HepMC3/FourVector.h"
+#include "HepMC3/GenEvent.h"
+#include "HepMC3/GenParticle.h"
+#include "HepMC3/GenVertex.h"
+#include "HepMC3/LHEFAttributes.h"
+#include "HepMC3/Print.h"
+#include "HepMC3/ReaderAscii.h"
+#include "HepMC3/WriterAscii.h"
+#include "HepMC3/Selector.h"
+#include "HepMC3/Relatives.h"
+
 
 
 // Return filesize for statistics
@@ -37,6 +39,7 @@ long GetFileSize(const std::string &filename) {
     return fs;
 }
 
+using namespace HepMC3;
 
 // For LHE event format see:
 // [REFERENCE: http://home.thep.lu.se/~torbjorn/talks/fnal04lha.pdf]
@@ -52,7 +55,7 @@ int main(int argc, char *argv[]) {
     std::string outputfile = inputfile + ".lhe";
 
     // Input and output
-    HepMC::ReaderAscii input(inputfile);
+    HepMC3::ReaderAscii input(inputfile);
     LHEF::Writer writer(outputfile);
 
     // TODO: Check what this does actually?
@@ -61,7 +64,7 @@ int main(int argc, char *argv[]) {
     int events = 0;
 
     // HepMC3 event object
-    HepMC::GenEvent ev(HepMC::Units::GEV, HepMC::Units::MM);
+    HepMC3::GenEvent ev(HepMC3::Units::GEV, HepMC3::Units::MM);
 
     // Event loop over all events in HepMC3 file
     while (!input.failed()) {
@@ -84,12 +87,10 @@ int main(int argc, char *argv[]) {
 	std::vector<double> VTIMUP;            // invariant lifetime ctau
 	std::vector<double> SPINUP;            // helicity (spin) information
 
-	// All particles
-	HepMC::FindParticles search(ev, HepMC::FIND_ALL);
-
-	// Loop over particles
+	// Loop over all particles
 	int NUP = 0;
-	FOREACH(const HepMC::GenParticlePtr &p1, search.results()) {
+	for (HepMC3::ConstGenParticlePtr p1 : ev.particles()) {
+		
 	    // IDUP
 	    IDUP.push_back(p1->pid());
 
@@ -97,11 +98,9 @@ int main(int argc, char *argv[]) {
 	    ISTUP.push_back(p1->status());
 
 	    // Find mother ids
-	    HepMC::FindParticles search2(p1, HepMC::FIND_ALL_ANCESTORS);
-
 	    std::vector<int> mother_ids;
-	    FOREACH(const HepMC::GenParticlePtr &k, search2.results()) {
-		// HepMC::Print::line(k);
+		for (HepMC3::ConstGenParticlePtr k : Relatives::ANCESTORS(p1)) {
+		// HepMC3::Print::line(k);
 		mother_ids.push_back(k->id());
 	    }
 	    std::pair<int, int> MOTHUP_this(0, 0);
@@ -123,7 +122,7 @@ int main(int argc, char *argv[]) {
 	    ICOLUP.push_back(ICOLUP_this);
 
 	    // PUP
-	    HepMC::FourVector pvec = p1->momentum();
+	    HepMC3::FourVector pvec = p1->momentum();
 	    std::vector<double> PUP_this = {pvec.px(), pvec.py(), pvec.pz(),
 	                                    pvec.e(), pvec.m()};
 	    PUP.push_back(PUP_this);
@@ -189,11 +188,11 @@ int main(int argc, char *argv[]) {
 	double input_size = GetFileSize(inputfile) / 1.0e6;
 	double output_size = GetFileSize(outputfile) / 1.0e6;
 
-	printf("HepMC3:: input  (%0.1f MB, %0.5f MB/event) %s \n", input_size,
+	printf("HepMC33:: input  (%0.1f MB, %0.5f MB/event) %s \n", input_size,
 	       input_size / events, inputfile.c_str());
 	printf("LHEF::   output (%0.1f MB, %0.5f MB/event) %s \n", output_size,
 	       output_size / events, outputfile.c_str());
-	printf("Total %d events converted from HepMC3 to LHE \n", events);
+	printf("Total %d events converted from HepMC33 to LHE \n", events);
     }
 
     return EXIT_SUCCESS;

@@ -10,11 +10,11 @@
 #include <random>
 #include <vector>
 
-// HepMC3
-#include "HepMC/FourVector.h"
-#include "HepMC/GenEvent.h"
-#include "HepMC/GenParticle.h"
-#include "HepMC/GenVertex.h"
+// HepMC33
+#include "HepMC3/FourVector.h"
+#include "HepMC3/GenEvent.h"
+#include "HepMC3/GenParticle.h"
+#include "HepMC3/GenVertex.h"
 
 // Own
 #include "Graniitti/MAux.h"
@@ -224,18 +224,18 @@ double MQuasiElastic::EventWeight(const std::vector<double>& randvec, AuxIntData
 }
 
 
-// Record HepMC3 event
-bool MQuasiElastic::EventRecord(HepMC::GenEvent& evt) {
+// Record HepMC33 event
+bool MQuasiElastic::EventRecord(HepMC3::GenEvent& evt) {
 	
 	// ----------------------------------------------------------------------
 	// Non-Diffractive
 
 	if (ProcPtr.CHANNEL == "ND") {
 
-		HepMC::GenParticlePtr gen_p1;
-		HepMC::GenParticlePtr gen_p2;
-		HepMC::GenParticlePtr gen_p1f;
-		HepMC::GenParticlePtr gen_p2f;
+		HepMC3::GenParticlePtr gen_p1;
+		HepMC3::GenParticlePtr gen_p2;
+		HepMC3::GenParticlePtr gen_p1f;
+		HepMC3::GenParticlePtr gen_p2f;
 
 		for (const auto& i : indices(etree)) {
 
@@ -244,32 +244,32 @@ bool MQuasiElastic::EventRecord(HepMC::GenEvent& evt) {
 			for (std::size_t c = 0; c < NCHAIN; ++c) {
 
 				// Initial state protons (4-momentum, pdg-id, status code)
-				gen_p1 = std::make_shared<HepMC::GenParticle>(gra::aux::M4Vec2HepMC(etree[i].p1i), PDG::PDG_p, (i == 0) ? PDG::PDG_BEAM : PDG::PDG_INTERMEDIATE);
-				gen_p2 = std::make_shared<HepMC::GenParticle>(gra::aux::M4Vec2HepMC(etree[i].p2i), PDG::PDG_p, (i == 0) ? PDG::PDG_BEAM : PDG::PDG_INTERMEDIATE);
+				gen_p1 = std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(etree[i].p1i), PDG::PDG_p, (i == 0) ? PDG::PDG_BEAM : PDG::PDG_INTERMEDIATE);
+				gen_p2 = std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(etree[i].p2i), PDG::PDG_p, (i == 0) ? PDG::PDG_BEAM : PDG::PDG_INTERMEDIATE);
 
 				// Final state protons
-				gen_p1f = std::make_shared<HepMC::GenParticle>(gra::aux::M4Vec2HepMC(etree[i].p1f), PDG::PDG_p, PDG::PDG_INTERMEDIATE);
-				gen_p2f = std::make_shared<HepMC::GenParticle>(gra::aux::M4Vec2HepMC(etree[i].p2f), PDG::PDG_p, PDG::PDG_INTERMEDIATE);
+				gen_p1f = std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(etree[i].p1f), PDG::PDG_p, PDG::PDG_INTERMEDIATE);
+				gen_p2f = std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(etree[i].p2f), PDG::PDG_p, PDG::PDG_INTERMEDIATE);
 				
 				// Exchange objects
-				HepMC::GenParticlePtr gen_q1 = std::make_shared<HepMC::GenParticle>(gra::aux::M4Vec2HepMC(etree[i].q1), PDG::PDG_gluon, PDG::PDG_INTERMEDIATE);
-				HepMC::GenParticlePtr gen_q2 = std::make_shared<HepMC::GenParticle>(gra::aux::M4Vec2HepMC(etree[i].q2), PDG::PDG_gluon, PDG::PDG_INTERMEDIATE);
+				HepMC3::GenParticlePtr gen_q1 = std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(etree[i].q1), PDG::PDG_gluon, PDG::PDG_INTERMEDIATE);
+				HepMC3::GenParticlePtr gen_q2 = std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(etree[i].q2), PDG::PDG_gluon, PDG::PDG_INTERMEDIATE);
 				
 				// Virtual state
 				M4Vec pomeron4vec(etree[i].k.Px()/NCHAIN, etree[i].k.Py()/NCHAIN, etree[i].k.Pz()/NCHAIN, etree[i].k.E()/NCHAIN);
-				HepMC::GenParticlePtr gen_X = std::make_shared<HepMC::GenParticle>(gra::aux::M4Vec2HepMC(pomeron4vec), 999, PDG::PDG_INTERMEDIATE);
-				HepMC::GenVertexPtr vX = std::make_shared<HepMC::GenVertex>();
+				HepMC3::GenParticlePtr gen_X = std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(pomeron4vec), 999, PDG::PDG_INTERMEDIATE);
+				HepMC3::GenVertexPtr vX = std::make_shared<HepMC3::GenVertex>();
 
 				if (i != etree.size()-1) {
 
 					// Upper vertex
-					HepMC::GenVertexPtr vXUP = std::make_shared<HepMC::GenVertex>();
+					HepMC3::GenVertexPtr vXUP = std::make_shared<HepMC3::GenVertex>();
 					vXUP->add_particle_in(gen_p1);
 					vXUP->add_particle_out(gen_p1f);
 					vXUP->add_particle_out(gen_q1);
 
 					// Upper vertex
-					HepMC::GenVertexPtr vXDO = std::make_shared<HepMC::GenVertex>();
+					HepMC3::GenVertexPtr vXDO = std::make_shared<HepMC3::GenVertex>();
 					vXDO->add_particle_in(gen_p2);
 					vXDO->add_particle_out(gen_p2f);
 					vXDO->add_particle_out(gen_q2);
@@ -286,7 +286,7 @@ bool MQuasiElastic::EventRecord(HepMC::GenEvent& evt) {
 				} else { // Last MPI
 
 					// Proton-Proton-Virtual state vertex
-					vX = std::make_shared<HepMC::GenVertex>();
+					vX = std::make_shared<HepMC3::GenVertex>();
 					vX->add_particle_in(gen_p1);
 					vX->add_particle_in(gen_p2);
 					vX->add_particle_out(gen_X);
@@ -321,15 +321,15 @@ bool MQuasiElastic::EventRecord(HepMC::GenEvent& evt) {
 	// Diffractive processes
 
 	// Initial state protons (4-momentum, pdg-id, status code)
-	HepMC::GenParticlePtr gen_p1 =
-	    std::make_shared<HepMC::GenParticle>(gra::aux::M4Vec2HepMC(lts.pbeam1), beam1.pdg, PDG::PDG_BEAM);
-	HepMC::GenParticlePtr gen_p2 =
-	    std::make_shared<HepMC::GenParticle>(gra::aux::M4Vec2HepMC(lts.pbeam2), beam2.pdg, PDG::PDG_BEAM);
+	HepMC3::GenParticlePtr gen_p1 =
+	    std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(lts.pbeam1), beam1.pdg, PDG::PDG_BEAM);
+	HepMC3::GenParticlePtr gen_p2 =
+	    std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(lts.pbeam2), beam2.pdg, PDG::PDG_BEAM);
 
 	// Pomeron 4-vector and generator particle
 	M4Vec q1(lts.pbeam1 - lts.pfinal[1]);
-	HepMC::GenParticlePtr gen_q1 =
-		std::make_shared<HepMC::GenParticle>(gra::aux::M4Vec2HepMC(q1), PDG::PDG_pomeron, PDG::PDG_INTERMEDIATE);
+	HepMC3::GenParticlePtr gen_q1 =
+		std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(q1), PDG::PDG_pomeron, PDG::PDG_INTERMEDIATE);
 	
 	// Final state protons/N*
 	int PDG_ID1     = beam1.pdg;
@@ -355,21 +355,21 @@ bool MQuasiElastic::EventRecord(HepMC::GenEvent& evt) {
 		PDG_status2 = PDG::PDG_INTERMEDIATE;
 	}
 
-	HepMC::GenParticlePtr gen_p1f = std::make_shared<HepMC::GenParticle>(
-	    gra::aux::M4Vec2HepMC(lts.pfinal[1]), PDG_ID1, PDG_status1);
-	HepMC::GenParticlePtr gen_p2f = std::make_shared<HepMC::GenParticle>(
-	    gra::aux::M4Vec2HepMC(lts.pfinal[2]), PDG_ID2, PDG_status2);
+	HepMC3::GenParticlePtr gen_p1f = std::make_shared<HepMC3::GenParticle>(
+	    gra::aux::M4Vec2HepMC3(lts.pfinal[1]), PDG_ID1, PDG_status1);
+	HepMC3::GenParticlePtr gen_p2f = std::make_shared<HepMC3::GenParticle>(
+	    gra::aux::M4Vec2HepMC3(lts.pfinal[2]), PDG_ID2, PDG_status2);
 
 	// Construct vertices
 
 	// Upper proton-pomeron-proton
-	HepMC::GenVertexPtr v1 = std::make_shared<HepMC::GenVertex>();
+	HepMC3::GenVertexPtr v1 = std::make_shared<HepMC3::GenVertex>();
 	v1->add_particle_in(gen_p1);
 	v1->add_particle_out(gen_p1f);
 	v1->add_particle_out(gen_q1);
 
 	// Lower proton-pomeron-proton
-	HepMC::GenVertexPtr v2 = std::make_shared<HepMC::GenVertex>();
+	HepMC3::GenVertexPtr v2 = std::make_shared<HepMC3::GenVertex>();
 	v2->add_particle_in(gen_p2);
 	v2->add_particle_out(gen_p2f);
 	v2->add_particle_in(gen_q1);

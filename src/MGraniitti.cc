@@ -32,10 +32,10 @@
 #include "Graniitti/MFactorized.h"
 #include "Graniitti/MTimer.h"
 
-// HepMC3
-#include "HepMC/WriterHEPEVT.h"
-#include "HepMC/WriterAsciiHepMC2.h"
-#include "HepMC/GenEvent.h"
+// HepMC33
+#include "HepMC3/WriterHEPEVT.h"
+#include "HepMC3/WriterAsciiHepMC2.h"
+#include "HepMC3/GenEvent.h"
 
 // Libraries
 #include "json.hpp"
@@ -133,12 +133,28 @@ void MGraniitti::InitFileOutput() {
 
 		FULL_OUTPUT_STR = gra::aux::GetBasePath(2) + "/output/" + OUTPUT + "." + FORMAT;
 
+		// --------------------------------------------------------------
+		// Generator info
+ 		runinfo = make_shared<HepMC3::GenRunInfo>();
+
+ 		struct HepMC3::GenRunInfo::ToolInfo generator = {
+ 			std::string("GRANIITTI"),
+ 			std::to_string(aux::GetVersion()).substr(0,5),
+ 			std::string("Generator")};
+		runinfo->tools().push_back(generator);
+
+    	struct HepMC3::GenRunInfo::ToolInfo config = {
+    		FULL_INPUT_STR, "1.0", std::string("Steering card")};
+    	runinfo->tools().push_back(config);
+    	
+		// --------------------------------------------------------------
+
 		if        (FORMAT == "hepmc3" && outputHepMC3 == nullptr) {
-			outputHepMC3  = std::make_shared<HepMC::WriterAscii>(FULL_OUTPUT_STR);
+			outputHepMC3  = std::make_shared<HepMC3::WriterAscii>(FULL_OUTPUT_STR, runinfo);
 	    } else if (FORMAT == "hepmc2" && outputHepMC2 == nullptr) {    	
-			outputHepMC2  = std::make_shared<HepMC::WriterAsciiHepMC2>(FULL_OUTPUT_STR);
+			outputHepMC2  = std::make_shared<HepMC3::WriterAsciiHepMC2>(FULL_OUTPUT_STR, runinfo);
 		} else if (FORMAT == "hepevt" && outputHEPEVT == nullptr) {
-			outputHEPEVT  = std::make_shared<HepMC::WriterHEPEVT>(FULL_OUTPUT_STR);
+			outputHEPEVT  = std::make_shared<HepMC3::WriterHEPEVT>(FULL_OUTPUT_STR);
 		}
 	}
 }
@@ -255,6 +271,9 @@ void MGraniitti::SetVegasParam(const VEGASPARAM& in) {
 
 // Read parameters from a single JSON file
 void MGraniitti::ReadInput(const std::string& inputfile, const std::string cmd_PROCESS) {
+
+	// Save it for later use
+	FULL_INPUT_STR = inputfile;
 
 	std::cout << rang::fg::green << "MGraniitti::ReadInput: "
 		+ inputfile << rang::fg::reset << std::endl << std::endl;
@@ -1520,12 +1539,15 @@ int MGraniitti::SaveEvent(MProcess* pr, double weight, double MAXWEIGHT, const g
 	// Three ways to accept the event. N.B. weight > 0 needed if the amplitude fails numerically
 	if ((hit_in && aux.Valid()) || (WEIGHTED && aux.Valid()) || aux.forced_accept) {
 		
-		// Create HepMC event (do not lock yet for speed)
-		HepMC::GenEvent evt(HepMC::Units::GEV, HepMC::Units::MM);
+		// Create HepMC3 event (do not lock yet for speed)
+		HepMC3::GenEvent evt(HepMC3::Units::GEV, HepMC3::Units::MM);
+
+		// Construct event record
 		if (!pr->EventRecord(evt)) { // Event not ok!
 			//std::cout << "MGraniitti::SaveEvent: Last moment rare veto!" << std::endl;
 			return 2;
 		}
+		
 		// Event ok, continue >>
 		
 		// @@@ THIS IS THREAD-NON-SAFE -> LOCK IT
@@ -1537,22 +1559,23 @@ int MGraniitti::SaveEvent(MProcess* pr, double weight, double MAXWEIGHT, const g
 			gra::aux::g_mutex.unlock();
 			return 1;
 		}
-
-		// Save cross section information (HepMC format wants it event
-		// by event)
-		std::shared_ptr<HepMC::GenCrossSection> xsobj = std::make_shared<HepMC::GenCrossSection>();
-		evt.add_attribute("GenCrossSection", xsobj);
 		
-		// Save event weight (unweighted events with weight 1)
-		const double HepMC_weight = WEIGHTED ? weight : 1.0;
-		evt.weights()[0] = HepMC_weight; // add more weights with .push_back()
+		// Save cross section information (HepMC3 format wants it event
+		// by event)
+		std::shared_ptr<HepMC3::GenCrossSection> xsobj = std::make_shared<HepMC3::GenCrossSection>();
+		evt.add_attribute("GenCrossSection", xsobj);
 
-		// Now add the value in picobarns [HepMC convention]
+		// Now add the value in picobarns [HepMC3 convention]
 		if (xsforced > 0) {
 			xsobj->set_cross_section(xsforced*1E12, 0); // external fixed one
 		} else {
 			xsobj->set_cross_section(stat.sigma*1E12, stat.sigma_err*1E12);
 		}
+		
+		// Save event weight (unweighted events with weight 1)
+		const double HepMC3_weight = WEIGHTED ? weight : 1.0;
+		evt.weights().push_back(HepMC3_weight); // add more weights with .push_back()
+
 		if      (FORMAT == "hepmc3") {
 			outputHepMC3->write_event(evt);
 		}

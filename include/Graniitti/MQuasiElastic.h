@@ -12,8 +12,8 @@
 #include <random>
 #include <vector>
 
-// HepMC3
-#include "HepMC/GenEvent.h"
+// HepMC33
+#include "HepMC3/GenEvent.h"
 
 // Own
 #include "Graniitti/M4Vec.h"
@@ -39,7 +39,7 @@ public:
 		return EventWeight(randvec, aux);
 	}
 	double EventWeight(const std::vector<double>& randvec, AuxIntData& aux);
-	bool EventRecord(HepMC::GenEvent& evt);
+	bool EventRecord(HepMC3::GenEvent& evt);
 	void PrintInit(bool silent) const;
 	
 private:

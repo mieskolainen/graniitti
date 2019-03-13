@@ -207,7 +207,7 @@ bool MFactorized::FiducialCuts() const {
 }
 
 // Record event
-bool MFactorized::EventRecord(HepMC::GenEvent& evt) {
+bool MFactorized::EventRecord(HepMC3::GenEvent& evt) {
 	
 	return CommonRecord(evt);
 }

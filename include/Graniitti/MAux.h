@@ -24,8 +24,8 @@
 #include "Graniitti/MSudakov.h"
 #include "Graniitti/MMatrix.h"
 
-// HepMC3
-#include "HepMC/FourVector.h"
+// HepMC33
+#include "HepMC3/FourVector.h"
 
 // Eigen
 #include <Eigen/Dense>
@@ -46,7 +46,7 @@ extern std::string MODELPARAM;
 // Sudakov routines
 extern MSudakov sudakov;
 
-// GLOBAL for multithreading: HepMC3 outputfile and LHAPDF and mutex lock
+// GLOBAL for multithreading: HepMC33 outputfile and LHAPDF and mutex lock
 extern std::mutex g_mutex;
 
 // For multithreaded VEGAS, to handle the exceptions from forked threads
@@ -54,12 +54,12 @@ static std::exception_ptr globalExceptionPtr = nullptr;
 
 // ----------------------------------------------------------------------
 
-// M4Vec to HepMC::FourVector
-inline HepMC::FourVector M4Vec2HepMC(const M4Vec& v) {
-	return HepMC::FourVector(v.X(),v.Y(),v.Z(), v.E());
+// M4Vec to HepMC3::FourVector
+inline HepMC3::FourVector M4Vec2HepMC3(const M4Vec& v) {
+	return HepMC3::FourVector(v.X(),v.Y(),v.Z(), v.E());
 }
-// HepMC::FourVector to M4Vec
-inline M4Vec HepMC2M4Vec(const HepMC::FourVector& v) {
+// HepMC3::FourVector to M4Vec
+inline M4Vec HepMC2M4Vec(const HepMC3::FourVector& v) {
 	return M4Vec(v.x(),v.y(),v.z(), v.e());
 }
 

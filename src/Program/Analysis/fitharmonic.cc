@@ -34,14 +34,16 @@
 #include "rang.hpp"
 
 // HepMC 3
-#include "HepMC/FourVector.h"
-#include "HepMC/GenEvent.h"
-#include "HepMC/GenParticle.h"
-#include "HepMC/GenVertex.h"
-#include "HepMC/Print.h"
-#include "HepMC/ReaderAscii.h"
-#include "HepMC/Search/FindParticles.h"
-#include "HepMC/WriterAscii.h"
+#include "HepMC3/FourVector.h"
+#include "HepMC3/GenEvent.h"
+#include "HepMC3/GenParticle.h"
+#include "HepMC3/GenVertex.h"
+#include "HepMC3/Print.h"
+#include "HepMC3/ReaderAscii.h"
+#include "HepMC3/WriterAscii.h"
+#include "HepMC3/Selector.h"
+#include "HepMC3/Relatives.h"
+
 
 using gra::aux::indices;
 
@@ -203,7 +205,7 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega>& eve
   printf("ReadIn:: Maximum event count %d \n", MAXEVENTS);
   printf("Reading %s \n", total_input.c_str());
   
-  HepMC::ReaderAscii input_file(total_input);
+  HepMC3::ReaderAscii input_file(total_input);
   // Reading failed
   if (input_file.failed()) {
     throw std::invalid_argument("MHarmonic::ReadIn: Failed to open <" + total_input + ">");
@@ -213,7 +215,7 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega>& eve
 
   // Dummy vector
   M4Vec pvec;
-  HepMC::GenEvent evt(HepMC::Units::GEV, HepMC::Units::MM);
+  HepMC3::GenEvent evt(HepMC3::Units::GEV, HepMC3::Units::MM);
 
   // Allocate memory here for speed
   events.resize((int) 1e7);
@@ -228,12 +230,12 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega>& eve
     input_file.read_event(evt);
 
     // FIND SYSTEM PARTICLES
-    HepMC::FindParticles search_pip(evt, HepMC::FIND_ALL, HepMC::PDG_ID == PDG::PDG_pip && HepMC::STATUS == PDG::PDG_STABLE);
-    HepMC::FindParticles search_pim(evt, HepMC::FIND_ALL, HepMC::PDG_ID == PDG::PDG_pim && HepMC::STATUS == PDG::PDG_STABLE);
+    //HepMC3::FindParticles search_pip(evt, HepMC::FIND_ALL, HepMC::PDG_ID == PDG::PDG_pip && HepMC::STATUS == PDG::PDG_STABLE);
+    //HepMC3::FindParticles search_pim(evt, HepMC::FIND_ALL, HepMC::PDG_ID == PDG::PDG_pim && HepMC::STATUS == PDG::PDG_STABLE);
 
     // FIND BEAM PROTONS
-    HepMC::FindParticles  search_beam_p(evt, HepMC::FIND_ALL, HepMC::PDG_ID == PDG::PDG_p && HepMC::STATUS == PDG::PDG_BEAM);
-    HepMC::FindParticles search_final_p(evt, HepMC::FIND_ALL, HepMC::PDG_ID == PDG::PDG_p && HepMC::STATUS == PDG::PDG_STABLE);
+    //HepMC3::FindParticles  search_beam_p(evt, HepMC::FIND_ALL, HepMC::PDG_ID == PDG::PDG_p && HepMC::STATUS == PDG::PDG_BEAM);
+    //HepMC3::FindParticles search_final_p(evt, HepMC::FIND_ALL, HepMC::PDG_ID == PDG::PDG_p && HepMC::STATUS == PDG::PDG_STABLE);
 
     if (events_read == 0) {
       //    Print::listing(evt);
@@ -246,11 +248,14 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega>& eve
 
     // Find out central particles
     int found = 0;
-    FOREACH(const HepMC::GenParticlePtr& p1, search_pip.results()) {
+    //FOREACH(const HepMC::GenParticlePtr& p1, search_pip.results()) {
+    for (HepMC3::ConstGenParticlePtr p1: HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_STABLE 
+                                                            && *abs(HepMC3::Selector::PDG_ID) == PDG::PDG_pip, evt.particles())) {
       pip = gra::aux::HepMC2M4Vec(p1->momentum());
       ++found;
     }
-    FOREACH(const HepMC::GenParticlePtr& p1, search_pim.results()) {
+    for (HepMC3::ConstGenParticlePtr p1: HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_STABLE 
+                                                            && *abs(HepMC3::Selector::PDG_ID) == PDG::PDG_pim, evt.particles())) {
       pim = gra::aux::HepMC2M4Vec(p1->momentum());
       ++found;
     }
@@ -272,7 +277,8 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega>& eve
     M4Vec p_final_minus;
 
     if (FRAME == "GJ" || FRAME == "PG") {
-      FOREACH(const HepMC::GenParticlePtr& p1, search_beam_p.results()) {
+    for (HepMC3::ConstGenParticlePtr p1: HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_BEAM 
+                                                            && *abs(HepMC3::Selector::PDG_ID) == PDG::PDG_p, evt.particles())) {
         // Print::line(p1);
         pvec = gra::aux::HepMC2M4Vec(p1->momentum());
         if (pvec.Pz() > 0) {
@@ -284,7 +290,8 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega>& eve
     }
 
     if (FRAME == "GJ") {
-      FOREACH(const HepMC::GenParticlePtr& p1, search_final_p.results()) {
+    for (HepMC3::ConstGenParticlePtr p1: HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_STABLE 
+                                                            && *abs(HepMC3::Selector::PDG_ID) == PDG::PDG_p, evt.particles())) {
         // Print::line(p1);
         pvec = gra::aux::HepMC2M4Vec(p1->momentum());
         if (pvec.Pz() > 0) {

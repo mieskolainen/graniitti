@@ -33,12 +33,12 @@
 #include "Graniitti/MFragment.h"
 
 
-// HepMC3
-#include "HepMC/FourVector.h"
-#include "HepMC/GenEvent.h"
-#include "HepMC/GenParticle.h"
-#include "HepMC/GenVertex.h"
-#include "HepMC/Print.h"
+// HepMC33
+#include "HepMC3/FourVector.h"
+#include "HepMC3/GenEvent.h"
+#include "HepMC3/GenParticle.h"
+#include "HepMC3/GenVertex.h"
+#include "HepMC3/Print.h"
 
 
 // Libraries
@@ -840,7 +840,7 @@ void MProcess::GetOffShellMass(const gra::MDecayBranch& branch, double& mass) {
 // Proton continuum excitation (this is not yet written in the same format as central system - TBD!)
 //
 int MProcess::ExciteContinuum(const M4Vec& nstar, 
-	const HepMC::GenParticlePtr gen_nstar, HepMC::GenEvent& evt, double Q2_scale, int B, int Q) {
+	const HepMC3::GenParticlePtr gen_nstar, HepMC3::GenEvent& evt, double Q2_scale, int B, int Q) {
 
 	// Sanity check (2 x pion mass)
 	if (msqrt(Q2_scale) < 0.3) {
@@ -943,22 +943,22 @@ int MProcess::ExciteContinuum(const M4Vec& nstar,
 //
 void MProcess::BranchForwardSystem(const std::vector<M4Vec>& p,
 								   const std::vector<int>& pdgcode, const std::vector<bool>& isstable,
-								   const HepMC::GenParticlePtr gen_nstar, HepMC::GenEvent& evt) {
+								   const HepMC3::GenParticlePtr gen_nstar, HepMC3::GenEvent& evt) {
 
 	// Create N* decay vertex
-	HepMC::GenVertexPtr v = std::make_shared<HepMC::GenVertex>();
+	HepMC3::GenVertexPtr v = std::make_shared<HepMC3::GenVertex>();
 	evt.add_vertex(v);
 
 	// Add N* in to the decay vertex
 	v->add_particle_in(gen_nstar);
 
 	// Add decay products to the decay vertex
-	std::vector<HepMC::GenParticlePtr> gen_part;
+	std::vector<HepMC3::GenParticlePtr> gen_part;
 	for (const auto& i : indices(p)) {
 		
 		int status = (isstable[i] == true) ? PDG::PDG_STABLE : PDG::PDG_DECAY;
-		HepMC::GenParticlePtr gen_p =
-		    std::make_shared<HepMC::GenParticle>(gra::aux::M4Vec2HepMC(p[i]),
+		HepMC3::GenParticlePtr gen_p =
+		    std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(p[i]),
 		                                         pdgcode[i], status);
 		gen_part.push_back(gen_p);
 
@@ -979,13 +979,13 @@ void MProcess::BranchForwardSystem(const std::vector<M4Vec>& p,
 			gra::kinematics::TwoBodyPhaseSpace(p[i], p[i].M(), m, pgamma, random);
 
 			// Gammas
-			HepMC::GenParticlePtr gen_p1 =
-			    std::make_shared<HepMC::GenParticle>(gra::aux::M4Vec2HepMC(pgamma[0]), PDG::PDG_gamma, PDG::PDG_STABLE);
-			HepMC::GenParticlePtr gen_p2 =
-			    std::make_shared<HepMC::GenParticle>(gra::aux::M4Vec2HepMC(pgamma[1]), PDG::PDG_gamma, PDG::PDG_STABLE);
+			HepMC3::GenParticlePtr gen_p1 =
+			    std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(pgamma[0]), PDG::PDG_gamma, PDG::PDG_STABLE);
+			HepMC3::GenParticlePtr gen_p2 =
+			    std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(pgamma[1]), PDG::PDG_gamma, PDG::PDG_STABLE);
 
 			// Create a decay vertex and put particles in and out
-			HepMC::GenVertexPtr vert = std::make_shared<HepMC::GenVertex>();
+			HepMC3::GenVertexPtr vert = std::make_shared<HepMC3::GenVertex>();
 			evt.add_vertex(vert);
 
 			// In
@@ -1295,14 +1295,14 @@ bool MProcess::ConstructDecayKinematics(gra::MDecayBranch& branch) {
 
 // Recursively add final states to the event structure
 void MProcess::WriteDecayKinematics(gra::MDecayBranch& branch,
-                                    HepMC::GenParticlePtr& mother,
-                                    HepMC::GenEvent& evt) {
+                                    HepMC3::GenParticlePtr& mother,
+                                    HepMC3::GenEvent& evt) {
 	// This particle has daughters
 	if (branch.legs.size() > 0) {
 
 		// Create new vertex with decay 4-position
-		HepMC::GenVertexPtr vertex =
-		    std::make_shared<HepMC::GenVertex>(gra::aux::M4Vec2HepMC(branch.decay_position));
+		HepMC3::GenVertexPtr vertex =
+		    std::make_shared<HepMC3::GenVertex>(gra::aux::M4Vec2HepMC3(branch.decay_position));
 		evt.add_vertex(vertex);
 
 		// The decaying particle
@@ -1316,8 +1316,8 @@ void MProcess::WriteDecayKinematics(gra::MDecayBranch& branch,
 			// ADD HERE THE ctau > 1.0 cm definition for the status
 			// code
 
-			HepMC::GenParticlePtr particle =
-			    std::make_shared<HepMC::GenParticle>(gra::aux::M4Vec2HepMC(branch.legs[i].p4), branch.legs[i].p.pdg, STATE);
+			HepMC3::GenParticlePtr particle =
+			    std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(branch.legs[i].p4), branch.legs[i].p.pdg, STATE);
 			vertex->add_particle_out(particle);
 
 			// ** Recursion **
@@ -1586,13 +1586,13 @@ bool MProcess::GetLorentzScalars(unsigned int Nf) {
 	return true;
 }
 
-bool MProcess::CommonRecord(HepMC::GenEvent& evt) {
+bool MProcess::CommonRecord(HepMC3::GenEvent& evt) {
 
 	// Initial state protons (4-momentum, pdg-id, status code)
-	HepMC::GenParticlePtr gen_p1 =
-	    std::make_shared<HepMC::GenParticle>(gra::aux::M4Vec2HepMC(lts.pbeam1), beam1.pdg, PDG::PDG_BEAM);
-	HepMC::GenParticlePtr gen_p2 =
-	    std::make_shared<HepMC::GenParticle>(gra::aux::M4Vec2HepMC(lts.pbeam2), beam2.pdg, PDG::PDG_BEAM);
+	HepMC3::GenParticlePtr gen_p1 =
+	    std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(lts.pbeam1), beam1.pdg, PDG::PDG_BEAM);
+	HepMC3::GenParticlePtr gen_p2 =
+	    std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(lts.pbeam2), beam2.pdg, PDG::PDG_BEAM);
 
 	// Final state protons/N*
 	int PDG_ID1 = beam1.pdg;
@@ -1610,42 +1610,42 @@ bool MProcess::CommonRecord(HepMC::GenEvent& evt) {
 		PDG_status2 = PDG::PDG_INTERMEDIATE;
 	}
 
-	HepMC::GenParticlePtr gen_p1f = std::make_shared<HepMC::GenParticle>(
-	    gra::aux::M4Vec2HepMC(lts.pfinal[1]), PDG_ID1, PDG_status1);
-	HepMC::GenParticlePtr gen_p2f = std::make_shared<HepMC::GenParticle>(
-	    gra::aux::M4Vec2HepMC(lts.pfinal[2]), PDG_ID2, PDG_status2);
+	HepMC3::GenParticlePtr gen_p1f = std::make_shared<HepMC3::GenParticle>(
+	    gra::aux::M4Vec2HepMC3(lts.pfinal[1]), PDG_ID1, PDG_status1);
+	HepMC3::GenParticlePtr gen_p2f = std::make_shared<HepMC3::GenParticle>(
+	    gra::aux::M4Vec2HepMC3(lts.pfinal[2]), PDG_ID2, PDG_status2);
 
 	// -------------------------------------------------------------------
 
 	// Propagator 1 and 2
-	HepMC::GenParticlePtr gen_q1 = std::make_shared<HepMC::GenParticle>(
-	    gra::aux::M4Vec2HepMC(lts.q1), PDG::PDG_pomeron, PDG::PDG_INTERMEDIATE);
-	HepMC::GenParticlePtr gen_q2 = std::make_shared<HepMC::GenParticle>(
-	    gra::aux::M4Vec2HepMC(lts.q2), PDG::PDG_pomeron, PDG::PDG_INTERMEDIATE);
+	HepMC3::GenParticlePtr gen_q1 = std::make_shared<HepMC3::GenParticle>(
+	    gra::aux::M4Vec2HepMC3(lts.q1), PDG::PDG_pomeron, PDG::PDG_INTERMEDIATE);
+	HepMC3::GenParticlePtr gen_q2 = std::make_shared<HepMC3::GenParticle>(
+	    gra::aux::M4Vec2HepMC3(lts.q2), PDG::PDG_pomeron, PDG::PDG_INTERMEDIATE);
 
 	// -------------------------------------------------------------------
 
 	// Central system / resonance
-	HepMC::GenParticlePtr gen_q = std::make_shared<HepMC::GenParticle>(
-	    gra::aux::M4Vec2HepMC(lts.pfinal[0]), PDG::PDG_system, PDG::PDG_INTERMEDIATE);
+	HepMC3::GenParticlePtr gen_q = std::make_shared<HepMC3::GenParticle>(
+	    gra::aux::M4Vec2HepMC3(lts.pfinal[0]), PDG::PDG_system, PDG::PDG_INTERMEDIATE);
 
 	// ====================================================================
 	// Construct vertices
 
 	// Upper proton-pomeron-proton
-	HepMC::GenVertexPtr v1 = std::make_shared<HepMC::GenVertex>();
+	HepMC3::GenVertexPtr v1 = std::make_shared<HepMC3::GenVertex>();
 	v1->add_particle_in(gen_p1);
 	v1->add_particle_out(gen_p1f);
 	v1->add_particle_out(gen_q1);
 
 	// Lower proton-pomeron-proton
-	HepMC::GenVertexPtr v2 = std::make_shared<HepMC::GenVertex>();
+	HepMC3::GenVertexPtr v2 = std::make_shared<HepMC3::GenVertex>();
 	v2->add_particle_in(gen_p2);
 	v2->add_particle_out(gen_p2f);
 	v2->add_particle_out(gen_q2);
 
 	// Pomeron-Pomeron-System vertex
-	HepMC::GenVertexPtr v3 = std::make_shared<HepMC::GenVertex>();
+	HepMC3::GenVertexPtr v3 = std::make_shared<HepMC3::GenVertex>();
 	v3->add_particle_in(gen_q1);
 	v3->add_particle_in(gen_q2);
 	v3->add_particle_out(gen_q);
@@ -1657,7 +1657,7 @@ bool MProcess::CommonRecord(HepMC::GenEvent& evt) {
 	// ====================================================================
 	// System->Decay products vertex
 
-	HepMC::GenVertexPtr v4 = std::make_shared<HepMC::GenVertex>();
+	HepMC3::GenVertexPtr v4 = std::make_shared<HepMC3::GenVertex>();
 	evt.add_vertex(v4);
 
 	// Add resonance in
@@ -1680,7 +1680,7 @@ bool MProcess::CommonRecord(HepMC::GenEvent& evt) {
 			// ----------------------------------------------------------
 			}
 
-		HepMC::GenParticlePtr particle = std::make_shared<HepMC::GenParticle>(gra::aux::M4Vec2HepMC(lts.decaytree[i].p4), lts.decaytree[i].p.pdg, STATE);
+		HepMC3::GenParticlePtr particle = std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(lts.decaytree[i].p4), lts.decaytree[i].p.pdg, STATE);
 		v4->add_particle_out(particle);
 
 		WriteDecayKinematics(lts.decaytree[i], particle, evt);
@@ -1691,7 +1691,7 @@ bool MProcess::CommonRecord(HepMC::GenEvent& evt) {
 	if (lts.excite1 == true) {
 
 		// Create vertex
-		HepMC::GenVertexPtr v1X = std::make_shared<HepMC::GenVertex>();
+		HepMC3::GenVertexPtr v1X = std::make_shared<HepMC3::GenVertex>();
 		evt.add_vertex(v1X);
 
 		// Add N* in
@@ -1703,8 +1703,8 @@ bool MProcess::CommonRecord(HepMC::GenEvent& evt) {
 			const int STATE = (lts.decayforward1.legs[i].legs.size() > 0) ? PDG::PDG_DECAY : PDG::PDG_STABLE;
 			// TBD: ADD HERE THE ctau > 1.0 cm definition for the status code
 
-			HepMC::GenParticlePtr particle = std::make_shared<HepMC::GenParticle>(
-				gra::aux::M4Vec2HepMC(lts.decayforward1.legs[i].p4), lts.decayforward1.legs[i].p.pdg, STATE);
+			HepMC3::GenParticlePtr particle = std::make_shared<HepMC3::GenParticle>(
+				gra::aux::M4Vec2HepMC3(lts.decayforward1.legs[i].p4), lts.decayforward1.legs[i].p.pdg, STATE);
 			v1X->add_particle_out(particle);
 
 			WriteDecayKinematics(lts.decayforward1.legs[i], particle, evt);
@@ -1715,7 +1715,7 @@ bool MProcess::CommonRecord(HepMC::GenEvent& evt) {
 	if (lts.excite2 == true) {
 
 		// Create vertex
-		HepMC::GenVertexPtr v2X = std::make_shared<HepMC::GenVertex>();
+		HepMC3::GenVertexPtr v2X = std::make_shared<HepMC3::GenVertex>();
 		evt.add_vertex(v2X);
 
 		// Add N* in
@@ -1727,8 +1727,8 @@ bool MProcess::CommonRecord(HepMC::GenEvent& evt) {
 			const int STATE = (lts.decayforward2.legs[i].legs.size() > 0) ? PDG::PDG_DECAY : PDG::PDG_STABLE;
 			// TBD: ADD HERE THE ctau > 1.0 cm definition for the status code
 			
-			HepMC::GenParticlePtr particle = std::make_shared<HepMC::GenParticle>(
-				gra::aux::M4Vec2HepMC(lts.decayforward2.legs[i].p4), lts.decayforward2.legs[i].p.pdg, STATE);
+			HepMC3::GenParticlePtr particle = std::make_shared<HepMC3::GenParticle>(
+				gra::aux::M4Vec2HepMC3(lts.decayforward2.legs[i].p4), lts.decayforward2.legs[i].p.pdg, STATE);
 			v2X->add_particle_out(particle);
 			
 			WriteDecayKinematics(lts.decayforward2.legs[i], particle, evt);

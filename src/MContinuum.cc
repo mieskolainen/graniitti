@@ -203,7 +203,7 @@ bool MContinuum::FiducialCuts() const {
 }
 
 // Record event
-bool MContinuum::EventRecord(HepMC::GenEvent& evt) {
+bool MContinuum::EventRecord(HepMC3::GenEvent& evt) {
 
 	return CommonRecord(evt);
 }

@@ -31,15 +31,17 @@
 #include "TStyle.h"
 #include "TTree.h"
 
-// HepMC 3
-#include "HepMC/GenCrossSection.h"
-#include "HepMC/FourVector.h"
-#include "HepMC/GenEvent.h"
-#include "HepMC/GenParticle.h"
-#include "HepMC/GenVertex.h"
-#include "HepMC/ReaderAscii.h"
-#include "HepMC/Search/FindParticles.h"
-#include "HepMC/Print.h"
+// HepMC3 3
+#include "HepMC3/GenCrossSection.h"
+#include "HepMC3/FourVector.h"
+#include "HepMC3/GenEvent.h"
+#include "HepMC3/GenParticle.h"
+#include "HepMC3/GenVertex.h"
+#include "HepMC3/ReaderAscii.h"
+#include "HepMC3/Print.h"
+#include "HepMC3/Selector.h"
+#include "HepMC3/Relatives.h"
+
 
 // Own
 #include "Graniitti/Analysis/MAnalyzer.h"
@@ -171,7 +173,7 @@ MAnalyzer::~MAnalyzer() {
 // Fiducial cuts
 // return true if event passes, else false
 /*
-bool MAnalyzer::FiducialCuts(HepMC::GenEvent& ) {
+bool MAnalyzer::FiducialCuts(HepMC3::GenEvent& ) {
 
 	return true;
 }
@@ -190,10 +192,10 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 	
 	inputfile = input;
 	const std::string totalpath = gra::aux::GetBasePath(2) + "/output/" + input + ".hepmc3";
-	HepMC::ReaderAscii input_file(totalpath);
+	HepMC3::ReaderAscii input_file(totalpath);
 	
 	if (input_file.failed()) {
-		throw std::invalid_argument("MAnalyzer::HepMC3Read: Cannot open file " + totalpath);
+		throw std::invalid_argument("MAnalyzer::HepMC33Read: Cannot open file " + totalpath);
 	}
 
 	// Event loop
@@ -206,24 +208,24 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 	while (true) {
 
 		// Read event from input file
-		HepMC::GenEvent evt(HepMC::Units::GEV, HepMC::Units::MM);
+		HepMC3::GenEvent evt(HepMC3::Units::GEV, HepMC3::Units::MM);
 		input_file.read_event(evt);
-
+		
 		// Reading failed
 		if (input_file.failed()) {
 			if (events_read == 0) {
-				throw std::invalid_argument("MAnalyzer::HepMC3Read: File " + totalpath + " is empty!");
+				throw std::invalid_argument("MAnalyzer::HepMC33Read: File " + totalpath + " is empty!");
 			} else { break; }
 		}
 		if (events_read == 0) {
-			HepMC::Print::listing(evt);
-			HepMC::Print::content(evt);
+			HepMC3::Print::listing(evt);
+			HepMC3::Print::content(evt);
 		}
 		++events_read;
 
-		// *** Get generator cross section (in picobarns by HepMC convention) ***
-		std::shared_ptr<HepMC::GenCrossSection> cs =
-		    evt.attribute<HepMC::GenCrossSection>("GenCrossSection");
+		// *** Get generator cross section (in picobarns by HepMC3 convention) ***
+		std::shared_ptr<HepMC3::GenCrossSection> cs =
+		    evt.attribute<HepMC3::GenCrossSection>("GenCrossSection");
 		if (cs) {
 			cross_section = 1E-12 * cs->xsec(0); // turn into barns
 		} else {
@@ -255,34 +257,26 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 		std::vector<M4Vec> pip;
 		std::vector<M4Vec> pim;
 
-		// Central system
-		HepMC::FindParticles search_pip(evt, HepMC::FIND_ALL, HepMC::PDG_ID == finalPDG);
-		HepMC::FindParticles search_pim(evt, HepMC::FIND_ALL, HepMC::PDG_ID == NEGfinalPDG);
+		for (HepMC3::ConstGenParticlePtr p1: HepMC3::applyFilter(*abs(HepMC3::Selector::PDG_ID) == finalPDG, evt.particles())) {
+			M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
 
-		// Find out central final states
-		FOREACH(const HepMC::GenParticlePtr& p1, search_pip.results()) {
-			M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
-			// Check that ancestor is central system
-			HepMC::FindParticles search_ancestor(p1, HepMC::FIND_ALL_ANCESTORS, HepMC::PDG_ID == PDG::PDG_system);
-			const unsigned int found = search_ancestor.results().size();
-			if (found) {
-				pip.push_back(pvec);	
-			}
+			// Check that ancestor is a central system
+			std::vector<HepMC3::ConstGenParticlePtr> results =
+				HepMC3::applyFilter(*abs(HepMC3::Selector::PDG_ID) == PDG::PDG_system, HepMC3::Relatives::ANCESTORS(p1));
+			if (results.size() != 0) { pip.push_back(pvec); }
 		}
-		FOREACH(const HepMC::GenParticlePtr& p1, search_pim.results()) {
+		for (HepMC3::ConstGenParticlePtr p1: HepMC3::applyFilter(*abs(HepMC3::Selector::PDG_ID) == NEGfinalPDG, evt.particles())) {
 			M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
-			// Check that ancestor is central system
-			HepMC::FindParticles search_ancestor(p1, HepMC::FIND_ALL_ANCESTORS, HepMC::PDG_ID == PDG::PDG_system);
-			const unsigned int found = search_ancestor.results().size();
-			if (found) {
-				pim.push_back(pvec);	
-			}
+
+			// Check that ancestor is a central system
+			std::vector<HepMC3::ConstGenParticlePtr> results =
+				HepMC3::applyFilter(*abs(HepMC3::Selector::PDG_ID) == PDG::PDG_system, HepMC3::Relatives::ANCESTORS(p1));
+			if (results.size() != 0) { pim.push_back(pvec); }
 		}
 
 		// CHECK CONDITION
 		if (pip.size() + pim.size() != (unsigned int)multiplicity) {
-			printf("MAnalyzer::ReadHepMC3:: Multiplicity condition not filled %lu %lu %d! \n",
-				pip.size(), pim.size(), multiplicity);
+			printf("MAnalyzer::ReadHepMC33:: Multiplicity condition not filled %lu %lu %d! \n", pip.size(), pim.size(), multiplicity);
 			continue; // skip event
 		}
 
@@ -292,8 +286,11 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 		for (const auto& x : pip) { system += x; }
 		for (const auto& x : pim) { system += x; }
 
-		HepMC::FindParticles search_beam_protons(evt,  HepMC::FIND_ALL, HepMC::PDG_ID == PDG::PDG_p && HepMC::STATUS == PDG::PDG_BEAM);
-		HepMC::FindParticles search_final_protons(evt, HepMC::FIND_ALL, HepMC::PDG_ID == PDG::PDG_p && HepMC::STATUS == PDG::PDG_STABLE);
+		std::vector<HepMC3::GenParticlePtr> beam_protons =
+			HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_BEAM   && *abs(HepMC3::Selector::PDG_ID) == PDG::PDG_p, evt.particles());
+		
+		std::vector<HepMC3::GenParticlePtr> final_protons =
+			HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_STABLE && *abs(HepMC3::Selector::PDG_ID) == PDG::PDG_p, evt.particles());
 
 		M4Vec p_beam_plus;
 		M4Vec p_beam_minus;
@@ -301,7 +298,7 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 		M4Vec p_final_minus;
 
 		// Beam (initial state ) protons
-		FOREACH(const HepMC::GenParticlePtr& p1, search_beam_protons.results()) {
+		for (const HepMC3::GenParticlePtr& p1 : beam_protons) {
 			M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
 			if (pvec.Rap() > 0) {
 				p_beam_plus = pvec;
@@ -311,17 +308,16 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 		}
 
 		// Final state protons
-		FOREACH(const HepMC::GenParticlePtr& p1, search_final_protons.results()) {
+		for (const HepMC3::GenParticlePtr& p1 : final_protons) {
 
 			M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
 
 			// Check that ancestor is NOT excited forward system or central system
-			HepMC::FindParticles search_ancestor1(p1, HepMC::FIND_ALL_ANCESTORS, HepMC::PDG_ID == PDG::PDG_NSTAR);
-			unsigned int found1 = search_ancestor1.results().size();
-			HepMC::FindParticles search_ancestor2(p1, HepMC::FIND_ALL_ANCESTORS, HepMC::PDG_ID == PDG::PDG_system);
-			unsigned int found2 = search_ancestor2.results().size();
+			std::vector<HepMC3::GenParticlePtr> results =
+				HepMC3::applyFilter(*abs(HepMC3::Selector::PDG_ID) == PDG::PDG_NSTAR ||
+					                *abs(HepMC3::Selector::PDG_ID) == PDG::PDG_system, HepMC3::Relatives::ANCESTORS(p1));
 
-			if (!found1 && !found2) {
+			if (results.size() == 0) {
 				if (pvec.Rap() > 0) {
 					p_final_plus = pvec;
 				} else {
@@ -395,14 +391,14 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 			}
 
 		} catch (...) {
-			throw std::invalid_argument("MAnalyzer::HepMC3Read: Problem filling histogram!");
+			throw std::invalid_argument("MAnalyzer::HepMC33Read: Problem filling histogram!");
 		}
 
 		// << SUPERPLOTTER
 		// **************************************************************
 
 		if (events_read >= MAXEVENTS){
-			std::cout << "MAnalyzer::HepMC3Read: Maximum event count " << MAXEVENTS << " reached!";
+			std::cout << "MAnalyzer::HepMC33Read: Maximum event count " << MAXEVENTS << " reached!";
 			break; // Enough events
 		}
 
@@ -415,19 +411,19 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 		selecW += W;
 	}
 	std::cout << std::endl;
-	std::cout << "MAnalyzer::HepMC3Read: Events processed in total: "
+	std::cout << "MAnalyzer::HepMC33Read: Events processed in total: "
 			  << events_read << std::endl;
 
-	// Close HepMC file
+	// Close HepMC3 file
 	input_file.close();
 
 	if (selecW == 0.0) {
-		throw std::invalid_argument("MAnalyzer::HepMC3Read:: Valid events in <"
+		throw std::invalid_argument("MAnalyzer::HepMC33Read:: Valid events in <"
 			+ totalpath + ">"+ " == 0 out of " + std::to_string(events_read));
 	}
 	// Take into account extra fiducial cut efficiency here
 	double efficiency = selecW / totalW;
-	printf("MAnalyzer::HepMC3Read: Fiducial cut efficiency: %0.3f \n", efficiency);
+	printf("MAnalyzer::HepMC33Read: Fiducial cut efficiency: %0.3f \n", efficiency);
 	std::cout << std::endl;
 
 	return cross_section * efficiency;
@@ -435,32 +431,35 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 
 
 // Sanity check
-double MAnalyzer::CheckEnergyMomentum(HepMC::GenEvent& evt) const {
+double MAnalyzer::CheckEnergyMomentum(HepMC3::GenEvent& evt) const {
 
-	HepMC::FindParticles search_all_init(evt,  HepMC::FIND_ALL, HepMC::STATUS == PDG::PDG_BEAM);   // Beam
-	HepMC::FindParticles search_all_final(evt, HepMC::FIND_ALL, HepMC::STATUS == PDG::PDG_STABLE); // Final state
+	std::vector<HepMC3::GenParticlePtr> all_init  =
+		HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_BEAM, evt.particles());    // Beam
+	
+	std::vector<HepMC3::GenParticlePtr> all_final =
+		HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_STABLE, evt.particles());  // Final state
 	
 	M4Vec beam(0,0,0,0);
-	FOREACH(const HepMC::GenParticlePtr& p1, search_all_init.results()) {
+	for (const HepMC3::GenParticlePtr& p1 : all_init)  {
 		beam += gra::aux::HepMC2M4Vec(p1->momentum());
 	}
 	M4Vec final(0,0,0,0);
-	FOREACH(const HepMC::GenParticlePtr& p1, search_all_final.results()) {	
+	for (const HepMC3::GenParticlePtr& p1 : all_final) {
 		final += gra::aux::HepMC2M4Vec(p1->momentum());
 	}
 	if (!gra::math::CheckEMC(beam-final)) {
 		std::cout << rang::fg::red << 
 		"Energy-Momentum not conserved!" << rang::fg::reset << std::endl;
 		(beam - final).Print();
-		HepMC::Print::listing(evt);
-		HepMC::Print::content(evt);
+		HepMC3::Print::listing(evt);
+		HepMC3::Print::content(evt);
 	}
 	return beam.M();
 }
 
 
 // 2-body angular observables
-void MAnalyzer::FrameObservables(double W, HepMC::GenEvent& evt, const M4Vec& p_beam_plus,
+void MAnalyzer::FrameObservables(double W, HepMC3::GenEvent& evt, const M4Vec& p_beam_plus,
 	const M4Vec& p_beam_minus, const M4Vec& p_final_plus, const M4Vec& p_final_minus,
 	const std::vector<M4Vec>& pip, const std::vector<M4Vec>& pim) {
 
@@ -527,19 +526,28 @@ void MAnalyzer::FrameObservables(double W, HepMC::GenEvent& evt, const M4Vec& p_
 }
 
 // Forward system observables
-void MAnalyzer::NStarObservables(double W, HepMC::GenEvent& evt) {
+void MAnalyzer::NStarObservables(double W, HepMC3::GenEvent& evt) {
 
 	// Excite forward system particles
-	HepMC::FindParticles search_gammas(evt,   HepMC::FIND_ALL, HepMC::PDG_ID == PDG::PDG_gamma && HepMC::STATUS == PDG::PDG_STABLE);
-	HepMC::FindParticles search_neutrons(evt, HepMC::FIND_ALL, HepMC::PDG_ID == PDG::PDG_n     && HepMC::STATUS == PDG::PDG_STABLE);
-	HepMC::FindParticles search_pip(evt,      HepMC::FIND_ALL, HepMC::PDG_ID == PDG::PDG_pip   && HepMC::STATUS == PDG::PDG_STABLE);
-	HepMC::FindParticles search_pim(evt,      HepMC::FIND_ALL, HepMC::PDG_ID == PDG::PDG_pim   && HepMC::STATUS == PDG::PDG_STABLE);
-	HepMC::FindParticles search_nstar(evt,    HepMC::FIND_ALL, HepMC::PDG_ID == PDG::PDG_NSTAR);
+	std::vector<HepMC3::GenParticlePtr> search_gammas   =
+		HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_STABLE && *abs(HepMC3::Selector::PDG_ID) == PDG::PDG_gamma, evt.particles());
+
+	std::vector<HepMC3::GenParticlePtr> search_neutrons =
+		HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_STABLE && *abs(HepMC3::Selector::PDG_ID) == PDG::PDG_n,     evt.particles());
+
+	std::vector<HepMC3::GenParticlePtr> search_pip   =
+		HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_STABLE && *abs(HepMC3::Selector::PDG_ID) == PDG::PDG_pip,   evt.particles());
+
+	std::vector<HepMC3::GenParticlePtr> search_pim   =
+		HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_STABLE && *abs(HepMC3::Selector::PDG_ID) == PDG::PDG_pim,   evt.particles());
+
+	std::vector<HepMC3::GenParticlePtr> search_nstar =
+		HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_STABLE && *abs(HepMC3::Selector::PDG_ID) == PDG::PDG_NSTAR, evt.particles());
 
 	// Find out if we excited one or two protons
 	bool excited_plus  = false;
 	bool excited_minus = false;
-	FOREACH(const HepMC::GenParticlePtr& p1, search_nstar.results()) {
+	for (const HepMC3::GenParticlePtr& p1 : search_nstar) {
 
 		M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
 		hM_NSTAR->Fill(pvec.M());
@@ -563,14 +571,15 @@ void MAnalyzer::NStarObservables(double W, HepMC::GenEvent& evt) {
 	double gamma_e_minus = 0;
 
 	// Gammas
-	FOREACH(const HepMC::GenParticlePtr& p1, search_gammas.results()) {
+	for (const HepMC3::GenParticlePtr& p1 : search_gammas) {
 		
 		M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
 
 		// Check that ancestor is excited forward system
-		HepMC::FindParticles search_ancestor(p1, HepMC::FIND_ALL_ANCESTORS, HepMC::PDG_ID == PDG::PDG_NSTAR);
-		unsigned int found = search_ancestor.results().size();
-		if (found) {
+		std::vector<HepMC3::GenParticlePtr> ancestor =
+			HepMC3::applyFilter(*abs(HepMC3::Selector::PDG_ID) == PDG::PDG_NSTAR, HepMC3::Relatives::ANCESTORS(p1));
+
+		if (ancestor.size() != 0) {
 			hEta_Gamma->Fill(pvec.Eta(), W);
 			hE_Gamma->Fill(pvec.E(), W);
 			hXF_Gamma->Fill(pvec.Pz() / (sqrts/2), W);
@@ -585,11 +594,11 @@ void MAnalyzer::NStarObservables(double W, HepMC::GenEvent& evt) {
 	}
 
 	// Pi+
-	FOREACH(const HepMC::GenParticlePtr& p1, search_pip.results()) {
-		// HepMC::Print::line(p1);
+	for (const HepMC3::GenParticlePtr& p1 : search_pip) {
+		// HepMC3::Print::line(p1);
 
-		// Check that parent is excited system
-		std::vector<HepMC::GenParticlePtr> parents = p1->parents();
+		// Check that parent is the excited system
+		std::vector<HepMC3::GenParticlePtr> parents = p1->parents();
 		bool found = false;
 		for (const auto& k : indices(parents)) {
 			if (parents[k]->pid() == PDG::PDG_NSTAR) { found = true; }
@@ -603,11 +612,11 @@ void MAnalyzer::NStarObservables(double W, HepMC::GenEvent& evt) {
 	}
 
 	// Pi-
-	FOREACH(const HepMC::GenParticlePtr& p1, search_pim.results()) {
-		// HepMC::Print::line(p1);
+	for (const HepMC3::GenParticlePtr& p1 : search_pim) {
+		// HepMC3::Print::line(p1);
 
-		// Check that parent is excited system
-		std::vector<HepMC::GenParticlePtr> parents = p1->parents();
+		// Check that parent is the excited system
+		std::vector<HepMC3::GenParticlePtr> parents = p1->parents();
 		bool found = false;
 		for (const auto& k : indices(parents)) {
 			if (parents[k]->pid() == PDG::PDG_NSTAR) { found = true; }
@@ -624,11 +633,11 @@ void MAnalyzer::NStarObservables(double W, HepMC::GenEvent& evt) {
 	double neutron_e_plus  = 0;
 	double neutron_e_minus = 0;
 
-	FOREACH(const HepMC::GenParticlePtr& p1, search_neutrons.results()) {
+	for (const HepMC3::GenParticlePtr& p1 : search_neutrons) {
 		M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
 
-		// Check that parent is excited system
-		std::vector<HepMC::GenParticlePtr> parents = p1->parents();
+		// Check that parent is the excited system
+		std::vector<HepMC3::GenParticlePtr> parents = p1->parents();
 		bool found = false;
 		for (const auto& k : indices(parents)) {
 			if (parents[k]->pid() == PDG::PDG_NSTAR) { found = true; }

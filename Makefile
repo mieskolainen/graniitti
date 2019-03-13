@@ -106,8 +106,7 @@ endif
 # Libraries
 
 # HEPMC3
-HEPMC3lib      = -L$(HEPMC3SYS)/lib -lHepMC
-HEPMC3fiolib   = -L$(HEPMC3SYS)/lib -lHepMCfio
+HEPMC3lib      = -L$(HEPMC3SYS)/lib -lHepMC3 -lHepMC3search
 
 # LHAPDF6
 LHAPDF6lib     = -L$(LHAPDFSYS)/lib -lLHAPDF

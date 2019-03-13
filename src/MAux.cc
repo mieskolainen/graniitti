@@ -19,8 +19,8 @@
 #include <sys/resource.h>
 #include <time.h>
 
-// HepMC3
-#include "HepMC/FourVector.h"
+// HepMC33
+#include "HepMC3/FourVector.h"
 
 // Own
 #include "Graniitti/MAux.h"
@@ -46,7 +46,7 @@ std::string MODELPARAM;
 // Sudakov routines
 MSudakov sudakov;
 
-// GLOBAL for multithreading: HepMC3 outputfile and LHAPDF and mutex lock
+// GLOBAL for multithreading: HepMC33 outputfile and LHAPDF and mutex lock
 std::mutex g_mutex;
 
 // Check do we have terminal output (=true), or output to file (=false)

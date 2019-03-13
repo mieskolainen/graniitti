@@ -23,9 +23,9 @@
 #include <thread>
 #include <vector>
 
-// HepMC3
-#include "HepMC/WriterAscii.h"
-#include "HepMC/WriterAsciiHepMC2.h"
+// HepMC33
+#include "HepMC3/WriterAscii.h"
+#include "HepMC3/WriterAsciiHepMC2.h"
 
 // Own
 #include "Graniitti/MAux.h"
@@ -131,17 +131,17 @@ int main(int argc, char* argv[]) {
 			ND_EVT -= D;
 			std::vector<int> NEVT = {SD_EVT, DD_EVT, ND_EVT};
 
-			// HepMC3
-			//outputHepMC3 =
-			//    std::make_shared<HepMC::WriterAscii>("./output/" + OUTPUT + ".hepmc3");
+			// HepMC33
+			//outputHepMC33 =
+			//    std::make_shared<HepMC3::WriterAscii>("./output/" + OUTPUT + ".hepmc3");
 		    //} else if (FORMAT.compare("hepmc2") == 0) {
-			//HepMC::outputHepMC2 = 
-			//std::shared_ptr<HepMC::WriterAscii> outputHepMC3;
+			//HepMC3::outputHepMC32 = 
+			//std::shared_ptr<HepMC3::WriterAscii> outputHepMC33;
 
-			// HepMC2
+			// HepMC32
 			const std::string OUTPUTNAME = "minbias_" + std::to_string(static_cast<int>(sqrtsvec[e])); // Note x 2
 			const std::string outputstr  = "./output/" + OUTPUTNAME + ".hepmc2";
-			std::shared_ptr<HepMC::WriterAsciiHepMC2> outputHepMC2 = std::make_shared<HepMC::WriterAsciiHepMC2>(outputstr);
+			std::shared_ptr<HepMC3::WriterAsciiHepMC2> outputHepMC2 = std::make_shared<HepMC3::WriterAsciiHepMC2>(outputstr);
 
 			// Loop over processes
 			for (std::size_t i = 0; i < NEVT.size(); ++i) {

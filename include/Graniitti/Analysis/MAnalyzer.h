@@ -29,15 +29,16 @@
 #include "TTree.h"
 
 
-// HepMC3
-#include "HepMC/FourVector.h"
-#include "HepMC/GenEvent.h"
-#include "HepMC/GenParticle.h"
-#include "HepMC/GenVertex.h"
-#include "HepMC/Print.h"
-#include "HepMC/ReaderAscii.h"
-#include "HepMC/Search/FindParticles.h"
-#include "HepMC/WriterAscii.h"
+// HepMC33
+#include "HepMC3/FourVector.h"
+#include "HepMC3/GenEvent.h"
+#include "HepMC3/GenParticle.h"
+#include "HepMC3/GenVertex.h"
+#include "HepMC3/Print.h"
+#include "HepMC3/ReaderAscii.h"
+#include "HepMC3/WriterAscii.h"
+#include "HepMC3/Selector.h"
+#include "HepMC3/Relatives.h"
 
 
 // Own
@@ -108,17 +109,17 @@ public:
 
 	double cross_section = 0;
 
-	double CheckEnergyMomentum(HepMC::GenEvent& evt) const;
-	void FrameObservables(double W, HepMC::GenEvent& evt, const M4Vec& p_beam_plus,
+	double CheckEnergyMomentum(HepMC3::GenEvent& evt) const;
+	void FrameObservables(double W, HepMC3::GenEvent& evt, const M4Vec& p_beam_plus,
 							const M4Vec& p_beam_minus, const M4Vec& p_final_plus, const M4Vec& p_final_minus,
 							const std::vector<M4Vec>& pip, const std::vector<M4Vec>& pim);
-	void NStarObservables(double W, HepMC::GenEvent& evt);
+	void NStarObservables(double W, HepMC3::GenEvent& evt);
 	
 private:
 	
 	double sqrts = 0.0;
 	
-	// Name of the HepMC3 input
+	// Name of the HepMC33 input
 	std::string inputfile;
 	
 	// Proton excitation is turned on
