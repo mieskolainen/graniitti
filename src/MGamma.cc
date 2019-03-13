@@ -10,6 +10,7 @@
 
 
 // Own
+#include "Graniitti/MPDG.h"
 #include "Graniitti/MSpin.h"
 #include "Graniitti/MMath.h"
 #include "Graniitti/MForm.h"
@@ -78,7 +79,7 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 	               gra::form::alpha_EM(lts.t2);   // = e^4
 	const double mass  = lts.decaytree[0].p4.M(); // lepton, quark (or monopole) mass
 	const double mass2 = pow2(mass);
-	const bool MONOPOLE_MODE = (lts.decaytree[0].p.pdg == 992) ? true : false;
+	const bool MONOPOLE_MODE = (lts.decaytree[0].p.pdg == PDG::PDG_monopole) ? true : false;
 	
 	// qqbar (apply color factor 3)
 	// ... [NOT IMPLEMENTED]
@@ -263,7 +264,7 @@ std::complex<double> MGamma::yyHiggs(gra::LORENTZSCALAR& lts) const {
 	A *= lts.excite1 ? form::ampF2xQ2(lts.x1, std::abs(lts.t1)) : form::CohFlux(lts.x1, lts.t1, lts.qt1); // Gammaflux
 	A *= lts.excite2 ? form::ampF2xQ2(lts.x2, std::abs(lts.t2)) : form::CohFlux(lts.x2, lts.t2, lts.qt2); // Gammaflux
 	A *= msqrt(lts.s / lts.s_hat);                 													      // Phasespace flux
-	
+
 	for (const auto& i : aux::indices(lts.hamp)) {
 		lts.hamp[i] *= A;
 	}
@@ -304,7 +305,7 @@ std::complex<double> MGamma::yyX(const gra::LORENTZSCALAR& lts, gra::PARAM_RES& 
 	A_prod *= lts.excite1 ? form::ampF2xQ2(lts.x1, std::abs(lts.t1)) : form::CohFlux(lts.x1, lts.t1, lts.qt1); // Gammaflux
 	A_prod *= lts.excite2 ? form::ampF2xQ2(lts.x2, std::abs(lts.t2)) : form::CohFlux(lts.x2, lts.t2, lts.qt2); // Gammaflux
 	A_prod *= msqrt(lts.s / lts.s_hat);                 													   // Phasespace flux
-	
+
 	// Spin and decay part
 	const std::complex<double> A_decay = gra::spin::SpinAmp(lts, resonance);
 	

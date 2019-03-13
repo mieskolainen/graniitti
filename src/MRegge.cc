@@ -768,14 +768,14 @@ std::complex<double> MRegge::PhotoME3(gra::LORENTZSCALAR& lts, gra::PARAM_RES& r
 	const std::complex<double> M1 =
 		CohFlux(lts.x1, lts.t1, lts.qt1) / msqrt(lts.x1) *
 			common *
-		PhotoProp(lts.s2, lts.t2, pow2(resonance.p.mass));
-
+		PhotoProp(lts.s2, lts.t2, pow2(resonance.p.mass), lts.excite2);
+		
 	// Pomeron up (t1) x Photon down (t2)
 	const std::complex<double> M2 =
 		CohFlux(lts.x2, lts.t2, lts.qt2) / msqrt(lts.x2) *
 			common *
-		PhotoProp(lts.s1, lts.t1, pow2(resonance.p.mass));
-
+		PhotoProp(lts.s1, lts.t1, pow2(resonance.p.mass), lts.excite1);
+	
 	// Should sum here with negative sign (anti-symmetric initial state) ?
 	// Perhaps leave that as an option (TBD)
 	const std::complex<double> A_prod = (M1 + M2) * PARAM_REGGE::JPCoupling(lts, resonance);
@@ -805,7 +805,7 @@ std::complex<double> MRegge::PhotoME3(gra::LORENTZSCALAR& lts, gra::PARAM_RES& r
 //
 // [REFERENCE: Donnachie, Dosch, Landshoff, Nachtmann, Pomeron Physics and QCD (Cambridge University Press, 2002)]
 
-std::complex<double> MRegge::PhotoProp(double s, double t, double m2) const {
+std::complex<double> MRegge::PhotoProp(double s, double t, double m2, bool excite) const {
 
 	// Different vector meson slopes (HERA data),
 	// dsigma/dt ~ exp(Bt),
@@ -830,7 +830,7 @@ std::complex<double> MRegge::PhotoProp(double s, double t, double m2) const {
 
 	// Proton form factor simply exponential here
 	// Division by 2, because we are at amplitude level
-	const double FF = std::exp(B0 * t / 2.0);
+	const double FF = excite ? gra::form::S3FINEL(t) : std::exp(B0 * t / 2.0);
 
 	return eta * std::pow(s / W02, alpha) * FF * PARAM_SOFT::gN_P;
 }

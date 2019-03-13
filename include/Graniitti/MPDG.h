@@ -17,7 +17,6 @@
 
 
 namespace gra {
-
 namespace PDG {
 	
 	// Common PDG ids, http://pdg.lbl.gov/2007/reviews/montecarlorpp.pdf
@@ -33,12 +32,13 @@ namespace PDG {
 	constexpr const int PDG_gluon = 21;
 	constexpr const int PDG_muon  = 13;
 	
-	constexpr const int PDG_pomeron = 990;
-	constexpr const int PDG_reggeon = 110;
-	constexpr const int PDG_MSTAR   = 90000;            // Meson  resonance
-	constexpr const int PDG_NSTAR   = 90210;            // Baryon resonance
-	constexpr const int PDG_system  = 93;               // "Container" / "Jet" / "System"
-
+	constexpr const int PDG_pomeron  = 990;
+	constexpr const int PDG_reggeon  = 110;
+	constexpr const int PDG_monopole = 992;             // spin-1/2 monopole 
+	constexpr const int PDG_MSTAR    = 90000;           // Meson  resonance
+	constexpr const int PDG_NSTAR    = 90210;           // Baryon resonance
+	constexpr const int PDG_system   = 93;              // "Container" / "Jet" / "System"
+	
 	// HepPMC STABLE definitions conventions
 	constexpr const int PDG_BEAM         = 4;           // Beam particles
 	constexpr const int PDG_STABLE       = 1;           // Final state "stable" particles

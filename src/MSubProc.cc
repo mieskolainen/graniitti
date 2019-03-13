@@ -11,6 +11,7 @@
 #include <vector>
 
 // Own
+#include "Graniitti/MPDG.h"
 #include "Graniitti/MSubProc.h"
 #include "Graniitti/MAux.h"
 #include "Graniitti/MKinematics.h"
@@ -36,16 +37,16 @@ MSubProc::MSubProc(const std::string& _ISTATE, const std::string& _CHANNEL, cons
 	ISTATE  = _ISTATE;
 	CHANNEL = _CHANNEL;	
 	PDG     = _PDG;
-
+	
 	ConstructDescriptions(ISTATE);
 
-	// 4 and 6 body Regge Ladder leg permutations
-	const int mode = 1;
+	// Construct 4 and 6 body Regge Ladder leg permutations
+	const int mode = 1; // charged permutations
 	permutations4_ = gra::math::GetAmpPerm(4, mode);
 	permutations6_ = gra::math::GetAmpPerm(6, mode);
-
+	
 	// ** Read in monopole mass (needed by monopolium process) **
-	PARAM_MONOPOLE::M0 = _PDG.FindByPDG(992).mass;
+	PARAM_MONOPOLE::M0 = _PDG.FindByPDG(PDG::PDG_monopole).mass;
 }
 
 MSubProc::MSubProc(const std::vector<std::string>& first) {
@@ -245,8 +246,8 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy(gra::LORENTZSCALAR& lt
 		throw std::invalid_argument("MSubProc::GetBareAmplitude_yy: Proton excitation not yet implemented for gamma-gamma processes!");
 	}
 	// ------------------------------------------------------------------
-	
-	if (CHANNEL == "RES") {
+
+	if      (CHANNEL == "RES") {
 		A = yyX(lts, lts.RESONANCES.begin()->second);
 	}
 	else if (CHANNEL == "Higgs") {

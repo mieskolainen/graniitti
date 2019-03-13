@@ -320,8 +320,8 @@ double S3F(double t) {
 double S3FINEL(double t) {
 
 	const double a = 0.5616; // GeV^{2}
-	const double f = std::pow(std::abs(t) / (std::abs(t) + a), 1.0808);
-
+	const double f = std::pow(std::abs(t) / (std::abs(t) + a), 1.088);
+	
 	return msqrt(f); // Make it <amplitude level>
 }
 

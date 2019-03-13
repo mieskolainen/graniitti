@@ -86,14 +86,14 @@ public:
 
 	// Constructor amplitude leg permutations
 	void ConstructPerm(int type);
-
+	
 	// Amplitude_ permutations
 	std::vector<std::vector<int>> permutations4_;
 	std::vector<std::vector<int>> permutations6_;
 
 	// Regge propagators
 	std::complex<double> PropOnly(double s, double t) const;
-	std::complex<double> PhotoProp(double s, double t, double m2) const;
+	std::complex<double> PhotoProp(double s, double t, double m2, bool excite) const;
 	
 	// Helicity functions
 	double g_Vertex(double t, double lambda_i, double lambda_f) const;
