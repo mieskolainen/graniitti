@@ -138,9 +138,9 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 
 		// Apply fluxes
 		double A = msqrt(amp2);
-		A *= gra::form::CohFlux(lts.x1, lts.t1, lts.qt1); // Gammaflux
-		A *= gra::form::CohFlux(lts.x2, lts.t2, lts.qt2); // Gammaflux
-		A *= msqrt(lts.s / lts.s_hat);                    // Phasespace flux
+		A *= lts.excite1 ? form::ampF2xQ2(lts.x1, std::abs(lts.t1)) : form::CohFlux(lts.x1, lts.t1, lts.qt1); // Gammaflux
+		A *= lts.excite2 ? form::ampF2xQ2(lts.x2, std::abs(lts.t2)) : form::CohFlux(lts.x2, lts.t2, lts.qt2); // Gammaflux
+		A *= msqrt(lts.s / lts.s_hat);                    													  // Phasespace flux
 
 		return A;
 
@@ -217,11 +217,11 @@ std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR& lts) const {
 	                   (pow2(lts.s_hat - M*M) + pow2(M * Gamma_M));
 
 	// Apply fluxes
-	std::complex<double> A =
-	                 gra::form::CohFlux(lts.x1, lts.t1, lts.qt1)
-	               * msqrt(sigma_hat)
-	               * gra::form::CohFlux(lts.x2, lts.t2, lts.qt2)
-	               * msqrt(lts.s / lts.s_hat);
+	std::complex<double> A = msqrt(sigma_hat);
+
+	A *= lts.excite1 ? form::ampF2xQ2(lts.x1, std::abs(lts.t1)) : form::CohFlux(lts.x1, lts.t1, lts.qt1); // Gammaflux
+	A *= lts.excite2 ? form::ampF2xQ2(lts.x2, std::abs(lts.t2)) : form::CohFlux(lts.x2, lts.t2, lts.qt2); // Gammaflux
+	A *= msqrt(lts.s / lts.s_hat);                 													      // Phasespace flux
 
 	return A;
 }
@@ -259,12 +259,13 @@ std::complex<double> MGamma::yyHiggs(gra::LORENTZSCALAR& lts) const {
 	lts.hamp[3] = lts.hamp[0]; // ++
 
 	// Apply photon fluxes and phase space flux
-	const double factor = gra::form::CohFlux(lts.x1, lts.t1, lts.qt1)
-       				    * gra::form::CohFlux(lts.x2, lts.t2, lts.qt2)
-       				    * msqrt(lts.s / lts.s_hat);
-
+	double A = 1.0;
+	A *= lts.excite1 ? form::ampF2xQ2(lts.x1, std::abs(lts.t1)) : form::CohFlux(lts.x1, lts.t1, lts.qt1); // Gammaflux
+	A *= lts.excite2 ? form::ampF2xQ2(lts.x2, std::abs(lts.t2)) : form::CohFlux(lts.x2, lts.t2, lts.qt2); // Gammaflux
+	A *= msqrt(lts.s / lts.s_hat);                 													      // Phasespace flux
+	
 	for (const auto& i : aux::indices(lts.hamp)) {
-		lts.hamp[i] *= factor;
+		lts.hamp[i] *= A;
 	}
 
 	// Sum over helicity amplitudes squared
@@ -293,24 +294,21 @@ std::complex<double> MGamma::yyHiggs(gra::LORENTZSCALAR& lts) const {
 //
 // [REFERENCE: Uhlemann, Kauer, Narrow-width approximation accuracy, https://arxiv.org/pdf/0807.4112.pdf]
 //
-//
 std::complex<double> MGamma::yyX(const gra::LORENTZSCALAR& lts, gra::PARAM_RES& resonance) const {
 
 	// Factor of 2 x from (identical) initial state boson statistics
-	const std::complex<double> A_prod =
-	    2.0 *
-	    gra::form::CohFlux(lts.x1, lts.t1, lts.qt1) *
+	std::complex<double> A_prod = 2.0 *
 	    	gra::form::CBW(lts, resonance) * resonance.g *
-	    	PARAM_REGGE::JPCoupling(lts, resonance) *
-	    gra::form::CohFlux(lts.x2, lts.t2, lts.qt2);
-	    
+	    	PARAM_REGGE::JPCoupling(lts, resonance);
+    
+	A_prod *= lts.excite1 ? form::ampF2xQ2(lts.x1, std::abs(lts.t1)) : form::CohFlux(lts.x1, lts.t1, lts.qt1); // Gammaflux
+	A_prod *= lts.excite2 ? form::ampF2xQ2(lts.x2, std::abs(lts.t2)) : form::CohFlux(lts.x2, lts.t2, lts.qt2); // Gammaflux
+	A_prod *= msqrt(lts.s / lts.s_hat);                 													   // Phasespace flux
+	
 	// Spin and decay part
 	const std::complex<double> A_decay = gra::spin::SpinAmp(lts, resonance);
 	
-	// Phase space flux
-	const double PS = msqrt(lts.s / lts.s_hat);
-	
-	return A_prod * A_decay * PS;
+	return A_prod * A_decay;
 }
 
 

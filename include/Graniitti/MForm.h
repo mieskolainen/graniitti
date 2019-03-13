@@ -91,7 +91,7 @@ std::complex<double> ReggeEta(double alpha_t, double sigma);
 // Proton form factor, elastic and inelastic
 double S3F(double t);
 double S3FINEL(double t);
-double F2xQ2(double x, double Q2);
+double ampF2xQ2(double x, double Q2);
 
 // Pomeron trajectory
 double S3PomAlpha(double t);

@@ -267,6 +267,8 @@ std::complex<double> ReggeEta(double alpha_t, double sigma) {
 	return -(1.0 + sigma * std::exp(-zi * PI * alpha_t)) / denom;
 }
 
+
+// ----------------------------------------------------------------------
 // Non-linear Pomeron trajectory functional form:
 //
 // [REFERENCE: Khoze, Martin, Ryskin, https://arxiv.org/abs/hep-ph/0007359]
@@ -284,17 +286,7 @@ double S3PomAlpha(double t) {
 	return alpha_P;
 }
 
-// Proton form factor parametrization functional as in:
-//
-//
-double S3F(double t) {
-	return (1.0 / (1 - t / PARAM_SOFT::fc1)) *
-	       (1.0 / (1 - t / PARAM_SOFT::fc2));
-}
-
 // Pion loop insert to the non-linear Pomeron trajectory
-//
-//
 double S3HPL(double tau, double t) {
 	const double m = 1.0; // fixed scale (GeV)
 	const double sqrtau = msqrt(1 + tau);
@@ -308,27 +300,36 @@ double S3HPL(double tau, double t) {
 	            std::log((sqrtau + 1.0) / (sqrtau - 1.0)) +
 	        std::log((m * m) / (mpi * mpi)));
 }
+// ----------------------------------------------------------------------
 
-// Proton inelastic structure function F2 parametrization:
+
+// Elastic proton form factor parametrization <apply at amplitude level>
 //
-// [REFERENCE: Donnachie, Landshoff, Z. Phys. C61, 139-145 (1994)]
-double S3FINEL(double t) {
-	const double a = 0.5616; // GeV^{2}
-	const double F2 =
-	    std::pow(std::abs(t) / (std::abs(t) + a), PARAM_REGGE::a0[0]);
-	return msqrt(F2); // Make it <amplitude level>
+// [REFERENCE: Khoze, Martin, Ryskin, https://arxiv.org/abs/hep-ph/0007359]
+double S3F(double t) {
+	return (1.0 / (1 - t / PARAM_SOFT::fc1)) *
+	       (1.0 / (1 - t / PARAM_SOFT::fc2));
 }
 
-// (dipole) form factor F_(t)
-// double F_Dipole(double t) {
-//   return ((4.0*mp*mp - 2.79*t)/(4.0*mp*mp - t))*pow2((1.0/(1.0 - t/0.71)));
-// }
+
+// Proton inelastic structure function parametrization t-dependent part
+//
+// <apply at amplitude level>
+//
+// [REFERENCE: Donnachie, Landshoff, https://arxiv.org/abs/hep-ph/9305319]
+double S3FINEL(double t) {
+
+	const double a = 0.5616; // GeV^{2}
+	const double f = std::pow(std::abs(t) / (std::abs(t) + a), 1.0808);
+
+	return msqrt(f); // Make it <amplitude level>
+}
 
 
-// Proton inelastic structure function F2 parametrization:
+// Proton inelastic structure function parametrization  <apply at amplitude level>
 //
 // [REFERENCE: Capella, Kaidalov, Merino, Tran Tranh Van, https://arxiv.org/abs/hep-ph/9405338v1]
-double F2xQ2(double x, double Q2) {
+double ampF2xQ2(double x, double Q2) {
 
 	const double A        = 0.1502;
 	const double B_u      = 1.2064;
@@ -347,11 +348,11 @@ double F2xQ2(double x, double Q2) {
 	const double C1 = std::pow(Q2/(Q2 + a), 1.0 + DELTA_Q2);
 	const double C2 = std::pow(Q2/(Q2 + b), alpha_R);
 
-	const double output = A * std::pow(x, -DELTA_Q2)  * std::pow(1-x, n_Q2 + 4.0) * C1 + 
-		   std::pow(x, 1.0-alpha_R) *
-		   	(B_u * std::pow(1-x, n_Q2) + B_d * std::pow(1-x, n_Q2 + 1.0)) * C2;
+	const double F2 = A * std::pow(x, -DELTA_Q2)    * std::pow(1-x, n_Q2 + 4.0)  * C1 + 
+		   				  std::pow(x, 1.0-alpha_R)  *
+		   		   (B_u * std::pow(1-x, n_Q2) + B_d * std::pow(1-x, n_Q2 + 1.0)) * C2;
 
-   	return output;
+   	return msqrt(F2); // Make it <amplitude level>
 }
 
 
@@ -359,11 +360,11 @@ double F2xQ2(double x, double Q2) {
 // Photon flux densities and form factors, input Q^2 as positive
 
 // Alpha EM(Q^2 = 0)
-double alpha_EM(double Q2) {
+double alpha_EM(double Q2) { // no running here
 	return 1.0 / 137.035999139;
 }
 // Electric charge in natural units ~ 0.3
-double e_EM(double Q2) {
+double e_EM(double Q2) {  // no running here
 	return msqrt(alpha_EM(Q2) * 4.0 * PI);
 }
 double e_EM() {
@@ -478,9 +479,7 @@ double CohFlux(double x, double t, double pt) {
 	// Phasespace normalization for 2->N kinematics (including proton legs)
 	const double PS = 16.0 * gra::math::PIPI;
 
-	// Square root -> we use this function at <amplitude level>, things
-	// above were at cross section level
-	return msqrt(f * PS);
+	return msqrt(f * PS); // make it <amplitude level>
 }
 
 
@@ -493,7 +492,7 @@ double DZFlux(double x) {
 	           (std::log(A) - 11.0 / 6.0 + 3.0 / A -
 	            3.0 / (2.0 * pow2(A)) + 1.0 / (3 * pow3(A)));
 
-	return msqrt(f);
+	return msqrt(f);  // make it <amplitude level>
 }
 
 // Breit-Wigner propagators / form factors

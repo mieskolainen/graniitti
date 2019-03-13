@@ -160,6 +160,7 @@ inline std::complex<double> MSubProc::GetBareAmplitude_X(gra::LORENTZSCALAR& lts
 	return A;
 }
 
+
 // Pomeron-Pomeron
 inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR& lts) {
 	
@@ -239,6 +240,12 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yP(gra::LORENTZSCALAR& lt
 inline std::complex<double> MSubProc::GetBareAmplitude_yy(gra::LORENTZSCALAR& lts) {
 	std::complex<double> A(0, 0);
 
+	// ------------------------------------------------------------------
+	if (lts.excite1 == true || lts.excite2 == true) {
+		throw std::invalid_argument("MSubProc::GetBareAmplitude_yy: Proton excitation not yet implemented for gamma-gamma processes!");
+	}
+	// ------------------------------------------------------------------
+	
 	if (CHANNEL == "RES") {
 		A = yyX(lts, lts.RESONANCES.begin()->second);
 	}
