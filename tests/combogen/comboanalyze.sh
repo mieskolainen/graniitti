@@ -1,6 +1,6 @@
 #!/bin/sh
 
-make -j4 && ./bin/analyze -i ALICE2pi,ALICE2K,ALICEppbar -g 211,321,2212 -n 2,2,2 -l \
+make -j4 && ./bin/analyze -i ALICE_2pi,ALICE_2K,ALICE_ppbar -g 211,321,2212 -n 2,2,2 -l \
 '#pi^{+}#pi^{-}','#it{K}^{+}#it{K}^{-}','#it{p}#bar{#it{p}} / 13 TeV ' \
 -M 3.0 -Y 1.5 -P 2.0 -u ub -S 0.18 #-X 1000
 
