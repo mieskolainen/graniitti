@@ -197,7 +197,7 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 	if (input_file.failed()) {
 		throw std::invalid_argument("MAnalyzer::HepMC3Read: Cannot open file " + totalpath);
 	}
-	
+
 	// Event loop
 	unsigned int events_read  = 0;
 
@@ -681,8 +681,7 @@ void MAnalyzer::PlotAll() {
     // Create output directory if it does not exist
 	const std::string FOLDER = gra::aux::GetBasePath(2) + "/figs/" + inputfile;
    	aux::CreateDirectory(FOLDER);
-
-
+   	
 	// FIT FUNCTIONS
 	TF1* fb = new TF1("exp_fit", exponential, 0.05, 0.5, 2);
 	fb->SetParameter(0, 10.0); // A
@@ -692,7 +691,6 @@ void MAnalyzer::PlotAll() {
 	fa->SetParameter(0, 10.0); // A
 	fa->SetParameter(1, 0.15); // T
 	fa->SetParameter(2, 0.1);  // n
-
 
 	//        hpT2->Fit("exp_fit","R");
 	//        hpT_Meson_p->Fit("pow_fit","R"); // "R" for range
