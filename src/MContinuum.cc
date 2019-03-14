@@ -306,15 +306,15 @@ void MContinuum::PrintInit(bool silent) const {
 
 // (3*Nf-4)-dimensional phase space vector initialization
 bool MContinuum::BNRandomKin(unsigned int Nf, const std::vector<double>& randvec) {
-
+	
 	const unsigned int Kf = Nf - 2; // Central system multiplicity
-
+	
 	const double pt1  = gcuts.forward_pt_min + (gcuts.forward_pt_max - gcuts.forward_pt_min) * randvec[0];
 	const double pt2  = gcuts.forward_pt_min + (gcuts.forward_pt_max - gcuts.forward_pt_min) * randvec[1];
 	const double phi1 = 2.0 * gra::math::PI * randvec[2];
 	const double phi2 = 2.0 * gra::math::PI * randvec[3];
 	const unsigned int offset = 4; // 4 variables above
-
+	
 	// Decay product masses
 	// ==============================================================
 	for (const auto& i : indices(lts.decaytree)) {
@@ -325,7 +325,7 @@ bool MContinuum::BNRandomKin(unsigned int Nf, const std::vector<double>& randvec
 		}
 	}
 	// ==============================================================
-
+	
 	// Intermediate kt
 	std::vector<double> kt(Kf - 1, 0.0);  // Kf-1
 	size_t ind = offset;
@@ -333,32 +333,32 @@ bool MContinuum::BNRandomKin(unsigned int Nf, const std::vector<double>& randvec
 		kt[i] = gcuts.kt_min + (gcuts.kt_max - gcuts.kt_min) * randvec[ind];
 		++ind;
 	}
-
+	
 	// Intermediate phi
 	std::vector<double> phi(Kf - 1, 0.0); // Kf-1
 	for (const auto& i : indices(phi)) {
 		phi[i] = 2.0 * PI * randvec[ind];
 		++ind;
 	}
-
+	
 	// Final state rapidity
 	std::vector<double> y(Kf, 0.0);       // Kf
 	for (const auto& i : indices(y)) {
 		y[i] = gcuts.rap_min + (gcuts.rap_max - gcuts.rap_min) * randvec[ind];
 		++ind;
 	}
-
+	
 	// Forward N* system masses
 	double m1 = beam1.mass;
 	double m2 = beam2.mass;
 	lts.excite1 = false;
 	lts.excite2 = false;
-
+	
 	const double M2_f_min = pow2(1.07);
 	const double M2_f_max = gcuts.XI_max * lts.s;
 	
 	if (EXCITATION == 1) {
-		const double mforward = msqrt( M2_f_min + (M2_f_max - M2_f_min) * randvec[ind] );
+		const double mforward = msqrt(M2_f_min + (M2_f_max - M2_f_min) * randvec[ind]);
 		if (random.U(0,1) < 0.5) {
 			m1 = mforward;
 			lts.excite1 = true;
@@ -368,14 +368,15 @@ bool MContinuum::BNRandomKin(unsigned int Nf, const std::vector<double>& randvec
 		}
 	}
 	if (EXCITATION == 2) {
-		m1 = msqrt( M2_f_min + (M2_f_max - M2_f_min) * randvec[ind]   );
-		m2 = msqrt( M2_f_min + (M2_f_max - M2_f_min) * randvec[ind+1] );
+		m1 = msqrt(M2_f_min + (M2_f_max - M2_f_min) * randvec[ind]  );
+		m2 = msqrt(M2_f_min + (M2_f_max - M2_f_min) * randvec[ind+1]);
 		lts.excite1 = true;
 		lts.excite2 = true;
 	}
 	
 	return BNBuildKin(Nf, pt1, pt2, phi1, phi2, kt, phi, y, m1, m2);
 }
+
 
 // Build kinematics of 2->N
 bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1, double phi2,
