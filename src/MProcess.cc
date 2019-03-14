@@ -1521,15 +1521,15 @@ bool MProcess::GetLorentzScalars(unsigned int Nf) {
 
 	lts.t1 = lts.q1.M2();
 	lts.t2 = lts.q2.M2();
-	
+
 	if (lts.t1 > 0 || lts.t2 > 0) { return false; }
 
 	// For 2-body central processes
 	if (lts.decaytree.size() == 2) {
-		lts.t_hat = (lts.q1 - lts.decaytree[0].p4).M2(); // note q1 on both!
-		lts.u_hat = (lts.q1 - lts.decaytree[1].p4).M2();
+		lts.t_hat = (lts.q1 - lts.decaytree[0].p4).M2(); // note q1 on both
+		lts.u_hat = (lts.q1 - lts.decaytree[1].p4).M2(); // in t and u!
 	}
-
+	
 	for (std::size_t i = offset; i <= Nf; ++i) {
 		lts.tt_1[i] = (lts.q1 - lts.pfinal[i]).M2();
 	}
@@ -1546,7 +1546,7 @@ bool MProcess::GetLorentzScalars(unsigned int Nf) {
 	lts.x1 = (1 - lts.pfinal[1].Pz() / lts.pbeam1.Pz());
 	lts.x2 = (1 - lts.pfinal[2].Pz() / lts.pbeam2.Pz());
 
-	// Bjorken-x [0,1]
+	// Bjorken-x [0,1] (gives 1 always for elastic central production forward leg)
 	lts.xbj1 = lts.t1 / (2 * (lts.pbeam1 * lts.q1));
 	lts.xbj2 = lts.t2 / (2 * (lts.pbeam2 * lts.q2));
 
