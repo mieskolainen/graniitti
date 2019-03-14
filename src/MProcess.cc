@@ -1526,8 +1526,8 @@ bool MProcess::GetLorentzScalars(unsigned int Nf) {
 
 	// For 2-body central processes
 	if (lts.decaytree.size() == 2) {
-		lts.t_hat = (lts.q1 - lts.decaytree[0].p4).M2();
-		lts.u_hat = (lts.q2 - lts.decaytree[1].p4).M2();
+		lts.t_hat = (lts.q1 - lts.decaytree[0].p4).M2(); // note q1 on both!
+		lts.u_hat = (lts.q1 - lts.decaytree[1].p4).M2();
 	}
 
 	for (std::size_t i = offset; i <= Nf; ++i) {
