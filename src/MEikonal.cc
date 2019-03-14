@@ -34,90 +34,92 @@ using gra::math::zi;
 namespace gra {
 
 
-// Eikonal screening numerical integration parameters
-// N.B. Compile will make significant optimizations if boundaries
-// are const variables.
-namespace MEikonalNumerics {
+	// Eikonal screening numerical integration parameters
+	// N.B. Compile will make significant optimizations if boundaries
+	// are const variables.
+	namespace MEikonalNumerics {
 
-	const double MinKT2 = 1E-6;
-	const double MaxKT2 = 25.0;
-	unsigned int NumberKT2 = 0;
-	bool    logKT2 = false;
-	
-	const double MinBT = 1E-6;
-	const double MaxBT = 10.0 / PDG::GeV2fm;
-	unsigned int NumberBT = 0;
-	bool    logBT = false;
+		const double MinKT2 = 1E-6;
+		const double MaxKT2 = 25.0;
+		unsigned int NumberKT2 = 0;
+		bool    logKT2 = false;
+		
+		const double MinBT = 1E-6;
+		const double MaxBT = 10.0 / PDG::GeV2fm;
+		unsigned int NumberBT = 0;
+		bool    logBT = false;
 
-	const double FBIntegralMinKT = 1E-9;
-	const double FBIntegralMaxKT = 30.0;
-	const unsigned int   FBIntegralN = 10000;
+		const double FBIntegralMinKT = 1E-9;
+		const double FBIntegralMaxKT = 30.0;
+		const unsigned int   FBIntegralN = 10000;
 
-	const double MinLoopKT = 1E-4;
-	double       MaxLoopKT = 1.75;
-	
-	std::string GetHashString() {
-		std::string str = std::to_string(MEikonalNumerics::MinKT2) +
-		                  std::to_string(MEikonalNumerics::MaxKT2) +
-		                  std::to_string(MEikonalNumerics::NumberKT2) +
-		                  std::to_string(MEikonalNumerics::logKT2) +
-		                  std::to_string(MEikonalNumerics::MinBT) +
-		                  std::to_string(MEikonalNumerics::MaxBT) +
-		                  std::to_string(MEikonalNumerics::NumberBT) +
-		                  std::to_string(MEikonalNumerics::logBT) +
-		                  std::to_string(MEikonalNumerics::FBIntegralMinKT) +
-		                  std::to_string(MEikonalNumerics::FBIntegralMaxKT) +
-		                  std::to_string(MEikonalNumerics::FBIntegralN)
-		                  ;
-		return str;
-}
-
-void ReadParameters() {
-	
-	// Read and parse
-	using json = nlohmann::json;
-
-	const std::string inputfile = gra::aux::GetBasePath(2) + "/modeldata/" + "NUMERICS.json";
-	const std::string data      = gra::aux::GetInputData(inputfile);
-	json j;
-
-	try {
-		j = json::parse(data);
-
-		// JSON block identifier
-		const std::string XID = "NUMERICS_EIKONAL";
-
-		//MaxKT2  = j[XID]["MaxKT2"];
-		NumberKT2 = j[XID]["NumberKT2"];
-		logKT2    = j[XID]["logKT2"];
-
-		//MaxBT   = j[XID]["MaxBT"]; MaxBT /= gra::math::GeV2fm; // Input as fermi, program uses GeV^{-1}
-		NumberBT  = j[XID]["NumberBT"];
-		logBT     = j[XID]["logBT"];
-
-		//FBIntegralMaxKT = j[XID]["FBIntegralMaxKT"];
-		//FBIntegralN     = j[XID]["FBIntegralN"];
-
-		//MaxLoopKT = j[XID]["MaxLoopKT"];
-
-	} catch (...) {
-		std::string str =
-		    "MEikonalNumerics::ReadParameters: Error parsing " + inputfile + " (Check for extra/missing commas)";
-		throw std::invalid_argument(str);
+		const double MinLoopKT = 1E-4;
+		double       MaxLoopKT = 1.75;
+		
+		std::string GetHashString() {
+			std::string str = std::to_string(MEikonalNumerics::MinKT2) +
+			                  std::to_string(MEikonalNumerics::MaxKT2) +
+			                  std::to_string(MEikonalNumerics::NumberKT2) +
+			                  std::to_string(MEikonalNumerics::logKT2) +
+			                  std::to_string(MEikonalNumerics::MinBT) +
+			                  std::to_string(MEikonalNumerics::MaxBT) +
+			                  std::to_string(MEikonalNumerics::NumberBT) +
+			                  std::to_string(MEikonalNumerics::logBT) +
+			                  std::to_string(MEikonalNumerics::FBIntegralMinKT) +
+			                  std::to_string(MEikonalNumerics::FBIntegralMaxKT) +
+			                  std::to_string(MEikonalNumerics::FBIntegralN)
+			                  ;
+			return str;
 	}
-}
 
-// -----------------------------------------
+	void ReadParameters() {
+		
+		// Read and parse
+		using json = nlohmann::json;
 
-// Screening loop (default values)
-unsigned int NumberLoopKT  = 3 * 8; // Number of kt steps
-unsigned int NumberLoopPHI = 3 * 8; // Number of phi steps
+		const std::string inputfile = gra::aux::GetBasePath(2) + "/modeldata/" + "NUMERICS.json";
+		const std::string data      = gra::aux::GetInputData(inputfile);
+		json j;
 
-void SetLoopDiscretization(unsigned int ND) {
-	NumberLoopKT  = 3 * ND;
-	NumberLoopPHI = 3 * ND;
-}
-}
+		try {
+			j = json::parse(data);
+
+			// JSON block identifier
+			const std::string XID = "NUMERICS_EIKONAL";
+
+			//MaxKT2  = j[XID]["MaxKT2"];
+			NumberKT2 = j[XID]["NumberKT2"];
+			logKT2    = j[XID]["logKT2"];
+
+			//MaxBT   = j[XID]["MaxBT"]; MaxBT /= gra::math::GeV2fm; // Input as fermi, program uses GeV^{-1}
+			NumberBT  = j[XID]["NumberBT"];
+			logBT     = j[XID]["logBT"];
+
+			//FBIntegralMaxKT = j[XID]["FBIntegralMaxKT"];
+			//FBIntegralN     = j[XID]["FBIntegralN"];
+
+			//MaxLoopKT = j[XID]["MaxLoopKT"];
+
+		} catch (...) {
+			std::string str =
+			    "MEikonalNumerics::ReadParameters: Error parsing " + inputfile + " (Check for extra/missing commas)";
+			throw std::invalid_argument(str);
+		}
+	}
+	
+	// -----------------------------------------
+	
+	// Screening loop (minimum values)
+	unsigned int NumberLoopKT  = 12; // Number of kt steps
+	unsigned int NumberLoopPHI = 9;  // Number of phi steps
+
+	// User adds more
+	void SetLoopDiscretization(unsigned int ND) {
+		NumberLoopKT  = 3 * ND + NumberLoopKT;
+		NumberLoopPHI = 3 * ND + NumberLoopPHI;
+	}
+	
+} // Namespace MEikonal ends
 
 
 MEikonal::MEikonal() {
