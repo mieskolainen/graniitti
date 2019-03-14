@@ -1521,7 +1521,7 @@ bool MProcess::GetLorentzScalars(unsigned int Nf) {
 
 	lts.t1 = lts.q1.M2();
 	lts.t2 = lts.q2.M2();
-
+	
 	if (lts.t1 > 0 || lts.t2 > 0) { return false; }
 
 	// For 2-body central processes
@@ -1568,11 +1568,9 @@ bool MProcess::GetLorentzScalars(unsigned int Nf) {
 	printf("lts.Pt          = %0.9f \n", lts.Pt);
 	printf("lts.t1          = %0.9f \n", lts.t1);
 	printf("lts.t2          = %0.9f \n", lts.t2);
-	printf("B5PhaseSpaceWeight = %0.2E \n", B5PhaseSpaceWeight());
-	printf("B5IntegralVolume() = %0.2E \n", B5IntegralVolume());
 	printf("lts.t_hat - decaytree[0].M2() = %0.9f \n", lts.t_hat - lts.decaytree[0].p4.M2());
 	printf("lts.u_hat - decaytree[0].M2() = %0.9f \n", lts.u_hat - lts.decaytree[0].p4.M2());
-
+	
 	for (std::size_t i = 0; i < randvec.size(); ++i) {
 		printf("randvec[%d] = %0.9f \n", i, randvec[i]);
 	}

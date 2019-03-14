@@ -368,7 +368,7 @@ std::complex<double> MDurham::DQtloop(
 			double Q1_2_scale = 0.0;
 			double Q2_2_scale = 0.0;
 			DScaleChoise(qt2, q1_2, q2_2, Q1_2_scale, Q2_2_scale);
-
+			
 			// Minimum scale cutoff
 			if (Q1_2_scale < Durham::qt2_MIN || Q2_2_scale < Durham::qt2_MIN) { continue; }
 
