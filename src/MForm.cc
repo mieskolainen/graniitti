@@ -523,13 +523,14 @@ double CohFlux(double xi, double t, double pt) {
 	// Phasespace normalization for 2->N kinematics (including proton legs)
 	const double PS = 16.0 * gra::math::PIPI;
 
-	return msqrt(f * PS); // make it <amplitude level>
+	return msqrt(f * PS); // make it <"amplitude level">
 }
 
 
-// Incoherent photon flux from dissociated proton with mass M.
+// Incoherent photon flux from a dissociated proton with mass M.
 // When xi -> 0 ~~> M -> mp, this reproduces CohFlux() if
 // F2(x,Q^2) does reproduce the elastic limit (not all parametrizations do)
+//
 double IncohFlux(double xi, double t, double pt, double M) {
 	
 	const double pt2 = pow2(pt);
@@ -538,7 +539,7 @@ double IncohFlux(double xi, double t, double pt, double M) {
 	const double M2  = pow2(M);
 	const double Q2  = std::abs(t);
 	//const double xbj = Q2 / (Q2 + M2 - mp2);
-	
+
 	const double f = alpha_EM(0) / (PI * xi) *
 					  (1.0 / (pt2 + xi*(M2 - mp2) + xi2*mp2)) *
 	                 ((1.0 - xi) * (pt2 / (pt2 + xi*(M2 - mp2) + xi2*mp2)) * F2xQ2(xi,Q2) / (Q2 + M2 - mp2));
@@ -546,7 +547,7 @@ double IncohFlux(double xi, double t, double pt, double M) {
 	// Phasespace normalization for 2->N kinematics (including proton legs)
 	const double PS = 16.0 * gra::math::PIPI;
 
-	return msqrt(f * PS); // make it <amplitude level>
+	return msqrt(f * PS); // make it <"amplitude level">
 }
 
 
