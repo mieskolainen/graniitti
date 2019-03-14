@@ -1540,10 +1540,14 @@ bool MProcess::GetLorentzScalars(unsigned int Nf) {
 		lts.tt_2[i] = (pbeam2_pfinal2 - lts.pfinal[i]).M2();
 	}
 	
-	// Fractional longitudinal momentum loss
+	// Fractional longitudinal momentum loss [0,1]
 	lts.x1 = (1 - lts.pfinal[1].Pz() / lts.pbeam1.Pz());
 	lts.x2 = (1 - lts.pfinal[2].Pz() / lts.pbeam2.Pz());
-	
+
+	// Bjorken-x [0,1]
+	lts.xbj1 = lts.t1 / (2 * (lts.pbeam1 * lts.q1));
+	lts.xbj2 = lts.t2 / (2 * (lts.pbeam2 * lts.q2));
+
 	// Propagator vectors
 	lts.q1 = lts.pbeam1 - lts.pfinal[1];
 	lts.q2 = lts.pbeam2 - lts.pfinal[2];
@@ -1558,7 +1562,6 @@ bool MProcess::GetLorentzScalars(unsigned int Nf) {
 	lts.Y     = lts.pfinal[0].Rap();
 	lts.Pt    = lts.pfinal[0].Pt();
 	
-
 	//const double xbj = std::abs(lts.t1) / (std::abs(lts.t1) + lts.pfinal[1].M2() - pow2(beam1.mass));
 	//printf("x1 = %0.5E, xbj = %0.5E, ratio = %0.5f \n", lts.x1, xbj, lts.x1 / xbj);
 

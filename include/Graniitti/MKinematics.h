@@ -1482,9 +1482,13 @@ struct LORENTZSCALAR {
   double tt_2[10]      = {0.0};
   double tt_xy[10][10] = {{0.0}};
   
-  // Bjorken-x (longitudinal momentum fraction)
+  // Longitudinal momentum losses
   double x1 = 0.0;
   double x2 = 0.0;
+  
+  // Bjorken-x
+  double xbj1 = 0.0;
+  double xbj2 = 0.0;
   
   // Forward proton excitation tag
   bool excite1 = false;
