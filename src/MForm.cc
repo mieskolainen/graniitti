@@ -504,6 +504,10 @@ double G_M(double Q2) {
 }
 
 // Coherent photon flux from proton
+// xi ~ longitudinal momentum loss [0,1]
+// t  ~ Mandelstam t
+// pt ~ proton transverse momentum
+//
 double CohFlux(double xi, double t, double pt) {
 
 	const double pt2 = pow2(pt);
@@ -523,8 +527,8 @@ double CohFlux(double xi, double t, double pt) {
 }
 
 
-// Incoherent photon flux from proton
-// when M -> mp, this reproduces CohFlux() if
+// Incoherent photon flux from dissociated proton with mass M.
+// When xi -> 0 ~~> M -> mp, this reproduces CohFlux() if
 // F2(x,Q^2) does reproduce the elastic limit (not all parametrizations do)
 double IncohFlux(double xi, double t, double pt, double M) {
 	
@@ -533,10 +537,11 @@ double IncohFlux(double xi, double t, double pt, double M) {
 	const double mp2 = pow2(mp);
 	const double M2  = pow2(M);
 	const double Q2  = std::abs(t);
+	//const double xbj = Q2 / (Q2 + M2 - mp2);
 	
 	const double f = alpha_EM(0) / (PI * xi) *
 					  (1.0 / (pt2 + xi*(M2 - mp2) + xi2*mp2)) *
-	                 ((1.0 - xi) * (pt2 / (pt2 + xi*(M2 - mp2) + xi2*mp2)) * F2xQ2(xi,Q2) );
+	                 ((1.0 - xi) * (pt2 / (pt2 + xi*(M2 - mp2) + xi2*mp2)) * F2xQ2(xi,Q2) / (Q2 + M2 - mp2));
     
 	// Phasespace normalization for 2->N kinematics (including proton legs)
 	const double PS = 16.0 * gra::math::PIPI;
