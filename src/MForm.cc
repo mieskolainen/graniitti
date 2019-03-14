@@ -508,6 +508,12 @@ double G_M(double Q2) {
 // t  ~ Mandelstam t
 // pt ~ proton transverse momentum
 //
+//
+//  p ---------F_E---------> p' with xi = 1 - p^*_z'/p_z
+//               $
+//                $
+//                 $
+//
 double CohFlux(double xi, double t, double pt) {
 
 	const double pt2 = pow2(pt);
@@ -531,6 +537,14 @@ double CohFlux(double xi, double t, double pt) {
 // When xi -> 0 ~~> M -> mp, this reproduces CohFlux() if
 // F2(x,Q^2) does reproduce the elastic limit (not all parametrizations do)
 //
+//
+//  p ---------F2(x,Q^2)----->  p* with xi = 1 - p^*_z / p_z
+//              -------------->
+//                ------------->
+//                 $
+//                  $
+//                   $
+//
 double IncohFlux(double xi, double t, double pt, double M) {
 	
 	const double pt2 = pow2(pt);
@@ -538,8 +552,7 @@ double IncohFlux(double xi, double t, double pt, double M) {
 	const double mp2 = pow2(mp);
 	const double M2  = pow2(M);
 	const double Q2  = std::abs(t);
-	//const double xbj = Q2 / (Q2 + M2 - mp2);
-
+	
 	const double f = alpha_EM(0) / (PI * xi) *
 					  (1.0 / (pt2 + xi*(M2 - mp2) + xi2*mp2)) *
 	                 ((1.0 - xi) * (pt2 / (pt2 + xi*(M2 - mp2) + xi2*mp2)) * F2xQ2(xi,Q2) / (Q2 + M2 - mp2));
