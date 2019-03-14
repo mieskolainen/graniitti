@@ -385,10 +385,17 @@ double F2xQ2(double x, double Q2) {
 }
 
 
+// "Purely magnetic structure function"
+//
+// Callan-Gross relation for spin-1/2: F_2(x) = 2xF_1(x) under Bjorken scaling
+// For spin-0, F_1(x) = 0
+//
 double F1xQ2(double x, double Q2) {
 
+	// Not implemented
 	return 0.0;
 }
+
 
 // ============================================================================
 // Photon flux densities and form factors, input Q^2 as positive
@@ -517,9 +524,10 @@ double CohFlux(double xi, double t, double pt) {
 
 
 // Incoherent photon flux from proton
-// when M -> mp, this reproduces CohFlux() if F2 does reproduce the elastic limit (not all parametrizations do)
+// when M -> mp, this reproduces CohFlux() if
+// F2(x,Q^2) does reproduce the elastic limit (not all parametrizations do)
 double IncohFlux(double xi, double t, double pt, double M) {
-
+	
 	const double pt2 = pow2(pt);
 	const double xi2 = pow2(xi);
 	const double mp2 = pow2(mp);

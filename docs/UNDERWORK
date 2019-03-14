@@ -8,3 +8,4 @@ Processes under construction/validation:
 - forward excitation is now implemented also for gamma-gamma (via F2 structure functions) but not fully validated
 - tensor pomeron amplitudes for 2xPS,2xV,2xF implemented but not fully validated
 - "sliding helicity amplitudes" under implementation
+- exhaustive unit testing of kinematics and dynamics, and consistency tests under implementation
