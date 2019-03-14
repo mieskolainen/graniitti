@@ -533,8 +533,6 @@ double IncohFlux(double xi, double t, double pt, double M) {
 	const double mp2 = pow2(mp);
 	const double M2  = pow2(M);
 	const double Q2  = std::abs(t);
-	//const double xbj = Q2 / (Q2 + M2 - mp2);
-	//printf("xi = %0.5E, xbj = %0.5E \n", xi, xbj);
 	
 	const double f = alpha_EM(0) / (PI * xi) *
 					  (1.0 / (pt2 + xi*(M2 - mp2) + xi2*mp2)) *

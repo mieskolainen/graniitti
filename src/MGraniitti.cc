@@ -599,11 +599,13 @@ void MGraniitti::ReadGenCuts(const std::string& inputfile) {
 		} catch (...) {
 			// Do nothing
 		}
-		gcuts.XI_min = Xi[0];
-		gcuts.XI_max = Xi[1];
-		gra::aux::AssertCut(Xi, "GENCUTS::<C>::Xi", true);
+		if (Xi.size() != 0) {
+			gcuts.XI_min = Xi[0];
+			gcuts.XI_max = Xi[1];
+			gra::aux::AssertCut(Xi, "GENCUTS::<C>::Xi", true);
+		}
 	}
-
+	
 	// Factorized phase space class
 	if (PROCESS.find("<F>") != std::string::npos) {
 
@@ -649,10 +651,11 @@ void MGraniitti::ReadGenCuts(const std::string& inputfile) {
 		} catch (...) {
 			// Do nothing
 		}
-		gcuts.XI_min = Xi[0];
-		gcuts.XI_max = Xi[1];
-		gra::aux::AssertCut(Xi, "GENCUTS::<F>::Xi", true);
-
+		if (Xi.size() != 0) {
+			gcuts.XI_min = Xi[0];
+			gcuts.XI_max = Xi[1];
+			gra::aux::AssertCut(Xi, "GENCUTS::<F>::Xi", true);
+		}
 	}
 	
 	// Quasielastic phase space class
