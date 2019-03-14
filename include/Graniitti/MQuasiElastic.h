@@ -59,8 +59,6 @@ private:
 	double B3PhaseSpaceWeight() const;
 	
 	// Event by event integration boundaries
-	double M2_min    = 0.0;
-	double M2_max    = 0.0;
 	double t_max     = 0.0;
 	double t_min     = 0.0;
 	double DD_M2_max = 0.0;

@@ -352,9 +352,9 @@ bool MFactorized::B51RandomKin(const std::vector<double>& randvec) {
 	lts.excite1 = false;
 	lts.excite2 = false;
 
-	const double M2_f_min = pow2(1.07);
-	const double M2_f_max = gcuts.XI_max * lts.s;
-	
+	M2_f_min = pow2(1.07);
+	M2_f_max = gcuts.XI_max * lts.s;
+
 	if (EXCITATION == 1) {
 		const double mforward = msqrt( M2_f_min + (M2_f_max - M2_f_min) * randvec[6] );
 		if (random.U(0,1) < 0.5) {
@@ -501,12 +501,12 @@ double MFactorized::B51IntegralVolume() const {
 	double M2_forward_volume = 1.0;
 
 	if      (EXCITATION == 1) {
-		M2_forward_volume = gcuts.XI_max * lts.s - pow2(1.07);
+		M2_forward_volume = M2_f_max - M2_f_min;
 	}
 	else if (EXCITATION == 2) {
-		M2_forward_volume = pow2( gcuts.XI_max * lts.s - pow2(1.07) );
+		M2_forward_volume = pow2(M2_f_max - M2_f_min);
 	}
-
+	
 	return (pow2(M_MAX) - pow2(M_MIN)) *
 		   (2.0 * gra::math::PI) *
 	       (2.0 * gra::math::PI) *

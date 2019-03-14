@@ -319,9 +319,9 @@ protected:
 	//bool UNWEIGHTED = false;
 	
 	// Steering parameters
-	std::string PROCESS;      // Process identifier string
-	std::string DECAYMODE;    // Decaymode identifier string
-	bool SCREENING = false;   // Pomeron loop on/off
+	std::string PROCESS;              // Process identifier string
+	std::string DECAYMODE;            // Decaymode identifier string
+	bool SCREENING = false;           // Pomeron loop on/off
 	unsigned int EXCITATION = 0;      // Forward proton excitation (0 = off, 1 = single, 2 = double)
 	unsigned int USERCUTS = 0;        // User custom cuts identifier
 	unsigned int FLATAMPLITUDE = 0;   // Flat matrix element mode
@@ -331,6 +331,10 @@ protected:
 
 	bool ISOLATE = false;     // Isolate the decay phase space (<F> class)
 	bool FIXONSHELL = false;  // Fix daughter to their on-shell masses
+
+	// Forward excitation minimum/maximum M^2 boundaries
+	double M2_f_min = 0.0;
+	double M2_f_max = 0.0;
 	// ----------------------------------------------------------------------
 	
 	// Non-Diffractive

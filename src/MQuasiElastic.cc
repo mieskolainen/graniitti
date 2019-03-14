@@ -688,8 +688,8 @@ bool MQuasiElastic::B3RandomKin(const std::vector<double>& randvec) {
 
 	// Set Diffractive mass boundaries
 	// neutron + piplus + safe margin
-	M2_min = std::max(gcuts.XI_min * lts.s, gra::math::pow2(1.3));
-	M2_max = gcuts.XI_max * lts.s;
+	M2_f_min = std::max(gcuts.XI_min * lts.s, gra::math::pow2(1.3));
+	M2_f_max = gcuts.XI_max * lts.s;
 
 	lts.excite1 = false;
 	lts.excite2 = false;
@@ -697,7 +697,7 @@ bool MQuasiElastic::B3RandomKin(const std::vector<double>& randvec) {
 	// Sample diffractive system masses
 	if (ProcPtr.CHANNEL == "SD") {
 
-		const double r = M2_min + (M2_max - M2_min) * randvec[1];
+		const double r = M2_f_min + (M2_f_max - M2_f_min) * randvec[1];
 
 		// Choose random permutation
 		if (random.U(0, 1) < 0.5) {
@@ -712,9 +712,9 @@ bool MQuasiElastic::B3RandomKin(const std::vector<double>& randvec) {
 
 	} else if (ProcPtr.CHANNEL == "DD") {
 
-		const double r1 = M2_min + (M2_max - M2_min) * randvec[1];
+		const double r1 = M2_f_min + (M2_f_max - M2_f_min) * randvec[1];
 		DD_M2_max = gcuts.XI_max * (pow2(mp) * lts.s) / r1;
-		const double r2 = M2_min + (DD_M2_max - M2_min) * randvec[2];
+		const double r2 = M2_f_min + (DD_M2_max - M2_f_min) * randvec[2];
 
 		// Choose random permutations
 		if (random.U(0, 1) < 0.5) {
@@ -819,11 +819,13 @@ double MQuasiElastic::B3IntegralVolume() const {
 		return std::abs(t_max - t_min);
 	}
 	else if (ProcPtr.CHANNEL == "SD") {
-		return std::abs(t_max - t_min) * (M2_max - M2_min);
+		return std::abs(t_max - t_min) *
+		       (M2_f_max - M2_f_min);
 	}
 	else if (ProcPtr.CHANNEL == "DD") {
-		return std::abs(t_max - t_min) * (M2_max - M2_min) *
-		       (DD_M2_max - M2_min);
+		return std::abs(t_max - t_min) *
+		       (M2_f_max  - M2_f_min)  *
+		       (DD_M2_max - M2_f_min);
 	} else {
 		return 0;
 	}
