@@ -367,7 +367,7 @@ bool MContinuum::BNRandomKin(unsigned int Nf, const std::vector<double>& randvec
 			lts.excite2 = true;
 		}
 	}
-	if (EXCITATION == 2) {
+	else if (EXCITATION == 2) {
 		m1 = msqrt(M2_f_min + (M2_f_max - M2_f_min) * randvec[ind]  );
 		m2 = msqrt(M2_f_min + (M2_f_max - M2_f_min) * randvec[ind+1]);
 		lts.excite1 = true;
@@ -650,25 +650,25 @@ fprintf('};\n');
 // For reference, Nf = 4 special case in:
 // [REFERENCE: Lebiedowicz, Szczurek, arxiv.org/abs/0912.0190]
 double MContinuum::BNIntegralVolume() const {
-	
+
 	// Number of central states
 	const unsigned int Kf = pkt_.size() + 1;
-	
+
 	// Forward leg integration
 	double M2_forward_volume = 1.0;
-	
+
 	if      (EXCITATION == 1) {
 		M2_forward_volume = M2_f_max - M2_f_min;
 	}
 	else if (EXCITATION == 2) {
 		M2_forward_volume = pow2(M2_f_max - M2_f_min);
 	}
-	
+
 	return pow2(2.0 * PI) * 
 		   pow2(gcuts.forward_pt_max - gcuts.forward_pt_min) *
 		   std::pow(2.0 * PI, Kf-1) *
 	       std::pow(gcuts.kt_max  - gcuts.kt_min, Kf-1) *
-	       std::pow(gcuts.rap_max - gcuts.rap_min, Kf) *
+	       std::pow(gcuts.rap_max - gcuts.rap_min, Kf)  *
 	       M2_forward_volume;
 }
 

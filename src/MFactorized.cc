@@ -365,13 +365,13 @@ bool MFactorized::B51RandomKin(const std::vector<double>& randvec) {
 			lts.excite2 = true;
 		}
 	}
-	if (EXCITATION == 2) {
+	else if (EXCITATION == 2) {
 		m1 = msqrt( M2_f_min + (M2_f_max - M2_f_min) * randvec[6] );
 		m2 = msqrt( M2_f_min + (M2_f_max - M2_f_min) * randvec[7] );
 		lts.excite1 = true;
 		lts.excite2 = true;
 	}
-
+	
 	return B51BuildKin(pt1, pt2, phi1, phi2, yX, m2X, m1, m2);
 }
 
@@ -506,7 +506,7 @@ double MFactorized::B51IntegralVolume() const {
 	else if (EXCITATION == 2) {
 		M2_forward_volume = pow2(M2_f_max - M2_f_min);
 	}
-	
+
 	return (pow2(M_MAX) - pow2(M_MIN)) *
 		   (2.0 * gra::math::PI) *
 	       (2.0 * gra::math::PI) *
