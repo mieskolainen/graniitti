@@ -1,0 +1,10 @@
+GRANIITTI 0.1 (BETA) FAQ: 14.3.2019
+
+mikael.mieskolainen@cern.ch
+-----------
+
+Processes under construction/validation:
+
+- forward excitation is now implemented also for gamma-gamma but not fully validated
+- tensor pomeron amplitudes for 2xPS,2xV,2xF implemented but not fully validated
+- "sliding helicity amplitudes" under implementation

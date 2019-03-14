@@ -1,9 +1,12 @@
-GRANIITTI 0.1 (BETA) FAQ: 11.3.2019
+GRANIITTI 0.1 (BETA) FAQ: 14.3.2019
 
 mikael.mieskolainen@cern.ch
 -----------
 
 First run ./bin/gr
+
+Q:  Which features or processes are "under construction"
+A:  See /docs/UNDERWORK or send email.
 
 
 Q:  Where are examples of .json steering cards?
@@ -73,6 +76,6 @@ A:  Generation cuts are applied at the level of phase space sampling
 
 
 Q:  Something seems just weird.
-A:  Just email mikael.mieskolainen@cern.ch
+A:  Just send email.
 
 ...
