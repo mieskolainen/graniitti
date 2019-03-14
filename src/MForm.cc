@@ -553,10 +553,11 @@ double IncohFlux(double xi, double t, double pt, double M) {
 	const double mp2 = pow2(mp);
 	const double M2  = pow2(M);
 	const double Q2  = std::abs(t);
-
+	const double xbj = Q2 / (Q2 + M2 - mp2);
+	
 	const double f = alpha_EM(0) / (PI * xi) *
 					  (1.0 / (pt2 + xi*(M2 - mp2) + xi2*mp2)) *
-	                 ((1.0 - xi) * (pt2 / (pt2 + xi*(M2 - mp2) + xi2*mp2)) * F2xQ2(xi,Q2) / (Q2 + M2 - mp2));
+	                 ((1.0 - xi) * (pt2 / (pt2 + xi*(M2 - mp2) + xi2*mp2)) * F2xQ2(xbj,Q2) / (Q2 + M2 - mp2));
     
 	// Phasespace normalization for 2->N kinematics (including proton legs)
 	const double PS = 16.0 * gra::math::PIPI;
@@ -576,6 +577,7 @@ double DZFlux(double x) {
 
 	return msqrt(f);  // make it <amplitude level>
 }
+
 
 // Breit-Wigner propagators / form factors
 //

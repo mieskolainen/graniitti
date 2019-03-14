@@ -34,6 +34,8 @@ void MUserHistograms::InitHistograms() {
 	h1["pPt"]      = MH1<double>(Nbins, "Forward Pt (GeV)");
 	h2["rap1rap2"] = MH2(Nbins, Nbins, "Rapidity1 vs Rapidity2"); h2["rap1rap2"].SetAutoSymmetry({true, true});
 	
+	h1["FM"]        = MH1<double>(Nbins, "Forward M (GeV)");
+
 	// Level 2
 	Nbins = 40;
 
@@ -69,6 +71,8 @@ void MUserHistograms::FillHistograms(double totalweight, const gra::LORENTZSCALA
 		h1["dPhi_pp"].Fill(std::abs(lts.pfinal[1].DeltaPhi(lts.pfinal[2])), totalweight);
 		h1["pPt"].Fill(lts.pfinal[1].Pt(), totalweight);
 		//h1["m0"].Fill(lts.decaytree[0].p4.M(), totalweight);
+
+		h1["FM"].Fill(gra::math::msqrt(lts.pfinal[1].M()), totalweight);
 	}
 	
 	// Level 2
