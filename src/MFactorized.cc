@@ -354,7 +354,7 @@ bool MFactorized::B51RandomKin(const std::vector<double>& randvec) {
 
 	M2_f_min = pow2(1.07);
 	M2_f_max = gcuts.XI_max * lts.s;
-
+	
 	if (EXCITATION == 1) {
 		const double mforward = msqrt( M2_f_min + (M2_f_max - M2_f_min) * randvec[6] );
 		if (random.U(0,1) < 0.5) {
