@@ -449,6 +449,10 @@ double G_M(double Q2) {
 }
 */
 
+// "Sachs Form Factor" goes as follows:
+// G_E(0) = 1 for proton, 0 for neutron
+// G_M(0) = mu_p for proton, mu_n for neutrons
+
 // Simple parametrization of nucleon EM-form factors
 // 	
 // [REFERENCE: JJ Kelly, https://journals.aps.org/prc/pdf/10.1103/PhysRevC.70.068202]
@@ -492,11 +496,6 @@ double G_M(double Q2) {
 	return mup * num / den;
 }
 
-
-// "Sachs Form Factor" goes as follows:
-// G_E(0) = 1 for proton, 0 for neutron
-// G_M(0) = mu_p for proton, mu_n for neutrons
-
 // Coherent photon flux from proton
 double CohFlux(double xi, double t, double pt) {
 
@@ -528,7 +527,7 @@ double IncohFlux(double xi, double t, double pt, double M) {
 	const double Q2  = std::abs(t);
 	//const double xbj = Q2 / (Q2 + M2 - mp2);
 	//printf("xi = %0.5E, xbj = %0.5E \n", xi, xbj);
-	
+
 	const double f = alpha_EM(0) / (PI * xi) *
 					  (1.0 / (pt2 + xi*(M2 - mp2) + xi2*mp2)) *
 	                 ((1.0 - xi) * (pt2 / (pt2 + xi*(M2 - mp2) + xi2*mp2)) * F2xQ2(xi,Q2) / (Q2 + M2 - mp2));
