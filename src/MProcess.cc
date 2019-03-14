@@ -1514,30 +1514,32 @@ bool MProcess::GetLorentzScalars(unsigned int Nf) {
 	// ------------------------------------------------------------------
 
 	// t-type Lorentz scalars -->
-	const M4Vec pbeam1_pfinal1 = lts.pbeam1 - lts.pfinal[1];
-	const M4Vec pbeam2_pfinal2 = lts.pbeam2 - lts.pfinal[2];
 
-	lts.t1 = pbeam1_pfinal1.M2();
-	lts.t2 = pbeam2_pfinal2.M2();
+	// Propagator vectors
+	lts.q1 = lts.pbeam1 - lts.pfinal[1];
+	lts.q2 = lts.pbeam2 - lts.pfinal[2];
+
+	lts.t1 = lts.q1.M2();
+	lts.t2 = lts.q2.M2();
 
 	if (lts.t1 > 0 || lts.t2 > 0) { return false; }
 
 	// For 2-body central processes
 	if (lts.decaytree.size() == 2) {
-		lts.t_hat = (pbeam1_pfinal1 - lts.decaytree[0].p4).M2();
-		lts.u_hat = (pbeam1_pfinal1 - lts.decaytree[1].p4).M2();
+		lts.t_hat = (lts.q1 - lts.decaytree[0].p4).M2();
+		lts.u_hat = (lts.q2 - lts.decaytree[1].p4).M2();
 	}
 
 	for (std::size_t i = offset; i <= Nf; ++i) {
-		lts.tt_1[i] = (pbeam1_pfinal1 - lts.pfinal[i]).M2();
+		lts.tt_1[i] = (lts.q1 - lts.pfinal[i]).M2();
 	}
 	for (std::size_t i = offset; i <= Nf; ++i) {
 		for (std::size_t j = offset; j <= Nf; ++j) {
-			lts.tt_xy[i][j] = (pbeam1_pfinal1 - lts.pfinal[i] - lts.pfinal[j]).M2();
+			lts.tt_xy[i][j] = (lts.q1 - lts.pfinal[i] - lts.pfinal[j]).M2();
 		}
 	}
 	for (std::size_t i = offset; i <= Nf; ++i) {
-		lts.tt_2[i] = (pbeam2_pfinal2 - lts.pfinal[i]).M2();
+		lts.tt_2[i] = (lts.q2 - lts.pfinal[i]).M2();
 	}
 	
 	// Fractional longitudinal momentum loss [0,1]
@@ -1548,10 +1550,6 @@ bool MProcess::GetLorentzScalars(unsigned int Nf) {
 	lts.xbj1 = lts.t1 / (2 * (lts.pbeam1 * lts.q1));
 	lts.xbj2 = lts.t2 / (2 * (lts.pbeam2 * lts.q2));
 
-	// Propagator vectors
-	lts.q1 = lts.pbeam1 - lts.pfinal[1];
-	lts.q2 = lts.pbeam2 - lts.pfinal[2];
-	
 	// Propagator pt
 	lts.qt1 = lts.q1.Pt();
 	lts.qt2 = lts.q2.Pt();
