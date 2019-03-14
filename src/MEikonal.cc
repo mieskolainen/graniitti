@@ -581,6 +581,8 @@ std::complex<double> IArray1D::Interpolate1D(double a) const {
 	if (a > MAX*(1+EPS) ) {
 		printf("IArray1D::Interpolate1D(%s) Input out of grid domain: "
 			"%s = %0.3f [%0.3f, %0.3f] \n", name.c_str(), name.c_str(), a, MIN, MAX);
+
+		throw std::invalid_argument("Interpolate1D:: Out of grid domain");
 	}
 	int i = std::floor((a - MIN) / STEP);
 

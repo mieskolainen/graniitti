@@ -73,7 +73,7 @@ MGraniitti::~MGraniitti() {
 }
 
 void MGraniitti::PrintHistograms() {
-	HistogramFusion();
+	//HistogramFusion();
 	proc->PrintHistograms();
 }
 

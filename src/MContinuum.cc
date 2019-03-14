@@ -99,10 +99,10 @@ void MContinuum::post_Constructor() {
 
 		// QED/EW/Durham-QCD processes (high pt)
 		if (ProcPtr.ISTATE != "PP" && ProcPtr.ISTATE != "yP") {
-			gcuts.kt_max = lts.sqrt_s / 2.0;
+			gcuts.kt_max = lts.sqrt_s / 4.0;
 		}
 	}
-
+	
 	// Initialize phase space dimension (3*Nf - 4)
 	ProcPtr.LIPSDIM = 3*(lts.decaytree.size()+2)-4;
 

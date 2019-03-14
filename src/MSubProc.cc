@@ -113,7 +113,18 @@ void MSubProc::SetTechnicalBoundaries(gra::GENCUT& gcuts, unsigned int EXCITATIO
 	if (gcuts.forward_pt_max < 0.0) { // Not set yet
 		
 		if      (EXCITATION == 0) {   // Fully elastic
-			gcuts.forward_pt_max = 2.0;
+			if      (ISTATE == "PP") {
+			gcuts.forward_pt_max = 1.75;
+			}
+			else if (ISTATE == "yP") {
+			gcuts.forward_pt_max = 1.75;
+			}
+			else if (ISTATE == "yy") {
+			gcuts.forward_pt_max = 1.5;
+			}
+			else if (ISTATE == "gg") {
+			gcuts.forward_pt_max = 1.75;
+			}
 		}
 		else if (EXCITATION == 1) {   // Single
 			gcuts.forward_pt_max = 12.0;
