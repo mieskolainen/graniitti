@@ -123,10 +123,7 @@ int main(int argc, char* argv[]) {
 	if (r.count("h"))  { gen->proc->SetHistograms(r["h"].as<unsigned int>()); }
 	if (r.count("a"))  { gen->proc->SetFlatAmp(r["a"].as<unsigned int>()); }
 	if (r.count("r"))  { gen->proc->random.SetSeed(r["r"].as<unsigned int>()); }
-
-	// Always after process setup
-	gen->proc->post_Constructor();
-
+	
 	// -------------------------------------------------------------------
 
 	// Initialize generator (always last!)

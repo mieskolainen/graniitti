@@ -101,6 +101,9 @@ void MFactorized::post_Constructor() {
 
 	// Initialize phase space dimension
 	ProcPtr.LIPSDIM = 5 + 1; // All processes, +1 from central system mass
+
+	if (EXCITATION == 1) { ProcPtr.LIPSDIM += 1; }
+	if (EXCITATION == 2) { ProcPtr.LIPSDIM += 2; }
 }
 
 
@@ -142,9 +145,8 @@ bool MFactorized::LoopKinematics(const std::vector<double>& p1p,
 	double p2z = -(lts.pfinal[0].Pz() + p1z); // by momentum conservation
 	if (std::isnan(p1z)) { return false; }
 	
-	// *** Enforce scattering direction +p -> +p, -p -> -p ***
-	p1z = std::abs(p1z);
-	p2z = -std::abs(p2z);
+	// Enforce scattering direction +p -> +p, -p -> -p (VERY RARE POLYNOMIAL BRANCH FLIP)
+	if (p1z < 0 || p2z > 0) { return false; }
 
 	// Pz and E of protons/N*
 	lts.pfinal[1].SetPzE(p1z, msqrt(pow2(m1) + pow2(pt1) + pow2(p1z)) );
@@ -269,13 +271,17 @@ void MFactorized::PrintInit(bool silent) const {
 		          << "Generation cuts:" << rang::style::reset
 		          << std::endl
 		          << std::endl;
-		printf("- System rapidity (Rap) [min, max] = [%0.2f, %0.2f]     (user) \n"
-			   "- System mass (M)       [min, max] = [%0.2f, %0.2f] GeV (user) \n"
-		       "- Forward leg (Pt)      [min, max] = [%0.2f, %0.2f] GeV (fixed/user) \n",
+		printf("- System rapidity (Rap) [min, max] = [%0.2f, %0.2f]     \t(user) \n"
+			   "- System mass (M)       [min, max] = [%0.2f, %0.2f] GeV \t(user) \n"
+		       "- Forward leg (Pt)      [min, max] = [%0.2f, %0.2f] GeV \t(fixed/user) \n",
 		    gcuts.Y_min, gcuts.Y_max,
 		    gcuts.M_min, gcuts.M_max,
 		    gcuts.forward_pt_min, gcuts.forward_pt_max);
 		
+		if (EXCITATION != 0) {
+		printf("- Forward leg (Xi)      [min, max] = [%0.2f, %0.2f]     \t(fixed/user) \n", gcuts.XI_min, gcuts.XI_max);
+		}
+
 		PrintFiducialCuts();
 	}
 }
@@ -338,19 +344,37 @@ bool MFactorized::B51RandomKin(const std::vector<double>& randvec) {
 	};
 
 	// Mass squared
-	const double M2 = pow2(M_MIN) + (pow2(M_MAX) - pow2(M_MIN)) * randvec[5];
+	const double m2X = pow2(M_MIN) + (pow2(M_MAX) - pow2(M_MIN)) * randvec[5];
 
-	return B51BuildKin(pt1, pt2, phi1, phi2, yX, M2);
+	// Forward N* system masses
+	double m1 = beam1.mass;
+	double m2 = beam2.mass;
+	lts.excite1 = false;
+	lts.excite2 = false;
+
+	if (EXCITATION == 1) {
+		const double mforward = msqrt(random.U(pow2(1.07), gcuts.XI_max * lts.s));
+		if (random.U(0,1) < 0.5) {
+			m1 = mforward;
+			lts.excite1 = true;
+		} else {
+			m2 = mforward;
+			lts.excite2 = true;
+		}
+	}
+	if (EXCITATION == 2) {
+		m1 = msqrt(random.U(pow2(1.07), gcuts.XI_max * lts.s));
+		m2 = msqrt(random.U(pow2(1.07), gcuts.XI_max * lts.s));
+		lts.excite1 = true;
+		lts.excite2 = true;
+	}
+
+	return B51BuildKin(pt1, pt2, phi1, phi2, yX, m2X, m1, m2);
 }
 
 
 // Build kinematics for 2->3 skeleton
-bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, double yX, double m2X) {
-
-	// Forward N* system masses
-	double m1 = 0;
-	double m2 = 0;
-	MFragment::GetForwardMass(m1, m2, lts.excite1, lts.excite2, EXCITATION, random);
+bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, double yX, double m2X, double m1, double m2) {
 
 	// Final state 4-momenta, set px,py first
 	M4Vec p1(pt1 * std::cos(phi1), pt1 * std::sin(phi1), 0, 0);
@@ -367,9 +391,8 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
 	double p1z = gra::kinematics::SolvepPZ1(m1, m2, pt1, pt2, pX.Pz(), pX.E(), lts.sqrt_s);
 	double p2z = -(pX.Pz() + p1z); // by momentum conservation
 
-	// *** Enforce scattering direction +p -> +p, -p -> -p *** (RARE POLYNOMIAL BRANCH FLIP)
-	p1z =  std::abs(p1z);
-	p2z = -std::abs(p2z);
+	// Enforce scattering direction +p -> +p, -p -> -p (VERY RARE POLYNOMIAL BRANCH FLIP)
+	if (p1z < 0 || p2z > 0) { return false; }
 	
 	// Pz and E of forward protons/N*
 	p1.SetPzE(p1z, msqrt(pow2(m1) + pow2(pt1) + pow2(p1z)));
@@ -470,12 +493,24 @@ void MFactorized::DecayWidthPS(double& exact) const {
 // Integral over central mass^2 is separate [phase-space factorization], but
 // encapsulated here (+1 dimension)
 double MFactorized::B51IntegralVolume() const {
+
+	// Forward leg integration
+	double M2_forward_volume = 1.0;
+
+	if      (EXCITATION == 1) {
+		M2_forward_volume = gcuts.XI_max * lts.s - pow2(1.07);
+	}
+	else if (EXCITATION == 2) {
+		M2_forward_volume = pow2( gcuts.XI_max * lts.s - pow2(1.07) );
+	}
+
 	return (pow2(M_MAX) - pow2(M_MIN)) *
 		   (2.0 * gra::math::PI) *
 	       (2.0 * gra::math::PI) *
 	       (gcuts.forward_pt_max - gcuts.forward_pt_min) *
 	       (gcuts.forward_pt_max - gcuts.forward_pt_min) *
-	       (gcuts.Y_max - gcuts.Y_min);
+	       (gcuts.Y_max - gcuts.Y_min) *
+	       M2_forward_volume;
 }
 
 

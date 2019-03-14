@@ -51,8 +51,10 @@ MAmpMG5_yy_ww::~MAmpMG5_yy_ww() {
 std::complex<double> MAmpMG5_yy_ww::CalcAmp(gra::LORENTZSCALAR& lts) {
 
 	// Get photon fluxes
-	const double gammaflux1 = lts.excite1 ? gra::form::ampF2xQ2(lts.x1, std::abs(lts.t1)) : gra::form::CohFlux(lts.x1, lts.t1, lts.qt1); // Gammaflux
-	const double gammaflux2 = lts.excite2 ? gra::form::ampF2xQ2(lts.x2, std::abs(lts.t2)) : gra::form::CohFlux(lts.x2, lts.t2, lts.qt2); // Gammaflux
+			const double M1 = lts.pfinal[1].M();
+		const double M2 = lts.pfinal[2].M();
+	const double gammaflux1 = lts.excite1 ? gra::form::IncohFlux(lts.x1, lts.t1, lts.qt1, M1) : gra::form::CohFlux(lts.x1, lts.t1, lts.qt1); // Gammaflux
+	const double gammaflux2 = lts.excite2 ? gra::form::IncohFlux(lts.x2, lts.t2, lts.qt2, M2) : gra::form::CohFlux(lts.x2, lts.t2, lts.qt2); // Gammaflux
 
 	const double mgamma1 = 0; // on-shell
 	const double mgamma2 = 0;

@@ -389,7 +389,7 @@ void MFragment::GetForwardMass(double& mass1, double& mass2, bool& excite1,
 
 // Return excited forward system mass
 void MFragment::GetSingleForwardMass(double& mass, MRandom& random) {
-
+	
 	// Good-Walker resonance excitation probabilities
 	// C++11, thread_local is also static
 	thread_local std::discrete_distribution<> d(

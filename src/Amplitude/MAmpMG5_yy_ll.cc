@@ -52,20 +52,24 @@ MAmpMG5_yy_ll::~MAmpMG5_yy_ll() {
 // Get amplitude
 std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR& lts) {
 	
+	//printf("xi1 = %0.5E, xi2 = %0.5E \n", lts.x1, lts.x2);
+	
 	// Get photon fluxes
-	const double gammaflux1 = lts.excite1 ? gra::form::ampF2xQ2(lts.x1, std::abs(lts.t1)) : gra::form::CohFlux(lts.x1, lts.t1, lts.qt1); // Gammaflux
-	const double gammaflux2 = lts.excite2 ? gra::form::ampF2xQ2(lts.x2, std::abs(lts.t2)) : gra::form::CohFlux(lts.x2, lts.t2, lts.qt2); // Gammaflux
+	const double gammaflux1 = lts.excite1 ? gra::form::IncohFlux(lts.x1, lts.t1, lts.qt1, lts.pfinal[1].M()) : 
+											  gra::form::CohFlux(lts.x1, lts.t1, lts.qt1);
+	const double gammaflux2 = lts.excite2 ? gra::form::IncohFlux(lts.x2, lts.t2, lts.qt2, lts.pfinal[2].M()) :
+											  gra::form::CohFlux(lts.x2, lts.t2, lts.qt2);
 
 	// Photon masses
 	const double mgamma1 = 0; // use on-shell
 	const double mgamma2 = 0;
-
+	
 	// *** Set masses for HELAS ***
 	const std::vector<double> masses = {mgamma1, mgamma2,
 	                                    lts.decaytree[0].p4.M(),
 	                                    lts.decaytree[1].p4.M()};
 	mME = masses;
-
+	
 	// *** Set particle 4-momentum: [E,px,py,pz] convention here! ***
 	double p1[] = {lts.q1.P3mod(), lts.q1.Px(), lts.q1.Py(),
 	               lts.q1.Pz()}; // force E = p (gamma on-shell)

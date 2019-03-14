@@ -1104,28 +1104,34 @@ bool MProcess::CommonCuts() const {
 		if (!UserCut(USERCUTS, lts)) {
 			return false; // not fine
 		}
-		
-		// Check forward system variables
-		if (std::abs(lts.t1)  > fcuts.forward_t_min && std::abs(lts.t1)  < fcuts.forward_t_max &&
-		    std::abs(lts.t2)  > fcuts.forward_t_min && std::abs(lts.t2)  < fcuts.forward_t_max &&
-		    lts.pfinal[1].M() > fcuts.forward_M_min && lts.pfinal[1].M() < fcuts.forward_M_max &&
-		    lts.pfinal[2].M() > fcuts.forward_M_min && lts.pfinal[2].M() < fcuts.forward_M_max) {
 
-			// fine, do not touch
-		} else {
-			return false; // not fine
+		// Check forward system variables
+		if (std::abs(lts.t1) > fcuts.forward_t_min && std::abs(lts.t1) < fcuts.forward_t_max &&
+		    std::abs(lts.t2) > fcuts.forward_t_min && std::abs(lts.t2) < fcuts.forward_t_max) {
+				// fine
+		} else { return false; }
+
+		if (lts.excite1) {
+		    if (lts.pfinal[1].M() > fcuts.forward_M_min && lts.pfinal[1].M() < fcuts.forward_M_max) {
+				// fine
+		    } else { return false; }
+		}
+
+		if (lts.excite2) {
+			if (lts.pfinal[2].M() > fcuts.forward_M_min && lts.pfinal[2].M() < fcuts.forward_M_max) {
+				// fine
+			} else { return false; }
 		}
 
 		// Check system variables
 		if (msqrt(lts.m2) > fcuts.M_min && msqrt(lts.m2) < fcuts.M_max &&
-		    lts.Y > fcuts.Y_min && lts.Y < fcuts.Y_max &&
-		    lts.Pt > fcuts.Pt_min && lts.Pt < fcuts.Pt_max) {
-			
+		    lts.Y  > fcuts.Y_min  && lts.Y  < fcuts.Y_max &&
+		    lts.Pt > fcuts.Pt_min && lts.Pt < fcuts.Pt_max) {	
 			// fine, do not touch
 		} else {
 			return false; // not fine
 		}
-
+		
 		// Check fiducial cuts of the central final state particles
 		for (const auto& i : indices(lts.decaytree)) {
 			FindDecayCuts(lts.decaytree[i], ok);
@@ -1536,24 +1542,24 @@ bool MProcess::GetLorentzScalars(unsigned int Nf) {
 		lts.tt_2[i] = (pbeam2_pfinal2 - lts.pfinal[i]).M2();
 	}
 	
-	// Bjorken-x
+	// Longitudinal momentum loss
 	lts.x1 = (1.0 - lts.pfinal[1].Pz() / lts.pbeam1.Pz());
 	lts.x2 = (1.0 - lts.pfinal[2].Pz() / lts.pbeam2.Pz());
-
+	
 	// Propagator vectors
 	lts.q1 = lts.pbeam1 - lts.pfinal[1];
 	lts.q2 = lts.pbeam2 - lts.pfinal[2];
-
+	
 	// Propagator pt
 	lts.qt1 = lts.q1.Pt();
 	lts.qt2 = lts.q2.Pt();
-
+	
 	// Often used system variables
 	lts.m2    = lts.pfinal[0].M2();
 	lts.s_hat = lts.m2;
 	lts.Y     = lts.pfinal[0].Rap();
 	lts.Pt    = lts.pfinal[0].Pt();
-
+	
 	// DEBUG
 	/*
 	std::cout << std::endl;

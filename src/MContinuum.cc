@@ -84,6 +84,8 @@ void MContinuum::ConstructProcesses() {
 // Initialize cut and process spesific postsetup
 void MContinuum::post_Constructor() {
 
+	std::cout << "MContinuum::post_Constructor: " << EXCITATION << std::endl;
+	
 	// Set sampling boundaries
 	ProcPtr.SetTechnicalBoundaries(gcuts, EXCITATION);
 	
@@ -103,6 +105,9 @@ void MContinuum::post_Constructor() {
 
 	// Initialize phase space dimension (3*Nf - 4)
 	ProcPtr.LIPSDIM = 3*(lts.decaytree.size()+2)-4;
+
+	if (EXCITATION == 1) { ProcPtr.LIPSDIM += 1; }
+	if (EXCITATION == 2) { ProcPtr.LIPSDIM += 2; }
 }
 
 
@@ -150,9 +155,8 @@ bool MContinuum::LoopKinematics(const std::vector<double>& p1p,
 	double p1z = gra::kinematics::SolvepPZ1(m1, m2, pt1, pt2, sumP.Pz(), sumP.E(), lts.sqrt_s);
 	double p2z = -(sumP.Pz() + p1z); // by momentum conservation
 	
-	// Enforce scattering direction +p -> +p, -p -> -p
-	p1z =  std::abs(p1z);
-	p2z = -std::abs(p2z);
+	// Enforce scattering direction +p -> +p, -p -> -p (VERY RARE POLYNOMIAL BRANCH FLIP)
+	if (p1z < 0 || p2z > 0) { return false; }
 	
 	lts.pfinal[1].SetPzE(p1z, msqrt(pow2(m1) + pow2(pt1) + pow2(p1z)));
 	lts.pfinal[2].SetPzE(p2z, msqrt(pow2(m2) + pow2(pt2) + pow2(p2z)));
@@ -286,10 +290,15 @@ void MContinuum::PrintInit(bool silent) const {
 		          << "Generation cuts:" << rang::style::reset
 		          << std::endl
 		          << std::endl;
-		printf("- Final state rapidity (Rap) [min, max] = [%0.2f, %0.2f]     (user)       \n"
-		       "- Intermediate (Kt)          [min, max] = [%0.2f, %0.2f] GeV (fixed/user) \n"
-		       "- Forward leg (Pt)           [min, max] = [%0.2f, %0.2f] GeV (fixed/user) \n",
+		printf("- Final state rapidity (Rap) [min, max] = [%0.2f, %0.2f]     \t(user)       \n"
+		       "- Intermediate (Kt)          [min, max] = [%0.2f, %0.2f] GeV \t(fixed/user) \n"
+		       "- Forward leg (Pt)           [min, max] = [%0.2f, %0.2f] GeV \t(fixed/user) \n",
 		       gcuts.rap_min, gcuts.rap_max, gcuts.kt_min, gcuts.kt_max, gcuts.forward_pt_min, gcuts.forward_pt_max);
+
+		if (EXCITATION != 0) {
+		printf("- Forward leg (Xi)           [min, max] = [%0.2f, %0.2f]     \t(fixed/user) \n", gcuts.XI_min, gcuts.XI_max);
+		}
+
 		PrintFiducialCuts();
 	}
 }
@@ -339,12 +348,35 @@ bool MContinuum::BNRandomKin(unsigned int Nf, const std::vector<double>& randvec
 		++ind;
 	}
 
-	return BNBuildKin(Nf, pt1, pt2, phi1, phi2, kt, phi, y);
+	// Forward N* system masses
+	double m1 = beam1.mass;
+	double m2 = beam2.mass;
+	lts.excite1 = false;
+	lts.excite2 = false;
+
+	if (EXCITATION == 1) {
+		const double mforward = msqrt(random.U(pow2(1.07), gcuts.XI_max * lts.s));
+		if (random.U(0,1) < 0.5) {
+			m1 = mforward;
+			lts.excite1 = true;
+		} else {
+			m2 = mforward;
+			lts.excite2 = true;
+		}
+	}
+	if (EXCITATION == 2) {
+		m1 = msqrt(random.U(pow2(1.07), gcuts.XI_max * lts.s));
+		m2 = msqrt(random.U(pow2(1.07), gcuts.XI_max * lts.s));
+		lts.excite1 = true;
+		lts.excite2 = true;
+	}
+
+	return BNBuildKin(Nf, pt1, pt2, phi1, phi2, kt, phi, y, m1, m2);
 }
 
 // Build kinematics of 2->N
 bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1, double phi2,
-	const std::vector<double>& kt, const std::vector<double>& phi, const std::vector<double>& y) {
+	const std::vector<double>& kt, const std::vector<double>& phi, const std::vector<double>& y, double m1, double m2) {
 
 	const unsigned int Kf = Nf - 2; // Central system multiplicity
 
@@ -356,10 +388,10 @@ bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1
 		throw std::invalid_argument(str);
 	}
 
-	double m1 = 0;
-	double m2 = 0;
-	MFragment::GetForwardMass(m1, m2, lts.excite1, lts.excite2, EXCITATION, random);
-
+	//double m1 = 0;
+	//double m2 = 0;
+	//MFragment::GetForwardMass(m1, m2, lts.excite1, lts.excite2, EXCITATION, random);
+	
 	// Forward protons px,py
 	M4Vec p1(pt1 * std::cos(phi1), pt1 * std::sin(phi1), 0, 0);
 	M4Vec p2(pt2 * std::cos(phi2), pt2 * std::sin(phi2), 0, 0);
@@ -392,8 +424,7 @@ bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1
 	double p2z = -(sumP.Pz() + p1z); // by momentum conservation
 
 	// Enforce scattering direction +p -> +p, -p -> -p (VERY RARE POLYNOMIAL BRANCH FLIP)
-	p1z =  std::abs(p1z);
-	p2z = -std::abs(p2z);
+	if (p1z < 0 || p2z > 0) { return false; }
 
 	// pz and E of protons/N*
 	p1.SetPzE(p1z, msqrt(pow2(m1) + pow2(pt1) + pow2(p1z)));
@@ -619,11 +650,22 @@ double MContinuum::BNIntegralVolume() const {
 	// Number of central states
 	const unsigned int Kf = pkt_.size() + 1;
 
+	// Forward leg integration
+	double M2_forward_volume = 1.0;
+
+	if      (EXCITATION == 1) {
+		M2_forward_volume = gcuts.XI_max * lts.s - pow2(1.07);
+	}
+	else if (EXCITATION == 2) {
+		M2_forward_volume = pow2( gcuts.XI_max * lts.s - pow2(1.07) );
+	}
+
 	return pow2(2.0 * PI) * 
 		   pow2(gcuts.forward_pt_max - gcuts.forward_pt_min) *
 		   std::pow(2.0 * PI, Kf-1) *
 	       std::pow(gcuts.kt_max  - gcuts.kt_min, Kf-1) *
-	       std::pow(gcuts.rap_max - gcuts.rap_min, Kf);
+	       std::pow(gcuts.rap_max - gcuts.rap_min, Kf) *
+	       M2_forward_volume;
 }
 
 

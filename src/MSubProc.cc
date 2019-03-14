@@ -37,14 +37,14 @@ MSubProc::MSubProc(const std::string& _ISTATE, const std::string& _CHANNEL, cons
 	ISTATE  = _ISTATE;
 	CHANNEL = _CHANNEL;	
 	PDG     = _PDG;
-	
+
 	ConstructDescriptions(ISTATE);
 
 	// Construct 4 and 6 body Regge Ladder leg permutations
 	const int mode = 1; // charged permutations
 	permutations4_ = gra::math::GetAmpPerm(4, mode);
 	permutations6_ = gra::math::GetAmpPerm(6, mode);
-	
+
 	// ** Read in monopole mass (needed by monopolium process) **
 	PARAM_MONOPOLE::M0 = _PDG.FindByPDG(PDG::PDG_monopole).mass;
 }
@@ -78,7 +78,7 @@ void MSubProc::ConstructDescriptions(const std::string& first) {
 			descriptions.insert(std::pair<std::string, std::map<std::string,std::string>>("PP", channels));
 	}
 	else if (first == "yP") {
-
+		
 		std::map<std::string, std::string> channels;
 		channels.insert(std::pair<std::string, std::string>("RES",       "Photoproduction of resonance [EPA] x [Pomeron]"));
 			descriptions.insert(std::pair<std::string, std::map<std::string,std::string>>("yP", channels));
@@ -109,17 +109,17 @@ void MSubProc::SetTechnicalBoundaries(gra::GENCUT& gcuts, unsigned int EXCITATIO
 	if (gcuts.forward_pt_min < 0.0) { // Not set yet
 		gcuts.forward_pt_min = 0.0;
 	}
-
+	
 	if (gcuts.forward_pt_max < 0.0) { // Not set yet
-
-		if      (EXCITATION == 0) {  // Fully elastic
+		
+		if      (EXCITATION == 0) {   // Fully elastic
 			gcuts.forward_pt_max = 2.0;
 		}
-		else if (EXCITATION == 1) {  // Single
-			gcuts.forward_pt_max = 4.0;
+		else if (EXCITATION == 1) {   // Single
+			gcuts.forward_pt_max = 12.0;
 		}
-		else if (EXCITATION == 2) {  // Double
-			gcuts.forward_pt_max = 6.0;
+		else if (EXCITATION == 2) {   // Double
+			gcuts.forward_pt_max = 48.0;
 		}
 	}
 }
@@ -243,7 +243,7 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy(gra::LORENTZSCALAR& lt
 
 	// ------------------------------------------------------------------
 	if (lts.excite1 == true || lts.excite2 == true) {
-		throw std::invalid_argument("MSubProc::GetBareAmplitude_yy: Proton excitation not yet implemented for gamma-gamma processes!");
+	//	throw std::invalid_argument("MSubProc::GetBareAmplitude_yy: Proton excitation not yet implemented for gamma-gamma processes!");
 	}
 	// ------------------------------------------------------------------
 

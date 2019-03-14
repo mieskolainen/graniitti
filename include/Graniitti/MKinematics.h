@@ -1521,9 +1521,9 @@ struct GENCUT {
 
   // ---------------------------------------
 
-  // Quasi-Elastic phase space <Q>
+  // Quasi-Elastic phase space <Q> or forward excitation
   double XI_min = 0.0;
-  double XI_max = 1.0;
+  double XI_max = 1e-6;
 };
 
 

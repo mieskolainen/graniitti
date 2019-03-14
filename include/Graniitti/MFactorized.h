@@ -52,7 +52,7 @@ private:
 	// 5+1-Dim phase space, 2->3
 	bool   B51RandomKin(const std::vector<double>& randvec);
 	bool   B51BuildKin(double pt1, double pt2, double phi1, double phi2,
-	                double yX, double m2X);
+	                   double yX,  double m2X, double m1,   double m2);
 	void   B51RecordEvent(HepMC3::GenEvent& evt);
 
 	double B51IntegralVolume() const;

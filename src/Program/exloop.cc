@@ -246,10 +246,7 @@ void experiment(bool screening) {
 				// Set spesific parameters
 				gen->proc->SetScreening(mode);
 				gen->proc->SetExcitation(false);
-
-				// ** ALWAYS LAST **
-				//gen->proc->post_Constructor("MODELPARAM.json");
-
+                
 				// Initialize (always last!)
 				gen->Initialize();
 

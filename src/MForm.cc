@@ -312,49 +312,83 @@ double S3F(double t) {
 }
 
 
-// Proton inelastic structure function parametrization t-dependent part
-//
-// <apply at amplitude level>
+// Proton inelastic structure function parametrization t-dependent part stripped
 //
 // [REFERENCE: Donnachie, Landshoff, https://arxiv.org/abs/hep-ph/9305319]
 double S3FINEL(double t) {
 
-	const double a = 0.5616; // GeV^{2}
-	const double f = std::pow(std::abs(t) / (std::abs(t) + a), 1.088);
-	
+	static const double a = 0.5616; // GeV^{2}
+	const double f = std::pow(std::abs(t) / (std::abs(t) + a), 1.0808);
+
 	return msqrt(f); // Make it <amplitude level>
 }
 
 
-// Proton inelastic structure function parametrization  <apply at amplitude level>
-//
+// Proton inelastic structure function F2(x,Q^2) parametrization 
+// 
+// The basic idea is that at low-Q^2, a fully non-perturbative description (parametrization) is needed.
+// At high Q^2, DGLAP evolution could be done in log(Q^2) starting from the input description.
+// 
+// Now, some classic ones have been implemented:
+// 
+// [REFERENCE: Donnachie, Landshoff, https://arxiv.org/abs/hep-ph/9305319]
 // [REFERENCE: Capella, Kaidalov, Merino, Tran Tranh Van, https://arxiv.org/abs/hep-ph/9405338v1]
-double ampF2xQ2(double x, double Q2) {
+//
+double F2xQ2(double x, double Q2) {
 
-	const double A        = 0.1502;
-	const double B_u      = 1.2064;
-	const double B_d      = 0.1798;
-	const double alpha_R  = 0.4150;
-	const double DELTA_0  = 0.0800;
+	const std::string F2TYPE = "CKMT";
 
-	const double a        = 0.2631;
-	const double b        = 0.6452;
-	const double c        = 3.5489;
-	const double d        = 1.1170;
+	if (F2TYPE == "DL") {
 
-	const double n_Q2     = (3.0/2.0) * (1 + Q2/(Q2 + c));
-	const double DELTA_Q2 = DELTA_0 * (1 + (2*Q2) / (Q2 + d));
-	
-	const double C1 = std::pow(Q2/(Q2 + a), 1.0 + DELTA_Q2);
-	const double C2 = std::pow(Q2/(Q2 + b), alpha_R);
+		static const double A = 0.324;
+		static const double B = 0.098;
 
-	const double F2 = A * std::pow(x, -DELTA_Q2)    * std::pow(1-x, n_Q2 + 4.0)  * C1 + 
-		   				  std::pow(x, 1.0-alpha_R)  *
-		   		   (B_u * std::pow(1-x, n_Q2) + B_d * std::pow(1-x, n_Q2 + 1.0)) * C2;
+		static const double DELTA_P = 0.0808;
+		static const double DELTA_R = 0.5475;
 
-   	return msqrt(F2); // Make it <amplitude level>
+		static const double a = 0.561991692786383;
+		static const double b = 0.011133;
+
+		const double F2 = 
+		  A * std::pow(x, - DELTA_P) * std::pow(Q2 / (Q2 + a), 1 + DELTA_P)
+		+ B * std::pow(x, 1-DELTA_R) * std::pow(Q2 / (Q2 + b), DELTA_R);
+
+		return F2;
+	}
+
+	else if (F2TYPE == "CKMT") {
+		static const double A        = 0.1502;
+		static const double B_u      = 1.2064;
+		static const double B_d      = 0.1798;
+		static const double alpha_R  = 0.4150;
+		static const double DELTA_0  = 0.0800;
+
+		static const double a        = 0.2631;
+		static const double b        = 0.6452;
+		static const double c        = 3.5489;
+		static const double d        = 1.1170;
+
+		const double n_Q2     = (3.0/2.0) * (1 + Q2/(Q2 + c));
+		const double DELTA_Q2 = DELTA_0 * (1 + (2*Q2) / (Q2 + d));
+		
+		const double C1 = std::pow(Q2/(Q2 + a), 1.0 + DELTA_Q2);
+		const double C2 = std::pow(Q2/(Q2 + b), alpha_R);
+
+		const double F2 = A * std::pow(x, -DELTA_Q2)    * std::pow(1-x, n_Q2 + 4.0)  * C1 + 
+			   				  std::pow(x, 1.0-alpha_R)  *
+			   		   (B_u * std::pow(1-x, n_Q2) + B_d * std::pow(1-x, n_Q2 + 1.0)) * C2;
+
+	   	return F2;
+    } else {
+    	throw std::invalid_argument("gra::form::F2xQ2: Unknown F2TYPE = " + F2TYPE);
+    }
 }
 
+
+double F1xQ2(double x, double Q2) {
+
+	return 0.0;
+}
 
 // ============================================================================
 // Photon flux densities and form factors, input Q^2 as positive
@@ -416,7 +450,7 @@ double G_M(double Q2) {
 */
 
 // Simple parametrization of nucleon EM-form factors
-// 
+// 	
 // [REFERENCE: JJ Kelly, https://journals.aps.org/prc/pdf/10.1103/PhysRevC.70.068202]
 double G_E(double Q2) {
 	static const std::vector<double> a = {1, -0.24};
@@ -463,19 +497,19 @@ double G_M(double Q2) {
 // G_E(0) = 1 for proton, 0 for neutron
 // G_M(0) = mu_p for proton, mu_n for neutrons
 
-//
-// Photon x-value, t-value, photon pt
-//
-double CohFlux(double x, double t, double pt) {
-	const double pt2 = pt * pt;
-	const double x2 = x * x;
-	const double mp2 = mp * mp;
-	const double Q2 = std::abs(t); // Absolute value
+// Coherent photon flux from proton
+double CohFlux(double xi, double t, double pt) {
 
-	const double f = alpha_EM(0) / (PI * x) * (1.0 / (pt2 + x2 * mp2)) *
-	                 ((pt2 / (pt2 + x2 * mp2)) * (1.0 - x) * F_E(Q2) +
-	                  (x2 / 2.0) * F_M(Q2));
+	const double pt2 = pow2(pt);
+	const double xi2 = pow2(xi);
+	const double mp2 = pow2(mp);
+	const double Q2  = std::abs(t);
 
+	const double f = alpha_EM(0) / (PI * xi) * 
+	                 (1.0 / (pt2 + xi2 * mp2)) *
+	                ((1.0 - xi) * (pt2 / (pt2 + xi2 * mp2)) * F_E(Q2) +
+	                 (xi2 / 2.0) * F_M(Q2));
+    
 	// Phasespace normalization for 2->N kinematics (including proton legs)
 	const double PS = 16.0 * gra::math::PIPI;
 
@@ -483,7 +517,31 @@ double CohFlux(double x, double t, double pt) {
 }
 
 
-// Drees-Zeppenfeld photon flux (collinear EPA flux)
+// Incoherent photon flux from proton
+// when M -> mp, this reproduces CohFlux() if F2 does reproduce the elastic limit (not all parametrizations do)
+double IncohFlux(double xi, double t, double pt, double M) {
+
+	const double pt2 = pow2(pt);
+	const double xi2 = pow2(xi);
+	const double mp2 = pow2(mp);
+	const double M2  = pow2(M);
+	const double Q2  = std::abs(t);
+	const double xbj = Q2 / (Q2 + M2 - mp2);
+
+	//printf("xi = %0.5E, xbj = %0.5E \n", xi, xbj);
+
+	const double f = alpha_EM(0) / (PI * xi) *
+					  (1.0 / (pt2 + xi*(M2 - mp2) + xi2*mp2)) *
+	                 ((1.0 - xi) * (pt2 / (pt2 + xi*(M2 - mp2) + xi2*mp2)) * F2xQ2(xi,Q2) / (Q2 + M2 - mp2));
+    
+	// Phasespace normalization for 2->N kinematics (including proton legs)
+	const double PS = 16.0 * gra::math::PIPI;
+
+	return msqrt(f * PS); // make it <amplitude level>
+}
+
+
+// Drees-Zeppenfeld photon flux (collinear EPA flux - use only for the reference)
 double DZFlux(double x) {
 	const double Q2min = (pow2(mp) * pow2(x)) / (1.0 - x);
 	const double A = 1.0 + 0.71 / Q2min;

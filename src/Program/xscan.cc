@@ -57,7 +57,7 @@ int main(int argc, char* argv[]) {
   		;
   			
 	auto r = options.parse(argc, argv);
-
+	
 	if (r.count("help") || NARGC == 0) {
 		gen->GetProcessNumbers();
 		std::cout << options.help({""}) << std::endl;

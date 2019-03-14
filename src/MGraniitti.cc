@@ -482,9 +482,6 @@ void MGraniitti::ReadProcessParam(const std::string& inputfile, const std::strin
 	ReadGenCuts(inputfile);
 	ReadFidCuts(inputfile);
 	ReadVetoCuts(inputfile);
-	
-	// ** ALWAYS LAST AFTER READING ALL CUTS! **
-	proc->post_Constructor();
 }
 
 
@@ -594,6 +591,17 @@ void MGraniitti::ReadGenCuts(const std::string& inputfile) {
 			gcuts.forward_pt_max   = pt[1];
 			gra::aux::AssertCut(pt, "GENCUTS::<C>::Pt", true);
 		}
+
+		// This is optional, forward leg excitation 
+		std::vector<double> Xi;
+		try {
+		std::vector<double> temp = j[XID]["<C>"]["Xi"]; Xi = temp;
+		} catch (...) {
+			// Do nothing
+		}
+		gcuts.XI_min = Xi[0];
+		gcuts.XI_max = Xi[1];
+		gra::aux::AssertCut(Xi, "GENCUTS::<C>::Xi", true);
 	}
 
 	// Factorized phase space class
@@ -633,6 +641,18 @@ void MGraniitti::ReadGenCuts(const std::string& inputfile) {
 			gcuts.forward_pt_max = pt[1];
 			gra::aux::AssertCut(pt, "GENCUTS::<F>::Pt", true);
 		}
+
+		// This is optional, forward leg excitation 
+		std::vector<double> Xi;
+		try {
+		std::vector<double> temp = j[XID]["<F>"]["Xi"]; Xi = temp;
+		} catch (...) {
+			// Do nothing
+		}
+		gcuts.XI_min = Xi[0];
+		gcuts.XI_max = Xi[1];
+		gra::aux::AssertCut(Xi, "GENCUTS::<F>::Xi", true);
+
 	}
 	
 	// Quasielastic phase space class
@@ -863,6 +883,10 @@ void MGraniitti::InitEikonalOnly() {
 }
 
 void MGraniitti::Initialize() {
+	
+	// ** ALWAYS HERE ONLY AS LAST! **
+	proc->post_Constructor();
+	
 	// Print out basic information
 	std::cout << std::endl;
 	std::cout << rang::style::bold
