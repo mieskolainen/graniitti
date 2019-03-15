@@ -160,15 +160,14 @@ void MH1<T>::GetXPositiveDefinite(std::valarray<double>& x, std::valarray<double
 // Histogram mean (based on binned values)
 template <class T>
 double MH1<T>::GetMean() const {
-	double sum = 0.0;
+	double sum  = 0.0;
 	double norm = 0.0; // Normalization
 	const double binwidth = (XMAX - XMIN) / XBINS;
 
 	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
-		const double value =
-		    binwidth * (i + 1) - binwidth / 2.0 + XMIN;
+		const double value  = binwidth * (i + 1) - binwidth / 2.0 + XMIN;
 		const double weight = GetPositiveDefinite(i);
-		sum += weight * value;
+		sum  += weight * value;
 		norm += weight;
 	}
 
@@ -182,18 +181,17 @@ double MH1<T>::GetMean() const {
 // Histogram mean squared (based on binned values)
 template <class T>
 double MH1<T>::GetSquareMean() const {
-	double sum = 0.0;
+	double sum  = 0.0;
 	double norm = 0.0; // Normalization
 	const double binwidth = (XMAX - XMIN) / XBINS;
 
 	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
-		const double value =
-		    std::pow(binwidth * (i + 1) - binwidth / 2.0 + XMIN, 2);
+		const double value  = std::pow(binwidth * (i + 1) - binwidth / 2.0 + XMIN, 2);
 		const double weight = GetPositiveDefinite(i);
-		sum += weight * value;
+		sum  += weight * value;
 		norm += weight;
 	}
-
+	
 	if (norm > 0) {
 		return sum / norm;
 	} else {

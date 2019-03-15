@@ -115,14 +115,14 @@ public:
 
 // ALGEBRA methods
 
+    // Space-time invariants
+    double Invariant() const { return E()*E() - P3mod2(); }
+    double M2()        const { return Invariant(); }
+    double M()         const { return (M2() > 0.0) ? msqrt(M2()) : -msqrt(-M2()); }
+    
     // gamma = E/m = 1/sqrt(1-v^2/c^2) = 1/sqrt(1-beta^2)
     double Gamma() const     { return E() / M(); }
     double Beta()  const     { return P3mod() / E(); }
-
-    // Space-time invariants
-    double Invariant() const { return E()*E() - P3mod2(); }
-    double M()         const { return (M2() > 0.0) ? std::sqrt(M2()) : -std::sqrt(-M2()); }
-    double M2()        const { return Invariant(); }
     
     // Transverse 2-vector norm and norm^2
     double Perp()   const { return Pt(); }
@@ -135,7 +135,7 @@ public:
     double P3mod2() const { return k[X_]*k[X_] + k[Y_]*k[Y_] + k[Z_]*k[Z_]; }
     
     // Transverse mass (invariant under boost in z-direction)
-    double Mt()     const { return std::sqrt(Mt2()); }
+    double Mt()     const { return msqrt(Mt2()); }
     double Mt2()    const { return M2() + Pt2(); }
     
     // Coincides with transverse mass for single particle

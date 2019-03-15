@@ -72,7 +72,7 @@ void MUserHistograms::FillHistograms(double totalweight, const gra::LORENTZSCALA
 		h1["pPt"].Fill(lts.pfinal[1].Pt(), totalweight);
 		//h1["m0"].Fill(lts.decaytree[0].p4.M(), totalweight);
 
-		h1["FM"].Fill(gra::math::msqrt(lts.pfinal[1].M()), totalweight);
+		h1["FM"].Fill(lts.pfinal[1].M(), totalweight);
 	}
 	
 	// Level 2
