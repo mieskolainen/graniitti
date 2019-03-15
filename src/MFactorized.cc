@@ -58,7 +58,7 @@ MFactorized::MFactorized(std::string process) {
 
 	InitHistograms();
 	SetProcess(process);
-
+	
 	// Init final states
 	M4Vec zerovec(0, 0, 0, 0);
 	for (std::size_t i = 0; i < 10; ++i) {
@@ -133,7 +133,7 @@ bool MFactorized::LoopKinematics(const std::vector<double>& p1p,
 	// Central system momentum
 	lts.pfinal[0].SetPxPy(-(lts.pfinal[1].Px() + lts.pfinal[2].Px()),
 	                      -(lts.pfinal[1].Py() + lts.pfinal[2].Py()));
-	
+
 	// Central system pz and E
 	const double mtX = msqrt(pow2(mX) + lts.pfinal[0].Pt2());
 	lts.pfinal[0].SetPzE(mtX * std::sinh(yX), mtX * std::cosh(yX));
@@ -141,7 +141,7 @@ bool MFactorized::LoopKinematics(const std::vector<double>& p1p,
 	// Energy overflow
 	if (lts.pfinal[0].E() > (lts.sqrt_s - (m1 + m2))) { return false; }
 
-	double p1z = gra::kinematics::SolvepPZ1(m1, m2, pt1, pt2, lts.pfinal[0].Pz(), lts.pfinal[0].E(), lts.sqrt_s);
+	double p1z = gra::kinematics::SolvePz(m1, m2, pt1, pt2, lts.pfinal[0].Pz(), lts.pfinal[0].E(), lts.s, lts.pbeam1.Pz() + lts.pbeam2.Pz());
 	double p2z = -(lts.pfinal[0].Pz() + p1z); // by momentum conservation
 	if (std::isnan(p1z)) { return false; }
 	
@@ -372,7 +372,7 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
 	// Energy overflow
 	if (pX.E() > (lts.sqrt_s - (m1 + m2))) { return false; }
 
-	double p1z = gra::kinematics::SolvepPZ1(m1, m2, pt1, pt2, pX.Pz(), pX.E(), lts.sqrt_s);
+	double p1z = gra::kinematics::SolvePz(m1, m2, pt1, pt2, pX.Pz(), pX.E(), lts.s, lts.pbeam1.Pz() + lts.pbeam2.Pz());
 	double p2z = -(pX.Pz() + p1z); // by momentum conservation
 
 	// Enforce scattering direction +p -> +p, -p -> -p (VERY RARE POLYNOMIAL BRANCH FLIP)
