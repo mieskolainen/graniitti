@@ -24,7 +24,7 @@
 namespace gra {
 namespace kinematics {
 
-  // Case pzlab = 0 (LHC pp) and m3 = m4
+  // Case pzin = 0 (LHC pp) and m3 = m4
   inline double SolvePz3_A(double m3, double pt3, double pt4, double pz5, double E5, double s) {
 
     const double  t2 = E5*E5;
@@ -55,9 +55,9 @@ namespace kinematics {
   }
   
   
-  // Case pzlab = 0 (LHC pp) and m3, m4 any
+  // Case pzin = 0 (LHC pp) and m3, m4 any
   inline double SolvePz3_B(double m3, double m4, double pt3, double pt4, double pz5, double E5, double s) {
-
+    
     const double  t2 = E5*E5;
     const double  t3 = m3*m3;
     const double  t4 = m4*m4;
@@ -93,17 +93,17 @@ namespace kinematics {
   }
 
 
-  // Case pzlab any and m3 = m4
-  inline double SolvePz3_C(double m3, double pt3, double pt4, double pz5, double E5, double s, double pzlab) {
+  // Case pzin any and m3 = m4
+  inline double SolvePz3_C(double m3, double pt3, double pt4, double pz5, double E5, double s, double pzin) {
 
     const double  t2 = sqrt(s);
     const double  t3 = E5*E5;
-    const double  t4 = pzlab*pzlab;
+    const double  t4 = pzin*pzin;
     const double  t5 = pz5*pz5;
     const double  t6 = pt3*pt3;
     const double  t7 = pt4*pt4;
     const double  t8 = m3*m3;
-    const double  t9 = pz5*pzlab*2.0;
+    const double  t9 = pz5*pzin*2.0;
     const double  t12 = E5*t2*2.0;
     const double  t10 = s+t3-t4-t5+t9-t12;
     const double  t11 = 1.0/t10;
@@ -127,18 +127,18 @@ namespace kinematics {
     const double  t30 = E5*t2*t7*4.0;
     const double  t31 = E5*t2*t5*4.0;
     const double  t32 = E5*t2*t4*4.0;
-    const double  t33 = pz5*pzlab*s*4.0;
-    const double  t34 = pz5*pzlab*t3*4.0;
-    const double  t35 = t13+t15+t16+t17+t18+t19+t20+t21+t22+t23+t24+t25+t26+t27+t28+t29+t30+t31+t32+t33+t34-E5*t14*4.0-s*t4*2.0-s*t5*2.0-s*t6*2.0-s*t7*2.0-s*t8*4.0-t3*t4*2.0-t3*t5*2.0-t3*t6*2.0-t3*t7*2.0-t3*t8*4.0-t6*t7*2.0-E5*t2*t3*4.0-pz5*pzlab*t4*4.0-pz5*pzlab*t5*4.0-pz5*pzlab*t6*4.0-pz5*pzlab*t7*4.0-pz5*pzlab*t8*8.0-E5*pz5*pzlab*t2*8.0;
+    const double  t33 = pz5*pzin*s*4.0;
+    const double  t34 = pz5*pzin*t3*4.0;
+    const double  t35 = t13+t15+t16+t17+t18+t19+t20+t21+t22+t23+t24+t25+t26+t27+t28+t29+t30+t31+t32+t33+t34-E5*t14*4.0-s*t4*2.0-s*t5*2.0-s*t6*2.0-s*t7*2.0-s*t8*4.0-t3*t4*2.0-t3*t5*2.0-t3*t6*2.0-t3*t7*2.0-t3*t8*4.0-t6*t7*2.0-E5*t2*t3*4.0-pz5*pzin*t4*4.0-pz5*pzin*t5*4.0-pz5*pzin*t6*4.0-pz5*pzin*t7*4.0-pz5*pzin*t8*8.0-E5*pz5*pzin*t2*8.0;
     const double  t36 = std::sqrt(t35);
-    const double  t0 = pz5*(-1.0/2.0)+pzlab*(1.0/2.0)-E5*t11*t36*(1.0/2.0)-pz5*t6*t11*(1.0/2.0)+pz5*t7*t11*(1.0/2.0)+pzlab*t6*t11*(1.0/2.0)-pzlab*t7*t11*(1.0/2.0)+t2*t11*t36*(1.0/2.0);
+    const double  t0 = pz5*(-1.0/2.0)+pzin*(1.0/2.0)-E5*t11*t36*(1.0/2.0)-pz5*t6*t11*(1.0/2.0)+pz5*t7*t11*(1.0/2.0)+pzin*t6*t11*(1.0/2.0)-pzin*t7*t11*(1.0/2.0)+t2*t11*t36*(1.0/2.0);
 
     return t0;
   }
 
 
-  // Case pzlab any and m3,m4 any
-  inline double SolvePz3_D(double m3, double m4, double pt3, double pt4, double pz5, double E5, double s, double pzlab) {
+  // Case pzin any and m3,m4 any
+  inline double SolvePz3_D(double m3, double m4, double pt3, double pt4, double pz5, double E5, double s, double pzin) {
 
     const double  t2 = E5*E5;
     const double  t3 = m3*m3;
@@ -178,7 +178,7 @@ namespace kinematics {
   /*
   %% MATLAB symbolic code to generate solutions
   %% Solve the non-linear system
-  syms E3 E4 E5 pz3 pz4 pz5 m3 m4 pt3 pt4 pzlab s
+  syms E3 E4 E5 pz3 pz4 pz5 m3 m4 pt3 pt4 pzin s
 
   assume(E3 > 0);
   assume(E4 > 0);
@@ -187,9 +187,9 @@ namespace kinematics {
   assume(m3 > 0);
   assume(m4 > 0);
   assume(s > 0);
-  assume(pzlab,'real');
+  assume(pzin,'real');
   
-  eqs = [pzlab   == pz3 + pz4 + pz5
+  eqs = [pzin   == pz3 + pz4 + pz5
          s^(1/2) == E3 + E4 + E5
          E3^2    == m3^2 + pz3^2 + pt3^2
          E4^2    == m4^2 + pz4^2 + pt4^2].';
@@ -204,16 +204,16 @@ namespace kinematics {
 
   str = 'const double';
   
-  sol_A = simplify(subs(S, [m4 pzlab], [m3 0]), 'Steps', 25);
+  sol_A = simplify(subs(S, [m4 pzin], [m3 0]), 'Steps', 25);
   ccode(sol_A, 'File', 'temp.c'); readwritetext('temp.c','solution_A.c', str);
   
-  sol_B = simplify(subs(S, pzlab, 0), 'Steps', 25);
+  sol_B = simplify(subs(S, pzin, 0), 'Steps', 25);
   ccode(sol_B, 'File', 'temp.c'); readwritetext('temp.c','solution_B.c', str);
   
   sol_C = simplify(subs(S, m4, m3), 'Steps', 25);
   ccode(sol_C, 'File', 'temp.c'); readwritetext('temp.c','solution_C.c', str);
   
-  sol_D = simplify(subs(S, pzlab, 0), 'Steps', 25);
+  sol_D = simplify(subs(S, pzin, 0), 'Steps', 25);
   ccode(sol_D, 'File', 'temp.c'); readwritetext('temp.c','solution_D.c', str);
   */
 
@@ -235,13 +235,13 @@ namespace kinematics {
   // Metafunction distributing computation
   // This function solves pz3 component in p1 + p2 -> p3 + p5 + p4
   //
-  // pzlab denotes the (sum of) initial state momentum. For example, LHC pp has pzlab = 0
+  // pzin denotes the (sum of) initial state momentum. For example, LHC pp has pzin = 0
   //
-  inline double SolvePz(double m3, double m4, double pt3, double pt4, double pz5, double E5, double s, double pzlab) {
+  inline double SolvePz(double m3, double m4, double pt3, double pt4, double pz5, double E5, double s, double pzin) {
 
     constexpr double EPS = 1e-9;
 
-    if (std::abs(pzlab) < EPS) {     // symmetric beam momentum case
+    if (std::abs(pzin) < EPS) {     // symmetric beam momentum case
       if (std::abs(m3 - m4) < EPS) { // identical mass case (elastic-X-elastic)
         return SolvePz3_A(m3, pt3, pt4, pz5, E5, s);
       } else {
@@ -249,9 +249,9 @@ namespace kinematics {
       }
     } else {                         // asymmetric beam momentum case
       if (std::abs(m3 - m4) < EPS) { // identical mass case (elastic-X-elastic)
-        return SolvePz3_C(m3, pt3, pt4, pz5, E5, s, pzlab);
+        return SolvePz3_C(m3, pt3, pt4, pz5, E5, s, pzin);
       } else {
-        return SolvePz3_D(m3, m4, pt3, pt4, pz5, E5, s, pzlab);
+        return SolvePz3_D(m3, m4, pt3, pt4, pz5, E5, s, pzin);
       }
     }
 
