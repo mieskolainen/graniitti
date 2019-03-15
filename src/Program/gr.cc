@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
   		;
 	
 	options.add_options("GENERALPARAM")
-  		("o,OUTPUT",     "Output name",                  cxxopts::value<std::string>() )
+  		("o,OUTPUT",     "Output name string",           cxxopts::value<std::string>() )
   		("f,FORMAT",     "Output format",                cxxopts::value<std::string>() )
   		("n,NEVENT",     "Number of events",             cxxopts::value<unsigned int>() )
   		("g,INTEGRATOR", "Integrator",                   cxxopts::value<std::string>() )
@@ -73,6 +73,7 @@ int main(int argc, char* argv[]) {
 		std::cout << std::endl;
 		std::cout << "PROCESS examples:" << std::endl;
 		std::cout << "  yy[CON]<C> -> mu+ mu-" << std::endl;
+		std::cout << "  yy[Higgs]<F> &> 22 22" << std::endl;
 		std::cout << "  PP[CON]<C> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-}" << std::endl;
 		std::cout << std::endl;
 		std::cout << "A steering card example with no additional input:" << std::endl;
