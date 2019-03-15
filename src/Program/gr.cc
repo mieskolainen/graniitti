@@ -43,6 +43,7 @@ int main(int argc, char* argv[]) {
   		;
 	
 	options.add_options("GENERALPARAM")
+	
   		("o,OUTPUT",     "Output name string",           cxxopts::value<std::string>() )
   		("f,FORMAT",     "Output format",                cxxopts::value<std::string>() )
   		("n,NEVENT",     "Number of events",             cxxopts::value<unsigned int>() )
@@ -50,7 +51,7 @@ int main(int argc, char* argv[]) {
   		("w,WEIGHTED",   "Weighted events (true/false)", cxxopts::value<std::string>() )
   		("c,CORES",      "Number of CPU cores/threads",  cxxopts::value<unsigned int>() )
   		;
-  		
+	
  	options.add_options("PROCESSPARAM")
  		("p,PROCESS",  "Process",                cxxopts::value<std::string>() )
   		("l,POMLOOP",  "Screening Pomeron loop", cxxopts::value<std::string>() )
