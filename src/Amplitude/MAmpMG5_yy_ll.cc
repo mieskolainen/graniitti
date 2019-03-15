@@ -127,7 +127,8 @@ std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR& lts) {
 		perm[i] = i;
 	}
 
-	// static const std::vector<int> nonzero = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+	// All
+	//static const std::vector<int> nonzero = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
 	
  	// High energy limit / Helicity conserving
 	static const std::vector<int> nonzero = {5, 6, 9, 10};

@@ -59,7 +59,7 @@
       "CHI2MAX" : 10.0,       // Maximum Chi^2 in initialization
       "DEBUG"   : -1          // Debug output (default -1)
     },
-
+    
     // FLAT integrator
     "FLAT" : {
 
@@ -75,7 +75,7 @@
 
     "<C>" : {
       "Rap" : [-2.5, 2.5],  // Rapidity boundaries of the final states (<C> class)
-      "Xi"  : [0, 1e-5]     // Invariant scale M^2/s (forward excitation)
+      "Xi"  : [0, 1e-3]     // Invariant scale M^2/s (forward excitation)
     },
     "<F>" : {
       "Rap" : [-2.5, 2.5],  // Rapidity boundaries of the system (<F> class)
