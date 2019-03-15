@@ -7,6 +7,8 @@
 // Modified from the MadGraph C++ Standalone output
 // Mikael Mieskolainen, 2018
 
+// [FEASABILITY TEST CLASS]
+
 
 // Own
 #include "Graniitti/Amplitude/MAmpMG5_yy_ll_2to4.h"

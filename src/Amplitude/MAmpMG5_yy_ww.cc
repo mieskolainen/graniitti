@@ -116,7 +116,7 @@ std::complex<double> MAmpMG5_yy_ww::CalcAmp(gra::LORENTZSCALAR& lts) {
 	    {1, 1, -1, -1},   {1, 1, -1, 0},   {1, 1, -1, 1},
 	    {1, 1, 0, -1},    {1, 1, 0, 0},    {1, 1, 0, 1},
 	    {1, 1, 1, -1},    {1, 1, 1, 0},    {1, 1, 1, 1}};
-
+	    
 	// Permutations
 	int perm[nexternal];
 
