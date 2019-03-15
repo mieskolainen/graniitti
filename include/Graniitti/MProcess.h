@@ -264,6 +264,8 @@ protected:
 	// Lorentz scalars
 	bool GetLorentzScalars(unsigned int Nf);
 	
+	void SampleForwardMasses(std::vector<double>& mvec, const std::vector<double>& randvec);
+
 	// --------------------------------------------------------
 	// System fragmentation
 

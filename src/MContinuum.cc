@@ -349,32 +349,13 @@ bool MContinuum::BNRandomKin(unsigned int Nf, const std::vector<double>& randvec
 	}
 
 	// Forward N* system masses
-	double m1 = beam1.mass;
-	double m2 = beam2.mass;
-	lts.excite1 = false;
-	lts.excite2 = false;
+	std::vector<double> mvec;
+	std::vector<double> rvec;
+	if (EXCITATION == 1) { rvec = {randvec[ind]}; }
+	if (EXCITATION == 2) { rvec = {randvec[ind], randvec[ind+1]}; }
+	SampleForwardMasses(mvec, rvec);
 
-	M2_f_min = pow2(1.07);
-	M2_f_max = gcuts.XI_max * lts.s;
-	
-	if (EXCITATION == 1) {
-		const double mforward = msqrt(M2_f_min + (M2_f_max - M2_f_min) * randvec[ind]);
-		if (random.U(0,1) < 0.5) {
-			m1 = mforward;
-			lts.excite1 = true;
-		} else {
-			m2 = mforward;
-			lts.excite2 = true;
-		}
-	}
-	else if (EXCITATION == 2) {
-		m1 = msqrt(M2_f_min + (M2_f_max - M2_f_min) * randvec[ind]  );
-		m2 = msqrt(M2_f_min + (M2_f_max - M2_f_min) * randvec[ind+1]);
-		lts.excite1 = true;
-		lts.excite2 = true;
-	}
-
-	return BNBuildKin(Nf, pt1, pt2, phi1, phi2, kt, phi, y, m1, m2);
+	return BNBuildKin(Nf, pt1, pt2, phi1, phi2, kt, phi, y, mvec[0], mvec[1]);
 }
 
 
@@ -391,10 +372,6 @@ bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1
 		    " (should be " + std::to_string(Kf) +" for this process)!";
 		throw std::invalid_argument(str);
 	}
-
-	//double m1 = 0;
-	//double m2 = 0;
-	//MFragment::GetForwardMass(m1, m2, lts.excite1, lts.excite2, EXCITATION, random);
 	
 	// Forward protons px,py
 	M4Vec p1(pt1 * std::cos(phi1), pt1 * std::sin(phi1), 0, 0);

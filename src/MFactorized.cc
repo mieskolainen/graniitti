@@ -347,32 +347,13 @@ bool MFactorized::B51RandomKin(const std::vector<double>& randvec) {
 	const double m2X = pow2(M_MIN) + (pow2(M_MAX) - pow2(M_MIN)) * randvec[5];
 
 	// Forward N* system masses
-	double m1 = beam1.mass;
-	double m2 = beam2.mass;
-	lts.excite1 = false;
-	lts.excite2 = false;
-
-	M2_f_min = pow2(1.07);
-	M2_f_max = gcuts.XI_max * lts.s;
+	std::vector<double> mvec;
+	std::vector<double> rvec;
+	if (EXCITATION == 1) { rvec = {randvec[6]}; }
+	if (EXCITATION == 2) { rvec = {randvec[6], randvec[7]}; }
+	SampleForwardMasses(mvec, rvec);
 	
-	if (EXCITATION == 1) {
-		const double mforward = msqrt( M2_f_min + (M2_f_max - M2_f_min) * randvec[6] );
-		if (random.U(0,1) < 0.5) {
-			m1 = mforward;
-			lts.excite1 = true;
-		} else {
-			m2 = mforward;
-			lts.excite2 = true;
-		}
-	}
-	else if (EXCITATION == 2) {
-		m1 = msqrt( M2_f_min + (M2_f_max - M2_f_min) * randvec[6] );
-		m2 = msqrt( M2_f_min + (M2_f_max - M2_f_min) * randvec[7] );
-		lts.excite1 = true;
-		lts.excite2 = true;
-	}
-	
-	return B51BuildKin(pt1, pt2, phi1, phi2, yX, m2X, m1, m2);
+	return B51BuildKin(pt1, pt2, phi1, phi2, yX, m2X, mvec[0], mvec[1]);
 }
 
 

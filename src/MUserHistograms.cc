@@ -71,8 +71,9 @@ void MUserHistograms::FillHistograms(double totalweight, const gra::LORENTZSCALA
 		h1["dPhi_pp"].Fill(std::abs(lts.pfinal[1].DeltaPhi(lts.pfinal[2])), totalweight);
 		h1["pPt"].Fill(lts.pfinal[1].Pt(), totalweight);
 		//h1["m0"].Fill(lts.decaytree[0].p4.M(), totalweight);
-
-		h1["FM"].Fill(lts.pfinal[1].M(), totalweight);
+		
+		// Dissociated proton
+		if (lts.pfinal[1].M() > 1.0) { h1["FM"].Fill(lts.pfinal[1].M(), totalweight); }
 	}
 	
 	// Level 2

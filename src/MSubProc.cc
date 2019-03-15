@@ -126,11 +126,14 @@ void MSubProc::SetTechnicalBoundaries(gra::GENCUT& gcuts, unsigned int EXCITATIO
 			gcuts.forward_pt_max = 1.75;
 			}
 		}
+
+		// Here, we cannot put too high if we use on-shell matrix (e.g. in EPA)
+		// because t ~ -pt^2
 		else if (EXCITATION == 1) {   // Single
-			gcuts.forward_pt_max = 12.0;
+			gcuts.forward_pt_max = 3.0;
 		}
 		else if (EXCITATION == 2) {   // Double
-			gcuts.forward_pt_max = 48.0;
+			gcuts.forward_pt_max = 3.0;
 		}
 	}
 }

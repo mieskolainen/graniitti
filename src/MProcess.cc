@@ -1333,6 +1333,36 @@ void MProcess::WriteDecayKinematics(gra::MDecayBranch& branch,
 }
 
 
+// Forward excitation mass sampling
+void MProcess::SampleForwardMasses(std::vector<double>& mvec, const std::vector<double>& randvec) {
+
+	mvec = {beam1.mass, beam2.mass};
+	
+	lts.excite1 = false;
+	lts.excite2 = false;
+
+	M2_f_min = pow2(1.07);
+	M2_f_max = gcuts.XI_max * lts.s;
+	
+	if      (EXCITATION == 1) {
+		const double mforward = msqrt( M2_f_min + (M2_f_max - M2_f_min) * randvec[0] );
+		if (random.U(0,1) < 0.5) {
+			mvec[0]     = mforward;
+			lts.excite1 = true;
+		} else {
+			mvec[1]     = mforward;
+			lts.excite2 = true;
+		}
+	}
+	else if (EXCITATION == 2) {
+		mvec[0]     = msqrt( M2_f_min + (M2_f_max - M2_f_min) * randvec[0] );
+		mvec[1]     = msqrt( M2_f_min + (M2_f_max - M2_f_min) * randvec[1] );
+		lts.excite1 = true;
+		lts.excite2 = true;
+	}
+}
+
+
 // Print fiducial cuts set by user
 void MProcess::PrintFiducialCuts() const {
 

@@ -314,7 +314,7 @@ double S3F(double t) {
 
 
 // Proton inelastic form factor / structure function
-// parametrization ANSATZ for Pomeron processes [THIS FUNCTION IS DIRTY - IMPROVE!]
+// parametrization for Pomeron processes [THIS FUNCTION IS ANSATZ - IMPROVE!]
 // 
 // <apply at amplitude level>
 double S3FINEL(double t, double M2) {
@@ -341,7 +341,7 @@ double S3FINEL(double t, double M2) {
 // [REFERENCE: Donnachie, Landshoff, https://arxiv.org/abs/hep-ph/9305319]
 // [REFERENCE: Capella, Kaidalov, Merino, Tran Tranh Van, https://arxiv.org/abs/hep-ph/9405338v1]
 //
-double F2xQ2(double x, double Q2) {
+double F2xQ2(double xbj, double Q2) {
 
 	const std::string F2TYPE = "CKMT";
 
@@ -357,8 +357,8 @@ double F2xQ2(double x, double Q2) {
 		constexpr double b = 0.011133;
 		
 		const double F2 = 
-		  A * std::pow(x, - DELTA_P) * std::pow(Q2 / (Q2 + a), 1 + DELTA_P)
-		+ B * std::pow(x, 1-DELTA_R) * std::pow(Q2 / (Q2 + b), DELTA_R);
+		  A * std::pow(xbj, - DELTA_P) * std::pow(Q2 / (Q2 + a), 1 + DELTA_P)
+		+ B * std::pow(xbj, 1-DELTA_R) * std::pow(Q2 / (Q2 + b), DELTA_R);
 
 		return F2;
 	}
@@ -381,9 +381,9 @@ double F2xQ2(double x, double Q2) {
 		const double C1 = std::pow(Q2/(Q2 + a), 1.0 + DELTA_Q2);
 		const double C2 = std::pow(Q2/(Q2 + b), alpha_R);
 
-		const double F2 = A * std::pow(x, -DELTA_Q2)    * std::pow(1-x, n_Q2 + 4.0)  * C1 + 
-			   				  std::pow(x, 1.0-alpha_R)  *
-			   		   (B_u * std::pow(1-x, n_Q2) + B_d * std::pow(1-x, n_Q2 + 1.0)) * C2;
+		const double F2 = A * std::pow(xbj, -DELTA_Q2)    * std::pow(1-xbj, n_Q2 + 4.0)  * C1 + 
+			   				  std::pow(xbj, 1.0-alpha_R)  *
+			   		   (B_u * std::pow(1-xbj, n_Q2) + B_d * std::pow(1-xbj, n_Q2 + 1.0)) * C2;
 
 	   	return F2;
     } else {
@@ -397,10 +397,11 @@ double F2xQ2(double x, double Q2) {
 // Callan-Gross relation for spin-1/2: F_2(x) = 2xF_1(x) under Bjorken scaling
 // For spin-0, F_1(x) = 0
 //
-double F1xQ2(double x, double Q2) {
+double F1xQ2(double xbj, double Q2) {
 
-	// Not implemented
-	return 0.0;
+	// F_L(xbj,Q2) = (1 + 4*pow2(xbj*mp)/Q2) * F2(xbj, Q2) - 2xbj * F1(xbj,Q2)
+
+	return F2xQ2(xbj, Q2) / (2.0*xbj);
 }
 
 
@@ -572,7 +573,7 @@ double IncohFlux(double xi, double t, double pt, double M2) {
 	const double xbj = Q2 / (Q2 + M2 - mp2); // Bjorken-x
 
 	double f = alpha_EM(0) / PI *
-			   (1.0 / (pt2 + xi*(M2 - mp2) + xi2*mp2)) *
+			   (pt2 / (pt2 + xi*(M2 - mp2) + xi2*mp2)) *
 	           ((1.0 - xi) * (pt2 / (pt2 + xi*(M2 - mp2) + xi2*mp2)) * F2xQ2(xbj,Q2) / (Q2 + M2 - mp2) +
 	           	(xi2 / (4.0*pow2(xbj))) * 2.0 * xbj * F1xQ2(xbj,Q2) / (Q2 + M2 - mp2) );
     
@@ -589,7 +590,7 @@ double IncohFlux(double xi, double t, double pt, double M2) {
 double DZFlux(double x) {
 	const double Q2min = (pow2(mp) * pow2(x)) / (1.0 - x);
 	const double A = 1.0 + 0.71 / Q2min;
-	
+
 	double f = alpha_EM(0) / (2.0 * PI * x) * (1.0 + pow2(1.0 - x)) *
 	           (std::log(A) - 11.0 / 6.0 + 3.0 / A -
 	            3.0 / (2.0 * pow2(A)) + 1.0 / (3 * pow3(A)));

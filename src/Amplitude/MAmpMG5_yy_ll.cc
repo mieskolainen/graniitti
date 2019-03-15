@@ -71,8 +71,8 @@ std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR& lts) {
 	mME = masses;
 	
 	// *** Set particle 4-momentum: [E,px,py,pz] convention here! ***
-	double p1[] = {lts.q1.P3mod(), lts.q1.Px(), lts.q1.Py(),
-	               lts.q1.Pz()}; // force E = p (gamma on-shell)
+	// force E = p (gamma on-shell)
+	double p1[] = {lts.q1.P3mod(), lts.q1.Px(), lts.q1.Py(), lts.q1.Pz()}; 
 	double p2[] = {lts.q2.P3mod(), lts.q2.Px(), lts.q2.Py(), lts.q2.Pz()};
 	double p3[] = {lts.decaytree[0].p4.E(),  lts.decaytree[0].p4.Px(),
 	               lts.decaytree[0].p4.Py(), lts.decaytree[0].p4.Pz()};
