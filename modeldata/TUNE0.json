@@ -52,7 +52,7 @@
   "PARAM_REGGE" : {
       
       // Off-shell t_hat/u_hat channel form factor: 1 = "exp", 2 = "orear", 3 = "pow"
-      "offshellFF" : 3,
+      "offshellFF" : 2,
       
       // Form factor parameters
       "b_EXP" :   0.57,    // GeV^-2

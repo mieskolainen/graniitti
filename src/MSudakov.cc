@@ -517,8 +517,7 @@ double MSudakov::NumFlavor(double q2) const {
 // Constructs interpolation array values
 void MSudakov::CalculateArray(IArray2D& arr, std::pair<double,double> (MSudakov::*f)(double,double)) {
 
-	std::cout << "MSudakov::CalculateArray:" << std::endl;
-
+	MTimer timer;
 	for (const auto& i : indices(arr.F)) {
 		const double a = arr.MIN[0] + i * arr.STEP[0];
 
@@ -544,6 +543,7 @@ void MSudakov::CalculateArray(IArray2D& arr, std::pair<double,double> (MSudakov:
 	}
 	// Progressbar clearing
 	gra::aux::ClearProgress();
+	printf("MSudakov::CalculateArray: Time elapsed %0.1f sec \n", timer.ElapsedSec());
 }
 
 
@@ -564,7 +564,6 @@ bool IArray2D::WriteArray(const std::string& filename, bool overwrite) const {
 		throw std::invalid_argument(str);
 	}
 
-	MTimer timer(true);
 	std::cout << "IArray2D::WriteArray: ";
 
 	for (const auto& i : indices(F)) {
@@ -578,7 +577,6 @@ bool IArray2D::WriteArray(const std::string& filename, bool overwrite) const {
 				 << F[i][j][3] << std::endl;
 		}
 	}
-	printf("Time elapsed %0.1f sec \n", timer.ElapsedSec());
 	file.close();
 	return true;
 }

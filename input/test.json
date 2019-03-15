@@ -74,7 +74,8 @@
   "GENCUTS" : {
 
     "<C>" : {
-      "Rap" : [-0.9, 0.9]  // Rapidity boundaries of the final states (<C> class)
+      "Rap" : [-0.9, 0.9],  // Rapidity boundaries of the final states (<C> class)
+      "Xi"  : [0, 2e-7]     // Invariant scale M^2/s (forward excitation)
     },
     "<F>" : {
       "Rap" : [-0.9, 0.9], // Rapidity boundaries of the system (<F> class)

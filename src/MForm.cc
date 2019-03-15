@@ -303,8 +303,9 @@ double S3HPL(double tau, double t) {
 // ----------------------------------------------------------------------
 
 
-// Elastic proton form factor parametrization <apply at amplitude level>
+// Elastic proton form factor parametrization
 //
+// <apply at amplitude level>
 // [REFERENCE: Khoze, Martin, Ryskin, https://arxiv.org/abs/hep-ph/0007359]
 double S3F(double t) {
 	return (1.0 / (1 - t / PARAM_SOFT::fc1)) *
@@ -312,15 +313,21 @@ double S3F(double t) {
 }
 
 
-// Proton inelastic structure function parametrization t-dependent part stripped
-//
-// [REFERENCE: Donnachie, Landshoff, https://arxiv.org/abs/hep-ph/9305319]
-double S3FINEL(double t) {
+// Proton inelastic form factor / structure function
+// parametrization ANSATZ for Pomeron processes
+// 
+// <apply at amplitude level>
+double S3FINEL(double t, double M2) {
 
-	static const double a = 0.5616; // GeV^{2}
-	const double f = std::pow(std::abs(t) / (std::abs(t) + a), 1.0808);
+	static const double DELTA_P = 0.0808;
+	static const       double a = 0.5616; // GeV^{2}
 
-	return msqrt(f); // Make it <amplitude level>
+	double f = std::pow(std::abs(t) / (M2*(std::abs(t) + a)), 0.5 * (1 + DELTA_P));
+
+	// Coupling ansatz
+	f *= msqrt(PARAM_SOFT::g3P / PARAM_SOFT::gN_P);
+
+	return f;
 }
 
 
@@ -546,15 +553,14 @@ double CohFlux(double xi, double t, double pt) {
 //                   $
 //
 //
-double IncohFlux(double xi, double t, double pt, double M) {
+double IncohFlux(double xi, double t, double pt, double M2) {
 	
+	static const double mp2 = pow2(mp);
+
 	const double pt2 = pow2(pt);
 	const double xi2 = pow2(xi);
-	const double mp2 = pow2(mp);
-	const double M2  = pow2(M);
 	const double Q2  = std::abs(t);
-	
-	const double xbj = Q2 / (Q2 + M2 - mp2);
+	const double xbj = Q2 / (Q2 + M2 - mp2); // Bjorken-x
 
 	const double f = alpha_EM(0) / (PI * xi) *
 					  (1.0 / (pt2 + xi*(M2 - mp2) + xi2*mp2)) *

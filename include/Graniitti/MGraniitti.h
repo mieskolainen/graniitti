@@ -470,7 +470,7 @@ private:
 	std::string OUTPUT = "";
 	std::string FORMAT = "";   // hepmc3 or hepmc2 or hepevt
 	
-	std::shared_ptr<HepMC3::GenRunInfo> runinfo             = nullptr;
+	std::shared_ptr<HepMC3::GenRunInfo>        runinfo      = nullptr;
 	std::shared_ptr<HepMC3::WriterAscii>       outputHepMC3 = nullptr;
 	std::shared_ptr<HepMC3::WriterAsciiHepMC2> outputHepMC2 = nullptr;
 	std::shared_ptr<HepMC3::WriterHEPEVT>      outputHEPEVT = nullptr;

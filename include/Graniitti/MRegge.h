@@ -93,7 +93,7 @@ public:
 
 	// Regge propagators
 	std::complex<double> PropOnly(double s, double t) const;
-	std::complex<double> PhotoProp(double s, double t, double m2, bool excite) const;
+	std::complex<double> PhotoProp(double s, double t, double m2, bool excite, double M2_forward) const;
 	
 	// Helicity functions
 	double g_Vertex(double t, double lambda_i, double lambda_f) const;

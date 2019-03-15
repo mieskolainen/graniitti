@@ -238,8 +238,8 @@ std::complex<double> MRegge::ME3HEL(gra::LORENTZSCALAR& lts, gra::PARAM_RES& res
 
 	// --------------------------------------------------------------------------
 	// Proton form factors
-	const double FF_A  = lts.excite1 ? gra::form::S3FINEL(lts.t1) : gra::form::S3F(lts.t1);
-	const double FF_B  = lts.excite2 ? gra::form::S3FINEL(lts.t2) : gra::form::S3F(lts.t2);
+	const double FF_A  = lts.excite1 ? gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : gra::form::S3F(lts.t1);
+	const double FF_B  = lts.excite2 ? gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : gra::form::S3F(lts.t2);
 
 	// Forward proton deltaphi
 	const double phi = lts.pfinal[1].DeltaPhi(lts.pfinal[2]);
@@ -432,8 +432,8 @@ std::complex<double> MRegge::ME4(gra::LORENTZSCALAR& lts, double sign) const {
 		prop = &PARAM_REGGE::Baryon_prop;		
 	}
 
-	const double FF_A  = lts.excite1 ? gra::form::S3FINEL(lts.t1) : gra::form::S3F(lts.t1);
-	const double FF_B  = lts.excite2 ? gra::form::S3FINEL(lts.t2) : gra::form::S3F(lts.t2);
+	const double FF_A  = lts.excite1 ? gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : gra::form::S3F(lts.t1);
+	const double FF_B  = lts.excite2 ? gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : gra::form::S3F(lts.t2);
 	
 	// Particle-Particle-Pomeron coupling
 	const double gpp_P = PARAM_REGGE::c[0] / PARAM_SOFT::gN_P;
@@ -539,8 +539,8 @@ std::complex<double> MRegge::ME6(gra::LORENTZSCALAR& lts) const {
 		prop = &PARAM_REGGE::Baryon_prop;		
 	}
 
-	const double FF_A  = lts.excite1 ? gra::form::S3FINEL(lts.t1) : gra::form::S3F(lts.t1);
-	const double FF_B  = lts.excite2 ? gra::form::S3FINEL(lts.t2) : gra::form::S3F(lts.t2);	
+	const double FF_A  = lts.excite1 ? gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : gra::form::S3F(lts.t1);
+	const double FF_B  = lts.excite2 ? gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : gra::form::S3F(lts.t2);	
 
 	// Particle-Particle-Pomeron coupling
 	const double gpp_P = PARAM_REGGE::c[0] / PARAM_SOFT::gN_P;
@@ -632,8 +632,8 @@ std::complex<double> MRegge::ME8(gra::LORENTZSCALAR& lts) const {
 		ff   = &PARAM_REGGE::Baryon_FF;
 		prop = &PARAM_REGGE::Baryon_prop;		
 	}
-	const double FF_A  = lts.excite1 ? gra::form::S3FINEL(lts.t1) : gra::form::S3F(lts.t1);
-	const double FF_B  = lts.excite2 ? gra::form::S3FINEL(lts.t2) : gra::form::S3F(lts.t2);	
+	const double FF_A  = lts.excite1 ? gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : gra::form::S3F(lts.t1);
+	const double FF_B  = lts.excite2 ? gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : gra::form::S3F(lts.t2);	
 	
 	// Particle-Particle-Pomeron coupling
 	const double gpp_P = PARAM_REGGE::c[0] / PARAM_SOFT::gN_P;
@@ -718,8 +718,8 @@ std::complex<double> MRegge::ME8(gra::LORENTZSCALAR& lts) const {
 std::complex<double> MRegge::ME3(gra::LORENTZSCALAR& lts, gra::PARAM_RES& resonance) const {
 
 	// Proton form factors
-	const double FF_A  = lts.excite1 ? gra::form::S3FINEL(lts.t1) : gra::form::S3F(lts.t1);
-	const double FF_B  = lts.excite2 ? gra::form::S3FINEL(lts.t2) : gra::form::S3F(lts.t2);
+	const double FF_A  = lts.excite1 ? gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : gra::form::S3F(lts.t1);
+	const double FF_B  = lts.excite2 ? gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : gra::form::S3F(lts.t2);
 
 	// s-channel
 	// Factor 2 x from initial state (identical boson) statistics
@@ -764,22 +764,25 @@ std::complex<double> MRegge::PhotoME3(gra::LORENTZSCALAR& lts, gra::PARAM_RES& r
 	const std::complex<double> common = CBW(lts, resonance) * resonance.g *
 	    	PARAM_REGGE::ResonanceFormFactor(lts.m2, pow2(resonance.p.mass));
 
+	const double gammaflux1 = lts.excite1 ? IncohFlux(lts.x1, lts.t1, lts.qt1, lts.pfinal[1].M2()) : CohFlux(lts.x1, lts.t1, lts.qt1);
+	const double gammaflux2 = lts.excite2 ? IncohFlux(lts.x2, lts.t2, lts.qt2, lts.pfinal[2].M2()) : CohFlux(lts.x2, lts.t2, lts.qt2);
+
 	// Photon up (t1) x Pomeron down (t2)
 	const std::complex<double> M1 =
-		CohFlux(lts.x1, lts.t1, lts.qt1) / msqrt(lts.x1) *
+		 gammaflux1 / msqrt(lts.x1) *
 			common *
-		PhotoProp(lts.s2, lts.t2, pow2(resonance.p.mass), lts.excite2);
-		
+		PhotoProp(lts.s2, lts.t2, pow2(resonance.p.mass), lts.excite2, lts.pfinal[2].M2());
+	
 	// Pomeron up (t1) x Photon down (t2)
 	const std::complex<double> M2 =
-		CohFlux(lts.x2, lts.t2, lts.qt2) / msqrt(lts.x2) *
+		gammaflux2 / msqrt(lts.x2) *
 			common *
-		PhotoProp(lts.s1, lts.t1, pow2(resonance.p.mass), lts.excite1);
+		PhotoProp(lts.s1, lts.t1, pow2(resonance.p.mass), lts.excite1, lts.pfinal[1].M2());
 	
 	// Should sum here with negative sign (anti-symmetric initial state) ?
-	// Perhaps leave that as an option (TBD)
+	// Perhaps leave that as an option (TBD) [IMPROVE THIS PART]
 	const std::complex<double> A_prod = (M1 + M2) * PARAM_REGGE::JPCoupling(lts, resonance);
-
+	
 	// Spin and decay part
 	const std::complex<double> A_decay = gra::spin::SpinAmp(lts, resonance);
 
@@ -805,7 +808,7 @@ std::complex<double> MRegge::PhotoME3(gra::LORENTZSCALAR& lts, gra::PARAM_RES& r
 //
 // [REFERENCE: Donnachie, Dosch, Landshoff, Nachtmann, Pomeron Physics and QCD (Cambridge University Press, 2002)]
 
-std::complex<double> MRegge::PhotoProp(double s, double t, double m2, bool excite) const {
+std::complex<double> MRegge::PhotoProp(double s, double t, double m2, bool excite, double M2_forward) const {
 
 	// Different vector meson slopes (HERA data),
 	// dsigma/dt ~ exp(Bt),
@@ -830,7 +833,7 @@ std::complex<double> MRegge::PhotoProp(double s, double t, double m2, bool excit
 
 	// Proton form factor simply exponential here
 	// Division by 2, because we are at amplitude level
-	const double FF = excite ? gra::form::S3FINEL(t) : std::exp(B0 * t / 2.0);
+	const double FF = excite ? gra::form::S3FINEL(t, M2_forward) : std::exp(B0 * t / 2.0);
 
 	return eta * std::pow(s / W02, alpha) * FF * PARAM_SOFT::gN_P;
 }

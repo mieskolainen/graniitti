@@ -90,7 +90,7 @@ std::complex<double> ReggeEta(double alpha_t, double sigma);
 
 // Proton form factor, elastic and inelastic
 double S3F(double t);
-double S3FINEL(double t);
+double S3FINEL(double t, double M2);
 
 // Proton structure functions
 double F2xQ2(double xi, double Q2);
@@ -112,7 +112,7 @@ double F_M(double Q2);
 double G_M(double Q2);
 double G_E(double Q2);
 double CohFlux(double x, double t, double pt);
-double IncohFlux(double x, double t, double pt, double M);
+double IncohFlux(double x, double t, double pt, double M2);
 
 // QED coupling alpha_EM at Q^2 = 0 is 1/137.035999679,
 // gives 1/alpha_EM^2 = 0.085.

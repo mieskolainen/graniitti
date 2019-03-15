@@ -279,7 +279,7 @@ void MFactorized::PrintInit(bool silent) const {
 		    gcuts.forward_pt_min, gcuts.forward_pt_max);
 		
 		if (EXCITATION != 0) {
-		printf("- Forward leg (Xi)      [min, max] = [%0.2f, %0.2f]     \t(fixed/user) \n", gcuts.XI_min, gcuts.XI_max);
+		printf("- Forward leg (Xi)      [min, max] = [%0.2E, %0.2E]     \t(fixed/user) \n", gcuts.XI_min, gcuts.XI_max);
 		}
 
 		PrintFiducialCuts();

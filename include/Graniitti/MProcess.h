@@ -264,9 +264,6 @@ protected:
 	// Lorentz scalars
 	bool GetLorentzScalars(unsigned int Nf);
 	
-	// Regge amplitude initialization
-	void InitReggeAmplitude(const std::string& MODELPARAM);
-
 	// --------------------------------------------------------
 	// System fragmentation
 

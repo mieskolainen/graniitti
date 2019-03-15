@@ -55,9 +55,9 @@ std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR& lts) {
 	//printf("xi1 = %0.5E, xi2 = %0.5E \n", lts.x1, lts.x2);
 	
 	// Get photon fluxes
-	const double gammaflux1 = lts.excite1 ? gra::form::IncohFlux(lts.x1, lts.t1, lts.qt1, lts.pfinal[1].M()) : 
+	const double gammaflux1 = lts.excite1 ? gra::form::IncohFlux(lts.x1, lts.t1, lts.qt1, lts.pfinal[1].M2()) : 
 											  gra::form::CohFlux(lts.x1, lts.t1, lts.qt1);
-	const double gammaflux2 = lts.excite2 ? gra::form::IncohFlux(lts.x2, lts.t2, lts.qt2, lts.pfinal[2].M()) :
+	const double gammaflux2 = lts.excite2 ? gra::form::IncohFlux(lts.x2, lts.t2, lts.qt2, lts.pfinal[2].M2()) :
 											  gra::form::CohFlux(lts.x2, lts.t2, lts.qt2);
 
 	// Photon masses

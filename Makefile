@@ -94,7 +94,7 @@ endif
 
 # If ROOT seems to be installed, tag ROOT dependent compilation on
 ifeq ($(ROOTSYS),)
-$(info Did not find ROOTSYS - compilation without ROOT dependent tools)
+$(info Did not find ROOTSYS - compilation without ROOT <root.cern.ch> dependent tools)
 ROOT=FALSE
 else
 $(info Found ROOTSYS = $(ROOTSYS))

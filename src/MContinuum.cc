@@ -296,7 +296,7 @@ void MContinuum::PrintInit(bool silent) const {
 		       gcuts.rap_min, gcuts.rap_max, gcuts.kt_min, gcuts.kt_max, gcuts.forward_pt_min, gcuts.forward_pt_max);
 
 		if (EXCITATION != 0) {
-		printf("- Forward leg (Xi)           [min, max] = [%0.2f, %0.2f]     \t(fixed/user) \n", gcuts.XI_min, gcuts.XI_max);
+		printf("- Forward leg (Xi)           [min, max] = [%0.2E, %0.2E]     \t(fixed/user) \n", gcuts.XI_min, gcuts.XI_max);
 		}
 
 		PrintFiducialCuts();
@@ -656,14 +656,14 @@ double MContinuum::BNIntegralVolume() const {
 
 	// Forward leg integration
 	double M2_forward_volume = 1.0;
-
+	
 	if      (EXCITATION == 1) {
 		M2_forward_volume = M2_f_max - M2_f_min;
 	}
 	else if (EXCITATION == 2) {
 		M2_forward_volume = pow2(M2_f_max - M2_f_min);
 	}
-
+	
 	return pow2(2.0 * PI) * 
 		   pow2(gcuts.forward_pt_max - gcuts.forward_pt_min) *
 		   std::pow(2.0 * PI, Kf-1) *

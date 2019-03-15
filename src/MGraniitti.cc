@@ -86,7 +86,7 @@ void MGraniitti::HistogramFusion() {
 		std::cout << "MGraniitti::HistogramFusion: \n";
 		std::cout << "<Warning: Multithreaded histogram fusion can result in convolution with adaptive histogram bounds> \n\n";
 		}
-
+		
 		// START with process index 1, because 0 is the base
 		for (std::size_t i = 1; i < pvec.size(); ++i) {
 
@@ -100,7 +100,7 @@ void MGraniitti::HistogramFusion() {
 			}
 		}
 		hist_fusion_done = true;
-
+		
 	} else {
 		std::cout << "MGraniitti::HistogramFusion: Multithreaded histograms have been fused already" << std::endl;
 	}

@@ -140,11 +140,8 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 		// Apply fluxes
 		double A = msqrt(amp2);
 
-		const double M1 = lts.pfinal[1].M();
-		const double M2 = lts.pfinal[2].M();
-
-		A *= lts.excite1 ? gra::form::IncohFlux(lts.x1, lts.t1, lts.qt1, M1) : form::CohFlux(lts.x1, lts.t1, lts.qt1); // Gammaflux
-		A *= lts.excite2 ? gra::form::IncohFlux(lts.x2, lts.t2, lts.qt2, M2) : form::CohFlux(lts.x2, lts.t2, lts.qt2); // Gammaflux
+		A *= lts.excite1 ? gra::form::IncohFlux(lts.x1, lts.t1, lts.qt1, lts.pfinal[1].M2()) : form::CohFlux(lts.x1, lts.t1, lts.qt1); // Gammaflux
+		A *= lts.excite2 ? gra::form::IncohFlux(lts.x2, lts.t2, lts.qt2, lts.pfinal[2].M2()) : form::CohFlux(lts.x2, lts.t2, lts.qt2); // Gammaflux
 		A *= msqrt(lts.s / lts.s_hat);                    													          // Phasespace flux
 
 		return A;
@@ -224,10 +221,8 @@ std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR& lts) const {
 	// Apply fluxes
 	std::complex<double> A = msqrt(sigma_hat);
 
-		const double M1 = lts.pfinal[1].M();
-		const double M2 = lts.pfinal[2].M();
-	A *= lts.excite1 ? gra::form::IncohFlux(lts.x1, lts.t1, lts.qt1, M1) : form::CohFlux(lts.x1, lts.t1, lts.qt1); // Gammaflux
-	A *= lts.excite2 ? gra::form::IncohFlux(lts.x2, lts.t2, lts.qt2, M2) : form::CohFlux(lts.x2, lts.t2, lts.qt2); // Gammaflux
+	A *= lts.excite1 ? gra::form::IncohFlux(lts.x1, lts.t1, lts.qt1, lts.pfinal[1].M2()) : form::CohFlux(lts.x1, lts.t1, lts.qt1); // Gammaflux
+	A *= lts.excite2 ? gra::form::IncohFlux(lts.x2, lts.t2, lts.qt2, lts.pfinal[2].M2()) : form::CohFlux(lts.x2, lts.t2, lts.qt2); // Gammaflux
 	A *= msqrt(lts.s / lts.s_hat);                 													      // Phasespace flux
 
 	return A;
@@ -309,11 +304,9 @@ std::complex<double> MGamma::yyX(const gra::LORENTZSCALAR& lts, gra::PARAM_RES& 
 	std::complex<double> A_prod = 2.0 *
 	    	gra::form::CBW(lts, resonance) * resonance.g *
 	    	PARAM_REGGE::JPCoupling(lts, resonance);
-    
-    		const double M1 = lts.pfinal[1].M();
-		const double M2 = lts.pfinal[2].M();
-	A_prod *= lts.excite1 ? gra::form::IncohFlux(lts.x1, lts.t1, lts.qt1, M1) : form::CohFlux(lts.x1, lts.t1, lts.qt1); // Gammaflux
-	A_prod *= lts.excite2 ? gra::form::IncohFlux(lts.x2, lts.t2, lts.qt2, M2) : form::CohFlux(lts.x2, lts.t2, lts.qt2); // Gammaflux
+	
+	A_prod *= lts.excite1 ? gra::form::IncohFlux(lts.x1, lts.t1, lts.qt1, lts.pfinal[1].M2()) : form::CohFlux(lts.x1, lts.t1, lts.qt1); // Gammaflux
+	A_prod *= lts.excite2 ? gra::form::IncohFlux(lts.x2, lts.t2, lts.qt2, lts.pfinal[2].M2()) : form::CohFlux(lts.x2, lts.t2, lts.qt2); // Gammaflux
 	A_prod *= msqrt(lts.s / lts.s_hat);                 													                          // Phasespace flux
 
 	// Spin and decay part

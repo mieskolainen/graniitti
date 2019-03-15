@@ -159,7 +159,7 @@ void experiment(bool screening) {
     // <https://discoverycenter.nbi.ku.dk/teaching/thesis_page/MasterEmilBolsFinal.pdf>
     input.push_back(MEASUREMENT("ATLAS17_2pi.json",  18.75e-6,  0.048e-6,  0.770e-6));
 
-
+/*
     // ALICE fiducial
     input.push_back(MEASUREMENT("ALICE_2pi.json",    0, 0, 0));
 
@@ -194,7 +194,7 @@ void experiment(bool screening) {
 
     // ...
     input.push_back(MEASUREMENT("monopolium.json",   0, 0, 0));
-
+*/
 
     // ------------------------------------------------------------------
     /*
