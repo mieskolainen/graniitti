@@ -501,16 +501,17 @@ void PrintVersion() {
 
 	std::cout << GetVersionString() << std::endl;
 	std::cout << rang::style::bold
-	          << "Available at: <github.com/mieskolainen/graniitti>"
+	          << "Available at <github.com/mieskolainen/graniitti>"
 	          << rang::style::reset << std::endl
 	          << std::endl;
     std::cout << "References: arXiv:1811.01730 [hep-ph]" << std::endl;
     std::cout << std::endl;
 	std::cout << "(c) 2017-2019 Mikael Mieskolainen" << std::endl;
+	std::cout << "<mikael.mieskolainen@cern.ch>"     << std::endl;
+	std::cout << std::endl;
 	std::cout << "<opensource.org/licenses/GPL-3.0>" << std::endl;
 	std::cout << "<opensource.org/licenses/MIT>"     << std::endl;
 }
-
 
 void PrintFlashScreen(rang::fg pcolor) {
 
