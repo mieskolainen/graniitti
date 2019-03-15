@@ -314,7 +314,7 @@ double S3F(double t) {
 
 
 // Proton inelastic form factor / structure function
-// parametrization ANSATZ for Pomeron processes
+// parametrization ANSATZ for Pomeron processes [THIS FUNCTION IS DIRTY - IMPROVE!]
 // 
 // <apply at amplitude level>
 double S3FINEL(double t, double M2) {
@@ -437,8 +437,8 @@ double e_EM() {
 // 
 // Proton electric form factor (F_electric == F_2 == Pauli)
 double F_E(double Q2) {
-	return (4.0 * mp * mp * pow2(G_E(Q2)) + Q2 * pow2(G_M(Q2))) /
-	       (4.0 * mp * mp + Q2);
+	return (4.0 * pow2(mp) * pow2(G_E(Q2)) + Q2 * pow2(G_M(Q2))) /
+	       (4.0 * pow2(mp) + Q2);
 }
 // Proton magnetic form factor (F_magnetic == F_1  == Dirac)
 double F_M(double Q2) {
@@ -520,7 +520,13 @@ double G_M(double Q2) {
 //               $
 //                $
 //                 $
-// 
+//
+// Factors applied here:
+//  
+//  1/xi    [~ sub Moller flux]
+//  1/pt2   [~ kt-factorization] (cancels with pt2 from numerator)
+//  16pi^2  [~ kinematics volume factor]
+//
 double CohFlux(double xi, double t, double pt) {
 
 	const double pt2 = pow2(pt);
@@ -528,15 +534,17 @@ double CohFlux(double xi, double t, double pt) {
 	const double mp2 = pow2(mp);
 	const double Q2  = std::abs(t);
 
-	const double f = alpha_EM(0) / (PI * xi) * 
-	                 (1.0 / (pt2 + xi2 * mp2)) *
-	                ((1.0 - xi) * (pt2 / (pt2 + xi2 * mp2)) * F_E(Q2) +
-	                 (xi2 / 2.0) * F_M(Q2));
+	double f = alpha_EM(0) / PI  * 
+	           (pt2 / (pt2 + xi2 * mp2)) *
+	           ((1.0 - xi) * (pt2 / (pt2 + xi2 * mp2)) * F_E(Q2) +
+	           	(xi2 / 4.0) * F_M(Q2));
     
-	// Phasespace normalization for 2->N kinematics (including proton legs)
-	const double PS = 16.0 * gra::math::PIPI;
+	// Factors
+	f /= xi;
+	f /= pt2;
+	f *= 16.0 * gra::math::PIPI;
 
-	return msqrt(f * PS); // make it <"amplitude level">
+	return msqrt(f); // make it <"amplitude level">
 }
 
 
@@ -552,6 +560,7 @@ double CohFlux(double xi, double t, double pt) {
 //                  $
 //                   $
 //
+// Factors applied as with CohFlux() above.
 //
 double IncohFlux(double xi, double t, double pt, double M2) {
 	
@@ -562,22 +571,25 @@ double IncohFlux(double xi, double t, double pt, double M2) {
 	const double Q2  = std::abs(t);
 	const double xbj = Q2 / (Q2 + M2 - mp2); // Bjorken-x
 
-	const double f = alpha_EM(0) / (PI * xi) *
-					  (1.0 / (pt2 + xi*(M2 - mp2) + xi2*mp2)) *
-	                 ((1.0 - xi) * (pt2 / (pt2 + xi*(M2 - mp2) + xi2*mp2)) * F2xQ2(xbj,Q2) / (Q2 + M2 - mp2));
+	double f = alpha_EM(0) / PI *
+			   (1.0 / (pt2 + xi*(M2 - mp2) + xi2*mp2)) *
+	           ((1.0 - xi) * (pt2 / (pt2 + xi*(M2 - mp2) + xi2*mp2)) * F2xQ2(xbj,Q2) / (Q2 + M2 - mp2) +
+	           	(xi2 / (4.0*pow2(xbj))) * 2.0 * xbj * F1xQ2(xbj,Q2) / (Q2 + M2 - mp2) );
     
-	// Phasespace normalization for 2->N kinematics (including proton legs)
-	const double PS = 16.0 * gra::math::PIPI;
+	// Factors
+	f /= xi;
+	f /= pt2;
+	f *= 16.0 * gra::math::PIPI;
 
-	return msqrt(f * PS); // make it <"amplitude level">
+	return msqrt(f); // make it <"amplitude level">
 }
 
 
-// Drees-Zeppenfeld photon flux (collinear EPA flux - use only for the reference)
+// Drees-Zeppenfeld proton gamma flux (collinear EPA flux - use only for a reference)
 double DZFlux(double x) {
 	const double Q2min = (pow2(mp) * pow2(x)) / (1.0 - x);
 	const double A = 1.0 + 0.71 / Q2min;
-
+	
 	double f = alpha_EM(0) / (2.0 * PI * x) * (1.0 + pow2(1.0 - x)) *
 	           (std::log(A) - 11.0 / 6.0 + 3.0 / A -
 	            3.0 / (2.0 * pow2(A)) + 1.0 / (3 * pow3(A)));

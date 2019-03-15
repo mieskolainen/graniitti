@@ -235,7 +235,7 @@ void experiment(bool screening) {
 		for (int mode = 0; mode < MODEMAX; ++mode) {
 	    	
 		    try {
-
+                
 		    	MGraniitti* gen = new MGraniitti;
 
 				HILJAA = false;
@@ -246,10 +246,11 @@ void experiment(bool screening) {
 				// Set spesific parameters
 				gen->proc->SetScreening(mode);
 				gen->proc->SetExcitation(false);
-                
+                gen->proc->SetHistograms(0);
+
 				// Initialize (always last!)
 				gen->Initialize();
-
+                
 				// Get total, elastic and inelastic cross section
 				double xs_tot = 0.0;
 				double xs_el  = 0.0;

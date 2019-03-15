@@ -121,31 +121,31 @@ public:
     double M()         const { return (M2() > 0.0) ? msqrt(M2()) : -msqrt(-M2()); }
     
     // gamma = E/m = 1/sqrt(1-v^2/c^2) = 1/sqrt(1-beta^2)
-    double Gamma() const     { return E() / M(); }
-    double Beta()  const     { return P3mod() / E(); }
-    
+    double Gamma()     const { return E() / M(); }
+    double Beta()      const { return P3mod() / E(); }
+
     // Transverse 2-vector norm and norm^2
-    double Perp()   const { return Pt(); }
-    double Perp2()  const { return Pt2(); }
-    double Pt()     const { return msqrt(Pt2()); }
-    double Pt2()    const { return k[X_]*k[X_] + k[Y_]*k[Y_];}
+    double Perp()      const { return Pt(); }
+    double Perp2()     const { return Pt2(); }
+    double Pt()        const { return msqrt(Pt2()); }
+    double Pt2()       const { return k[X_]*k[X_] + k[Y_]*k[Y_];}
     
     // Total 3-vector norm and norm^2
-    double P3mod()  const { return msqrt(P3mod2()); }
-    double P3mod2() const { return k[X_]*k[X_] + k[Y_]*k[Y_] + k[Z_]*k[Z_]; }
+    double P3mod()     const { return msqrt(P3mod2()); }
+    double P3mod2()    const { return k[X_]*k[X_] + k[Y_]*k[Y_] + k[Z_]*k[Z_]; }
     
     // Transverse mass (invariant under boost in z-direction)
-    double Mt()     const { return msqrt(Mt2()); }
-    double Mt2()    const { return M2() + Pt2(); }
+    double Mt()        const { return msqrt(Mt2()); }
+    double Mt2()       const { return M2() + Pt2(); }
     
     // Coincides with transverse mass for single particle
-    double Et()     const { return Mt(); }
-    double Et2()    const { return Mt2(); }
+    double Et()        const { return Mt(); }
+    double Et2()       const { return Mt2(); }
     
     // Angles
-    double Phi()      const { return std::atan2(Py(), Px()); } // y / x
-    double Theta()    const { return std::atan2(Pt(), Pz()); } // |Pt| / z
-    double CosTheta() const { return std::cos(Theta()); }
+    double Phi()       const { return std::atan2(Py(), Px()); } // y / x
+    double Theta()     const { return std::atan2(Pt(), Pz()); } // |Pt| / z
+    double CosTheta()  const { return std::cos(Theta()); }
     
     
     // Pseudorapidity and rapidity (boost) in z-direction
@@ -153,7 +153,7 @@ public:
         return 0.5*std::log( (P3mod() + Pz()) / (P3mod() - Pz()) );
     }
     double Rap() const {
-        return 0.5*std::log( (E() + Pz())   / (E() - Pz()) );
+        return 0.5*std::log( (E() + Pz()) / (E() - Pz()) );
     }
     
     // Lightcone variable: k_+ = E + p_z
