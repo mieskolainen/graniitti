@@ -236,7 +236,7 @@ void experiment(bool screening) {
 	    	
 		    try {
 
-		    	std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
+		    	MGraniitti* gen = new MGraniitti;
 
 				HILJAA = false;
 
@@ -258,6 +258,8 @@ void experiment(bool screening) {
 
 				// > Get process cross section and error
 				gen->GetXS(xs0[p][mode], xs0_err[p][mode]);
+
+                delete gen;
 
 		    } catch (const std::invalid_argument& err) {
 				std::cerr << "PROCESS:: " << input[p].card

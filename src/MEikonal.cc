@@ -70,7 +70,7 @@ namespace gra {
 			                  std::to_string(MEikonalNumerics::FBIntegralN)
 			                  ;
 			return str;
-	}
+		}
 
 	void ReadParameters() {
 		
@@ -110,9 +110,9 @@ namespace gra {
 	// -----------------------------------------
 	
 	// Screening loop (minimum values)
-	unsigned int NumberLoopKT  = 12; // Number of kt steps
-	unsigned int NumberLoopPHI = 9;  // Number of phi steps
-
+	unsigned int NumberLoopKT  = 15; // Number of kt steps
+	unsigned int NumberLoopPHI = 12;  // Number of phi steps
+	
 	// User adds more
 	void SetLoopDiscretization(unsigned int ND) {
 		NumberLoopKT  = 3 * ND + NumberLoopKT;

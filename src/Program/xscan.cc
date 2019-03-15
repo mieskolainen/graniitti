@@ -114,30 +114,32 @@ int main(int argc, char* argv[]) {
 	    for (const auto& k : indices(jsinput)) {
 
 			// Create generator object
-			std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
+			MGraniitti* gen = new MGraniitti;
 
 			// Read process input from file
 			gen->ReadInput(jsinput[k]);
 			
 			// Set beam and energy
-			const std::vector<std::string> beam = {"p+","p+"};
+			const std::vector<std::string> beam = {"p+", "p+"};
 			const std::vector<double> ebeam = {energy[i]/2, energy[i]/2};
 			gen->proc->SetInitialState(beam, ebeam);
-
+			
 			// SCREENING
 			gen->proc->SetScreening(SCREENING);
-
+			
 			// Always last!
 			gen->Initialize();
-
+			
 			if (k == 0) { // One process is enough
 			    gen->proc->Eikonal.GetTotXS(xs_tot, xs_el, xs_in);
 			}
-
+			
 			// > Get process cross section and error
 			gen->GetXS(xs0[k], xs0_err[k]);
+			
+			delete gen;
 	    }
-
+	    
 	    // Write out
 	    fprintf(fout, "%0.3E\t\t%0.3E\t\t%0.3E\t\t%0.3E", energy.at(i),
 	            xs_tot, xs_in, xs_el);

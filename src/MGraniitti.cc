@@ -67,9 +67,9 @@ MGraniitti::MGraniitti() {
 MGraniitti::~MGraniitti() {
 
 	// Destroy processes
-	//for (unsigned int i = 0; i < pvec.size(); ++i) {
-	//	delete pvec[i];
-	//}
+	for (unsigned int i = 0; i < pvec.size(); ++i) {
+		if (pvec[i] != nullptr) { delete pvec[i]; }
+	}
 }
 
 void MGraniitti::PrintHistograms() {
@@ -225,7 +225,7 @@ void MGraniitti::InitMultiMemory() {
 	// ** Init multithreading memory by making copies of the process **
 	if (pvec.size() != 0) {
 		for (std::size_t i = 0; i < pvec.size(); ++i) {
-			delete pvec[i];
+			if (pvec[i] != nullptr) { delete pvec[i]; }
 		}
 	}
 	pvec.resize(CORES, nullptr);
