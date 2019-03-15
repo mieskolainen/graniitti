@@ -52,14 +52,14 @@
 
       "PRECISION" : 0.01,     // Integral relative precision target
       "NCALL"     : 100000,    // Number of function calls per initialization iteration (5000 or more)
-      "ITER"      : 10,       // Number of initialization iteration (10 or more)
+      "ITER"      : 20,       // Number of initialization iteration (10 or more)
 
       "BINS"    : 128,        // Maximum number of bins per dimension (NOTE: EVEN NUMBER)
       "LAMBDA"  : 1.5,        // Regularization parameter
       "CHI2MAX" : 10.0,       // Maximum Chi^2 in initialization
       "DEBUG"   : -1          // Debug output (default -1)
     },
-    
+
     // FLAT integrator
     "FLAT" : {
 
@@ -72,10 +72,10 @@
   // Generation cuts
 
   "GENCUTS" : {
-
+    
     "<C>" : {
       "Rap" : [-2.5, 2.5],  // Rapidity boundaries of the final states (<C> class)
-      "Xi"  : [0, 1e-3]     // Invariant scale M^2/s (forward excitation)
+      "Xi"  : [0, 1e-1]     // Invariant scale M^2/s (forward excitation)
     },
     "<F>" : {
       "Rap" : [-2.5, 2.5],  // Rapidity boundaries of the system (<F> class)
