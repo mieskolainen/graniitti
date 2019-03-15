@@ -319,8 +319,8 @@ double S3F(double t) {
 // <apply at amplitude level>
 double S3FINEL(double t, double M2) {
 
-	static const double DELTA_P = 0.0808;
-	static const       double a = 0.5616; // GeV^{2}
+	constexpr double DELTA_P = 0.0808;
+	constexpr       double a = 0.5616; // GeV^{2}
 
 	double f = std::pow(std::abs(t) / (M2*(std::abs(t) + a)), 0.5 * (1 + DELTA_P));
 
@@ -347,15 +347,15 @@ double F2xQ2(double x, double Q2) {
 
 	if (F2TYPE == "DL") {
 
-		static const double A = 0.324;
-		static const double B = 0.098;
+		constexpr double A = 0.324;
+		constexpr double B = 0.098;
 
-		static const double DELTA_P = 0.0808;
-		static const double DELTA_R = 0.5475;
+		constexpr double DELTA_P = 0.0808;
+		constexpr double DELTA_R = 0.5475;
 
-		static const double a = 0.561991692786383;
-		static const double b = 0.011133;
-
+		constexpr double a = 0.561991692786383;
+		constexpr double b = 0.011133;
+		
 		const double F2 = 
 		  A * std::pow(x, - DELTA_P) * std::pow(Q2 / (Q2 + a), 1 + DELTA_P)
 		+ B * std::pow(x, 1-DELTA_R) * std::pow(Q2 / (Q2 + b), DELTA_R);
@@ -364,16 +364,16 @@ double F2xQ2(double x, double Q2) {
 	}
 
 	else if (F2TYPE == "CKMT") {
-		static const double A        = 0.1502;
-		static const double B_u      = 1.2064;
-		static const double B_d      = 0.1798;
-		static const double alpha_R  = 0.4150;
-		static const double DELTA_0  = 0.0800;
+		constexpr double A        = 0.1502;
+		constexpr double B_u      = 1.2064;
+		constexpr double B_d      = 0.1798;
+		constexpr double alpha_R  = 0.4150;
+		constexpr double DELTA_0  = 0.0800;
 
-		static const double a        = 0.2631;
-		static const double b        = 0.6452;
-		static const double c        = 3.5489;
-		static const double d        = 1.1170;
+		constexpr double a        = 0.2631;
+		constexpr double b        = 0.6452;
+		constexpr double c        = 3.5489;
+		constexpr double d        = 1.1170;
 
 		const double n_Q2     = (3.0/2.0) * (1 + Q2/(Q2 + c));
 		const double DELTA_Q2 = DELTA_0 * (1 + (2*Q2) / (Q2 + d));
@@ -449,7 +449,7 @@ double F_M(double Q2) {
 
 // "Sachs" form factors:
 // <http://www.scholarpedia.org/article/Nucleon_Form_factors>
-const double mup = 2.792847337; // Proton magnetic moment
+constexpr double mup = 2.792847337; // Proton magnetic moment
 
 /*
 // The simplest possible: Dipole parametrization
@@ -555,7 +555,7 @@ double CohFlux(double xi, double t, double pt) {
 //
 double IncohFlux(double xi, double t, double pt, double M2) {
 	
-	static const double mp2 = pow2(mp);
+	constexpr double mp2 = pow2(mp);
 
 	const double pt2 = pow2(pt);
 	const double xi2 = pow2(xi);

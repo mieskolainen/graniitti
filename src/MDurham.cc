@@ -33,13 +33,13 @@ namespace gra {
 
 // 2-body incoming or outgoing helicity combinations
 // (keep it algebraic order to match with MadGraph)
-const int MM = 0; // --
-const int MP = 1; // -+
-const int PM = 2; // +-
-const int PP = 3; // ++
+constexpr int MM = 0; // --
+constexpr int MP = 1; // -+
+constexpr int PM = 2; // +-
+constexpr int PP = 3; // ++
 
 // 2-body final state helicity configurations
-const std::vector<int> fs2 = {MM,MP,PM,PP};
+static const std::vector<int> fs2 = {MM,MP,PM,PP};
 
 // Central system J^P = 0^+, 0^-, +2^+, -2^+
 enum SPINPARITY { P0, M0, P2, M2 }; // Implicit conversion to int

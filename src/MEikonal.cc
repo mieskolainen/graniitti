@@ -32,28 +32,27 @@ using gra::math::zi;
 
 
 namespace gra {
-
-
+	
 	// Eikonal screening numerical integration parameters
 	// N.B. Compile will make significant optimizations if boundaries
 	// are const variables.
 	namespace MEikonalNumerics {
 
-		const double MinKT2 = 1E-6;
-		const double MaxKT2 = 25.0;
+		constexpr double MinKT2 = 1E-6;
+		constexpr double MaxKT2 = 25.0;
 		unsigned int NumberKT2 = 0;
 		bool    logKT2 = false;
 		
-		const double MinBT = 1E-6;
-		const double MaxBT = 10.0 / PDG::GeV2fm;
+		constexpr double MinBT = 1E-6;
+		constexpr double MaxBT = 10.0 / PDG::GeV2fm;
 		unsigned int NumberBT = 0;
 		bool    logBT = false;
 
-		const double FBIntegralMinKT = 1E-9;
-		const double FBIntegralMaxKT = 30.0;
-		const unsigned int   FBIntegralN = 10000;
+		constexpr     double FBIntegralMinKT = 1E-9;
+		constexpr     double FBIntegralMaxKT = 30.0;
+		constexpr unsigned int   FBIntegralN = 10000;
 
-		const double MinLoopKT = 1E-4;
+		constexpr double MinLoopKT = 1E-4;
 		double       MaxLoopKT = 1.75;
 		
 		std::string GetHashString() {
