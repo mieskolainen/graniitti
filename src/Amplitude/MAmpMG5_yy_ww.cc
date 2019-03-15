@@ -100,10 +100,8 @@ std::complex<double> MAmpMG5_yy_ww::CalcAmp(gra::LORENTZSCALAR& lts) {
 
 	// Helicity combinations
 	static const int ncomb = 36;
-
-	std::vector<std::complex<double>> temp(ncomb, 0.0);
-	lts.hamp = temp;
-
+	lts.hamp = std::vector<std::complex<double>> (ncomb);
+	
 	// Helicities for the process
 	static const int helicities[ncomb][nexternal] = {
 	    {-1, -1, -1, -1}, {-1, -1, -1, 0}, {-1, -1, -1, 1},

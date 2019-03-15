@@ -113,10 +113,7 @@ std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR& lts) {
 
 	static const int ncomb = 16;
 
-	std::vector<std::complex<double>> temp(ncomb, 0.0);
-	lts.hamp = temp;
-
-	const static int helicities[ncomb][nexternal] = {
+	static const int helicities[ncomb][nexternal] = {
 	    {-1, -1, -1, -1}, {-1, -1, -1, 1}, {-1, -1, 1, -1}, {-1, -1, 1, 1},
 	    {-1, 1, -1, -1},  {-1, 1, -1, 1},  {-1, 1, 1, -1},  {-1, 1, 1, 1},
 	    {1, -1, -1, -1},  {1, -1, -1, 1},  {1, -1, 1, -1},  {1, -1, 1, 1},
@@ -130,31 +127,35 @@ std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR& lts) {
 		perm[i] = i;
 	}
 
-	// const static std::vector<int> nonzero =
-	// {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}; // All
-	const static std::vector<int> nonzero = {
-	    5, 6, 9, 10}; // High energy limit / Helicity conserving
+	// static const std::vector<int> nonzero = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+	
+ 	// High energy limit / Helicity conserving
+	static const std::vector<int> nonzero = {5, 6, 9, 10};
+
+	lts.hamp = std::vector<std::complex<double>> (nonzero.size());
 
 	// Loop over helicity combinations
-	for (auto ihel : nonzero) {
+	for (std::size_t i = 0; i < nonzero.size(); ++i) {
+
+		const unsigned int ihel = nonzero[i];
 		calculate_wavefunctions(perm, helicities[ihel]);
 
 		// Sum of subamplitudes (s,t,u,...)
 		for (int k = 0; k < namplitudes; ++k) {
-			lts.hamp[ihel] += amp[k];
+			lts.hamp[i] += amp[k];
 		}
 		// Apply gamma fluxes
-		lts.hamp[ihel] *= gammaflux1;
-		lts.hamp[ihel] *= gammaflux2;
+		lts.hamp[i] *= gammaflux1;
+		lts.hamp[i] *= gammaflux2;
 
 		// Phase space
-		lts.hamp[ihel] *= gra::math::msqrt(lts.s / lts.s_hat);
+		lts.hamp[i] *= gra::math::msqrt(lts.s / lts.s_hat);
 	}
 
 	// Total amplitude squared over all helicity combinations individually
 	double amp2 = 0.0;
-	for (auto ihel : nonzero) {
-		amp2 += gra::math::abs2(lts.hamp[ihel]);
+	for (std::size_t i = 0; i < lts.hamp.size(); ++i) {
+		amp2 += gra::math::abs2(lts.hamp[i]);
 	}
 	amp2 /= 4; // spin average matrix element squared
 

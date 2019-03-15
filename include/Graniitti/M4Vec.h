@@ -319,7 +319,7 @@ private:
 
     // speed of light, c = [m/s] (EXACT/DEFINITION)
     static constexpr const double c = 2.99792458E8; 
-
+    
     // Indices
     static const int E_ = 0;
     static const int X_ = 1;
