@@ -176,7 +176,7 @@ bool MQuasiElastic::LoopKinematics(const std::vector<double>& p1p,
 		kinematics::LorentzBoost(beamsum, lts.sqrt_s, lts.pfinal[2], sign);	
 	}
 	// ------------------------------------------------------------------
-	
+
 	if (!gra::math::CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2]))) { return false; }
 
 	return B3GetLorentzScalars();
@@ -499,14 +499,14 @@ void MQuasiElastic::PrintInit(bool silent) const {
 //
 // 1. Note that this problem is indeed quite sensitive to the (ad-hoc) beam-fragment
 // treatment -> visible for example in multiplicity (double-NBD like)
-// spectrum peak and shape etc. Here, we do not try to handle any color D.O.F., but just
+// spectrum peak and shape etc. Here, we do not try to handle any color dof, but just
 // put some boundary conditions and simple Regge-like x-dependence.
 //
 // 2. The energy evolution of the multiplicity spectrum density dN/deta is
 // very sensitive to the Poisson-ansatz-eikonal process, naturally. Often seen easy powerlaw
 // parametrization is not easy to obtain simultaneously with other observables.
 // This just reminds that a very wide simultaneous set of observables is always needed
-// <=> RIVET analysis.
+// <=> Rivet analysis.
 //
 std::complex<double> MQuasiElastic::PolySoft(const std::vector<double>& randvec) {	
 	
@@ -669,7 +669,7 @@ std::complex<double> MQuasiElastic::PolySoft(const std::vector<double>& randvec)
 				faulty = true;
 			}
 		}
-		
+
 		if (faulty) {
 			++outertrials;
 			if (outertrials > MAXTRIAL) {
