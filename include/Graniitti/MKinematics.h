@@ -718,7 +718,7 @@ namespace kinematics {
   // Uses the "sorting algorithm", see description in F. James, CERN/68
   // bool unweighted for (un)weighted operation
   //
-  // Return: W for a valid fragmentation and -1.0 for a kinematically impossible
+  // Return: W for a valid and -1.0 for a kinematically impossible
   // 
   template <typename T1, typename T2>
   inline MCW NBodySetup(const T1& mother, double M0, const std::vector<double>& m, std::vector<double>& M_eff,
