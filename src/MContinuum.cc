@@ -117,6 +117,7 @@ void MContinuum::post_Constructor() {
 bool MContinuum::LoopKinematics(const std::vector<double>& p1p,
                                 const std::vector<double>& p2p) {
 
+	static const M4Vec beamsum = lts.pbeam1 + lts.pbeam2;
 	const unsigned int Kf = lts.decaytree.size(); // Number of central particles
 	const unsigned int Nf = Kf + 2;               // Number of final states
 
@@ -163,7 +164,6 @@ bool MContinuum::LoopKinematics(const std::vector<double>& p1p,
 	lts.pfinal[0] = sumP;
 
 	// Check Energy-Momentum
-	static const M4Vec beamsum = lts.pbeam1 + lts.pbeam2;
 	if (!gra::math::CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2] + lts.pfinal[0]))) { return false; }
 
 	return GetLorentzScalars(Nf);
