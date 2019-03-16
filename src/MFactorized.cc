@@ -153,6 +153,16 @@ bool MFactorized::LoopKinematics(const std::vector<double>& p1p,
 	lts.pfinal[1].SetPzE(p1z, msqrt(pow2(m1) + pow2(pt1) + pow2(p1z)) );
 	lts.pfinal[2].SetPzE(p2z, msqrt(pow2(m2) + pow2(pt2) + pow2(p2z)) );
 
+	// ------------------------------------------------------------------
+	// Now boost if asymmetric beams
+	if (std::abs(beamsum.Pz()) > 1e-9) {
+		constexpr int sign = 1; // positive -> boost to the lab
+		kinematics::LorentzBoost(beamsum, lts.sqrt_s, lts.pfinal[1], sign);
+		kinematics::LorentzBoost(beamsum, lts.sqrt_s, lts.pfinal[2], sign);
+		kinematics::LorentzBoost(beamsum, lts.sqrt_s, lts.pfinal[0], sign);	
+	}
+	// ------------------------------------------------------------------
+
 	if (!CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2] + lts.pfinal[0]))) { return false; }
 
 	return GetLorentzScalars(Nf);

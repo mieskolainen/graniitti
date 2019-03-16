@@ -163,6 +163,20 @@ bool MContinuum::LoopKinematics(const std::vector<double>& p1p,
 	lts.pfinal[2].SetPzE(p2z, msqrt(pow2(m2) + pow2(pt2) + pow2(p2z)));
 	lts.pfinal[0] = sumP;
 
+	// ------------------------------------------------------------------
+	// Now boost if asymmetric beams
+	if (std::abs(beamsum.Pz()) > 1e-9) {
+		constexpr int sign = 1; // positive -> boost to the lab
+		kinematics::LorentzBoost(beamsum, lts.sqrt_s, lts.pfinal[1], sign);
+		kinematics::LorentzBoost(beamsum, lts.sqrt_s, lts.pfinal[2], sign);
+		kinematics::LorentzBoost(beamsum, lts.sqrt_s, lts.pfinal[0], sign);
+
+		for (std::size_t i = 0; i < Kf; ++i) {
+			kinematics::LorentzBoost(beamsum, lts.sqrt_s, lts.pfinal[i+offset], sign);
+		}
+	}
+	// ------------------------------------------------------------------
+
 	// Check Energy-Momentum
 	if (!gra::math::CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2] + lts.pfinal[0]))) { return false; }
 
