@@ -152,8 +152,9 @@ bool MContinuum::LoopKinematics(const std::vector<double>& p1p,
 	const double m1  = lts.pfinal_orig[1].M();
 	const double m2  = lts.pfinal_orig[2].M();
 	
-	double p1z = gra::kinematics::SolvePz(m1, m2, pt1, pt2, sumP.Pz(), sumP.E(), lts.s, lts.pbeam1.Pz() + lts.pbeam2.Pz());
-	double p2z = -(sumP.Pz() + p1z); // by momentum conservation
+	const double pzin = lts.pbeam1.Pz() + lts.pbeam2.Pz();
+	double p1z = gra::kinematics::SolvePz(m1, m2, pt1, pt2, sumP.Pz(), sumP.E(), lts.s, pzin);
+	double p2z = -(sumP.Pz() + p1z) + pzin; // by momentum conservation
 	
 	// Enforce scattering direction +p -> +p, -p -> -p (VERY RARE POLYNOMIAL BRANCH FLIP)
 	if (p1z < 0 || p2z > 0) { return false; }
@@ -386,7 +387,7 @@ bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1
 	// Apply linear system to get p
 	std::vector<M4Vec> p(Kf, M4Vec(0,0,0,0));
 	BLinearSystem(p, pkt_, p1, p2);
-	
+
 	// Set pz and E for central final states
 	M4Vec sumP(0,0,0,0);
 	for (const auto& i : indices(p)) {
@@ -401,8 +402,9 @@ bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1
 	// Check crude energy overflow
 	if (sumP.E() > lts.sqrt_s) { return false; }
 
-	double p1z = gra::kinematics::SolvePz(m1, m2, pt1, pt2, sumP.Pz(), sumP.E(), lts.s, lts.pbeam1.Pz() + lts.pbeam2.Pz());
-	double p2z = -(sumP.Pz() + p1z); // by momentum conservation
+	const double pzin = lts.pbeam1.Pz() + lts.pbeam2.Pz();
+	double p1z = gra::kinematics::SolvePz(m1, m2, pt1, pt2, sumP.Pz(), sumP.E(), lts.s, pzin);
+	double p2z = -(sumP.Pz() + p1z) + pzin; // by momentum conservation
 
 	// Enforce scattering direction +p -> +p, -p -> -p (VERY RARE POLYNOMIAL BRANCH FLIP)
 	if (p1z < 0 || p2z > 0) { return false; }
