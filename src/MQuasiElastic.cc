@@ -161,11 +161,11 @@ bool MQuasiElastic::LoopKinematics(const std::vector<double>& p1p,
 	const double pzin = lts.pbeam1.Pz() + lts.pbeam2.Pz();
 	const double p1z = kinematics::SolvePz(m1, m2, lts.pfinal[1].Pt(), lts.pfinal[2].Pt(), 0, 0, lts.s, pzin);
 	const double p2z = -p1z + pzin; // by momentum conservation
-	
-	// pz and E of protons/N*
-	lts.pfinal[1].SetPzE(p1z, msqrt(m1 * m1 + pow2(lts.pfinal[1].Pt()) + p1z * p1z));
-	lts.pfinal[2].SetPzE(p2z, msqrt(m2 * m2 + pow2(lts.pfinal[2].Pt()) + p2z * p2z));
 
+	// pz and E of protons/N*
+	lts.pfinal[1].SetPzE(p1z, msqrt(pow2(m1) + pow2(lts.pfinal[1].Pt()) + pow2(p1z)));
+	lts.pfinal[2].SetPzE(p2z, msqrt(pow2(m2) + pow2(lts.pfinal[2].Pt()) + pow2(p2z)));
+	
 	if (!gra::math::CheckEMC((lts.pbeam1 + lts.pbeam2) - (lts.pfinal[1] + lts.pfinal[2]))) { return false; }
 
 	return B3GetLorentzScalars();
