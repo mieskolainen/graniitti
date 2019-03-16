@@ -165,7 +165,7 @@ bool MQuasiElastic::LoopKinematics(const std::vector<double>& p1p,
 	// pz and E of protons/N*
 	lts.pfinal[1].SetPzE(p1z, msqrt(pow2(m1) + pow2(lts.pfinal[1].Pt()) + pow2(p1z)));
 	lts.pfinal[2].SetPzE(p2z, msqrt(pow2(m2) + pow2(lts.pfinal[2].Pt()) + pow2(p2z)));
-	
+
 	if (!gra::math::CheckEMC((lts.pbeam1 + lts.pbeam2) - (lts.pfinal[1] + lts.pfinal[2]))) { return false; }
 
 	return B3GetLorentzScalars();
@@ -757,14 +757,14 @@ bool MQuasiElastic::B3BuildKin(double s3, double s4, double t) {
 	const double s2 = lts.pbeam2.M2();
 
 	// Scattering angle based on invariants
-	double theta = std::acos(gra::kinematics::CosthetaStar(lts.s, t, s1, s2, s3, s4));
+	double theta = std::acos(kinematics::CosthetaStar(lts.s, t, s1, s2, s3, s4));
 
 	// Forward/backward solution flip (skip these, rare)
 	if (std::cos(theta) < 0) { return false; }
 	//theta = (std::cos(theta) < 0) ? gra::math::PI - theta : theta;
 	
 	// Outgoing 4-momentum by Kallen (triangle) function
-	const double pnorm = gra::kinematics::DecayMomentum(lts.sqrt_s, msqrt(s3), msqrt(s4));
+	const double pnorm = kinematics::DecayMomentum(lts.sqrt_s, msqrt(s3), msqrt(s4));
 	M4Vec p3(0, 0,  pnorm, 0.5 * (lts.s + s3 - s4) / lts.sqrt_s);
 	M4Vec p4(0, 0, -pnorm, 0.5 * (lts.s + s4 - s3) / lts.sqrt_s);
 
