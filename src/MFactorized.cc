@@ -141,9 +141,8 @@ bool MFactorized::LoopKinematics(const std::vector<double>& p1p,
 	// Energy overflow
 	if (lts.pfinal[0].E() > (lts.sqrt_s - (m1 + m2))) { return false; }
 
-	const double pzin = lts.pbeam1.Pz() + lts.pbeam2.Pz();
-	double p1z = gra::kinematics::SolvePz(m1, m2, pt1, pt2, lts.pfinal[0].Pz(), lts.pfinal[0].E(), lts.s, pzin);
-	double p2z = -(lts.pfinal[0].Pz() + p1z) + pzin; // by momentum conservation
+	double p1z = gra::kinematics::SolvePz(m1, m2, pt1, pt2, lts.pfinal[0].Pz(), lts.pfinal[0].E(), lts.s);
+	double p2z = -(lts.pfinal[0].Pz() + p1z); // by momentum conservation
 	if (std::isnan(p1z)) { return false; }
 	
 	// Enforce scattering direction +p -> +p, -p -> -p (VERY RARE POLYNOMIAL BRANCH FLIP)
@@ -153,7 +152,8 @@ bool MFactorized::LoopKinematics(const std::vector<double>& p1p,
 	lts.pfinal[1].SetPzE(p1z, msqrt(pow2(m1) + pow2(pt1) + pow2(p1z)) );
 	lts.pfinal[2].SetPzE(p2z, msqrt(pow2(m2) + pow2(pt2) + pow2(p2z)) );
 
-	if (!CheckEMC((lts.pbeam1 + lts.pbeam2) - (lts.pfinal[1] + lts.pfinal[2] + lts.pfinal[0]))) { return false; }
+	static const M4Vec beamsum = lts.pbeam1 + lts.pbeam2;
+	if (!CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2] + lts.pfinal[0]))) { return false; }
 
 	return GetLorentzScalars(Nf);
 }
@@ -361,6 +361,8 @@ bool MFactorized::B51RandomKin(const std::vector<double>& randvec) {
 // Build kinematics for 2->3 skeleton
 bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, double yX, double m2X, double m1, double m2) {
 
+	static const M4Vec beamsum = lts.pbeam1 + lts.pbeam2;
+
 	// Final state 4-momenta, set px,py first
 	M4Vec p1(pt1 * std::cos(phi1), pt1 * std::sin(phi1), 0, 0);
 	M4Vec p2(pt2 * std::cos(phi2), pt2 * std::sin(phi2), 0, 0);
@@ -373,9 +375,8 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
 	// Energy overflow
 	if (pX.E() > (lts.sqrt_s - (m1 + m2))) { return false; }
 
-	const double pzin = lts.pbeam1.Pz() + lts.pbeam2.Pz();
-	double p1z = gra::kinematics::SolvePz(m1, m2, pt1, pt2, pX.Pz(), pX.E(), lts.s, pzin);
-	double p2z = -(pX.Pz() + p1z) + pzin; // by momentum conservation
+	double p1z = gra::kinematics::SolvePz(m1, m2, pt1, pt2, pX.Pz(), pX.E(), lts.s);
+	double p2z = -(pX.Pz() + p1z); // by momentum conservation
 
 	// Enforce scattering direction +p -> +p, -p -> -p (VERY RARE POLYNOMIAL BRANCH FLIP)
 	if (p1z < 0 || p2z > 0) { return false; }
@@ -383,6 +384,16 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
 	// Pz and E of forward protons/N*
 	p1.SetPzE(p1z, msqrt(pow2(m1) + pow2(pt1) + pow2(p1z)));
 	p2.SetPzE(p2z, msqrt(pow2(m2) + pow2(pt2) + pow2(p2z)));
+	
+	// ------------------------------------------------------------------
+	// Now boost if asymmetric beams
+	if (std::abs(beamsum.Pz()) > 1e-9) {
+		constexpr int sign = 1; // positive -> boost to the lab
+		kinematics::LorentzBoost(beamsum, lts.sqrt_s, p1, sign);
+		kinematics::LorentzBoost(beamsum, lts.sqrt_s, p2, sign);
+		kinematics::LorentzBoost(beamsum, lts.sqrt_s, pX, sign);	
+	}
+	// ------------------------------------------------------------------
 
 	// Save
 	lts.pfinal[1] = p1;
@@ -393,7 +404,7 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
 	// Kinematic checks
 
 	// Total 4-momentum conservation
-	if (!CheckEMC((lts.pbeam1 + lts.pbeam2) - (lts.pfinal[1] + lts.pfinal[2] + lts.pfinal[0]))) { return false; }
+	if (!CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2] + lts.pfinal[0]))) { return false; }
 
 	// ==============================================================================
 	// Central system decay tree first branch kinematics set up here, the

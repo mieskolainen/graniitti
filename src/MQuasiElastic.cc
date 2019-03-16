@@ -149,7 +149,7 @@ bool MQuasiElastic::FiducialCuts() const {
 
 
 bool MQuasiElastic::LoopKinematics(const std::vector<double>& p1p,
-                                    const std::vector<double>& p2p) {
+                                   const std::vector<double>& p2p) {
 	const double m1 = lts.pfinal[1].M();
 	const double m2 = lts.pfinal[2].M();
 
@@ -158,15 +158,15 @@ bool MQuasiElastic::LoopKinematics(const std::vector<double>& p1p,
 	lts.pfinal[2].SetPxPy(p2p[0], p2p[1]);
 
 	// SOLVE pz and E
-	const double pzin = lts.pbeam1.Pz() + lts.pbeam2.Pz();
-	const double p1z = kinematics::SolvePz(m1, m2, lts.pfinal[1].Pt(), lts.pfinal[2].Pt(), 0, 0, lts.s, pzin);
-	const double p2z = -p1z + pzin; // by momentum conservation
+	const double p1z = kinematics::SolvePz(m1, m2, lts.pfinal[1].Pt(), lts.pfinal[2].Pt(), 0, 0, lts.s);
+	const double p2z = -p1z; // by momentum conservation
 
 	// pz and E of protons/N*
 	lts.pfinal[1].SetPzE(p1z, msqrt(pow2(m1) + pow2(lts.pfinal[1].Pt()) + pow2(p1z)));
 	lts.pfinal[2].SetPzE(p2z, msqrt(pow2(m2) + pow2(lts.pfinal[2].Pt()) + pow2(p2z)));
 
-	if (!gra::math::CheckEMC((lts.pbeam1 + lts.pbeam2) - (lts.pfinal[1] + lts.pfinal[2]))) { return false; }
+	static const M4Vec beamsum = lts.pbeam1 + lts.pbeam2;
+	if (!gra::math::CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2]))) { return false; }
 
 	return B3GetLorentzScalars();
 }
@@ -752,8 +752,9 @@ bool MQuasiElastic::B3RandomKin(const std::vector<double>& randvec) {
 // Build kinematics for elastic, single and double diffractive 2->2 quasielastic
 bool MQuasiElastic::B3BuildKin(double s3, double s4, double t) {
 
-	const double s1 = lts.pbeam1.M2();
-	const double s2 = lts.pbeam2.M2();
+	static const double s1 = lts.pbeam1.M2();
+	static const double s2 = lts.pbeam2.M2();
+	static const M4Vec beamsum = lts.pbeam1 + lts.pbeam2;
 
 	// Scattering angle based on invariants
 	double theta = std::acos(kinematics::CosthetaStar(lts.s, t, s1, s2, s3, s4));
@@ -762,21 +763,30 @@ bool MQuasiElastic::B3BuildKin(double s3, double s4, double t) {
 	if (std::cos(theta) < 0) { return false; }
 	//theta = (std::cos(theta) < 0) ? gra::math::PI - theta : theta;
 	
-	// Outgoing 4-momentum by Kallen (triangle) function
+	// Outgoing 4-momentum by Kallen (triangle) function in the center-of-momentum frame
 	const double pnorm = kinematics::DecayMomentum(lts.sqrt_s, msqrt(s3), msqrt(s4));
 	M4Vec p3(0, 0,  pnorm, 0.5 * (lts.s + s3 - s4) / lts.sqrt_s);
 	M4Vec p4(0, 0, -pnorm, 0.5 * (lts.s + s4 - s3) / lts.sqrt_s);
-
+	
 	// Transverse momentum by orienting with random rotation (theta,phi)
 	const double phi = random.U(0.0, 2.0 * gra::math::PI); // Flat phi
 	gra::kinematics::Rotate(p3, theta, phi);
 	gra::kinematics::Rotate(p4, theta, phi);
 
+	// ------------------------------------------------------------------
+	// Now boost if asymmetric beams
+	if (std::abs(beamsum.Pz()) > 1e-9) {
+		constexpr int sign = 1; // positive -> boost to the lab
+		kinematics::LorentzBoost(beamsum, lts.sqrt_s, p3, sign);
+		kinematics::LorentzBoost(beamsum, lts.sqrt_s, p4, sign);
+	}
+	// ------------------------------------------------------------------
+
 	lts.pfinal[1] = p3;
 	lts.pfinal[2] = p4;
 
 	// Check Energy-Momentum conservation
-	if (!gra::math::CheckEMC((lts.pbeam1 + lts.pbeam2) - (lts.pfinal[1] + lts.pfinal[2]))) { return false;}
+	if (!gra::math::CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2]))) { return false;}
 
 	return B3GetLorentzScalars();
 }

@@ -152,9 +152,8 @@ bool MContinuum::LoopKinematics(const std::vector<double>& p1p,
 	const double m1  = lts.pfinal_orig[1].M();
 	const double m2  = lts.pfinal_orig[2].M();
 	
-	const double pzin = lts.pbeam1.Pz() + lts.pbeam2.Pz();
-	double p1z = gra::kinematics::SolvePz(m1, m2, pt1, pt2, sumP.Pz(), sumP.E(), lts.s, pzin);
-	double p2z = -(sumP.Pz() + p1z) + pzin; // by momentum conservation
+	double p1z = gra::kinematics::SolvePz(m1, m2, pt1, pt2, sumP.Pz(), sumP.E(), lts.s);
+	double p2z = -(sumP.Pz() + p1z); // by momentum conservation
 	
 	// Enforce scattering direction +p -> +p, -p -> -p (VERY RARE POLYNOMIAL BRANCH FLIP)
 	if (p1z < 0 || p2z > 0) { return false; }
@@ -164,7 +163,8 @@ bool MContinuum::LoopKinematics(const std::vector<double>& p1p,
 	lts.pfinal[0] = sumP;
 
 	// Check Energy-Momentum
-	if (!gra::math::CheckEMC((lts.pbeam1 + lts.pbeam2) - (lts.pfinal[1] + lts.pfinal[2] + lts.pfinal[0]))) { return false; }
+	static const M4Vec beamsum = lts.pbeam1 + lts.pbeam2;
+	if (!gra::math::CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2] + lts.pfinal[0]))) { return false; }
 
 	return GetLorentzScalars(Nf);
 }
@@ -365,6 +365,7 @@ bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1
 	const std::vector<double>& kt, const std::vector<double>& phi, const std::vector<double>& y, double m1, double m2) {
 
 	const unsigned int Kf = Nf - 2; // Central system multiplicity
+	static const M4Vec beamsum = lts.pbeam1 + lts.pbeam2;
 
 	if (lts.decaytree.size() != Kf) {
 		std::string str =
@@ -395,24 +396,36 @@ bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1
 		const double m = lts.decaytree[i].m_offshell; // Note offshell!
 		const double mt = msqrt(pow2(m) + p[i].Pt2());
 		p[i].SetPzE(mt*std::sinh(y[i]), mt*std::cosh(y[i]));
-
 		sumP += p[i];
 	}
 
 	// Check crude energy overflow
 	if (sumP.E() > lts.sqrt_s) { return false; }
 
-	const double pzin = lts.pbeam1.Pz() + lts.pbeam2.Pz();
-	double p1z = gra::kinematics::SolvePz(m1, m2, pt1, pt2, sumP.Pz(), sumP.E(), lts.s, pzin);
-	double p2z = -(sumP.Pz() + p1z) + pzin; // by momentum conservation
+	double p1z = gra::kinematics::SolvePz(m1, m2, pt1, pt2, sumP.Pz(), sumP.E(), lts.s);
+	double p2z = -(sumP.Pz() + p1z); // by momentum conservation
 
 	// Enforce scattering direction +p -> +p, -p -> -p (VERY RARE POLYNOMIAL BRANCH FLIP)
 	if (p1z < 0 || p2z > 0) { return false; }
-
+	
 	// pz and E of protons/N*
 	p1.SetPzE(p1z, msqrt(pow2(m1) + pow2(pt1) + pow2(p1z)));
 	p2.SetPzE(p2z, msqrt(pow2(m2) + pow2(pt2) + pow2(p2z)));
 
+	// ------------------------------------------------------------------
+	// Now boost if asymmetric beams
+	if (std::abs(beamsum.Pz()) > 1e-9) {
+		constexpr int sign = 1; // positive -> boost to the lab
+		kinematics::LorentzBoost(beamsum, lts.sqrt_s, p1,   sign);
+		kinematics::LorentzBoost(beamsum, lts.sqrt_s, p2,   sign);
+		kinematics::LorentzBoost(beamsum, lts.sqrt_s, sumP, sign);
+
+		for (const auto& i : indices(p)) {
+			kinematics::LorentzBoost(beamsum, lts.sqrt_s, p[i], sign);
+		}
+	}
+	// ------------------------------------------------------------------
+	
 	// First branch kinematics
 	lts.pfinal[1] = p1;    // Forward systems
 	lts.pfinal[2] = p2;
@@ -433,7 +446,7 @@ bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1
 	if (sumP.M() < sumM) { return false; }
 
 	// Total 4-momentum conservation
-	if (!gra::math::CheckEMC((lts.pbeam1 + lts.pbeam2) - (lts.pfinal[1] + lts.pfinal[2] + lts.pfinal[0]))) { return false; }
+	if (!gra::math::CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2] + lts.pfinal[0]))) { return false; }
 
 	// -------------------------------------------------------------------
 
