@@ -32,9 +32,9 @@ namespace kinematics {
     const double  t4 = pt4*pt4;
     const double  t5 = pz5*pz5;
     const double  t6 = m3*m3;
-    const double  t7 = sqrt(s);
+    const double  t7 = std::sqrt(s);
     const double  t8 = s*t2*6.0;
-    const double  t9 = pow(s,3.0/2.0);
+    const double  t9 = std::pow(s,3.0/2.0);
     const double  t10 = t2*t2;
     const double  t11 = t3*t3;
     const double  t12 = t4*t4;
@@ -48,7 +48,7 @@ namespace kinematics {
     const double  t20 = E5*t4*t7*4.0;
     const double  t21 = E5*t5*t7*4.0;
     const double  t22 = t8+t10+t11+t12+t13+t14+t15+t16+t17+t18+t19+t20+t21-E5*t9*4.0-s*t3*2.0-s*t4*2.0-s*t5*2.0-s*t6*4.0-t2*t3*2.0-t2*t4*2.0-t2*t5*2.0-t3*t4*2.0-t2*t6*4.0-E5*t2*t7*4.0;
-    const double  t23 = sqrt(t22);
+    const double  t23 = std::sqrt(t22);
     const double  t0 = pz5*(-1.0/2.0)-(E5*t23*(1.0/2.0)-t7*t23*(1.0/2.0)+pz5*(t3*(1.0/2.0)-t4*(1.0/2.0)))/(s+t2-t5-E5*t7*2.0);
 
     return t0;
@@ -96,7 +96,7 @@ namespace kinematics {
   // Case pzin any and m3 = m4
   inline double SolvePz3_C(double m3, double pt3, double pt4, double pz5, double E5, double s, double pzin) {
 
-    const double  t2 = sqrt(s);
+    const double  t2 = std::sqrt(s);
     const double  t3 = E5*E5;
     const double  t4 = pzin*pzin;
     const double  t5 = pz5*pz5;
@@ -139,7 +139,7 @@ namespace kinematics {
 
   // Case pzin any and m3,m4 any
   inline double SolvePz3_D(double m3, double m4, double pt3, double pt4, double pz5, double E5, double s, double pzin) {
-
+    
     const double  t2 = E5*E5;
     const double  t3 = m3*m3;
     const double  t4 = m4*m4;
