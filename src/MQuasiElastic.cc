@@ -749,8 +749,7 @@ bool MQuasiElastic::B3RandomKin(const std::vector<double>& randvec) {
 }
 
 
-// Build kinematics for Single Diffractive
-// and Double Diffractive 2->2 "quasi-elastic" scattering
+// Build kinematics for elastic, single and double diffractive 2->2 quasielastic
 bool MQuasiElastic::B3BuildKin(double s3, double s4, double t) {
 
 	const double s1 = lts.pbeam1.M2();
