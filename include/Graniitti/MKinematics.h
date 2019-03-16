@@ -53,11 +53,11 @@ namespace kinematics {
 
     return t0;
   }
-  
-  
+
+
   // Case pzin = 0 (LHC pp) and m3, m4 any
   inline double SolvePz3_B(double m3, double m4, double pt3, double pt4, double pz5, double E5, double s) {
-    
+
     const double  t2 = E5*E5;
     const double  t3 = m3*m3;
     const double  t4 = m4*m4;
@@ -232,8 +232,8 @@ namespace kinematics {
   end
   */
 
-  // Metafunction distributing computation
-  // This function solves pz3 component in p1 + p2 -> p3 + p5 + p4
+
+  // This function solves pz3 component in p1 + p2 -> p3 + {p5} + p4
   //
   // pzin denotes the (sum of) initial state momentum. For example, LHC pp has pzin = 0
   //
@@ -241,7 +241,7 @@ namespace kinematics {
 
     constexpr double EPS = 1e-9;
 
-    if (std::abs(pzin) < EPS) {     // symmetric beam momentum case
+    if (std::abs(pzin) < EPS) {      // symmetric beam momentum case
       if (std::abs(m3 - m4) < EPS) { // identical mass case (elastic-X-elastic)
         return SolvePz3_A(m3, pt3, pt4, pz5, E5, s);
       } else {
