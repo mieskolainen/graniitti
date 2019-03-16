@@ -26,7 +26,7 @@ namespace kinematics {
 
   // Case m3 = m4
   inline double SolvePz3_A(double m3, double pt3, double pt4, double pz5, double E5, double s) {
-
+    
     const double  t2 = E5*E5;
     const double  t3 = pt3*pt3;
     const double  t4 = pt4*pt4;
