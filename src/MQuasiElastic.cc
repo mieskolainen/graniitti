@@ -176,7 +176,7 @@ bool MQuasiElastic::LoopKinematics(const std::vector<double>& p1p,
 		kinematics::LorentzBoost(beamsum, lts.sqrt_s, lts.pfinal[2], sign);	
 	}
 	// ------------------------------------------------------------------
-	
+
 	if (!gra::math::CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2]))) { return false; }
 
 	return B3GetLorentzScalars();
@@ -543,23 +543,7 @@ std::complex<double> MQuasiElastic::PolySoft(const std::vector<double>& randvec)
 	// Dirichlet parameters
 	const double DIRALPHA = 0.85;
 	std::vector<double> alphavec(N, DIRALPHA); // "Uniform case"
-
-	// Random integer from [1,NBins-1]
-	// const double Q2 = 1.0;
-
-	/*
-	// Evaluate Proton Structure Function
-	static std::vector<double> F2val(1/XSTEP, 0.0);
-	static double MAXVAL = 0;
-	for (const auto& n : indices(F2val)) {
-
-		const double xval = XMIN + n*XSTEP;
-		F2val[n] = gra::form::F2xQ2(xval, Q2);
-		MAXVAL = (F2val[n] > MAXVAL) ? F2val[n] : MAXVAL;
-	}
-	std::discrete_distribution<int> DIST(F2val.begin(), F2val.end());
-	*/
-
+	
 	while (true) {
 
 		bool faulty = false;
@@ -579,29 +563,6 @@ std::complex<double> MQuasiElastic::PolySoft(const std::vector<double>& randvec)
 			x1 = random.PowerRandom(XMIN, XMAX, -(DELTA));
 			x2 = random.PowerRandom(XMIN, XMAX, -(DELTA));
 
-			/*
-			// Structure function parametrization
-			
-			//x1 = XMIN + DIST(rng) * XSTEP;
-			//x2 = XMIN + DIST(rng) * XSTEP;
-			
-			// Acceptance-Rejection
-			while (true) {
-			    const int n = RANDI(rng);
-			    if (random.U(0,1) < F2val[n] / MAXVAL) {
-			    	x1 = XMIN + n * XSTEP;
-			    	break;
-			    }
-			}
-			while (true) {
-			    const int n = RANDI(rng);
-			    if (random.U(0,1) < F2val[n] / MAXVAL) {
-			    	x2 = XMIN + n * XSTEP;
-			    	break;
-			    }
-			}
-			*/
-			
 			// Pick gaussian Fermi pt of Pomerons
 			const double sigma = 0.4; // GeV
 			const double pt1   = msqrt(pow2(random.G(0,sigma)) + pow2(random.G(0,sigma)));
