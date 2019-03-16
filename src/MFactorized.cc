@@ -384,7 +384,7 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
 	// Pz and E of forward protons/N*
 	p1.SetPzE(p1z, msqrt(pow2(m1) + pow2(pt1) + pow2(p1z)));
 	p2.SetPzE(p2z, msqrt(pow2(m2) + pow2(pt2) + pow2(p2z)));
-	
+
 	// ------------------------------------------------------------------
 	// Now boost if asymmetric beams
 	if (std::abs(beamsum.Pz()) > 1e-9) {

@@ -431,10 +431,13 @@ void MProcess::SetInitialState(const std::vector<std::string>& beam,
 
 	beam1 = PDG.FindByPDGName(beam[0]);
 	beam2 = PDG.FindByPDGName(beam[1]);
-
-	// Beam particle 4-momenta re-setup
-	lts.pbeam1 = M4Vec(0, 0,  msqrt(pow2(energy[0]) - pow2(beam1.mass)), energy[0]); // positive z-axis
-	lts.pbeam2 = M4Vec(0, 0, -msqrt(pow2(energy[1]) - pow2(beam2.mass)), energy[1]); // negative z-axis
+	
+	// Beam particle 4-momenta re-setup with safety threshold if fixed target setup
+	const double E1 = std::max(energy[0], 1.001*beam1.mass);
+	const double E2 = std::max(energy[1], 1.001*beam2.mass);
+	
+	lts.pbeam1 = M4Vec(0, 0,  msqrt(pow2(E1) - pow2(beam1.mass)), E1); // positive z-axis
+	lts.pbeam2 = M4Vec(0, 0, -msqrt(pow2(E2) - pow2(beam2.mass)), E2); // negative z-axis
 
 	// Mandelstam s
 	lts.s      = (lts.pbeam1 + lts.pbeam2).M2();
