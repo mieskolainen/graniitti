@@ -158,10 +158,10 @@ bool MQuasiElastic::LoopKinematics(const std::vector<double>& p1p,
 	lts.pfinal[2].SetPxPy(p2p[0], p2p[1]);
 
 	// SOLVE pz and E
-
-	const double p1z = kinematics::SolvePz(m1, m2, lts.pfinal[1].Pt(), lts.pfinal[2].Pt(), 0, 0, lts.s, lts.pbeam1.Pz() + lts.pbeam2.Pz());
-	const double p2z = -p1z; // by momentum conservation
-
+	const double pzin = lts.pbeam1.Pz() + lts.pbeam2.Pz();
+	const double p1z = kinematics::SolvePz(m1, m2, lts.pfinal[1].Pt(), lts.pfinal[2].Pt(), 0, 0, lts.s, pzin);
+	const double p2z = -p1z + pzin; // by momentum conservation
+	
 	// pz and E of protons/N*
 	lts.pfinal[1].SetPzE(p1z, msqrt(m1 * m1 + pow2(lts.pfinal[1].Pt()) + p1z * p1z));
 	lts.pfinal[2].SetPzE(p2z, msqrt(m2 * m2 + pow2(lts.pfinal[2].Pt()) + p2z * p2z));
