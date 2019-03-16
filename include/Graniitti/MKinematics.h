@@ -135,11 +135,11 @@ namespace kinematics {
 
     return t0;
   }
-
-
-  // Case pzin any and m3,m4 any
+  
+  
+  // Case pzin any and m3,m4 any (MOST GENERIC OF ALL)
   inline double SolvePz3_D(double m3, double m4, double pt3, double pt4, double pz5, double E5, double s, double pzin) {
-    
+
     const double  t2 = E5*E5;
     const double  t3 = m3*m3;
     const double  t4 = m4*m4;
@@ -170,7 +170,7 @@ namespace kinematics {
     const double  t29 = t9+t11+t12+t13+t14+t15+t16+t17+t18+t19+t20+t21+t22+t23+t24+t25+t26+t27+t28-E5*t10*4.0-s*t3*2.0-s*t4*2.0-s*t5*2.0-s*t6*2.0-s*t7*2.0-t2*t3*2.0-t2*t4*2.0-t2*t5*2.0-t3*t4*2.0-t2*t6*2.0-t2*t7*2.0-t3*t6*2.0-t4*t5*2.0-t5*t6*2.0-E5*t2*t8*4.0;
     const double  t30 = std::sqrt(t29);
     const double  t0 = pz5*(-1.0/2.0)-(E5*t30*(1.0/2.0)-t8*t30*(1.0/2.0)+pz5*(t3*(1.0/2.0)-t4*(1.0/2.0)+t5*(1.0/2.0)-t6*(1.0/2.0)))/(s+t2-t7-E5*t8*2.0);
-
+    
     return t0;
   }
 
