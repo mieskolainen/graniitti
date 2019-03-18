@@ -103,7 +103,7 @@ endif
 
 
 # =======================================================================
-# Libraries
+# External libraries to be linked
 
 # HEPMC3
 HEPMC3lib      = -L$(HEPMC3SYS)/lib -lHepMC3 -lHepMC3search
@@ -125,18 +125,23 @@ ROOTlib        = -L$(ROOTSYS)/lib -lCore -lRIO -lNet \
 endif
 
 # C++ standard
-STANDARDlib    = -pthread -lrt -lm -lstdc++
+STANDARDlib    = -lstdc++ -lm -pthread -lrt
 #  -ldl -rdynamic
 
 # GSL, on ubuntu run: sudo apt-get install libgsl-dev
 #GSLlib         = -lgsl -lgslcblas
 
 
-# -----------------------------------------------------------------------
+LDLIBS  = $(STANDARDlib)
+LDLIBS += $(HEPMC3lib)
+LDLIBS += $(LHAPDF6lib)
+LDLIBS += $(PYTORCHlib)
+
+
+# =======================================================================
 # Header files
 
 # C++
-INCLUDES += $(STANDARDlib)
 INCLUDES += -I/usr/include
 
 # Own
@@ -156,13 +161,12 @@ INCLUDES += -Ilibs/Eigen/unsupported/
 #INCLUDES += -Ilibs/libtorch/include/
 #INCLUDES += -Ilibs/libtorch/include/torch/csrc/api/include
 
-
 # External libraries
 INCLUDES += -I$(HEPMC3SYS)/include
 INCLUDES += -I$(LHAPDFSYS)/include
 
 
-# -----------------------------------------------------------------------
+# =======================================================================
 # Compiler and its options
 
 CXX       = g++
@@ -171,7 +175,7 @@ CXX       = g++
 OPTIM     = -O2 -DNDEBUG -march=native -ftree-vectorize 
 #-fno-signed-zeros
 
-CXXFLAGS  = -Wall -fPIC -pipe $(OPTIM) $(INCLUDES)
+CXXFLAGS  = -Wall -fPIC -pipe $(OPTIM)
 
 # Needed by PyTorch if using pre-compiled (ABI = Application Binary Interface)
 # gcc < 5.1 is 0, later versions use 1 by default
@@ -198,7 +202,7 @@ CXXFLAGS += -MMD -MP
 #
 # Check your CPU instruction set with: cat /proc/cpuinfo
 
-# -----------------------------------------------------------------------
+# =======================================================================
 # Sources, objects and dependency files
 
 OBJ_DIR     = obj
@@ -276,14 +280,6 @@ endif
 
 
 # -----------------------------------------------------------------------
-# External libraries to be linked
-
-LDLIBS  = $(HEPMC3lib)
-LDLIBS += $(LHAPDF6lib)
-LDLIBS += $(PYTORCHlib)
-
-
-# -----------------------------------------------------------------------
 # PROGRAM
 
 # Directory
@@ -309,6 +305,10 @@ endif
 # Multicore
 #export MAKEFLAGS="-j $(grep -c ^processor /proc/cpuinfo)"
 
+
+# -----------------------------------------------------------------------
+# RULES for linking
+
 all: $(PROGRAM) $(PROGRAM_ROOT) $(PROGRAM_TEST)
 	@echo " "
 	@echo "PROGRAM:" $(PROGRAM) $(PROGRAM_ROOT) $(PROGRAM_TEST)
@@ -319,7 +319,7 @@ $(PROGRAM): $(OBJ) $(OBJ_PROGRAM)
 	$(CXX) $(OBJ_DIR)/$@.o $(OBJ) -o $@ $(CXXFLAGS) $(LDLIBS)
 
 $(PROGRAM_ROOT): $(OBJ) $(OBJ_2) $(OBJ_PROGRAM_ROOT)
-	$(CXX) $(OBJ_DIR)/$@.o $(OBJ) $(OBJ_2) -o $@ $(CXXFLAGS) $(LDLIBS) -I$(ROOTSYS)/include $(ROOTlib)
+	$(CXX) $(OBJ_DIR)/$@.o $(OBJ) $(OBJ_2) -o $@ $(CXXFLAGS) $(LDLIBS) $(ROOTlib)
 
 # Unit tests (note, we use catchmain.o from $(OBJ_3) for linking with catch2)
 $(PROGRAM_TEST): $(OBJ) $(OBJ_3) $(OBJ_PROGRAM_TEST)
@@ -335,28 +335,28 @@ $(PROGRAM_TEST): $(OBJ) $(OBJ_3) $(OBJ_PROGRAM_TEST)
 $(OBJ_DIR)/%.o: $(SRC_DIR_0)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) -std=c++17 -c $< -o $@ $(CXXFLAGS)
+	$(CXX) -std=c++17 -c $< -o $@ $(CXXFLAGS) $(INCLUDES)
 # =======================================================================
 
 # =======================================================================
 $(OBJ_DIR)/%.o: $(SRC_DIR_1)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) -std=c++17 -c $< -o $@ $(CXXFLAGS)
+	$(CXX) -std=c++17 -c $< -o $@ $(CXXFLAGS) $(INCLUDES)
 # =======================================================================
 
 # =======================================================================
 $(OBJ_DIR)/%.o: $(SRC_DIR_2)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) -std=c++14 -c $< -o $@ $(CXXFLAGS) -I$(ROOTSYS)/include
+	$(CXX) -std=c++14 -c $< -o $@ $(CXXFLAGS) $(INCLUDES) -I$(ROOTSYS)/include
 # =======================================================================
 
 # =======================================================================
 $(OBJ_DIR)/%.o: $(SRC_DIR_3)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) -std=c++17 -c $< -o $@ $(CXXFLAGS)
+	$(CXX) -std=c++17 -c $< -o $@ $(CXXFLAGS) $(INCLUDES)
 # =======================================================================
 
 # PROGRAM objects
@@ -365,21 +365,21 @@ $(OBJ_DIR)/%.o: $(SRC_DIR_3)/%.cc
 $(OBJ_DIR)/$(BIN_DIR)/%.o: $(SRC_DIR_PROGRAM)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) -std=c++17 -c $< -o $@ $(CXXFLAGS)
+	$(CXX) -std=c++17 -c $< -o $@ $(CXXFLAGS) $(INCLUDES)
 # =======================================================================
 
 # =======================================================================
 $(OBJ_DIR)/$(BIN_DIR)/%.o: $(SRC_DIR_PROGRAM_ROOT)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) -std=c++14 -c $< -o $@ $(CXXFLAGS) -I$(ROOTSYS)/include
+	$(CXX) -std=c++14 -c $< -o $@ $(CXXFLAGS) $(INCLUDES) -I$(ROOTSYS)/include
 # =======================================================================
 
 # =======================================================================
 $(OBJ_DIR)/$(BIN_DIR)/%.o: $(SRC_DIR_PROGRAM_TEST)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) -std=c++17 -c $< -o $@ $(CXXFLAGS)
+	$(CXX) -std=c++17 -c $< -o $@ $(CXXFLAGS) $(INCLUDES)
 # =======================================================================
 
 # -----------------------------------------------------------------------

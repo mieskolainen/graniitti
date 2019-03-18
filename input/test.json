@@ -51,7 +51,7 @@
     "VEGAS" : {
 
       "PRECISION" : 0.01,     // Integral relative precision target
-      "NCALL"     : 50000,    // Number of function calls per initialization iteration (5000 or more)
+      "NCALL"     : 5000,    // Number of function calls per initialization iteration (5000 or more)
       "ITER"      : 10,       // Number of initialization iteration (10 or more)
 
       "BINS"    : 128,        // Maximum number of bins per dimension (NOTE: EVEN NUMBER)

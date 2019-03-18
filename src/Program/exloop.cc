@@ -293,7 +293,7 @@ void experiment(bool screening) {
     for (const auto& i : indices(input)) {
 	printf(
 	    "[%22s] DATA = %0.2E +- %0.2E (stat) +- %0.2E (syst) | MC BARE = "
-	    "%0.3E (ratio = %0.2f) | MC SRCN = %0.3E (ratio = %0.2f) | <S^2> = %0.3f \n",
+	    "%0.3E (ratio = %0.2f) | MC SCRN = %0.3E (ratio = %0.2f) | <S^2> = %0.3f \n",
 	    input[i].card.c_str(), input[i].value, input[i].stat,
 	    input[i].syst, xs0[i][0], xs0[i][0] / input[i].value, xs0[i][1],
 	    xs0[i][1] / input[i].value, xs0[i][1] / xs0[i][0]);
