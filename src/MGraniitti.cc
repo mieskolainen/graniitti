@@ -88,6 +88,11 @@ void MGraniitti::UnifyHistogramBounds() {
 		double xmin = 0;
 		double xmax = 0;
 
+		// Fuse buffer values [start index 1]
+		for (std::size_t p = 1; p < pvec.size(); ++p) {
+			proc->h1[xpoint.first].FuseBuffer(pvec[p]->h1[xpoint.first]);
+		}
+		
 		proc->h1[xpoint.first].FlushBuffer();
 		proc->h1[xpoint.first].GetBounds(xbins, xmin, xmax);
 		proc->h1[xpoint.first].ResetBounds(xbins, xmin, xmax); // Reset this too
@@ -108,6 +113,11 @@ void MGraniitti::UnifyHistogramBounds() {
 		double ymin = 0;
 		double ymax = 0;
 
+		// Fuse buffer values [start index 1]
+		for (std::size_t p = 1; p < pvec.size(); ++p) {
+			proc->h2[xpoint.first].FuseBuffer(pvec[p]->h2[xpoint.first]);
+		}
+
 		proc->h2[xpoint.first].FlushBuffer();
 		proc->h2[xpoint.first].GetBounds(xbins, xmin, xmax, ybins, ymin, ymax);
 		proc->h2[xpoint.first].ResetBounds(xbins, xmin, xmax, ybins, ymin, ymax); // Reset this too
@@ -124,10 +134,6 @@ void MGraniitti::UnifyHistogramBounds() {
 void MGraniitti::HistogramFusion() {
 
 	if (hist_fusion_done == false) {
-
-		if (pvec.size() > 1) {
-		std::cout << "MGraniitti::HistogramFusion: \n";
-		}
 		
 		// START with process index 1, because 0 is the base
 		for (std::size_t i = 1; i < pvec.size(); ++i) {

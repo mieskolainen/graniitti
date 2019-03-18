@@ -106,6 +106,14 @@ public:
 		ymax  = YMAX;
 	}
 
+	void FuseBuffer(const MH2& rhs) {
+		buff_values.insert(buff_values.end(), rhs.buff_values.begin(), rhs.buff_values.end() );
+		buff_weights.insert(buff_weights.end(), rhs.buff_weights.begin(), rhs.buff_weights.end() );	
+	}
+	
+	// Keep it public for buffer fusion
+	std::vector<std::vector<double>> buff_values;
+	std::vector<double> buff_weights;
 
 private:
 
@@ -113,11 +121,9 @@ private:
 
    	// -----------------------------------------------------------
 	// For autorange
-	std::vector<std::vector<double>> buff_values;
-	std::vector<double> buff_weights;
 
 	bool FILLBUFF                  = false;
-	int  AUTOBUFFSIZE              = 10000; // Default AUTOBUFFSIZE
+	int  AUTOBUFFSIZE              = 100000; // Default AUTOBUFFSIZE
 	std::vector<bool> AUTOSYMMETRY = {false, false};
 	// -----------------------------------------------------------
 
