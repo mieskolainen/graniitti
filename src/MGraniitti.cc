@@ -1142,7 +1142,6 @@ int MGraniitti::Vegas(unsigned int init, unsigned int calls, unsigned int itermi
 	MTimer gridtic;
 
 	// VEGAS grid iterations
-	int extra_iter = 0;
 	for (std::size_t iter = 0; iter < itermin; ++iter) {
 
 		if (init == 0 && iter == 2) { // Save time for one iteration
@@ -1212,24 +1211,6 @@ int MGraniitti::Vegas(unsigned int init, unsigned int calls, unsigned int itermi
 		stat.chi2       = chi2this;
 		// --------------------------------------------------------------
 
-		// Status
-		if (GMODE == 0) {
-
-			if (stime.ElapsedSec() > 2.0 || init == 0 ) {
-				PrintStatus(stat.evaluations, N, local_tictoc, -1.0);
-				stime.Reset();
-			}
-			if (atime.ElapsedSec() > 0.01) {
-				gra::aux::PrintProgress((iter+1) / static_cast<double>(itermin+extra_iter));
-				atime.Reset();
-			}
-
-			// ==========================================================
-			// **** Update VEGAS grid (not during event generation) ****
-			VD.OptimizeGrid(vparam);
-			// ==========================================================
-		}
-
 		// Got enough events generated
 		if (GMODE == 1 && stat.generated >= N) {
 			goto stop;
@@ -1275,16 +1256,32 @@ int MGraniitti::Vegas(unsigned int init, unsigned int calls, unsigned int itermi
 			if ((iter == (itermin - 1) && stat.chi2 > vparam.CHI2MAX) ||
 			    (iter == (itermin - 1) && stat.sigma_err / stat.sigma > vparam.PRECISION)) {
 				++itermin;
-				extra_iter = 1; // Tag it for printing purposes
 			}
 		}
-		
+
+		// Status and grid optimization
+		if (GMODE == 0) {
+
+			if (stime.ElapsedSec() > 2.0 || init == 0 ) {
+				PrintStatus(stat.evaluations, N, local_tictoc, -1.0);
+				stime.Reset();
+			}
+			if (atime.ElapsedSec() > 0.01) {
+				gra::aux::PrintProgress((iter+1) / static_cast<double>(itermin));
+				atime.Reset();
+			}
+			
+			// ==========================================================
+			// **** Update VEGAS grid (not during event generation) ****
+			VD.OptimizeGrid(vparam);
+			// ==========================================================
+		}
+
 		// Unify histogram boundaries after burn-in across different threads
 		// (due to adaptive histogramming)
 		if (init == 0 && iter == itermin - 1) {
 			UnifyHistogramBounds();
 		}
-
 	} // Main grid iteration loop
 
 stop: // We jump here once finished (GOTO point)
