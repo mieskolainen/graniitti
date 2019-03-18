@@ -73,7 +73,7 @@ void MSubProc::ConstructDescriptions(const std::string& first) {
 	else if (first == "PP") {
 
 		std::map<std::string, std::string> channels;
-		channels.insert(std::pair<std::string, std::string>("CONTENSOR",    "Regge continuum 2-body                   [Tensor Pomeron] x [Tensor Pomeron]"));
+		channels.insert(std::pair<std::string, std::string>("CONTENSOR",    "Regge continuum 2-body                   [Tensor Pomeron] x [Tensor Pomeron] @@<UNDER TESTING>@@"));
 		channels.insert(std::pair<std::string, std::string>("CON",          "Regge continuum 2/4/6-body               [Pomeron] x [Pomeron]"));
 		channels.insert(std::pair<std::string, std::string>("CON-",         "Regge continuum 2-body negative subamp   [Pomeron] x [Pomeron]"));
 		channels.insert(std::pair<std::string, std::string>("RES+CON",      "Regge cont. 2-body + complex resonances  [Pomeron] x [Gamma/Pomeron]"));
@@ -92,7 +92,7 @@ void MSubProc::ConstructDescriptions(const std::string& first) {
 		std::map<std::string, std::string> channels;
 		channels.insert(std::pair<std::string, std::string>("RES",          "Gamma-Gamma to parametric resonance      [EPA] x [EPA]"));
 		channels.insert(std::pair<std::string, std::string>("Higgs",        "Gamma-Gamma to SM Higgs                  [EPA] x [EPA]"));
-		channels.insert(std::pair<std::string, std::string>("monopolium(0)","Gamma-Gamma to Monopolium (J=0)          [EPA] x [EPA]         @@<UNDER CONSTRUCTION>@@"));
+		channels.insert(std::pair<std::string, std::string>("monopolium(0)","Gamma-Gamma to Monopolium (J=0)          [EPA] x [EPA]         @@<UNDER TESTING>@@"));
 		channels.insert(std::pair<std::string, std::string>("CON",          "Gamma-Gamma to l+l-, w+w-, monopoles     [EPA] x [EPA]"));
 		channels.insert(std::pair<std::string, std::string>("QED",          "Gamma-Gamma qq -> q l+ l- q              [FULL QED]            @@<TEST PROCESS>@@"));
 			descriptions.insert(std::pair<std::string, std::map<std::string,std::string>>("yy", channels));
@@ -113,7 +113,7 @@ void MSubProc::ConstructDescriptions(const std::string& first) {
 	else if (first == "yy_LUX") {
 
 		std::map<std::string, std::string> channels;
-		channels.insert(std::pair<std::string, std::string>("CON",          "Collinear yy to l+l, w+w- or monopoles   [LUX] x [LUX]         @@<UNDER CONSTRUCTION>@@"));
+		channels.insert(std::pair<std::string, std::string>("CON",          "Collinear yy to l+l, w+w- or monopoles   [LUX] x [LUX]         @@<UNDER TESTING>@@"));
 			descriptions.insert(std::pair<std::string, std::map<std::string,std::string>>("yy_LUX", channels));	
 	}
 }
