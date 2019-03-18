@@ -328,7 +328,7 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy(gra::LORENTZSCALAR& lt
 inline std::complex<double> MSubProc::GetBareAmplitude_yy_DZ(gra::LORENTZSCALAR& lts) { 
 
 	throw std::invalid_argument("yy_DZ::Not active in this version");
-	
+
 	// Amplitude
 	std::complex<double> A = yyffbar(lts);
 
@@ -346,7 +346,7 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy_DZ(gra::LORENTZSCALAR&
 inline std::complex<double> MSubProc::GetBareAmplitude_yy_LUX(gra::LORENTZSCALAR& lts) {
 
 	throw std::invalid_argument("yy_LUX::Not active in this version");
-	
+
 	// @@ MULTITHREADING LOCK @@
 	gra::aux::g_mutex.lock();
 	if (GlobalPdfPtr == nullptr) {

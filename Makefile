@@ -168,7 +168,8 @@ INCLUDES += -I$(LHAPDFSYS)/include
 CXX       = g++
 
 # Compilation flags
-OPTIM     = -O3 -DNDEBUG -march=native -ftree-vectorize -fno-signed-zeros
+OPTIM     = -O2 -DNDEBUG -march=native -ftree-vectorize 
+#-fno-signed-zeros
 
 CXXFLAGS  = -Wall -fPIC -pipe $(OPTIM) $(INCLUDES)
 
