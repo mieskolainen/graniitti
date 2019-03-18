@@ -350,7 +350,8 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy_LUX(gra::LORENTZSCALAR
 	try {
 		GlobalPdfPtr = std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(pdfname, 0));
 	} catch (...) {
-		std::string str = "MSubProc::InitLHAPDF: Problem with reading a pdfset '" + pdfname + "'";
+		std::string str = "MSubProc::InitLHAPDF: Problem with reading '" + pdfname + "'";
+		gra::aux::g_mutex.unlock();  // remember before throw, otherwise deadlock
 		throw std::invalid_argument(str);
 	}
 	}
@@ -368,7 +369,7 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy_LUX(gra::LORENTZSCALAR
 	} else {
 		throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown CHANNEL = " + CHANNEL);
 	}
-
+	
 	// @@ MULTITHREADING LOCK @@
 	gra::aux::g_mutex.lock();
 
@@ -383,6 +384,7 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy_LUX(gra::LORENTZSCALAR
 	f1 = GlobalPdfPtr->xfxQ2(PDG::PDG_gamma, lts.x1, Q2) / lts.x1;
 	f2 = GlobalPdfPtr->xfxQ2(PDG::PDG_gamma, lts.x2, Q2) / lts.x2;
 	} catch (...) {
+		gra::aux::g_mutex.unlock(); // remember before throw, otherwise deadlock		
 		throw std::invalid_argument("MSubProc:yy_LUX: Failed evaluating LHAPDF");
 	}
 	gra::aux::g_mutex.unlock();

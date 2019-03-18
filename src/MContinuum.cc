@@ -204,12 +204,10 @@ double MContinuum::EventWeight(const std::vector<double>& randvec, AuxIntData& a
 	}
 	
 	aux.amplitude_ok = CheckInfNan(W);
-	
+		
 	// As the last step: Histograms
-	if (!aux.burn_in_mode) {
-		const double totalweight = W * aux.vegasweight;
-		FillHistograms(totalweight, lts);
-	}
+	const double totalweight = W * aux.vegasweight;
+	FillHistograms(totalweight, lts);
 
 	return W;
 }

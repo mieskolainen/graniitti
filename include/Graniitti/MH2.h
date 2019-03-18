@@ -97,6 +97,15 @@ public:
 		AUTOSYMMETRY = in;
 	}
 
+	void GetBounds(int& xbins, double& xmin, double& xmax, int& ybins, double& ymin, double& ymax) const {
+		xbins = XBINS;
+		xmin  = XMIN;
+		xmax  = XMAX;
+		ybins = YBINS;
+		ymin  = YMIN;
+		ymax  = YMAX;
+	}
+
 
 private:
 

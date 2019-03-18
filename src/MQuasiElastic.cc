@@ -205,10 +205,8 @@ double MQuasiElastic::EventWeight(const std::vector<double>& randvec, AuxIntData
 		aux.amplitude_ok = CheckInfNan(W);
 		
 		// Fill Histograms
-		if (!aux.burn_in_mode) { // Condition skips first VEGAS  burn-in iterations
-			//const double totalweight = W * aux.vegasweight;
-			//FillHistograms(totalweight, lts); // This seqfaults, because we do not have enough observables
-		}
+		//const double totalweight = W * aux.vegasweight;
+		//FillHistograms(totalweight, lts); // This seqfaults, because we do not have enough observables
 
 	} else { // Non-Diffractive
 

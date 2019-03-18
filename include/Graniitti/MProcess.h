@@ -96,7 +96,7 @@ public:
 
 	std::vector<std::string> PrintProcesses() const;
 	std::string GetProcessDescriptor(std::string process) const;
-
+	
 	// Set central system decay structure
 	void SetDecayMode(std::string str);
 	void SetupBranching();
@@ -315,8 +315,6 @@ protected:
 	MSubProc ProcPtr;
 	
 	// ----------------------------------------------------------------------
-	//bool UNWEIGHTED = false;
-	
 	// Steering parameters
 	std::string PROCESS;              // Process identifier string
 	std::string CID;                  // Phase space sampler identifier <F>,<C>,...
@@ -340,10 +338,7 @@ protected:
 	// Non-Diffractive
 	std::vector<MPI> etree;
 	double bt = 0.0;
-
-	// Automatic sampling boundary search
-	//bool AUTOBOUND = true;
-
+	
 	// Particle database
 	MPDG PDG;
 };

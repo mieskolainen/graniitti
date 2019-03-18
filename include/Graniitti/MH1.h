@@ -169,10 +169,9 @@ public:
 		h.weights2  = this->weights2;
 		h.counts    = this->counts;
 		for (std::size_t i = 0; i < h.weights.size(); ++i) {
-			h.weights[i] = (std::abs(rhs.weights[i]) > 0)
-			                   ? h.weights[i] / rhs.weights[i] : 0;
-			h.counts[i]  = (rhs.counts[i] > 0)
-			                  ? h.counts[i] / rhs.counts[i] : 0;
+			h.weights[i]  = (std::abs(rhs.weights[i])  > 0) ? h.weights[i]  / rhs.weights[i]  : 0;
+			h.weights2[i] = (std::abs(rhs.weights2[i]) > 0) ? h.weights2[i] / rhs.weights2[i] : 0;
+			h.counts[i]   = (rhs.counts[i] > 0)             ? h.counts[i]   / rhs.counts[i]   : 0;
 		}
 		return h;
 	}
@@ -187,7 +186,15 @@ public:
 	void SetAutoSymmetry(bool in) {
 		AUTOSYMMETRY = in;
 	}
+
+	// Get histogram bounds
+	void GetBounds(int& xbins, double& xmin, double& xmax) const {
+		xbins = XBINS;
+		xmin  = XMIN;
+		xmax  = XMAX;
+	}
 	
+
 private:
 
    	std::string name; // Histogram name

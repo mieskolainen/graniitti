@@ -207,6 +207,8 @@ void MH2::Clear() {
 // Automatic histogram range algorithm
 void MH2::FlushBuffer() {
 
+	if (FILLBUFF && buff_values.size() > 0) {
+
 	FILLBUFF = false; // no more filling buffer
 
 	std::vector<double> min = {0.0, 0.0};
@@ -268,6 +270,8 @@ void MH2::FlushBuffer() {
 	// Clear buffers
 	buff_values.clear();
 	buff_weights.clear();
+
+	}
 }
 
 

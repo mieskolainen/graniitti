@@ -74,18 +74,59 @@ MGraniitti::~MGraniitti() {
 }
 
 void MGraniitti::PrintHistograms() {
-	//HistogramFusion();
+	HistogramFusion();
 	proc->PrintHistograms();
 }
 
-// Fuse VEGAS histograms for NCORES-fold statistics
+// Unify histogram bounds across threads, so the histogram fusion is possible
+void MGraniitti::UnifyHistogramBounds() {
+
+	// Loop over all 1D histograms
+	for (auto const& xpoint : proc->h1) {
+
+		int   xbins = 0;
+		double xmin = 0;
+		double xmax = 0;
+
+		proc->h1[xpoint.first].FlushBuffer();
+		proc->h1[xpoint.first].GetBounds(xbins, xmin, xmax);
+		proc->h1[xpoint.first].ResetBounds(xbins, xmin, xmax); // Reset this too
+
+		// Loop over processes and set histogram bounds [start index = 1]
+		for (std::size_t p = 1; p < pvec.size(); ++p) {
+			pvec[p]->h1[xpoint.first].ResetBounds(xbins, xmin, xmax);
+		}
+	}
+	// Loop over all 2D histograms
+	for (auto const& xpoint : proc->h2) {
+
+		int   xbins = 0;
+		double xmin = 0;
+		double xmax = 0;
+
+		int   ybins = 0;
+		double ymin = 0;
+		double ymax = 0;
+
+		proc->h2[xpoint.first].FlushBuffer();
+		proc->h2[xpoint.first].GetBounds(xbins, xmin, xmax, ybins, ymin, ymax);
+		proc->h2[xpoint.first].ResetBounds(xbins, xmin, xmax, ybins, ymin, ymax); // Reset this too
+
+		// Loop over processes and set histogram bounds [start index = 1]
+		for (std::size_t p = 1; p < pvec.size(); ++p) {
+			pvec[p]->h2[xpoint.first].ResetBounds(xbins, xmin, xmax, ybins, ymin, ymax);
+		}
+	}
+}
+
+
+// Fuse histograms for N-fold statistics
 void MGraniitti::HistogramFusion() {
 
 	if (hist_fusion_done == false) {
 
 		if (pvec.size() > 1) {
 		std::cout << "MGraniitti::HistogramFusion: \n";
-		std::cout << "<Warning: Multithreaded histogram fusion can result in convolution with adaptive histogram bounds> \n\n";
 		}
 		
 		// START with process index 1, because 0 is the base
@@ -115,7 +156,6 @@ void MGraniitti::Generate() {
 		// (in order not to generate unnecessary empty files
 		// if file name / output type is changed)
 		InitFileOutput();
-
 		CallIntegrator(NEVENTS);
 	}
 }
@@ -1224,6 +1264,12 @@ int MGraniitti::Vegas(unsigned int init, unsigned int calls, unsigned int itermi
 			    (iter == (itermin - 1) && stat.sigma_err / stat.sigma > vparam.PRECISION)) {
 				++itermin;
 			}
+		}
+
+		// Unify histogram boundaries after burn-in across different threads
+		// (due to adaptive histogramming)
+		if (init == 0 && iter == itermin - 1) {
+			UnifyHistogramBounds();
 		}
 
 	} // Main grid iteration loop

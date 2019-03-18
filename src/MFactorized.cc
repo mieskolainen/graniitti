@@ -203,10 +203,8 @@ double MFactorized::EventWeight(const std::vector<double>& randvec, AuxIntData& 
 	aux.amplitude_ok = CheckInfNan(W);
 	
 	// As the last STEP: Histograms
-	if (!aux.burn_in_mode) {
-		const double totalweight = W * aux.vegasweight;
-		FillHistograms(totalweight, lts);
-	}
+	const double totalweight = W * aux.vegasweight;
+	FillHistograms(totalweight, lts);
 
 	return W;
 }

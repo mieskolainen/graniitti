@@ -512,13 +512,16 @@ private:
 	// DATA
 	VEGASData VD;
 
+	
 	int  Vegas(unsigned int init, unsigned int calls, unsigned int iter, unsigned int N);
 	void VEGASInit(unsigned int init, unsigned int calls);
 	void VEGASMultiThread(unsigned int N, unsigned int tid, unsigned int init, unsigned int LOCALcalls);
 	std::vector<unsigned int> VEGASGetLocalCalls(unsigned int calls);
 
 	// -----------------------------------------------
-
+	
+	void UnifyHistogramBounds();
+	
 	// Calculate cross section
 	void CalculateCrossSection();
 

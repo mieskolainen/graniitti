@@ -217,6 +217,9 @@ void MH1<T>::Fill(double xvalue) {
 // Weighted fill
 template <class T>
 void MH1<T>::Fill(double xvalue, T weight) {
+
+
+
 	if (!FILLBUFF) { // Normal filling
 
 		fills += 1;
@@ -246,6 +249,9 @@ void MH1<T>::Fill(double xvalue, T weight) {
 // Automatic histogram range algorithm
 template <class T>
 void MH1<T>::FlushBuffer() {
+
+	if (FILLBUFF && buff_values.size() > 0) {
+
 	FILLBUFF = false; // no more filling buffer
 
 	// Find out mean
@@ -294,6 +300,8 @@ void MH1<T>::FlushBuffer() {
 	// Clear buffers
 	buff_values.clear();
 	buff_weights.clear();
+
+	}
 }
 
 // Reset histogram completely
