@@ -200,7 +200,7 @@ public:
 		buff_values.insert(buff_values.end(), rhs.buff_values.begin(), rhs.buff_values.end() );
 		buff_weights.insert(buff_weights.end(), rhs.buff_weights.begin(), rhs.buff_weights.end() );	
 	}
-	
+
 	// Keep it public for buffer fusion
 	std::vector<double> buff_values;
 	std::vector<T> buff_weights;
@@ -211,7 +211,7 @@ private:
 
    	// -----------------------------------------------------------
 	// For autorange
-
+   	
 	bool FILLBUFF     = false;
 	int AUTOBUFFSIZE  = 100000; // Default AUTOBUFFSIZE
 	bool AUTOSYMMETRY = false;

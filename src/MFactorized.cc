@@ -197,7 +197,7 @@ double MFactorized::EventWeight(const std::vector<double>& randvec, AuxIntData& 
 		
 		// ** EVENT WEIGHT **
 		W = C_space * (1.0 / S_factor) * B51PhaseSpaceWeight() * B51IntegralVolume() * MatESQ *
-		    GeV2barn / MollerFlux(); // Total weight: phase-space x |M|^2 x barn units
+		    GeV2barn / MollerFlux();
 	}
 	
 	aux.amplitude_ok = CheckInfNan(W);

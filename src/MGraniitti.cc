@@ -92,10 +92,10 @@ void MGraniitti::UnifyHistogramBounds() {
 		for (std::size_t p = 1; p < pvec.size(); ++p) {
 			proc->h1[xpoint.first].FuseBuffer(pvec[p]->h1[xpoint.first]);
 		}
-		
+
 		proc->h1[xpoint.first].FlushBuffer();
 		proc->h1[xpoint.first].GetBounds(xbins, xmin, xmax);
-		proc->h1[xpoint.first].ResetBounds(xbins, xmin, xmax); // Reset this too
+		proc->h1[xpoint.first].ResetBounds(xbins, xmin, xmax); // New start
 
 		// Loop over processes and set histogram bounds [start index = 1]
 		for (std::size_t p = 1; p < pvec.size(); ++p) {
@@ -120,7 +120,7 @@ void MGraniitti::UnifyHistogramBounds() {
 
 		proc->h2[xpoint.first].FlushBuffer();
 		proc->h2[xpoint.first].GetBounds(xbins, xmin, xmax, ybins, ymin, ymax);
-		proc->h2[xpoint.first].ResetBounds(xbins, xmin, xmax, ybins, ymin, ymax); // Reset this too
+		proc->h2[xpoint.first].ResetBounds(xbins, xmin, xmax, ybins, ymin, ymax); // New start
 
 		// Loop over processes and set histogram bounds [start index = 1]
 		for (std::size_t p = 1; p < pvec.size(); ++p) {
@@ -1131,6 +1131,8 @@ int MGraniitti::Vegas(unsigned int init, unsigned int calls, unsigned int itermi
 
 	// Reset local timers
 	local_tictoc = MTimer(true);
+
+	MTimer stime = MTimer(true); // For statusprint
 	atime        = MTimer(true); // For progressbar
 
 	// -------------------------------------------------------------------
@@ -1140,6 +1142,7 @@ int MGraniitti::Vegas(unsigned int init, unsigned int calls, unsigned int itermi
 	MTimer gridtic;
 
 	// VEGAS grid iterations
+	int extra_iter = 0;
 	for (std::size_t iter = 0; iter < itermin; ++iter) {
 
 		if (init == 0 && iter == 2) { // Save time for one iteration
@@ -1211,10 +1214,13 @@ int MGraniitti::Vegas(unsigned int init, unsigned int calls, unsigned int itermi
 
 		// Status
 		if (GMODE == 0) {
-			PrintStatus(stat.evaluations, N, local_tictoc, -1.0);
 
-			if (atime.ElapsedSec() > 0.1) {
-				gra::aux::PrintProgress((iter + 1) / static_cast<double>(itermin));
+			if (stime.ElapsedSec() > 2.0 || init == 0 ) {
+				PrintStatus(stat.evaluations, N, local_tictoc, -1.0);
+				stime.Reset();
+			}
+			if (atime.ElapsedSec() > 0.01) {
+				gra::aux::PrintProgress((iter+1) / static_cast<double>(itermin+extra_iter));
 				atime.Reset();
 			}
 
@@ -1269,9 +1275,10 @@ int MGraniitti::Vegas(unsigned int init, unsigned int calls, unsigned int itermi
 			if ((iter == (itermin - 1) && stat.chi2 > vparam.CHI2MAX) ||
 			    (iter == (itermin - 1) && stat.sigma_err / stat.sigma > vparam.PRECISION)) {
 				++itermin;
+				extra_iter = 1; // Tag it for printing purposes
 			}
 		}
-
+		
 		// Unify histogram boundaries after burn-in across different threads
 		// (due to adaptive histogramming)
 		if (init == 0 && iter == itermin - 1) {

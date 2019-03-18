@@ -110,9 +110,11 @@ void MH1<T>::Print(double width) const {
 				std::cout << " ";
 			}
 		}
-		//const double BINWIDTH = (XMAX - XMIN) / XBINS;
-		printf("| %0.1E +- %0.1E \n", value, value_err); // Print out value +- error
-		//printf("| %0.1E +- %0.1E [dO/dx] = %0.1E \n", value, value_err, value / BINWIDTH); // Print out value +- error
+		const double BINWIDTH = (XMAX - XMIN) / XBINS;
+		// Raw value +- error
+		//printf("| %0.1E +- %0.1E \n", value, value_err);
+		// raw value +- stat | dO/dx (differential cross section, for example)
+		printf("| %0.1E +- %0.1E [dO/dx] = %0.1E \n", value, value_err, value / fills / BINWIDTH);
 	}
 	
 	std::cout << "          |"; // Empty bottom left corner
@@ -129,7 +131,7 @@ void MH1<T>::Print(double width) const {
 	const double mean   = GetMean();
 	const double sqmean = GetSquareMean();
 	printf(" <X> = %0.3f, <X^2> = %0.3f, <X^2> - <X>^2 = %0.3f [F = %lld | "
-	       " U/O = %lld/%lld] \n", mean, sqmean, sqmean - std::pow(mean, 2),
+	       "U/O = %lld/%lld] \n", mean, sqmean, sqmean - std::pow(mean, 2),
 	       fills, underflow, overflow);
 
 	std::cout << std::endl;

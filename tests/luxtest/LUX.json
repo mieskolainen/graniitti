@@ -98,14 +98,14 @@
 
       "Eta"  : [-2.5, 2.5],      // Pseudorapidity
       "Rap"  : [-10.0, 10.0],    // Rapidity
-      "Pt"   : [10.0, 100000.0], // Transverse momentum
+      "Pt"   : [20.0, 100000.0], // Transverse momentum
       "Et"   : [0.0, 100000.0]   // Transverse energy
     },
     
     // Central system
     "SYSTEM" : {
 	
-      "M"    : [0, 100000.0],      // Mass
+      "M"    : [500, 5000],      // Mass
       "Rap"  : [-10.0, 10.0],    // Rapidity
       "Pt"   : [0.0, 100000.0]   // Transverse momentum
     },

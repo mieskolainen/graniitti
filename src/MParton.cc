@@ -145,8 +145,8 @@ double MParton::EventWeight(const std::vector<double>& randvec, AuxIntData& aux)
 		}
 		
 		// ** EVENT WEIGHT **
-		W = C_space * (1.0 / S_factor) * MatESQ * GeV2barn *
-			B2IntegralVolume() * B2PhaseSpaceWeight() / MollerFlux();
+		W = C_space * (1.0 / S_factor) * MatESQ * B2IntegralVolume() *
+			B2PhaseSpaceWeight() * GeV2barn / MollerFlux();
 	}
 	
 	aux.amplitude_ok = CheckInfNan(W);

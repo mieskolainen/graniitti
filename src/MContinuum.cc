@@ -196,11 +196,12 @@ double MContinuum::EventWeight(const std::vector<double>& randvec, AuxIntData& a
 
 	if (aux.Valid()) {
 		
-		// ** EVENT WEIGHT **
-		double MatESQ = (FLATAMPLITUDE == 0) ? abs2(S3ScreenedAmp()) : GetFlatAmp2(lts); // Matrix element squared
+		// Matrix element squared
+		double MatESQ = (FLATAMPLITUDE == 0) ? abs2(S3ScreenedAmp()) : GetFlatAmp2(lts);
 
-		W = (1.0 / S_factor) * BNPhaseSpaceWeight() * BNIntegralVolume() * MatESQ * GeV2barn /
-		    MollerFlux(); // Total weight: phase-space x |M|^2 x barn units
+		// ** EVENT WEIGHT **
+		W = (1.0 / S_factor) * BNPhaseSpaceWeight() * BNIntegralVolume() * MatESQ *
+			GeV2barn / MollerFlux();
 	}
 	
 	aux.amplitude_ok = CheckInfNan(W);
