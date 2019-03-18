@@ -87,10 +87,11 @@ double b = 0.0;
 // Monopole parameters
 namespace PARAM_MONOPOLE {
 
-int En = 0;          // Bound state energy level
-double M0 = 0.0;     // Monopole mass
-double Gamma0 = 0.0; // Monopolium width
-int coupling = 0;    // Coupling scenarios
+int En = 0;                 // Bound state energy level
+double M0 = 0.0;            // Monopole mass
+double Gamma0 = 0.0;        // Monopolium width
+std::string coupling = "";  // Coupling scenarios
+int gn = 0;                 // Dirac charge 1,2,3,...
 
 bool initialized = false;
 
@@ -139,11 +140,9 @@ void PrintParam(double sqrts) {
 		throw std::invalid_argument(str);
 	}
 
-	if        (PARAM_MONOPOLE::coupling == 1) {
-		std::cout << "Coupling scheme = 1 (Beta-Dirac)" << std::endl;
-	} else if (PARAM_MONOPOLE::coupling == 2) {
-		std::cout << "Coupling scheme = 2 (Pure-Dirac)" << std::endl;
-	}
+	std::cout << "Dirac charge = "    << PARAM_MONOPOLE::gn << std::endl;
+	std::cout << "Coupling scheme = " << PARAM_MONOPOLE::coupling << std::endl;
+	
 }
 }
 
@@ -336,7 +335,8 @@ double S3FINEL(double t, double M2) {
 // The basic idea is that at low-Q^2, a fully non-perturbative description (parametrization) is needed.
 // At high Q^2, DGLAP evolution could be done in log(Q^2) starting from the input description.
 // 
-// Now, some classic ones have been implemented:
+// Now, some (very) classic ones have been implemented. 
+// TBD: Can we "invert" F_2 and F_L e.g from LUXqed pdfs, or interface to other library.
 // 
 // [REFERENCE: Donnachie, Landshoff, https://arxiv.org/abs/hep-ph/9305319]
 // [REFERENCE: Capella, Kaidalov, Merino, Tran Tranh Van, https://arxiv.org/abs/hep-ph/9405338v1]
@@ -545,7 +545,7 @@ double CohFlux(double xi, double t, double pt) {
 	f /= pt2;
 	f *= 16.0 * gra::math::PIPI;
 
-	return msqrt(f); // make it <"amplitude level">
+	return f; // Use at cross section level
 }
 
 
@@ -582,11 +582,11 @@ double IncohFlux(double xi, double t, double pt, double M2) {
 	f /= pt2;
 	f *= 16.0 * gra::math::PIPI;
 
-	return msqrt(f); // make it <"amplitude level">
+	return f; // Use at cross section level
 }
 
 
-// Drees-Zeppenfeld proton gamma flux (collinear EPA flux - use only for a reference)
+// Drees-Zeppenfeld proton coherent gamma flux (collinear)
 double DZFlux(double x) {
 	const double Q2min = (pow2(mp) * pow2(x)) / (1.0 - x);
 	const double A = 1.0 + 0.71 / Q2min;
@@ -595,7 +595,7 @@ double DZFlux(double x) {
 	           (std::log(A) - 11.0 / 6.0 + 3.0 / A -
 	            3.0 / (2.0 * pow2(A)) + 1.0 / (3 * pow3(A)));
 
-	return msqrt(f);  // make it <amplitude level>
+	return f; // Use at cross section level
 }
 
 

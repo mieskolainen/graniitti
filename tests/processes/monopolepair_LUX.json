@@ -11,13 +11,13 @@
   
   "GENERALPARAM" : {
     
-    "OUTPUT"     : "test2",      // Output filename
-    "FORMAT"     : "hepmc3",    // hepmc3, hepmc2, hepevt
-    "CORES"      : 0,           // Number of CPU threads (0 for automatic)
-    "NEVENTS"    : 100,         // Number of events
-    "INTEGRATOR" : "VEGAS",     // "VEGAS" (default), "FLAT" (for debug)
-    "WEIGHTED"   : false,       // Weighted events (default false)
-    "MODELPARAM" : "TUNE0"      // General model tune
+    "OUTPUT"     : "monopolepair_LUX", // Output filename
+    "FORMAT"     : "hepmc3",           // hepmc3, hepmc2, hepevt
+    "CORES"      : 0,                  // Number of CPU threads (0 for automatic)
+    "NEVENTS"    : 100,                // Number of events
+    "INTEGRATOR" : "VEGAS",            // "VEGAS" (default), "FLAT" (for debug)
+    "WEIGHTED"   : false,              // Weighted events (default false)
+    "MODELPARAM" : "TUNE0"             // General model tune
   },
   
   // ----------------------------------------------------------------------
@@ -26,12 +26,12 @@
   "PROCESSPARAM" : {
     
     "BEAM"    : ["p+","p+"],    // Beam PDG-ID / Name
-    "ENERGY"  : [3500, 3500],   // Beam energy in the lab (GeV)
-    "PROCESS" : "yy[CON]<C> -> mu+ mu-", // Process mode
-    "RES" : ["f0_500", "rho_770", "f0_980", "phi_1020", "f2_1270", "f0_1500", "f2_1525", "f0_1710"],
+    "ENERGY"  : [6500, 6500],   // Beam energy in the lab (GeV)
+    "PROCESS" : "yy_LUX[CON]<P> -> monopole0 monopole0~", // Process mode
+    "RES"     : [],
     "POMLOOP" : false,          // Eikonal Pomeron loop screening
     "NSTARS"  : 0,              // N* excitation (0 = elastic, 1 = single, 2 = double)
-    "LHAPDF"  : "CT10nlo",      // LHAPDF parton distribution set
+    "LHAPDF"  : "LUXqed17_plus_PDF4LHC15_nnlo_100",  // LHAPDF parton distribution set
     "HIST"    : 2,              // On-the-flight histograms (0 = off,1,2)
     "FLATAMP" : 0,              // For flat matrix element (default 0)
     "RNDSEED" : 12345678        // Random seed (int32)
@@ -44,7 +44,7 @@
     
     // Loop integration
     "POMLOOP" : {
-      "ND" : 3                // Loop integral discretization
+      "ND" : 1                // Loop integral discretization
     },
     
     // VEGAS integrator
@@ -74,16 +74,14 @@
   "GENCUTS" : {
 
     "<C>" : {
-      "Rap" : [-2.5, 2.5],  // Rapidity boundaries of the final states (<C> class)
-      "Pt"  : [0, 12],
-      "Xi"  : [0, 2e-3]     // Invariant scale M^2/s (forward excitation)
+      "Rap" : [-9, 9]         // Rapidity boundaries of the final states (<C> class)
     },
     "<F>" : {
-      "Rap" : [-2.5, 2.5],  // Rapidity boundaries of the system (<F> class)
-      "M"   : [0, 7.0]
+      "Rap" : [-9, 0],        // Rapidity boundaries of the system (<F> class)
+      "M"   : [0, 13000]
     },
     "<Q>" : {
-      "Xi"  : [0, 0.05]     // Invariant scale M^2/s (forward excitation)
+      "Xi"  : [0, 0.05]       // Invariant scale M^2/s (forward excitation)
     }
   },
 
@@ -93,29 +91,29 @@
 
   "FIDCUTS" : {
 
-    "active" : true,
+    "active" : false,
 
      // Central system final states
     "PARTICLE" : {
 
-      "Eta"  : [-2.5, 2.5],     // Pseudorapidity
-      "Rap"  : [-10.0, 10.0],   // Rapidity
-      "Pt"   : [15.0, 100000.0], // Transverse momentum
-      "Et"   : [0.0, 100000.0]  // Transverse energy
+      "Eta"  : [-2.5, 2.5],      // Pseudorapidity
+      "Rap"  : [-10.0, 10.0],    // Rapidity
+      "Pt"   : [20.0, 100000.0], // Transverse momentum
+      "Et"   : [0.0, 100000.0]   // Transverse energy
     },
-
+    
     // Central system
     "SYSTEM" : {
 
-      "M"    : [0.0, 100000.0], // Mass
-      "Rap"  : [-10.0, 10.0],   // Rapidity
-      "Pt"   : [0.0, 100000.0]  // Transverse momentum
+      "M"    : [1000, 5000],     // Mass
+      "Rap"  : [-10.0, 10.0],    // Rapidity
+      "Pt"   : [0.0, 100000.0]   // Transverse momentum
     },
 
     // Forward system
     "FORWARD" : {
-      "M"    : [1.07, 1000.0], // Mass
-      "t"    : [0.0, 100000.0], // Forward protons/N* Mandelstam t (absolute value) (GeV^2)
+      "M"    : [0.0, 100000.0],  // Mass
+      "t"    : [0.0, 100000.0],  // Forward protons/N* Mandelstam t (absolute value) (GeV^2)
     },
 
     // Custom user cuts (default false, otherwise identifier ID)
@@ -145,6 +143,5 @@
     }
     // Domain 2 (add arbitrary one more here) ...
   }
-
 
 }

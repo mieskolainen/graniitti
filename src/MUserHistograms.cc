@@ -34,11 +34,11 @@ void MUserHistograms::InitHistograms() {
 	h1["pPt"]      = MH1<double>(Nbins, 0.0, 2.0, "Forward Pt (GeV)");
 	h2["rap1rap2"] = MH2(Nbins, Nbins, "Rapidity1 vs Rapidity2"); h2["rap1rap2"].SetAutoSymmetry({true, true});
 	
-	h1["FM"]        = MH1<double>(Nbins, "Forward M (GeV)");
+	h1["FM"]       = MH1<double>(Nbins, "Forward M (GeV)");
 
 	// Level 2
 	Nbins = 40;
-
+	
 	h2["costhetaphi_CS"] = MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [Collins-Soper frame]");
 	h2["costhetaphi_HE"] = MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [Helicity frame]");
 	h2["costhetaphi_AH"] = MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [Anti-Helicity frame]");
@@ -67,9 +67,9 @@ void MUserHistograms::FillHistograms(double totalweight, const gra::LORENTZSCALA
 	if (HIST >= 1) {
 		h1["M"].Fill(gra::math::msqrt(lts.m2), totalweight);
 		h1["Rap"].Fill(lts.Y, totalweight);
-		h1["Pt"].Fill(lts.Pt, totalweight);
-		h1["dPhi_pp"].Fill(std::abs(lts.pfinal[1].DeltaPhi(lts.pfinal[2])), totalweight);
-		h1["pPt"].Fill(lts.pfinal[1].Pt(), totalweight);
+		//h1["Pt"].Fill(lts.Pt, totalweight);
+		//h1["dPhi_pp"].Fill(std::abs(lts.pfinal[1].DeltaPhi(lts.pfinal[2])), totalweight);
+		//h1["pPt"].Fill(lts.pfinal[1].Pt(), totalweight);
 		//h1["m0"].Fill(lts.decaytree[0].p4.M(), totalweight);
 		
 		// Dissociated proton

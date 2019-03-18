@@ -114,6 +114,7 @@ namespace Durham {
 std::complex<double> MDurham::DurhamQCD(gra::LORENTZSCALAR& lts, const std::string& process) {
 	
 	// First run, init parameters
+	// @@ MULTITHREADING LOCK @@
 	gra::aux::g_mutex.lock();
 	if (gra::aux::sudakov.initialized == false) {
 		try {

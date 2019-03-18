@@ -44,8 +44,6 @@ using gra::PDG::GeV2barn;
 namespace gra {
 
 
-double auxw = 0.0;
-
 // This is needed by construction
 MFactorized::MFactorized() {
 	std::vector<std::string> supported = {"PP","yP","yy","gg"};
@@ -75,7 +73,7 @@ MFactorized::~MFactorized() {
 void MFactorized::ConstructProcesses() {
 
 	Processes.clear();
-	const std::string CID = "F";
+	CID = "F";
 	for (auto const& x : ProcPtr.descriptions) {
 	    std::map<std::string, std::string> value = x.second;
 	    for (auto const& y : value) {
@@ -87,7 +85,7 @@ void MFactorized::ConstructProcesses() {
 
 // Initialize cut and process spesific postsetup
 void MFactorized::post_Constructor() {
-
+	
 	if (ProcPtr.CHANNEL == "RES") {
 		// Here we support only single resonances
 		if (lts.RESONANCES.size() != 1) {
@@ -95,13 +93,13 @@ void MFactorized::post_Constructor() {
 			throw std::invalid_argument(str);
 		}
 	}
-
+	
 	// Set sampling boundaries
 	ProcPtr.SetTechnicalBoundaries(gcuts, EXCITATION);
-
+	
 	// Initialize phase space dimension
 	ProcPtr.LIPSDIM = 5 + 1; // All processes, +1 from central system mass
-
+	
 	if (EXCITATION == 1) { ProcPtr.LIPSDIM += 1; }
 	if (EXCITATION == 2) { ProcPtr.LIPSDIM += 2; }
 }

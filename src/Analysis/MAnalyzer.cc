@@ -229,12 +229,10 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 		if (cs) {
 			cross_section = 1E-12 * cs->xsec(0); // turn into barns
 		} else {
-			std::cout
-			    << "Problem accessing 'GenCrossSection' attribute!"
-			    << std::endl;
+			std::cout << "Problem accessing 'GenCrossSection' attribute!" << std::endl;
 		}
 		// --------------------------------------------------------------
-
+		
 		// *** Get event weight (always in barn units) ***
 		double W = 1.0;
 		if (evt.weights().size() != 0) { // check do we have weights saved

@@ -52,14 +52,6 @@ MAmpMG5_yy_ll::~MAmpMG5_yy_ll() {
 // Get amplitude
 std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR& lts) {
 	
-	//printf("xi1 = %0.5E, xi2 = %0.5E \n", lts.x1, lts.x2);
-	
-	// Get photon fluxes
-	const double gammaflux1 = lts.excite1 ? gra::form::IncohFlux(lts.x1, lts.t1, lts.qt1, lts.pfinal[1].M2()) : 
-											  gra::form::CohFlux(lts.x1, lts.t1, lts.qt1);
-	const double gammaflux2 = lts.excite2 ? gra::form::IncohFlux(lts.x2, lts.t2, lts.qt2, lts.pfinal[2].M2()) :
-											  gra::form::CohFlux(lts.x2, lts.t2, lts.qt2);
-
 	// Photon masses
 	const double mgamma1 = 0; // use on-shell
 	const double mgamma2 = 0;
@@ -145,12 +137,6 @@ std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR& lts) {
 		for (int k = 0; k < namplitudes; ++k) {
 			lts.hamp[i] += amp[k];
 		}
-		// Apply gamma fluxes
-		lts.hamp[i] *= gammaflux1;
-		lts.hamp[i] *= gammaflux2;
-
-		// Phase space
-		lts.hamp[i] *= gra::math::msqrt(lts.s / lts.s_hat);
 	}
 
 	// Total amplitude squared over all helicity combinations individually
@@ -159,7 +145,7 @@ std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR& lts) {
 		amp2 += gra::math::abs2(lts.hamp[i]);
 	}
 	amp2 /= 4; // spin average matrix element squared
-
+	
 	return gra::math::msqrt(amp2); // square root, we take square later
 }
 
@@ -171,7 +157,7 @@ void MAmpMG5_yy_ll::calculate_wavefunctions(const int perm[],
                                             const int hel[]) {
 	// *** MODIFIED: Constant QED coupling, instead of pars->GC_3 ***
 	const std::complex<double> GC_3(0, -gra::form::e_EM());
-
+	
 	// Calculate all wavefunctions
 	MG5_sm_yy_ll::vxxxxx(p[perm[0]], mME[0], hel[0], -1, w[0]);
 	MG5_sm_yy_ll::vxxxxx(p[perm[1]], mME[1], hel[1], -1, w[1]);

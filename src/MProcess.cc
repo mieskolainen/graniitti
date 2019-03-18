@@ -80,9 +80,9 @@ void MProcess::PrintSetup() const {
 	
 	// All other than inclusive processes
     if (ProcPtr.ISTATE != "X") {
-		std::cout << "- Decaymode:               " << DECAYMODE << std::endl;
+		std::cout << "- Final state:             " << DECAYMODE << std::endl;
 		std::cout << "- Proton N* excitation:    " << std::boolalpha << EXCITATION;
-
+		
 		if (EXCITATION == 0){
 			std::cout << rang::fg::green << "  <elastic>"
 			          << rang::fg::reset << std::endl;
@@ -1100,6 +1100,7 @@ bool MProcess::CommonCuts() const {
 
 	bool ok = true;
 
+
 	// Fiducial cuts
 	if (fcuts.active == true) {
 
@@ -1109,27 +1110,30 @@ bool MProcess::CommonCuts() const {
 		}
 
 		// Check forward system variables
-		if (std::abs(lts.t1) > fcuts.forward_t_min && std::abs(lts.t1) < fcuts.forward_t_max &&
-		    std::abs(lts.t2) > fcuts.forward_t_min && std::abs(lts.t2) < fcuts.forward_t_max) {
-				// fine
-		} else { return false; }
-
-		if (lts.excite1) {
-		    if (lts.pfinal[1].M() > fcuts.forward_M_min && lts.pfinal[1].M() < fcuts.forward_M_max) {
-				// fine
-		    } else { return false; }
-		}
-
-		if (lts.excite2) {
-			if (lts.pfinal[2].M() > fcuts.forward_M_min && lts.pfinal[2].M() < fcuts.forward_M_max) {
-				// fine
+		if (CID != "P") { // Collinear class does not support these
+					
+			if (std::abs(lts.t1) >= fcuts.forward_t_min && std::abs(lts.t1) <= fcuts.forward_t_max &&
+			    std::abs(lts.t2) >= fcuts.forward_t_min && std::abs(lts.t2) <= fcuts.forward_t_max) {
+					// fine
 			} else { return false; }
+
+			if (lts.excite1) {
+			    if (lts.pfinal[1].M() >= fcuts.forward_M_min && lts.pfinal[1].M() <= fcuts.forward_M_max) {
+					// fine
+			    } else { return false; }
+			}
+
+			if (lts.excite2) {
+				if (lts.pfinal[2].M() >= fcuts.forward_M_min && lts.pfinal[2].M() <= fcuts.forward_M_max) {
+					// fine
+				} else { return false; }
+			}
 		}
 
 		// Check system variables
-		if (msqrt(lts.m2) > fcuts.M_min && msqrt(lts.m2) < fcuts.M_max &&
-		    lts.Y  > fcuts.Y_min  && lts.Y  < fcuts.Y_max &&
-		    lts.Pt > fcuts.Pt_min && lts.Pt < fcuts.Pt_max) {	
+		if (msqrt(lts.m2) >= fcuts.M_min && msqrt(lts.m2) <= fcuts.M_max &&
+		    lts.Y  >= fcuts.Y_min  && lts.Y  <= fcuts.Y_max &&
+		    lts.Pt >= fcuts.Pt_min && lts.Pt <= fcuts.Pt_max) {	
 			// fine, do not touch
 		} else {
 			return false; // not fine
@@ -1140,6 +1144,7 @@ bool MProcess::CommonCuts() const {
 			FindDecayCuts(lts.decaytree[i], ok);
 		}
 	}
+
 	return ok;
 }
 
@@ -1151,14 +1156,14 @@ void MProcess::FindDecayCuts(const gra::MDecayBranch& branch, bool& ok) const {
 	if (branch.legs.size() == 0) {
 
 		// Check cuts
-		if (branch.p4.Pt()  > fcuts.pt_min &&
-		    branch.p4.Pt()  < fcuts.pt_max &&
-		    branch.p4.Et()  > fcuts.Et_min &&
-		    branch.p4.Et()  < fcuts.Et_max &&
-		    branch.p4.Eta() > fcuts.eta_min &&
-		    branch.p4.Eta() < fcuts.eta_max &&
-		    branch.p4.Rap() > fcuts.rap_min &&
-		    branch.p4.Rap() < fcuts.rap_max) {
+		if (branch.p4.Pt()  >= fcuts.pt_min &&
+		    branch.p4.Pt()  <= fcuts.pt_max &&
+		    branch.p4.Et()  >= fcuts.Et_min &&
+		    branch.p4.Et()  <= fcuts.Et_max &&
+		    branch.p4.Eta() >= fcuts.eta_min &&
+		    branch.p4.Eta() <= fcuts.eta_max &&
+		    branch.p4.Rap() >= fcuts.rap_min &&
+		    branch.p4.Rap() <= fcuts.rap_max) {
 			// Event passes cuts
 		} else {
 			ok = false; // does not pass
@@ -1182,10 +1187,10 @@ void MProcess::FindVetoCuts(const gra::MDecayBranch& branch, bool& ok) const {
 		for (const auto& i : indices(vetocuts.cuts)) {
 
 			// Check cuts
-			if (branch.p4.Pt()  > vetocuts.cuts[i].pt_min &&
-			    branch.p4.Pt()  < vetocuts.cuts[i].pt_max &&
-			    branch.p4.Eta() > vetocuts.cuts[i].eta_min &&
-			    branch.p4.Eta() < vetocuts.cuts[i].eta_max) {
+			if (branch.p4.Pt()  >= vetocuts.cuts[i].pt_min &&
+			    branch.p4.Pt()  <= vetocuts.cuts[i].pt_max &&
+			    branch.p4.Eta() >= vetocuts.cuts[i].eta_min &&
+			    branch.p4.Eta() <= vetocuts.cuts[i].eta_max) {
 
 				ok = false; // VETO, does not pass
 			} else {

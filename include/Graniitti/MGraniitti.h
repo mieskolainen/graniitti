@@ -29,6 +29,7 @@
 #include "Graniitti/MProcess.h"
 #include "Graniitti/MQuasiElastic.h"
 #include "Graniitti/MFactorized.h"
+#include "Graniitti/MParton.h"
 #include "Graniitti/MSpin.h"
 #include "Graniitti/MTimer.h"
 #include "Graniitti/M4Vec.h"
@@ -480,6 +481,7 @@ private:
 	MContinuum    proc_C;
 	MFactorized   proc_F;
 	MQuasiElastic proc_Q;
+	MParton       proc_P;
 
 	// Forced cross-section for HepMC3 output
 	double xsforced = -1;
@@ -490,7 +492,6 @@ private:
 	MTimer atime;
 	double time_t0  = 0.0;
 	double itertime = 0.0;
-
 
 	// -----------------------------------------------
 	// Process MC integration generic variables

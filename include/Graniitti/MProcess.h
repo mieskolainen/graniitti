@@ -319,6 +319,7 @@ protected:
 	
 	// Steering parameters
 	std::string PROCESS;              // Process identifier string
+	std::string CID;                  // Phase space sampler identifier <F>,<C>,...
 	std::string DECAYMODE;            // Decaymode identifier string
 	bool SCREENING = false;           // Pomeron loop on/off
 	unsigned int EXCITATION = 0;      // Forward proton excitation (0 = off, 1 = single, 2 = double)

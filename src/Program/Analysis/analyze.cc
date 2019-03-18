@@ -275,7 +275,7 @@ try {
     std::string units = r["units"].as<std::string>();
     double multiplier = 0.0;
 
-    if (units == "barn") {
+    if      (units == "barn") {
         multiplier = 1.0;
     }
     else if (units == "mb") {
@@ -289,7 +289,7 @@ try {
         multiplier = 1E9;       
     }
     else if (units == "pb") {
-        multiplier = 1E9;       
+        multiplier = 1E12;
     }
     else if (units == "fb") {
         multiplier = 1E15;       

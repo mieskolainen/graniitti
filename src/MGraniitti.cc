@@ -30,9 +30,10 @@
 #include "Graniitti/MProcess.h"
 #include "Graniitti/MQuasiElastic.h"
 #include "Graniitti/MFactorized.h"
+#include "Graniitti/MParton.h"
 #include "Graniitti/MTimer.h"
 
-// HepMC33
+// HepMC3
 #include "HepMC3/WriterHEPEVT.h"
 #include "HepMC3/WriterAsciiHepMC2.h"
 #include "HepMC3/GenEvent.h"
@@ -168,21 +169,26 @@ std::vector<std::string> MGraniitti::GetProcessNumbers() const {
 	std::cout << rang::style::reset << std::endl << std::endl;
 	std::cout << std::endl;
 
-	std::cout << rang::style::bold << "2->3 x 1->(N-2) PS:" << rang::style::reset << std::endl;
-	std::vector<std::string> list2 = proc_F.PrintProcesses();
+	std::cout << rang::style::bold << "2->3 x 1->(N-2) LIPS:" << rang::style::reset << std::endl;
+	std::vector<std::string> list1 = proc_F.PrintProcesses();
 	std::cout << std::endl;
 
-	std::cout << rang::style::bold << "2->N PS:" << rang::style::reset << std::endl;
-	std::vector<std::string> list3 = proc_C.PrintProcesses();
+	std::cout << rang::style::bold << "2->N LIPS:" << rang::style::reset << std::endl;
+	std::vector<std::string> list2 = proc_C.PrintProcesses();
 	std::cout << std::endl;
 
 	std::cout << rang::style::bold << "Quasielastic:" << rang::style::reset << std::endl;
-	std::vector<std::string> list1 = proc_Q.PrintProcesses();
+	std::vector<std::string> list3 = proc_Q.PrintProcesses();
 	std::cout << std::endl;
 
+	std::cout << rang::style::bold << "2->1 x (1->M) collinear:" << rang::style::reset << std::endl;
+	std::vector<std::string> list4 = proc_P.PrintProcesses();
+	std::cout << std::endl;
+	
 	// Concatenate all
 	list1.insert(list1.end(), list2.begin(), list2.end());
 	list1.insert(list1.end(), list3.begin(), list3.end());
+	list1.insert(list1.end(), list4.begin(), list4.end());	
 
 	return list1;
 }
@@ -207,6 +213,11 @@ void MGraniitti::InitProcessMemory(std::string process, unsigned int seed) {
 	} else if (proc_C.ProcessExist(process)) {
 		proc_C = MContinuum(process);
 		proc = &proc_C;
+
+	// <P> processes
+	} else if (proc_P.ProcessExist(process)) {
+		proc_P = MParton(process);
+		proc = &proc_P;
 
 	} else {
 		std::string str =
@@ -238,6 +249,8 @@ void MGraniitti::InitMultiMemory() {
 			pvec[i] = new MFactorized(proc_F);
 		} else if (proc_C.ProcessExist(PROCESS)) {
 			pvec[i] = new MContinuum(proc_C);
+		} else if (proc_P.ProcessExist(PROCESS)) {
+			pvec[i] = new MParton(proc_P);
 		}
 	}
 
@@ -349,10 +362,12 @@ void MGraniitti::ReadModelParam(const std::string& inputfile) {
 	PARAM_FLAT::b = j["PARAM_FLAT"]["b"];
 
 	// Monopole production
+	PARAM_MONOPOLE::coupling = j["PARAM_MONOPOLE"]["coupling"];
+	PARAM_MONOPOLE::gn       = j["PARAM_MONOPOLE"]["gn"];	
 	PARAM_MONOPOLE::En       = j["PARAM_MONOPOLE"]["En"];
 	PARAM_MONOPOLE::Gamma0   = j["PARAM_MONOPOLE"]["Gamma0"];
-	PARAM_MONOPOLE::coupling = j["PARAM_MONOPOLE"]["coupling"];
-
+	
+	
 	// Regge amplitude parameters
 	std::vector<double> a0   = j["PARAM_REGGE"]["a0"];
 	std::vector<double> ap   = j["PARAM_REGGE"]["ap"];
@@ -434,7 +449,7 @@ void MGraniitti::ReadProcessParam(const std::string& inputfile, const std::strin
 	gra::aux::TrimExtraSpace(DECAY_PART);
 
 	InitProcessMemory(PROCESS_PART, j[XID]["RNDSEED"]);
-
+	
 	// ----------------------------------------------------------------
 	// SETUP process: process memory needs to be initialized before!
 	
@@ -446,8 +461,9 @@ void MGraniitti::ReadProcessParam(const std::string& inputfile, const std::strin
 
 	if (pos2 != std::string::npos) {
 
-		if (PROCESS_PART.find("<F>") == std::string::npos) {
-			throw std::invalid_argument("MGraniitti::ReadProcessParam: Phase space isolation arrow '&>' to be used only with <F> class!");
+		if (PROCESS_PART.find("<F>") == std::string::npos &&
+			PROCESS_PART.find("<P>") == std::string::npos) {
+			throw std::invalid_argument("MGraniitti::ReadProcessParam: Phase space isolation arrow '&>' to be used only with <F> or <P> class!");
 		}
 		proc->SetIsolate(true);
 	}
@@ -1684,7 +1700,10 @@ void MGraniitti::PrintStatistics(unsigned int N) {
 		}
 
 		unsigned int N_leg = proc->lts.decaytree.size() + 2;
-		if (proc->GetIsolate()) { N_leg = 3; } // Isolated 2->3 process with <F> phase space
+
+		// Special cases
+		if (proc->GetIsolate()) { N_leg = 3; }       // Isolated 2->3 process with <F> phase space
+		if (proc->GetdLIPSDim() == 2) { N_leg = 2; } // <P> and <Q> class
 
 		printf("{2->%d cross section}:             %0.3E +- %0.3E barn \n", N_leg, stat.sigma, stat.sigma_err);
 		printf("Sampling uncertainty:             %0.3f %% \n", 100 * stat.sigma_err / stat.sigma);
@@ -1734,7 +1753,7 @@ void MGraniitti::PrintStatistics(unsigned int N) {
 			// Decaywidth = 1/(2M S) \int dPS |M_decay|^2, where M
 			// = mother mass, S = final state symmetry factor
 
-			if (!proc->GetIsolate()) { // Not isolated
+			if (!proc->GetIsolate() && proc->GetdLIPSDim() != 2) { // Special cases
 			printf("{2->3 cross section ~=~ [2->%u / (1->%lu LIPS) x 2PI]}:       %0.3E barn \n",
 				N_leg, proc->lts.decaytree.size(), stat.sigma / proc->lts.DW_sum.Integral() * (2*PI) );
 			std::cout << std::endl;

@@ -159,7 +159,11 @@ void experiment(bool screening) {
     // <https://discoverycenter.nbi.ku.dk/teaching/thesis_page/MasterEmilBolsFinal.pdf>
     input.push_back(MEASUREMENT("ATLAS17_2pi.json",  18.75e-6,  0.048e-6,  0.770e-6));
 
-/*
+    // Comparison of 2->4 vs 2->2 cf. MadGraph EPA (1.31e-12)
+    input.push_back(MEASUREMENT("yy2ee.json",       0, 0, 0));
+    input.push_back(MEASUREMENT("yy2ee_DZ.json",    0, 0, 0));
+    
+
     // ALICE fiducial
     input.push_back(MEASUREMENT("ALICE_2pi.json",    0, 0, 0));
 
@@ -193,8 +197,11 @@ void experiment(bool screening) {
     input.push_back(MEASUREMENT("monopolepair.json", 0, 0, 0));
 
     // ...
+    input.push_back(MEASUREMENT("monopolepair_LUX.json", 0, 0, 0));
+
+    // ...
     input.push_back(MEASUREMENT("monopolium.json",   0, 0, 0));
-*/
+
 
     // ------------------------------------------------------------------
     /*
@@ -285,7 +292,7 @@ void experiment(bool screening) {
     // Loop over processes
     for (const auto& i : indices(input)) {
 	printf(
-	    "[%20s] DATA = %0.2E +- %0.2E (stat) +- %0.2E (syst) | MC BARE = "
+	    "[%22s] DATA = %0.2E +- %0.2E (stat) +- %0.2E (syst) | MC BARE = "
 	    "%0.3E (ratio = %0.2f) | MC SRCN = %0.3E (ratio = %0.2f) | <S^2> = %0.3f \n",
 	    input[i].card.c_str(), input[i].value, input[i].stat,
 	    input[i].syst, xs0[i][0], xs0[i][0] / input[i].value, xs0[i][1],

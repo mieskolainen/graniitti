@@ -48,7 +48,7 @@ namespace gra {
 // *************************************************************
 // Dirac quantization condition:
 //
-// g = 2\pi \hbar / (\mu_0 e) n,    where n = 1,2,3,...
+// g = 2\pi \hbar n / (\mu_0 e),    where n = 1,2,3,...
 // where alpha = e^2/(4*PI) is the running QED coupling
 //
 //
@@ -74,22 +74,25 @@ namespace gra {
 //
 std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 
-	// e+e-, mu+mu-, tau+tau-
-	double COUPL = 16.0 * pow2(gra::math::PI) * gra::form::alpha_EM(lts.t1) *
-	               gra::form::alpha_EM(lts.t2);   // = e^4
+	// QED couplings
+	double COUPL = 16.0 * pow2(gra::math::PI * gra::form::alpha_EM(0)); // = e^4
 	const double mass  = lts.decaytree[0].p4.M(); // lepton, quark (or monopole) mass
 	const double mass2 = pow2(mass);
 	const bool MONOPOLE_MODE = (lts.decaytree[0].p.pdg == PDG::PDG_monopole) ? true : false;
+
+	if (PARAM_MONOPOLE::gn < 1) {
+		throw std::invalid_argument("MGamma::yyffbar: Parameter Dirac n less than 1");
+	}
 	
-	// qqbar (apply color factor 3)
-	// ... [NOT IMPLEMENTED]
-	
+	// Amplitude
+	std::complex<double> A = 0.0;
+
 	// Monopole-Antimonopole coupling
 	if (MONOPOLE_MODE) {
 
-		static const double g = 2.0 * math::PI / form::e_EM(); // With Dirac n = 1
+		static const double g = 2.0 * math::PI * PARAM_MONOPOLE::gn / form::e_EM();
 
-		if (PARAM_MONOPOLE::coupling == 1) { // Beta-Dirac coupling
+		if        (PARAM_MONOPOLE::coupling == "beta-dirac") {
 			
 			// Calculate beta (velocity)
 			// const M4Vec px = pfinal[3] + pfinal[4];
@@ -102,15 +105,13 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 			// Faster way
 			const double beta = msqrt(1.0 - 4.0 * pow2(PARAM_MONOPOLE::M0) / lts.s_hat);
 			COUPL = pow4(g * beta);
-			
-		} else if (PARAM_MONOPOLE::coupling == 2) { // Pure-Dirac coupling
-			
-			COUPL = pow4(g);
-			
+
+		} else if (PARAM_MONOPOLE::coupling == "dirac") {
+
+			COUPL = pow4(g);	
 		} else {
 			throw std::invalid_argument(
-			    "MGamma::yyffbar: Unknown PARAM_MONOPOLE::coupling " +
-			    std::to_string(PARAM_MONOPOLE::coupling));
+			    "MGamma::yyffbar: Unknown PARAM_MONOPOLE::coupling " + PARAM_MONOPOLE::coupling);
 		}
 
 		// QED tree level amplitude squared |M|^2, spin averaged and
@@ -137,21 +138,33 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 
 		// printf("%0.15f %0.15f \n", amp2, amp2_);
 
-		// Apply fluxes
-		double A = msqrt(amp2);
-
-		A *= lts.excite1 ? gra::form::IncohFlux(lts.x1, lts.t1, lts.qt1, lts.pfinal[1].M2()) : form::CohFlux(lts.x1, lts.t1, lts.qt1); // Gammaflux
-		A *= lts.excite2 ? gra::form::IncohFlux(lts.x2, lts.t2, lts.qt2, lts.pfinal[2].M2()) : form::CohFlux(lts.x2, lts.t2, lts.qt2); // Gammaflux
-		A *= msqrt(lts.s / lts.s_hat);                    													          // Phasespace flux
-
-		return A;
+		A = msqrt(amp2);
 
 	} else { // MADGRAPH/HELAS, all helicity amplitudes individually -> for
 		// the screening loop
 
-		return AmpMG5_yy_ll.CalcAmp(lts);
+		A = AmpMG5_yy_ll.CalcAmp(lts);
 	}
+
+	// ------------------------------------------------------------------
+	// quark pair (charge 1/3 or 2/3), apply charge and color factors
+	if (std::abs(lts.decaytree[0].p.pdg) <= 6) { // we have a quark
+
+		const double  Q = lts.decaytree[0].p.chargeX3 / 3.0;
+		const double NC = 3.0; // quarks come in three colors
+
+		const double factor = msqrt( pow4(Q) * NC ); // to amplitude level
+		A *= factor;
+
+		for (const auto& i : aux::indices(lts.hamp)) { // helicity amplitudes
+			lts.hamp[i] *= factor;	
+		}
+	}
+	// ------------------------------------------------------------------
+
+	return A;
 }
+
 
 // --------------------------------------------------------------------------------------------
 // A Monopolium (monopole-antimonopole) bound state process
@@ -184,24 +197,26 @@ std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR& lts) const {
 
 	if (M < 0) {
 		throw std::invalid_argument(
-		    "MGamma::yyMP: Increase ladder parameter n. Monopolium "
+		    "MGamma::yyMP: Increase ladder level parameter En. Monopolium "
 		    "nominal mass " + std::to_string(M) + " < 0!");
+	}
+	if (PARAM_MONOPOLE::gn < 1) {
+		throw std::invalid_argument("MGamma::yyMP: Parameter Dirac n less than 1");
 	}
 
 	// Two coupling scenarios:
-	static const double g = 2.0 * math::PI / form::e_EM(); // With Dirac n = 1	
+	static const double g = 2.0 * math::PI * PARAM_MONOPOLE::gn / form::e_EM();
 	double beta = 0.0;
 
-	if        (PARAM_MONOPOLE::coupling == 1) {  // Beta-Dirac coupling
+	if        (PARAM_MONOPOLE::coupling == "beta-dirac") {
 		beta = msqrt(1.0 - pow2(M) / lts.s_hat);
-	} else if (PARAM_MONOPOLE::coupling == 2) {  // Pure-Dirac coupling
+	} else if (PARAM_MONOPOLE::coupling == "dirac") {
 		beta = 1.0;
 	} else {
 		throw std::invalid_argument(
-		    "MGamma::yyMP: Unknown PARAM_MONOPOLE::coupling " +
-		    std::to_string(PARAM_MONOPOLE::coupling));
+		    "MGamma::yyMP: Unknown PARAM_MONOPOLE::coupling " + PARAM_MONOPOLE::coupling);
 	}
-
+	
 	// Magnetic coupling
 	const double alpha_g = pow2(beta * g) / (4.0 * math::PI);
 
@@ -210,22 +225,14 @@ std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR& lts) const {
 
 	//printf("alpha_g = %0.3E, Gamma_E = %0.3E, Gamma_M = %0.3E, Psi_MP = %0.3E \n",
 	//	alpha_g, Gamma_E, Gamma_M, PARAM_MONOPOLE::PsiMP(PARAM_MONOPOLE::n));
-
+	
 	// Normalization
 	double norm = 2.0*math::PI * M*M;
 
 	// Sub process
-	double sigma_hat = norm * (Gamma_E * Gamma_M ) /
-	                   (pow2(lts.s_hat - M*M) + pow2(M * Gamma_M));
+	double sigma_hat = norm * (Gamma_E * Gamma_M ) / (pow2(lts.s_hat - M*M) + pow2(M * Gamma_M));
 
-	// Apply fluxes
-	std::complex<double> A = msqrt(sigma_hat);
-
-	A *= lts.excite1 ? gra::form::IncohFlux(lts.x1, lts.t1, lts.qt1, lts.pfinal[1].M2()) : form::CohFlux(lts.x1, lts.t1, lts.qt1); // Gammaflux
-	A *= lts.excite2 ? gra::form::IncohFlux(lts.x2, lts.t2, lts.qt2, lts.pfinal[2].M2()) : form::CohFlux(lts.x2, lts.t2, lts.qt2); // Gammaflux
-	A *= msqrt(lts.s / lts.s_hat);                 													      // Phasespace flux
-
-	return A;
+	return msqrt(sigma_hat);
 }
 
 // --------------------------------------------------------------------------------------------
@@ -260,18 +267,6 @@ std::complex<double> MGamma::yyHiggs(gra::LORENTZSCALAR& lts) const {
 	lts.hamp[2] = 0.0;         // +-
 	lts.hamp[3] = lts.hamp[0]; // ++
 
-	// Apply photon fluxes and phase space flux
-	double A = 1.0;
-			const double M1 = lts.pfinal[1].M();
-		const double M2 = lts.pfinal[2].M();
-	A *= lts.excite1 ? gra::form::IncohFlux(lts.x1, lts.t1, lts.qt1, M1) : form::CohFlux(lts.x1, lts.t1, lts.qt1); // Gammaflux
-	A *= lts.excite2 ? gra::form::IncohFlux(lts.x2, lts.t2, lts.qt2, M2) : form::CohFlux(lts.x2, lts.t2, lts.qt2); // Gammaflux
-	A *= msqrt(lts.s / lts.s_hat);                 													      // Phasespace flux
-
-	for (const auto& i : aux::indices(lts.hamp)) {
-		lts.hamp[i] *= A;
-	}
-
 	// Sum over helicity amplitudes squared
 	double sumA2 = 0.0;
 	for (const auto& i : aux::indices(lts.hamp)) {
@@ -304,10 +299,6 @@ std::complex<double> MGamma::yyX(const gra::LORENTZSCALAR& lts, gra::PARAM_RES& 
 	std::complex<double> A_prod = 2.0 *
 	    	gra::form::CBW(lts, resonance) * resonance.g *
 	    	PARAM_REGGE::JPCoupling(lts, resonance);
-	
-	A_prod *= lts.excite1 ? gra::form::IncohFlux(lts.x1, lts.t1, lts.qt1, lts.pfinal[1].M2()) : form::CohFlux(lts.x1, lts.t1, lts.qt1); // Gammaflux
-	A_prod *= lts.excite2 ? gra::form::IncohFlux(lts.x2, lts.t2, lts.qt2, lts.pfinal[2].M2()) : form::CohFlux(lts.x2, lts.t2, lts.qt2); // Gammaflux
-	A_prod *= msqrt(lts.s / lts.s_hat);                 													                          // Phasespace flux
 
 	// Spin and decay part
 	const std::complex<double> A_decay = gra::spin::SpinAmp(lts, resonance);

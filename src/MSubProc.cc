@@ -18,6 +18,9 @@
 #include "Graniitti/MSpin.h"
 #include "Graniitti/MForm.h"
 
+// LHAPDF
+#include "LHAPDF/LHAPDF.h"
+
 // Libraries
 #include "rang.hpp"
 
@@ -30,6 +33,7 @@ using gra::math::zi;
 
 namespace gra {
 
+std::unique_ptr<LHAPDF::PDF> GlobalPdfPtr = nullptr;
 
 // Initialize
 MSubProc::MSubProc(const std::string& _ISTATE, const std::string& _CHANNEL, const MPDG& _PDG) {
@@ -100,7 +104,20 @@ void MSubProc::ConstructDescriptions(const std::string& first) {
 		channels.insert(std::pair<std::string, std::string>("CON",          "QCD continuum to gg + ...                [Durham QCD]"));
 			descriptions.insert(std::pair<std::string, std::map<std::string,std::string>>("gg", channels));
 	}
+	else if (first == "yy_DZ") {
+
+		std::map<std::string, std::string> channels;
+		channels.insert(std::pair<std::string, std::string>("CON",          "Collinear yy to l+l, w+w- or monopoles   [DZ] x [DZ]"));
+			descriptions.insert(std::pair<std::string, std::map<std::string,std::string>>("yy_DZ", channels));	
+	}
+	else if (first == "yy_LUX") {
+
+		std::map<std::string, std::string> channels;
+		channels.insert(std::pair<std::string, std::string>("CON",          "Collinear yy to l+l, w+w- or monopoles   [LUX] x [LUX]         @@<UNDER CONSTRUCTION>@@"));
+			descriptions.insert(std::pair<std::string, std::map<std::string,std::string>>("yy_LUX", channels));	
+	}
 }
+
 
 // This is called last by the initialization routines
 // as the last step before event generation.
@@ -155,6 +172,12 @@ std::complex<double> MSubProc::GetBareAmplitude(gra::LORENTZSCALAR& lts) {
 	}
 	else if (ISTATE == "gg") {
 		return GetBareAmplitude_gg(lts);
+	}
+	else if (ISTATE == "yy_DZ") {
+		return GetBareAmplitude_yy_DZ(lts);
+	}
+	else if (ISTATE == "yy_LUX") {
+		return GetBareAmplitude_yy_LUX(lts);
 	} else {
 		throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown ISTATE '" + ISTATE + '"');
 	}
@@ -283,8 +306,91 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy(gra::LORENTZSCALAR& lt
 	} else {
 		throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown CHANNEL = " + CHANNEL);
 	}
-	return A;
+	
+ 	// Apply non-collinear EPA fluxes
+	const double gammaflux1 = lts.excite1 ? gra::form::IncohFlux(lts.x1, lts.t1, lts.qt1, lts.pfinal[1].M2()) : form::CohFlux(lts.x1, lts.t1, lts.qt1);
+	const double gammaflux2 = lts.excite2 ? gra::form::IncohFlux(lts.x2, lts.t2, lts.qt2, lts.pfinal[2].M2()) : form::CohFlux(lts.x2, lts.t2, lts.qt2);
+	const double phasespace = lts.s / lts.s_hat; // Moller flux replacement
+	
+	// To "amplitude level"
+	const double flux = msqrt( gammaflux1 * gammaflux2 * phasespace);
+
+	// Helicity amplitudes
+	for (const auto& i : aux::indices(lts.hamp)) {
+		lts.hamp[i] *= flux;
+	}
+
+	return A * flux;
 }
+
+
+// Gamma-Gamma collinear Drees-Zeppenfeld (coherent flux)
+inline std::complex<double> MSubProc::GetBareAmplitude_yy_DZ(gra::LORENTZSCALAR& lts) { 
+
+	// Amplitude
+	std::complex<double> A = yyffbar(lts);
+
+	// Evaluate gamma pdfs
+	const double   f1 = form::DZFlux(lts.x1);
+	const double   f2 = form::DZFlux(lts.x2);
+	const double amp2 = f1 * f2 * math::abs2(A) * (lts.s / lts.s_hat);
+
+	return msqrt(amp2); // We take square later
+}
+
+
+// Gamma-Gamma LUX-pdf (use at \mu > 10 GeV)
+// *** UNDER TESTING ***
+inline std::complex<double> MSubProc::GetBareAmplitude_yy_LUX(gra::LORENTZSCALAR& lts) {
+
+	// @@ MULTITHREADING LOCK @@
+	gra::aux::g_mutex.lock();
+	if (GlobalPdfPtr == nullptr) {
+	std::string pdfname = gra::form::LHAPDF;
+	try {
+		GlobalPdfPtr = std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(pdfname, 0));
+	} catch (...) {
+		std::string str = "MSubProc::InitLHAPDF: Problem with reading a pdfset '" + pdfname + "'";
+		throw std::invalid_argument(str);
+	}
+	}
+	gra::aux::g_mutex.unlock();
+
+	// Amplitude
+	std::complex<double> A(0, 0);
+	if (CHANNEL == "CON") {
+		if (std::abs(lts.decaytree[0].p.pdg) == 24 &&
+			std::abs(lts.decaytree[1].p.pdg) == 24) {   // W+W-
+			A = AmpMG5_yy_ww.CalcAmp(lts);
+		} else { // ffbar
+			A = yyffbar(lts);
+		}
+	} else {
+		throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown CHANNEL = " + CHANNEL);
+	}
+
+	// @@ MULTITHREADING LOCK @@
+	gra::aux::g_mutex.lock();
+
+	// pdf factorization scale
+	const double Q2 = lts.s_hat / 4.0; 
+	
+	// Evaluate gamma pdfs
+	double f1 = 0.0;
+	double f2 = 0.0;
+	try {
+	// Divide x out
+	f1 = GlobalPdfPtr->xfxQ2(PDG::PDG_gamma, lts.x1, Q2) / lts.x1;
+	f2 = GlobalPdfPtr->xfxQ2(PDG::PDG_gamma, lts.x2, Q2) / lts.x2;
+	} catch (...) {
+		throw std::invalid_argument("MSubProc:yy_LUX: Failed evaluating LHAPDF");
+	}
+	gra::aux::g_mutex.unlock();
+
+	const double tot = f1 * f2 * math::abs2(A) * (lts.s / lts.s_hat);
+	return msqrt(tot);
+}
+
 
 // Durham gg
 inline std::complex<double> MSubProc::GetBareAmplitude_gg(gra::LORENTZSCALAR& lts) {

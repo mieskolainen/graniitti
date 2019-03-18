@@ -50,10 +50,6 @@ MAmpMG5_yy_ww::~MAmpMG5_yy_ww() {
 // Get amplitude
 std::complex<double> MAmpMG5_yy_ww::CalcAmp(gra::LORENTZSCALAR& lts) {
 
-	// Get photon fluxes
-	const double gammaflux1 = lts.excite1 ? gra::form::IncohFlux(lts.x1, lts.t1, lts.qt1, lts.pfinal[1].M2()) : gra::form::CohFlux(lts.x1, lts.t1, lts.qt1); // Gammaflux
-	const double gammaflux2 = lts.excite2 ? gra::form::IncohFlux(lts.x2, lts.t2, lts.qt2, lts.pfinal[2].M2()) : gra::form::CohFlux(lts.x2, lts.t2, lts.qt2); // Gammaflux
-	
 	const double mgamma1 = 0; // on-shell
 	const double mgamma2 = 0;
 
@@ -133,14 +129,8 @@ std::complex<double> MAmpMG5_yy_ww::CalcAmp(gra::LORENTZSCALAR& lts) {
 		for (int k = 0; k < namplitudes; ++k) {
 			lts.hamp[ihel] += amp[k];
 		}
-		// Apply gamma fluxes
-		lts.hamp[ihel] *= gammaflux1;
-		lts.hamp[ihel] *= gammaflux2;
-
-		// Phase space
-		lts.hamp[ihel] *= gra::math::msqrt(lts.s / lts.s_hat);
 	}
-
+	
 	// Total amplitude squared over all helicity combinations individually
 	double amp2 = 0.0;
 	for (int ihel = 0; ihel < ncomb; ++ihel) {

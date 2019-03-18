@@ -764,9 +764,13 @@ std::complex<double> MRegge::PhotoME3(gra::LORENTZSCALAR& lts, gra::PARAM_RES& r
 	const std::complex<double> common = CBW(lts, resonance) * resonance.g *
 	    	PARAM_REGGE::ResonanceFormFactor(lts.m2, pow2(resonance.p.mass));
 
-	const double gammaflux1 = lts.excite1 ? IncohFlux(lts.x1, lts.t1, lts.qt1, lts.pfinal[1].M2()) : CohFlux(lts.x1, lts.t1, lts.qt1);
-	const double gammaflux2 = lts.excite2 ? IncohFlux(lts.x2, lts.t2, lts.qt2, lts.pfinal[2].M2()) : CohFlux(lts.x2, lts.t2, lts.qt2);
+	double gammaflux1 = lts.excite1 ? IncohFlux(lts.x1, lts.t1, lts.qt1, lts.pfinal[1].M2()) : CohFlux(lts.x1, lts.t1, lts.qt1);
+	double gammaflux2 = lts.excite2 ? IncohFlux(lts.x2, lts.t2, lts.qt2, lts.pfinal[2].M2()) : CohFlux(lts.x2, lts.t2, lts.qt2);
 
+	// "To amplitude level"
+	gammaflux1 = msqrt(gammaflux1);
+	gammaflux2 = msqrt(gammaflux2);
+	
 	// Photon up (t1) x Pomeron down (t2)
 	const std::complex<double> M1 =
 		 gammaflux1 / msqrt(lts.x1) *

@@ -90,10 +90,8 @@ void MH1<T>::Print(double width) const {
 
 			// Error on value (only on double histograms)
 			const double relative_err = value_err / value;
-			const std::size_t U =
-			    std::ceil(w * (N - 1) * (1 + relative_err)); // up
-			const std::size_t D = std::floor(w * (N - 1) *
-			                         (1 - relative_err));    // down
+			const std::size_t U = std::ceil(w * (N - 1) * (1 + relative_err)); // up
+			const std::size_t D = std::floor(w * (N - 1) *(1 - relative_err)); // down
 			// Print now
 			for (std::size_t j = 0; j < N; ++j) {
 				if (j == ind) {
@@ -112,9 +110,11 @@ void MH1<T>::Print(double width) const {
 				std::cout << " ";
 			}
 		}
-		printf("| %0.1E +- %0.1E\n", value, value_err); // Print out value +- error
+		//const double BINWIDTH = (XMAX - XMIN) / XBINS;
+		printf("| %0.1E +- %0.1E \n", value, value_err); // Print out value +- error
+		//printf("| %0.1E +- %0.1E [dO/dx] = %0.1E \n", value, value_err, value / BINWIDTH); // Print out value +- error
 	}
-
+	
 	std::cout << "          |"; // Empty bottom left corner
 	for (std::size_t i = 0; i < N; ++i) {
 		std::cout << "=";

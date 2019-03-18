@@ -71,7 +71,7 @@ void MContinuum::ConstructProcesses() {
 
 	Processes.clear();
 
-	const std::string CID = "C";
+	CID = "C";
 	for (auto const& x : ProcPtr.descriptions) {
 	    std::map<std::string, std::string> value = x.second;
 	    for (const auto& y : value) {
@@ -99,7 +99,7 @@ void MContinuum::post_Constructor() {
 
 		// QED/EW/Durham-QCD processes (high pt)
 		if (ProcPtr.ISTATE != "PP" && ProcPtr.ISTATE != "yP") {
-			gcuts.kt_max = lts.sqrt_s / 4.0;
+			gcuts.kt_max = lts.sqrt_s / 2.0; // kinematic maximum
 		}
 	}
 	
