@@ -28,7 +28,7 @@ class MContinuum : public MProcess {
 
 public:
 	MContinuum();
-	MContinuum(std::string process);
+	MContinuum(std::string process, const std::vector<aux::OneCMD>& syntax);
 	virtual ~MContinuum();
 
 	void post_Constructor();

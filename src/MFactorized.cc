@@ -52,10 +52,10 @@ MFactorized::MFactorized() {
 }
 
 // Constructor
-MFactorized::MFactorized(std::string process) {
+MFactorized::MFactorized(std::string process, const std::vector<aux::OneCMD>& syntax) {
 
 	InitHistograms();
-	SetProcess(process);
+	SetProcess(process, syntax);
 
 	// Init final states
 	M4Vec zerovec(0, 0, 0, 0);

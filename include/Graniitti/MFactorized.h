@@ -29,7 +29,7 @@ class MFactorized : public MProcess {
 
 public:
 	MFactorized();
-	MFactorized(std::string process);
+	MFactorized(std::string process, const std::vector<aux::OneCMD>& syntax);
 	virtual ~MFactorized();
 
 	void post_Constructor();

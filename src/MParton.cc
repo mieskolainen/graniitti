@@ -52,11 +52,11 @@ MParton::MParton() {
 }
 
 // Constructor
-MParton::MParton(std::string process) {
-
+MParton::MParton(std::string process, const std::vector<aux::OneCMD>& syntax) {
+	
 	InitHistograms();
-	SetProcess(process);
-
+	SetProcess(process, syntax);
+	
 	// Init final states
 	M4Vec zerovec(0, 0, 0, 0);
 	for (std::size_t i = 0; i < 10; ++i) {

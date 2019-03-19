@@ -166,82 +166,90 @@ gra::PARAM_RES ReadResonance(const std::string& resparam_str, MRandom& rng) {
 	std::string inputfile = gra::aux::GetBasePath(2) + "/modeldata/" + resparam_str;
 
 	// Read and parse
-	std::string data = gra::aux::GetInputData(inputfile);
-	nlohmann::json j = nlohmann::json::parse(data);
+	std::string data;
+	nlohmann::json j;
+
+	try {
+		data = gra::aux::GetInputData(inputfile);
+		j    = nlohmann::json::parse(data);
+	} catch (...) {
+		throw std::invalid_argument("form::ReadResonance: Error parsing '" + resparam_str + "'");
+	}
 
 	// Resonance parameters
 	gra::PARAM_RES res;
 
+	try {
+
 	std::complex<double> g(0, 0);
-	double g_A   = j["PARAM_RES"]["g_A"];
-	double g_phi = j["PARAM_RES"]["g_phi"];
+	double g_A   = j.at("PARAM_RES").at("g_A");
+	double g_phi = j.at("PARAM_RES").at("g_phi");
 	res.g = g_A * std::exp(std::complex<double>(0,1) * g_phi); // Complex coupling
 	
 	// PDG code
-	res.p.pdg = j["PARAM_RES"]["PDG"];
+	res.p.pdg = j.at("PARAM_RES").at("PDG");
 
 	// "Glueball state"
-	res.p.glue = j["PARAM_RES"]["glue"];
+	res.p.glue = j.at("PARAM_RES").at("glue");
 	
 	// mass
-	res.p.mass = j["PARAM_RES"]["M0"];
+	res.p.mass = j.at("PARAM_RES").at("M");
 	if (res.p.mass < 0) {
-		std::string str = "MAux:ReadResonance:: <" + resparam_str + "> Invalid M0 < 0 !";
+		std::string str = "MAux:ReadResonance:: <" + resparam_str + "> Invalid M < 0 !";
 		throw std::invalid_argument(str);
 	}
 
 	// width
-	res.p.width = j["PARAM_RES"]["Gamma"];
+	res.p.width = j.at("PARAM_RES").at("W");
 	if (res.p.width < 0) {
-		std::string str = "MAux:ReadResonance:: <" + resparam_str + "> Invalid Gamma < 0 !";
+		std::string str = "MAux:ReadResonance:: <" + resparam_str + "> Invalid W < 0 !";
 		throw std::invalid_argument(str);
 	}
 
-	//
-	res.p.J = j["PARAM_RES"]["J"];
-	res.p.spinX2 = res.p.J * 2;
+	const double J = j.at("PARAM_RES").at("J");
+	res.p.spinX2 = J * 2;
 	if (res.p.spinX2 < 0) {
 		std::string str = "MAux:ReadResonance:: <" + resparam_str + "> Invalid J < 0 !";
 		throw std::invalid_argument(str);
 	}
 
 	//
-	res.p.P = j["PARAM_RES"]["P"];
+	res.p.P = j.at("PARAM_RES").at("P");
 	if (!(res.p.P == -1 || res.p.P == 1)) {
 		std::string str = "MAux:ReadResonance:: <" + resparam_str + "> Invalid P (not -1 or 1) !";
 		throw std::invalid_argument(str);
 	}
 
 	// Validity of these is taken care of in the functions
-	res.BW             = j["PARAM_RES"]["BW"];
+	res.BW             = j.at("PARAM_RES").at("BW");
 
 	// If we have spin
 	if (res.p.spinX2 != 0) {
 
 		// Spin dependent
-		res.hc.FRAME               = j["PARAM_RES"]["FRAME"];
+		res.hc.FRAME               = j.at("PARAM_RES").at("FRAME");
 		const bool P_conservation  = true;
 		
-		const int n = 2 * res.p.J + 1; // n = 2J + 1
+		const int n = res.p.spinX2 + 1; // n = 2J + 1
 		MMatrix<std::complex<double>> rho(n,n);
 
 		// Draw random density matrices (until the number set by user)
-		if (j["PARAM_RES"]["random_rho"] > 0) {
-			for (std::size_t k = 0; k < j["PARAM_RES"]["random_rho"]; ++k) {
-				rho = gra::spin::RandomRho(res.p.J, P_conservation, rng);
+		if (j.at("PARAM_RES").at("random_rho") > 0) {
+			for (std::size_t k = 0; k < j.at("PARAM_RES").at("random_rho"); ++k) {
+				rho = gra::spin::RandomRho(res.p.spinX2/2.0, P_conservation, rng);
 			}
 
 		// Construct spin density matrix from the input
 		} else {
 			for (std::size_t a = 0; a < rho.size_row(); ++a) {
 				for (std::size_t b = 0; b < rho.size_col(); ++b) {
-					const double Re = j["PARAM_RES"]["rho_real"][a][b];
-					const double Im = j["PARAM_RES"]["rho_imag"][a][b];
+					const double Re = j.at("PARAM_RES").at("rho_real").at(a).at(b);
+					const double Im = j.at("PARAM_RES").at("rho_imag").at(a).at(b);
 					rho[a][b] = Re + zi * Im;
 				}
 			}
 			// Check positivity conditions
-			if (gra::spin::Positivity(rho, res.p.spinX2 / 2) == false) {
+			if (gra::spin::Positivity(rho, res.p.spinX2/2.0) == false) {
 				std::string str = "gra::form::ReadResonance: <" + resparam_str +
 				                  "> Input density matrix not positive definite!";
 				throw std::invalid_argument(str);
@@ -250,6 +258,11 @@ gra::PARAM_RES ReadResonance(const std::string& resparam_str, MRandom& rng) {
 		res.hc.rho = rho;
 	}
 	std::cout << " [DONE]" << std::endl;
+
+	} catch (nlohmann::json::exception& e) {
+		throw std::invalid_argument("form::ReadResonance: Missing parameter in '"
+			+ resparam_str + "' : " + e.what());
+	}
 
 	return res;
 }
@@ -621,12 +634,12 @@ std::complex<double> CBW(const gra::LORENTZSCALAR& lts,
 			              resonance.p.width);
 		case 3:
 			return CBW_BF(lts.m2, resonance.p.mass,
-			              resonance.p.width, resonance.p.J,
+			              resonance.p.width, resonance.p.spinX2/2.0,
 			              lts.decaytree[0].p4.M(),
 			              lts.decaytree[1].p4.M());
 		case 4:
 			return CBW_JR(lts.m2, resonance.p.mass,
-						  resonance.p.width, resonance.p.J);
+						  resonance.p.width, resonance.p.spinX2/2.0);
 
 		default:
 			throw std::invalid_argument(

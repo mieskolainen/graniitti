@@ -29,7 +29,7 @@ class MParton : public MProcess {
 
 public:
 	MParton();
-	MParton(std::string process);
+	MParton(std::string process, const std::vector<aux::OneCMD>& syntax);
 	virtual ~MParton();
 
 	void   post_Constructor();

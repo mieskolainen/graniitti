@@ -27,7 +27,7 @@
 
     "BEAM" :   ["p+","p+"],      // Beam PDG-ID / Name
     "ENERGY" : [6500, 6500],     // Beam energy in the lab (GeV)
-    "PROCESS" : "yy[CON]<C> -> monopole0 monopole0~", // Process ID
+    "PROCESS" : "yy[CON]<C> -> monopole0 monopole0~ @PDG[992]{M:1000,W:0}", // Process ID
     "RES" : [],
     "POMLOOP" : false,           // Eikonal Pomeron loop screening
     "NSTARS"  : 0,               // N* excitation (0 = elastic, 1 = single, 2 = double)

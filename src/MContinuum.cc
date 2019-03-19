@@ -49,10 +49,10 @@ MContinuum::MContinuum() {
 
 
 // Constructor
-MContinuum::MContinuum(std::string process) {
+MContinuum::MContinuum(std::string process, const std::vector<aux::OneCMD>& syntax) {
 	
 	InitHistograms();
-	SetProcess(process);
+	SetProcess(process, syntax);
 
 	// Init final states
 	M4Vec zerovec(0, 0, 0, 0);

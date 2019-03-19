@@ -8,6 +8,7 @@
 
 
 // C++
+#include <any>
 #include <regex>
 #include <complex>
 #include <mutex>
@@ -36,6 +37,26 @@
 
 namespace gra {
 namespace aux {
+
+// Example:
+//
+// @SOMECOMMAND=value
+// @PDG[992]{M:300, W:0}
+//
+
+struct OneCMD {
+
+	std::string id;
+	std::map<std::string, std::any> arg;
+
+	void Print() {
+		std::cout << "identifier: " << id << std::endl;
+		for (auto& [key, value]: arg) {
+		    std::cout << key << ":" << std::any_cast<std::string>(value) << std::endl;
+		}
+	}
+};
+
 
 // ----------------------------------------------------------------------
 // "PROGRAM GLOBALS"
@@ -297,6 +318,9 @@ index_range<Index> indices(const T& container) {
   return {container.size()};
 }
 // ----------------------------------------------------------------------
+
+std::vector<OneCMD> SplitCommands(const std::string& fullstr);
+std::vector<std::size_t> FindOccurance(const std::string& str, const std::string& sub);
 
 } // aux namespace
 } // gra namespace

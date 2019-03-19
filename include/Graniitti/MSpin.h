@@ -22,9 +22,9 @@ namespace spin {
 	// Amplitude squared
 	std::complex<double> SpinAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES& resonance);
 	
-	MMatrix<std::complex<double>> DMatrix(unsigned int J, double theta_mother, double phi_mother);
+	MMatrix<std::complex<double>> DMatrix(double J, double theta_mother, double phi_mother);
 	MMatrix<std::complex<double>> fMatrix(const MMatrix<std::complex<double>>& T,
-										  unsigned int J, double s1, double s2, double theta, double phi);
+										  double J, double s1, double s2, double theta, double phi);
 	std::vector<double> SpinProjections(double J);
 	void InitTMatrix(gra::HELMatrix& hc, const gra::MParticle& p, const gra::MParticle& p1, const gra::MParticle& p2);
 	

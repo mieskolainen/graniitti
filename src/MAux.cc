@@ -36,7 +36,6 @@
 namespace gra {
 namespace aux {
 
-
 // ----------------------------------------------------------------------
 // "PROGRAM GLOBALS"
 
@@ -613,6 +612,111 @@ void CreateDirectory(std::string fullpath) {
 	    mkdir(fullpath.c_str(), 0700);
 	}
 }
+
+// Get commandline arguments which are split by @... @... tagging syntax
+std::vector<OneCMD> SplitCommands(const std::string& fullstr) {
+
+	// Find @ blocks [ ... ]
+	std::vector<std::size_t> pos = FindOccurance(fullstr, "@");
+	std::vector<std::string> subcmd;
+
+	if (pos.size() != 0) {
+
+		// Take full string from the first @ till end
+		std::string str = fullstr.substr(pos[0]);
+
+		// Split multiple @id{} @id{} ... @id{} occurances
+		if (pos.size() >= 2) {
+			for (std::size_t i = 0; i < pos.size(); ++i) {
+				const int start = pos[i] + 1; // +1 so we skip @
+				const int end   = (i < pos.size()-1) ? pos[i+1] : str.size();
+				subcmd.push_back(str.substr(start, end - start + 1));
+			}
+		} else {
+			subcmd.push_back(str);
+		}
+	}
+
+	// Loop over @ blocks
+	std::vector<OneCMD> cmd;
+
+	for (std::size_t i = 0; i < subcmd.size(); ++i) {
+
+		// ** Remove whitespace **
+		TrimExtraSpace(subcmd[i]);
+
+		std::string id;
+		std::map<std::string, std::any> arg;
+		
+		// Check we find {} brackets
+		std::size_t Lpos = subcmd[i].find("{",0);
+		std::size_t Rpos = subcmd[i].find("}",0);
+
+		// Singlet command @blaa:foo
+		if (Lpos == std::string::npos && Rpos == std::string::npos) {
+
+			// ID
+			id = "_SINGLET_";
+			
+			// Value
+			std::vector<std::string> strip = SplitStr2Str(subcmd[i], ':');
+			if (strip.size() == 1) {
+				arg[strip[0]] = "true"; // default true, no : given
+			}
+			else if (strip.size() == 2) {
+				arg[strip[0]] = strip[1];
+			} else {
+				throw std::invalid_argument("gra::SplitCommands: syntax invalid with '" + subcmd[i] + "'");
+				// @id{key1:val1,key2:val2,...}
+			}
+			
+		// Block command @blaa{key:val,key:val,...}
+		} else { // We have {} block
+
+			// ID
+			id = subcmd[i].substr(0, Lpos);
+
+			// Content {}
+
+			// Now split all arguments inside {} by comma ','
+			std::vector<std::string> keyvals = SplitStr2Str(subcmd[i].substr(Lpos+1, Rpos-Lpos-1), ',');
+
+			// Add all
+			for (std::size_t i = 0; i < keyvals.size(); ++i) {
+
+				// Split using syntax definition: key:val
+				std::vector<std::string> strip = SplitStr2Str(keyvals[i], ':');
+				if (strip.size() != 2) {
+					throw std::invalid_argument("gra::SplitCommands: @Syntax not good with '"+ keyvals[i] + "'");
+				}
+				arg[strip[0]] = strip[1]; // add to map
+			}
+		}
+
+		// Add this command block
+		OneCMD o;
+		o.id = id;
+		o.arg = arg;
+		//o.Print(); // For debug
+		cmd.push_back(o);
+	}
+	return cmd;
+}
+
+// Find string occurances
+std::vector<std::size_t> FindOccurance(const std::string& str, const std::string& sub) {
+
+	// Holds all the positions that sub occurs within str
+	std::vector<size_t> positions;
+	std::size_t pos = str.find(sub, 0);
+   	
+	while(pos != std::string::npos) {
+	    positions.push_back(pos);
+	    pos = str.find(sub,pos+1);
+	}
+	return positions;
+}
+
 
 } // aux namespace ends
 } // gra namespace ends

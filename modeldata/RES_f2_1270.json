@@ -6,13 +6,13 @@
   "PARAM_RES" : {
 
     // PDG identifier
-    "PDG"   : 225,
+    "PDG" : 225,
 
     // Mass, width, spin (0,1/2,1,3/2,2...), parity (1,-1)
-    "M0" : 1.275,
-    "Gamma" : 0.185,
-    "J" : 2,
-    "P" : 1,
+    "M"  : 1.275,
+    "W"  : 0.185,
+    "J"  : 2,
+    "P"  : 1,
     
     // "Glueball state" (orthogonal transverse geometry)
     "glue" : false,

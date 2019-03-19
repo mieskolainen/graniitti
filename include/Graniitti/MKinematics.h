@@ -1362,14 +1362,13 @@ struct MParticle {
 
   double mass  = 0.0;
   double width = 0.0;
-  double tau = 0.0; // hbar / width
+  double tau   = 0.0; // hbar / width
 
   // J^PC
-  unsigned int J = 0;
-  int  P = 0;
-  int  C = 0;
+  int  P = 1;         // Default even P-parity
+  int  C = 0;         // Default zero C-parity (e.g. fermions do not have)
   unsigned int L = 0; // For Mesons/Baryons
-  bool glue = false; // Glueball state
+  bool glue = false;  // Glueball state
   
   void setPCL(int _P, int _C, unsigned int _L) {
     P = _P;
@@ -1381,14 +1380,16 @@ struct MParticle {
   double wcut = 0.0;
 
   void print() const {
-    std::cout << "MParticle::Print:" << std::endl;
-    std::cout << " name:  " << name  << std::endl;
-    std::cout << " pdg:   " << pdg   << std::endl;
-    std::cout << " mass:  " << mass  << std::endl;
-    std::cout << " width: " << width << std::endl;
-    std::cout << " J^PC : " << J << "^" << P << C << std::endl;
+    std::cout << " NAME:   " << name  << std::endl;
+    std::cout << " ID:     " << pdg   << std::endl;
+    std::cout << " M:      " << mass  << std::endl;
+    std::cout << " W:      " << width << std::endl;
+    std::cout << " J^PC:   " << aux::Spin2XtoString(spinX2) << "^" <<
+                                aux::ParityToString(P) <<
+                                aux::ParityToString(C) << std::endl << std::endl;
   }
 };
+
 
 // Recursive decay tree branch
 struct MDecayBranch {
@@ -1447,11 +1448,11 @@ public:
               << rang::style::reset << std::endl
               << std::endl;
 
-    printf("- PDG ID:      %d \n", p.pdg);
+    printf("- PDG ID:      %d \n",        p.pdg);
     printf("- Mass M0:     %0.5f GeV \n", p.mass);
     printf("- Width W:     %0.5f GeV \n", p.width);
-    printf("- Spin J:      %d \n", p.J);
-    printf("- Parity P:    %d \n", p.P);
+    printf("- Spin Jx2:    %d \n",        p.spinX2);
+    printf("- Parity P:    %d \n",        p.P);
     std::cout << std::endl;
     
     printf("<Production> \n");
@@ -1463,7 +1464,7 @@ public:
     printf("- Effective vertex constant g_f:  %0.3E", g_decay);
     std::cout << std::endl << std::endl;
     
-    if (p.J != 0) {
+    if (p.spinX2 != 0) {
 
       std::cout << "- Polarization Lorentz frame: " << hc.FRAME << std::endl;
       std::cout << std::endl;

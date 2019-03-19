@@ -1220,7 +1220,7 @@ void MProcess::PrintDecayTree(const gra::MDecayBranch& branch) const {
 	}
 
 	printf(
-	    "M0 = %0.2E, W = %0.2E (GeV) [<tau> = %0.1E s] PDG = [%s%d | %s] "
+	    "M = %0.2E, W = %0.2E (GeV) [<tau> = %0.1E s] PDG = [%s%d | %s] "
 	    "[Q=%s, J=%s] \n",
 	    branch.p.mass, branch.p.width, branch.p.tau,
 	    branch.p.pdg > 0 ? " " : "", branch.p.pdg, branch.p.name.c_str(),
@@ -1780,15 +1780,71 @@ bool MProcess::CommonRecord(HepMC3::GenEvent& evt) {
 	return true;
 }
 
-// Set process ID
-void MProcess::SetProcess(std::string& str) {
+// Set process
+void MProcess::SetProcess(std::string& str, const std::vector<aux::OneCMD>& syntax) {
 
 	// SET IT HERE!
 	PROCESS = str;
-	
+		
 	// Call this always first
 	PDG.ReadParticleData(gra::aux::GetBasePath(2) + "/modeldata/mass_width_2018.mcd");
 	
+	// Read and set new PDG input
+	for (const auto& i : indices(syntax)) {
+		if (syntax[i].id.find("PDG") != std::string::npos) {
+			std::size_t left  = syntax[i].id.find("[");
+			std::size_t right = syntax[i].id.find("]");
+			if (left == std::string::npos || right == std::string::npos) {
+				throw std::invalid_argument("MProcess::SetProcess: invalid @PDG[]{} syntax");
+			}
+			// Read pdg id / number
+			const int pdg = std::stoi( syntax[i].id.substr(left+1, right-left-1) );
+			
+			MParticle p = PDG.FindByPDG(pdg);
+
+			// Try to find the particle from PDG table
+			try {
+				MParticle p = PDG.FindByPDG(pdg);
+				MParticle p_anti;
+				bool found_anti = false;
+				
+				// Check if it has an anti-particle
+				try {
+					p_anti = PDG.FindByPDG(-pdg);
+					found_anti = true;
+				} catch (...) {} // do nothing
+				
+				// Set new properties
+				for (auto& [key,val] : syntax[i].arg) {
+					if (key == "M") {
+						p.mass = std::stod(std::any_cast<std::string>(val));
+						if (found_anti) {
+							p_anti.mass = p.mass;
+						}
+					}
+					if (key == "W") {
+						p.width = std::stod(std::any_cast<std::string>(val));
+						if (found_anti) {
+							p_anti.width = p.width;
+						}
+					}
+				}
+				// Set new modified to the PDG table
+				PDG.PDG_table[pdg]  = p;
+				if (found_anti) {
+				PDG.PDG_table[-pdg] = p_anti; 
+				}
+
+				std::cout << rang::fg::red <<
+					"MProcess::SetProcess: New particle properties set with @PDG[ID]{key:val} syntax:" << rang::fg::reset << std::endl;
+				p.print();
+
+			} catch (...) {
+				throw std::invalid_argument("MProcess::SetProcess: syntax problem in @PDG[ID] with ID = " + std::to_string(pdg));
+			}
+		}
+	}
+
 	// Remove whitespace
 	std::string::iterator end_pos = std::remove(str.begin(), str.end(), ' ');
 	str.erase(end_pos, str.end());

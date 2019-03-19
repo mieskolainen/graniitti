@@ -542,6 +542,9 @@ private:
 	gra::PARAM_RES ReadFactorized(const std::string& resparam_str);
 	void InitFileOutput();
 
+	// Interpreter commands
+	std::vector<aux::OneCMD> syntax;
+
 };
 
 // Launcher functions

@@ -30,7 +30,7 @@ class MQuasiElastic : public MProcess {
 
 public:
 	MQuasiElastic();
-	MQuasiElastic(std::string process);
+	MQuasiElastic(std::string process, const std::vector<aux::OneCMD>& syntax);
 	virtual ~MQuasiElastic();
 
 	void post_Constructor();

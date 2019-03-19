@@ -222,7 +222,7 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES& reso
 	}
 	
 	// No spin, no need
-	if (resonance.p.J == 0) {
+	if (resonance.p.spinX2 == 0) {
 		return resonance.hc.T[0][0] * resonance.g_decay; // (l,s) = (0,0)
 	}
 
@@ -238,7 +238,7 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES& reso
 		M4Vec boosted_daughter = lts.decaytree[B].p4;
 		gra::kinematics::LorentzBoost(lts.pfinal[0], lts.pfinal[0].M(), boosted_daughter, -1);
 
-		fA = fMatrix(resonance.hc.T, resonance.p.J, s1, s2, boosted_daughter.Theta(), boosted_daughter.Phi());
+		fA = fMatrix(resonance.hc.T, resonance.p.spinX2/2.0, s1, s2, boosted_daughter.Theta(), boosted_daughter.Phi());
 
 	} else {
 		return 1.0;
@@ -329,7 +329,7 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES& reso
 	
 	// ------------------------------------------------------------------
 	// Rotation does mixing of spin states. N.B. Eigenvalues do not change in rotation.	
-	const MMatrix<std::complex<double>> D = gra::spin::DMatrix(resonance.p.J, theta_rotation, phi_rotation);
+	const MMatrix<std::complex<double>> D = gra::spin::DMatrix(resonance.p.spinX2 / 2.0, theta_rotation, phi_rotation);
 
 	// rho_rot = D*rho*D^dagger
 	const MMatrix<std::complex<double>> rho_ROT = D * resonance.hc.rho * D.Dagger();
@@ -358,7 +358,7 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES& reso
 // 
 std::vector<double> SpinProjections(double J) {
 
-	std::vector<double> M(static_cast<double>(2*J+1), 0.0);
+	std::vector<double> M(static_cast<int>(2*J+1), 0.0);
 	double m = -J;
 	for (std::size_t i = 0; i < M.size(); ++i) {
 		M[i] += m;
@@ -377,7 +377,7 @@ std::vector<double> SpinProjections(double J) {
 // [REFERENCE: Jacob, Wick, On the general theory of particles with spin, 1959]
 // [REFERENCE: Amsler, Bizot, Simulation of angular distributions, 1983]
 MMatrix<std::complex<double>> fMatrix(const MMatrix<std::complex<double>>& T,
-									  unsigned int J, double s1, double s2, double theta, double phi) {
+									  double J, double s1, double s2, double theta, double phi) {
 	
 	if (T.size_row() != static_cast<unsigned int>(2*s1+1) || T.size_col() != static_cast<unsigned int>(2*s2+1)) {
 		throw std::invalid_argument("gra::spin::fMatrix: Input T matrix (2s1+1)x(2s2+1) with wrong dimensions: "
@@ -439,14 +439,16 @@ MMatrix<std::complex<double>> fMatrix(const MMatrix<std::complex<double>>& T,
 
 
 // Construct Wigner D-matrix for a spin-space operator rotation
-MMatrix<std::complex<double>> DMatrix(unsigned int J, double theta_rotation, double phi_rotation) {
+MMatrix<std::complex<double>> DMatrix(double J, double theta_rotation, double phi_rotation) {
 
 	// Create spin projections
 	const std::vector<double> M = SpinProjections(J);
 
-	MMatrix<std::complex<double>> D(2*J+1, 2*J+1, 0.0);
-	for (std::size_t i = 0; i < 2*J+1; ++i) {
-		for (std::size_t j = 0; j < 2*J+1; ++j) {
+	const unsigned int n = static_cast<unsigned int>(2*J+1);
+
+	MMatrix<std::complex<double>> D(n, n, 0.0);
+	for (std::size_t i = 0; i < n; ++i) {
+		for (std::size_t j = 0; j < n; ++j) {
 			D[i][j] = WignerD(theta_rotation, phi_rotation, M[i], M[j], J);
 		}
 	}

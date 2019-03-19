@@ -228,7 +228,7 @@ protected:
 	// Internal virtual functions, without definitions here
 	virtual void ConstructProcesses() = 0;
 	virtual bool LoopKinematics(const std::vector<double>& p1p,
-	                              const std::vector<double>& p2p) = 0;
+	                            const std::vector<double>& p2p) = 0;
 	virtual bool FiducialCuts() const = 0;
 	
 	// Eikonal screening loop
@@ -238,10 +238,11 @@ protected:
 	void PrintSetup() const;
 
 	// Setup process
-	void SetProcess(std::string& str);
+	void SetProcess(std::string& process, const std::vector<aux::OneCMD>& syntax);
 
 	// QFT symmetry factor
 	void CalculateSymmetryFactor();
+
 
 	// -------------------------------------------------------
 	// Recursive function to treat decay trees

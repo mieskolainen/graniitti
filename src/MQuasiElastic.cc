@@ -47,11 +47,10 @@ MQuasiElastic::MQuasiElastic() {
 }
 
 // Constructor
-MQuasiElastic::MQuasiElastic(std::string process) {
-
-	// Set random number seed
+MQuasiElastic::MQuasiElastic(std::string process, const std::vector<aux::OneCMD>& syntax) {
+	
 	InitHistograms();
-	SetProcess(process);
+	SetProcess(process, syntax);
 
 	// Init final states
 	M4Vec zerovec(0, 0, 0, 0);

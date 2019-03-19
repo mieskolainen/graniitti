@@ -198,6 +198,8 @@ std::complex<double> MRegge::ME2(gra::LORENTZSCALAR& lts, int mode) const {
 // ============================================================================
 // Helicity matrix element for Pomeron-Pomeron resonances
 //
+// [THIS IS UNDER CONSTRUCTION!]
+//
 //  lambda1    lambda3
 //   ===========
 //        *
@@ -213,7 +215,7 @@ std::complex<double> MRegge::ME2(gra::LORENTZSCALAR& lts, int mode) const {
 //
 std::complex<double> MRegge::ME3HEL(gra::LORENTZSCALAR& lts, gra::PARAM_RES& resonance) const {
 
-	int J = resonance.p.J;
+	const int J = resonance.p.spinX2 / 2.0;
 	
 	// --------------------------------------------------------------------------
 	unsigned int number = 0;
@@ -273,7 +275,7 @@ std::complex<double> MRegge::ME3HEL(gra::LORENTZSCALAR& lts, gra::PARAM_RES& res
 		// Calculate amplitude
 		const std::complex<double> amp =
 			g_Vertex(lts.t1, lambda[i][0],  lambda[i][2]) *
-				gik_Vertex(lts.t1, lts.t2, phi, lambda[i][4], resonance.p.J, resonance.p.P) * common;
+				gik_Vertex(lts.t1, lts.t2, phi, lambda[i][4], resonance.p.spinX2/2.0, resonance.p.P) * common;
 			g_Vertex(lts.t2, lambda[i][1],  lambda[i][3]);
 
 		//std::cout << amp << " :: " << gra::math::abs2(amp) << std::endl;
@@ -469,13 +471,16 @@ std::complex<double> MRegge::ME4RES(gra::LORENTZSCALAR& lts,
 
 	// 2. Coherent sum of Resonances (loop over)
 	for (auto& x : RESONANCES) {
-		// Pomeron-Pomeron
-		if (x.second.p.J == 0 || x.second.p.J == 2) {
-			M_tot += ME3(lts, x.second);
-		}
+
+		const int J = static_cast<int>(x.second.p.spinX2/2.0);
+
 		// Gamma-Pomeron for vectors
-		if (x.second.p.J == 1 && x.second.p.P == -1) {
+		if (J == 1 && x.second.p.P == -1) {
 			M_tot += PhotoME3(lts, x.second);
+		}
+		// Pomeron-Pomeron, J = 0,1,2,... all ok
+		else {
+			M_tot += ME3(lts, x.second);
 		}
 	}
 	return M_tot;
@@ -754,10 +759,10 @@ std::complex<double> MRegge::ME3(gra::LORENTZSCALAR& lts, gra::PARAM_RES& resona
 std::complex<double> MRegge::PhotoME3(gra::LORENTZSCALAR& lts, gra::PARAM_RES& resonance) const {
 
 	// Check spin
-	if (resonance.p.J != 1) {
+	if (resonance.p.spinX2 != 2) {
 		throw std::invalid_argument(
 		    "MRegge::PhotoME3: Resonance spin J = " +
-		    std::to_string(resonance.p.J) + " (should be J = 1)!");
+		    std::to_string(resonance.p.spinX2) + " (should be J = 1)!");
 	}
 
 	// Resonance part
@@ -965,7 +970,7 @@ std::complex<double> JPC_CS_coupling(const gra::LORENTZSCALAR& lts, const gra::P
 
 	// -------------------------------------------------------------------
 
-	const int J = resonance.p.J;
+	const int J = resonance.p.spinX2 / 2.0;
 	const int P = resonance.p.P;
 	const double phi = lts.pfinal[1].DeltaPhi(lts.pfinal[2]);
 
@@ -1097,7 +1102,7 @@ std::complex<double> JPCoupling(const gra::LORENTZSCALAR& lts,
 	//  ------------->
 	//  0           180 deg
 	//
-	if (resonance.p.J ==  0 &&
+	if (resonance.p.spinX2 ==  0 &&
 	    resonance.p.P == -1) { // 0- = pseudoscalar, [e.g. eta(548), eta(958)']
 		return msqrt(std::abs(lts.t1)) * msqrt(std::abs(lts.t2)) * std::sin(dphi);
 	}
@@ -1109,7 +1114,7 @@ std::complex<double> JPCoupling(const gra::LORENTZSCALAR& lts,
 	//  -------------> 
 	//  0           180 deg
 	//
-	if (resonance.p.J == 0 &&
+	if (resonance.p.spinX2 == 0 &&
 	    resonance.p.P == 1) {  // 0+ = scalar, [e.g. f0(980), f0(1710)]
 		return 1.0;
 	}
@@ -1121,7 +1126,7 @@ std::complex<double> JPCoupling(const gra::LORENTZSCALAR& lts,
 	//  ------------->
 	//  0           180 deg
 	//
-	if (resonance.p.J ==  1 &&
+	if (resonance.p.spinX2 ==  2 &&
 	    resonance.p.P == -1) { // 1- = vector, [e.g. rho(770), omega, phi(1020), K*(892)]
 		return 1.0;
 	}
@@ -1142,7 +1147,7 @@ std::complex<double> JPCoupling(const gra::LORENTZSCALAR& lts,
 	//  ------------->
 	//  0           180 deg
 	//
-	if (resonance.p.J == 1 &&
+	if (resonance.p.spinX2 == 2 &&
 	    resonance.p.P == 1) {  // 1+ = axialvector, [e.g. f1(1285), f1(1420)]
 		return A;
 	}
@@ -1154,7 +1159,7 @@ std::complex<double> JPCoupling(const gra::LORENTZSCALAR& lts,
 	//  ------------->
 	//  0           180 deg
 	//
-	if (resonance.p.J ==  2 &&
+	if (resonance.p.spinX2 == 4 &&
 		resonance.p.P == -1) { // 2- = tensor
 		return A;
 	}
@@ -1166,14 +1171,14 @@ std::complex<double> JPCoupling(const gra::LORENTZSCALAR& lts,
 	//  ------------->
 	//  0           180 deg
 	//
-	if (resonance.p.J == 2 &&
+	if (resonance.p.spinX2 == 4 &&
 	    resonance.p.P == 1) {  // 2+ = tensor, [e.g. f2(1270)]
 		return A;
 	}
 
 	throw std::invalid_argument(
-	    "JPCoupling: Unknown J^P (spin-parity) structure: " +
-	    std::to_string(resonance.p.J) + " " + std::to_string(resonance.p.P));
+	    "JPCoupling: Unknown (2xJ)^P (spin-parity) structure: " +
+	    std::to_string(resonance.p.spinX2) + " " + std::to_string(resonance.p.P));
 }
 
 

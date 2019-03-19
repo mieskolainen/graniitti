@@ -154,6 +154,7 @@ void MGraniitti::HistogramFusion() {
 	}
 }
 
+
 // Generate events
 void MGraniitti::Generate() {
 	if (NEVENTS > 0) { // Generate events
@@ -247,22 +248,22 @@ void MGraniitti::InitProcessMemory(std::string process, unsigned int seed) {
 
 	// <Q> process
 	if (proc_Q.ProcessExist(process)) {
-		proc_Q = MQuasiElastic(process);
+		proc_Q = MQuasiElastic(process, syntax);
 		proc = &proc_Q;
 
 	// <F> processes
 	} else if (proc_F.ProcessExist(process)) {
-		proc_F = MFactorized(process);
+		proc_F = MFactorized(process, syntax);
 		proc = &proc_F;
 
 	// <C> processes
 	} else if (proc_C.ProcessExist(process)) {
-		proc_C = MContinuum(process);
+		proc_C = MContinuum(process, syntax);
 		proc = &proc_C;
 
 	// <P> processes
 	} else if (proc_P.ProcessExist(process)) {
-		proc_P = MParton(process);
+		proc_P = MParton(process, syntax);
 		proc = &proc_P;
 
 	} else {
@@ -271,7 +272,7 @@ void MGraniitti::InitProcessMemory(std::string process, unsigned int seed) {
 		//GetProcessNumbers(); // This is done by main program
 		throw std::invalid_argument(str);
 	}
-
+	
 	// Set random seed last!
 	proc->random.SetSeed(seed);
 }
@@ -341,6 +342,7 @@ void MGraniitti::ReadInput(const std::string& inputfile, const std::string cmd_P
 	ReadProcessParam(inputfile, cmd_PROCESS);
 }
 
+
 // General parameter initialization
 void MGraniitti::ReadGeneralParam(const std::string& inputfile) {
 	// Read and parse
@@ -391,48 +393,50 @@ void MGraniitti::ReadModelParam(const std::string& inputfile) {
 		throw std::invalid_argument(str);
 	}
 
+	try {
+
 	// Soft model parameters
-	PARAM_SOFT::DELTA_P = j["PARAM_SOFT"]["DELTA_P"];
-	PARAM_SOFT::ALPHA_P = j["PARAM_SOFT"]["ALPHA_P"];
-	PARAM_SOFT::gN_P    = j["PARAM_SOFT"]["gN_P"];
+	PARAM_SOFT::DELTA_P = j.at("PARAM_SOFT").at("DELTA_P");
+	PARAM_SOFT::ALPHA_P = j.at("PARAM_SOFT").at("ALPHA_P");
+	PARAM_SOFT::gN_P    = j.at("PARAM_SOFT").at("gN_P");
 
-	double triple3P     = j["PARAM_SOFT"]["g3P"];
+	double triple3P     = j.at("PARAM_SOFT").at("g3P");
 	PARAM_SOFT::g3P     = triple3P * PARAM_SOFT::gN_P; // Convention
-	PARAM_SOFT::gamma   = j["PARAM_SOFT"]["gamma"];
+	PARAM_SOFT::gamma   = j.at("PARAM_SOFT").at("gamma");
 
-	PARAM_SOFT::fc1     = j["PARAM_SOFT"]["fc1"];
-	PARAM_SOFT::fc2     = j["PARAM_SOFT"]["fc2"];
-	PARAM_SOFT::fc3     = j["PARAM_SOFT"]["fc3"];
+	PARAM_SOFT::fc1     = j.at("PARAM_SOFT").at("fc1");
+	PARAM_SOFT::fc2     = j.at("PARAM_SOFT").at("fc2");
+	PARAM_SOFT::fc3     = j.at("PARAM_SOFT").at("fc3");
 
 	// Flat amplitude parameters
-	PARAM_FLAT::b = j["PARAM_FLAT"]["b"];
-
+	PARAM_FLAT::b       = j.at("PARAM_FLAT").at("b");
+	
 	// Monopole production
-	PARAM_MONOPOLE::coupling = j["PARAM_MONOPOLE"]["coupling"];
-	PARAM_MONOPOLE::gn       = j["PARAM_MONOPOLE"]["gn"];	
-	PARAM_MONOPOLE::En       = j["PARAM_MONOPOLE"]["En"];
-	PARAM_MONOPOLE::Gamma0   = j["PARAM_MONOPOLE"]["Gamma0"];
+	PARAM_MONOPOLE::coupling = j.at("PARAM_MONOPOLE").at("coupling");
+	PARAM_MONOPOLE::gn       = j.at("PARAM_MONOPOLE").at("gn");	
+	PARAM_MONOPOLE::En       = j.at("PARAM_MONOPOLE").at("En");
+	PARAM_MONOPOLE::Gamma0   = j.at("PARAM_MONOPOLE").at("Gamma0");
 	
 	
 	// Regge amplitude parameters
-	std::vector<double> a0   = j["PARAM_REGGE"]["a0"];
-	std::vector<double> ap   = j["PARAM_REGGE"]["ap"];
-	std::vector<double> sgn  = j["PARAM_REGGE"]["sgn"];
+	std::vector<double> a0   = j.at("PARAM_REGGE").at("a0");
+	std::vector<double> ap   = j.at("PARAM_REGGE").at("ap");
+	std::vector<double> sgn  = j.at("PARAM_REGGE").at("sgn");
 	PARAM_REGGE::a0          = a0;
 	PARAM_REGGE::ap          = ap;
 	PARAM_REGGE::sgn         = sgn;
 
-	PARAM_REGGE::s0          = j["PARAM_REGGE"]["s0"];
+	PARAM_REGGE::s0          = j.at("PARAM_REGGE").at("s0");
 
-	PARAM_REGGE::offshellFF  = j["PARAM_REGGE"]["offshellFF"];
-	PARAM_REGGE::b_EXP       = j["PARAM_REGGE"]["b_EXP"];
-	PARAM_REGGE::a_OREAR     = j["PARAM_REGGE"]["a_OREAR"];
-	PARAM_REGGE::b_OREAR     = j["PARAM_REGGE"]["b_OREAR"];
-	PARAM_REGGE::b_POW       = j["PARAM_REGGE"]["b_POW"];
-	PARAM_REGGE::reggeize    = j["PARAM_REGGE"]["reggeize"];
+	PARAM_REGGE::offshellFF  = j.at("PARAM_REGGE").at("offshellFF");
+	PARAM_REGGE::b_EXP       = j.at("PARAM_REGGE").at("b_EXP");
+	PARAM_REGGE::a_OREAR     = j.at("PARAM_REGGE").at("a_OREAR");
+	PARAM_REGGE::b_OREAR     = j.at("PARAM_REGGE").at("b_OREAR");
+	PARAM_REGGE::b_POW       = j.at("PARAM_REGGE").at("b_POW");
+	PARAM_REGGE::reggeize    = j.at("PARAM_REGGE").at("reggeize");
 
 	// Proton (Good-Walker) resonances
-	std::vector<double> rc   = j["PARAM_NSTAR"]["rc"];
+	std::vector<double> rc   = j.at("PARAM_NSTAR").at("rc");
 	PARAM_NSTAR::rc = rc;
 
 	// Make sure they sum to one
@@ -442,6 +446,11 @@ void MGraniitti::ReadModelParam(const std::string& inputfile) {
 	}
 
 	PARAM_SOFT::PrintParam();
+
+	} catch (nlohmann::json::exception& e) {
+		throw std::invalid_argument("MGraniitti::ReadModelParam: Missing parameter in '"
+			+ inputfile + "' : " + e.what());
+	}
 }
 
 
@@ -470,6 +479,15 @@ void MGraniitti::ReadProcessParam(const std::string& inputfile, const std::strin
 	} else { // commandline override
 		fullstring = cmd_PROCESS;
 	}
+
+	// First separate possible extra arguments by @... ...
+	std::vector<std::size_t> markerpos = aux::FindOccurance(fullstring, "@");
+
+	if (markerpos.size() != 0) {
+		syntax   = aux::SplitCommands(fullstring.substr(markerpos[0]));
+		fullstring = fullstring.substr(0, markerpos[0]-1);
+	}
+
 
 	// Now separate process and decay parts by "->"
 	std::string PROCESS_PART = "";
@@ -568,7 +586,6 @@ void MGraniitti::ReadIntegralParam(const std::string& inputfile) {
 	// Numerical loop integration
 	const int ND = j[XID]["POMLOOP"]["ND"];         AssertRange(ND,  {1, 1000}, "POMLOOP::ND",  true);
 	MEikonalNumerics::SetLoopDiscretization(ND);
-
 
 	// FLAT (naive) MC parameters
 	MCPARAM mpam;

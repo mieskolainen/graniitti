@@ -619,7 +619,7 @@ const gra::MParticle& MPDG::FindByPDG(int pdgcode) const {
     if (it != PDG_table.end()) {
         return it->second;
     }
-
+    
 	// Throw a fatal error, did not found the particle
 	PrintPDGTable();
 	std::string str = "MProcess::FindByPDG: Unknown PDG ID: "
