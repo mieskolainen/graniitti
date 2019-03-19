@@ -216,7 +216,7 @@ double MQuasiElastic::EventWeight(const std::vector<double>& randvec, AuxIntData
 		const double   LIPS = B3PhaseSpaceWeight();    // Phase-space weight
 		const double MatESQ = abs2(PolySoft(randvec)); // Matrix element squared
 		W = LIPS * MatESQ * GeV2barn; 			       // Total weight: phase-space x |M|^2 x barn units
-
+		
 		aux.amplitude_ok = CheckInfNan(W);
 
 		// Trigger forced event generation (using last component of auxvar)

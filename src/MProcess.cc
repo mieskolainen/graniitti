@@ -96,8 +96,8 @@ void MProcess::PrintSetup() const {
 			          << rang::fg::reset << std::endl;
 		}
     }
-	if (FLATAMPLITUDE != 0){
-		std::cout << "- Flat amplitude mode:     " << FLATAMPLITUDE << std::endl;
+	if (FLATAMP != 0){
+		std::cout << "- Flat amplitude mode:     " << FLATAMP << std::endl;
 	}
 
 	std::cout << std::endl << std::endl;
@@ -451,37 +451,34 @@ void MProcess::SetInitialState(const std::vector<std::string>& beam,
 }
 
 
-// Return "flat" matrix element squared |M|^2 -> for evaluating the phase space
+// Return "flat" matrix element squared |A|^2 -> for evaluating the phase space
 double MProcess::GetFlatAmp2(const gra::LORENTZSCALAR& lts) const {
 	double W = 1.0;
 
-	// Peripheral phase space: |M|^2 ~ exp(bt1) exp(bt2)
-	if (FLATAMPLITUDE == 1) {
+	// Peripheral phase space: |A|^2 ~ exp(bt1) exp(bt2)
+	if (FLATAMP == 1) {
 		W = std::exp(PARAM_FLAT::b * lts.t1) *
 		    std::exp(PARAM_FLAT::b * lts.t2);
 	}
-	// Peripheral phase space |M|^2 ~ exp(bt1) exp(bt2) / sqrt(shat)
-	else if (FLATAMPLITUDE == 2) {
+	// Peripheral phase space: |A|^2 ~ exp(bt1) exp(bt2) / sqrt(shat)
+	else if (FLATAMP == 2) {
 		W = std::exp(PARAM_FLAT::b * lts.t1) *
 		    std::exp(PARAM_FLAT::b * lts.t2) / msqrt(lts.s_hat);
 	}
-	// Peripheral phase space:  |M|^2 ~ exp(bt1) exp(bt2) / shat
-	else if (FLATAMPLITUDE == 3) {
+	// Peripheral phase space: |A|^2 ~ exp(bt1) exp(bt2) / shat
+	else if (FLATAMP == 3) {
 		W = std::exp(PARAM_FLAT::b * lts.t1) *
 		    std::exp(PARAM_FLAT::b * lts.t2) / lts.s_hat;
 	}
 	// Constant
-	else if (FLATAMPLITUDE == 4) {
+	else if (FLATAMP == 4) {
 		W = 1.0;
-		
 	} else {
 		// Throw an error, unknown mode
 		std::string str =
-		    "MProcess::GetFlatAmp2: Unknown FLATAMP mode (0 = off, 1 = exp(b(t1+t2)), 2 = exp(b(t1+t2))/M, 3 = exp(b(t1+t2))/M^2, 4 = constant) : " +
-		    std::to_string(FLATAMPLITUDE);
+		    "MProcess::GetFlatAmp2: Unknown FLATAMP mode (|A|^2 :: 0 = off, 1 = exp{b(t1+t2)}, 2 = exp{b(t1+t2)}/M, 3 = exp{b(t1+t2)}/M^2, 4 = 1.0) : input was " + std::to_string(FLATAMP);
 		throw std::invalid_argument(str);
 	}
-
 	return W;
 }
 
@@ -803,37 +800,63 @@ void MProcess::GetOffShellMass(const gra::MDecayBranch& branch, double& mass) {
 		return;
 	}
 
-	// We have decay daughters
-	double daughter_masses = 0;
-	if (branch.legs.size() > 0) {
+	const unsigned int OUTERMAXTRIAL = 1e4;
+	const unsigned int INNERMAXTRIAL = 1e4;
 
-		// Find daughter ON-shell masses
-		// [this is a limitation in multi off-shell chains - TBD]
-		for (std::size_t i = 0; i < branch.legs.size(); ++i) {
-			daughter_masses += branch.legs[i].p.mass;
-		}
-		const double safe_margin = 1e-4; // GeV
-		daughter_masses += safe_margin;
-	}
-
-	// Pick offshell mass
-	unsigned int trials = 0;
-	const unsigned int MAXTRIAL = 1e6;
+	unsigned int outertrials = 0;
+	
 	while (true) {
-		mass = random.BreitWignerRandom(branch.p.mass, branch.p.width);
-		++trials;
-		if (mass > daughter_masses) {
-			break;
-		}
-		if (trials > MAXTRIAL) {
 
-			// Collect daughter names
+		// We have decay daughters
+		double daughter_masses = 0;
+		if (branch.legs.size() > 0) {
+
+			// Find daughter offshell masses
+			for (std::size_t i = 0; i < branch.legs.size(); ++i) {
+
+				const double M = branch.legs[i].p.mass;
+				const double W = branch.legs[i].p.width;
+
+				if (!TREEFLATM2) {
+					daughter_masses += random.BreitWignerRandom(M, W, NWIDTH);
+				} else {
+					daughter_masses += msqrt( random.U(std::max(0.0,pow2(M - NWIDTH*W)), std::min(lts.s, pow2(M + NWIDTH*W)) ));
+				}
+			}
+			const double safe_margin = 1e-4; // GeV
+			daughter_masses += safe_margin;
+		}
+
+		// Pick mother offshell mass
+		unsigned int innertrials = 0;
+		while (true) {
+
+			const double M = branch.p.mass;
+			const double W = branch.p.width;
+
+			if (!TREEFLATM2) {
+				mass = random.BreitWignerRandom(M, W, NWIDTH);
+			} else {
+				mass = msqrt( random.U(std::max(0.0,pow2(M - NWIDTH*W)), std::min(lts.s, pow2(M + NWIDTH*W)) ));
+			}
+
+			++innertrials;
+			if (mass > daughter_masses) {
+				return; // all done
+			}
+			if (innertrials > INNERMAXTRIAL) {
+				break; // try again with different daughter masses
+			}
+		}
+		++outertrials;
+
+		// Impossible
+		if (outertrials > OUTERMAXTRIAL) {
 			std::string str;
 			for (const auto& i : indices(branch.legs)) {
 				str += branch.legs[i].p.name + " ";
 			}
-			str = "MProcess::GetOffShellMass: Kinematically impossible decay: "
-				+ branch.p.name + " > " + str;
+			str = "MProcess::GetOffShellMass: Kinematically impossible decay: " + branch.p.name + " > " + str;
 			throw std::invalid_argument(str);
 		}
 	}
@@ -1256,17 +1279,15 @@ bool MProcess::ConstructDecayKinematics(gra::MDecayBranch& branch) {
 	if (branch.legs.size() > 0) {
 		std::vector<double> masses;
 		
-		// Collect decay product masses
+		// Generate decay product masses
 		for (const auto& i : indices(branch.legs)) {
-			// Note, we need to take PDG mass here (no 4-momenta
-			// for p yet constructed)
-			// How about following (daughters) offshell masses ??
-			// (NEED TO EXTEND!)
-			masses.push_back(branch.legs[i].p.mass);
+
+			GetOffShellMass(branch.legs[i], branch.legs[i].m_offshell);
+			masses.push_back(branch.legs[i].m_offshell);
 		}
 		std::vector<M4Vec> p;
 		
-		// EXTEND HERE FOR DUAL-MODE OPERATION!!
+		// For now, keep always unweighted
 		const bool UNWEIGHT = true;
 		
 		// 2-body

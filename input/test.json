@@ -24,16 +24,15 @@
   // Process setup
   
   "PROCESSPARAM" : {
-    
+
     "BEAM"    : ["p+","p+"],    // Beam PDG-ID / Name
     "ENERGY"  : [6500, 6500],   // Beam energy in the lab (GeV)
-    "PROCESS" : "PP[RES+CON]<C> -> pi+ pi-", // Process mode
-    "RES" : ["f0_500", "rho_770", "f0_980", "phi_1020", "f2_1270", "f0_1500", "f2_1525", "f0_1710"],
+    "PROCESS" : "PP[CON]<C> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-} @FIXONSHELL:true", // Process mode
+    "RES"     : ["f0_500", "rho_770", "f0_980", "phi_1020", "f2_1270", "f0_1500", "f2_1525", "f0_1710"],
     "POMLOOP" : false,          // Eikonal Pomeron loop screening
     "NSTARS"  : 0,              // N* excitation (0 = elastic, 1 = single, 2 = double)
     "LHAPDF"  : "CT10nlo",      // LHAPDF parton distribution set
     "HIST"    : 2,              // On-the-flight histograms (0 = off,1,2)
-    "FLATAMP" : 0,              // For flat matrix element (default 0)
     "RNDSEED" : 12345678        // Random seed (int32)
   },
   
@@ -51,7 +50,7 @@
     "VEGAS" : {
 
       "PRECISION" : 0.01,     // Integral relative precision target
-      "NCALL"     : 5000,    // Number of function calls per initialization iteration (5000 or more)
+      "NCALL"     : 5000,     // Number of function calls per initialization iteration (5000 or more)
       "ITER"      : 10,       // Number of initialization iteration (10 or more)
 
       "BINS"    : 128,        // Maximum number of bins per dimension (NOTE: EVEN NUMBER)

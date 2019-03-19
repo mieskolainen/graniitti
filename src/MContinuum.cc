@@ -197,7 +197,7 @@ double MContinuum::EventWeight(const std::vector<double>& randvec, AuxIntData& a
 	if (aux.Valid()) {
 		
 		// Matrix element squared
-		double MatESQ = (FLATAMPLITUDE == 0) ? abs2(S3ScreenedAmp()) : GetFlatAmp2(lts);
+		const double MatESQ = (FLATAMP == 0) ? abs2(S3ScreenedAmp()) : GetFlatAmp2(lts);
 
 		// ** EVENT WEIGHT **
 		W = (1.0 / S_factor) * BNPhaseSpaceWeight() * BNIntegralVolume() * MatESQ *
@@ -332,11 +332,7 @@ bool MContinuum::BNRandomKin(unsigned int Nf, const std::vector<double>& randvec
 	// Decay product masses
 	// ==============================================================
 	for (const auto& i : indices(lts.decaytree)) {
-		if (FIXONSHELL) { // Use only on-shell value
-			lts.decaytree[i].m_offshell = lts.decaytree[i].p.mass;
-		} else {
-			GetOffShellMass(lts.decaytree[i], lts.decaytree[i].m_offshell);
-		}
+		GetOffShellMass(lts.decaytree[i], lts.decaytree[i].m_offshell);
 	}
 	// ==============================================================
 

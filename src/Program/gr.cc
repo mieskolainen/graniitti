@@ -58,28 +58,40 @@ int main(int argc, char* argv[]) {
 	  	("s,NSTARS",   "Excite protons (0,1,2)", cxxopts::value<unsigned int>() )
 	  	("q,LHAPDF",   "Set LHAPDF",             cxxopts::value<std::string>() )
 	  	("h,HIST",     "Histogramming",          cxxopts::value<unsigned int>() )
-	  	("a,FLATAMP",  "Flat matrix element",    cxxopts::value<unsigned int>() )
 	  	("r,RNDSEED",  "Random seed",            cxxopts::value<unsigned int>() )
   		;
-		
+
 	auto r = options.parse(argc, argv);
 	
 	if (r.count("help") || NARGC == 0) {
 		gen->GetProcessNumbers();
 		std::cout << options.help({"", "GENERALPARAM", "PROCESSPARAM"}) << std::endl;
-		std::cout << "Arrow operators:" << std::endl;
+		std::cout << rang::style::bold << " Arrow operators:" << rang::style::reset << std::endl;
 		std::cout << "  use -> between initial and final states" << std::endl;
 		std::cout << "  use &> (instead of ->) for a decoupled central system phase space (use with <F> class, e.g. for s-channel resonances)" << std::endl;
 		std::cout << "  use  > for recursive decaytree branchings with curly brackets { grand daughters }" << std::endl;
 		std::cout << std::endl;
-		std::cout << "PROCESS examples:" << std::endl;
+		std::cout << rang::style::bold << " Inline 'on-the-flight' parameters to concatenate with PROCESS string:" << rang::style::reset << std::endl;
+		std::cout << "  @FLATAMP:N                  sets flat matrix element for phase space generation, set N to -1 for more info" << std::endl;
+		std::cout << "  @PDG[X]{M:123, W:456}       sets new mass and width for pdg particle id X" << std::endl;
+		std::cout << "  @NWIDTH:N                   sets how many +- full widths particles can be off-shell in decay trees (set N to 0 for on-shell)" << std::endl;
+		std::cout << "  @TREEFLATM2:true            sets flat sampling in mass^2 instead of relativistic Breit-Wigner in decay trees" << std::endl;
+		std::cout << std::endl;
+		std::cout << rang::style::bold << " PROCESS string examples:" << rang::style::reset << std::endl;
 		std::cout << "  yy[CON]<C> -> mu+ mu-" << std::endl;
 		std::cout << "  yy[Higgs]<F> &> 22 22" << std::endl;
 		std::cout << "  PP[CON]<C> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-}" << std::endl;
+		std::cout << "  yy[CON]<F> -> pi+ pi- pi+ pi-" << std::endl;
+		std::cout << "  yy[CON]<C> -> p+ p- @FLATAMP:2" << std::endl;
+		std::cout << "  yy[CON]<C> -> 922 -922 @PDG[922]{M=1500,W=0}" << std::endl;
 		std::cout << std::endl;
-		std::cout << "A steering card example with no additional input:" << std::endl;
-		std::cout << "  " << argv[0] << " -i ./input/test.json" << std::endl << std::endl;
 		
+		std::cout << rang::style::bold << " A steering card example with no additional input:" << rang::style::reset << std::endl;
+		std::cout << "  " << argv[0] << " -i ./input/test.json" << std::endl << std::endl;
+
+		std::cout << rang::style::bold << " A steering card example + commandline input override:" << rang::style::reset << std::endl;
+		std::cout << "  " << argv[0] << " -i ./input/test.json -p \"yy[C]<F> -> W+ W-\"" << std::endl << std::endl;
+
 		return EXIT_FAILURE;
 	}
 
@@ -123,7 +135,6 @@ int main(int argc, char* argv[]) {
 	if (r.count("s"))  { gen->proc->SetExcitation(r["s"].as<unsigned int>()); }
 	if (r.count("q"))  { gen->proc->SetLHAPDF(r["q"].as<std::string>()); }
 	if (r.count("h"))  { gen->proc->SetHistograms(r["h"].as<unsigned int>()); }
-	if (r.count("a"))  { gen->proc->SetFlatAmp(r["a"].as<unsigned int>()); }
 	if (r.count("r"))  { gen->proc->random.SetSeed(r["r"].as<unsigned int>()); }
 	
 	// -------------------------------------------------------------------

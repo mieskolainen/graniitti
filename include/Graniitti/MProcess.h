@@ -105,13 +105,33 @@ public:
 	void SetInitialState(const std::vector<std::string>& beam, const std::vector<double>& energy);
 
 	// Isolate phase space in <F> class processes
-	void SetIsolate(bool isolate) {
-		ISOLATE = isolate;
+	void SetIsolate(bool in) {
+		ISOLATE = in;
 	}
 	bool GetIsolate() {
 		return ISOLATE;
 	}
-	
+	void SetTreeFlatM2(bool in) {
+		if (in == true) {
+		aux::PrintWarning();
+		std::cout << rang::fg::red << "MProcess::SetTreeFlat: Set flat in mass^2 sampling in decay trees : true" << rang::fg::reset << std::endl;
+		}
+		TREEFLATM2 = in;
+	}
+	bool GetTreeFlatM2() {
+		return TREEFLATM2;
+	}
+	void SetNWidth(double in) {
+		if (in == true) {
+		aux::PrintWarning();
+		std::cout << rang::fg::red << "MProcess::SetNWidth: Set number of decay widths in decay trees : " << in << rang::fg::reset << std::endl;
+		}
+		NWIDTH = in;
+	}
+	double GetNWidth() {
+		return NWIDTH;
+	}
+
 	// Customize amplitude structure in the initialization
 	void SetAmplitude_Structure(const std::string& MODELPARAM);
 
@@ -153,7 +173,7 @@ public:
 	void SetFidCuts(const gra::FIDCUT& in) {
 		fcuts = in;
 	}
-	void SetUserCuts(unsigned int in) {
+	void SetUserCuts(int in) {
 		USERCUTS = in;
 	}
 	void SetVetoCuts(const gra::VETOCUT& in) {
@@ -165,8 +185,8 @@ public:
 	}
 
 	// Set proton excitation to low-mass N*
-	void SetExcitation(unsigned int in) {
-		if (in > 2) {
+	void SetExcitation(int in) {
+		if (in > 2 || in < 0) {
 			std::string str =
 			    "MProcess::SetExcitation: Not valid input "
 			    "(0,1,2): " +
@@ -177,9 +197,15 @@ public:
 	}
 
 	// Set flat matrix element mode
-	void SetFlatAmp(unsigned int in) {
-		FLATAMPLITUDE = in;
+	void SetFlatAmp(int in) {
+
+		if (in > 0) {
+		aux::PrintWarning();
+		std::cout << rang::fg::red << "MProcess::SetFlatAmp: Flat matrix element FLATAMP : " << in << rang::fg::reset << std::endl;
+		}
+		FLATAMP = in;
 	}
+
 	// pp invariant Moller flux (high energy limit)
 	double MollerFlux() {
 		return 2.0 * lts.s;
@@ -306,8 +332,8 @@ protected:
 	// Initial states
 	gra::MParticle beam1;
 	gra::MParticle beam2;
-	double S_factor = 0.0;    // Cross section statistical 1/S symmetry factor
-	                          // (for identical final states)	
+	double S_factor = 0.0;        // Cross section statistical 1/S symmetry factor
+	                              // (for identical final states)	
 	// ----------------------------------------------------------------------
 	// Subprocesses
 	
@@ -317,20 +343,21 @@ protected:
 	
 	// ----------------------------------------------------------------------
 	// Steering parameters
-	std::string PROCESS;              // Process identifier string
-	std::string CID;                  // Phase space sampler identifier <F>,<C>,...
-	std::string DECAYMODE;            // Decaymode identifier string
-	bool SCREENING = false;           // Pomeron loop on/off
-	unsigned int EXCITATION = 0;      // Forward proton excitation (0 = off, 1 = single, 2 = double)
-	unsigned int USERCUTS = 0;        // User custom cuts identifier
-	unsigned int FLATAMPLITUDE = 0;   // Flat matrix element mode
+	std::string PROCESS;          // Process identifier string
+	std::string CID;              // Phase space sampler identifier <F>,<C>,...
+	std::string DECAYMODE;        // Decaymode identifier string
+	bool SCREENING = false;       // Pomeron loop on/off
+	unsigned int EXCITATION = 0;  // Forward proton excitation (0 = off, 1 = single, 2 = double)
+	unsigned int USERCUTS = 0;    // User custom cuts identifier
+	unsigned int FLATAMP = 0;     // Flat matrix element mode
 	
 	// ----------------------------------------------------------------------
 	// Phase-space control
 
-	bool ISOLATE = false;     // Isolate the decay phase space (<F> class)
-	bool FIXONSHELL = false;  // Fix daughter to their on-shell masses
-	
+	bool ISOLATE    = false;      // Isolate the decay phase space (<F> class)
+	bool TREEFLATM2 = false;      // Flat in M^2 instead of Breit-Wigner sampling
+	double NWIDTH   = 3;          // How many full widths to samples
+
 	// Forward excitation minimum/maximum M^2 boundaries
 	double M2_f_min = 0.0;
 	double M2_f_max = 0.0;

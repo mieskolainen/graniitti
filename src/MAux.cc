@@ -279,8 +279,8 @@ std::string GetInputData(const std::string& inputfile) {
 
 	// Check if exists
 	if (gra::aux::FileExist(inputfile) == false) {
-		std::string str = "gra::aux::GetInputData: Inputfile <" +
-		                   inputfile + "> does not exist.";
+		std::string str = "gra::aux::GetInputData: Inputfile '" +
+		                   inputfile + "' does not exist";
 		throw std::invalid_argument(str);
 	}
 	// Create a JSON object from file
@@ -633,7 +633,7 @@ std::vector<OneCMD> SplitCommands(const std::string& fullstr) {
 				subcmd.push_back(str.substr(start, end - start + 1));
 			}
 		} else {
-			subcmd.push_back(str);
+			subcmd.push_back(str.substr(1)); // +1 so we skip @
 		}
 	}
 
@@ -652,22 +652,21 @@ std::vector<OneCMD> SplitCommands(const std::string& fullstr) {
 		std::size_t Lpos = subcmd[i].find("{",0);
 		std::size_t Rpos = subcmd[i].find("}",0);
 
-		// Singlet command @blaa:foo
+		// Singlet command @ID:VALUE
 		if (Lpos == std::string::npos && Rpos == std::string::npos) {
 
-			// ID
-			id = "_SINGLET_";
-			
-			// Value
 			std::vector<std::string> strip = SplitStr2Str(subcmd[i], ':');
+
+			// ID
+			id = strip[0];
+
 			if (strip.size() == 1) {
-				arg[strip[0]] = "true"; // default true, no : given
+				arg["_SINGLET_"] = "true"; // default true, no : given
 			}
 			else if (strip.size() == 2) {
-				arg[strip[0]] = strip[1];
+				arg["_SINGLET_"] = strip[1];
 			} else {
-				throw std::invalid_argument("gra::SplitCommands: syntax invalid with '" + subcmd[i] + "'");
-				// @id{key1:val1,key2:val2,...}
+				throw std::invalid_argument("gra::SplitCommands: @Syntax invalid with '" + subcmd[i] + "'");
 			}
 			
 		// Block command @blaa{key:val,key:val,...}
@@ -697,7 +696,7 @@ std::vector<OneCMD> SplitCommands(const std::string& fullstr) {
 		OneCMD o;
 		o.id = id;
 		o.arg = arg;
-		//o.Print(); // For debug
+		o.Print(); // For debug
 		cmd.push_back(o);
 	}
 	return cmd;

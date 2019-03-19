@@ -180,7 +180,7 @@ double MFactorized::EventWeight(const std::vector<double>& randvec, AuxIntData& 
 	if (aux.Valid()) {
 		
 		// Matrix element squared
-		const double MatESQ = (FLATAMPLITUDE == 0) ? abs2(S3ScreenedAmp()) : GetFlatAmp2(lts);
+		const double MatESQ = (FLATAMP == 0) ? abs2(S3ScreenedAmp()) : GetFlatAmp2(lts);
 		
 		// Calculate central system Phase Space volume
 		double exact = 0.0;
@@ -312,11 +312,7 @@ bool MFactorized::B51RandomKin(const std::vector<double>& randvec) {
 		
 		// ==============================================================
 		for (const auto& i : indices(lts.decaytree)) {
-			if (FIXONSHELL) { // Use only on-shell value
-				lts.decaytree[i].m_offshell = lts.decaytree[i].p.mass;
-			} else {
-				GetOffShellMass(lts.decaytree[i], lts.decaytree[i].m_offshell);
-			}
+			GetOffShellMass(lts.decaytree[i], lts.decaytree[i].m_offshell);
 			M_sum += lts.decaytree[i].m_offshell;
 		}
 		// ==============================================================

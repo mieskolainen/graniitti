@@ -480,6 +480,7 @@ void MGraniitti::ReadProcessParam(const std::string& inputfile, const std::strin
 		fullstring = cmd_PROCESS;
 	}
 
+	// ----------------------------------------------------------------
 	// First separate possible extra arguments by @... ...
 	std::vector<std::size_t> markerpos = aux::FindOccurance(fullstring, "@");
 
@@ -487,7 +488,7 @@ void MGraniitti::ReadProcessParam(const std::string& inputfile, const std::strin
 		syntax   = aux::SplitCommands(fullstring.substr(markerpos[0]));
 		fullstring = fullstring.substr(0, markerpos[0]-1);
 	}
-
+	// ----------------------------------------------------------------
 
 	// Now separate process and decay parts by "->"
 	std::string PROCESS_PART = "";
@@ -521,7 +522,6 @@ void MGraniitti::ReadProcessParam(const std::string& inputfile, const std::strin
 	proc->SetScreening(j[XID]["POMLOOP"]);
 	proc->SetExcitation(j[XID]["NSTARS"]);
 	proc->SetHistograms(j[XID]["HIST"]);
-	proc->SetFlatAmp(j[XID]["FLATAMP"]);
 
 	if (pos2 != std::string::npos) {
 
@@ -551,6 +551,22 @@ void MGraniitti::ReadProcessParam(const std::string& inputfile, const std::strin
 		proc->SetupBranching();
 	}
 	// ----------------------------------------------------------------
+
+	// Command syntax parameters
+	for (const auto& i : indices(syntax)) {
+
+		if (syntax[i].id == "FLATAMP") {
+			proc->SetFlatAmp(std::stoi(std::any_cast<std::string>(syntax[i].arg["_SINGLET_"])));
+		}
+		if (syntax[i].id == "TREEFLATM2") {
+			proc->SetTreeFlatM2(std::any_cast<std::string>(syntax[i].arg["_SINGLET_"]) == "true");
+		}
+		if (syntax[i].id == "NWIDTH") {
+			proc->SetNWidth(std::stod(std::any_cast<std::string>(syntax[i].arg["_SINGLET_"])));
+		}
+	}
+
+	// ...
 
 	// Always last (we need PDG tables)
 	std::vector<std::string> beam = j[XID]["BEAM"];
