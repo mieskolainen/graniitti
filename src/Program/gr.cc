@@ -72,10 +72,10 @@ int main(int argc, char* argv[]) {
 		std::cout << "  use  > for recursive decaytree branchings with curly brackets { grand daughters }" << std::endl;
 		std::cout << std::endl;
 		std::cout << rang::style::bold << " Inline 'on-the-flight' parameters to concatenate with PROCESS string:" << rang::style::reset << std::endl;
-		std::cout << "  @FLATAMP:N                  sets flat matrix element for phase space generation, set N to -1 for more info" << std::endl;
-		std::cout << "  @PDG[X]{M:123, W:456}       sets new mass and width for pdg particle id X" << std::endl;
-		std::cout << "  @NWIDTH:N                   sets how many +- full widths particles can be off-shell in decay trees (set N to 0 for on-shell)" << std::endl;
-		std::cout << "  @TREEFLATM2:true            sets flat sampling in mass^2 instead of relativistic Breit-Wigner in decay trees" << std::endl;
+		std::cout << "  @FLATAMP:N                 sets flat matrix element for phase space generation, set N to -1 for more info" << std::endl;
+		std::cout << "  @PDG[X]{M:350.0, W:5.0}    sets new mass and width for pdg particle id X" << std::endl;
+		std::cout << "  @NWIDTH:N                  sets how many +- full widths particles can be off-shell in decay trees (set N to 0 for on-shell)" << std::endl;
+		std::cout << "  @TREEFLATM2:true           sets flat sampling in mass^2 instead of relativistic Breit-Wigner in decay trees" << std::endl;
 		std::cout << std::endl;
 		std::cout << rang::style::bold << " PROCESS string examples:" << rang::style::reset << std::endl;
 		std::cout << "  yy[CON]<C> -> mu+ mu-" << std::endl;
