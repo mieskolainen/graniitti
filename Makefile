@@ -44,7 +44,6 @@
 # USE [TABS] for intendation while modifying this file!
 # -----------------------------------------------------------------------
 
-
 # =======================================================================
 # Detect compiler version if using by default g++
 
@@ -65,7 +64,6 @@ $(error Your CXX_VERSION is too old, need at least CXX_VERSION = $(CXX_REQUIRED)
 endif
 
 endif
-
 
 # =======================================================================
 # PATH setup
