@@ -171,16 +171,14 @@ INCLUDES += -I$(LHAPDFSYS)/include
 
 CXX       = g++
 
-# Compilation flags
+CXXVER    = -std=c++17
 OPTIM     = -O3 -DNDEBUG -ftree-vectorize -fno-signed-zeros
-
 CXXFLAGS  = -Wall -fPIC -pipe $(OPTIM)
+
 
 # Needed by PyTorch if using pre-compiled (ABI = Application Binary Interface)
 # gcc < 5.1 is 0, later versions use 1 by default
 # CXXFLAGS += -D_GLIBCXX_USE_CXX11_ABI=0
-
-# N.B. ROOT libraries do not pass with -std=c++17, use -std=c++14
 
 # Automatic dependencies on
 CXXFLAGS += -MMD -MP 
@@ -339,28 +337,28 @@ $(PROGRAM_TEST): $(OBJ) $(OBJ_3) $(OBJ_PROGRAM_TEST)
 $(OBJ_DIR)/%.o: $(SRC_DIR_0)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) -std=c++17 -c $< -o $@ $(CXXFLAGS) $(INCLUDES)
+	$(CXX) $(CXXVER) -c $< -o $@ $(CXXFLAGS) $(INCLUDES)
 # =======================================================================
 
 # =======================================================================
 $(OBJ_DIR)/%.o: $(SRC_DIR_1)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) -std=c++17 -c $< -o $@ $(CXXFLAGS) $(INCLUDES)
+	$(CXX) $(CXXVER) -c $< -o $@ $(CXXFLAGS) $(INCLUDES)
 # =======================================================================
 
 # =======================================================================
 $(OBJ_DIR)/%.o: $(SRC_DIR_2)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) -std=c++14 -c $< -o $@ $(CXXFLAGS) $(INCLUDES) -I$(ROOTSYS)/include
+	$(CXX) $(CXXVER) -c $< -o $@ $(CXXFLAGS) $(INCLUDES) -I$(ROOTSYS)/include
 # =======================================================================
 
 # =======================================================================
 $(OBJ_DIR)/%.o: $(SRC_DIR_3)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) -std=c++17 -c $< -o $@ $(CXXFLAGS) $(INCLUDES)
+	$(CXX) $(CXXVER) -c $< -o $@ $(CXXFLAGS) $(INCLUDES)
 # =======================================================================
 
 # PROGRAM objects
@@ -369,21 +367,21 @@ $(OBJ_DIR)/%.o: $(SRC_DIR_3)/%.cc
 $(OBJ_DIR)/$(BIN_DIR)/%.o: $(SRC_DIR_PROGRAM)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) -std=c++17 -c $< -o $@ $(CXXFLAGS) $(INCLUDES)
+	$(CXX) $(CXXVER) -c $< -o $@ $(CXXFLAGS) $(INCLUDES)
 # =======================================================================
 
 # =======================================================================
 $(OBJ_DIR)/$(BIN_DIR)/%.o: $(SRC_DIR_PROGRAM_ROOT)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) -std=c++14 -c $< -o $@ $(CXXFLAGS) $(INCLUDES) -I$(ROOTSYS)/include
+	$(CXX) $(CXXVER) -c $< -o $@ $(CXXFLAGS) $(INCLUDES) -I$(ROOTSYS)/include
 # =======================================================================
 
 # =======================================================================
 $(OBJ_DIR)/$(BIN_DIR)/%.o: $(SRC_DIR_PROGRAM_TEST)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) -std=c++17 -c $< -o $@ $(CXXFLAGS) $(INCLUDES)
+	$(CXX) $(CXXVER) -c $< -o $@ $(CXXFLAGS) $(INCLUDES)
 # =======================================================================
 
 # -----------------------------------------------------------------------

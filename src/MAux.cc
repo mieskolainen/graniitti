@@ -473,18 +473,18 @@ void PrintGameOver() {
 }
 
 double GetVersion() {
-	return 0.2;
+	return 0.22;
 }
 
 std::string GetVersionString() {
 	char buff[100];
-	snprintf(buff, sizeof(buff), "Version %0.1f (BETA)", GetVersion());
+	snprintf(buff, sizeof(buff), "Version %0.2f (BETA) 200319", GetVersion());
 	std::string str = buff;
 	return str;
 }
 std::string GetVersionTLatex() {
 	char buff[100];
-	snprintf(buff, sizeof(buff), "#color[15]{#scale[0.6]{GRANIITTI #scale[0.8]{%0.1f}#it{#beta}}}", GetVersion());
+	snprintf(buff, sizeof(buff), "#color[15]{#scale[0.6]{GRANIITTI #scale[0.8]{%0.2f}#it{#beta}}}", GetVersion());
 	std::string str = buff;
 	return str;
 }
