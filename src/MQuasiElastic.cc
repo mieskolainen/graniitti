@@ -169,7 +169,7 @@ bool MQuasiElastic::LoopKinematics(const std::vector<double>& p1p,
 
 	// ------------------------------------------------------------------
 	// Now boost if asymmetric beams
-	if (std::abs(beamsum.Pz()) > 1e-9) {
+	if (std::abs(beamsum.Pz()) > 1e-6) {
 		constexpr int sign = 1; // positive -> boost to the lab
 		kinematics::LorentzBoost(beamsum, lts.sqrt_s, lts.pfinal[1], sign);
 		kinematics::LorentzBoost(beamsum, lts.sqrt_s, lts.pfinal[2], sign);	
@@ -783,7 +783,7 @@ bool MQuasiElastic::B3BuildKin(double s3, double s4, double t) {
 
 	// ------------------------------------------------------------------
 	// Now boost if asymmetric beams
-	if (std::abs(beamsum.Pz()) > 1e-9) {
+	if (std::abs(beamsum.Pz()) > 1e-6) {
 		constexpr int sign = 1; // positive -> boost to the lab
 		kinematics::LorentzBoost(beamsum, lts.sqrt_s, p3, sign);
 		kinematics::LorentzBoost(beamsum, lts.sqrt_s, p4, sign);

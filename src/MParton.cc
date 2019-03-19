@@ -266,12 +266,12 @@ bool MParton::B2BuildKin(double x1, double x2) {
 	// We-work in CMS-frame
 
 	// Initial state collinear (pt=0) and massless (m=0) parton 4-momentum
-	M4Vec q1(0, 0,  x1 * lts.sqrt_s/2, x1 * lts.sqrt_s/2);
-	M4Vec q2(0, 0, -x2 * lts.sqrt_s/2, x2 * lts.sqrt_s/2);
+	M4Vec q1(0, 0,  x1 * lts.sqrt_s/2.0, x1 * lts.sqrt_s/2.0);
+	M4Vec q2(0, 0, -x2 * lts.sqrt_s/2.0, x2 * lts.sqrt_s/2.0);
 
 	// ------------------------------------------------------------------
 	// Now boost if asymmetric beams
-	if (std::abs(beamsum.Pz()) > 1e-9) {
+	if (std::abs(beamsum.Pz()) > 1e-6) {
 		constexpr int sign = 1; // positive -> boost to the lab
 		kinematics::LorentzBoost(beamsum, lts.sqrt_s, q1, sign);
 		kinematics::LorentzBoost(beamsum, lts.sqrt_s, q2, sign);
@@ -281,7 +281,7 @@ bool MParton::B2BuildKin(double x1, double x2) {
 	M4Vec p1 = lts.pbeam1 - q1; // Remnant
 	M4Vec p2 = lts.pbeam2 - q2; // Remnant
 	M4Vec pX = q1 + q2;         // System
-
+	
 	// Save
 	lts.pfinal[1] = p1;
 	lts.pfinal[2] = p2;
@@ -292,7 +292,7 @@ bool MParton::B2BuildKin(double x1, double x2) {
 
 	// Total 4-momentum conservation
 	if (!CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2] + lts.pfinal[0]))) { return false; }
-
+	
 	// ==============================================================================
 	// Central system decay tree first branch kinematics set up here, the
 	// rest is done recursively

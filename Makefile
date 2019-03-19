@@ -172,8 +172,7 @@ INCLUDES += -I$(LHAPDFSYS)/include
 CXX       = g++
 
 # Compilation flags
-OPTIM     = -O2 -DNDEBUG -march=native -ftree-vectorize 
-#-fno-signed-zeros
+OPTIM     = -O3 -DNDEBUG -ftree-vectorize -fno-signed-zeros
 
 CXXFLAGS  = -Wall -fPIC -pipe $(OPTIM)
 
@@ -188,10 +187,7 @@ CXXFLAGS += -MMD -MP
 
 
 # -Wall,             compiler warnings full on
-# -march=native,     CPU spesific instruction set usage
 # -free-vectorize,   Autovectorization on
-# -ffast-math,       Heavy floating point optimization
-#  (fast but breaks  FLOP IEEE standards, do not use!)
 # -fno-signed-zeros  Optimization (floating point) which ignore the signedness of zero
 # -fPIC,             Position independent code (PIC) for shared libraries
 # -O2, -O3           Optimization level
@@ -201,6 +197,14 @@ CXXFLAGS += -MMD -MP
 # -rpath-link        Needed for .so which links to another .so
 #
 # Check your CPU instruction set with: cat /proc/cpuinfo
+
+
+# DANGEROUS:
+
+# -march=native,     CPU spesific instruction set usage
+#  (gives unknown flops problem, factor 1/4 wrong results on i5-4570 with g++7.4, do not use!)
+# -ffast-math,       Heavy floating point optimization
+#  (fast but breaks IEEE flops standards, do not use!)
 
 # =======================================================================
 # Sources, objects and dependency files
