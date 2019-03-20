@@ -84,8 +84,8 @@ double MRandom::RelativisticBWRandom(double m, double Gamma, double LIMIT) {
 
 	const double m2    = m*m;
 	const double m2max = gra::math::pow2(m + LIMIT*Gamma);
-	const double m2min = std::max(0.0, gra::math::pow2(m - LIMIT*Gamma)); 
-
+	const double m2min = gra::math::pow2(m - LIMIT*Gamma);
+	
 	double m2val = 0.0;
 	while (true) {
 		const double R = U(0,1);

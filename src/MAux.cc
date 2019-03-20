@@ -473,7 +473,7 @@ void PrintGameOver() {
 }
 
 double GetVersion() {
-	return 0.22;
+	return 0.23;
 }
 
 std::string GetVersionString() {
