@@ -221,8 +221,8 @@ complex<double> MProcess::S3ScreenedAmp() {
 
 			// -------------------------------------------------------------------
 
-			// Get screening amplitude (compiler will optimize this
-			// outside the loop)
+			// Get screening amplitude
+			// (compiler will optimize this outside the loop)
 			const std::complex<double> A_eik = Eikonal.MSA.Interpolate1D(kt2);
 			
 			// 0. Construct loop 2D kT-vector
@@ -269,10 +269,6 @@ complex<double> MProcess::S3ScreenedAmp() {
 			                               		  StepPhi, StepKT);
 		}
 	} else {
-		//    for (std::size_t i = 0; i < outer.size(); ++i) {
-		//      std::cout << "i = " << i << " : " << outer[i] <<
-		//      std::endl;
-		//    }
 		A_loop =
 		    norm * gra::math::Simpson38Integral2D(f, WSimpson, StepPhi, StepKT);
 	}
@@ -287,7 +283,7 @@ complex<double> MProcess::S3ScreenedAmp() {
 	if (lts.hamp.size() > 1) {
 		if (ProcPtr.ISTATE != "gg") { // Not Durham-QCD
 
-			// Separate sum
+			// Separate (incoherent) sum
 			double A2 = 0.0;
 			for (const auto& h : indices(lts.hamp)) {
 				A2 += abs2(hamp_0[h] + hamp_loop[h]);
@@ -306,7 +302,6 @@ complex<double> MProcess::S3ScreenedAmp() {
 			return A;
 		}
 	}
-
 
 	// All the other amplitude processes
 	return A_0 + A_loop;
@@ -544,9 +539,9 @@ void MProcess::SetDecayMode(std::string str) {
 	// Remind the user
 	if  (lts.decaytree.size() > 2 ) {
 		gra::aux::PrintWarning();
-		std::cout << "Warning: Resonance decay |matrix element 1->K|^2 is non-factorizable from the phase space for K = "
+		std::cout << "Reminder: Resonance decay |matrix element 1->K|^2 is non-factorizable from the phase space for K = "
 					+ std::to_string(lts.decaytree.size()) +" > 2!" << std::endl;
-		std::cout << "Use ISOLATE = true for fully separating 2->3 [+] 1->K" << std::endl;
+		std::cout << "Use &> arrow for fully separating 2->3 [+] 1->K" << std::endl;
 		std::cout << std::endl;
 	}
 }
@@ -1123,7 +1118,6 @@ bool MProcess::CommonCuts() const {
 
 	bool ok = true;
 
-
 	// Fiducial cuts
 	if (fcuts.active == true) {
 
@@ -1250,6 +1244,7 @@ void MProcess::PrintDecayTree(const gra::MDecayBranch& branch) const {
 	    gra::aux::Charge3XtoString(branch.p.chargeX3).c_str(),
 	    gra::aux::Spin2XtoString(branch.p.spinX2).c_str());
 
+	// ** RECURSION here **
 	for (const auto& i : indices(branch.legs)) {
 		PrintDecayTree(branch.legs[i]);
 	}
@@ -1349,13 +1344,13 @@ void MProcess::WriteDecayKinematics(gra::MDecayBranch& branch,
 			                ? PDG::PDG_DECAY : PDG::PDG_STABLE;
 			                
 			// ADD HERE THE ctau > 1.0 cm definition for the status
-			// code
+			// code [TBD]
 
 			HepMC3::GenParticlePtr particle =
 			    std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(branch.legs[i].p4), branch.legs[i].p.pdg, STATE);
 			vertex->add_particle_out(particle);
 
-			// ** Recursion **
+			// ** RECURSION here **
 			WriteDecayKinematics(branch.legs[i], particle, evt);
 		}
 	}
@@ -1370,7 +1365,7 @@ void MProcess::SampleForwardMasses(std::vector<double>& mvec, const std::vector<
 	lts.excite1 = false;
 	lts.excite2 = false;
 
-	M2_f_min = pow2(1.07);
+	M2_f_min = pow2(1.07); // proton + pion threshold
 	M2_f_max = gcuts.XI_max * lts.s;
 	
 	if      (EXCITATION == 1) {
@@ -1605,7 +1600,8 @@ bool MProcess::GetLorentzScalars(unsigned int Nf) {
 	lts.x1 = (1 - lts.pfinal[1].Pz() / lts.pbeam1.Pz());
 	lts.x2 = (1 - lts.pfinal[2].Pz() / lts.pbeam2.Pz());
 
-	// Bjorken-x [0,1] (gives 1 always for elastic central production forward leg)
+	// Bjorken-x [0,1] (this Lorentz invariant expression
+	// gives 1 always for elastic central production forward leg)
 	lts.xbj1 = lts.t1 / (2 * (lts.pbeam1 * lts.q1));
 	lts.xbj2 = lts.t2 / (2 * (lts.pbeam2 * lts.q2));
 
@@ -1730,7 +1726,7 @@ bool MProcess::CommonRecord(HepMC3::GenEvent& evt) {
 	for (const auto& i : indices(lts.decaytree)) {
 		const int STATE = (lts.decaytree[i].legs.size() > 0) ? PDG::PDG_DECAY : PDG::PDG_STABLE;
 		
-		// TBD: ADD HERE THE ctau > 1.0 cm definition for the status code
+			// TBD: ADD HERE THE ctau > 1.0 cm definition for the status code
 
 			if (STATE == PDG::PDG_DECAY) {
 			// ----------------------------------------------------------
@@ -1810,7 +1806,7 @@ void MProcess::SetProcess(std::string& str, const std::vector<aux::OneCMD>& synt
 	// Call this always first
 	PDG.ReadParticleData(gra::aux::GetBasePath(2) + "/modeldata/mass_width_2018.mcd");
 	
-	// Read and set new PDG input
+	// @SYNTAX Read and set new PDG input
 	for (const auto& i : indices(syntax)) {
 		if (syntax[i].id.find("PDG") != std::string::npos) {
 			std::size_t left  = syntax[i].id.find("[");
