@@ -794,14 +794,14 @@ void MProcess::GetOffShellMass(const gra::MDecayBranch& branch, double& mass) {
 		mass = branch.p.mass;
 		return;
 	}
-
+	
 	const unsigned int OUTERMAXTRIAL = 1e4;
 	const unsigned int INNERMAXTRIAL = 1e4;
 
 	unsigned int outertrials = 0;
 	
 	while (true) {
-		
+
 		// We have decay daughters
 		double daughter_masses = 0;
 		if (branch.legs.size() > 0) {
@@ -821,14 +821,14 @@ void MProcess::GetOffShellMass(const gra::MDecayBranch& branch, double& mass) {
 			const double safe_margin = 1e-4; // GeV
 			daughter_masses += safe_margin;
 		}
-		
+
 		// Pick mother offshell mass
 		unsigned int innertrials = 0;
 		while (true) {
 
 			const double M = branch.p.mass;
 			const double W = branch.p.width;
-			
+
 			if (!FLATMASS2) {
 				mass = std::max(0.0, random.RelativisticBWRandom(M, W, OFFSHELL));
 			} else {

@@ -249,14 +249,36 @@ void MParton::PrintInit(bool silent) const {
 	}
 }
 
+
 // 2-dimensional phase space vector initialization
 bool MParton::B2RandomKin(const std::vector<double>& randvec) {
 
-    const double x1 = randvec[0];
-    const double x2 = randvec[1];
+    double x1 = randvec[0];
+    double x2 = randvec[1];
 
+    const unsigned int MAXTRIAL = 1e4;
+    unsigned int trials = 0;
+    while (true) {
+    	double M_sum = 0.0;
+
+    	// Pick daughter masses
+		// ==============================================================
+		for (const auto& i : indices(lts.decaytree)) {
+			GetOffShellMass(lts.decaytree[i], lts.decaytree[i].m_offshell);
+			M_sum += lts.decaytree[i].m_offshell;
+		}
+		// ==============================================================
+
+		if (x1*x2*lts.s > pow2(M_sum)) { break; } // kinematics possible
+
+		++trials;
+		if (trials > MAXTRIAL) {
+			return false; // Impossible given daughter masses and this x1 and x2 value
+		}
+    }
 	return B2BuildKin(x1, x2);
 }
+
 
 // Build kinematics for 2->2 skeleton
 bool MParton::B2BuildKin(double x1, double x2) {
@@ -303,8 +325,7 @@ bool MParton::B2BuildKin(double x1, double x2) {
 	// Collect decay product masses
 	for (const auto& i : indices(lts.decaytree)) {
 		// @@ Note, we need to take offshell masses here @@
-		//masses.push_back(lts.decaytree[i].m_offshell);
-		masses.push_back(lts.decaytree[i].p.mass);	
+		masses.push_back(lts.decaytree[i].m_offshell);
 	}
 	std::vector<M4Vec> products;
 	

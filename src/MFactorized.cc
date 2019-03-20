@@ -338,7 +338,7 @@ bool MFactorized::B51RandomKin(const std::vector<double>& randvec) {
 		// Apply generator cuts (either automatic or user provided)
 		M_MIN = std::max(M_MIN, gcuts.M_min);
 		M_MAX = std::min(M_MAX, gcuts.M_max);
-
+		
 		if (M_MIN < M_MAX) { break; }
 		++trials;
 		if (trials > MAXTRIAL) {

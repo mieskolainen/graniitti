@@ -186,13 +186,17 @@ public:
 		if (in > 2 || in < 0) {
 			std::string str =
 			    "MProcess::SetExcitation: Not valid input "
-			    "(0,1,2): " +
-			    std::to_string(in) + " !";
+			    "(0,1,2) : " + std::to_string(in) + " !";
 			throw std::invalid_argument(str);
 		}
 		EXCITATION = in;
-	}
 
+		if (EXCITATION > 0) {
+			aux::PrintWarning();
+			std::cout << rang::fg::red << "MProcess::SetExcitation: Proton excitation is under construction : " << in << rang::fg::reset << std::endl;
+		}
+	}
+	
 	// Set flat matrix element mode
 	void SetFLATAMP(int in) {
 
