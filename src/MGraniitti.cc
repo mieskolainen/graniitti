@@ -495,7 +495,7 @@ void MGraniitti::ReadProcessParam(const std::string& inputfile, const std::strin
 	std::string DECAY_PART   = "";
 	std::size_t pos  = 0;
 	std::size_t pos1 = fullstring.find("->");
-	std::size_t pos2 = fullstring.find("&>"); // Isolated Phase-Space
+	std::size_t pos2 = fullstring.find("&>"); // ISOLATEd Phase-Space
 
 	pos = (pos1 != std::string::npos) ? pos1 : std::string::npos; // Try to find ->
 	if (pos == std::string::npos) {
@@ -529,7 +529,7 @@ void MGraniitti::ReadProcessParam(const std::string& inputfile, const std::strin
 			PROCESS_PART.find("<P>") == std::string::npos) {
 			throw std::invalid_argument("MGraniitti::ReadProcessParam: Phase space isolation arrow '&>' to be used only with <F> or <P> class!");
 		}
-		proc->SetIsolate(true);
+		proc->SetISOLATE(true);
 	}
 	
 	// ----------------------------------------------------------------
@@ -556,13 +556,13 @@ void MGraniitti::ReadProcessParam(const std::string& inputfile, const std::strin
 	for (const auto& i : indices(syntax)) {
 
 		if (syntax[i].id == "FLATAMP") {
-			proc->SetFlatAmp(std::stoi(std::any_cast<std::string>(syntax[i].arg["_SINGLET_"])));
+			proc->SetFLATAMP(std::stoi(std::any_cast<std::string>(syntax[i].arg["_SINGLET_"])));
 		}
-		if (syntax[i].id == "TREEFLATM2") {
-			proc->SetTreeFlatM2(std::any_cast<std::string>(syntax[i].arg["_SINGLET_"]) == "true");
+		if (syntax[i].id == "FLATMASS2") {
+			proc->SetFLATMASS2(std::any_cast<std::string>(syntax[i].arg["_SINGLET_"]) == "true");
 		}
-		if (syntax[i].id == "NWIDTH") {
-			proc->SetNWidth(std::stod(std::any_cast<std::string>(syntax[i].arg["_SINGLET_"])));
+		if (syntax[i].id == "OFFSHELL") {
+			proc->SetOFFSHELL(std::stod(std::any_cast<std::string>(syntax[i].arg["_SINGLET_"])));
 		}
 	}
 
@@ -1782,7 +1782,7 @@ void MGraniitti::PrintStatistics(unsigned int N) {
 		printf("Monte Carlo integration: \n\n\n");
 		std::cout << rang::style::reset;
 
-		if (proc->GetIsolate()) {
+		if (proc->GetISOLATE()) {
 			std::cout << rang::fg::red << "NOTE: Central leg phase space isolation tag &> in use!";
 			std::cout << rang::fg::reset;
 			std::cout << std::endl << std::endl;
@@ -1791,7 +1791,7 @@ void MGraniitti::PrintStatistics(unsigned int N) {
 		unsigned int N_leg = proc->lts.decaytree.size() + 2;
 
 		// Special cases
-		if (proc->GetIsolate()) { N_leg = 3; }       // Isolated 2->3 process with <F> phase space
+		if (proc->GetISOLATE()) { N_leg = 3; }       // ISOLATEd 2->3 process with <F> phase space
 		if (proc->GetdLIPSDim() == 2) { N_leg = 2; } // <P> and <Q> class
 
 		printf("{2->%d cross section}:             %0.3E +- %0.3E barn \n", N_leg, stat.sigma, stat.sigma_err);
@@ -1842,7 +1842,7 @@ void MGraniitti::PrintStatistics(unsigned int N) {
 			// Decaywidth = 1/(2M S) \int dPS |M_decay|^2, where M
 			// = mother mass, S = final state symmetry factor
 
-			if (!proc->GetIsolate() && proc->GetdLIPSDim() != 2) { // Special cases
+			if (!proc->GetISOLATE() && proc->GetdLIPSDim() != 2) { // Special cases
 			printf("{2->3 cross section ~=~ [2->%u / (1->%lu LIPS) x 2PI]}:       %0.3E barn \n",
 				N_leg, proc->lts.decaytree.size(), stat.sigma / proc->lts.DW_sum.Integral() * (2*PI) );
 			std::cout << std::endl;

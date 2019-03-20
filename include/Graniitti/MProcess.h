@@ -104,36 +104,33 @@ public:
 	// Set initial state
 	void SetInitialState(const std::vector<std::string>& beam, const std::vector<double>& energy);
 
-	// Isolate phase space in <F> class processes
-	void SetIsolate(bool in) {
+	// ISOLATE phase space in <F> class processes
+	void SetISOLATE(bool in) {
 		ISOLATE = in;
 	}
-	bool GetIsolate() {
+	bool GetISOLATE() {
 		return ISOLATE;
 	}
-	void SetTreeFlatM2(bool in) {
+	void SetFLATMASS2(bool in) {
 		if (in == true) {
 		aux::PrintWarning();
-		std::cout << rang::fg::red << "MProcess::SetTreeFlat: Set flat in mass^2 sampling in decay trees : true" << rang::fg::reset << std::endl;
+		std::cout << rang::fg::red << "MProcess::SetFLATMASS2: Set flat in mass^2 sampling in decay trees : true" << rang::fg::reset << std::endl;
 		}
-		TREEFLATM2 = in;
+		FLATMASS2 = in;
 	}
-	bool GetTreeFlatM2() {
-		return TREEFLATM2;
+	bool GetFLATMASS2() {
+		return FLATMASS2;
 	}
-	void SetNWidth(double in) {
+	void SetOFFSHELL(double in) {
 		if (in == true) {
 		aux::PrintWarning();
-		std::cout << rang::fg::red << "MProcess::SetNWidth: Set number of decay widths in decay trees : " << in << rang::fg::reset << std::endl;
+		std::cout << rang::fg::red << "MProcess::SetOFFSHELL: Set number of decay widths in decay trees : " << in << rang::fg::reset << std::endl;
 		}
-		NWIDTH = in;
+		OFFSHELL = in;
 	}
-	double GetNWidth() {
-		return NWIDTH;
+	double GetOFFSHELL() {
+		return OFFSHELL;
 	}
-
-	// Customize amplitude structure in the initialization
-	void SetAmplitude_Structure(const std::string& MODELPARAM);
 
 	// Get initial state
 	std::vector<gra::MParticle> GetInitialState() {
@@ -197,11 +194,11 @@ public:
 	}
 
 	// Set flat matrix element mode
-	void SetFlatAmp(int in) {
+	void SetFLATAMP(int in) {
 
 		if (in > 0) {
 		aux::PrintWarning();
-		std::cout << rang::fg::red << "MProcess::SetFlatAmp: Flat matrix element FLATAMP : " << in << rang::fg::reset << std::endl;
+		std::cout << rang::fg::red << "MProcess::SetFLATAMP: Flat matrix element FLATAMP : " << in << rang::fg::reset << std::endl;
 		}
 		FLATAMP = in;
 	}
@@ -343,6 +340,7 @@ protected:
 	
 	// ----------------------------------------------------------------------
 	// Steering parameters
+
 	std::string PROCESS;          // Process identifier string
 	std::string CID;              // Phase space sampler identifier <F>,<C>,...
 	std::string DECAYMODE;        // Decaymode identifier string
@@ -354,10 +352,10 @@ protected:
 	// ----------------------------------------------------------------------
 	// Phase-space control
 
-	bool ISOLATE    = false;      // Isolate the decay phase space (<F> class)
-	bool TREEFLATM2 = false;      // Flat in M^2 instead of Breit-Wigner sampling
-	double NWIDTH   = 3;          // How many full widths to samples
-
+	bool ISOLATE    = false;      // ISOLATE the decay phase space (<F> class)
+	bool FLATMASS2  = false;      // Flat in M^2 instead of Breit-Wigner sampling
+	double OFFSHELL = 3;          // How many full widths to sample particles in trees
+	
 	// Forward excitation minimum/maximum M^2 boundaries
 	double M2_f_min = 0.0;
 	double M2_f_max = 0.0;
