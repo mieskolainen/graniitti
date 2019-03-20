@@ -196,7 +196,7 @@ public:
 			std::cout << rang::fg::red << "MProcess::SetExcitation: Proton excitation is under construction : " << in << rang::fg::reset << std::endl;
 		}
 	}
-	
+
 	// Set flat matrix element mode
 	void SetFLATAMP(int in) {
 
@@ -358,7 +358,7 @@ protected:
 
 	bool ISOLATE    = false;      // ISOLATE the decay phase space (<F> class)
 	bool FLATMASS2  = false;      // Flat in M^2 instead of Breit-Wigner sampling
-	double OFFSHELL = 15;         // How many full widths to sample particles in trees
+	double OFFSHELL = 5;          // How many full widths to sample particles in trees
 	                              // (note that small values can create artifacts!)
 	
 	// Forward excitation minimum/maximum M^2 boundaries
