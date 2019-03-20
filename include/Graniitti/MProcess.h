@@ -354,7 +354,7 @@ protected:
 
 	bool ISOLATE    = false;      // ISOLATE the decay phase space (<F> class)
 	bool FLATMASS2  = false;      // Flat in M^2 instead of Breit-Wigner sampling
-	double OFFSHELL = 3;          // How many full widths to sample particles in trees
+	double OFFSHELL = 5;          // How many full widths to sample particles in trees
 	
 	// Forward excitation minimum/maximum M^2 boundaries
 	double M2_f_min = 0.0;

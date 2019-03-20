@@ -449,7 +449,7 @@ void MProcess::SetInitialState(const std::vector<std::string>& beam,
 // Return "flat" matrix element squared |A|^2 -> for evaluating the phase space
 double MProcess::GetFlatAmp2(const gra::LORENTZSCALAR& lts) const {
 	double W = 1.0;
-	
+
 	// Peripheral phase space: |A|^2 ~ exp(bt1) exp(bt2)
 	if (FLATAMP == 1) {
 		W = std::exp(PARAM_FLAT::b * lts.t1) *
@@ -813,7 +813,7 @@ void MProcess::GetOffShellMass(const gra::MDecayBranch& branch, double& mass) {
 				const double W = branch.legs[i].p.width;
 
 				if (!FLATMASS2) {
-					daughter_masses += random.BreitWignerRandom(M, W, OFFSHELL);
+					daughter_masses += std::max(0.0, random.BreitWignerRandom(M, W, OFFSHELL));
 				} else {
 					daughter_masses += msqrt( random.U(std::max(0.0,pow2(M - OFFSHELL*W)), std::min(lts.s, pow2(M + OFFSHELL*W)) ));
 				}
@@ -828,9 +828,9 @@ void MProcess::GetOffShellMass(const gra::MDecayBranch& branch, double& mass) {
 
 			const double M = branch.p.mass;
 			const double W = branch.p.width;
-
+			
 			if (!FLATMASS2) {
-				mass = random.BreitWignerRandom(M, W, OFFSHELL);
+				mass = std::max(0.0, random.BreitWignerRandom(M, W, OFFSHELL));
 			} else {
 				mass = msqrt( random.U(std::max(0.0,pow2(M - OFFSHELL*W)), std::min(lts.s, pow2(M + OFFSHELL*W)) ));
 			}
