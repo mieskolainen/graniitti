@@ -619,9 +619,9 @@ std::vector<OneCMD> SplitCommands(const std::string& fullstr) {
 	// Find @ blocks [ ... ]
 	std::vector<std::size_t> pos = FindOccurance(fullstr, "@");
 	std::vector<std::string> subcmd;
-
+	
 	if (pos.size() != 0) {
-
+		
 		// Take full string from the first @ till end
 		std::string str = fullstr.substr(pos[0]);
 
