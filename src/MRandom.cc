@@ -80,8 +80,8 @@ double MRandom::G(double mu, double sigma) {
 //
 // Input: resonance m and Gamma
 // Return mass (GeV)
-double MRandom::BreitWignerRandom(double m, double Gamma, double LIMIT) {
-
+double MRandom::RelativisticBWRandom(double m, double Gamma, double LIMIT) {
+	
 	const double m2    = m*m;
 	const double m2min = m2 - gra::math::pow2(LIMIT*Gamma); 
 	const double m2max = m2 + gra::math::pow2(LIMIT*Gamma);

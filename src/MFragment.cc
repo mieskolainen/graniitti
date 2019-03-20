@@ -416,7 +416,7 @@ void MFragment::GetSingleForwardMass(double& mass, MRandom& random) {
 	const double safe_margin = 0.01;
 	double mX = 0;
 	while (true) {
-		mX = random.BreitWignerRandom(M0, width, 1e6);
+		mX = random.RelativisticBWRandom(M0, width, 1e6);
 		if (mX > (PDG::mp + PDG::mpi + safe_margin)) {// && mX < lts.sqrt_s) {
 			mass = mX;
 			return;

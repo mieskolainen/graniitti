@@ -35,6 +35,7 @@ void MUserHistograms::InitHistograms() {
 	h2["rap1rap2"] = MH2(Nbins, Nbins, "Rapidity1 vs Rapidity2"); h2["rap1rap2"].SetAutoSymmetry({true, true});
 	
 	h1["FM"]       = MH1<double>(Nbins, "Forward M (GeV)");
+	h1["m0"]       = MH1<double>(Nbins, "Intermediate daughter M (GeV)");
 
 	// Level 2
 	Nbins = 40;
@@ -69,8 +70,10 @@ void MUserHistograms::FillHistograms(double totalweight, const gra::LORENTZSCALA
 		h1["Rap"].Fill(lts.Y, totalweight);
 		h1["Pt"].Fill(lts.Pt, totalweight);
 		h1["dPhi_pp"].Fill(std::abs(lts.pfinal[1].DeltaPhi(lts.pfinal[2])), totalweight);
-		//h1["pPt"].Fill(lts.pfinal[1].Pt(), totalweight);
-		//h1["m0"].Fill(lts.decaytree[0].p4.M(), totalweight);
+		h1["pPt"].Fill(lts.pfinal[1].Pt(), totalweight);
+		
+		// Cascade decay
+		if (lts.decaytree[0].legs.size() > 0) {h1["m0"].Fill(lts.decaytree[0].p4.M(), totalweight); }
 		
 		// Dissociated proton
 		if (lts.pfinal[1].M() > 1.0) { h1["FM"].Fill(lts.pfinal[1].M(), totalweight); }

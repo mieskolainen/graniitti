@@ -47,8 +47,8 @@ public:
 	double U(double a, double b);
 	double G(double mu, double sigma);	
 	double PowerRandom(double a, double b, double alpha);
-	double BreitWignerRandom(double m, double Gamma, double LIMIT = 3.0);
-	double CauchyRandom(double m, double Gamma, double LIMIT = 3.0);
+	double RelativisticBWRandom(double m, double Gamma, double LIMIT = 15.0); // Keep it high to avoid artifacts
+	double CauchyRandom(double m, double Gamma, double LIMIT = 15.0);
 	int    NBDRandom(double avgN, double k, int maxvalue);
 	int    PoissonRandom(double lambda);
 	double ExpRandom(double lambda);
