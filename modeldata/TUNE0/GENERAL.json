@@ -22,13 +22,11 @@
     "fc3"      : 5.0            // Pion loop (GeV^2)
   },
   
-  
   // ----------------------------------------------------------------------
   // Parameters for flat (DEBUG/ANALYSIS) amplitudes
   "PARAM_FLAT" : {
     "b" : 6                     // t-slope [GeV^{-2}], |M|^2 ~ exp(bt_1)exp(b_t2)
   },
-  
   
   // ----------------------------------------------------------------------
   // Monopolium / Monopole pair process parameters
@@ -49,21 +47,23 @@
 
   },
 
-
   // -----------------------------------------------------------------------
   // Regge amplitude parameters (used for central system)
   
   "PARAM_REGGE" : {
       
-      // Off-shell t_hat/u_hat channel form factor: 1 = "exp", 2 = "orear", 3 = "pow"
-      "offshellFF" : 2,
+      // Continuum amplitude t/u channel form factor:
+      // 1 = "exp", 2 = "orear", 3 = "pow"
+      // Note that with interfering resonances, the form factor parameter
+      // should be fitted together with the resonances.
+      "offshellFF" : 3,
       
       // Form factor parameters
-      "b_EXP" :   0.57,    // GeV^-2
-      "a_OREAR" : 0.46,    // GeV^-1
-      "b_OREAR" : 1.20,    // GeV^-1
-      "b_POW" :   0.67,    // GeV^2
-
+      "b_EXP" :   1.117,           // GeV^-2
+      "a_OREAR" : 0.310,           // GeV^-1
+      "b_OREAR" : 1.597,           // GeV^-1
+      "b_POW" :   0.6,     // GeV^2
+      
       // Regge-trajectory parameters (pomeron, f2, a2)
       "a0"  : [1.088, 0.55, 0.55], // Intercept (alpha_0 = 1 + DELTA)
       "ap"  : [0.20, 0.93, 0.93],  // Slope (alpha') [GeV^{-2}]
@@ -114,7 +114,6 @@
     "c" : [27.35376, 44.31084, 23.38164],
     "n" : [true, false, false]
   },
-  
   
   // -----------------------------------------------------------------------
   // Good-Walker proton excitation parametrization

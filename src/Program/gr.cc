@@ -101,7 +101,7 @@ int main(int argc, char* argv[]) {
 	if (r.count("p"))  {
 		gen->ReadInput(r["i"].as<std::string>(), r["p"].as<std::string>());
 	} else {
-		gen->ReadInput(r["i"].as<std::string>());		
+		gen->ReadInput(r["i"].as<std::string>());
 	}
 	
 	// -------------------------------------------------------------------

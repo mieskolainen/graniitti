@@ -186,7 +186,7 @@ void MGraniitti::InitFileOutput() {
  		runinfo = make_shared<HepMC3::GenRunInfo>();
 
  		struct HepMC3::GenRunInfo::ToolInfo generator = {
- 			std::string("GRANIITTI"),
+ 			std::string("GRANIITTI (" + gra::aux::MODELPARAM + ")"),
  			std::to_string(aux::GetVersion()).substr(0,5),
  			std::string("Generator")};
 		runinfo->tools().push_back(generator);
@@ -380,7 +380,8 @@ void MGraniitti::ReadModelParam(const std::string& inputfile) {
 	gra::aux::MODELPARAM = inputfile;
 
 	// Read and parse
-	const std::string fullpath = gra::aux::GetBasePath(2) + "/modeldata/" + inputfile + ".json";
+	const std::string fullpath = 
+		gra::aux::GetBasePath(2) + "/modeldata/" + gra::aux::MODELPARAM + "/GENERAL.json";
 	const std::string data     = gra::aux::GetInputData(fullpath);
 
 	json j;
@@ -600,9 +601,9 @@ void MGraniitti::ReadIntegralParam(const std::string& inputfile) {
 	const std::string XID = "INTEGRALPARAM";
 
 	// Numerical loop integration
-	const int ND = j[XID]["POMLOOP"]["ND"];         AssertRange(ND,  {1, 1000}, "POMLOOP::ND",  true);
+	const int ND = j[XID]["POMLOOP"]["ND"];         AssertRange(ND,  {-10, 10}, "POMLOOP::ND",  true);
 	MEikonalNumerics::SetLoopDiscretization(ND);
-
+	
 	// FLAT (naive) MC parameters
 	MCPARAM mpam;
 	mpam.PRECISION  = j[XID]["FLAT"]["PRECISION"];  AssertRange(mpam.PRECISION,  {0.0, 1.0},      "FLAT::PRECISION",  true);
@@ -995,6 +996,7 @@ void MGraniitti::Initialize() {
 	std::cout << "Multithreading:         " << CORES      << std::endl;
 	std::cout << "Integrator:             " << INTEGRATOR << std::endl;
 	std::cout << "Number of events:       " << NEVENTS    << std::endl;
+	std::cout << "Parameter setup:        " << gra::aux::MODELPARAM << std::endl;
 	
 	std::string str = (WEIGHTED == true) ? "weighted" : "unweighted";
 	std::cout << rang::fg::green << "Generation mode:        " << str
@@ -1007,6 +1009,8 @@ void MGraniitti::Initialize() {
 		proc->Eikonal.S3Constructor(proc->GetMandelstam_s(),
 									proc->GetInitialState(), false);
 	}
+
+	// Integrate
 	CallIntegrator(0);
 }
 
@@ -1014,7 +1018,13 @@ void MGraniitti::Initialize() {
 // Initialize with external Eikonal
 void MGraniitti::Initialize(const MEikonal& eikonal_in) {
 
+	// ** ALWAYS HERE ONLY AS LAST! **
+	proc->post_Constructor();
+	
+	// Set input eikonal
 	proc->SetEikonal(eikonal_in);
+
+	// Integrate
 	CallIntegrator(0);
 }
 

@@ -44,7 +44,7 @@ namespace gra {
 void MRegge::InitReggeAmplitude(int PDG, const std::string& MODELPARAM) {
 	
 	using json = nlohmann::json;
-	std::string fullpath = gra::aux::GetBasePath(2) + "/modeldata/" + MODELPARAM + ".json";
+	std::string fullpath = gra::aux::GetBasePath(2) + "/modeldata/" + MODELPARAM + "/GENERAL.json";
 	
 	// Read and parse
 	try {
@@ -130,7 +130,7 @@ void MRegge::InitReggeAmplitude(int PDG, const std::string& MODELPARAM) {
 // [REFERENCE: Gribov, Migdal, Strong coupling in the Pomeranchuk pole problem, Sov. Phys. JETP 28(4), 784-795 (1968)]
 // [REFERENCE: Muller, 1972]
 // 
-// For difference forms of triple Pomeron coupling (weak/strong, scalar/vector), see:
+// For different forms of triple Pomeron coupling (weak/strong, scalar/vector), see:
 // [REFERENCE: Luna, Khoze, Martin, Ryskin, https://arxiv.org/abs/1005.4864v1]
 //
 std::complex<double> MRegge::ME2(gra::LORENTZSCALAR& lts, int mode) const {
@@ -201,13 +201,13 @@ std::complex<double> MRegge::ME2(gra::LORENTZSCALAR& lts, int mode) const {
 // [THIS IS UNDER CONSTRUCTION!]
 //
 //  lambda1    lambda3
-//   ===========
+//   ==========>
 //        *
 //        *
 //        x----> lambda5
 //        *
 //        *
-//   ===========
+//   ==========>
 //  lambda2    lambda4
 //
 //
@@ -725,7 +725,7 @@ std::complex<double> MRegge::ME3(gra::LORENTZSCALAR& lts, gra::PARAM_RES& resona
 	// Proton form factors
 	const double FF_A  = lts.excite1 ? gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : gra::form::S3F(lts.t1);
 	const double FF_B  = lts.excite2 ? gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : gra::form::S3F(lts.t2);
-
+	
 	// s-channel
 	// Factor 2 x from initial state (identical boson) statistics
 	const std::complex<double> A_prod = 2.0 *
@@ -737,11 +737,11 @@ std::complex<double> MRegge::ME3(gra::LORENTZSCALAR& lts, gra::PARAM_RES& resona
 
 	// Decay amplitude
 	const std::complex<double> A_decay = gra::spin::SpinAmp(lts, resonance);
+	
+	// Fluxes
+	const double V = msqrt(lts.s / lts.s1 / lts.s2);
 
-	// Central vertex kinematic ansatz
-	const double V = lts.s/lts.s1/lts.s2;
-
-	return A_prod * V * A_decay;
+	return A_prod * A_decay * V;
 }
 
 
@@ -872,7 +872,7 @@ std::complex<double> MRegge::PropOnly(double s, double t) const {
 			// (cannot be used with linear trajectory due to poles)
 			//const std::complex<double> eta = ReggeEta(alpha, PARAM_REGGE::sgn[k]);
 			
-			// Evaluate at t = 0 to avoid poles
+			// Evaluate at t = 0 to avoid poles (for linear trajectory)
 			const std::complex<double> eta = ReggeEta(PARAM_REGGE::a0[k], PARAM_REGGE::sgn[k]);
 			
 			// Add to the sum
@@ -1071,8 +1071,8 @@ std::complex<double> JPC_CS_coupling(const gra::LORENTZSCALAR& lts, const gra::P
 // Propagator-Propagator-Resonance spin-parity transverse coupling structure
 // ansatz for different spin-parities.
 //
-// Idea: If Pomeron does not obey any basic classification scheme,
-// it may be a different quasiparticle (anyon etc.)
+// Idea: If Pomeron does not obey any basic spin-classification scheme,
+// it may be effective a different quasiparticle (anyon etc.)
 //
 //
 // For data, see:
@@ -1275,13 +1275,12 @@ std::complex<double> FSI_prop(double t_hat, double M2) {
 double ResonanceFormFactor(double s_hat, double M2) {
 
 	return 1.0;
-
-//	const double scale4 = 1.0; // GeV^4
-//	return std::exp(-pow2(s_hat - M2) / scale4);
+/*
+	const double scale4 = 1.0; // GeV^4
+	return std::exp(-pow2(s_hat - M2) / scale4);
+*/
 }
 
 
 } // PARAM_REGGE namespace ends
-
-
 } // gra namespace ends

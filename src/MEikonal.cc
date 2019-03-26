@@ -109,13 +109,13 @@ namespace gra {
 	// -----------------------------------------
 	
 	// Screening loop (minimum values)
-	unsigned int NumberLoopKT  = 15; // Number of kt steps
+	unsigned int NumberLoopKT  = 15;  // Number of kt steps
 	unsigned int NumberLoopPHI = 12;  // Number of phi steps
 	
-	// User adds more
-	void SetLoopDiscretization(unsigned int ND) {
-		NumberLoopKT  = 3 * ND + NumberLoopKT;
-		NumberLoopPHI = 3 * ND + NumberLoopPHI;
+	// User setup (ND can be negative, to get below the default)
+	void SetLoopDiscretization(int ND) {
+		NumberLoopKT  = std::max(3, 3 * ND + (int)NumberLoopKT);
+		NumberLoopPHI = std::max(3, 3 * ND + (int)NumberLoopPHI);
 	}
 	
 } // Namespace MEikonal ends

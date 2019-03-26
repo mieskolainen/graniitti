@@ -78,17 +78,28 @@ namespace PDG {
 	//constexpr double GeV2nb = GeV2barn * 1E9;   // 1 GeV^{-2} to nanobarn
 	//constexpr double GeV2pb = GeV2barn * 1E12;  // 1 GeV^{-2} to picobarns
 	//constexpr double mb2GeV = 1.0 / GeV2mb;     // 1 mb to GeV^{-2}
-
+	
 	
 	// More conversions
 	//constexpr double GeV2J   = eV * 1E9; // 1 GeV^{1} to [kg*m^2/s^2]=[Joule]
 	//constexpr double GeV2kg  = GeV2J / GeV2m2 * pow2(GeV2s); // 1 GeV^{1} to [kg]
 	//constexpr double GeV2N   = GeV2J / GeV2m; // 1 GeV^{2} to [N]=[kg*m/s^2] (Force)
 	//constexpr double GeV2mom = GeV2J / GeV2m * GeV2s; // 1 GeV^{1} to [kg*m/s] (Momentum)
-
+	
 	// cross section: [value] x [GeV^{-2}] = [value] x [hbar x c]^2
 	// decay rate:    [value] x [GeV] = [value] / hbar
 	// length:        [value] x [GeV^{-1}] = [value] x [hbar x c]
+	
+	
+	// Meson decay constants (PDG) [pi0, pi+, K+, K0, eta, etaprime]
+	static const std::map<int, double> fM_meson {
+		{111, 0.1300},
+		{211, 0.1307},
+		{321, 0.1598},
+		{311, 0.1598},
+		{221, 1.20 * 0.130},
+		{332,-0.45 * 0.130}
+	};
 
 } // Namespace PDG ends
 
@@ -101,7 +112,6 @@ public:
 	~MPDG() {}
 
 	void ReadParticleData(const std::string& filepath);
-	
 	void TokenizeProcess(const std::string& str, int depth, std::vector<gra::MDecayBranch>& branches) const;
 	bool IsDecay(const std::string& str) const;
 	

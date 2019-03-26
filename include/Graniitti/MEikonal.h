@@ -48,7 +48,7 @@ namespace MEikonalNumerics {
 
 	std::string GetHashString();
 
-	void SetLoopDiscretization(unsigned int ND);
+	void SetLoopDiscretization(int ND);
 	void ReadParameters();
 }
 

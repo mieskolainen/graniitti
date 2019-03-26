@@ -2,20 +2,20 @@
 //
 // mikael.mieskolainen@cern.ch, 2017
 {
-  
+
   "PARAM_RES" : {
 
     // PDG identifier
-    "PDG" : 9000221,
+    "PDG" : 9050225,
     
     // Mass, width, spin (0,1/2,1,3/2,2...), parity (1,-1)
-    "M"  : 0.50,
-    "W"  : 0.60,
-    "J"  : 0,
+    "M"  : 1.944,
+    "W"  : 4.72E-1,
+    "J"  : 2,
     "P"  : 1,
     
     // "Glueball state" (orthogonal transverse geometry)
-    "glue" : false,
+    "glue" : true,
 
     // Breit-Wigner propagator type
     // 1 = fixed width relativistic
@@ -28,18 +28,23 @@
     "random_rho" : 0,
     
     // Production coupling constant at amplitude level
-    "g_A"   : 0.08,
-    "g_phi" : 2.96,
+    "g_A"   : 0.1,
+    "g_phi" : 0.0,
 
     // Lorentz frame of spin polarization density
     // (SR ~ no rotation, HE ~ helicity, CS ~ Collins-Soper)
     "FRAME" : "SR",
     
     // Resonance spin-density (von Neumann) matrix (Re and Im parts)
+
+    // Spin-2 example case
+    // Transverse:   rho_--, rho_-, rho_+, rho_++
+    // Longitudinal: rho_00
+    
     "rho_real" : [ [0.0, 0, 0, 0, 0] ,
-                   [0, 0.25, 0, 0, 0] ,
-                   [0, 0, 0.5, 0, 0] ,
-                   [0, 0, 0, 0.25, 0] ,
+                   [0, 0.5, 0, 0, 0] ,
+                   [0, 0, 0, 0, 0] ,
+                   [0, 0, 0, 0.5, 0] ,
                    [0, 0, 0, 0, 0.0]],
 
     "rho_imag" : [ [0, 0, 0, 0, 0] ,

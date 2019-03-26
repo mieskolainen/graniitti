@@ -602,7 +602,8 @@ void MProcess::SetupBranching() {
 	// Setup branching fractions for resonances
 	using json = nlohmann::json;
 
-	const std::string inputfile = gra::aux::GetBasePath(2) + "/modeldata/" + "BRANCHING.json";
+	const std::string inputfile
+		= gra::aux::GetBasePath(2) + "/modeldata/" + aux::MODELPARAM + "/BRANCHING.json";
 	const std::string data      = gra::aux::GetInputData(inputfile);
 	json j;
 	try {
@@ -1561,7 +1562,8 @@ bool MProcess::GetLorentzScalars(unsigned int Nf) {
 		}
 	}
 	
-	lts.s1 = lts.ss[1][0]; // Sub invariants w.r.t central system
+	// Sub invariants w.r.t central system
+	lts.s1 = lts.ss[1][0]; 
 	lts.s2 = lts.ss[2][0];
 	if (lts.s1 < 0 || lts.s2 < 0) { return false; }
 

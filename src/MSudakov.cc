@@ -29,13 +29,13 @@
 #include "json.hpp"
 #include "rang.hpp"
 
-using gra::aux::indices;
-using gra::math::msqrt;
-using gra::math::pow2;
-using gra::math::zi;
-
 
 namespace gra {
+
+using aux::indices;
+using math::msqrt;
+using math::pow2;
+using math::zi;
 
 namespace MSudakovNumerics {
 
@@ -127,7 +127,7 @@ void MSudakov::Init(double _sqrts, const std::string& PDFSET, bool init_arrays) 
 	MSudakovNumerics::M_MAX = _sqrts;
 
 	// Collinear case: M^2 = x_1x_2s, let x_1 = 1.0 gives minimum x_2 = M^2/s
-	MSudakovNumerics::x_MIN = gra::math::pow2(MSudakovNumerics::M_MIN/MSudakovNumerics::sqrts);
+	MSudakovNumerics::x_MIN = math::pow2(MSudakovNumerics::M_MIN/MSudakovNumerics::sqrts);
 
 	// InitLHAPDF("CT10nlo");
 	InitLHAPDF(PDFSET);
@@ -220,14 +220,24 @@ void MSudakov::InitLHAPDF(const std::string& pdfname) {
 
 	// LHAPDF init
 	try {
-		PdfPtr =
-		    std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(pdfname, 0));
+		PdfPtr = std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(pdfname, 0));
 	} catch (...) {
-		std::string str =
-		    "MSudakov::InitLHAPDF: Problem with reading a pdfset '" + pdfname + "'";
-		throw std::invalid_argument(str);
+		++init_trials;
+
+		std::string str = "MSudakov::InitLHAPDF: Trials = "
+			+ std::to_string(init_trials) + " :: Problem with reading a pdfset '" + pdfname + "'";
+
+		if (init_trials >= 2) { // Too many failures
+    		throw std::invalid_argument(str);
+		}
+
+		std::cout << str << std::endl;
+		
+		aux::AutoDownloadLHAPDF(pdfname);
+	    InitLHAPDF(pdfname); // try again   
 	}
 }
+
 
 // PDF test routine
 void MSudakov::TestPDF() const {
@@ -338,7 +348,7 @@ double MSudakov::fg_xQ2M(double x, double q2, double M) const {
 	double total = 0.0;
 
 	if (Tg > 1e-15) {
-		total = dHg * gra::math::msqrt(Tg) + Hg * dTg / (2.0 * gra::math::msqrt(Tg));
+		total = dHg * math::msqrt(Tg) + Hg * dTg / (2.0 * math::msqrt(Tg));
 	} else {
 		//printf("MSudakov::fg_xQ2M: Sudakov factor Tg = %0.2E [x = %0.1E, q2 = %0.3f GeV^2, M = %0.3f GeV] \n", Tg, x, q2, M);
 	}
@@ -394,13 +404,13 @@ std::pair<double,double> MSudakov::Shuvaev_H(double q2, double x) {
 			// H_g(x/2,x/2,Q^2) = 4x/\pi \int_{x/4}^1 dy y^{1/2}(1-y)^{1/2}g(x/4y),q^2)
 			//
 			// => take into account that LHAPDF provides xg(), not g(), gives:
-			const double factor = gra::math::msqrt(gra::math::pow3(y) * (1 - y));
+			const double factor = math::msqrt(math::pow3(y) * (1 - y));
 			fA[i] = factor * xg_xQ2(argument, q2);
 			fB[i] = factor * diff_xg_xQ2_wrt_Q2(argument, q2);
 		}
-		const double norm = 16.0 / gra::math::PI;
-		Hg  = norm * gra::math::CSIntegral(fA, y_STEP);
-		dHg = norm * gra::math::CSIntegral(fB, y_STEP);
+		const double norm = 16.0 / math::PI;
+		Hg  = norm * math::CSIntegral(fA, y_STEP);
+		dHg = norm * math::CSIntegral(fB, y_STEP);
 
 	} else {
 		// Fatal error
@@ -427,10 +437,10 @@ std::pair<double,double> MSudakov::Shuvaev_H(double q2, double x) {
 std::pair<double,double> MSudakov::Sudakov_T(double qt2, double mu) {
 	
 	// Scale functor
-	auto DeltaScale = [](double kt2, double M) -> double { return gra::math::msqrt(kt2) / M; };
+	auto DeltaScale = [](double kt2, double M) -> double { return math::msqrt(kt2) / M; };
 	
 	// [OUTER INTEGRAL]: k_t^2 integral upper and lower bounds:
-	const double MAX = std::log(gra::math::pow2(mu));
+	const double MAX = std::log(math::pow2(mu));
 	const double MIN = std::log(qt2);
 	
 	// Discretization
@@ -449,12 +459,12 @@ std::pair<double,double> MSudakov::Sudakov_T(double qt2, double mu) {
 		const double delta = DeltaScale(kt2, mu);
 		f[i] = AlphaS_Q2(kt2) * (AP_gg(delta) + AP_qg(delta, kt2));
 	}
-	const double integral = gra::math::CSIntegral(f, STEP) / (2.0 * gra::math::PI);
+	const double integral = math::CSIntegral(f, STEP) / (2.0 * math::PI);
 
 	// Final expression and its derivative
 	const double Tg    = std::exp(-integral);
 	const double delta = DeltaScale(qt2, mu);
-	const double dTg   = Tg * AlphaS_Q2(qt2) / (2.0 * gra::math::PI * qt2) * (AP_gg(delta) + AP_qg(delta, qt2));
+	const double dTg   = Tg * AlphaS_Q2(qt2) / (2.0 * math::PI * qt2) * (AP_gg(delta) + AP_qg(delta, qt2));
 	return {Tg, dTg};
 }
 
@@ -481,8 +491,8 @@ double MSudakov::AP_gg(double delta) const {
 	const double CA = 3.0; // Structure constant
 	return 2.0 * CA *
 	       (std::log(1.0 / delta) -
-	        gra::math::pow2(1.0 - delta) *
-	            (3.0 * gra::math::pow2(delta) - 2.0 * delta + 11.0) / 12.0);
+	        math::pow2(1.0 - delta) *
+	            (3.0 * math::pow2(delta) - 2.0 * delta + 11.0) / 12.0);
 }
 
 // Altarelli-Parisi splitting function definite integral over z,
@@ -494,7 +504,7 @@ double MSudakov::AP_gg(double delta) const {
 //
 double MSudakov::AP_qg(double delta, double qt2) const {
 	const double TR = 0.5; // Structure constant
-	return TR * (-2.0 * gra::math::pow3(delta) / 3.0 + gra::math::pow2(delta) -
+	return TR * (-2.0 * math::pow3(delta) / 3.0 + math::pow2(delta) -
 	             delta + 2.0 / 3.0) * NumFlavor(qt2);
 }
 
@@ -504,9 +514,9 @@ double MSudakov::NumFlavor(double q2) const {
 	const double m_charm  = 1.275; // Gev, PDG-2018 (default definition)
 	const double m_bottom = 4.18;  // Gev
 
-	if        (q2 < gra::math::pow2(m_charm)) {
+	if        (q2 < math::pow2(m_charm)) {
 		return 3.0;
-	} else if (q2 < gra::math::pow2(m_bottom)) {
+	} else if (q2 < math::pow2(m_bottom)) {
 		return 4.0;
 	} else {
 		return 5.0;

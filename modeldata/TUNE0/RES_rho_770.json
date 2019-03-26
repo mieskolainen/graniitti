@@ -1,19 +1,19 @@
 // Resonance parameters
 //
-// mikael.mieskolainen@cern.ch, 2017
+// mikael.mieskolainen@cern.ch, 2018
 {
-
-  "PARAM_RES" : {
-
-    // PDG identifier
-    "PDG" : 225,
-
-    // Mass, width, spin (0,1/2,1,3/2,2...), parity (1,-1)
-    "M"  : 1.275,
-    "W"  : 0.185,
-    "J"  : 2,
-    "P"  : 1,
     
+  "PARAM_RES" : {
+      
+    // PDG identifier
+    "PDG" : 113,
+    
+    // Mass, width, (0,1/2,1,3/2,2...), parity (1,-1)
+    "M"  : 0.77526,
+    "W"  : 0.1491,
+    "J"  :  1,
+    "P"  :  -1,
+
     // "Glueball state" (orthogonal transverse geometry)
     "glue" : false,
 
@@ -26,32 +26,25 @@
     // Set 0 for density matrix below, or an integer > 0 for a random sampled
     // Different integers give different matrices.
     "random_rho" : 0,
-
+    
     // Production coupling constant at amplitude level
-    "g_A"   :  1.1,
-    "g_phi" : -2.2,
-
+    "g_A"   : 0.24980996,
+    "g_phi" : 2.864565,
+    
     // Lorentz frame of spin polarization density
     // (SR ~ no rotation, HE ~ helicity, CS ~ Collins-Soper)
     "FRAME" : "SR",
     
     // Resonance spin-density (von Neumann) matrix (Re and Im parts)
-    
-    // Spin-2 example case
-    // Transverse:   rho_--, rho_-, rho_+, rho_++
-    // Longitudinal: rho_00
 
-    "rho_real" : [ [0.0, 0, 0, 0, 0] ,
-                   [0, 0.5, 0, 0, 0] ,
-                   [0, 0, 0, 0, 0] ,
-                   [0, 0, 0, 0.5, 0] ,
-                   [0, 0, 0, 0, 0.0]],
-    
-    "rho_imag" : [ [0, 0, 0, 0, 0] ,
-                   [0, 0, 0, 0, 0] ,
-                   [0, 0, 0, 0, 0] ,
-                   [0, 0, 0, 0, 0] ,
-                   [0, 0, 0, 0, 0]],
+    // Spin-1 (pure transverse)
+    // rho_00 = Transverse part, rho_-1-1, rho_11 = longitudinal parts
+    "rho_real" : [ [ 0.5, 0,   0] ,
+                   [ 0,   0,   0] ,
+                   [ 0,   0, 0.5] ],
+    "rho_imag" : [ [ 0,  0,  0] ,
+                   [ 0,  0,  0] ,
+                   [ 0,  0,  0] ],
   }
 
 }

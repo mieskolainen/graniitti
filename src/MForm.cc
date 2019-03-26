@@ -163,8 +163,9 @@ gra::PARAM_RES ReadResonance(const std::string& resparam_str, MRandom& rng) {
 	std::cout << "gra::form::ReadResonance: Reading " + resparam_str + " ";
 
 	// Create a JSON object from file
-	std::string inputfile = gra::aux::GetBasePath(2) + "/modeldata/" + resparam_str;
-
+	std::string inputfile =
+		gra::aux::GetBasePath(2) + "/modeldata/" + gra::aux::MODELPARAM + "/" + resparam_str;
+	
 	// Read and parse
 	std::string data;
 	nlohmann::json j;

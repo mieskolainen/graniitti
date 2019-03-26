@@ -119,6 +119,8 @@ inline Eigen::MatrixXd Matrix2Eigen(const MMatrix<T>& M) {
 }
 
 // System information
+void AutoDownloadLHAPDF(const std::string pdfname);
+std::string ExecCommand(const std::string& cmd);
 std::string GetExecutablePath();
 std::string GetBasePath(std::size_t level);
 

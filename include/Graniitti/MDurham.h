@@ -63,7 +63,7 @@ public:
 	std::complex<double> DQtloop(gra::LORENTZSCALAR& lts, std::vector<std::vector<std::complex<double>>> Amp);
 	inline void DScaleChoise(double qt2, double q1_2, double q2_2, double& Q1_2_scale, double& Q2_2_scale) const;
 	
-	inline void Dgg2chi0(const gra::LORENTZSCALAR& lts,
+	inline void Dgg2chic0(const gra::LORENTZSCALAR& lts,
 	              std::vector<std::vector<std::complex<double>>>& Amp,
 	              const std::vector<double>& qt1,
 	              const std::vector<double>& qt2) const;
@@ -81,6 +81,12 @@ public:
 	
 	void Dgg2qqbar(const gra::LORENTZSCALAR& lts,
 	               std::vector<std::vector<std::complex<double>>>& Amp);
+
+	void Dgg2MMbar(const gra::LORENTZSCALAR& lts,
+				   std::vector<std::vector<std::complex<double>>>& Amp);
+	double phi_CZ(double x, double fM) const;
+	std::vector<double> EvalPhi(int N, double fM) const;
+	
 
 	double Asum = 0.0;
 	double Nsum = 0.0;

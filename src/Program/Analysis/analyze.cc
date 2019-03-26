@@ -55,9 +55,9 @@ void set_plot_style() {
     const Int_t NCont = 255;
 
     Double_t stops[NRGBs] = {0.00, 0.34, 0.61, 0.84, 1.00};
-    Double_t red[NRGBs] = {0.00, 0.00, 0.87, 1.00, 0.51};
+    Double_t red[NRGBs]   = {0.00, 0.00, 0.87, 1.00, 0.51};
     Double_t green[NRGBs] = {0.00, 0.81, 1.00, 0.20, 0.00};
-    Double_t blue[NRGBs] = {0.51, 1.00, 0.12, 0.00, 0.00};
+    Double_t blue[NRGBs]  = {0.51, 1.00, 0.12, 0.00, 0.00};
     TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
     gStyle->SetNumberContours(NCont);
 
@@ -225,11 +225,11 @@ try {
 
     cxxopts::Options options(argv[0], "");
     options.add_options()
-        ("i,input",     "input HepMC3 file <without .hepmc3> (input1,input2,...)",  cxxopts::value<std::string>() )
-        ("g,pdg",       "final state PDG (input1,input2,...)",            cxxopts::value<std::string>() )
-        ("n,number",    "final state multiplicity (input1,input2,...)",   cxxopts::value<std::string>() )
-        ("l,labels",    "plot legend string (input1,input2,...)",      cxxopts::value<std::string>() )
-        ("u,units",     "cross section unit (barn,mb,ub,nb,pb,fb)",    cxxopts::value<std::string>() )
+        ("i,input",     "input HepMC3 file        <input1,input2,...> (without .hepmc3)", cxxopts::value<std::string>() )
+        ("g,pdg",       "final state PDG          <input1,input2,...>",            cxxopts::value<std::string>() )
+        ("n,number",    "final state multiplicity <input1,input2,...>",   cxxopts::value<std::string>() )
+        ("l,labels",    "plot legend string       <input1,input2,...>",      cxxopts::value<std::string>() )
+        ("u,units",     "cross section unit       <barn|mb|ub|nb|pb|fb>",    cxxopts::value<std::string>() )
         ("M,mass",      "plot mass limit",     cxxopts::value<double>() )
         ("Y,rapidity",  "plot rapidity limit", cxxopts::value<double>() )
         ("P,momentum",  "plot momentum limit", cxxopts::value<double>() )

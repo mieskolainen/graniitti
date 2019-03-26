@@ -138,6 +138,11 @@ void experiment(bool screening) {
 
     const std::string BASEPATH = "./tests/processes/";
 
+
+    // ...
+    input.push_back(MEASUREMENT("gg2MMbar.json",     0, 0, 0));
+    
+
     // https://arxiv.org/pdf/hep-ex/0611040.pdf
     input.push_back(MEASUREMENT("CDF07_ee.json",     1.6e-12,   0.5e-12,   0.3e-12));
 
@@ -185,7 +190,7 @@ void experiment(bool screening) {
     input.push_back(MEASUREMENT("ATLAS_WW.json",     0, 0, 0));
 
 	// <https://arxiv.org/pdf/1806.04079.pdf>
-    input.push_back(MEASUREMENT("gg2chi0.json",      0, 0, 0));
+    input.push_back(MEASUREMENT("gg2chic0.json",     0, 0, 0));
 
     // ...
     input.push_back(MEASUREMENT("gg2gg.json",        0, 0, 0));
@@ -194,13 +199,13 @@ void experiment(bool screening) {
     input.push_back(MEASUREMENT("yy2Higgs.json",     0, 0, 0));
 
     // ...
-    input.push_back(MEASUREMENT("monopolepair.json", 0, 0, 0));
+    input.push_back(MEASUREMENT("monopolepair.json",     0, 0, 0));
 
     // ...
     input.push_back(MEASUREMENT("monopolepair_LUX.json", 0, 0, 0));
 
     // ...
-    input.push_back(MEASUREMENT("monopolium.json",   0, 0, 0));
+    input.push_back(MEASUREMENT("monopolium.json",       0, 0, 0));
 
 
     // ------------------------------------------------------------------

@@ -10,13 +10,13 @@
     
   "GENERALPARAM" : {
 
-    "OUTPUT"  : "ALICE_7_pipi", // Output filename
-    "FORMAT"  : "hepmc3",       // hepmc3, hepmc2, hepevt
-    "CORES"   : 0,              // Number of CPU threads (0 for automatic)
-    "NEVENTS" : 0,              // Number of unweighted (weight = 1) events
-    "INTEGRATOR" : "VEGAS",     // Integrator (VEGAS, FLAT)
-    "WEIGHTED"   : false,       // Weighted events (default false)
-    "MODELPARAM" : "TUNE0"      // General model tune
+    "OUTPUT"     : "ALICE_7_pipi", // Output filename
+    "FORMAT"     : "hepmc3",       // hepmc3, hepmc2, hepevt
+    "CORES"      :  0,             // Number of CPU threads (0 for automatic)
+    "NEVENTS"    : 0,              // Number of unweighted (weight = 1) events
+    "INTEGRATOR" : "VEGAS",        // Integrator (VEGAS, FLAT)
+    "WEIGHTED"   : false,          // Weighted events (default false)
+    "MODELPARAM" : "TUNE0"         // General model tune
   },
   
   // ----------------------------------------------------------------------
@@ -27,16 +27,14 @@
     "BEAM"    : ["p+","p+"],     // Beam PDG-ID / Name
     "ENERGY"  : [3500, 3500],    // Beam energy in the lab (GeV)
     "PROCESS" : "PP[RES+CON]<C> -> pi+ pi-",  // Process
-    //"RES"     : ["f0_500", "rho_770", "f0_980", "phi_1020", "f2_1270"],
-    //"RES"     : ["f0_500", "rho_770", "f0_980", "phi_1020", "f2_1270", "f0_1500", "f2_1525", "f0_1710"],
-    "RES"     : ["f0_500", "rho_770", "f0_980", "f2_1270", "f0_1500", "f2_1525", "f0_1710"],
+    "RES"     : ["f0_500", "rho_770", "f0_980", "phi_1020", "f2_1270", "f0_1500", "f2_1525", "f0_1710"],
     "POMLOOP" : false,           // Eikonal Pomeron loop screening
     "NSTARS"  : 0,               // N* excitation (0 = elastic, 1 = single, 2 = double)
     "LHAPDF"  : "CT10nlo",       // LHAPDF parton distribution set
     "HIST"    : 1,               // On-the-flight histograms (0 = off,1,2)
     "RNDSEED" : 12345678         // Random seed (int32)
   },
-
+  
   // ----------------------------------------------------------------------
   // Monte Carlo integrator setup
 
@@ -44,7 +42,7 @@
     
     // Loop integration
     "POMLOOP" : {
-      "ND" : 3              // Loop integral discretization (is multiplied by two)
+      "ND" : 0              // Loop integral discretization
     },
 
     // VEGAS integrator
@@ -52,10 +50,10 @@
       
       "BINS" : 128,         // Maximum number of bins per dimension (NOTE: EVEN NUMBER)
       "LAMBDA" : 1.25,      // Regularization parameter
-      "NCALL" : 1000,       // Number of function calls per iteration (5000 or more)
-      "ITER"  : 5,         // Number of initialization iteration (10 or more)
+      "NCALL" : 5000,       // Number of function calls per iteration (5000 or more)
+      "ITER"  : 5,          // Number of initialization iteration (10 or more)
       "CHI2MAX" : 10.0,     // Maximum Chi^2 in initialization
-      "PRECISION"  : 0.15,  // Integral relative precision target
+      "PRECISION"  : 0.05,  // Integral relative precision target
 
       "DEBUG" : -1          // Debug output (default -1)
     },
@@ -78,7 +76,8 @@
       "Rap" : [-0.9, 0.9] // Rapidity boundaries of the final states (<C> class)
     },
     "<F>" : {
-      "Rap" : [-2.0, 2.0] // Rapidity boundaries of the system (<F> class)
+      "Rap" : [-2.0, 2.0], // Rapidity boundaries of the system (<F> class)
+      "M"   : [0.0, 5.0]
     },
     "<Q>" : {
       "Xi"  : [0.0, 0.05] // Invariant scale M^2/s (forward excitation)

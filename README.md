@@ -1,4 +1,4 @@
-# GRANIITTI [beta 0.2 dev-branch] 
+# GRANIITTI [beta 0.25 dev-branch] 
 https://arxiv.org/abs/1811.01730
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)

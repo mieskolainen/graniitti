@@ -74,6 +74,7 @@ void SetSoftParam(std::map<std::string, gra::PARAM_RES>& RESONANCES, double* par
 // Choose continuum form factor parametrization here (1,2,3)
 int offshellFF = 1;
 
+bool POMLOOP = false;
 
 // ===============================================================
 // Note that TMinuit uses Fortran indexing => The parameter 0 in C++
@@ -96,7 +97,7 @@ void SetSoftParam(std::map<std::string, gra::PARAM_RES>& RESONANCES, double* par
     	double phi = par[++k];
     	RESONANCES[x.first].g = A * std::exp(gra::math::zi * phi);
 
-    	printf("[%s] \t A = %0.6f \t phi = %0.6f (%0.0f deg)\n",
+    	printf("[%s] \t A = %0.8f \t phi = %0.6f (%0.0f deg)\n",
     	       x.first.c_str(), A, phi, phi / (2 * gra::math::PI) * 360);
     }
     printf("\n");
@@ -177,7 +178,8 @@ int iter = 0;
 
 // Cost function
 void Chi2Func(int& npar, double* gin, double& f, double* par, int iflag) {
-    printf("fitcentral::Chi2Func: [iter = %d] ... \n", iter);
+
+    std::cout << rang::fg::red << "fitcentral::Chi2Func: iter = " << iter << rang::fg::reset << std::endl;
 
     double cost = 0;
     double chi2 = 0;
@@ -186,127 +188,133 @@ void Chi2Func(int& npar, double* gin, double& f, double* par, int iflag) {
     // Loop over different datasets
     for (const auto& k : indices(datasets)) {
 
-	double local_cost = 0.0;
-	double local_chi2 = 0.0;
-	int local_points = 0;
+    	double local_cost = 0.0;
+    	double local_chi2 = 0.0;
+    	int local_points = 0;
 
-	// Generator
-	std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
+    	// Generator
+        std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
 
-	try {
-	    if (iter > 0) {
-		HILJAA = true; // SILENT output
-	    }
+    	try {
 
-	    // Read process input from file, update parameters
-	    gen->ReadInput(datasets[k].INPUTFILE);
-        std::map<std::string, gra::PARAM_RES> RESONANCES = gen->proc->GetResonances();
-        fitcentral::SetSoftParam(RESONANCES, par);
-        gen->proc->SetResonances(RESONANCES);
+    	    if (iter > 1) {
+    		HILJAA = true; // SILENT output
+    	    }
 
-	    // Force histogramming level 1
-	    gen->proc->SetHistograms(1);
+    	    // Read process input from file
+    	    gen->ReadInput(datasets[k].INPUTFILE);
+            std::map<std::string, gra::PARAM_RES> RESONANCES = gen->proc->GetResonances();
 
-	    // Reset histogram bounds according to what we use here (MUST BE
-	    // DONE BEFORE INITIALIZATION!)
-	    gen->proc->h1["M"].ResetBounds(datasets[k].NBINS, datasets[k].MMIN, datasets[k].MMAX);
-        
-	    // Initialize (always last)
-	    if (iter == 0) {
-		gen->Initialize();
-		eik = gen->proc->GetEikonal();
-	    } else {
-		gen->Initialize(eik);
-	    }
-	    ++iter;
+            // Set new parameters
+            fitcentral::SetSoftParam(RESONANCES, par);
+            gen->proc->SetResonances(RESONANCES);
 
-	    // Generate events
-	    // gen->Generate();
+            // Set screening
+            gen->proc->SetScreening(fitcentral::POMLOOP);
 
-	    // Histogram fusion due to multithreading!
-	    gen->HistogramFusion();
+    	    // Force histogramming level 1
+    	    gen->proc->SetHistograms(1);
 
-	    printf("MC: \n");
-	    gen->proc->h1["M"].Print();
-	    // ---------------------------------------------------------
+    	    // Reset histogram bounds according to what we use here
+            // (MUST BE DONE BEFORE INITIALIZATION!)
+    	    gen->proc->h1["M"].ResetBounds(datasets[k].NBINS, datasets[k].MMIN, datasets[k].MMAX);
 
-	    // Get normalization from data
-	    double S = datasets[k].h1DATA->SumWeights() / gen->proc->h1["M"].SumWeights();
+    	    // Initialize (always last)
+    	    if (iter == 0) {
+    		gen->Initialize();
+    		eik = gen->proc->GetEikonal();
+    	    } else {
+    		gen->Initialize(eik);
+    	    }
+    	    ++iter;
 
-	    // Chi^2 and log-likelihood
-	    for (std::size_t i = 0; i < datasets[k].h1DATA->XBins(); ++i) {
-    		if (datasets[k].h1DATA->GetBinWeight(i) > 0) {
-    		    // Chi^2
-    		    local_chi2 += gra::math::pow2(S * gen->proc->h1["M"].GetBinWeight(i) -
-    		                    datasets[k].h1DATA->GetBinWeight(i)) / datasets[k].h1DATA->GetBinWeight(i);
+    	    // Generate events
+    	    //gen->Generate();
 
-    		    // Log-likelihood
-    		    double nb = datasets[k].h1DATA->GetBinWeight(i);
-    		    double fb = S * gen->proc->h1["M"].GetBinWeight(i);
-    		    if (fb > 0) {
-                    // make it negative (we use minimizer)
-                    local_cost -= nb * std::log(fb);
-    		    }
-    		    ++local_points;
-    		}
-	    }
+    	    // Histogram fusion due to multithreading!
+    	    gen->HistogramFusion();
 
-	    // Make it compatible with chi^2 uncertainty calculation
-	    local_cost *= 2.0;
+    	    printf("MC: \n");
+    	    gen->proc->h1["M"].Print();
+    	    // ---------------------------------------------------------
 
-	    // UPDATE GLOBAL
-	    chi2   += local_chi2;
-	    cost   += local_cost;
-	    points += local_points;
-        
-	    printf("DATA: \n");
-	    datasets[k].h1DATA->Print();
+    	    // Get normalization from data
+    	    double S = datasets[k].h1DATA->SumWeights() / gen->proc->h1["M"].SumWeights();
 
-	    if (chi2 / (double)points < 2.0) {
-		std::cout << rang::fg::green;
-	    } else {
-		std::cout << rang::fg::red;
-	    }
-	    printf(
-	        "============================================================="
-	        " \n");
-	    printf("DATASET %lu/%lu \n", k + 1, datasets.size());
-	    printf("LOCAL \n");
-	    printf(" chi^2 / points = %0.2f / %d = %0.2f \n", local_chi2,
-	           local_points, local_chi2 / (double)local_points);
-	    printf(" -logL = %0.2f \n", local_cost);
-	    printf("GLOBAL \n");
-	    printf(" chi^2 / points = %0.2f / %d = %0.2f \n", chi2, points,
-	           chi2 / (double)points);
-	    printf(" -logL = %0.2f \n", cost);
-	    printf(
-	        "============================================================="
-	        " \n\n");
-	    std::cout << rang::fg::reset;
+    	    // Chi^2 and log-likelihood
+    	    for (std::size_t i = 0; i < datasets[k].h1DATA->XBins(); ++i) {
+        		if (datasets[k].h1DATA->GetBinWeight(i) > 0) {
+        		    // Chi^2
+        		    local_chi2 += gra::math::pow2(S * gen->proc->h1["M"].GetBinWeight(i) -
+        		                    datasets[k].h1DATA->GetBinWeight(i)) / datasets[k].h1DATA->GetBinWeight(i);
 
-    } catch (const std::invalid_argument& e) {
-    gra::aux::PrintGameOver();
-    std::cerr << rang::fg::red
-              << "Exception catched: " << rang::fg::reset << e.what()
-              << std::endl;
-    exit(0);
-    } catch (const std::ios_base::failure& e) {
-    gra::aux::PrintGameOver();
-    std::cerr << rang::fg::red
-              << "Exception catched: std::ios_base::failure: "
-              << rang::fg::reset << e.what() << std::endl;
-    exit(0);
-    } catch (...) {
-    gra::aux::PrintGameOver();
-    std::cerr << rang::fg::red << "Exception catched: Unspecified (...) (Probably JSON input)"
-    		  << rang::fg::reset << std::endl;
-    exit(0);
-    }
-    }
+        		    // Log-likelihood
+        		    double nb = datasets[k].h1DATA->GetBinWeight(i);
+        		    double fb = S * gen->proc->h1["M"].GetBinWeight(i);
+        		    if (fb > 0) {
+                        // make it negative (we use minimizer)
+                        local_cost -= nb * std::log(fb);
+        		    }
+        		    ++local_points;
+        		}
+    	    }
+
+    	    // Make it compatible with chi^2 uncertainty calculation
+    	    local_cost *= 2.0;
+
+    	    // UPDATE GLOBAL
+    	    chi2   += local_chi2;
+    	    cost   += local_cost;
+    	    points += local_points;
+            
+    	    printf("DATA: \n");
+    	    datasets[k].h1DATA->Print();
+
+    	    if (chi2 / (double)points < 2.0) {
+    		std::cout << rang::fg::green;
+    	    } else {
+    		std::cout << rang::fg::red;
+    	    }
+    	    printf(
+    	        "============================================================="
+    	        " \n");
+    	    printf("DATASET %lu/%lu \n", k + 1, datasets.size());
+    	    printf("LOCAL \n");
+    	    printf(" chi^2 / points = %0.2f / %d = %0.2f \n", local_chi2,
+    	           local_points, local_chi2 / (double)local_points);
+    	    printf(" -logL = %0.2f \n", local_cost);
+    	    printf("GLOBAL \n");
+    	    printf(" chi^2 / points = %0.2f / %d = %0.2f \n", chi2, points,
+    	           chi2 / (double)points);
+    	    printf(" -logL = %0.2f \n", cost);
+    	    printf(
+    	        "============================================================="
+    	        " \n\n");
+    	    std::cout << rang::fg::reset;
+
+        } catch (const std::invalid_argument& e) {
+        gra::aux::PrintGameOver();
+        std::cerr << rang::fg::red
+                  << "Exception catched: " << rang::fg::reset << e.what()
+                  << std::endl;
+        exit(0);
+        } catch (const std::ios_base::failure& e) {
+        gra::aux::PrintGameOver();
+        std::cerr << rang::fg::red
+                  << "Exception catched: std::ios_base::failure: "
+                  << rang::fg::reset << e.what() << std::endl;
+        exit(0);
+        } catch (...) {
+        gra::aux::PrintGameOver();
+        std::cerr << rang::fg::red << "Exception catched: Unspecified (...) (Probably JSON input)"
+        		  << rang::fg::reset << std::endl;
+        exit(0);
+        }
+
+    } // Over different datasets
 
     f = cost;
 }
-
 } // Namespace fitcentral ends
 
 
@@ -319,68 +327,115 @@ int main(int argc, char* argv[]) {
               << std::endl;
     gra::aux::PrintVersion();
 
-    // Set input parameters
-    if (argc != 2) {
-	std::cerr << "Usage: ./fitcentral <form factor = 1,2,3>" << std::endl;
-	return EXIT_FAILURE;
+    // Save the number of input arguments
+    const int NARGC = argc - 1;
+
+try {
+
+    cxxopts::Options options(argv[0], "");
+    options.add_options()
+        ("i,input",     "Input dataset collection numbers         <0,1,2,3,...>", cxxopts::value<std::string>() )
+        ("c,continuum", "Continuum form factor                    <0|1|2>",       cxxopts::value<int>() )
+        ("x,fix",       "Fix all resonances to their input values <true|false>",  cxxopts::value<std::string>() )
+        ("l,POMLOOP",   "Screening Pomeron loop", cxxopts::value<std::string>() )
+        ("H,help",      "Help")
+        ;
+    auto r = options.parse(argc, argv);
+
+    if (r.count("help") || NARGC == 0) {
+        std::cout << options.help({""}) << std::endl;
+        std::cout << "Example:" << std::endl;
+        std::cout << "  " << argv[0] << " -i 0,1 -c 2"
+                  << std::endl << std::endl;
+        return EXIT_FAILURE;
     }
 
-    fitcentral::offshellFF = atoi(argv[1]); // Off-shell form factor
+    // Input dataset numbers
+    std::vector<int> input = gra::aux::SplitStr2Int(r["input"].as<std::string>());
 
+    // Off-shell form factor
+    fitcentral::offshellFF = r["c"].as<int>(); 
+
+    // Fix-all resonances
+    bool FIXALLRES = false;
+    if (r.count("x")) {
+        FIXALLRES = (r["x"].as<std::string>() == "true" ? true : false);
+    }
+
+    // Pomeron loop
+    if (r.count("l"))  { 
+        const std::string val = r["l"].as<std::string>();
+        fitcentral::POMLOOP = (val == "true");
+    }
+
+    // ==================================================================
     // Push datasets
-    // ---------------------------------------------------------------------
+    // ------------------------------------------------------------------
 
     const std::string BASEPATH = gra::aux::GetBasePath(2);
 
-
     fitcentral::DATASET temp;
 
-    temp.INPUTFILE = BASEPATH + "/fitcard/"    + "ALICE_7_KK.json";
-    temp.DATAFILE  = BASEPATH + "/HEPdata/CD/" + "KK_7_TeV.csv";
-    temp.DATATYPE  = 1;
 
-    temp.OBSERVABLE = 1;
-    temp.MMIN = 1.05;
+    // ------------------------------------------------------------------
+    // 0
 
-    temp.MMAX = 2.5;
-    temp.NBINS = 50;
-    temp.h1DATA = new MH1<double>(temp.NBINS, temp.MMIN, temp.MMAX, "ALICE 7 TeV K+K-");
+    if (std::find(input.begin(), input.end(), 0) != input.end() ) {
 
-    fitcentral::datasets.push_back(temp);
+        temp.INPUTFILE = BASEPATH + "/fitcard/"    + "ALICE_7_pipi.json";
+        temp.DATAFILE  = BASEPATH + "/HEPdata/CD/" + "pipi_7_TeV_eta_09_pt_150.csv";
+        temp.DATATYPE  = 4;
 
-    // ---------------------------------------------------------------------
+        temp.OBSERVABLE = 1;
+        temp.MMIN   = 0.3;
+        temp.MMAX   = 3.0;
+        temp.NBINS  = 100;
+        temp.h1DATA = new MH1<double>(temp.NBINS, temp.MMIN, temp.MMAX, "ALICE 7 TeV pi+pi-");
 
-    temp.INPUTFILE = BASEPATH + "/fitcard/"    + "ALICE_7_pipi.json";
-    temp.DATAFILE  = BASEPATH + "/HEPdata/CD/" + "pipi_7_TeV_eta_09_pt_150.csv";
-    temp.DATATYPE  = 4;
+        fitcentral::datasets.push_back(temp);
+    }
 
-    temp.OBSERVABLE = 1;
-    temp.MMIN   = 0.35;
-    temp.MMAX   = 3.0;
-    temp.NBINS  = 100;
-    temp.h1DATA = new MH1<double>(temp.NBINS, temp.MMIN, temp.MMAX, "ALICE 7 TeV pi+pi-");
+    // ------------------------------------------------------------------
+    // 1
 
-    fitcentral::datasets.push_back(temp);
+    if (std::find(input.begin(), input.end(), 1) != input.end() ) {
 
-    // ---------------------------------------------------------------------
+        temp.INPUTFILE = BASEPATH + "/fitcard/"    + "ALICE_7_KK.json";
+        temp.DATAFILE  = BASEPATH + "/HEPdata/CD/" + "KK_7_TeV.csv";
+        temp.DATATYPE  = 1;
 
-    /*
-      DATASET temp;
+        temp.OBSERVABLE = 1;
+        temp.MMIN = 0.98;
 
-      temp.INPUTFILE = BASEPATH + "/fitcard/"    + "ATLAS13_2pi.json";
-      temp.DATAFILE  = BASEPATH + "/HEPdata/CD/" + "ATLAS13pipi.csv";
-      temp.DATATYPE  = 4;
+        temp.MMAX = 2.5;
+        temp.NBINS = 50;
+        temp.h1DATA = new MH1<double>(temp.NBINS, temp.MMIN, temp.MMAX, "ALICE 7 TeV K+K-");
 
-      temp.OBSERVABLE = 1;
-      temp.MMIN   = 0.35;
-      temp.MMAX   = 2.4;
-      temp.NBINS  = 100;
-      temp.h1DATA = new MH1<double>(temp.NBINS, temp.MMIN, temp.MMAX, "ATLAS 13 TeV pi+pi-");
+        fitcentral::datasets.push_back(temp);
+    }
 
-      datasets.push_back(temp);
+    // ------------------------------------------------------------------
+    // 2
 
-    */
-    
+    if (std::find(input.begin(), input.end(), 2) != input.end() ) {
+
+        temp.INPUTFILE = BASEPATH + "/fitcard/"    + "ATLAS_13_pipi.json";
+        temp.DATAFILE  = BASEPATH + "/HEPdata/CD/" + "ATLAS13pipi.csv";
+        temp.DATATYPE  = 1;
+
+        temp.OBSERVABLE = 1;
+        temp.MMIN   = 0.3;
+        temp.MMAX   = 2.4;
+        temp.NBINS  = 100;
+        temp.h1DATA = new MH1<double>(temp.NBINS, temp.MMIN, temp.MMAX, "ATLAS 13 TeV pi+pi-");
+
+        fitcentral::datasets.push_back(temp);
+    }
+
+    if (fitcentral::datasets.size() == 0) {
+        throw std::invalid_argument("fitcentral::datasets is empty (did not find any)");
+    }
+
     // Read input data
     for (const auto& k : indices(fitcentral::datasets)) {
 	if (!fitcentral::ReadData(fitcentral::datasets[k]))
@@ -410,48 +465,47 @@ int main(int argc, char* argv[]) {
     // SET SOFT PARAMETERS, phase angles between [-pi,pi] but for optimization
     // reasons we allow larger domain [-2pi, 2pi]
     // due to phase wrapping.
-    // User needs to phase rotate back to [-pi,pi] after collecting out the fit
-    // results manually.
 
-    const double STEPSIZE = 0.15;
+    const double STEPSIZE_A   = 0.1;
+    const double STEPSIZE_phi = 0.15;
+
     
     // Loop over resonances
     int k = -1;
 
     for (const auto& x : RESONANCES) {
 	gMinuit->mnparm(++k, Form("RESONANCES[%s].g_A", x.first.c_str()),
-	                std::abs(x.second.g), STEPSIZE, 1e-5, 20.0, ierflg); // Characteristic coupling scale ~ 0.1 ... 10
+	                std::abs(x.second.g), STEPSIZE_A, 1e-9, 20.0, ierflg); // couplings [1e-9,...,2.0]
 	gMinuit->mnparm(++k, Form("RESONANCES[%s].g_phi", x.first.c_str()),
-	                std::arg(x.second.g), STEPSIZE, -2 * gra::math::PI,
+	                std::arg(x.second.g), STEPSIZE_phi, -2 * gra::math::PI,
 	                2 * gra::math::PI, ierflg);
     }
     
     // Continuum off-shell form factor
     if (fitcentral::offshellFF == 1) {
 	gMinuit->mnparm(++k, "PARAM_REGGE::a_EXP", PARAM_REGGE::b_EXP,
-	                STEPSIZE, 0.0, 10.0, ierflg);
+	                STEPSIZE_A, 0.0, 2.0, ierflg);
     }
     if (fitcentral::offshellFF == 2) {
 	gMinuit->mnparm(++k, "PARAM_REGGE::a_OREAR", PARAM_REGGE::a_OREAR,
-	                STEPSIZE, 0.0, 10.0, ierflg);
+	                STEPSIZE_A, 0.0, 2.0, ierflg);
 	gMinuit->mnparm(++k, "PARAM_REGGE::b_OREAR", PARAM_REGGE::b_OREAR,
-	                STEPSIZE, 0.0, 10.0, ierflg);
+	                STEPSIZE_A, 0.0, 2.0, ierflg);
     }
     if (fitcentral::offshellFF == 3) {
 	gMinuit->mnparm(++k, "PARAM_REGGE::b_POW", PARAM_REGGE::b_POW,
-	                STEPSIZE, 0.0, 10.0, ierflg);
+	                STEPSIZE_A, 0.0, 2.0, ierflg);
     }
 
     arglist[0] = 10000; // Maximum number of iterations
     arglist[1] = 0.001; // Cost function stop tolerance
 
-    /*
-    // Fix f0_1500
-    std::vector<int> fixed = {8,9};
-    for (uint i = 0; i < fixed.size(); ++i) {
-      gMinuit->FixParameter(fixed.at(i));
+    // FIX ALL RESONANCES
+    if (FIXALLRES) {
+        for (std::size_t i = 0; i < RESONANCES.size() * 2; ++i) { // 2 x for amplitude and phase
+            gMinuit->FixParameter(i);
+        }
     }
-    */
 
     // Release all parameters
     // gMinuit->mnfree(0);
@@ -477,6 +531,32 @@ int main(int argc, char* argv[]) {
     for (const auto& i : indices(fitcentral::datasets)) {
 	   delete fitcentral::datasets[i].h1DATA;
     }
+
+} catch (const std::invalid_argument& e) {
+    gra::aux::PrintGameOver();
+    std::cerr << rang::fg::red
+              << "Exception catched: " << rang::fg::reset << e.what()
+              << std::endl;
+    return EXIT_FAILURE;
+} catch (const std::ios_base::failure& e) {
+    gra::aux::PrintGameOver();
+    std::cerr << rang::fg::red
+              << "Exception catched: std::ios_base::failure: "
+              << rang::fg::reset << e.what() << std::endl;
+    return EXIT_FAILURE;
+} catch (const cxxopts::OptionException& e) {
+    gra::aux::PrintGameOver();
+    std::cerr << rang::fg::red
+              << "Exception catched: Commandline options: " << rang::fg::reset << e.what() << std::endl;
+    return EXIT_FAILURE;
+} catch (...) {
+    gra::aux::PrintGameOver();
+    std::cerr << rang::fg::red << "Exception catched: Unspecified (...) (Probably input)" << rang::fg::reset
+              << std::endl;
+    return EXIT_FAILURE;
+}
+
+
 
     return EXIT_SUCCESS;
 }

@@ -120,6 +120,8 @@ public:
 	
 private:
 	
+	int init_trials = 0;
+
 	void   InitArrays();
 	double diff_xg_xQ2_wrt_Q2(double x, double q2) const;
 	double AP_gg(double delta) const;

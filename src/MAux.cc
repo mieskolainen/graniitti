@@ -53,6 +53,43 @@ static const bool IS_TERMINAL = isatty(fileno(stdout)) != 0;
 
 // ----------------------------------------------------------------------
 
+// Download LHAPDFset automatically
+void AutoDownloadLHAPDF(const std::string pdfname) {
+
+    std::cout << rang::fg::red << "aux::AutoDownloadLHAPDF: Trying automatic download:" << rang::fg::reset << std::endl;
+    std::cout << std::endl;
+
+    // Get instal path and remove "\n"
+    std::string INSTALLPATH = aux::ExecCommand("lhapdf-config --prefix");
+	INSTALLPATH.erase(std::remove(INSTALLPATH.begin(), INSTALLPATH.end(), '\n'), INSTALLPATH.end());
+
+	if (INSTALLPATH.find("command not found") != std::string::npos) {
+		throw std::invalid_argument("aux::AutoDownloadLHAPDF: Failure: lhapdf-config command missing");
+	}
+
+    // Download, untar
+    std::string cmd1 = "wget http://www.hepforge.org/archive/lhapdf/pdfsets/6.2/" + pdfname + ".tar.gz -O- | " +
+    				   " tar xz -C " + INSTALLPATH + "/share/LHAPDF";
+    std::cout << cmd1 << std::endl;
+    std::string OUTPUT1 = aux::ExecCommand(cmd1);
+}
+
+
+// Run terminal command, get output to std::string
+std::string ExecCommand(const std::string& cmd) {
+    std::array<char, 128> buffer;
+    std::string result;
+    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
+    if (!pipe) {
+        throw std::runtime_error("aux::ExecCommand:: popen() failed!");
+    }
+    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+        result += buffer.data();
+    }
+    return result;
+}
+
+
 std::string GetExecutablePath() {
     char buff[2048];
     ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff)-1);
@@ -473,12 +510,12 @@ void PrintGameOver() {
 }
 
 double GetVersion() {
-	return 0.23;
+	return 0.25;
 }
 
 std::string GetVersionString() {
 	char buff[100];
-	snprintf(buff, sizeof(buff), "Version %0.2f (BETA) 200319", GetVersion());
+	snprintf(buff, sizeof(buff), "Version %0.2f (BETA) 240319", GetVersion());
 	std::string str = buff;
 	return str;
 }
@@ -619,9 +656,9 @@ std::vector<OneCMD> SplitCommands(const std::string& fullstr) {
 	// Find @ blocks [ ... ]
 	std::vector<std::size_t> pos = FindOccurance(fullstr, "@");
 	std::vector<std::string> subcmd;
-	
+
 	if (pos.size() != 0) {
-		
+
 		// Take full string from the first @ till end
 		std::string str = fullstr.substr(pos[0]);
 

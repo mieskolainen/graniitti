@@ -21,14 +21,13 @@
 #include "json.hpp"
 #include "rang.hpp"
 
-using gra::math::msqrt;
-using gra::math::pow2;
-using gra::math::zi;
-using gra::math::PI;
-using gra::PDG::mp;
-
-
 namespace gra {
+
+using math::msqrt;
+using math::pow2;
+using math::zi;
+using math::PI;
+using PDG::mp;
 
 
 // 2-body incoming or outgoing helicity combinations
@@ -61,7 +60,8 @@ namespace Durham {
 
 		using json = nlohmann::json;
 
-		const std::string inputfile = gra::aux::GetBasePath(2) + "/modeldata/" + gra::aux::MODELPARAM + ".json";
+		const std::string inputfile =
+			gra::aux::GetBasePath(2) + "/modeldata/" + gra::aux::MODELPARAM + "/GENERAL.json";
 		const std::string data = gra::aux::GetInputData(inputfile);
 		json j;
 		
@@ -83,7 +83,7 @@ namespace Durham {
 			qt_MAX = msqrt(Durham::qt2_MAX);
 
 			qt_STEP = (Durham::qt_MIN - Durham::qt_MAX) / Durham::N_qt;
-			phi_STEP = (2.0 * gra::math::PI) / Durham::N_phi;
+			phi_STEP = (2.0 * math::PI) / Durham::N_phi;
 
 			initialized = true;
 
@@ -119,20 +119,26 @@ std::complex<double> MDurham::DurhamQCD(gra::LORENTZSCALAR& lts, const std::stri
 	if (gra::aux::sudakov.initialized == false) {
 		try {
 			gra::aux::sudakov.Init(lts.sqrt_s, gra::form::LHAPDF, true);
-		} catch (std::invalid_argument e) {
-			gra::aux::g_mutex.unlock(); // need to release here,
-			                            // otherwise get infinite lock
-			throw(e);
+		} catch ( ... ) {
+			gra::aux::g_mutex.unlock(); // need to release here, otherwise get infinite lock
+			throw;
 		}
 	}
 	if (!Durham::initialized) {
-		Durham::ReadParameters();
+		try {
+			Durham::ReadParameters();
+		} catch ( ... ) {
+			gra::aux::g_mutex.unlock(); // need to release here, otherwise get infinite lock
+			throw;
+		}
 	}
 	gra::aux::g_mutex.unlock();
 
 	if (process == "gg") {
-		std::vector<std::vector<std::complex<double>>> Amp(
-		    4, std::vector<std::complex<double>>(4, 0.0));
+
+		// [Final state helicities/polarizations x 4 initial state helicities]
+		std::vector<std::vector<std::complex<double>>>
+		Amp(4, std::vector<std::complex<double>>(4, 0.0));
 
 		// Madgraph
 		gra::aux::g_mutex.lock();
@@ -145,10 +151,12 @@ std::complex<double> MDurham::DurhamQCD(gra::LORENTZSCALAR& lts, const std::stri
 
 		// Run loop
 		return DQtloop(lts, Amp);
+
 	} else if (process == "qqbar") {
 
-		std::vector<std::vector<std::complex<double>>> Amp(
-		    4, std::vector<std::complex<double>>(4, 0.0));
+		// [Final state helicities/polarizations x 4 initial state helicities]
+		std::vector<std::vector<std::complex<double>>>
+		Amp(4, std::vector<std::complex<double>>(4, 0.0));
 		
 		// Madgraph
 		gra::aux::g_mutex.lock();
@@ -161,13 +169,31 @@ std::complex<double> MDurham::DurhamQCD(gra::LORENTZSCALAR& lts, const std::stri
 
 		// Run loop
 		return DQtloop(lts, Amp);
-	} else if (process == "chi0") {
-		std::vector<std::vector<std::complex<double>>> Amp(
-		    1, std::vector<std::complex<double>>(4, 0.0));
+
+	} else if (process == "MMbar") {
+
+		// [Final state helicities/polarizations x 4 initial state helicities]
+		std::vector<std::vector<std::complex<double>>>
+		Amp(1, std::vector<std::complex<double>>(4, 0.0));
+
+		// Amplitude evaluated outside the Qt-loop (approximation)
+		Dgg2MMbar(lts, Amp);
 
 		// Run loop
-		std::complex<double> A = DQtloop(lts, Amp);
-		return A;
+		return DQtloop(lts, Amp);
+
+	} else if (process == "chic(0)") {
+
+		// [Final state helicities/polarizations x 4 initial state helicities]
+		std::vector<std::vector<std::complex<double>>>
+		Amp(1, std::vector<std::complex<double>>(4, 0.0));
+
+		// Amplitude evaluated outside the Qt-loop (approximation)
+		std::vector<double> null;
+		Dgg2chic0(lts, Amp, null, null);
+
+		// Run loop
+		return DQtloop(lts, Amp);
 
 	// ------------------------------------------------------------
 	//
@@ -198,20 +224,20 @@ inline void MDurham::DHelicity(const std::vector<double>& q1,
 	JzP[P0] = - 0.5 * (q1[X] * q2[X] + q1[Y] * q2[Y]);
 
 	// 1/2 i |q1_t x q2_t|
-	JzP[M0] = - 0.5 * gra::math::zi * std::abs(q1[X] * q2[Y] - q1[Y] * q2[X]);
+	JzP[M0] = - 0.5 * math::zi * std::abs(q1[X] * q2[Y] - q1[Y] * q2[X]);
 
 	const double Re = 0.5 * (q1[X] * q2[X] - q1[Y] * q2[Y]);
 	const double Im = 0.5 * (q1[X] * q2[Y] + q1[Y] * q2[X]);
 
 	// +1/2[ (xx - yy) + i(xy + yx) ]
-	JzP[P2] = Re + gra::math::zi * Im;
+	JzP[P2] = Re + math::zi * Im;
 
 	// +1/2[ (xx - yy) - i(xy + yx) ]
-	JzP[M2] = Re - gra::math::zi * Im;
+	JzP[M2] = Re - math::zi * Im;
 }
 
 
-// M_{++,--,+-,-+} denotes M_{\lambda_1,\lambda_2}
+// M_{\lambda_1,\lambda_2}
 // i.e. g(\lambda_1) g(\lambda_2) -> X (system) helicity amplitudes
 //
 // where lambda1, lambda2 are the initial state gluon helicities
@@ -324,7 +350,7 @@ std::complex<double> MDurham::DQtloop(
 	// Init 2D-Simpson weight matrix (will be calculated only once, being
 	// static), C++11 handles multithreaded static initialization
 	const static MMatrix<double> WSimpson =
-	    gra::math::Simpson38Weight2D(Durham::N_qt, Durham::N_phi);
+	    math::Simpson38Weight2D(Durham::N_qt, Durham::N_phi);
 
 	// NOTE N + 1, init with zero!
 	std::vector<MMatrix<std::complex<double>>> f(Amp.size(),
@@ -358,8 +384,8 @@ std::complex<double> MDurham::DQtloop(
 			const std::vector<double> q2 = {qt_[0] + pt2[0],
 			                                qt_[1] + pt2[1]};
 
-			const double q1_2 = gra::math::vpow2(q1);
-			const double q2_2 = gra::math::vpow2(q2);
+			const double q1_2 = math::vpow2(q1);
+			const double q2_2 = math::vpow2(q2);
 
 			// Get fusing gluon spin-parity (J_z^P) components
 			// [q1,q2] -> [0^+,0^-,+2^+,-2^-]
@@ -380,18 +406,13 @@ std::complex<double> MDurham::DQtloop(
 			
 			// Amplitude weight:
 			// * \pi^2 : see original KMR papers
-			// *    2  : factor of from initial state
-			// boson-statistics, check it:!
+			// *    2  : factor from initial state boson-statistics, check it:!
 			// *    qt : jacobian of d^2qt -> dphi dqt qt
 			std::complex<double> weight = fg_1 * fg_2 / (qt2 * q1_2 * q2_2);
-			weight *= gra::math::PIPI * 2.0 * qt;
+			weight *= math::PIPI * 2.0 * qt;
 
-			// Update sub-amplitude
-			if (Amp.size() == 1) { // Calculate here
-				Dgg2chi0(lts, Amp, q1, q2);
-			}
-			
-			// Loop over final state helicity combinations
+			// Loop over (outgoing) helicity combinations.
+			// Amp[h] contains initial state gluon helicity combinations --,-+,+-,++
 			for (std::size_t h = 0; h < f.size(); ++h) {
 			  f[h][i][j] = weight * DHelProj(Amp[h], JzP);
 			}
@@ -402,15 +423,14 @@ std::complex<double> MDurham::DQtloop(
 	// Evaluate the total numerical integral for each helicity amplitude
 	std::vector<std::complex<double>> sum(f.size(), 0.0);
 	for (std::size_t h = 0; h < f.size(); ++h) {
-		sum[h] = gra::math::Simpson38Integral2D(f[h], WSimpson, Durham::qt_STEP, Durham::phi_STEP);
+		sum[h] = math::Simpson38Integral2D(f[h], WSimpson, Durham::qt_STEP, Durham::phi_STEP);
 	}
 
 	// *****Make sure it is of right size!*****
 	lts.hamp.resize(f.size());
 
-	// Final outcome as a coherent sum over incoming gluons
-	// That is, sum at amplitude level -
-	// in Contrast to the usual \sum_h |A_h|^2
+	// Final outcome as a coherent sum over helicity combinations
+	// That is, sum at amplitude level in contrast to the usual \sum_{h \in helicity set} |A_h|^2
 	std::complex<double> A(0, 0);
 	for (std::size_t h = 0; h < f.size(); ++h) {
 
@@ -419,10 +439,10 @@ std::complex<double> MDurham::DQtloop(
 		// Apply proton form factors
 		lts.hamp[h] *= lts.excite1 ? gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : gra::form::S3F(lts.t1);
 		lts.hamp[h] *= lts.excite2 ? gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : gra::form::S3F(lts.t2);
-		
+
 		// Apply phase space factors
-		lts.hamp[h] *= msqrt(16.0 * gra::math::PIPI);
-		lts.hamp[h] *= msqrt(16.0 * gra::math::PIPI);
+		lts.hamp[h] *= msqrt(16.0 * math::PIPI);
+		lts.hamp[h] *= msqrt(16.0 * math::PIPI);
 		lts.hamp[h] *= msqrt(lts.s / lts.s_hat);
 
 		// For the total complex amplitude (for no eikonal screening applied)
@@ -438,8 +458,8 @@ std::complex<double> MDurham::DQtloop(
 // [REFERENCE: Khoze, Martin, Ryskin, Stirling, https://arxiv.org/abs/hep-ph/0403218]
 // [REFERENCE: Pasechnik, Szczurek, Teryaev, https://arxiv.org/abs/0709.0857v1]
 //
-void MDurham::Dgg2chi0(const gra::LORENTZSCALAR& lts, std::vector<std::vector<std::complex<double>>>& Amp,
-                       const std::vector<double>& qt1, const std::vector<double>& qt2) const {
+void MDurham::Dgg2chic0(const gra::LORENTZSCALAR& lts, std::vector<std::vector<std::complex<double>>>& Amp,
+                        const std::vector<double>& qt1, const std::vector<double>& qt2) const {
 	
 	// @@ MUTEX LOCK @@
 	gra::aux::g_mutex.lock();
@@ -454,12 +474,13 @@ void MDurham::Dgg2chi0(const gra::LORENTZSCALAR& lts, std::vector<std::vector<st
 	const double NC    = 3.0;                 // #colors
 	
 	// Gluonic width \Gamma(\chi_c(0+) -> gg), see references
-	std::complex<double> A = K_NLO * 8.0 * gra::math::zi * gs2 / M0 * msqrt(0.075) / msqrt(PI * M0 * NC);
+	std::complex<double> A = K_NLO * 8.0 * math::zi * gs2 / M0 * msqrt(0.075) / msqrt(PI * M0 * NC);
 
 	// Apply Breit-Wigner propagator shape delta-function
 	A *= gra::form::deltaBWamp(lts.s_hat, M0, W0);
 	
-	// Initial state gluon combinations
+	// Initial state gluon helicity combinations
+	// [RE-CHECK this point]
 	std::vector<std::complex<double>> is(4, 0.0);
 	is[MM] = A;
 	is[MP] = A;
@@ -546,15 +567,192 @@ void MDurham::Dgg2gg(const gra::LORENTZSCALAR& lts,
 	double  madsum = 0.0;
 	double thissum = 0.0;
 	for (unsigned int i = 0; i < 16; ++i) {
-		printf("i=%2d : |mad|^2 = %0.3f , |amp|^2 = %0.3f \n", i, gra::math::abs2(lts.hamp[i]), gra::math::abs2(dualAmp[i]));
-		madsum  += gra::math::abs2(lts.hamp[i]);
-		thissum += gra::math::abs2(dualAmp[i]); 
+		printf("i=%2d : |mad|^2 = %0.3f , |amp|^2 = %0.3f \n", i, math::abs2(lts.hamp[i]), math::abs2(dualAmp[i]));
+		madsum  += math::abs2(lts.hamp[i]);
+		thissum += math::abs2(dualAmp[i]); 
 	}
 	Asum += thissum / madsum;
 	Nsum += 1.0;
 	printf("THIS/MADGRAPH = %0.10f \n\n", Asum / Nsum);
 	}
 	// ------------------------------------------------------------------------
+}
+
+
+// ======================================================================
+// gg -> meson pair (gg -> q\bar{q} q\bar{q})
+//
+// [REFERENCE: Harland-Lang, Khoze, Ryskin, Stirling, https://arxiv.org/pdf/1105.1626.pdf]
+
+
+// Meson wave-function (without scale Q⁻dependence)
+// x the longitudinal momentum fraction of a parton within the meson
+// fM the meson decay constant
+// 
+// Normalization: \int_0^1 dx phi(x) \equiv fM/(2\sqrt{3})
+//
+double MDurham::phi_CZ(double x, double fM) const {
+	return 5.0*std::sqrt(3.0)*fM * x*(1.0 - x)*pow2(1.0 - 2.0*x);
+	//return 6.0*std::sqrt(3.0)*fM * x*(1.0 - x);
+}
+
+
+// For tabulating meson wave function
+// N + 1 points
+std::vector<double> MDurham::EvalPhi(int N, double fM) const {
+
+	std::vector<double> f(N+1);
+	const double STEP = 1.0/N;
+
+	for (const auto& i : aux::indices(f)) {
+		const double x = i * STEP;
+		f[i] = phi_CZ(x, fM);
+	}
+	return f;
+}
+
+
+// Meson pair amplitude
+// 
+// [THIS IS UNDER CONSTRUCTION]
+void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR& lts,
+                       	std::vector<std::vector<std::complex<double>>>& Amp) {
+
+	// Discretization
+	const int Nx = 36;
+	const double STEPx = 1.0/Nx;
+
+	// Init 2D-Simpson weight matrix (will be calculated only once, being
+	// static), C++11 handles multithreaded static initialization
+	const static MMatrix<double> WSimpson   = math::Simpson38Weight2D(Nx,Nx);
+
+	const double delta_AB = 8;                       // Sum over \delta^AB [gluons in with same color]
+	const double NC       = 3;                       // Three colors
+	const double CF       = (pow2(NC)-1.0)/(NC*2.0); // SU(3) algebra
+
+	// @@ MUTEX LOCK @@
+	gra::aux::g_mutex.lock();
+	const double alpha_s = gra::aux::sudakov.AlphaS_Q2(lts.s_hat / Durham::alphas_scale);
+	gra::aux::g_mutex.unlock();
+	// @@ MUTEX LOCK @@
+
+	const double     shat = lts.s_hat;
+	const double        m = lts.decaytree[0].p4.M();
+	const double     beta = kinematics::Beta(pow2(m), shat);
+	const double costheta = (1.0 + 2.0*lts.t_hat/lts.s_hat - 2.0*pow2(m)/lts.s_hat)/beta;
+	const double costheta2 = pow2(costheta);
+
+	// Helicity phase
+	const double phi = lts.decaytree[0].p4.Phi();
+	const std::complex<double> posphase = std::exp( 2.0*zi*phi);
+	const std::complex<double> negphase = std::exp(-2.0*zi*phi);
+	
+	// ------------------------------------------------------------------
+	// Mesons scalar flavor octet (non-singlet) amplitude:
+	// |\pi0\pi0>, |\pi+\pi->, |K+K->, |K0\bar{K0}>
+	// 
+	// T_+- = T_-+
+	auto T_SFO_PM = [&](double x, double y) {
+
+		const double a = (1.0 - x)*(1.0 - y) + x*y;
+		const double b = (1.0 - x)*(1.0 - y) - x*y;
+
+		return 1.0 / (x*y*(1.0 - x)*(1.0 - y)) *
+			   (x*(1.0 - x) + y*(1.0 - y)) / (pow2(a) + pow2(b)*costheta2) *
+			   (NC/2.0) *
+			   (costheta2 - 2.0*CF/NC * a);
+	};
+	// ------------------------------------------------------------------
+
+	// ------------------------------------------------------------------
+	// SU(3)_F scalar flavor-singlet amplitude:
+	// |\eta'\eta' >
+	// |\eta\eta >, |\eta\eta' > (|\eta-\eta' > mixing)
+	// 
+	// T_++ = T_--
+	auto T_SFS_PP = [&](double x, double y) {
+
+		return 1.0 / (x*y*(1.0 - x)*(1.0 - y)) *
+			   (1.0 + costheta2) / pow2(1.0 - costheta2);
+	};
+
+	// T_+- = T_-+
+	auto T_SFS_PM = [&](double x, double y) {
+
+		return 1.0 / (x*y*(1.0 - x)*(1.0 - y)) *
+			   (1.0 + 3.0*costheta2) / (2.0 * pow2(1.0 - costheta2));
+	};
+	// ------------------------------------------------------------------
+	
+	// pi0, pi+, K+, K0
+	static const std::vector<int> SFO_PDG = {111, 211, 321, 311};
+	// eta, eta, eta'
+	static const std::vector<int> SFS_PDG = {221, 331};
+
+	// Evaluate once the meson wave functions
+	static const int pdg0 = std::abs(lts.decaytree[0].p.pdg);
+	static const int pdg1 = std::abs(lts.decaytree[1].p.pdg);
+
+	// Meson decay constants
+	static const double fM_meson0 = PDG::fM_meson.at(pdg0);
+	static const double fM_meson1 = PDG::fM_meson.at(pdg1);
+
+	static const std::vector<double> wfphi0 = EvalPhi(Nx, fM_meson0);
+	static const std::vector<double> wfphi1 = EvalPhi(Nx, fM_meson1);
+
+	const double CUTOFF = 1e-8;
+	static const std::vector<double> xval  = math::linspace<std::vector>(CUTOFF, 1.0-CUTOFF, Nx+1);
+
+	// Integral over meson wave functions:
+	// M\int_0^1 dx dy \phi_M(x) \phi_\bar{M}(y) T_{\lambda\lambda'} (x,y,\hat{s},\theta)
+
+	// Common normalization
+	const double norm = (delta_AB/NC) * (64.0*math::PIPI*pow2(alpha_s)) / shat;
+
+	// Scalar flavor octet
+	if ((std::find(SFO_PDG.begin(), SFO_PDG.end(), pdg0) != SFO_PDG.end())) {
+		std::vector<std::complex<double>> is(4);
+		
+		MMatrix<double> f_PM(Nx+1, Nx+1, 0.0);
+
+		for (std::size_t i = 0; i < Nx+1; ++i) {
+		for (std::size_t j = 0; j < Nx+1; ++j) {
+
+			//printf("i = %d, j = %d : %0.6E \n", i, j, T_SFNS_PM(xval[i],xval[j]));
+			f_PM[i][j] = wfphi0[i] * wfphi1[j] * T_SFO_PM(xval[i], xval[j]);
+		}}
+
+		is[PP] = 0.0;
+		is[MM] = 0.0;
+		is[PM] = norm * math::Simpson38Integral2D(f_PM, WSimpson, STEPx, STEPx) * posphase;
+		is[MP] = is[PM] * negphase;
+
+		Amp[0] = is;
+	}
+
+	// Scalar flavor singlet
+	else if ((std::find(SFS_PDG.begin(), SFS_PDG.end(), pdg0) != SFS_PDG.end())) {
+		std::vector<std::complex<double>> is(4);
+
+		MMatrix<double> f_PP(Nx+1, Nx+1, 0.0);
+		MMatrix<double> f_PM(Nx+1, Nx+1, 0.0);
+
+		for (std::size_t i = 0; i < Nx+1; ++i) {
+		for (std::size_t j = 0; j < Nx+1; ++j) {
+
+			f_PP[i][j] = wfphi0[i] * wfphi1[j] * T_SFS_PP(xval[i], xval[j]);
+			f_PM[i][j] = wfphi0[i] * wfphi1[j] * T_SFS_PM(xval[i], xval[j]);
+		}}
+
+		is[PP] = norm * math::Simpson38Integral2D(f_PP, WSimpson, STEPx, STEPx);
+		is[MM] = is[PP];
+		is[PM] = norm * math::Simpson38Integral2D(f_PM, WSimpson, STEPx, STEPx) * posphase;
+		is[MP] = is[PM] * negphase;
+
+		Amp[0] = is;	
+	} else {
+		throw std::invalid_argument("MDurham::Dgg2MMbar: Unsupported meson: " + std::to_string(lts.decaytree[0].p.pdg));
+	}
 }
 
 
