@@ -139,10 +139,6 @@ void experiment(bool screening) {
     const std::string BASEPATH = "./tests/processes/";
 
 
-    // ...
-    input.push_back(MEASUREMENT("gg2MMbar.json",     0, 0, 0));
-    
-
     // https://arxiv.org/pdf/hep-ex/0611040.pdf
     input.push_back(MEASUREMENT("CDF07_ee.json",     1.6e-12,   0.5e-12,   0.3e-12));
 
@@ -194,6 +190,9 @@ void experiment(bool screening) {
 
     // ...
     input.push_back(MEASUREMENT("gg2gg.json",        0, 0, 0));
+    
+    // ...
+    input.push_back(MEASUREMENT("gg2MMbar.json",     0, 0, 0));
 
     // ...
     input.push_back(MEASUREMENT("yy2Higgs.json",     0, 0, 0));
@@ -246,11 +245,11 @@ void experiment(bool screening) {
 		// Screening off/on
 		for (int mode = 0; mode < MODEMAX; ++mode) {
 	    	
-		    try {
-                
-		    	MGraniitti* gen = new MGraniitti;
+            std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
 
-				HILJAA = false;
+		    try {
+
+				gra::HILJAA = false;
 
 				// Read process input from file
 				gen->ReadInput(BASEPATH + input[p].card);
@@ -272,8 +271,6 @@ void experiment(bool screening) {
 				// > Get process cross section and error
 				gen->GetXS(xs0[p][mode], xs0_err[p][mode]);
 
-                delete gen;
-
 		    } catch (const std::invalid_argument& err) {
 				std::cerr << "PROCESS:: " << input[p].card
 				          << " : Exception catched: " << err.what()
@@ -288,6 +285,7 @@ void experiment(bool screening) {
 				std::cerr << "Exception (...) catched!" << std::endl;
 				exit(0);
 		    }
+
 		} // Screening on/off
     } // Process loop
 

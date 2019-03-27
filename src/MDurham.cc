@@ -667,7 +667,7 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR& lts,
 	// they could be pre-calculated and interpolated as a function of costheta]
 	const int Nx = 96;
 	const double STEPx = 1.0/Nx;
-	
+
 	// Init 2D-Simpson weight matrix (will be calculated only once, being
 	// static), C++11 handles multithreaded static initialization
 	const static MMatrix<double> WSimpson = math::Simpson38Weight2D(Nx,Nx);
@@ -690,7 +690,7 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR& lts,
 
 	// ------------------------------------------------------------------
 	// ** Hard angular cut-off **
-	// sub-amplitudes are singular when |costheta| -> 1
+	// some sub-amplitudes are singular when |costheta| -> 1
 
 	const double ANGCUT = 0.1;
 	if (std::abs(costheta) > (1.0 - ANGCUT)) {
@@ -698,7 +698,7 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR& lts,
 		return;
 	}
 	// ------------------------------------------------------------------
-	
+
 	// Helicity phase
 	const double phi = lts.decaytree[0].p4.Phi();
 	const std::complex<double> posphase = std::exp( 2.0*zi*phi);
@@ -715,12 +715,12 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR& lts,
 		const double b = (1.0 - x)*(1.0 - y) - x*y; // -
 
 		return 1.0 / (x*y*(1.0 - x)*(1.0 - y)) *
-			   (x*(1.0 - x) + y*(1.0 - y)) / (pow2(a) + pow2(b)*costheta2) *
+			   (x*(1.0 - x) + y*(1.0 - y)) / (pow2(a) - pow2(b)*costheta2) *
 			   (NC/2.0) *
 			   (costheta2 - 2.0*CF/NC * a);
 	};
 	// ------------------------------------------------------------------
-
+	
 	// ------------------------------------------------------------------
 	// SU(3)_F scalar flavor-singlet amplitude:
 	// |\eta'\eta' >

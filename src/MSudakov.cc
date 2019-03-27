@@ -32,6 +32,8 @@
 
 namespace gra {
 
+std::unique_ptr<LHAPDF::PDF> PdfPtr = nullptr;
+
 using aux::indices;
 using math::msqrt;
 using math::pow2;

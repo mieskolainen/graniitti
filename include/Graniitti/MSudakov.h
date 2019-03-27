@@ -129,8 +129,7 @@ private:
 	void   CalculateArray(IArray2D& arr, std::pair<double,double> (MSudakov::*f)(double,double));
 
 	std::string PDFSETNAME;
-	std::unique_ptr<LHAPDF::PDF> PdfPtr;
-
+	
 	IArray2D veto;      // Sudakov veto
 	IArray2D spdf;      // Shuvaev pdf
 };
