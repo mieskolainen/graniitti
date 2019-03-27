@@ -65,7 +65,9 @@ double EnergyMP(double n);
 double GammaMP(double n, double alpha_g);
 double PsiMP(double n);
 
-void PrintParam(double sqrts);
+void PrintParam(double sqrts, bool forceprint = false);
+
+extern int _printcalls;
 }
 
 // N* excitation

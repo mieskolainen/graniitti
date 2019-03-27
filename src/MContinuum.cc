@@ -283,21 +283,6 @@ void MContinuum::PrintInit(bool silent) const {
 		std::cout << proton2 << std::endl;
 		std::cout << std::endl;
 		
-		// --------------------------------------------------------------
-		// Amplitude setup printout
-		// Monopolium
-		if (ProcPtr.CHANNEL == "monopolium(0)") {
-			PARAM_MONOPOLE::PrintParam(lts.sqrt_s);
-		}
-
-		// Custom resonances processes
-		if (ProcPtr.CHANNEL == "RES") {
-			for (auto& x : lts.RESONANCES) {
-				x.second.PrintParam(lts.sqrt_s);
-			}
-		}
-		// --------------------------------------------------------------
-		
 		// Generation cuts
 		std::cout << std::endl;
 		std::cout << rang::style::bold

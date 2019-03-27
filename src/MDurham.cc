@@ -603,6 +603,7 @@ double MDurham::phi_CZ(double x, double fM) const {
 //
 // Here, one could perhaps update the phenomenology (check more recent papers).
 //
+// ----------------------------------------------------------------------
 // Three charge neutral state are in the SU(3)_F quark model nonet (octet+singlet):
 // pi0, eta8, eta0
 // 
@@ -623,11 +624,11 @@ std::vector<double> MDurham::EvalPhi(int N, int pdg) const {
 
 	// Meson decay constants
 	double fM = 0.0;
-	static const std::vector<double> supported = {111, 211, 321, 311};
+	static const std::vector<double> supported = {111, 211, 321, 311}; // pi0, pi+, K+, K0
 	if (std::find(supported.begin(), supported.end(), pdg) != supported.end()) {
 		fM = PDG::fM_meson.at(pdg);
 	} else {
-		fM = PDG::fM_meson.at(211);   // else, take pi0
+		fM = PDG::fM_meson.at(111);   // else, take pi0
 	}
 	const double fM_eta8 = fM * 1.25; // pi0 x
 	const double fM_eta0 = fM * 1.07; // pi0 x
@@ -666,15 +667,15 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR& lts,
 	// they could be pre-calculated and interpolated as a function of costheta]
 	const int Nx = 96;
 	const double STEPx = 1.0/Nx;
-
+	
 	// Init 2D-Simpson weight matrix (will be calculated only once, being
 	// static), C++11 handles multithreaded static initialization
 	const static MMatrix<double> WSimpson = math::Simpson38Weight2D(Nx,Nx);
-	
+
 	const double delta_AB = 8;                       // Sum over \delta^AB [gluons in with the same color]
 	const double NC       = 3;                       // Three colors
 	const double CF       = (pow2(NC)-1.0)/(NC*2.0); // SU(3) algebra
-	
+
 	// @@ MUTEX LOCK @@
 	gra::aux::g_mutex.lock();
 	const double alpha_s = gra::aux::sudakov.AlphaS_Q2(lts.s_hat / Durham::alphas_scale);
@@ -689,7 +690,7 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR& lts,
 
 	// ------------------------------------------------------------------
 	// ** Hard angular cut-off **
-	// these amplitudes are singular when |costheta| -> 1
+	// sub-amplitudes are singular when |costheta| -> 1
 
 	const double ANGCUT = 0.1;
 	if (std::abs(costheta) > (1.0 - ANGCUT)) {
@@ -697,7 +698,7 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR& lts,
 		return;
 	}
 	// ------------------------------------------------------------------
-
+	
 	// Helicity phase
 	const double phi = lts.decaytree[0].p4.Phi();
 	const std::complex<double> posphase = std::exp( 2.0*zi*phi);
@@ -710,8 +711,8 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR& lts,
 	// T_+- = T_-+
 	auto T_SFO_PM = [&](double x, double y) {
 
-		const double a = (1.0 - x)*(1.0 - y) + x*y;
-		const double b = (1.0 - x)*(1.0 - y) - x*y;
+		const double a = (1.0 - x)*(1.0 - y) + x*y; // +
+		const double b = (1.0 - x)*(1.0 - y) - x*y; // -
 
 		return 1.0 / (x*y*(1.0 - x)*(1.0 - y)) *
 			   (x*(1.0 - x) + y*(1.0 - y)) / (pow2(a) + pow2(b)*costheta2) *

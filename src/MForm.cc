@@ -118,7 +118,11 @@ double PsiMP(double n) {
 	return (1.0 / msqrt(PI)) * std::pow(PARAM_MONOPOLE::M0 / (8.0 * form::alpha_EM(0) * n), 3.0/2.0);
 }
 
-void PrintParam(double sqrts) {
+void PrintParam(double sqrts, bool forceprint) {
+
+	if (_printcalls == 0 || forceprint) {
+
+	aux::PrintBar("*");
 	std::cout << rang::style::bold
 	          << "Monopolium process parameters:" << rang::style::reset
 	          << std::endl
@@ -141,9 +145,16 @@ void PrintParam(double sqrts) {
 	}
 
 	std::cout << "Dirac charge = "    << PARAM_MONOPOLE::gn << std::endl;
-	std::cout << "Coupling scheme = " << PARAM_MONOPOLE::coupling << std::endl;
-	
+	std::cout << "Coupling scheme = " << PARAM_MONOPOLE::coupling << std::endl;	
+	aux::PrintBar("*");
+	std::cout << std::endl;
+
+	_printcalls++;
+	}
 }
+
+int _printcalls = 0;
+
 }
 
 

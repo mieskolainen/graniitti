@@ -102,9 +102,9 @@ void MSubProc::ConstructDescriptions(const std::string& first) {
 
 		std::map<std::string, std::string> channels;
 		channels.insert(std::pair<std::string, std::string>("chic(0)",      "QCD resonance chic(0)                    [Durham QCD]"));
-		channels.insert(std::pair<std::string, std::string>("CON",          "QCD continuum to gg, MMbar               [Durham QCD]          @@ UNDER TESTING @@"));
+		channels.insert(std::pair<std::string, std::string>("CON",          "QCD continuum to gg, 2 x pseudoscalar    [Durham QCD]          @@ UNDER TESTING @@"));
 			descriptions.insert(std::pair<std::string, std::map<std::string,std::string>>("gg", channels));
-	}
+	}	
 	else if (first == "yy_DZ") {
 
 		std::map<std::string, std::string> channels;
