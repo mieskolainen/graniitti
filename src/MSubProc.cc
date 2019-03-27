@@ -229,7 +229,7 @@ inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR& lt
 			static MTensorPomeron TensorPomeron;
 			A = TensorPomeron.ME4(lts);
 		} else {
-			throw std::invalid_argument("MSubProc: Only 2-body+sequential final states for [CONTENSOR] process");
+			throw std::invalid_argument("MSubProc: Only 2-body + sequential final states for [CONTENSOR] process");
 		}
 	}
 	
@@ -243,7 +243,7 @@ inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR& lt
 		else if (lts.decaytree.size() == 6) {
 			A = ME8(lts);
 		} else {
-			throw std::invalid_argument("MSubProc: Only 2/4/6-body+sequential final states for [CON] process");
+			throw std::invalid_argument("MSubProc: Only 2/4/6-body + sequential final states for [CON] process");
 		}
 	}
 	
@@ -278,13 +278,7 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yP(gra::LORENTZSCALAR& lt
 // Gamma-Gamma
 inline std::complex<double> MSubProc::GetBareAmplitude_yy(gra::LORENTZSCALAR& lts) {
 	std::complex<double> A(0, 0);
-
-	// ------------------------------------------------------------------
-	if (lts.excite1 == true || lts.excite2 == true) {
-	//	throw std::invalid_argument("MSubProc::GetBareAmplitude_yy: Proton excitation not yet implemented for gamma-gamma processes!");
-	}
-	// ------------------------------------------------------------------
-
+	
 	if      (CHANNEL == "RES") {
 		A = yyX(lts, lts.RESONANCES.begin()->second);
 	}
@@ -368,7 +362,6 @@ retry:
 	}
 	gra::aux::g_mutex.unlock();
 	// @@ MULTITHREADING UNLOCK @@
-
 
 	// Amplitude
 	std::complex<double> A(0, 0);

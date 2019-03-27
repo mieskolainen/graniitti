@@ -154,7 +154,6 @@ void PrintParam(double sqrts, bool forceprint) {
 }
 
 int _printcalls = 0;
-
 }
 
 
