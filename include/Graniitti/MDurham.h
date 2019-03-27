@@ -85,7 +85,7 @@ public:
 	void Dgg2MMbar(const gra::LORENTZSCALAR& lts,
 				   std::vector<std::vector<std::complex<double>>>& Amp);
 	double phi_CZ(double x, double fM) const;
-	std::vector<double> EvalPhi(int N, double fM) const;
+	std::vector<double> EvalPhi(int N, int pdg) const;
 	
 
 	double Asum = 0.0;

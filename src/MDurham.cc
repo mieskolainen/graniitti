@@ -597,56 +597,112 @@ double MDurham::phi_CZ(double x, double fM) const {
 }
 
 
-// For tabulating meson wave function
-// N + 1 points
-std::vector<double> MDurham::EvalPhi(int N, double fM) const {
+// For tabulating the meson wave function
+//
+// [REFERENCE: Takizawa, http://www-nuclth.phys.sci.osaka-u.ac.jp/jp-usw/talk/Takizawa.pdf]
+//
+// Here, one could perhaps update the phenomenology (check more recent papers).
+//
+// Three charge neutral state are in the SU(3)_F quark model nonet (octet+singlet):
+// pi0, eta8, eta0
+// 
+// Rotation (mixing) to physical basis via:
+//
+// [eta > = [cos th  -sin th] [eta8>
+// [eta'>   [sin th   cos th] [eta0>
+// 
+// Decay constants:
+// 
+// f_{8eta}  =  f_8 * cos th
+// f_{8eta'} =  f_8 * sin th 
+// 
+// f_{0eta}  = -f_0 * sin th
+// f_{0eta'} =  f_0 * cos th
+//
+std::vector<double> MDurham::EvalPhi(int N, int pdg) const {
 
+	// Meson decay constants
+	double fM = 0.0;
+	static const std::vector<double> supported = {111, 211, 321, 311};
+	if (std::find(supported.begin(), supported.end(), pdg) != supported.end()) {
+		fM = PDG::fM_meson.at(pdg);
+	} else {
+		fM = PDG::fM_meson.at(211);   // else, take pi0
+	}
+	const double fM_eta8 = fM * 1.25; // pi0 x
+	const double fM_eta0 = fM * 1.07; // pi0 x
+
+	// Mixing angle
+	static const double THETA_eta = math::Deg2Rad(-21.8);
+	const double costh = std::cos(THETA_eta);
+	const double sinth = std::sin(THETA_eta);
+
+	// Evaluate
 	std::vector<double> f(N+1);
 	const double STEP = 1.0/N;
-
 	for (const auto& i : aux::indices(f)) {
 		const double x = i * STEP;
-		f[i] = phi_CZ(x, fM);
+		if      (pdg == 221) { // eta via mixing
+			f[i] = costh * phi_CZ(x, fM_eta8) - sinth * phi_CZ(x, fM_eta0);
+		}
+		else if (pdg == 331) { // etaprime via mixing
+			f[i] = sinth * phi_CZ(x, fM_eta8) + costh * phi_CZ(x, fM_eta0);
+		}
+		else {
+			f[i] = phi_CZ(x, fM);
+		}
 	}
 	return f;
 }
 
 
 // Meson pair amplitude
-// 
-// [THIS IS UNDER CONSTRUCTION]
+//
 void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR& lts,
                        	std::vector<std::vector<std::complex<double>>>& Amp) {
 
-	// Discretization
-	const int Nx = 36;
+	// Wave function x-discretization
+	// [Easy speed & accuracy improvement: Check lambda-functions below,
+	// they could be pre-calculated and interpolated as a function of costheta]
+	const int Nx = 96;
 	const double STEPx = 1.0/Nx;
 
 	// Init 2D-Simpson weight matrix (will be calculated only once, being
 	// static), C++11 handles multithreaded static initialization
-	const static MMatrix<double> WSimpson   = math::Simpson38Weight2D(Nx,Nx);
-
-	const double delta_AB = 8;                       // Sum over \delta^AB [gluons in with same color]
+	const static MMatrix<double> WSimpson = math::Simpson38Weight2D(Nx,Nx);
+	
+	const double delta_AB = 8;                       // Sum over \delta^AB [gluons in with the same color]
 	const double NC       = 3;                       // Three colors
 	const double CF       = (pow2(NC)-1.0)/(NC*2.0); // SU(3) algebra
-
+	
 	// @@ MUTEX LOCK @@
 	gra::aux::g_mutex.lock();
 	const double alpha_s = gra::aux::sudakov.AlphaS_Q2(lts.s_hat / Durham::alphas_scale);
 	gra::aux::g_mutex.unlock();
 	// @@ MUTEX LOCK @@
 
-	const double     shat = lts.s_hat;
-	const double        m = lts.decaytree[0].p4.M();
-	const double     beta = kinematics::Beta(pow2(m), shat);
-	const double costheta = (1.0 + 2.0*lts.t_hat/lts.s_hat - 2.0*pow2(m)/lts.s_hat)/beta;
+	const double      shat = lts.s_hat;
+	const double         m = lts.decaytree[0].p4.M();
+	const double      beta = kinematics::Beta(pow2(m), shat);
+	const double  costheta = (1.0 + 2.0*lts.t_hat/lts.s_hat - 2.0*pow2(m)/lts.s_hat)/beta;
 	const double costheta2 = pow2(costheta);
+
+	// ------------------------------------------------------------------
+	// ** Hard angular cut-off **
+	// these amplitudes are singular when |costheta| -> 1
+
+	const double ANGCUT = 0.1;
+	if (std::abs(costheta) > (1.0 - ANGCUT)) {
+		Amp[0] = std::vector<std::complex<double>>(4, 0.0); // Return zero
+		return;
+	}
+	// ------------------------------------------------------------------
 
 	// Helicity phase
 	const double phi = lts.decaytree[0].p4.Phi();
 	const std::complex<double> posphase = std::exp( 2.0*zi*phi);
 	const std::complex<double> negphase = std::exp(-2.0*zi*phi);
-	
+
 	// ------------------------------------------------------------------
 	// Mesons scalar flavor octet (non-singlet) amplitude:
 	// |\pi0\pi0>, |\pi+\pi->, |K+K->, |K0\bar{K0}>
@@ -683,42 +739,40 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR& lts,
 			   (1.0 + 3.0*costheta2) / (2.0 * pow2(1.0 - costheta2));
 	};
 	// ------------------------------------------------------------------
-	
+
 	// pi0, pi+, K+, K0
 	static const std::vector<int> SFO_PDG = {111, 211, 321, 311};
-	// eta, eta, eta'
+	// eta, eta'
 	static const std::vector<int> SFS_PDG = {221, 331};
 
-	// Evaluate once the meson wave functions
 	static const int pdg0 = std::abs(lts.decaytree[0].p.pdg);
 	static const int pdg1 = std::abs(lts.decaytree[1].p.pdg);
 
-	// Meson decay constants
-	static const double fM_meson0 = PDG::fM_meson.at(pdg0);
-	static const double fM_meson1 = PDG::fM_meson.at(pdg1);
+	// Evaluate only once the meson wave functions
+	static const std::vector<double> wfphi0 = EvalPhi(Nx, pdg0);
+	static const std::vector<double> wfphi1 = EvalPhi(Nx, pdg1);
 
-	static const std::vector<double> wfphi0 = EvalPhi(Nx, fM_meson0);
-	static const std::vector<double> wfphi1 = EvalPhi(Nx, fM_meson1);
+	// -------------------------------------------------------------------
+	const double CUTOFF = 1e-8; // To avoid singularity at x = 0, x = 1
+	static const std::vector<double> xval = math::linspace<std::vector>(CUTOFF, 1.0-CUTOFF, Nx+1);
 
-	const double CUTOFF = 1e-8;
-	static const std::vector<double> xval  = math::linspace<std::vector>(CUTOFF, 1.0-CUTOFF, Nx+1);
 
+	// ------------------------------------------------------------------
 	// Integral over meson wave functions:
 	// M\int_0^1 dx dy \phi_M(x) \phi_\bar{M}(y) T_{\lambda\lambda'} (x,y,\hat{s},\theta)
 
-	// Common normalization
+	// Normalization factor
 	const double norm = (delta_AB/NC) * (64.0*math::PIPI*pow2(alpha_s)) / shat;
 
 	// Scalar flavor octet
 	if ((std::find(SFO_PDG.begin(), SFO_PDG.end(), pdg0) != SFO_PDG.end())) {
 		std::vector<std::complex<double>> is(4);
-		
+			
 		MMatrix<double> f_PM(Nx+1, Nx+1, 0.0);
 
 		for (std::size_t i = 0; i < Nx+1; ++i) {
 		for (std::size_t j = 0; j < Nx+1; ++j) {
 
-			//printf("i = %d, j = %d : %0.6E \n", i, j, T_SFNS_PM(xval[i],xval[j]));
 			f_PM[i][j] = wfphi0[i] * wfphi1[j] * T_SFO_PM(xval[i], xval[j]);
 		}}
 
@@ -749,7 +803,8 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR& lts,
 		is[PM] = norm * math::Simpson38Integral2D(f_PM, WSimpson, STEPx, STEPx) * posphase;
 		is[MP] = is[PM] * negphase;
 
-		Amp[0] = is;	
+		Amp[0] = is;
+
 	} else {
 		throw std::invalid_argument("MDurham::Dgg2MMbar: Unsupported meson: " + std::to_string(lts.decaytree[0].p.pdg));
 	}

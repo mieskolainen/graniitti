@@ -91,14 +91,12 @@ namespace PDG {
 	// length:        [value] x [GeV^{-1}] = [value] x [hbar x c]
 	
 	
-	// Meson decay constants (PDG) [pi0, pi+, K+, K0, eta, etaprime]
+	// Meson decay constants (PDG) [pi0, pi+, K+, K0]
 	static const std::map<int, double> fM_meson {
 		{111, 0.1300},
 		{211, 0.1307},
 		{321, 0.1598},
-		{311, 0.1598},
-		{221, 1.20 * 0.130},
-		{332,-0.45 * 0.130}
+		{311, 0.1598}
 	};
 
 } // Namespace PDG ends
