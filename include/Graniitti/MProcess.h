@@ -29,6 +29,7 @@
 #include "Graniitti/MUserHistograms.h"
 #include "Graniitti/M4Vec.h"
 #include "Graniitti/MPDG.h"
+#include "Graniitti/MGlobals.h"
 
 
 namespace gra {
@@ -160,7 +161,7 @@ public:
 
 	// Set LHAPDF
 	void SetLHAPDF(const std::string& in) {
-		gra::form::LHAPDF = in;
+		gra::LHAPDF = in;
 	}
 	
 	// Set cuts

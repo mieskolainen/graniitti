@@ -39,27 +39,8 @@
 namespace gra {
 namespace aux {
 
-
-// ======================================================================
-// "PROGRAM GLOBALS"
-
-// Model tune
-std::string MODELPARAM = "";
-
-// Sudakov routines
-MSudakov* GlobalSudakovPtr = nullptr;
-
-// GLOBAL for multithreading: HepMC3 outputfile and LHAPDF and mutex lock
-std::mutex g_mutex;
-
 // Check do we have terminal output (=true), or output to file (=false)
 static const bool IS_TERMINAL = isatty(fileno(stdout)) != 0;
-
-// Normal pdfs
-LHAPDF::PDF* GlobalPdfPtr = nullptr;
-int pdf_trials = 0;
-
-// ======================================================================
 
 
 // Download LHAPDFset automatically

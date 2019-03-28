@@ -16,6 +16,8 @@
 #include "Graniitti/MMath.h"
 #include "Graniitti/MProcess.h"
 #include "Graniitti/MSpin.h"
+#include "Graniitti/MGraniitti.h"
+
 
 // Libraries
 #include "json.hpp"
@@ -162,10 +164,8 @@ namespace PARAM_NSTAR {
 std::vector<double> rc = {0.0, 0.0, 0.0};
 }
 
-namespace form {
 
-// LHAPDFset name
-std::string LHAPDF;
+namespace form {
 
 // Read resonance parameters
 gra::PARAM_RES ReadResonance(const std::string& resparam_str, MRandom& rng) {
@@ -174,7 +174,7 @@ gra::PARAM_RES ReadResonance(const std::string& resparam_str, MRandom& rng) {
 
 	// Create a JSON object from file
 	std::string inputfile =
-		gra::aux::GetBasePath(2) + "/modeldata/" + gra::aux::MODELPARAM + "/" + resparam_str;
+		gra::aux::GetBasePath(2) + "/modeldata/" + gra::MODELPARAM + "/" + resparam_str;
 	
 	// Read and parse
 	std::string data;

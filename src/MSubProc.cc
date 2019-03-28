@@ -17,6 +17,7 @@
 #include "Graniitti/MKinematics.h"
 #include "Graniitti/MSpin.h"
 #include "Graniitti/MForm.h"
+#include "Graniitti/MGlobals.h"
 
 // LHAPDF
 #include "LHAPDF/LHAPDF.h"
@@ -202,13 +203,13 @@ inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR& lt
 	
 	// ------------------------------------------------------------------
 	// First run, init parameters
-	gra::aux::g_mutex.lock();
+	gra::g_mutex.lock();
 	if (!PARAM_REGGE::initialized) { 
 		const int PDG = std::abs(lts.decaytree[0].p.pdg);
-		InitReggeAmplitude(PDG, gra::aux::MODELPARAM);
+		InitReggeAmplitude(PDG, gra::MODELPARAM);
 		PARAM_REGGE::initialized = true;
 	}
-	gra::aux::g_mutex.unlock();
+	gra::g_mutex.unlock();
 	// ------------------------------------------------------------------
 	
 	std::complex<double> A(0, 0);
@@ -338,27 +339,27 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy_DZ(gra::LORENTZSCALAR&
 inline std::complex<double> MSubProc::GetBareAmplitude_yy_LUX(gra::LORENTZSCALAR& lts) {
 
 	// @@ MULTITHREADING LOCK @@
-	gra::aux::g_mutex.lock();
-	if (aux::GlobalPdfPtr == nullptr) {
-	std::string pdfname = gra::form::LHAPDF;
+	gra::g_mutex.lock();
+	if (gra::GlobalPdfPtr == nullptr) {
+	std::string pdfname = gra::LHAPDF;
 
 retry:
 	try {
-		aux::GlobalPdfPtr = LHAPDF::mkPDF(pdfname, 0);
-		aux::pdf_trials = 0; // fine
+		gra::GlobalPdfPtr = LHAPDF::mkPDF(pdfname, 0);
+		gra::pdf_trials = 0; // fine
 	} catch (...) {
-		++aux::pdf_trials;
+		++gra::pdf_trials;
 		std::string str = "MSubProc::InitLHAPDF: Problem with reading '" + pdfname + "'";
 		aux::AutoDownloadLHAPDF(pdfname); // Try autodownload
-		gra::aux::g_mutex.unlock();       // Remember before throw, otherwise deadlock
-		if (aux::pdf_trials >= 2) { // too many failures
+		gra::g_mutex.unlock();       // Remember before throw, otherwise deadlock
+		if (gra::pdf_trials >= 2) { // too many failures
 			throw std::invalid_argument(str);
 		} else {
 			goto retry;
 		}
 	}
 	}
-	gra::aux::g_mutex.unlock();
+	gra::g_mutex.unlock();
 	// @@ MULTITHREADING UNLOCK @@
 
 	// Amplitude
@@ -375,7 +376,7 @@ retry:
 	}
 
 	// @@ MULTITHREADING LOCK @@
-	gra::aux::g_mutex.lock();
+	gra::g_mutex.lock();
 
 	// pdf factorization scale
 	const double Q2 = lts.s_hat / 4.0; 
@@ -385,13 +386,13 @@ retry:
 	double f2 = 0.0;
 	try {
 	// Divide x out
-	f1 = aux::GlobalPdfPtr->xfxQ2(PDG::PDG_gamma, lts.x1, Q2) / lts.x1;
-	f2 = aux::GlobalPdfPtr->xfxQ2(PDG::PDG_gamma, lts.x2, Q2) / lts.x2;
+	f1 = gra::GlobalPdfPtr->xfxQ2(PDG::PDG_gamma, lts.x1, Q2) / lts.x1;
+	f2 = gra::GlobalPdfPtr->xfxQ2(PDG::PDG_gamma, lts.x2, Q2) / lts.x2;
 	} catch (...) {
-		gra::aux::g_mutex.unlock(); // remember before throw, otherwise deadlock		
+		gra::g_mutex.unlock(); // remember before throw, otherwise deadlock		
 		throw std::invalid_argument("MSubProc:yy_LUX: Failed evaluating LHAPDF");
 	}
-	gra::aux::g_mutex.unlock();
+	gra::g_mutex.unlock();
 
 	const double tot = f1 * f2 * math::abs2(A) * (lts.s / lts.s_hat);
 	return msqrt(tot);

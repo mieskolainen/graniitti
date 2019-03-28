@@ -77,14 +77,6 @@ extern std::vector<double> rc;
 
 namespace form {
 
-// ----------------------------------------------------------------------
-// "PROGRAM GLOBALS"
-
-extern std::map<std::string, gra::PARAM_RES> RESONANCES;
-extern std::string LHAPDF;
-
-// ----------------------------------------------------------------------
-
 // Read resonance
 gra::PARAM_RES ReadResonance(const std::string& resparam_str, MRandom& rng);
 
@@ -135,7 +127,6 @@ std::complex<double> CBW_BF(double m2, double M0, double Gamma, int J,
 std::complex<double> CBW_JR(double m2, double M0, double Gamma, double J);
 
 } // form namespace
-
 } // gra namespace
 
 #endif

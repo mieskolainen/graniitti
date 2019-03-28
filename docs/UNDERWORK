@@ -1,4 +1,4 @@
-GRANIITTI (BETA) FAQ: 24.3.2019
+GRANIITTI (BETA) FAQ: 28.3.2019
 
 mikael.mieskolainen@cern.ch
 -----------
@@ -12,4 +12,6 @@ Processes under construction/validation:
 - vetocuts are not activated
 - exhaustive unit testing of kinematics and dynamics, and consistency tests under implementation
 
+- a known problem with creating & destroying MGraniitti() instances in a loop with LHAPDF access.
+  Something to do with LHAPDF memory access & its use here.
 

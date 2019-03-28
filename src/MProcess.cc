@@ -31,6 +31,7 @@
 #include "Graniitti/MTimer.h"
 #include "Graniitti/MUserCuts.h"
 #include "Graniitti/MFragment.h"
+#include "Graniitti/MGlobals.h"
 
 
 // HepMC33
@@ -603,7 +604,7 @@ void MProcess::SetupBranching() {
 	using json = nlohmann::json;
 
 	const std::string inputfile
-		= gra::aux::GetBasePath(2) + "/modeldata/" + aux::MODELPARAM + "/BRANCHING.json";
+		= gra::aux::GetBasePath(2) + "/modeldata/" + gra::MODELPARAM + "/BRANCHING.json";
 	const std::string data      = gra::aux::GetInputData(inputfile);
 	json j;
 	try {

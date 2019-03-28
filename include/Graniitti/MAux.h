@@ -62,28 +62,6 @@ struct OneCMD {
 };
 
 
-// ======================================================================
-// "PROGRAM GLOBALS"
-
-// Model tune
-extern std::string MODELPARAM;
-
-// Sudakov/pdf routines
-extern MSudakov* GlobalSudakovPtr;
-
-// GLOBAL for multithreading: HepMC3 outputfile and LHAPDF and mutex lock
-extern std::mutex g_mutex;
-
-// For multithreaded VEGAS, to handle the exceptions from forked threads
-static std::exception_ptr globalExceptionPtr = nullptr;
-
-// Normal pdfs
-extern LHAPDF::PDF* GlobalPdfPtr;
-extern int pdf_trials;
-
-// ======================================================================
-
-
 // M4Vec to HepMC3::FourVector
 inline HepMC3::FourVector M4Vec2HepMC3(const M4Vec& v) {
 	return HepMC3::FourVector(v.X(),v.Y(),v.Z(), v.E());

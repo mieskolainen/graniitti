@@ -45,6 +45,27 @@
 
 namespace gra {
 
+
+// ******************************************************************
+// GLOBALS from MGlobals.h: initialized by MGraniitti()
+
+// Model tune
+std::string MODELPARAM;
+
+// Sudakov/pdf routines
+MSudakov* GlobalSudakovPtr;
+
+// Normal pdfs
+std::string LHAPDF;
+LHAPDF::PDF* GlobalPdfPtr;
+int pdf_trials;
+
+// Multithreading
+std::mutex g_mutex;
+std::exception_ptr globalExceptionPtr;
+
+// ******************************************************************
+
 using json = nlohmann::json;
 
 using gra::aux::indices;
@@ -60,9 +81,13 @@ MGraniitti::MGraniitti() {
 
 	// ******************************************************************
 	// Init program globals
-	if (gra::aux::GlobalSudakovPtr == nullptr) {
-		gra::aux::GlobalSudakovPtr = new MSudakov;
-	}
+	
+	gra::MODELPARAM = "";
+	gra::GlobalSudakovPtr = new MSudakov();
+	gra::LHAPDF = "";
+	gra::GlobalPdfPtr = nullptr;
+	gra::pdf_trials = 0;
+
 	// ******************************************************************
 
 	// Print general layout
@@ -75,17 +100,16 @@ MGraniitti::~MGraniitti() {
 	std::cout << "Calling ~MGraniitti" << std::endl;
 
 	// ******************************************************************
-	// Destroy/reset program globals
-	if (gra::aux::GlobalSudakovPtr != nullptr) {
+	// Destroy & reset program globals
+	if (gra::GlobalSudakovPtr != nullptr) {
 		std::cout << "Destructing GlobalSudakovPtr" << std::endl;
-		delete gra::aux::GlobalSudakovPtr;
-		gra::aux::GlobalSudakovPtr = nullptr;
+		delete gra::GlobalSudakovPtr;
+		gra::GlobalSudakovPtr = nullptr;
 	}
-	if (gra::aux::GlobalPdfPtr != nullptr) {
+	if (gra::GlobalPdfPtr != nullptr) {
 		std::cout << "Destructing GlobalPdfPtr" << std::endl;
-		delete gra::aux::GlobalPdfPtr;
-		gra::aux::GlobalPdfPtr = nullptr;
-		gra::aux::pdf_trials = 0;
+		delete gra::GlobalPdfPtr;
+		gra::GlobalPdfPtr = nullptr;
 	}
 	// ******************************************************************
 
@@ -208,7 +232,7 @@ void MGraniitti::InitFileOutput() {
  		runinfo = make_shared<HepMC3::GenRunInfo>();
 
  		struct HepMC3::GenRunInfo::ToolInfo generator = {
- 			std::string("GRANIITTI (" + gra::aux::MODELPARAM + ")"),
+ 			std::string("GRANIITTI (" + gra::MODELPARAM + ")"),
  			std::to_string(aux::GetVersion()).substr(0,5),
  			std::string("Generator")};
 		runinfo->tools().push_back(generator);
@@ -399,11 +423,11 @@ void MGraniitti::ReadGeneralParam(const std::string& inputfile) {
 void MGraniitti::ReadModelParam(const std::string& inputfile) {
 
 	// Setup for later use
-	gra::aux::MODELPARAM = inputfile;
+	gra::MODELPARAM = inputfile;
 
 	// Read and parse
 	const std::string fullpath = 
-		gra::aux::GetBasePath(2) + "/modeldata/" + gra::aux::MODELPARAM + "/GENERAL.json";
+		gra::aux::GetBasePath(2) + "/modeldata/" + gra::MODELPARAM + "/GENERAL.json";
 	const std::string data     = gra::aux::GetInputData(fullpath);
 
 	json j;
@@ -1018,7 +1042,7 @@ void MGraniitti::Initialize() {
 	std::cout << "Multithreading:         " << CORES      << std::endl;
 	std::cout << "Integrator:             " << INTEGRATOR << std::endl;
 	std::cout << "Number of events:       " << NEVENTS    << std::endl;
-	std::cout << "Parameter setup:        " << gra::aux::MODELPARAM << std::endl;
+	std::cout << "Parameter setup:        " << gra::MODELPARAM << std::endl;
 	
 	std::string str = (WEIGHTED == true) ? "weighted" : "unweighted";
 	std::cout << rang::fg::green << "Generation mode:        " << str
@@ -1237,8 +1261,8 @@ int MGraniitti::Vegas(unsigned int init, unsigned int calls, unsigned int itermi
 		for (auto& t : threads) {
 			t.join();
 		}
-		if (gra::aux::globalExceptionPtr) { // Exception handling of threads
-			std::rethrow_exception(gra::aux::globalExceptionPtr);
+		if (gra::globalExceptionPtr) { // Exception handling of threads
+			std::rethrow_exception(gra::globalExceptionPtr);
 		}
 
 		// --------------------------------------------------------------
@@ -1407,7 +1431,7 @@ void MGraniitti::VEGASMultiThread(unsigned int N, unsigned int THREAD_ID, unsign
 			// *******************************************************************
 
 			// @@ Multithreading lock (FAST SECTION) @@
-			gra::aux::g_mutex.lock();
+			gra::g_mutex.lock();
 
 			// Increase statistics
 			stat.Accumulate(aux);
@@ -1436,7 +1460,7 @@ void MGraniitti::VEGASMultiThread(unsigned int N, unsigned int THREAD_ID, unsign
 					if (f > stat.maxf) { stat.maxf = f; }
 				}
 			}
-			gra::aux::g_mutex.unlock();
+			gra::g_mutex.unlock();
 			// @@ Multithreading unlock (FAST SECTION) @@
 
 			// ----------------------------------------------------------
@@ -1461,7 +1485,7 @@ void MGraniitti::VEGASMultiThread(unsigned int N, unsigned int THREAD_ID, unsign
 	} catch (...) {
 		// Set the global exception pointer if exception arises
 		// This is because of multithreading
-		gra::aux::globalExceptionPtr = std::current_exception();
+		gra::globalExceptionPtr = std::current_exception();
 	}
 }
 
@@ -1687,7 +1711,7 @@ void MGraniitti::SampleNeuro(unsigned int N) {
 // Save unweighted or weighted event
 int MGraniitti::SaveEvent(MProcess* pr, double weight, double MAXWEIGHT, const gra::AuxIntData& aux) {
 
-	gra::aux::g_mutex.lock();
+	gra::g_mutex.lock();
 	stat.trials += 1; // This is one trial more
 	
 	// 0. Hit-Miss
@@ -1698,7 +1722,7 @@ int MGraniitti::SaveEvent(MProcess* pr, double weight, double MAXWEIGHT, const g
 		++stat.N_overflow;
 		hit_in = false;
 	}
-	gra::aux::g_mutex.unlock();
+	gra::g_mutex.unlock();
 	
 	// Three ways to accept the event. N.B. weight > 0 needed if the amplitude fails numerically
 	if ((hit_in && aux.Valid()) || (WEIGHTED && aux.Valid()) || aux.forced_accept) {
@@ -1715,12 +1739,12 @@ int MGraniitti::SaveEvent(MProcess* pr, double weight, double MAXWEIGHT, const g
 		// Event ok, continue >>
 		
 		// @@@ THIS IS THREAD-NON-SAFE -> LOCK IT
-		gra::aux::g_mutex.lock();   
+		gra::g_mutex.lock();   
 		
 		// ** This is a multithreading race-condition treatment **
 		if (stat.generated == (unsigned int) GetNumberOfEvents()) {
 			stat.trials -= 1; // Correct statistics, unnecessary trial
-			gra::aux::g_mutex.unlock();
+			gra::g_mutex.unlock();
 			return 1;
 		}
 		
@@ -1756,7 +1780,7 @@ int MGraniitti::SaveEvent(MProcess* pr, double weight, double MAXWEIGHT, const g
 		// LAST STEP
 		stat.generated += 1; // +1 event generated
 
-		gra::aux::g_mutex.unlock();
+		gra::g_mutex.unlock();
 		// @@ THIS IS THREAD-NON-SAFE <- LOCK IT @@
 		return 0;
 	} else {

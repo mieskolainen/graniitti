@@ -16,6 +16,7 @@
 #include "Graniitti/MSudakov.h"
 #include "Graniitti/MDurham.h"
 #include "Graniitti/MPDG.h"
+#include "Graniitti/MGlobals.h"
 
 // Libraries
 #include "json.hpp"
@@ -62,7 +63,7 @@ namespace Durham {
 		using json = nlohmann::json;
 
 		const std::string inputfile =
-			gra::aux::GetBasePath(2) + "/modeldata/" + gra::aux::MODELPARAM + "/GENERAL.json";
+			gra::aux::GetBasePath(2) + "/modeldata/" + gra::MODELPARAM + "/GENERAL.json";
 		const std::string data = gra::aux::GetInputData(inputfile);
 		json j;
 		
@@ -116,12 +117,12 @@ std::complex<double> MDurham::DurhamQCD(gra::LORENTZSCALAR& lts, const std::stri
 	
 	// First run, init parameters
 	// @@ MULTITHREADING LOCK @@
-	gra::aux::g_mutex.lock();
-	if (gra::aux::GlobalSudakovPtr->initialized == false) {
+	gra::g_mutex.lock();
+	if (gra::GlobalSudakovPtr->initialized == false) {
 		try {
-			gra::aux::GlobalSudakovPtr->Init(lts.sqrt_s, gra::form::LHAPDF, true);
+			gra::GlobalSudakovPtr->Init(lts.sqrt_s, gra::LHAPDF, true);
 		} catch ( ... ) {
-			gra::aux::g_mutex.unlock(); // need to release here, otherwise get infinite lock
+			gra::g_mutex.unlock(); // need to release here, otherwise get infinite lock
 			throw;
 		}
 	}
@@ -129,11 +130,11 @@ std::complex<double> MDurham::DurhamQCD(gra::LORENTZSCALAR& lts, const std::stri
 		try {
 			Durham::ReadParameters();
 		} catch ( ... ) {
-			gra::aux::g_mutex.unlock(); // need to release here, otherwise get infinite lock
+			gra::g_mutex.unlock(); // need to release here, otherwise get infinite lock
 			throw;
 		}
 	}
-	gra::aux::g_mutex.unlock();
+	gra::g_mutex.unlock();
 
 	if (process == "gg") {
 
@@ -142,9 +143,9 @@ std::complex<double> MDurham::DurhamQCD(gra::LORENTZSCALAR& lts, const std::stri
 		Amp(4, std::vector<std::complex<double>>(4, 0.0));
 
 		// Madgraph
-		gra::aux::g_mutex.lock();
-		const double alpha_s = gra::aux::GlobalSudakovPtr->AlphaS_Q2(lts.s_hat);
-		gra::aux::g_mutex.unlock();
+		gra::g_mutex.lock();
+		const double alpha_s = gra::GlobalSudakovPtr->AlphaS_Q2(lts.s_hat);
+		gra::g_mutex.unlock();
 		AmpMG5_gg_gg.CalcAmp(lts, alpha_s);
 
 		// Amplitude evaluated outside the Qt-loop (approximation)
@@ -160,9 +161,9 @@ std::complex<double> MDurham::DurhamQCD(gra::LORENTZSCALAR& lts, const std::stri
 		Amp(4, std::vector<std::complex<double>>(4, 0.0));
 		
 		// Madgraph
-		gra::aux::g_mutex.lock();
-		const double alpha_s = gra::aux::GlobalSudakovPtr->AlphaS_Q2(lts.s_hat);
-		gra::aux::g_mutex.unlock();
+		gra::g_mutex.lock();
+		const double alpha_s = gra::GlobalSudakovPtr->AlphaS_Q2(lts.s_hat);
+		gra::g_mutex.unlock();
 		AmpMG5_gg_qqbar.CalcAmp(lts, alpha_s);
 
 		// Amplitude evaluated outside the Qt-loop (approximation)
@@ -402,8 +403,8 @@ std::complex<double> MDurham::DQtloop(
 
 			// --------------------------------------------------------------------------
 			// Get amplitude level pdfs
-			const double fg_1 = gra::aux::GlobalSudakovPtr->fg_xQ2M(lts.x1, Q1_2_scale, MU);
-			const double fg_2 = gra::aux::GlobalSudakovPtr->fg_xQ2M(lts.x2, Q2_2_scale, MU);
+			const double fg_1 = gra::GlobalSudakovPtr->fg_xQ2M(lts.x1, Q1_2_scale, MU);
+			const double fg_2 = gra::GlobalSudakovPtr->fg_xQ2M(lts.x2, Q2_2_scale, MU);
 			
 			// Amplitude weight:
 			// * \pi^2 : see original KMR papers
@@ -463,9 +464,9 @@ void MDurham::Dgg2chic0(const gra::LORENTZSCALAR& lts, std::vector<std::vector<s
                         const std::vector<double>& qt1, const std::vector<double>& qt2) const {
 	
 	// @@ MUTEX LOCK @@
-	gra::aux::g_mutex.lock();
-	const double alpha_s = gra::aux::GlobalSudakovPtr->AlphaS_Q2(lts.s_hat / Durham::alphas_scale);
-	gra::aux::g_mutex.unlock();
+	gra::g_mutex.lock();
+	const double alpha_s = gra::GlobalSudakovPtr->AlphaS_Q2(lts.s_hat / Durham::alphas_scale);
+	gra::g_mutex.unlock();
 	// @@ MUTEX LOCK @@
 
 	const double gs2   = 4.0 * PI * alpha_s;  // coupling
@@ -512,9 +513,9 @@ void MDurham::Dgg2gg(const gra::LORENTZSCALAR& lts,
                        std::vector<std::vector<std::complex<double>>>& Amp) {
 	
 	// @@ MUTEX LOCK @@
-	gra::aux::g_mutex.lock();
-	const double alpha_s = gra::aux::GlobalSudakovPtr->AlphaS_Q2(lts.s_hat / Durham::alphas_scale);
-	gra::aux::g_mutex.unlock();
+	gra::g_mutex.lock();
+	const double alpha_s = gra::GlobalSudakovPtr->AlphaS_Q2(lts.s_hat / Durham::alphas_scale);
+	gra::g_mutex.unlock();
 	// @@ MUTEX LOCK @@
 
 	// Vertex factor coupling, gs^2 = 4 pi alpha_s
@@ -678,9 +679,9 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR& lts,
 	const double CF       = (pow2(NC)-1.0)/(NC*2.0); // SU(3) algebra
 
 	// @@ MUTEX LOCK @@
-	gra::aux::g_mutex.lock();
-	const double alpha_s = gra::aux::GlobalSudakovPtr->AlphaS_Q2(lts.s_hat / Durham::alphas_scale);
-	gra::aux::g_mutex.unlock();
+	gra::g_mutex.lock();
+	const double alpha_s = gra::GlobalSudakovPtr->AlphaS_Q2(lts.s_hat / Durham::alphas_scale);
+	gra::g_mutex.unlock();
 	// @@ MUTEX LOCK @@
 
 	const double      shat = lts.s_hat;

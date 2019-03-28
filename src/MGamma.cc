@@ -17,6 +17,7 @@
 #include "Graniitti/MKinematics.h"
 #include "Graniitti/MGamma.h"
 #include "Graniitti/MRegge.h"
+#include "Graniitti/MGlobals.h"
 
 
 using gra::math::msqrt;
@@ -191,9 +192,9 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR& lts) {
 //
 std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR& lts) const {
 	
-	gra::aux::g_mutex.lock();   // @@@
+	gra::g_mutex.lock();   // @@@
 	PARAM_MONOPOLE::PrintParam(lts.sqrt_s);	
-	gra::aux::g_mutex.unlock(); // @@@
+	gra::g_mutex.unlock(); // @@@
 
 	// Monopolium nominal mass and width parameters
 	static const double M = 2.0 * PARAM_MONOPOLE::M0 + PARAM_MONOPOLE::EnergyMP(PARAM_MONOPOLE::En);
