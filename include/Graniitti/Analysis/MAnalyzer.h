@@ -62,37 +62,42 @@ public:
 	// Different Lorentz frame labels
 	const std::vector<TString> frame_labels = {"CS", "HE",  "LAB",
 	                                           "GJ", "PG", "SR"};
-
+	                                           
 	// ----------------------------------------------------------
 	// Forward system quantities
 	std::unique_ptr<TH1D> hE_Pions;
 	std::unique_ptr<TH1D> hE_Gamma;
 	std::unique_ptr<TH1D> hE_Neutron;
 	std::unique_ptr<TH1D> hE_GammaNeutron;
-
+	
 	std::unique_ptr<TH1D> hXF_Pions;
 	std::unique_ptr<TH1D> hXF_Gamma;
 	std::unique_ptr<TH1D> hXF_Neutron;
-
+	
 	std::unique_ptr<TH1D> hEta_Pions;
 	std::unique_ptr<TH1D> hEta_Gamma;
 	std::unique_ptr<TH1D> hEta_Neutron;
 	std::unique_ptr<TH1D> hM_NSTAR;
-
-
+	
+	
 	// ----------------------------------------------------------
 	// Angular observables
 	std::unique_ptr<TProfile> hPl[8];
-
-	const unsigned int NFR = 6; // number of frames
-
-	std::unique_ptr<TH2D> h2CosTheta[6][6];
-	std::unique_ptr<TH2D> h2Phi[6][6];
-	std::unique_ptr<TH1D> hCosTheta_Meson_p[6];
-	std::unique_ptr<TH1D> hCosTheta_Meson_m[6];
-	std::unique_ptr<TH1D> hPhi_Meson_p[6];
-	std::unique_ptr<TH1D> hPhi_Meson_m[6];
-	std::unique_ptr<TH2D> h2CosTheta_Phi[6];
+	
+	static constexpr unsigned int NFR = 6; // number of frames
+	
+	// Correlations between frames
+	std::unique_ptr<TH2D> h2CosTheta[NFR][NFR];
+	std::unique_ptr<TH2D> h2Phi[NFR][NFR];
+	
+	std::unique_ptr<TH1D> hCosTheta_Meson_p[NFR];
+	std::unique_ptr<TH1D> hCosTheta_Meson_m[NFR];
+	std::unique_ptr<TH1D> hPhi_Meson_p[NFR];
+	std::unique_ptr<TH1D> hPhi_Meson_m[NFR];
+	std::unique_ptr<TH2D> h2CosTheta_Phi[NFR];
+	
+	std::unique_ptr<TH2D> h2M_CosTheta[NFR];
+	std::unique_ptr<TH2D> h2M_Phi[NFR];
 	
 	
 	// HepMC3 reader
@@ -106,7 +111,7 @@ public:
 	
 	// Plot out all local histograms
 	void PlotAll();
-
+	
 	double cross_section = 0;
 
 	double CheckEnergyMomentum(HepMC3::GenEvent& evt) const;

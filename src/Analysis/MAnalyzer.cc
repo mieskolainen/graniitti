@@ -163,6 +163,22 @@ MAnalyzer::MAnalyzer() {
 		         frame_labels[i].Data()),
 		    NBINS / 2, -1, 1, NBINS / 2, -gra::math::PI, gra::math::PI);
 	}
+
+	// 2D (M, costheta)
+	for (std::size_t i = 0; i < NFR; ++i) {
+		h2M_CosTheta[i] = std::make_unique<TH2D>(
+		    Form("M vs cos(#theta) %s", frame_labels[i].Data()),
+		    Form(" ;M (GeV);%s^{+} cos(#theta)", pstr.c_str(), frame_labels[i].Data()),
+		    NBINS / 2, 0.0, 2.5, NBINS / 2, -1, 1);
+	}
+
+	// 2D (M, phi)
+	for (std::size_t i = 0; i < NFR; ++i) {
+		h2M_Phi[i] = std::make_unique<TH2D>(
+		    Form("M vs #phi %s", frame_labels[i].Data()),
+		    Form(" ;M (GeV);%s^{+} #phi %s (rad)", pstr.c_str(), frame_labels[i].Data()),
+		    NBINS / 2, 0.0, 2.5, NBINS / 2, -gra::math::PI, gra::math::PI);
+	}
 }
 
 // Destructor
@@ -520,8 +536,11 @@ void MAnalyzer::FrameObservables(double W, HepMC3::GenEvent& evt, const M4Vec& p
 		hPhi_Meson_m[i]->Fill(pions[i][1].Phi(), W);
 
 		h2CosTheta_Phi[i]->Fill(pions[i][0].CosTheta(), pions[i][0].Phi(), W);
+		h2M_CosTheta[i]->Fill(system.M(), pions[i][0].CosTheta(), W);
+		h2M_Phi[i]->Fill(system.M(), pions[i][0].Phi(), W);
 	}	
 }
+
 
 // Forward system observables
 void MAnalyzer::NStarObservables(double W, HepMC3::GenEvent& evt) {
@@ -757,6 +776,10 @@ void MAnalyzer::PlotAll() {
 	}
 	// *************** *************** ***************
 
+
+	// -------------------------------------------------------------------------------------
+
+
 	TCanvas c2("c", "c", 800, 800);
 	c2.Divide(NFR, NFR, 0.0001, 0.0002);
 
@@ -772,6 +795,9 @@ void MAnalyzer::PlotAll() {
 	c2.SaveAs(Form("%s/figs/%s/QA_matrix2.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));
 
 
+	// -------------------------------------------------------------------------------------
+
+
 	TCanvas c3("c", "c", 800, 800);
 	c3.Divide(NFR, NFR, 0.0001, 0.0002);
 
@@ -785,6 +811,9 @@ void MAnalyzer::PlotAll() {
 		}
 	}
 	c3.SaveAs(Form("%s/figs/%s/QA_matrix3.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));
+
+
+	// -------------------------------------------------------------------------------------
 
 
 	TCanvas c4("c", "c", 800, 800);
@@ -816,9 +845,30 @@ void MAnalyzer::PlotAll() {
 	}
 	c4.SaveAs(Form("%s/figs/%s/QA_matrix4.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));
 
+
+	// -------------------------------------------------------------------------------------
+
+
+	TCanvas c5("c", "c", 800, 250);
+	c5.Divide(NFR, 2, 0.001, 0.002); // 2 rows, NFR columns
+
+	k = 1;
+	for (std::size_t i = 0; i < NFR; ++i) {
+		c5.cd(k);
+		++k;
+		h2M_CosTheta[i]->Draw("COLZ");
+	}
+	for (std::size_t i = 0; i < NFR; ++i) {
+		c5.cd(k);
+		++k;
+		h2M_Phi[i]->Draw("COLZ");
+	}
+	c5.SaveAs(Form("%s/figs/%s/QA_matrix5.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));	
+
+
 	// -------------------------------------------------------------------------------------
 	// -------------------------------------------------------------------------------------
-	// Legendre polynomials in the Rest Frame
+	// Legendre polynomials in the Rest Frame (non-rotated one)
 
 	const int colors[4] = {48, 53, 98, 32};
 
