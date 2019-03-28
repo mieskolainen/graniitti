@@ -1,6 +1,6 @@
 #!/bin/sh
 
-make -j4 && ./bin/analyze -i CMS_13_2pi,CMS_13_2K -g 211,321 -n 2,2 -l \
+make -j4 && ./bin/analyze -i CMS19_2pi,CMS19_2K -g 211,321 -n 2,2 -l \
 '#pi^{+}#pi^{-}','#it{K}^{+}#it{K}^{-} / 13 TeV' \
 -M 3.0 -Y 2.5 -P 2.0 -u ub -S 0.18 #-X 1000
 
