@@ -192,7 +192,7 @@ void experiment(bool screening) {
     input.push_back(MEASUREMENT("gg2gg.json",        0, 0, 0));
     
     // ...
-    input.push_back(MEASUREMENT("gg2MMbar.json",     0, 0, 0));
+    //input.push_back(MEASUREMENT("gg2MMbar.json",     0, 0, 0));
 
     // ...
     input.push_back(MEASUREMENT("yy2Higgs.json",     0, 0, 0));

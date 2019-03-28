@@ -36,7 +36,7 @@
     "HIST"    : 1,              // On-the-flight histograms (0 = off,1,2)
     "RNDSEED" : 12345678,       // Random seed (int32)
   },
-
+  
   // ----------------------------------------------------------------------
   // Monte Carlo integrator setup
 
