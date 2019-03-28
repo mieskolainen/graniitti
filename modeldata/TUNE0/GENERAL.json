@@ -51,7 +51,7 @@
   // Regge amplitude parameters (used for central system)
   
   "PARAM_REGGE" : {
-
+      
       // Continuum amplitude t/u channel form factor:
       // 1 = "exp", 2 = "orear", 3 = "pow"
       // Note that with (interfering) resonances, the continuum parameters

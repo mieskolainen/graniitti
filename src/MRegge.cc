@@ -740,7 +740,7 @@ std::complex<double> MRegge::ME3(gra::LORENTZSCALAR& lts, gra::PARAM_RES& resona
 	
 	// Fluxes
 	//const double V = msqrt(lts.s / lts.s1 / lts.s2);
-	
+
 	return A_prod * A_decay;
 }
 
