@@ -20,7 +20,7 @@ extern std::string MODELPARAM;
 extern MSudakov* GlobalSudakovPtr;
 
 // Normal pdfs
-extern std::string LHAPDF;
+extern std::string LHAPDFSET;
 extern LHAPDF::PDF* GlobalPdfPtr;
 extern int pdf_trials;
 

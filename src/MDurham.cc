@@ -120,7 +120,7 @@ std::complex<double> MDurham::DurhamQCD(gra::LORENTZSCALAR& lts, const std::stri
 	gra::g_mutex.lock();
 	if (gra::GlobalSudakovPtr->initialized == false) {
 		try {
-			gra::GlobalSudakovPtr->Init(lts.sqrt_s, gra::LHAPDF, true);
+			gra::GlobalSudakovPtr->Init(lts.sqrt_s, gra::LHAPDFSET, true);
 		} catch ( ... ) {
 			gra::g_mutex.unlock(); // need to release here, otherwise get infinite lock
 			throw;

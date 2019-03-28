@@ -341,8 +341,8 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy_LUX(gra::LORENTZSCALAR
 	// @@ MULTITHREADING LOCK @@
 	gra::g_mutex.lock();
 	if (gra::GlobalPdfPtr == nullptr) {
-	std::string pdfname = gra::LHAPDF;
-
+	std::string pdfname = gra::LHAPDFSET;
+	
 retry:
 	try {
 		gra::GlobalPdfPtr = LHAPDF::mkPDF(pdfname, 0);

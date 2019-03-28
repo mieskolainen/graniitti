@@ -56,7 +56,7 @@ std::string MODELPARAM;
 MSudakov* GlobalSudakovPtr;
 
 // Normal pdfs
-std::string LHAPDF;
+std::string LHAPDFSET;
 LHAPDF::PDF* GlobalPdfPtr;
 int pdf_trials;
 
@@ -81,10 +81,10 @@ MGraniitti::MGraniitti() {
 
 	// ******************************************************************
 	// Init program globals
-	
+
 	gra::MODELPARAM = "";
 	gra::GlobalSudakovPtr = new MSudakov();
-	gra::LHAPDF = "";
+	gra::LHAPDFSET = "";
 	gra::GlobalPdfPtr = nullptr;
 	gra::pdf_trials = 0;
 
@@ -97,17 +97,16 @@ MGraniitti::MGraniitti() {
 // Destructor
 MGraniitti::~MGraniitti() {
 
-	std::cout << "Calling ~MGraniitti" << std::endl;
 
 	// ******************************************************************
 	// Destroy & reset program globals
 	if (gra::GlobalSudakovPtr != nullptr) {
-		std::cout << "Destructing GlobalSudakovPtr" << std::endl;
+		//std::cout << "Destructing GlobalSudakovPtr" << std::endl;
 		delete gra::GlobalSudakovPtr;
 		gra::GlobalSudakovPtr = nullptr;
 	}
 	if (gra::GlobalPdfPtr != nullptr) {
-		std::cout << "Destructing GlobalPdfPtr" << std::endl;
+		//std::cout << "Destructing GlobalPdfPtr" << std::endl;
 		delete gra::GlobalPdfPtr;
 		gra::GlobalPdfPtr = nullptr;
 	}
@@ -117,6 +116,8 @@ MGraniitti::~MGraniitti() {
 	for (unsigned int i = 0; i < pvec.size(); ++i) {
 		if (pvec[i] != nullptr) { delete pvec[i]; }
 	}
+	
+	std::cout << "~MGraniitti [DONE]" << std::endl;
 }
 
 void MGraniitti::PrintHistograms() {

@@ -161,7 +161,7 @@ public:
 
 	// Set LHAPDF
 	void SetLHAPDF(const std::string& in) {
-		gra::LHAPDF = in;
+		gra::LHAPDFSET = in;
 	}
 	
 	// Set cuts
