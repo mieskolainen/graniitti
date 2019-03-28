@@ -245,11 +245,12 @@ void experiment(bool screening) {
 		// Screening off/on
 		for (int mode = 0; mode < MODEMAX; ++mode) {
 	    	
-            std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
+            MGraniitti* gen = new MGraniitti();
 
 		    try {
 
-				gra::HILJAA = false;
+                // Silent output
+				gen->HILJAA = false;
 
 				// Read process input from file
 				gen->ReadInput(BASEPATH + input[p].card);
@@ -285,6 +286,8 @@ void experiment(bool screening) {
 				std::cerr << "Exception (...) catched!" << std::endl;
 				exit(0);
 		    }
+
+            delete gen;
 
 		} // Screening on/off
     } // Process loop

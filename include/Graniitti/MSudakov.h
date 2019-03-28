@@ -22,6 +22,7 @@
 
 namespace gra {
 
+// Take care when copying this class - there is a pointer to LHAPDF
 
 // Interpolation container
 class IArray2D {
@@ -31,11 +32,11 @@ public:
 	~IArray2D() {};
 	
 	std::string name[2];
-	double    MIN[2] = {0};
-	double    MAX[2] = {0};
-	unsigned int        N[2] = {0};
-	double   STEP[2] = {0};
-	bool    islog[2] = {false};
+	double      MIN[2] = {0};
+	double      MAX[2] = {0};
+	unsigned int  N[2] = {0};
+	double     STEP[2] = {0};
+	bool      islog[2] = {false};
 	
 	// Setup discretization
 	void Set(unsigned int VAR, std::string _name, double _min, double _max, double _N, double _logarithmic) {
@@ -44,7 +45,7 @@ public:
 		if (VAR > 1) { throw std::invalid_argument("IArray2D::Set: Error: VAR = " + std::to_string(VAR) + " > 1"); }
 
 		// AT least two intervals
-		if (_N < 2) { throw std::invalid_argument("IArray2D::Set: Error: N = " + std::to_string(_N) + " < 2"); }
+		if (_N < 2) {  throw std::invalid_argument("IArray2D::Set: Error: N = "   + std::to_string(_N)  + " < 2"); }
 
 		// Sanity
 		if (_min >= _max) {
@@ -63,7 +64,7 @@ public:
 		MIN[VAR]    = islog[VAR] ? std::log(_min) : _min;
 		MAX[VAR]    = islog[VAR] ? std::log(_max) : _max;
 		N[VAR]      = _N;
-		
+			
 		STEP[VAR]   = (MAX[VAR] - MIN[VAR]) / N[VAR];
 		name[VAR]   = _name;
 	}
@@ -129,7 +130,8 @@ private:
 	void   CalculateArray(IArray2D& arr, std::pair<double,double> (MSudakov::*f)(double,double));
 
 	std::string PDFSETNAME;
-	
+	LHAPDF::PDF* PdfPtr = nullptr;
+
 	IArray2D veto;      // Sudakov veto
 	IArray2D spdf;      // Shuvaev pdf
 };

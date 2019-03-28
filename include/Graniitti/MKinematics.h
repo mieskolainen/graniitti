@@ -1457,6 +1457,7 @@ public:
     
     printf("<Production> \n");
     printf("- Effective vertex constant g_i:  %0.1E x exp(i x %0.1f) \n", std::abs(g), std::arg(g));
+    printf("- Form factor: %s \n", g_FF == true ? "true" : "false");
 
     std::cout << std::endl;
     printf("<Decay> \n");
@@ -1489,6 +1490,9 @@ public:
 
   // (Complex) coupling constant
   std::complex<double> g = 0.0;
+  
+  // Form factor
+  bool g_FF = false;
 
   // Breit-Wigner type
   int BW = 0;

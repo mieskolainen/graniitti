@@ -47,8 +47,6 @@ namespace gra {
 
 using json = nlohmann::json;
 
-bool HILJAA = false;
-
 using gra::aux::indices;
 using gra::math::msqrt;
 using gra::math::pow2;
@@ -60,12 +58,36 @@ using gra::math::PI;
 // Constructor
 MGraniitti::MGraniitti() {
 
+	// ******************************************************************
+	// Init program globals
+	if (gra::aux::GlobalSudakovPtr == nullptr) {
+		gra::aux::GlobalSudakovPtr = new MSudakov;
+	}
+	// ******************************************************************
+
 	// Print general layout
 	PrintInit();
 }
 
 // Destructor
 MGraniitti::~MGraniitti() {
+
+	std::cout << "Calling ~MGraniitti" << std::endl;
+
+	// ******************************************************************
+	// Destroy/reset program globals
+	if (gra::aux::GlobalSudakovPtr != nullptr) {
+		std::cout << "Destructing GlobalSudakovPtr" << std::endl;
+		delete gra::aux::GlobalSudakovPtr;
+		gra::aux::GlobalSudakovPtr = nullptr;
+	}
+	if (gra::aux::GlobalPdfPtr != nullptr) {
+		std::cout << "Destructing GlobalPdfPtr" << std::endl;
+		delete gra::aux::GlobalPdfPtr;
+		gra::aux::GlobalPdfPtr = nullptr;
+		gra::aux::pdf_trials = 0;
+	}
+	// ******************************************************************
 
 	// Destroy processes
 	for (unsigned int i = 0; i < pvec.size(); ++i) {

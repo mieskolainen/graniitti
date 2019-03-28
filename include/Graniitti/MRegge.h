@@ -55,7 +55,7 @@ std::complex<double> JPC_CS_coupling(const gra::LORENTZSCALAR& lts,
 double Proton_FF(double tprime, double b);
 double Meson_FF(double that, double M2);
 double Baryon_FF(double that, double M2);
-double ResonanceFormFactor(double shat, double M2);
+double ResonanceFormFactor(double shat, double M2, bool active);
 
 // Propagators
 double Meson_prop(double that, double M2);

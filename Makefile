@@ -170,7 +170,7 @@ INCLUDES += -I$(LHAPDFSYS)/include
 CXX       = g++
 
 CXXVER    = -std=c++17
-OPTIM     = -O3 -DNDEBUG -ftree-vectorize -fno-signed-zeros
+OPTIM     = -O2 -DNDEBUG -ftree-vectorize -fno-signed-zeros
 CXXFLAGS  = -Wall -fPIC -pipe $(OPTIM)
 
 

@@ -30,9 +30,14 @@
     // Production coupling constant at amplitude level
     "g_A"   : 0.502032381,
     "g_phi" : -2.859156,
-    
+
+    // Production form factor on
+    "g_FF"  : false,
+
     // Lorentz frame of spin polarization density
     // (SR ~ no rotation, HE ~ helicity, CS ~ Collins-Soper)
+    // Any rest frame is technically ok,
+    // but some of them may have simpler representations for the rho matrix.
     "FRAME" : "SR",
     
     // Resonance spin-density (von Neumann) matrix (Re and Im parts)

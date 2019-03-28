@@ -11,7 +11,7 @@
   
   "GENERALPARAM" : {
     
-    "OUTPUT"     : "CMS_13_2K",      // Output filename
+    "OUTPUT"     : "CMS19_2K",      // Output filename
     "FORMAT"     : "hepmc3",    // hepmc3, hepmc2, hepevt
     "CORES"      : 0,           // Number of CPU threads (0 for automatic)
     "NEVENTS"    : 100,         // Number of events

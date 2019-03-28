@@ -25,7 +25,11 @@
 #include "Graniitti/MSudakov.h"
 #include "Graniitti/MMatrix.h"
 
-// HepMC33
+
+// LHAPDF
+#include "LHAPDF/LHAPDF.h"
+
+// HepMC3
 #include "HepMC3/FourVector.h"
 
 // Eigen
@@ -58,22 +62,27 @@ struct OneCMD {
 };
 
 
-// ----------------------------------------------------------------------
+// ======================================================================
 // "PROGRAM GLOBALS"
 
-// Model parameters
+// Model tune
 extern std::string MODELPARAM;
 
-// Sudakov routines
-extern MSudakov sudakov;
+// Sudakov/pdf routines
+extern MSudakov* GlobalSudakovPtr;
 
-// GLOBAL for multithreading: HepMC33 outputfile and LHAPDF and mutex lock
+// GLOBAL for multithreading: HepMC3 outputfile and LHAPDF and mutex lock
 extern std::mutex g_mutex;
 
 // For multithreaded VEGAS, to handle the exceptions from forked threads
 static std::exception_ptr globalExceptionPtr = nullptr;
 
-// ----------------------------------------------------------------------
+// Normal pdfs
+extern LHAPDF::PDF* GlobalPdfPtr;
+extern int pdf_trials;
+
+// ======================================================================
+
 
 // M4Vec to HepMC3::FourVector
 inline HepMC3::FourVector M4Vec2HepMC3(const M4Vec& v) {

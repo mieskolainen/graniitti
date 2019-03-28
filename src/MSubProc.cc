@@ -33,9 +33,6 @@ using gra::math::zi;
 
 namespace gra {
 
-std::unique_ptr<LHAPDF::PDF> GlobalPdfPtr = nullptr;
-int pdf_trials = 0;
-
 // Initialize
 MSubProc::MSubProc(const std::string& _ISTATE, const std::string& _CHANNEL, const MPDG& _PDG) {
 
@@ -342,18 +339,19 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy_LUX(gra::LORENTZSCALAR
 
 	// @@ MULTITHREADING LOCK @@
 	gra::aux::g_mutex.lock();
-	if (GlobalPdfPtr == nullptr) {
+	if (aux::GlobalPdfPtr == nullptr) {
 	std::string pdfname = gra::form::LHAPDF;
 
 retry:
 	try {
-		GlobalPdfPtr = std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(pdfname, 0));
+		aux::GlobalPdfPtr = LHAPDF::mkPDF(pdfname, 0);
+		aux::pdf_trials = 0; // fine
 	} catch (...) {
-		++pdf_trials;
+		++aux::pdf_trials;
 		std::string str = "MSubProc::InitLHAPDF: Problem with reading '" + pdfname + "'";
 		aux::AutoDownloadLHAPDF(pdfname); // Try autodownload
 		gra::aux::g_mutex.unlock();       // Remember before throw, otherwise deadlock
-		if (pdf_trials >= 2) { // too many failures
+		if (aux::pdf_trials >= 2) { // too many failures
 			throw std::invalid_argument(str);
 		} else {
 			goto retry;
@@ -387,8 +385,8 @@ retry:
 	double f2 = 0.0;
 	try {
 	// Divide x out
-	f1 = GlobalPdfPtr->xfxQ2(PDG::PDG_gamma, lts.x1, Q2) / lts.x1;
-	f2 = GlobalPdfPtr->xfxQ2(PDG::PDG_gamma, lts.x2, Q2) / lts.x2;
+	f1 = aux::GlobalPdfPtr->xfxQ2(PDG::PDG_gamma, lts.x1, Q2) / lts.x1;
+	f2 = aux::GlobalPdfPtr->xfxQ2(PDG::PDG_gamma, lts.x2, Q2) / lts.x2;
 	} catch (...) {
 		gra::aux::g_mutex.unlock(); // remember before throw, otherwise deadlock		
 		throw std::invalid_argument("MSubProc:yy_LUX: Failed evaluating LHAPDF");

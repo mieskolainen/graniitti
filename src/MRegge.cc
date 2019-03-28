@@ -732,9 +732,9 @@ std::complex<double> MRegge::ME3(gra::LORENTZSCALAR& lts, gra::PARAM_RES& resona
 		PropOnly(lts.s1, lts.t1) * FF_A * PARAM_SOFT::gN_P *
 			CBW(lts, resonance) * resonance.g *
 			PARAM_REGGE::JPCoupling(lts, resonance) *
-			PARAM_REGGE::ResonanceFormFactor(lts.m2, pow2(resonance.p.mass)) *
+			PARAM_REGGE::ResonanceFormFactor(lts.m2, pow2(resonance.p.mass), resonance.g_FF) *
 		PropOnly(lts.s2, lts.t2) * FF_B * PARAM_SOFT::gN_P;
-
+		
 	// Decay amplitude
 	const std::complex<double> A_decay = gra::spin::SpinAmp(lts, resonance);
 	
@@ -767,7 +767,7 @@ std::complex<double> MRegge::PhotoME3(gra::LORENTZSCALAR& lts, gra::PARAM_RES& r
 
 	// Resonance part
 	const std::complex<double> common = CBW(lts, resonance) * resonance.g *
-	    	PARAM_REGGE::ResonanceFormFactor(lts.m2, pow2(resonance.p.mass));
+	    	PARAM_REGGE::ResonanceFormFactor(lts.m2, pow2(resonance.p.mass), resonance.g_FF);
 
 	double gammaflux1 = lts.excite1 ? IncohFlux(lts.x1, lts.t1, lts.qt1, lts.pfinal[1].M2()) : CohFlux(lts.x1, lts.t1, lts.qt1);
 	double gammaflux2 = lts.excite2 ? IncohFlux(lts.x2, lts.t2, lts.qt2, lts.pfinal[2].M2()) : CohFlux(lts.x2, lts.t2, lts.qt2);
@@ -1269,18 +1269,17 @@ std::complex<double> FSI_prop(double t_hat, double M2) {
 // (in addition to Breit-Wigner propagator)
 //
 // In general, without any interfering continuum process
-// (which would provide the same effect),
-// this is is needed.
+// (which would provide the same effect), this may be needed?
 //
-double ResonanceFormFactor(double s_hat, double M2) {
+double ResonanceFormFactor(double s_hat, double M2, bool active) {
 
-	return 1.0;
-/*
-	const double scale4 = 1.0; // GeV^4
-	return std::exp(-pow2(s_hat - M2) / scale4);
-*/
+	if (!active) {
+		return 1.0;
+	} else {
+		const double scale4 = 1.0; // GeV^4
+		return std::exp(-pow2(s_hat - M2) / scale4);	
+	}
 }
-
 
 } // PARAM_REGGE namespace ends
 } // gra namespace ends

@@ -197,10 +197,10 @@ void Chi2Func(int& npar, double* gin, double& f, double* par, int iflag) {
 
     	try {
 
-    	    if (iter > 1) {
-    		HILJAA = true; // SILENT output
-    	    }
-
+            if (iter > 1) {
+               gen->HILJAA = true; // SILENT output
+            }
+            
     	    // Read process input from file
     	    gen->ReadInput(datasets[k].INPUTFILE);
             std::map<std::string, gra::PARAM_RES> RESONANCES = gen->proc->GetResonances();

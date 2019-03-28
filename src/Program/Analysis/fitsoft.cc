@@ -92,15 +92,17 @@ void SetSoftParam(double* par);
 std::vector<double> dsigma_el_dt(double* par, const double sqrts,
                                  const std::vector<std::string>& beam,
                                  std::vector<double>& x) {
-    if (iter > 0) {
-	   HILJAA = true; // SILENT output
-    }
-    
+
     // Mandelstam s
     const double s = sqrts * sqrts;
 
     // Create generator object first
     std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
+
+    if (iter > 0) {
+       gen->HILJAA = true; // SILENT output
+    }
+    
     std::vector<double> values(x.size(), 0.0);
 
     try {

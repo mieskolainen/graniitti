@@ -47,14 +47,15 @@ enum SPINPARITY { P0, M0, P2, M2 }; // Implicit conversion to int
 // Durham loop integral discretization technical parameters
 namespace Durham {
 
-	unsigned int N_qt = 0;      // Number of qt discretization intervals
-	unsigned int N_phi = 0;     // Number of phi discretization intervals
+	unsigned int N_qt = 0;         // Number of qt discretization intervals
+	unsigned int N_phi = 0;        // Number of phi discretization intervals
 	
-	double qt2_MIN = 0; // Loop momentum qt^2 minimum (GeV^2)
-	double qt2_MAX = 0; // Loop momentum qt^2 maximum (GeV^2)
+	double qt2_MIN = 0;            // Loop momentum qt^2 minimum (GeV^2)
+	double qt2_MAX = 0;            // Loop momentum qt^2 maximum (GeV^2)
 	
 	std::string PDF_scale = "MIN"; // Scheme
-	double alphas_scale = 4.0;
+	double alphas_scale = 4.0;     // PDF factorization scale
+	double MAXCOS = 0.9;           // Meson amplitude |cos(theta*)| < MAXCOS
 
 	void ReadParameters() {
 
@@ -70,13 +71,13 @@ namespace Durham {
 			
 			// JSON block identifier
 			const std::string XID = "PARAM_DURHAM_QCD";
-			N_qt        = j[XID]["N_qt"];
-			N_phi       = j[XID]["N_phi"];
-			qt2_MIN     = j[XID]["qt2_MIN"];
-			qt2_MAX     = j[XID]["qt2_MAX"];
-
-			PDF_scale   = j[XID]["PDF_scale"];
-			alphas_scale = j[XID]["alphas_scale"];
+			N_qt         = j.at(XID).at("N_qt");
+			N_phi        = j.at(XID).at("N_phi");
+			qt2_MIN      = j.at(XID).at("qt2_MIN");
+			qt2_MAX      = j.at(XID).at("qt2_MAX");
+			PDF_scale    = j.at(XID).at("PDF_scale");
+			alphas_scale = j.at(XID).at("alphas_scale");
+			MAXCOS       = j.at(XID).at("MAXCOS");
 
 			// Now calculate rest
 			qt_MIN = msqrt(Durham::qt2_MIN);
@@ -116,9 +117,9 @@ std::complex<double> MDurham::DurhamQCD(gra::LORENTZSCALAR& lts, const std::stri
 	// First run, init parameters
 	// @@ MULTITHREADING LOCK @@
 	gra::aux::g_mutex.lock();
-	if (gra::aux::sudakov.initialized == false) {
+	if (gra::aux::GlobalSudakovPtr->initialized == false) {
 		try {
-			gra::aux::sudakov.Init(lts.sqrt_s, gra::form::LHAPDF, true);
+			gra::aux::GlobalSudakovPtr->Init(lts.sqrt_s, gra::form::LHAPDF, true);
 		} catch ( ... ) {
 			gra::aux::g_mutex.unlock(); // need to release here, otherwise get infinite lock
 			throw;
@@ -142,7 +143,7 @@ std::complex<double> MDurham::DurhamQCD(gra::LORENTZSCALAR& lts, const std::stri
 
 		// Madgraph
 		gra::aux::g_mutex.lock();
-		const double alpha_s = gra::aux::sudakov.AlphaS_Q2(lts.s_hat);
+		const double alpha_s = gra::aux::GlobalSudakovPtr->AlphaS_Q2(lts.s_hat);
 		gra::aux::g_mutex.unlock();
 		AmpMG5_gg_gg.CalcAmp(lts, alpha_s);
 
@@ -160,7 +161,7 @@ std::complex<double> MDurham::DurhamQCD(gra::LORENTZSCALAR& lts, const std::stri
 		
 		// Madgraph
 		gra::aux::g_mutex.lock();
-		const double alpha_s = gra::aux::sudakov.AlphaS_Q2(lts.s_hat);
+		const double alpha_s = gra::aux::GlobalSudakovPtr->AlphaS_Q2(lts.s_hat);
 		gra::aux::g_mutex.unlock();
 		AmpMG5_gg_qqbar.CalcAmp(lts, alpha_s);
 
@@ -401,8 +402,8 @@ std::complex<double> MDurham::DQtloop(
 
 			// --------------------------------------------------------------------------
 			// Get amplitude level pdfs
-			const double fg_1 = gra::aux::sudakov.fg_xQ2M(lts.x1, Q1_2_scale, MU);
-			const double fg_2 = gra::aux::sudakov.fg_xQ2M(lts.x2, Q2_2_scale, MU);
+			const double fg_1 = gra::aux::GlobalSudakovPtr->fg_xQ2M(lts.x1, Q1_2_scale, MU);
+			const double fg_2 = gra::aux::GlobalSudakovPtr->fg_xQ2M(lts.x2, Q2_2_scale, MU);
 			
 			// Amplitude weight:
 			// * \pi^2 : see original KMR papers
@@ -463,7 +464,7 @@ void MDurham::Dgg2chic0(const gra::LORENTZSCALAR& lts, std::vector<std::vector<s
 	
 	// @@ MUTEX LOCK @@
 	gra::aux::g_mutex.lock();
-	const double alpha_s = gra::aux::sudakov.AlphaS_Q2(lts.s_hat / Durham::alphas_scale);
+	const double alpha_s = gra::aux::GlobalSudakovPtr->AlphaS_Q2(lts.s_hat / Durham::alphas_scale);
 	gra::aux::g_mutex.unlock();
 	// @@ MUTEX LOCK @@
 
@@ -512,7 +513,7 @@ void MDurham::Dgg2gg(const gra::LORENTZSCALAR& lts,
 	
 	// @@ MUTEX LOCK @@
 	gra::aux::g_mutex.lock();
-	const double alpha_s = gra::aux::sudakov.AlphaS_Q2(lts.s_hat / Durham::alphas_scale);
+	const double alpha_s = gra::aux::GlobalSudakovPtr->AlphaS_Q2(lts.s_hat / Durham::alphas_scale);
 	gra::aux::g_mutex.unlock();
 	// @@ MUTEX LOCK @@
 
@@ -628,13 +629,13 @@ std::vector<double> MDurham::EvalPhi(int N, int pdg) const {
 	if (std::find(supported.begin(), supported.end(), pdg) != supported.end()) {
 		fM = PDG::fM_meson.at(pdg);
 	} else {
-		fM = PDG::fM_meson.at(111);   // else, take pi0
+		fM = PDG::fM_meson.at(111);  // else, take pi0
 	}
-	const double fM_eta8 = fM * 1.25; // pi0 x
-	const double fM_eta0 = fM * 1.07; // pi0 x
+	const double fM_eta8 = fM * 1.0; // just use pi0
+	const double fM_eta0 = fM * 1.0; // just use pi0
 
 	// Mixing angle
-	static const double THETA_eta = math::Deg2Rad(-21.8);
+	static const double THETA_eta = math::Deg2Rad(-15.4);
 	const double costh = std::cos(THETA_eta);
 	const double sinth = std::sin(THETA_eta);
 
@@ -678,7 +679,7 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR& lts,
 
 	// @@ MUTEX LOCK @@
 	gra::aux::g_mutex.lock();
-	const double alpha_s = gra::aux::sudakov.AlphaS_Q2(lts.s_hat / Durham::alphas_scale);
+	const double alpha_s = gra::aux::GlobalSudakovPtr->AlphaS_Q2(lts.s_hat / Durham::alphas_scale);
 	gra::aux::g_mutex.unlock();
 	// @@ MUTEX LOCK @@
 
@@ -687,13 +688,12 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR& lts,
 	const double      beta = kinematics::Beta(pow2(m), shat);
 	const double  costheta = (1.0 + 2.0*lts.t_hat/lts.s_hat - 2.0*pow2(m)/lts.s_hat)/beta;
 	const double costheta2 = pow2(costheta);
-
+	
 	// ------------------------------------------------------------------
 	// ** Hard angular cut-off **
 	// some sub-amplitudes are singular when |costheta| -> 1
 
-	const double ANGCUT = 0.1;
-	if (std::abs(costheta) > (1.0 - ANGCUT)) {
+	if (std::abs(costheta) > Durham::MAXCOS) {
 		Amp[0] = std::vector<std::complex<double>>(4, 0.0); // Return zero
 		return;
 	}
@@ -720,7 +720,7 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR& lts,
 			   (costheta2 - 2.0*CF/NC * a);
 	};
 	// ------------------------------------------------------------------
-	
+
 	// ------------------------------------------------------------------
 	// SU(3)_F scalar flavor-singlet amplitude:
 	// |\eta'\eta' >
@@ -754,7 +754,7 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR& lts,
 	static const std::vector<double> wfphi1 = EvalPhi(Nx, pdg1);
 
 	// -------------------------------------------------------------------
-	const double CUTOFF = 1e-8; // To avoid singularity at x = 0, x = 1
+	const double CUTOFF = 1e-15; // To avoid singularity at x = 0, x = 1
 	static const std::vector<double> xval = math::linspace<std::vector>(CUTOFF, 1.0-CUTOFF, Nx+1);
 
 

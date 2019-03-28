@@ -19,7 +19,11 @@
 #include <sys/resource.h>
 #include <time.h>
 
-// HepMC33
+
+// LHAPDF
+#include "LHAPDF/LHAPDF.h"
+
+// HepMC3
 #include "HepMC3/FourVector.h"
 
 // Own
@@ -32,26 +36,31 @@
 // Libraries
 #include "rang.hpp"
 
-
 namespace gra {
 namespace aux {
 
-// ----------------------------------------------------------------------
+
+// ======================================================================
 // "PROGRAM GLOBALS"
 
 // Model tune
-std::string MODELPARAM;
+std::string MODELPARAM = "";
 
 // Sudakov routines
-MSudakov sudakov;
+MSudakov* GlobalSudakovPtr = nullptr;
 
-// GLOBAL for multithreading: HepMC33 outputfile and LHAPDF and mutex lock
+// GLOBAL for multithreading: HepMC3 outputfile and LHAPDF and mutex lock
 std::mutex g_mutex;
 
 // Check do we have terminal output (=true), or output to file (=false)
 static const bool IS_TERMINAL = isatty(fileno(stdout)) != 0;
 
-// ----------------------------------------------------------------------
+// Normal pdfs
+LHAPDF::PDF* GlobalPdfPtr = nullptr;
+int pdf_trials = 0;
+
+// ======================================================================
+
 
 // Download LHAPDFset automatically
 void AutoDownloadLHAPDF(const std::string pdfname) {

@@ -32,8 +32,6 @@
 
 namespace gra {
 
-std::unique_ptr<LHAPDF::PDF> PdfPtr = nullptr;
-
 using aux::indices;
 using math::msqrt;
 using math::pow2;
@@ -109,13 +107,15 @@ namespace MSudakovNumerics {
 
 }
 
-
 // Constructor
 MSudakov::MSudakov() {
 }
 
 // Destructor
 MSudakov::~MSudakov() {
+	if (PdfPtr != nullptr) {
+		delete PdfPtr;
+	}
 }
 
 // Init
@@ -222,7 +222,7 @@ void MSudakov::InitLHAPDF(const std::string& pdfname) {
 
 	// LHAPDF init
 	try {
-		PdfPtr = std::unique_ptr<LHAPDF::PDF>(LHAPDF::mkPDF(pdfname, 0));
+		PdfPtr = LHAPDF::mkPDF(pdfname, 0);
 	} catch (...) {
 		++init_trials;
 

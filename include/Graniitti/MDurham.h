@@ -38,6 +38,7 @@ namespace Durham {
 
 	extern std::string PDF_scale; // PDF scale scheme
 	extern double alphas_scale;   // alphas scale scheme
+	extern double MAXCOS;         // Meson amplitude |cos(theta*)| < MAXCOS
 
 	// THESE MUST BE SET LAST
 	extern double qt_MIN;
@@ -56,7 +57,7 @@ class MDurham {
 
 public:
 
-	MDurham() {}
+	MDurham()  {}
 	~MDurham() {}
 
 	std::complex<double> DurhamQCD(gra::LORENTZSCALAR& lts, const std::string& process);

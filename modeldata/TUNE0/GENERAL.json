@@ -117,6 +117,7 @@
   
   // -----------------------------------------------------------------------
   // Good-Walker proton excitation parametrization
+  // (IMPLEMENTATION UNDER CONSTRUCTION)
 
   "PARAM_NSTAR" : {
 
@@ -141,7 +142,10 @@
 
     // Technical parameters: Gluon loop numerical discretization (keep a factor of 3)
     "N_phi" : 36,
-    "N_qt"  : 24
+    "N_qt"  : 24,
+
+    // Angular |cos(theta*)| < MAXCOS cutoff for meson amplitudes [0,1]
+    "MAXCOS" : 0.9,
   }
   
 }

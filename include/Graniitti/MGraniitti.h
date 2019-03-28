@@ -37,11 +37,6 @@
 
 namespace gra {
 
-
-// Global to silent output
-extern bool HILJAA;
-
-
 // Simple MC parameters
 struct MCPARAM {
 	double PRECISION = 0.05;    // Integral relative precision
@@ -448,6 +443,9 @@ public:
 	int NEVENTS = 0;             // Number of events to be generated
 	int CORES   = 0;             // Number of CPU cores (threads) in use
 	std::string INTEGRATOR = ""; // Integrator (VEGAS, FLAT, ...)
+	
+	// SILENT OUTPUT
+	bool HILJAA = false;
 
 private:
 
