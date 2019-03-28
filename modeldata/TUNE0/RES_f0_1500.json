@@ -28,7 +28,7 @@
     "random_rho" : 0,
 
     // Production coupling constant at amplitude level
-    "g_A"   : 0.03427592,
+    "g_A"   : 0.034,
     "g_phi" : 1.092474,
     
     // Production form factor on
