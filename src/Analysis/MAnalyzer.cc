@@ -792,7 +792,7 @@ void MAnalyzer::PlotAll() {
 				h2CosTheta[i][j]->Draw("COLZ");
 		}
 	}
-	c2.SaveAs(Form("%s/figs/%s/QA_matrix2.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));
+	c2.SaveAs(Form("%s/figs/%s/h2_frame_correlations_costheta.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));
 
 
 	// -------------------------------------------------------------------------------------
@@ -810,14 +810,14 @@ void MAnalyzer::PlotAll() {
 				h2Phi[i][j]->Draw("COLZ");
 		}
 	}
-	c3.SaveAs(Form("%s/figs/%s/QA_matrix3.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));
+	c3.SaveAs(Form("%s/figs/%s/h2_frame_correlations_phi.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));
 
 
 	// -------------------------------------------------------------------------------------
 
 
-	TCanvas c4("c", "c", 800, 800);
-	c4.Divide(NFR, NFR, 0.0001, 0.0002);
+	TCanvas c4("c", "c", 800, 400);
+	c4.Divide(NFR, 3, 0.0001, 0.0002);
 
 	k = 1;
 	for (std::size_t i = 0; i < NFR; ++i) {
@@ -843,7 +843,7 @@ void MAnalyzer::PlotAll() {
 		++k;
 		h2CosTheta_Phi[i]->Draw("COLZ");
 	}
-	c4.SaveAs(Form("%s/figs/%s/QA_matrix4.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));
+	c4.SaveAs(Form("%s/figs/%s/h2_costheta_phi.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));
 
 
 	// -------------------------------------------------------------------------------------
@@ -863,7 +863,7 @@ void MAnalyzer::PlotAll() {
 		++k;
 		h2M_Phi[i]->Draw("COLZ");
 	}
-	c5.SaveAs(Form("%s/figs/%s/QA_matrix5.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));	
+	c5.SaveAs(Form("%s/figs/%s/h2_M_costheta_phi.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));	
 
 
 	// -------------------------------------------------------------------------------------
