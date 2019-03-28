@@ -42,8 +42,8 @@
 
     // Resonance spin-density (von Neumann) matrix (Re and Im parts)
 
-    // Spin-1 (pure transverse)
-    // rho_00 = Transverse part, rho_-1-1, rho_11 = longitudinal parts
+    // Spin-1
+    // rho_00 = longitudinal part, rho_-1-1, rho_11 = transverse parts
     "rho_real" : [ [ 0.5, 0,  0] ,
                    [ 0,   0,  0] ,
                    [ 0,   0,  0.5] ],

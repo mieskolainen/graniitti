@@ -42,7 +42,7 @@
     
     // Resonance spin-density (von Neumann) matrix (Re and Im parts)
 
-    // Spin-1 example case
+    // Spin-1 example case (flat diagonal = unpolarized)
     "rho_real" : [ [ 0.333,  0,  0] ,
                    [ 0,  0.333,  0] ,
                    [ 0,  0,  0.333] ],
