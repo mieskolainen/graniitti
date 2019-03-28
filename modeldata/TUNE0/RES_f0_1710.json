@@ -28,11 +28,11 @@
     "random_rho" : 0,
     
     // Production coupling constant at amplitude level
-    "g_A"   :  0.02,
+    "g_A"   :  0.002,
     "g_phi" :  2.804989,
 
     // Production form factor on
-    "g_FF"  : false,
+    "g_FF"  : true,
 
     // Lorentz frame of spin polarization density
     // (SR ~ no rotation, HE ~ helicity, CS ~ Collins-Soper)

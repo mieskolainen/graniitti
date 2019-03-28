@@ -120,7 +120,7 @@
     // Custom user cuts (default false, otherwise identifier ID)
     "USERCUTS" : false
   },
-
+  
   // ----------------------------------------------------------------------
   // Veto cuts
   // A single particle filling the conditions VETO (reject) the event.

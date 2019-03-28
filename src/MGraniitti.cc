@@ -1918,7 +1918,7 @@ void MGraniitti::PrintStatistics(unsigned int N) {
 		if (INTEGRATOR == "VEGAS") {
 		printf("MAX weight (vegas x integrand):   %0.3E \n", stat.maxf);
 		}
-
+		
 		printf("\n");
 		printf("Amplitude passing rate:           %0.3E \n", stat.amplitude_ok / stat.evaluations);
 		printf("Kinematics passing rate:          %0.3E \n", stat.kinematics_ok / stat.evaluations);
@@ -1929,7 +1929,7 @@ void MGraniitti::PrintStatistics(unsigned int N) {
 		std::cout << std::endl;
 		printf(
 		    "** All values include phase space generation and "
-		    "fiducial cuts ** \n");
+		    "fiducial (+ veto) cuts ** \n");
 		gra::aux::PrintBar("=");
 	}
 	if (GMODE == 1) {

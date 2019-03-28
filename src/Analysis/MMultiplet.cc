@@ -476,6 +476,7 @@ double hProfMultiplet::SaveFig(const std::string& fullpath) const {
 		h[i]->SetMarkerColor(color[i]);
 		h[i]->SetMarkerStyle(20);
 		h[i]->SetMarkerSize(0.5);
+
 		h[i]->Draw("L SAME");
 	}
 

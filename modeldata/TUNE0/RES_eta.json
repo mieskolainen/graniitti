@@ -33,7 +33,7 @@
     "g_phi" : -2.795,
 
     // Production form factor on
-    "g_FF"  : false,
+    "g_FF"  : true,
 
     // Lorentz frame of spin polarization density
     // (SR ~ no rotation, HE ~ helicity, CS ~ Collins-Soper)

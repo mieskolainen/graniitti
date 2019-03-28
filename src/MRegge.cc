@@ -739,9 +739,9 @@ std::complex<double> MRegge::ME3(gra::LORENTZSCALAR& lts, gra::PARAM_RES& resona
 	const std::complex<double> A_decay = gra::spin::SpinAmp(lts, resonance);
 	
 	// Fluxes
-	const double V = msqrt(lts.s / lts.s1 / lts.s2);
-
-	return A_prod * A_decay * V;
+	//const double V = msqrt(lts.s / lts.s1 / lts.s2);
+	
+	return A_prod * A_decay;
 }
 
 

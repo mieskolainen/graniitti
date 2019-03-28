@@ -28,12 +28,12 @@
     "random_rho" : 0,
 
     // Production coupling constant at amplitude level
-    "g_A"   : 0.08,
-    "g_phi" : 3.3,
+    "g_A"   :  0.049,
+    "g_phi" : -2.847,
 
     // Production form factor on
-    "g_FF"  : false,
-
+    "g_FF"  : true,
+    
     // Lorentz frame of spin polarization density
     // (SR ~ no rotation, HE ~ helicity, CS ~ Collins-Soper)
     // Any rest frame is technically ok,
@@ -44,9 +44,9 @@
     "rho_real" : [ [ 0.0,  0,  0] ,
                    [ 0,  0.0,  0] ,
                    [ 0,  0,  0.0] ],
-    "rho_imag" : [ [  0,      0,      0] ,
-                   [  0,      0,      0] ,
-                   [  0,      0,      0] ],
+    "rho_imag" : [ [ 0,   0,   0] ,
+                   [ 0,   0,   0] ,
+                   [ 0,   0,   0] ],
   }
 
 }

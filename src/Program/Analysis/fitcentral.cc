@@ -59,10 +59,8 @@ struct DATASET {
     MH1<double>* h1DATA;
 };
 
-
 // All datasets here
 std::vector<DATASET> datasets;
-
 
 // Function prototypes
 void RunMC(double* par);
@@ -70,11 +68,14 @@ bool ReadData(DATASET& dataset);
 void Chi2Func(int& npar, double* gin, double& f, double* par, int iflag);
 void SetSoftParam(std::map<std::string, gra::PARAM_RES>& RESONANCES, double* par);
 
-
 // Choose continuum form factor parametrization here (1,2,3)
 int offshellFF = 1;
-
 bool POMLOOP = false;
+
+// Resonance fixlist and zerolist
+std::vector<std::string> fixlist;
+std::vector<std::string> zerolist;
+
 
 // ===============================================================
 // Note that TMinuit uses Fortran indexing => The parameter 0 in C++
@@ -97,10 +98,20 @@ void SetSoftParam(std::map<std::string, gra::PARAM_RES>& RESONANCES, double* par
     	double phi = par[++k];
     	RESONANCES[x.first].g = A * std::exp(gra::math::zi * phi);
 
-    	printf("[%s] \t A = %0.8f \t phi = %0.6f (%0.0f deg)\n",
+    	printf("[%s] \t A = %0.8f \t phi = %0.6f (%0.0f deg) ",
     	       x.first.c_str(), A, phi, phi / (2 * gra::math::PI) * 360);
+    
+        if        (std::find(fixlist.begin(), fixlist.end(), x.first) != fixlist.end()) {
+            std::cout << rang::fg::red << "\t[SET FIXED]" << rang::fg::reset << std::endl;
+
+        } else if (std::find(zerolist.begin(), zerolist.end(), x.first) != zerolist.end()) {
+            std::cout << rang::fg::red << "\t[SET ZERO]" << rang::fg::reset << std::endl;
+
+        } else {
+            std::cout << std::endl;
+        }
     }
-    printf("\n");
+    std::cout << std::endl;
     
     // Continuum form factors
     if (offshellFF == 1) {
@@ -334,10 +345,12 @@ try {
 
     cxxopts::Options options(argv[0], "");
     options.add_options()
-        ("i,input",     "Input dataset collection numbers         <0,1,2,3,...>", cxxopts::value<std::string>() )
-        ("c,continuum", "Continuum form factor                    <0|1|2>",       cxxopts::value<int>() )
-        ("x,fix",       "Fix all resonances to their input values <true|false>",  cxxopts::value<std::string>() )
-        ("l,POMLOOP",   "Screening Pomeron loop", cxxopts::value<std::string>() )
+        ("i,input",     "Input dataset collection numbers         <0,1,2,3,...>",        cxxopts::value<std::string>() )
+        ("c,continuum", "Continuum form factor                    <0|1|2>",              cxxopts::value<int>() )
+        ("x,fix",       "Fix resonances to their input values     <f0_980,f2_1270,...>", cxxopts::value<std::string>() )
+        ("z,zero",      "Fix resonances to zero                   <f2_1525,...>",        cxxopts::value<std::string>() )
+        ("A,allfix",    "Fix all resonances to their input values <true|false>",         cxxopts::value<std::string>() )
+        ("l,POMLOOP",   "Screening Pomeron loop",                                        cxxopts::value<std::string>() )
         ("H,help",      "Help")
         ;
     auto r = options.parse(argc, argv);
@@ -345,7 +358,7 @@ try {
     if (r.count("help") || NARGC == 0) {
         std::cout << options.help({""}) << std::endl;
         std::cout << "Example:" << std::endl;
-        std::cout << "  " << argv[0] << " -i 0,1 -c 2"
+        std::cout << "  " << argv[0] << " -i 0,1 -c 2 -x 'f0_980' "
                   << std::endl << std::endl;
         return EXIT_FAILURE;
     }
@@ -356,10 +369,20 @@ try {
     // Off-shell form factor
     fitcentral::offshellFF = r["c"].as<int>(); 
 
+    // Resonance fixlist
+    if (r.count("x")) {
+        fitcentral::fixlist = gra::aux::SplitStr2Str(r["x"].as<std::string>());
+    }
+
+    // Resonance zerolist
+    if (r.count("z")) {
+        fitcentral::zerolist = gra::aux::SplitStr2Str(r["z"].as<std::string>());
+    }
+
     // Fix-all resonances
     bool FIXALLRES = false;
-    if (r.count("x")) {
-        FIXALLRES = (r["x"].as<std::string>() == "true" ? true : false);
+    if (r.count("A")) {
+        FIXALLRES = (r["A"].as<std::string>() == "true" ? true : false);
     }
 
     // Pomeron loop
@@ -466,19 +489,28 @@ try {
     // reasons we allow larger domain [-2pi, 2pi]
     // due to phase wrapping.
 
-    const double STEPSIZE_A   = 0.1;
-    const double STEPSIZE_phi = 0.15;
-
-    
+    const double STEPSIZE_A   = 0.05;
+    const double STEPSIZE_phi = 0.05;
+        
     // Loop over resonances
     int k = -1;
 
     for (const auto& x : RESONANCES) {
-	gMinuit->mnparm(++k, Form("RESONANCES[%s].g_A", x.first.c_str()),
-	                std::abs(x.second.g), STEPSIZE_A, 1e-9, 20.0, ierflg); // couplings [1e-9,...,2.0]
-	gMinuit->mnparm(++k, Form("RESONANCES[%s].g_phi", x.first.c_str()),
-	                std::arg(x.second.g), STEPSIZE_phi, -2 * gra::math::PI,
-	                2 * gra::math::PI, ierflg);
+        
+        bool setzero = false;
+        if (std::find(fitcentral::zerolist.begin(), fitcentral::zerolist.end(), x.first) != fitcentral::zerolist.end()) {
+            setzero = true;
+        }
+        gMinuit->mnparm(++k, Form("RESONANCES[%s].g_A",   x.first.c_str()),
+                !setzero ? std::abs(x.second.g) : 0.0, STEPSIZE_A, 1e-9, 20.0, ierflg); // couplings [1e-9,...,2.0]
+        gMinuit->mnparm(++k, Form("RESONANCES[%s].g_phi", x.first.c_str()),
+                !setzero ? std::arg(x.second.g) : 0.0, STEPSIZE_phi, -2*gra::math::PI, 2*gra::math::PI, ierflg);
+        
+        // Do we fix it or is zero (fix then always)
+        if (setzero || std::find(fitcentral::fixlist.begin(), fitcentral::fixlist.end(), x.first) != fitcentral::fixlist.end()) {
+            gMinuit->FixParameter(k-1);
+            gMinuit->FixParameter(k-2);
+        }
     }
     
     // Continuum off-shell form factor
