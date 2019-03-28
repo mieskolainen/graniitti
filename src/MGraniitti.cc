@@ -87,7 +87,7 @@ MGraniitti::MGraniitti() {
 	gra::LHAPDFSET = "";
 	gra::GlobalPdfPtr = nullptr;
 	gra::pdf_trials = 0;
-
+	gra::globalExceptionPtr = nullptr;
 	// ******************************************************************
 
 	// Print general layout
@@ -96,7 +96,6 @@ MGraniitti::MGraniitti() {
 
 // Destructor
 MGraniitti::~MGraniitti() {
-
 
 	// ******************************************************************
 	// Destroy & reset program globals
@@ -116,7 +115,7 @@ MGraniitti::~MGraniitti() {
 	for (unsigned int i = 0; i < pvec.size(); ++i) {
 		if (pvec[i] != nullptr) { delete pvec[i]; }
 	}
-	
+
 	std::cout << "~MGraniitti [DONE]" << std::endl;
 }
 
