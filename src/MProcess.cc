@@ -629,7 +629,16 @@ void MProcess::SetupBranching() {
 
 		if (found == true) {
 
-			std::cout << "MProcess::SetupBranching: Resonance PDG = " + std::to_string(res.p.pdg) << std::endl;
+			// Do we find it from PDG database
+			std::string resonance_name = "not-found-from-PDG";
+			try {
+				MParticle part = PDG.FindByPDG(res.p.pdg);
+				resonance_name = part.name;
+			} catch (...) {
+				// continue;
+			}
+			std::cout << "MProcess::SetupBranching: Resonance PDG = "
+				+ std::to_string(res.p.pdg) + " / " + resonance_name << std::endl;
 
 			// Try to find the decaymode
 			bool found_decay_mode = false;
