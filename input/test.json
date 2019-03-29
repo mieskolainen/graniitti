@@ -29,7 +29,7 @@
     "ENERGY"  : [6500, 6500],   // Beam energy in the lab (GeV)
     //"PROCESS" : "PP[CON]<C> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-}", // Process mode
     "PROCESS" : "PP[RES+CON]<C> -> pi+ pi-", // Process mode
-    "RES"     : ["rho_770", "f0_980", "phi_1020", "f2_1270", "f0_1500", "f2_1525", "f0_1710"],
+    "RES"     : ["f0_500","rho_770", "f0_980", "phi_1020", "f2_1270", "f0_1500", "f2_1525", "f0_1710"],
     "POMLOOP" : false,          // Eikonal Pomeron loop screening
     "NSTARS"  : 0,              // N* excitation (0 = elastic, 1 = single, 2 = double)
     "LHAPDF"  : "CT10nlo",      // LHAPDF parton distribution set
@@ -99,7 +99,7 @@
 
       "Eta"  : [-0.9, 0.9],     // Pseudorapidity
       "Rap"  : [-10.0, 10.0],   // Rapidity
-      "Pt"   : [0.1, 100000.0], // Transverse momentum
+      "Pt"   : [0.15, 100000.0], // Transverse momentum
       "Et"   : [0.0, 100000.0]  // Transverse energy
     },
 

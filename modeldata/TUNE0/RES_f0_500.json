@@ -10,9 +10,10 @@
     
     // Mass, width, spin (0,1/2,1,3/2,2...), parity (1,-1)
     "M"  : 0.50,
-    "W"  : 0.60,
+    "W"  : 0.50,
     "J"  : 0,
     "P"  : 1,
+    
     
     // "Glueball state" (orthogonal transverse geometry)
     "glue" : false,
@@ -28,8 +29,8 @@
     "random_rho" : 0,
     
     // Production coupling constant at amplitude level
-    "g_A"   : 0.0002,
-    "g_phi" :  -2.317122,
+    "g_A"   : 0.21,
+    "g_phi" : -2.8,
 
     // Production form factor on
     // Any rest frame is technically ok,

@@ -29,7 +29,7 @@
     "BEAM" :   ["p+","p+"],    // Beam PDG-ID / Name
     "ENERGY" : [6500, 6500],   // Beam energy in the lab (GeV)
     "PROCESS" : "PP[RES+CON]<C> -> pi+ pi-", // Process mode
-    "RES" : ["rho_770", "f0_980", "phi_1020", "f2_1270", "f0_1500", "f2_1525", "f0_1710"],
+    "RES" : ["f0_500", "rho_770", "f0_980", "phi_1020", "f2_1270", "f0_1500", "f2_1525", "f0_1710"],
     "POMLOOP" : true,          // Eikonal Pomeron loop screening
     "NSTARS"  : 0,             // N* excitation (0 = elastic, 1 = single, 2 = double)
     "LHAPDF"  : "CT10nlo",     // LHAPDF parton distribution set

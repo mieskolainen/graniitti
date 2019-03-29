@@ -68,18 +68,19 @@ bool ReadData(DATASET& dataset);
 void Chi2Func(int& npar, double* gin, double& f, double* par, int iflag);
 void SetSoftParam(std::map<std::string, gra::PARAM_RES>& RESONANCES, double* par);
 
-// Choose continuum form factor parametrization here (1,2,3)
+// Choose continuum form factor
 int offshellFF = 1;
 bool POMLOOP = false;
 
 // Resonance fixlist and zerolist
-std::vector<std::string> fixlist;
+std::vector<std::string> afixlist;
+std::vector<std::string> pfixlist;
 std::vector<std::string> zerolist;
 
 
 // ===============================================================
-// Note that TMinuit uses Fortran indexing => The parameter 0 in C++
-// is the parameter 1 in TMinuit.
+// Note that TMinuit uses (internally) Fortran indexing =>
+// The parameter 0 in C++ is the parameter 1 in TMinuit output.
 //
 // Main function
 
@@ -101,11 +102,17 @@ void SetSoftParam(std::map<std::string, gra::PARAM_RES>& RESONANCES, double* par
     	printf("[%s] \t A = %0.8f \t phi = %0.6f (%0.0f deg) ",
     	       x.first.c_str(), A, phi, phi / (2 * gra::math::PI) * 360);
     
-        if        (std::find(fixlist.begin(), fixlist.end(), x.first) != fixlist.end()) {
-            std::cout << rang::fg::red << "\t[SET FIXED]" << rang::fg::reset << std::endl;
+        bool afix = std::find(afixlist.begin(), afixlist.end(), x.first) != afixlist.end();
+        bool pfix = std::find(pfixlist.begin(), pfixlist.end(), x.first) != pfixlist.end();
 
+        if (afix && pfix) {
+            std::cout << rang::fg::red << "\t[AMPLITUDE & PHASE FIXED]" << rang::fg::reset << std::endl;
+        } else if (afix) {
+            std::cout << rang::fg::green << "\t[AMPLITUDE FIXED]" << rang::fg::reset << std::endl;
+        } else if (pfix) {
+            std::cout << rang::fg::blue << "\t[PHASE FIXED]" << rang::fg::reset << std::endl;
         } else if (std::find(zerolist.begin(), zerolist.end(), x.first) != zerolist.end()) {
-            std::cout << rang::fg::red << "\t[SET ZERO]" << rang::fg::reset << std::endl;
+            std::cout << rang::fg::yellow << "\t[SET TO ZERO]" << rang::fg::reset << std::endl;
 
         } else {
             std::cout << std::endl;
@@ -114,19 +121,28 @@ void SetSoftParam(std::map<std::string, gra::PARAM_RES>& RESONANCES, double* par
     std::cout << std::endl;
     
     // Continuum form factors
-    if (offshellFF == 1) {
+    if (offshellFF == 0) {
 	PARAM_REGGE::b_EXP = par[++k];
-	printf("[Offshell-FF] \t b_EXP = %0.3f \n", PARAM_REGGE::b_EXP);
+	printf("[Offshell-FF] \t b_EXP = %0.3f", PARAM_REGGE::b_EXP);
     }
-    if (offshellFF == 2) {
+    if (offshellFF == 1) {
 	PARAM_REGGE::a_OREAR = par[++k];
 	PARAM_REGGE::b_OREAR = par[++k];
-	printf("[Offshell-FF] \t a/b_OREAR = [%0.3f,%0.3f] \n",
+	printf("[Offshell-FF] \t a/b_OREAR = [%0.3f,%0.3f]",
 	       PARAM_REGGE::a_OREAR, PARAM_REGGE::b_OREAR);
     }
-    if (offshellFF == 3) {
+    if (offshellFF == 2) {
 	PARAM_REGGE::b_POW = par[++k];
-	printf("[Offshell-FF] \t b_POW = %0.3f \n", PARAM_REGGE::b_POW);
+	printf("[Offshell-FF] \t b_POW = %0.3f", PARAM_REGGE::b_POW);
+    }
+
+    bool fixcontinuum = (std::find(afixlist.begin(), afixlist.end(), "continuum") != afixlist.end()) ||
+                        (std::find(pfixlist.begin(), pfixlist.end(), "continuum") != pfixlist.end());
+
+    if (fixcontinuum) {
+        std::cout << rang::fg::red << "\t[FIXED]" << rang::fg::reset << std::endl;
+    } else {
+        std::cout << std::endl;
     }
 }
 
@@ -345,12 +361,14 @@ try {
 
     cxxopts::Options options(argv[0], "");
     options.add_options()
-        ("i,input",     "Input dataset collection numbers         <0,1,2,3,...>",        cxxopts::value<std::string>() )
-        ("c,continuum", "Continuum form factor                    <0|1|2>",              cxxopts::value<int>() )
-        ("x,fix",       "Fix resonances to their input values     <f0_980,f2_1270,...>", cxxopts::value<std::string>() )
-        ("z,zero",      "Fix resonances to zero                   <f2_1525,...>",        cxxopts::value<std::string>() )
-        ("A,allfix",    "Fix all resonances to their input values <true|false>",         cxxopts::value<std::string>() )
-        ("l,POMLOOP",   "Screening Pomeron loop",                                        cxxopts::value<std::string>() )
+        ("i,input",     "Input dataset collection numbers               <0,1,2,3,...>",        cxxopts::value<std::string>() )
+        ("c,continuum", "Continuum form factor                          <0|1|2>",              cxxopts::value<int>() )
+        ("a,afix",      "Fix resonance amplitude to their input values  <f0_980,f2_1270,...>", cxxopts::value<std::string>() )
+        ("p,pfix",      "Fix resonance phase to their input values      <f0_980,f2_1270,...>", cxxopts::value<std::string>() )
+        ("x,fix",       "Fix resonance amplitude and phase              <f0_980,f2_1270,...>", cxxopts::value<std::string>() )
+        ("z,zero",      "Fix resonances to zero                         <f2_1525,...>",        cxxopts::value<std::string>() )
+        ("Y,allfixed",  "Fix all resonances to their input values       <true|false>",         cxxopts::value<std::string>() )
+        ("l,POMLOOP",   "Screening Pomeron loop",                                              cxxopts::value<std::string>() )
         ("H,help",      "Help")
         ;
     auto r = options.parse(argc, argv);
@@ -358,23 +376,33 @@ try {
     if (r.count("help") || NARGC == 0) {
         std::cout << options.help({""}) << std::endl;
         std::cout << "Example:" << std::endl;
-        std::cout << "  " << argv[0] << " -i 0,1 -c 2 -x 'f0_980' "
-                  << std::endl << std::endl;
+        std::cout << "  " << argv[0] << " -i 0,1 -c 2 -x 'rho_770,continuum' " << std::endl << std::endl;
         return EXIT_FAILURE;
     }
 
     // Input dataset numbers
-    std::vector<int> input = gra::aux::SplitStr2Int(r["input"].as<std::string>());
+    std::vector<int> input   = gra::aux::SplitStr2Int(r["input"].as<std::string>());
 
     // Off-shell form factor
-    fitcentral::offshellFF = r["c"].as<int>(); 
+    fitcentral::offshellFF   = r["c"].as<int>(); 
 
-    // Resonance fixlist
-    if (r.count("x")) {
-        fitcentral::fixlist = gra::aux::SplitStr2Str(r["x"].as<std::string>());
+    // Amplitude
+    if (r.count("a")) {
+        fitcentral::afixlist = gra::aux::SplitStr2Str(r["a"].as<std::string>());
     }
+    // Phase
+    if (r.count("p")) {
+        fitcentral::pfixlist = gra::aux::SplitStr2Str(r["p"].as<std::string>());
+    }
+    // Both
+    if (r.count("x")) {
+        std::vector<std::string> out1 = gra::aux::SplitStr2Str(r["x"].as<std::string>());
+        fitcentral::afixlist.insert(fitcentral::afixlist.end(), out1.begin(), out1.end());
 
-    // Resonance zerolist
+        std::vector<std::string> out2 = gra::aux::SplitStr2Str(r["x"].as<std::string>());
+        fitcentral::pfixlist.insert(fitcentral::pfixlist.end(), out2.begin(), out2.end());
+    }
+    // Zero
     if (r.count("z")) {
         fitcentral::zerolist = gra::aux::SplitStr2Str(r["z"].as<std::string>());
     }
@@ -472,7 +500,6 @@ try {
     double arglist[10];
     int ierflg = 0;
     
-    
     // Chi^2 type cost function, set 1
     // -log(likelihood), set 0.5
     arglist[0] = 1;
@@ -489,11 +516,18 @@ try {
     // reasons we allow larger domain [-2pi, 2pi]
     // due to phase wrapping.
 
-    const double STEPSIZE_A   = 0.05;
-    const double STEPSIZE_phi = 0.05;
-        
+    const double STEPSIZE_A   = 0.05; // starting scale
+    const double STEPSIZE_phi = 0.15;
+    
     // Loop over resonances
     int k = -1;
+
+    if (FIXALLRES) {
+        for (const auto& x : RESONANCES) {
+            fitcentral::afixlist.push_back(x.first);
+            fitcentral::pfixlist.push_back(x.first);   
+        }
+    }
 
     for (const auto& x : RESONANCES) {
         
@@ -506,50 +540,61 @@ try {
         gMinuit->mnparm(++k, Form("RESONANCES[%s].g_phi", x.first.c_str()),
                 !setzero ? std::arg(x.second.g) : 0.0, STEPSIZE_phi, -2*gra::math::PI, 2*gra::math::PI, ierflg);
         
-        // Do we fix it or is zero (fix then always)
-        if (setzero || std::find(fitcentral::fixlist.begin(), fitcentral::fixlist.end(), x.first) != fitcentral::fixlist.end()) {
-            gMinuit->FixParameter(k-1);
-            gMinuit->FixParameter(k-2);
+        // Amplitude and Phase
+        bool afix = std::find(fitcentral::afixlist.begin(), fitcentral::afixlist.end(), x.first) != fitcentral::afixlist.end();       
+        bool pfix = std::find(fitcentral::pfixlist.begin(), fitcentral::pfixlist.end(), x.first) != fitcentral::pfixlist.end();
+
+        // Is set to zero (then fix always)
+        if (setzero) {
+            afix = true;
+            pfix = true;
         }
+        if (afix) { gMinuit->FixParameter(k-1); }
+        if (pfix) { gMinuit->FixParameter(k);   }
     }
     
     // Continuum off-shell form factor
-    if (fitcentral::offshellFF == 1) {
+    if (fitcentral::offshellFF == 0) {
 	gMinuit->mnparm(++k, "PARAM_REGGE::a_EXP", PARAM_REGGE::b_EXP,
 	                STEPSIZE_A, 0.0, 2.0, ierflg);
     }
-    if (fitcentral::offshellFF == 2) {
+    else if (fitcentral::offshellFF == 1) {
 	gMinuit->mnparm(++k, "PARAM_REGGE::a_OREAR", PARAM_REGGE::a_OREAR,
 	                STEPSIZE_A, 0.0, 2.0, ierflg);
 	gMinuit->mnparm(++k, "PARAM_REGGE::b_OREAR", PARAM_REGGE::b_OREAR,
 	                STEPSIZE_A, 0.0, 2.0, ierflg);
     }
-    if (fitcentral::offshellFF == 3) {
+    else if (fitcentral::offshellFF == 2) {
 	gMinuit->mnparm(++k, "PARAM_REGGE::b_POW", PARAM_REGGE::b_POW,
 	                STEPSIZE_A, 0.0, 2.0, ierflg);
     }
-
-    arglist[0] = 10000; // Maximum number of iterations
-    arglist[1] = 0.001; // Cost function stop tolerance
-
-    // FIX ALL RESONANCES
-    if (FIXALLRES) {
-        for (std::size_t i = 0; i < RESONANCES.size() * 2; ++i) { // 2 x for amplitude and phase
-            gMinuit->FixParameter(i);
-        }
+    else {
+        throw std::invalid_argument("fitcentral::offshellFF should be 0,1,2 (input is " + 
+            std::to_string(fitcentral::offshellFF) + ")");
     }
+
+    // Do we fix it
+    bool afix = std::find(fitcentral::afixlist.begin(), fitcentral::afixlist.end(), "continuum") != fitcentral::afixlist.end();
+    bool pfix = std::find(fitcentral::pfixlist.begin(), fitcentral::pfixlist.end(), "continuum") != fitcentral::pfixlist.end();
+
+    if (afix || pfix) {
+        gMinuit->FixParameter(k); // continuum
+    }
+
+    arglist[0] = 10000;   // Maximum number of iterations
+    arglist[1] = 0.001;   // Cost function stop tolerance
 
     // Release all parameters
     // gMinuit->mnfree(0);
 
     // First MC search (necessary for global search)
-    // gMinuit->mnexcm("SEEK", arglist, 2, ierflg);
+    //gMinuit->mnexcm("SEEK", arglist, 2, ierflg);
 
     // First simplex (necessary for global search)
     gMinuit->mnexcm("SIMPLEX", arglist, 2, ierflg);
 
     // Then migrad near the optimum
-    // gMinuit->mnexcm("MIGRAD", arglist, 2, ierflg);
+    //gMinuit->mnexcm("MIGRAD", arglist, 2, ierflg);
 
     // Get proper errors with MINOS
     // gMinuit->mnexcm("MINOS", arglist, 2, ierflg);

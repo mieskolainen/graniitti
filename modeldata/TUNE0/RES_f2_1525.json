@@ -22,13 +22,13 @@
     // 2 = running width relativistic
     // 3 = spin barrier relativistic
     "BW" : 2,
-
+    
     // Set 0 for density matrix below, or an integer > 0 for a random sampled
     // Different integers give different matrices.
     "random_rho" : 0,
 
     // Production coupling constant at amplitude level
-    "g_A"   : 0.042,
+    "g_A"   : 0.07,
     "g_phi" : 1.475962,
 
     // Production form factor on

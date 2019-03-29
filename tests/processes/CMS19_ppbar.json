@@ -11,7 +11,7 @@
   
   "GENERALPARAM" : {
     
-    "OUTPUT"     : "CMS19_2K",      // Output filename
+    "OUTPUT"     : "CMS19_ppbar",      // Output filename
     "FORMAT"     : "hepmc3",    // hepmc3, hepmc2, hepevt
     "CORES"      : 0,           // Number of CPU threads (0 for automatic)
     "NEVENTS"    : 100,         // Number of events
@@ -28,8 +28,8 @@
     "BEAM"    : ["p+","p+"],    // Beam PDG-ID / Name
     "ENERGY"  : [6500, 6500],   // Beam energy in the lab (GeV)
     //"PROCESS" : "PP[CON]<C> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-}", // Process mode
-    "PROCESS" : "PP[RES+CON]<C> -> K+ K-", // Process mode
-    "RES"     : ["f0_500", "f0_980", "f2_1270", "f0_1500", "f2_1525"],
+    "PROCESS" : "PP[CON]<C> -> p+ p-", // Process mode
+    "RES"     : [],
     "POMLOOP" : false,          // Eikonal Pomeron loop screening
     "NSTARS"  : 0,              // N* excitation (0 = elastic, 1 = single, 2 = double)
     "LHAPDF"  : "CT10nlo",      // LHAPDF parton distribution set

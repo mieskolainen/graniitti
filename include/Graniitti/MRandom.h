@@ -58,9 +58,11 @@ public:
 	double NBDpdf(int n, double avgN, double k);
 	double Logpdf(int k, double p);
 
-	// 64-bit Mersenne Twister by Matsumoto and Nishimura, 2000 (fast)
-	std::mt19937_64 rng; 
+	// For generators, check: https://nullprogram.com/blog/2017/09/21/
 
+	// 64-bit Mersenne Twister by Matsumoto and Nishimura, fast, basic
+	std::mt19937_64 rng; 
+	
 	// 48-bit RANLUX (slow)
 	//std::ranlux48 rng;
 	

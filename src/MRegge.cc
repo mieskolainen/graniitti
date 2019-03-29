@@ -738,10 +738,10 @@ std::complex<double> MRegge::ME3(gra::LORENTZSCALAR& lts, gra::PARAM_RES& resona
 	// Decay amplitude
 	const std::complex<double> A_decay = gra::spin::SpinAmp(lts, resonance);
 	
-	// Fluxes
-	//const double V = msqrt(lts.s / lts.s1 / lts.s2);
-
-	return A_prod * A_decay;
+	// Flux
+	const double V = msqrt(lts.s / lts.s1 / lts.s2);
+	
+	return A_prod * A_decay * V;
 }
 
 
@@ -771,7 +771,7 @@ std::complex<double> MRegge::PhotoME3(gra::LORENTZSCALAR& lts, gra::PARAM_RES& r
 
 	double gammaflux1 = lts.excite1 ? IncohFlux(lts.x1, lts.t1, lts.qt1, lts.pfinal[1].M2()) : CohFlux(lts.x1, lts.t1, lts.qt1);
 	double gammaflux2 = lts.excite2 ? IncohFlux(lts.x2, lts.t2, lts.qt2, lts.pfinal[2].M2()) : CohFlux(lts.x2, lts.t2, lts.qt2);
-
+	
 	// "To amplitude level"
 	gammaflux1 = msqrt(gammaflux1);
 	gammaflux2 = msqrt(gammaflux2);
@@ -837,7 +837,7 @@ std::complex<double> MRegge::PhotoProp(double s, double t, double m2, bool excit
 	// N.B. The pomeron slope (a') also affects, so all parameters need
 	// to be fitted in a proper way (full MC)
 	const double alpha =
-	    PARAM_REGGE::a0[0] + t * PARAM_REGGE::ap[0];    // Pomeron trajectory
+	    PARAM_REGGE::a0[0] + t * PARAM_REGGE::ap[0];     // Pomeron trajectory
 	const std::complex<double> eta = ReggeEta(alpha, 1); // Pomeron signature
 
 	// Proton form factor simply exponential here
@@ -917,17 +917,17 @@ void PrintParam() {
 		    i, a0[i], ap[i], sgn[i]);
 	}
 	printf("- offshellFF = %d \n", offshellFF);
-	if (offshellFF == 1) {
+	if (offshellFF == 0) {
 		printf("  -- b_EXP = %0.3f [GeV^{-2}] (exponential) \n",
 		       b_EXP);
 	}
-	if (offshellFF == 2) {
+	if (offshellFF == 1) {
 		printf(
 		    "  -- a_OREAR = %0.3f [GeV^{-1}], b_OREAR = %0.3f "
 		    "[GeV^{-1}] (Orear)\n",
 		    a_OREAR, b_OREAR);
 	}
-	if (offshellFF == 3) {
+	if (offshellFF == 2) {
 		printf("  -- b_POW = %0.3f [GeV^{-2}] (powerlaw) \n", b_POW);
 	}
 	printf("- reggeize = %d \n", reggeize);
@@ -1188,17 +1188,17 @@ double Meson_FF(double t_hat, double M2) {
 
 	switch (PARAM_REGGE::offshellFF) {
 		// Exponential
-		case 1:
+		case 0:
 			return std::exp(-PARAM_REGGE::b_EXP * std::abs(tprime));
 		// Orear
-		case 2:
+		case 1:
 			return std::exp(-PARAM_REGGE::b_OREAR *
 			                    msqrt(std::abs(tprime) +
 			                          pow2(PARAM_REGGE::a_OREAR)) +
 			                PARAM_REGGE::a_OREAR *
 			                    PARAM_REGGE::b_OREAR);
 		// Powerlaw
-		case 3:
+		case 2:
 			return 1.0 / (1.0 - tprime / PARAM_REGGE::b_POW);
 
 		default:
@@ -1214,17 +1214,17 @@ double Baryon_FF(double t_hat, double M2) {
 
 	switch (PARAM_REGGE::offshellFF) {
 		// Exponential
-		case 1:
+		case 0:
 			return std::exp(-PARAM_REGGE::b_EXP * std::abs(tprime));
 		// Orear
-		case 2:
+		case 1:
 			return std::exp(-PARAM_REGGE::b_OREAR *
 			                    msqrt(std::abs(tprime) +
 			                          pow2(PARAM_REGGE::a_OREAR)) +
 			                PARAM_REGGE::a_OREAR *
 			                    PARAM_REGGE::b_OREAR);
 		// Powerlaw
-		case 3:
+		case 2:
 			return 1.0 / (1.0 - tprime / PARAM_REGGE::b_POW);
 
 		default:
