@@ -17,11 +17,10 @@
 # -----------------------------------------------------------------------
 # 
 # EXTERNAL LIBRARIES SETUP:
-# 
+#
 #   [HEPMC3] and [LHAPDF]: See ./install folder
-# 
-# Example: export ROOTSYS=/home/user/sw/ROOT6
-# 
+#   [ROOT] Example: export ROOTSYS=/home/user/sw/ROOT6
+#
 # GENERAL:
 #
 #   If you just installed e.g. HEPMC3 libraries
