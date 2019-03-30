@@ -339,7 +339,7 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 				}
 			}
 		}
-
+		
 		// Observables for 2-body case only
 		if (multiplicity == 2) {
 			FrameObservables(W, evt, p_beam_plus, p_beam_minus, p_final_plus, p_final_minus, pip, pim);
