@@ -117,7 +117,7 @@ LHAPDF6lib     = -L$(LHAPDFSYS)/lib -lLHAPDF
 
 # ROOT
 ifeq ($(ROOT),TRUE)
-ROOTlib        = -L$(ROOTSYS)/lib -L$(ROOTSYS)/root/lib -lCore -lRIO -lNet \
+ROOTlib        = -L$(ROOTSYS)/lib -L$(ROOTSYS)/lib/root -lCore -lRIO -lNet \
 				 -lHist -lGraf -lGraf3d -lGpad -lTree -lRint \
 				 -lPostscript -lMatrix -lPhysics -lMathCore \
 				 -lThread -lGui -lRooFit -lMinuit
