@@ -19,7 +19,7 @@
 # EXTERNAL LIBRARIES SETUP:
 #
 #   [HEPMC3] and [LHAPDF]: See ./install folder
-#   [ROOT] Example: export ROOTSYS=/home/user/sw/ROOT6
+#   [ROOT]                 Example: export ROOTSYS=/home/user/sw/ROOT6
 #
 # GENERAL:
 #
@@ -333,6 +333,10 @@ $(PROGRAM_TEST): $(OBJ) $(OBJ_3) $(OBJ_PROGRAM_TEST)
 # RULES to generate library dependencies and compile
 
 # LIBRARY objects
+#
+# Note that for ROOT, we need both:
+# -I$(ROOTSYS)/include
+# -I$(ROOTSYS)/root/include
 
 # =======================================================================
 $(OBJ_DIR)/%.o: $(SRC_DIR_0)/%.cc
@@ -352,7 +356,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR_1)/%.cc
 $(OBJ_DIR)/%.o: $(SRC_DIR_2)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) $(CXXVER_OLD) -c $< -o $@ $(CXXFLAGS) $(INCLUDES) -I$(ROOTSYS)/include
+	$(CXX) $(CXXVER_OLD) -c $< -o $@ $(CXXFLAGS) $(INCLUDES) -I$(ROOTSYS)/include -I$(ROOTSYS)/root/include
 # =======================================================================
 
 # =======================================================================
@@ -375,7 +379,7 @@ $(OBJ_DIR)/$(BIN_DIR)/%.o: $(SRC_DIR_PROGRAM)/%.cc
 $(OBJ_DIR)/$(BIN_DIR)/%.o: $(SRC_DIR_PROGRAM_ROOT)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) $(CXXVER_OLD) -c $< -o $@ $(CXXFLAGS) $(INCLUDES) -I$(ROOTSYS)/include
+	$(CXX) $(CXXVER_OLD) -c $< -o $@ $(CXXFLAGS) $(INCLUDES) -I$(ROOTSYS)/include -I$(ROOTSYS)/root/include
 # =======================================================================
 
 # =======================================================================
