@@ -376,7 +376,7 @@ $(OBJ_DIR)/$(BIN_DIR)/%.o: $(SRC_DIR_PROGRAM)/%.cc
 $(OBJ_DIR)/$(BIN_DIR)/%.o: $(SRC_DIR_PROGRAM_ROOT)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) $(CXXVER) -c $< -o $@ $(CXXFLAGS) $(INCLUDES) -I$(ROOTSYS)/include
+	$(CXX) $(CXXVER_OLD) -c $< -o $@ $(CXXFLAGS) $(INCLUDES) -I$(ROOTSYS)/include
 # =======================================================================
 
 # =======================================================================

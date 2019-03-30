@@ -168,10 +168,10 @@ MAnalyzer::MAnalyzer() {
 	for (std::size_t i = 0; i < NFR; ++i) {
 		h2M_CosTheta[i] = std::make_unique<TH2D>(
 		    Form("M vs cos(#theta) %s", frame_labels[i].Data()),
-		    Form(" ;M (GeV);%s^{+} cos(#theta)", pstr.c_str(), frame_labels[i].Data()),
+		    Form(" ;M (GeV);%s^{+} cos(#theta) %s", pstr.c_str(), frame_labels[i].Data()),
 		    NBINS / 2, 0.0, 2.5, NBINS / 2, -1, 1);
 	}
-
+	
 	// 2D (M, phi)
 	for (std::size_t i = 0; i < NFR; ++i) {
 		h2M_Phi[i] = std::make_unique<TH2D>(
