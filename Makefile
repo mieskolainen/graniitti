@@ -15,11 +15,13 @@
 #     -|-         unit tests: make TEST=TRUE
 #
 # -----------------------------------------------------------------------
-#
+# 
 # EXTERNAL LIBRARIES SETUP:
-#
+# 
 #   [HEPMC3] and [LHAPDF]: See ./install folder
-#
+# 
+# Example: export ROOTSYS=/home/user/sw/ROOT6
+# 
 # GENERAL:
 #
 #   If you just installed e.g. HEPMC3 libraries
@@ -167,11 +169,13 @@ INCLUDES += -I$(LHAPDFSYS)/include
 # =======================================================================
 # Compiler and its options
 
-CXX       = g++
+CXX        = g++
 
-CXXVER    = -std=c++17
-OPTIM     = -O2 -DNDEBUG -ftree-vectorize -fno-signed-zeros
-CXXFLAGS  = -Wall -fPIC -pipe $(OPTIM)
+CXXVER     = -std=c++17
+CXXVER_OLD = -std=c++14
+
+OPTIM      = -O2 -DNDEBUG -ftree-vectorize -fno-signed-zeros
+CXXFLAGS   = -Wall -fPIC -pipe $(OPTIM)
 
 
 # Needed by PyTorch if using pre-compiled (ABI = Application Binary Interface)
@@ -349,7 +353,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR_1)/%.cc
 $(OBJ_DIR)/%.o: $(SRC_DIR_2)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) $(CXXVER) -c $< -o $@ $(CXXFLAGS) $(INCLUDES) -I$(ROOTSYS)/include
+	$(CXX) $(CXXVER_OLD) -c $< -o $@ $(CXXFLAGS) $(INCLUDES) -I$(ROOTSYS)/include
 # =======================================================================
 
 # =======================================================================

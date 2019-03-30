@@ -673,7 +673,7 @@ std::vector<OneCMD> SplitCommands(const std::string& fullstr) {
 		TrimExtraSpace(subcmd[i]);
 
 		std::string id;
-		std::map<std::string, std::any> arg;
+		std::map<std::string, std::string> arg;
 		
 		// Check we find {} brackets
 		std::size_t Lpos = subcmd[i].find("{",0);

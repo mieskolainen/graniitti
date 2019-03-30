@@ -603,13 +603,13 @@ void MGraniitti::ReadProcessParam(const std::string& inputfile, const std::strin
 	for (const auto& i : indices(syntax)) {
 
 		if (syntax[i].id == "FLATAMP") {
-			proc->SetFLATAMP(std::stoi(std::any_cast<std::string>(syntax[i].arg["_SINGLET_"])));
+			proc->SetFLATAMP(std::stoi(syntax[i].arg["_SINGLET_"]));
 		}
 		if (syntax[i].id == "FLATMASS2") {
-			proc->SetFLATMASS2(std::any_cast<std::string>(syntax[i].arg["_SINGLET_"]) == "true");
+			proc->SetFLATMASS2(syntax[i].arg["_SINGLET_"] == "true");
 		}
 		if (syntax[i].id == "OFFSHELL") {
-			proc->SetOFFSHELL(std::stod(std::any_cast<std::string>(syntax[i].arg["_SINGLET_"])));
+			proc->SetOFFSHELL(std::stod(syntax[i].arg["_SINGLET_"]));
 		}
 	}
 

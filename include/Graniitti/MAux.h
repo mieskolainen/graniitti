@@ -51,12 +51,12 @@ namespace aux {
 struct OneCMD {
 
 	std::string id;
-	std::map<std::string, std::any> arg;
+	std::map<std::string, std::string> arg;
 
 	void Print() {
 		std::cout << "identifier: " << id << std::endl;
-		for (auto& [key, value]: arg) {
-		    std::cout << key << ":" << std::any_cast<std::string>(value) << std::endl;
+		for (const auto& x : arg) {
+		    std::cout << x.first << ":" << x.second << std::endl;
 		}
 	}
 };

@@ -1844,15 +1844,15 @@ void MProcess::SetProcess(std::string& str, const std::vector<aux::OneCMD>& synt
 				} catch (...) {} // do nothing
 				
 				// Set new properties
-				for (auto& [key,val] : syntax[i].arg) {
-					if (key == "M") {
-						p.mass = std::stod(std::any_cast<std::string>(val));
+				for (const auto& x : syntax[i].arg) {
+					if (x.first == "M") {
+						p.mass = std::stod(x.second);
 						if (found_anti) {
 							p_anti.mass = p.mass;
 						}
 					}
-					if (key == "W") {
-						p.width = std::stod(std::any_cast<std::string>(val));
+					if (x.first == "W") {
+						p.width = std::stod(x.second);
 						if (found_anti) {
 							p_anti.width = p.width;
 						}
@@ -1861,13 +1861,13 @@ void MProcess::SetProcess(std::string& str, const std::vector<aux::OneCMD>& synt
 				// Set new modified to the PDG table
 				PDG.PDG_table[pdg]  = p;
 				if (found_anti) {
-				PDG.PDG_table[-pdg] = p_anti; 
+				PDG.PDG_table[-pdg] = p_anti;
 				}
-
+				
 				std::cout << rang::fg::red <<
 					"MProcess::SetProcess: New particle properties set with @PDG[ID]{key:val} syntax:" << rang::fg::reset << std::endl;
 				p.print();
-
+				
 			} catch (...) {
 				throw std::invalid_argument("MProcess::SetProcess: syntax problem in @PDG[ID] with ID = " + std::to_string(pdg));
 			}
