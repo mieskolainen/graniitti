@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) {
 		std::cout << "  PP[CON]<C> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-}" << std::endl;
 		std::cout << "  yy[CON]<F> -> pi+ pi- pi+ pi-" << std::endl;
 		std::cout << "  yy[CON]<C> -> p+ p- @FLATAMP:2" << std::endl;
-		std::cout << "  yy[CON]<C> -> 922 -922 @PDG[922]{M:1500,W:0}" << std::endl;
+		std::cout << "  yy[CON]<C> -> 921 -921 @PDG[921]{M:1500,W:0}" << std::endl;
 		std::cout << std::endl;
 		
 		std::cout << rang::style::bold << " A steering card example with no additional input:" << rang::style::reset << std::endl;
