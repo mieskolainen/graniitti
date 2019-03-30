@@ -142,6 +142,7 @@ LDLIBS += $(PYTORCHlib)
 
 # C++
 INCLUDES += -I/usr/include
+INCLUDES += -I/usr/local/include
 
 # Own
 INCLUDES += -I.
@@ -379,7 +380,7 @@ $(OBJ_DIR)/$(BIN_DIR)/%.o: $(SRC_DIR_PROGRAM)/%.cc
 $(OBJ_DIR)/$(BIN_DIR)/%.o: $(SRC_DIR_PROGRAM_ROOT)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) $(CXXVER_OLD) -c $< -o $@ $(CXXFLAGS) $(INCLUDES) -I$(ROOTSYS)/include -I$(ROOTSYS)/root/include
+	$(CXX) $(CXXVER_OLD) -c $< -o $@ $(CXXFLAGS) $(INCLUDES) -I$(ROOTSYS)/include -I$(ROOTSYS)/include/root
 # =======================================================================
 
 # =======================================================================
