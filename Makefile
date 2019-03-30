@@ -334,9 +334,9 @@ $(PROGRAM_TEST): $(OBJ) $(OBJ_3) $(OBJ_PROGRAM_TEST)
 
 # LIBRARY objects
 #
-# Note that for diferrent ROOT version, we need both:
+# Note that for different ROOT installations, we need both:
 # -I$(ROOTSYS)/include
-# -I$(ROOTSYS)/root/include
+# -I$(ROOTSYS)/include/root
 
 # =======================================================================
 $(OBJ_DIR)/%.o: $(SRC_DIR_0)/%.cc
@@ -356,7 +356,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR_1)/%.cc
 $(OBJ_DIR)/%.o: $(SRC_DIR_2)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) $(CXXVER_OLD) -c $< -o $@ $(CXXFLAGS) $(INCLUDES) -I$(ROOTSYS)/include -I$(ROOTSYS)/root/include
+	$(CXX) $(CXXVER_OLD) -c $< -o $@ $(CXXFLAGS) $(INCLUDES) -I$(ROOTSYS)/include -I$(ROOTSYS)/include/root
 # =======================================================================
 
 # =======================================================================
