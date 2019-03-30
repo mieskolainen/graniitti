@@ -334,7 +334,7 @@ $(PROGRAM_TEST): $(OBJ) $(OBJ_3) $(OBJ_PROGRAM_TEST)
 
 # LIBRARY objects
 #
-# Note that for ROOT, we need both:
+# Note that for diferrent ROOT version, we need both:
 # -I$(ROOTSYS)/include
 # -I$(ROOTSYS)/root/include
 
