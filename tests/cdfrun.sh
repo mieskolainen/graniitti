@@ -1,4 +1,10 @@
-make && ./bin/gr -i ./tests/experiment/CDF_2pi0.json -p 1
+#!/bin/sh
 
-make -j4 ROOT=TRUE && ./bin/analyzer -i CDF_2pi0 -g 22 -n 4 -l \
-	'2#pi^{0}#rightarrow2(#gamma#gamma)' -M 2.5 -Y 1.5 -P 1.5 -u ub
+# Hard-coded integrated screening factor (for speed, set 1 if Pomeron loop was on)
+S2=0.2
+
+make -j4 && ./bin/gr -i ./tests/processes/CDF14_2pi.json -n 10000 -l false -w true
+
+make -j4 ROOT=TRUE && ./bin/analyze -i CDF14_2pi -g 211 -n 2 -l \
+	'#pi^{+}#pi^{-}' -t '#sqrt{s} = 1.96 TeV, |#eta| < 1.3, p_{T} > 0.4 GeV, |Y_{X}| < 0.9' \
+	-M 2.5 -Y 1.5 -P 1.5 -u ub -S $S2

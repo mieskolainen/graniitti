@@ -214,9 +214,22 @@ inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR& lt
 	
 	std::complex<double> A(0, 0);
 
-
 	if      (CHANNEL == "RES") {
-		A = ME3(lts, lts.RESONANCES.begin()->second);
+
+		// Coherent sum of Resonances (loop over)
+		for (auto& x : lts.RESONANCES) {
+
+			const int J = static_cast<int>(x.second.p.spinX2/2.0);
+
+			// Gamma-Pomeron for vectors (could be Pomeron-Odderon too)
+			if (J == 1 && x.second.p.P == -1) {
+				A += PhotoME3(lts, x.second);
+			}
+			// Pomeron-Pomeron, J = 0,1,2,... all ok
+			else {
+				A += ME3(lts, x.second);
+			}
+		}
 	}
 	else if (CHANNEL == "RESHEL") {
 		A = ME3HEL(lts, lts.RESONANCES.begin()->second);
@@ -254,7 +267,25 @@ inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR& lt
 	}
 	
 	else if (CHANNEL == "RES+CON") {
-		A = ME4RES(lts, lts.RESONANCES, 1);
+
+		// 1. Continuum matrix element
+		A = ME4(lts, 1);
+
+		// 2. Coherent sum of Resonances (loop over)
+		for (auto& x : lts.RESONANCES) {
+
+			const int J = static_cast<int>(x.second.p.spinX2/2.0);
+
+			// Gamma-Pomeron for vectors
+			if (J == 1 && x.second.p.P == -1) {
+				A += PhotoME3(lts, x.second);
+			}
+			// Pomeron-Pomeron, J = 0,1,2,... all ok
+			else {
+				A += ME3(lts, x.second);
+			}
+		}
+
 	} else {
 		throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown CHANNEL = " + CHANNEL);
 	}

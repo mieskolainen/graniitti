@@ -1376,8 +1376,13 @@ void MProcess::SampleForwardMasses(std::vector<double>& mvec, const std::vector<
 	lts.excite1 = false;
 	lts.excite2 = false;
 
-	M2_f_min = pow2(1.07); // proton + pion threshold
+	M2_f_min = pow2(1.09); // neutron + pi+ threshold
 	M2_f_max = gcuts.XI_max * lts.s;
+	
+	if (M2_f_max <= M2_f_min) {
+		throw std::invalid_argument("MProcess::SampleForwardMasses: Forward leg Xi : [max] gives mass = "
+			+ std::to_string(msqrt(M2_f_max)) + " GeV, below the inelastic threshold. Increase the upper (max) bound.");
+	}
 	
 	if      (EXCITATION == 1) {
 		const double mforward = msqrt( M2_f_min + (M2_f_max - M2_f_min) * randvec[0] );

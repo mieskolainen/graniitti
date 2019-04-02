@@ -78,7 +78,6 @@ public:
 	std::complex<double> ME8(gra::LORENTZSCALAR& lts) const;
 	std::complex<double> ME6(gra::LORENTZSCALAR& lts) const;
 	std::complex<double> ME4(gra::LORENTZSCALAR& lts, double sign) const;
-	std::complex<double> ME4RES(gra::LORENTZSCALAR& lts, std::map<std::string, gra::PARAM_RES>& RESONANCES, double sign) const;
 	std::complex<double> ME2(gra::LORENTZSCALAR& lts, int mode) const;
 	std::complex<double> ME3(gra::LORENTZSCALAR& lts, gra::PARAM_RES& resonance) const;
 	std::complex<double> ME3HEL(gra::LORENTZSCALAR& lts, gra::PARAM_RES& resonance) const;

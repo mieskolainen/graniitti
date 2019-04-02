@@ -461,32 +461,6 @@ std::complex<double> MRegge::ME4(gra::LORENTZSCALAR& lts, double sign) const {
 	return A;
 }
 
-
-// (bare) matrix element for 2->4 Continuum + Resonances
-std::complex<double> MRegge::ME4RES(gra::LORENTZSCALAR& lts, 
-		std::map<std::string, gra::PARAM_RES>& RESONANCES, double sign) const {
-
-	// 1. Continuum matrix element
-	std::complex<double> M_tot = ME4(lts, sign);
-
-	// 2. Coherent sum of Resonances (loop over)
-	for (auto& x : RESONANCES) {
-
-		const int J = static_cast<int>(x.second.p.spinX2/2.0);
-
-		// Gamma-Pomeron for vectors
-		if (J == 1 && x.second.p.P == -1) {
-			M_tot += PhotoME3(lts, x.second);
-		}
-		// Pomeron-Pomeron, J = 0,1,2,... all ok
-		else {
-			M_tot += ME3(lts, x.second);
-		}
-	}
-	return M_tot;
-}
-
-
 // ============================================================================
 // Regge matrix element ansatz for 2->6 continuum spectrum
 //

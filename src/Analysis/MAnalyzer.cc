@@ -453,6 +453,9 @@ double MAnalyzer::CheckEnergyMomentum(HepMC3::GenEvent& evt) const {
 	std::vector<HepMC3::GenParticlePtr> all_final =
 		HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_STABLE, evt.particles());  // Final state
 	
+//	std::vector<HepMC3::GenParticlePtr> all_final =
+//		HepMC3::applyFilter(*abs(HepMC3::Selector::PDG_ID) == PDG::PDG_NSTAR || *abs(HepMC3::Selector::PDG_ID) == 93, evt.particles());  // Final state
+
 	M4Vec beam(0,0,0,0);
 	for (const HepMC3::GenParticlePtr& p1 : all_init)  {
 		beam += gra::aux::HepMC2M4Vec(p1->momentum());
@@ -474,18 +477,16 @@ double MAnalyzer::CheckEnergyMomentum(HepMC3::GenEvent& evt) const {
 
 // 2-body angular observables
 void MAnalyzer::FrameObservables(double W, HepMC3::GenEvent& evt, const M4Vec& p_beam_plus,
-	const M4Vec& p_beam_minus, const M4Vec& p_final_plus, const M4Vec& p_final_minus,
+	const M4Vec& p_beam_minus,     const M4Vec& p_final_plus,     const M4Vec& p_final_minus,
 	const std::vector<M4Vec>& pip, const std::vector<M4Vec>& pim) {
 
 	// GJ-frame direction
 	const unsigned int direction = 1;
 	M4Vec propagator;
 
-	// Calculate propagator (=Pomeron) 4-vector
-	if (direction == 1) {
-		propagator = p_beam_plus  - p_final_plus;
-	} else {
-		propagator = p_beam_minus - p_final_minus;
+	// Calculate propagator (= Pomeron) 4-vector
+	if (direction == 1) { propagator = p_beam_plus  - p_final_plus;
+	} else {              propagator = p_beam_minus - p_final_minus;
 	}
 	std::vector<M4Vec> twopions;
 	
@@ -509,17 +510,20 @@ void MAnalyzer::FrameObservables(double W, HepMC3::GenEvent& evt, const M4Vec& p
 	gra::kinematics::GJframe(pions[3], propagator);
 	gra::kinematics::PGframe(pions[4], direction, p_beam_plus, p_beam_minus);
 	gra::kinematics::SRframe(pions[5]);
-	
 
+
+	// FILL HISTOGRAMS -->
+	
 	// Legendre polynomials P_l cos(theta)
 	const M4Vec system = twopions[0] + twopions[1];
-	const unsigned int FRAMENUMBER = 5; // Non-rotated frame
+	const unsigned int FRAMENUMBER = 5;   // Non-rotated (SR) frame
 	for (std::size_t l = 0; l < 8; ++l) { // note l+1
-		double value = gra::math::LegendrePl((l + 1), pions[FRAMENUMBER][0].CosTheta()); // cos(theta)
+
+		// Take first daughter [0]
+		double value = gra::math::LegendrePl((l + 1), pions[FRAMENUMBER][0].CosTheta());
 		hPl[l]->Fill(system.M(), value, W);
 	}
 
-	// FILL HISTOGRAMS -->
 	// 2D
 	for (std::size_t i = 0; i < NFR; ++i) {
 		for (std::size_t j = 0; j < NFR; ++j) {
@@ -547,19 +551,19 @@ void MAnalyzer::NStarObservables(double W, HepMC3::GenEvent& evt) {
 
 	// Excite forward system particles
 	std::vector<HepMC3::GenParticlePtr> search_gammas   =
-		HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_STABLE && *abs(HepMC3::Selector::PDG_ID) == PDG::PDG_gamma, evt.particles());
+		HepMC3::applyFilter(*abs(HepMC3::Selector::PDG_ID) == PDG::PDG_gamma, evt.particles());
 
 	std::vector<HepMC3::GenParticlePtr> search_neutrons =
-		HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_STABLE && *abs(HepMC3::Selector::PDG_ID) == PDG::PDG_n,     evt.particles());
+		HepMC3::applyFilter(*abs(HepMC3::Selector::PDG_ID) == PDG::PDG_n,     evt.particles());
 
 	std::vector<HepMC3::GenParticlePtr> search_pip   =
-		HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_STABLE && *abs(HepMC3::Selector::PDG_ID) == PDG::PDG_pip,   evt.particles());
+		HepMC3::applyFilter(*abs(HepMC3::Selector::PDG_ID) == PDG::PDG_pip,   evt.particles());
 
 	std::vector<HepMC3::GenParticlePtr> search_pim   =
-		HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_STABLE && *abs(HepMC3::Selector::PDG_ID) == PDG::PDG_pim,   evt.particles());
-
+		HepMC3::applyFilter(*abs(HepMC3::Selector::PDG_ID) == PDG::PDG_pim,   evt.particles());
+		
 	std::vector<HepMC3::GenParticlePtr> search_nstar =
-		HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_STABLE && *abs(HepMC3::Selector::PDG_ID) == PDG::PDG_NSTAR, evt.particles());
+		HepMC3::applyFilter(*abs(HepMC3::Selector::PDG_ID) == PDG::PDG_NSTAR, evt.particles());
 
 	// Find out if we excited one or two protons
 	bool excited_plus  = false;

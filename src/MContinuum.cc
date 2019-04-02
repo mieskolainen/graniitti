@@ -432,7 +432,7 @@ bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1
 		lts.pfinal[i+offset] = p[i];
 		sumM += p[i].M();
 	}
-
+	
 	// -------------------------------------------------------------------
 	// Kinematic checks
 

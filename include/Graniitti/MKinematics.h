@@ -54,7 +54,54 @@ namespace kinematics {
     return t0;
   }
 
+  /*
+  // Old version for reference
+  inline double SolvePz3_B(double m1, double m2, double pt1, double pt2, double pz, double pE, double s) {
+  
+    using gra::math::msqrt;
+    using gra::math::pow2;
+    using gra::math::pow3;
+    using gra::math::pow4;
+    using gra::math::pow5;
 
+    const double sqrt_s = msqrt(s);
+    const double p1z =
+        (-(pow2(m1) * pow2(pE) * pz) + pow2(m2) * pow2(pE) * pz -
+         pow4(pE) * pz - pow2(pE) * pow2(pt1) * pz +
+         pow2(pE) * pow2(pt2) * pz + pow2(m1) * pow3(pz) -
+         pow2(m2) * pow3(pz) + 2.0 * pow2(pE) * pow3(pz) +
+         pow2(pt1) * pow3(pz) - pow2(pt2) * pow3(pz) - pow5(pz) -
+         2.0 * pow2(m1) * pE * pz * sqrt_s +
+         2.0 * pow2(m2) * pE * pz * sqrt_s -
+         2.0 * pE * pow2(pt1) * pz * sqrt_s +
+         2.0 * pE * pow2(pt2) * pz * sqrt_s - pow2(m1) * pz * s +
+         pow2(m2) * pz * s + 2.0 * pow2(pE) * pz * s - pow2(pt1) * pz * s +
+         pow2(pt2) * pz * s + 2.0 * pow3(pz) * s - pz * pow2(s) +
+         sqrt(pow2(pE - sqrt_s) *
+              pow2(pow2(pE) - pow2(pz) + 2.0 * pE * sqrt_s + s) *
+              (pow4(m1) + pow4(m2) + pow4(pE) -
+               2.0 * pow2(pE) * pow2(pt1) + pow4(pt1) -
+               2.0 * pow2(pE) * pow2(pt2) - 2.0 * pow2(pt1) * pow2(pt2) +
+               pow4(pt2) - 2.0 * pow2(pE) * pow2(pz) +
+               2.0 * pow2(pt1) * pow2(pz) + 2.0 * pow2(pt2) * pow2(pz) +
+               pow4(pz) - 4.0 * pow3(pE) * sqrt_s +
+               4.0 * pE * pow2(pt1) * sqrt_s +
+               4.0 * pE * pow2(pt2) * sqrt_s +
+               4.0 * pE * pow2(pz) * sqrt_s + 6.0 * pow2(pE) * s -
+               2.0 * pow2(pt1) * s - 2.0 * pow2(pt2) * s -
+               2.0 * pow2(pz) * s - 4.0 * pE * std::pow(s, 1.5) + pow2(s) -
+               2.0 * pow2(m2) * (pow2(pE) + pow2(pt1) - pow2(pt2) -
+                                 pow2(pz) - 2.0 * pE * sqrt_s + s) -
+               2.0 * pow2(m1) *
+                   (pow2(m2) + pow2(pE) - pow2(pt1) + pow2(pt2) -
+                    pow2(pz) - 2.0 * pE * sqrt_s + s)))) /
+        (2.0 * (pow4(pE) + pow2(pow2(pz) - s) -
+                2.0 * pow2(pE) * (pow2(pz) + s)));
+
+        return p1z;
+  }
+  */
+  
   // Case m3, m4 same or different
   inline double SolvePz3_B(double m3, double m4, double pt3, double pt4, double pz5, double E5, double s) {
 
@@ -91,7 +138,7 @@ namespace kinematics {
 
     return t0;
   }
-
+  
   /*
   %% MATLAB symbolic code to generate solutions
   %% Solve the non-linear system
@@ -1345,6 +1392,14 @@ namespace kinematics {
       p[1].Print();
     }
     // ********************************************************************
+    T sum;
+    for (const auto& i : gra::aux::indices(p)) {
+      sum += p[i];
+    }
+    if (std::abs(sum.Px()) > epsilon || std::abs(sum.Py()) > epsilon ||
+        std::abs(sum.Pz()) > epsilon) {
+      printf("SRframe:: Not a rest frame!! \n");
+    }
   }
 
 } // Namespace MKinematics
