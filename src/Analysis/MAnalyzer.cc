@@ -30,6 +30,7 @@
 #include "TString.h"
 #include "TStyle.h"
 #include "TTree.h"
+#include "TLine.h"
 
 // HepMC3 3
 #include "HepMC3/GenCrossSection.h"
@@ -696,23 +697,24 @@ double exponential(double* x, double* par) {
 }
 
 
-// Plotter
-void MAnalyzer::PlotAll() {
+// Custom plotter
+void MAnalyzer::PlotAll(const std::string& titlestr) {
 
     // Create output directory if it does not exist
 	const std::string FOLDER = gra::aux::GetBasePath(2) + "/figs/" + inputfile;
    	aux::CreateDirectory(FOLDER);
-   	
+	
+   	/*
 	// FIT FUNCTIONS
-	TF1* fb = new TF1("exp_fit", exponential, 0.05, 0.5, 2);
+	std::unique_ptr<TF1> fb = std::make_unique<TF1>("exp_fit", exponential, 0.05, 0.5, 2);
 	fb->SetParameter(0, 10.0); // A
 	fb->SetParameter(1, -8.0); // b
 
-	TF1* fa = new TF1("pow_fit", powerlaw, 0.5, 3.0, 3);
+	std::unique_ptr<TF1> fa = std::make_unique<TF1>("pow_fit", powerlaw, 0.5, 3.0, 3);
 	fa->SetParameter(0, 10.0); // A
 	fa->SetParameter(1, 0.15); // T
 	fa->SetParameter(2, 0.1);  // n
-
+	*/
 	//        hpT2->Fit("exp_fit","R");
 	//        hpT_Meson_p->Fit("pow_fit","R"); // "R" for range
 
@@ -783,7 +785,6 @@ void MAnalyzer::PlotAll() {
 
 	// -------------------------------------------------------------------------------------
 
-
 	TCanvas c2("c", "c", 800, 800);
 	c2.Divide(NFR, NFR, 0.0001, 0.0002);
 
@@ -792,15 +793,15 @@ void MAnalyzer::PlotAll() {
 		for (std::size_t j = 0; j < NFR; ++j) {
 			c2.cd(k);
 			++k;
-			if (j >= i)
-				h2CosTheta[i][j]->Draw("COLZ");
+			if (j >= i) { h2CosTheta[i][j]->Draw("COLZ"); }
+
+			// Titlestr
+			if (i == 0 & j == 0) { h2CosTheta[i][j]->SetTitle(titlestr.c_str()); }
 		}
 	}
 	c2.SaveAs(Form("%s/figs/%s/h2_frame_correlations_costheta.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));
 
-
 	// -------------------------------------------------------------------------------------
-
 
 	TCanvas c3("c", "c", 800, 800);
 	c3.Divide(NFR, NFR, 0.0001, 0.0002);
@@ -810,15 +811,15 @@ void MAnalyzer::PlotAll() {
 		for (std::size_t j = 0; j < NFR; ++j) {
 			c3.cd(k);
 			++k;
-			if (j >= i)
-				h2Phi[i][j]->Draw("COLZ");
+			if (j >= i) { h2Phi[i][j]->Draw("COLZ"); }
+
+			// Titlestr
+			if (i == 0 & j == 0) { h2Phi[i][j]->SetTitle(titlestr.c_str()); }
 		}
 	}
 	c3.SaveAs(Form("%s/figs/%s/h2_frame_correlations_phi.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));
 
-
 	// -------------------------------------------------------------------------------------
-
 
 	TCanvas c4("c", "c", 800, 400);
 	c4.Divide(NFR, 3, 0.0001, 0.0002);
@@ -832,6 +833,9 @@ void MAnalyzer::PlotAll() {
 		hCosTheta_Meson_m[i]->SetLineColor(46);
 		hCosTheta_Meson_p[i]->Draw("same");
 		hCosTheta_Meson_m[i]->Draw("same");
+
+		// Titlestr
+		if (i == 0) { hCosTheta_Meson_p[i]->SetTitle(titlestr.c_str()); }
 	}
 	for (std::size_t i = 0; i < NFR; ++i) {
 		c4.cd(k);
@@ -849,9 +853,7 @@ void MAnalyzer::PlotAll() {
 	}
 	c4.SaveAs(Form("%s/figs/%s/h2_costheta_phi.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));
 
-
 	// -------------------------------------------------------------------------------------
-
 
 	TCanvas c5("c", "c", 800, 250);
 	c5.Divide(NFR, 2, 0.001, 0.002); // 2 rows, NFR columns
@@ -861,6 +863,8 @@ void MAnalyzer::PlotAll() {
 		c5.cd(k);
 		++k;
 		h2M_CosTheta[i]->Draw("COLZ");
+		// Titlestr
+		if (i == 0) { h2M_CosTheta[i]->SetTitle(titlestr.c_str()); }
 	}
 	for (std::size_t i = 0; i < NFR; ++i) {
 		c5.cd(k);
@@ -869,63 +873,59 @@ void MAnalyzer::PlotAll() {
 	}
 	c5.SaveAs(Form("%s/figs/%s/h2_M_costheta_phi.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));	
 
-
 	// -------------------------------------------------------------------------------------
 	// -------------------------------------------------------------------------------------
 	// Legendre polynomials in the Rest Frame (non-rotated one)
 
-	const int colors[4] = {48, 53, 98, 32};
+	const int colors[8]     = {48, 53, 98, 32, 48, 53, 98, 32};
+	const double XBOUND[2]  = {0.0, 4.0};
 
-	// 1...4
-	{
-		TCanvas* c115 = new TCanvas("c115", "Legendre polynomials", 600, 400);
-		TLegend* leg[4];
-		c115->Divide(2, 2, 0.001, 0.001);
+	// 1...8
+	TCanvas* c115 = new TCanvas("c115", "Legendre polynomials 1-4", 600, 400);
+	TCanvas* c116 = new TCanvas("c116", "Legendre polynomials 5-8", 600, 400);
+	
+	TLegend* leg[8];
+	TLine*   line[8];
+	c115->Divide(2, 2, 0.001, 0.001);
+	c116->Divide(2, 2, 0.001, 0.001);
 
-		for (std::size_t l = 0; l < 4; ++l) {
-			c115->cd(l + 1); // note (l+1)
+	for (std::size_t l = 0; l < 8; ++l) {
 
-			leg[l] = new TLegend(0.15, 0.75, 0.4, 0.85); // x1,y1,x2,y2
-			hPl[l]->SetLineColor(colors[l]);
-			hPl[l]->Draw();
-			hPl[l]->SetMinimum(-0.4); // Y-axis minimum
-			hPl[l]->SetMaximum(0.4);  // Y-axis maximum
+		if (l < 4) { c115->cd(l + 1);
+		} else     { c116->cd(l - 3); }
 
-			leg[l]->SetFillColor(0);  // White background
-			leg[l]->SetBorderSize(0); // No box
-			leg[l]->AddEntry(hPl[l].get(), Form("l = %lu", l + 1),
-			                 "l");
-			leg[l]->Draw();
-		}
-		c115->SaveAs(
-		    Form("%s/figs/%s/hPl_1to4.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));
+		// Legend
+		leg[l] = new TLegend(0.15, 0.75, 0.4, 0.85); // x1,y1,x2,y2
+
+		// Data
+		hPl[l]->SetLineColor(colors[l]);
+		hPl[l]->Draw("SAME");
+		hPl[l]->SetMinimum(-0.4); // Y-axis minimum
+		hPl[l]->SetMaximum( 0.4); // Y-axis maximum
+
+		// Adjust legend
+		leg[l]->SetFillColor(0);  // White background
+		leg[l]->SetBorderSize(0); // No box
+		leg[l]->AddEntry(hPl[l].get(), Form("l = %lu", l + 1), "l");
+		leg[l]->Draw("SAME");
+
+		// Horizontal line
+		line[l] = new TLine(XBOUND[0],0,XBOUND[1],0);
+		line[l]->Draw("SAME");
+		
+		// Titlestr
+		if (l == 0 || l == 4) { hPl[l]->SetTitle(titlestr.c_str()); }
 	}
+	c115->SaveAs(Form("%s/figs/%s/hPl_1to4.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));
+	c116->SaveAs(Form("%s/figs/%s/hPl_6to8.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));
 
-	// 5...8
-	{
-		TCanvas* c115 = new TCanvas("c115", "Legendre polynomials", 600, 400);
-		TLegend* leg[4];
-		c115->Divide(2, 2, 0.001, 0.001);
-
-		const int colors[4] = {48, 53, 98, 32};
-		for (std::size_t l = 4; l < 8; ++l) {
-			c115->cd(l - 3); // note (l-3)
-
-			leg[l] = new TLegend(0.15, 0.75, 0.4, 0.85); // x1,y1,x2,y2
-			hPl[l]->SetLineColor(colors[l - 4]);
-			hPl[l]->Draw();
-			hPl[l]->SetMinimum(-0.4); // Y-axis minimum
-			hPl[l]->SetMaximum(0.4);  // Y-axis maximum
-
-			leg[l]->SetFillColor(0);  // White background
-			leg[l]->SetBorderSize(0); // No box
-			leg[l]->AddEntry(hPl[l].get(), Form("l = %lu", l + 1),
-			                 "l");
-			leg[l]->Draw();
-		}
-		c115->SaveAs(
-		    Form("%s/figs/%s/hPl_5to8.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));
+	delete   c115;
+	delete   c116;
+	for (std::size_t i = 0; i < 8; ++i) {
+		delete  leg[i];
+		delete line[i];
 	}
 }
+
 
 } // gra namespace ends

@@ -359,7 +359,7 @@ try {
 
     // Print all separate histograms
     for (const auto& i : indices(analysis)) {
-        analysis[i]->PlotAll();
+        analysis[i]->PlotAll(title);
     }
 
 } catch (const std::invalid_argument& e) {

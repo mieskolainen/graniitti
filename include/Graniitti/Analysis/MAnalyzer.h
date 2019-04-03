@@ -110,7 +110,7 @@ public:
 	
 	
 	// Plot out all local histograms
-	void PlotAll();
+	void PlotAll(const std::string& titlestr);
 	
 	double cross_section = 0;
 
