@@ -229,7 +229,7 @@ void MGraniitti::InitFileOutput() {
 
 		// --------------------------------------------------------------
 		// Generator info
- 		runinfo = make_shared<HepMC3::GenRunInfo>();
+ 		runinfo = std::make_shared<HepMC3::GenRunInfo>();
 
  		struct HepMC3::GenRunInfo::ToolInfo generator = {
  			std::string("GRANIITTI (" + gra::MODELPARAM + ")"),

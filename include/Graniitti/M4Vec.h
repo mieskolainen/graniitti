@@ -22,6 +22,7 @@
 #define M4VEC_H
 
 #include <iostream>
+#include <complex>
 #include <vector>
 
 
@@ -77,6 +78,13 @@ public:
         k[E_] = t;
     }
     
+    void SetPxPyPzM(double x, double y, double z, double m) {
+        k[X_] = x;
+        k[Y_] = y;
+        k[Z_] = z;
+        k[E_] = msqrt( P3mod2() + m*m);
+    }
+
     void SetPxPyPz(double x, double y, double z) {
         k[X_] = x;
         k[Y_] = y;

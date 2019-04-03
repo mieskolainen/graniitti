@@ -264,10 +264,6 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 		}
 		int NEGfinalPDG = sign * finalPDG;
 
-		// ==============================================================
-		sqrts = CheckEnergyMomentum(evt);
-		// ==============================================================
-
 		// Central particles
 		std::vector<M4Vec> pip;
 		std::vector<M4Vec> pim;
@@ -291,7 +287,7 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 
 		// CHECK CONDITION
 		if (pip.size() + pim.size() != (unsigned int)multiplicity) {
-			printf("MAnalyzer::ReadHepMC3:: Multiplicity condition not filled %lu %lu %d! \n", pip.size(), pim.size(), multiplicity);
+			printf("MAnalyzer::ReadHepMC3:: Multiplicity condition not filled +[%lu] -[%lu] %d! \n", pip.size(), pim.size(), multiplicity);
 			continue; // skip event
 		}
 
@@ -311,6 +307,13 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 		M4Vec p_beam_minus;
 		M4Vec p_final_plus;
 		M4Vec p_final_minus;
+
+		// If we have full event, check energy-momentum
+		if (beam_protons.size()) {
+		// ==============================================================
+		//sqrts = CheckEnergyMomentum(evt);
+		// ==============================================================
+		}
 
 		// Beam (initial state ) protons
 		for (const HepMC3::GenParticlePtr& p1 : beam_protons) {
@@ -466,6 +469,7 @@ double MAnalyzer::CheckEnergyMomentum(HepMC3::GenEvent& evt) const {
 		final += gra::aux::HepMC2M4Vec(p1->momentum());
 	}
 	if (!gra::math::CheckEMC(beam-final)) {
+		gra::aux::PrintWarning();
 		std::cout << rang::fg::red << 
 		"Energy-Momentum not conserved!" << rang::fg::reset << std::endl;
 		(beam - final).Print();
@@ -504,6 +508,7 @@ void MAnalyzer::FrameObservables(double W, HepMC3::GenEvent& evt, const M4Vec& p
 		pions.push_back(twopions);
 	}
 
+
 	// Frame transformations
 	gra::kinematics::CSframe(pions[0]);
 	gra::kinematics::HEframe(pions[1]);
@@ -512,6 +517,10 @@ void MAnalyzer::FrameObservables(double W, HepMC3::GenEvent& evt, const M4Vec& p
 	gra::kinematics::PGframe(pions[4], direction, p_beam_plus, p_beam_minus);
 	gra::kinematics::SRframe(pions[5]);
 
+	// No forward protons -> set zero
+	if (p_final_plus.M() < 0.5) {
+		pions[3] = {M4Vec(0,0,0,0), M4Vec(0,0,0,0)};
+	}
 
 	// FILL HISTOGRAMS -->
 	
@@ -781,28 +790,28 @@ void MAnalyzer::PlotAll(const std::string& titlestr) {
 		c1.SaveAs(Form("%s/figs/%s/forward.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));
 	}
 	// *************** *************** ***************
-
-
+	
+	
 	// -------------------------------------------------------------------------------------
-
+	
 	TCanvas c2("c", "c", 800, 800);
 	c2.Divide(NFR, NFR, 0.0001, 0.0002);
-
+	
 	int k = 1;
 	for (std::size_t i = 0; i < NFR; ++i) {
 		for (std::size_t j = 0; j < NFR; ++j) {
 			c2.cd(k);
 			++k;
 			if (j >= i) { h2CosTheta[i][j]->Draw("COLZ"); }
-
+			
 			// Titlestr
-			if (i == 0 & j == 0) { h2CosTheta[i][j]->SetTitle(titlestr.c_str()); }
+			if ((i == 0) & (j == 0)) { h2CosTheta[i][j]->SetTitle(titlestr.c_str()); }
 		}
 	}
 	c2.SaveAs(Form("%s/figs/%s/h2_frame_correlations_costheta.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));
-
+	
 	// -------------------------------------------------------------------------------------
-
+	
 	TCanvas c3("c", "c", 800, 800);
 	c3.Divide(NFR, NFR, 0.0001, 0.0002);
 
@@ -814,7 +823,7 @@ void MAnalyzer::PlotAll(const std::string& titlestr) {
 			if (j >= i) { h2Phi[i][j]->Draw("COLZ"); }
 
 			// Titlestr
-			if (i == 0 & j == 0) { h2Phi[i][j]->SetTitle(titlestr.c_str()); }
+			if ((i == 0) & (j == 0)) { h2Phi[i][j]->SetTitle(titlestr.c_str()); }
 		}
 	}
 	c3.SaveAs(Form("%s/figs/%s/h2_frame_correlations_phi.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));
