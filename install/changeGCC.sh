@@ -1,9 +1,9 @@
 #!/bin/sh
 #
 # Change Ubuntu 16.04 GCC version
-# Run with: source changeGCC.sh GCC_VER=5
+# Run with: source changeGCC.sh
 #
-# (code from gist.github.com/jlblancoc)
+# (basecode from gist.github.com/jlblancoc)
 #
 # Tested to change succesfully between 5 <-> 7
 
