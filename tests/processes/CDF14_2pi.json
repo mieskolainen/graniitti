@@ -107,7 +107,7 @@
     "SYSTEM" : {
 
       "M"    : [0.0, 100000.0], // Mass
-      "Rap"  : [-1.0, 1.0],   // Rapidity
+      "Rap"  : [-1.0, 1.0],     // Rapidity
       "Pt"   : [0.0, 100000.0]  // Transverse momentum
     },
 

@@ -10,7 +10,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
 # Generate
-make -j4 && ./bin/gr -i ./tests/processes/CDF14_2pi.json -n 300000 -l false -w true
+make -j4 && ./bin/gr -i ./tests/processes/CDF14_2pi.json -n 100000 -l false -w true
 
 fi
 
