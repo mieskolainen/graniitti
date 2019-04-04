@@ -14,13 +14,12 @@
     "OUTPUT"     : "ALICE7_2pi", // Output filename
     "FORMAT"     : "hepmc3",    // hepmc3, hepmc2, hepevt
     "CORES"      : 0,           // Number of CPU threads (0 for automatic)
-    "NEVENTS"    : 100000,      // Number of events
+    "NEVENTS"    : 10000,      // Number of events
     "INTEGRATOR" : "VEGAS",     // "VEGAS" (default), "FLAT" (for debug)
     "WEIGHTED"   : false,       // Weighted events (default false)
     "MODELPARAM" : "TUNE0"      // General model tune
   },
-
-
+  
   // ----------------------------------------------------------------------
   // Process setup
 
@@ -29,7 +28,7 @@
     "BEAM" :   ["p+","p+"],    // Beam PDG-ID / Name
     "ENERGY" : [3500, 3500],   // Beam energy in the lab (GeV)
     "PROCESS" : "PP[RES+CON]<C> -> pi+ pi-", // Process mode
-    "RES" : ["rho_770", "f0_980", "phi_1020", "f2_1270", "f0_1500", "f2_1525", "f0_1710"],
+    "RES" : ["f0_500", "rho_770", "f0_980", "phi_1020", "f2_1270", "f0_1500", "f2_1525", "f0_1710"],
     "POMLOOP" : true,          // Eikonal Pomeron loop screening
     "NSTARS"  : 0,             // N* excitation (0 = elastic, 1 = single, 2 = double)
     "LHAPDF"  : "CT10nlo",     // LHAPDF parton distribution set

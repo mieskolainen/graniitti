@@ -4,16 +4,15 @@
 {
   
   "PARAM_RES" : {
-
+    
     // PDG identifier
     "PDG" : 9000221,
     
     // Mass, width, spin (0,1/2,1,3/2,2...), parity (1,-1)
-    "M"  : 0.50,
-    "W"  : 0.50,
+    "M"  : 0.5,
+    "W"  : 0.4,
     "J"  : 0,
     "P"  : 1,
-    
     
     // "Glueball state" (orthogonal transverse geometry)
     "glue" : false,
@@ -23,13 +22,13 @@
     // 2 = running width relativistic
     // 3 = spin barrier relativistic
     "BW" : 2,
-
+    
     // Set 0 for density matrix below, or an integer > 0 for a random sampled
     // Different integers give different matrices.
     "random_rho" : 0,
     
     // Production coupling constant at amplitude level
-    "g_A"   : 0.21,
+    "g_A"   : 0.05,
     "g_phi" : -2.8,
 
     // Production form factor on
