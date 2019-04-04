@@ -16,5 +16,5 @@ fi
 
 # Analyze
 make -j4 ROOT=TRUE && ./bin/analyze -i ALICE7_2pi,ALICE7PIPI.csv -g 211,211 -n 2,2 -l \
-	'GRANIITTI #pi^{+}#pi^{-}','ALICE 7 TeV #pi^{+}#pi^{-}' -t '#sqrt{s} = 7 TeV, |#eta| < 0.9, p_{T} > 0.1 GeV' \
+	'GRANIITTI','XYZ' -t '#pi^{+}#pi^{-}, #sqrt{s} = 7 TeV, |#eta| < 0.9, p_{T} > 0.1 GeV' \
 	-M 2.5 -Y 1.25 -P 2.0 -u ub -S $S2

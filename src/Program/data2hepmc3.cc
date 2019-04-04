@@ -51,8 +51,8 @@ int main(int argc, char *argv[]) {
     std::string outputfile = "./output/" + DATAFILE + ".hepmc3";
 
     // Force cross-section (barn)
-	const double xsforced = 20e-6;
-	
+	const double xsforced = 5.5e-6;
+
     // Read events
     FILE* fp;
 
@@ -171,7 +171,8 @@ int main(int argc, char *argv[]) {
 		xsobj->set_cross_section(xsforced*1E12, 0); // external fixed one
 
 		// Save event weight (unweighted events with weight 1)
-		const double HepMC3_weight = PID_weight;
+		//const double HepMC3_weight = PID_weight;
+		const double HepMC3_weight = 1.0;
 		evt.weights().push_back(HepMC3_weight); // add more weights with .push_back()
 
 		// Write event out
