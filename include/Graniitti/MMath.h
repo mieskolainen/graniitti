@@ -271,7 +271,7 @@ constexpr int Cbinom(int n, int k) {
 //  + 1 if even permutation of arguments
 //  - 1 if odd permutation of arguments
 //    0 otherwise
-MTensor<int> EpsTensor(std::size_t N) {
+inline MTensor<int> EpsTensor(std::size_t N) {
 	
 	// Maximum range value for each for-loop
 	const std::size_t MAX = N;
@@ -295,7 +295,7 @@ MTensor<int> EpsTensor(std::size_t N) {
 	// ------------------------------------------------------------------
 
 	const std::vector<std::size_t> dimensions(N, MAX);
-	MTensor<int> T = MTensor(dimensions, int(0));
+	MTensor<int> T(dimensions, int(0));
 
 	// Nested for-loop
     std::size_t index = 0;
@@ -305,14 +305,14 @@ MTensor<int> EpsTensor(std::size_t N) {
     	// Evaluate the function value
 		T(ind) = permutation();
     	// --------------------------------------------------------------
-				
+		
         ind[0]++;
-
+        
         // Carry
         while (ind[index] == MAX) {
-
+        	
             if (index == N - 1) { return T; }
-
+            
             ind[index++] = 0;
             ind[index]++;
         }
