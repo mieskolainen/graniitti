@@ -21,6 +21,7 @@
 // Own
 #include "Graniitti/M4Vec.h"
 #include "Graniitti/MMatrix.h"
+#include "Graniitti/MTensor.h"
 
 namespace gra  {
 namespace math {
@@ -263,6 +264,60 @@ constexpr int Cbinom(int n, int k) {
 	
 	// Recursive function
 	return Cbinom(n-1, k-1) + Cbinom(n-1, k);
+}
+
+
+// N-dim epsilon tensor e_{\mu_1,\mu_2,\mu_3,...}:
+//  + 1 if even permutation of arguments
+//  - 1 if odd permutation of arguments
+//    0 otherwise
+MTensor<int> EpsTensor(std::size_t N) {
+	
+	// Maximum range value for each for-loop
+	const std::size_t MAX = N;
+
+    // These hold for-loop index for each nested for loop
+    std::vector<std::size_t> ind(N,0);
+
+	// ------------------------------------------------------------------
+    // Permutation tensor definition
+	auto permutation = [&] () {
+		int value = 1;
+		for (std::size_t i = 0;   i < N; ++i) {
+		for (std::size_t j = i+1; j < N; ++j) {
+
+			// Even permutation +1, Odd permutation -1, Otherwise 0
+			if (ind[i] > ind[j]) { value = -value; }
+			else if (ind[i] == ind[j]) { return 0; }
+		}}
+		return value;
+	};
+	// ------------------------------------------------------------------
+
+	const std::vector<std::size_t> dimensions(N, MAX);
+	MTensor<int> T = MTensor(dimensions, int(0));
+
+	// Nested for-loop
+    std::size_t index = 0;
+    while (true) {
+
+    	// --------------------------------------------------------------
+    	// Evaluate the function value
+		T(ind) = permutation();
+    	// --------------------------------------------------------------
+				
+        ind[0]++;
+
+        // Carry
+        while (ind[index] == MAX) {
+
+            if (index == N - 1) { return T; }
+
+            ind[index++] = 0;
+            ind[index]++;
+        }
+        index = 0;
+    }
 }
 
 

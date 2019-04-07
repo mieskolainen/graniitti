@@ -71,7 +71,7 @@ public:
     std::size_t size(std::size_t ind) const { return dim[ind]; }
 
 private:
-
+    
 	// Multidimensional indexing algorithm
 	// Row-major order
 	std::size_t Index(const std::vector<size_t>& ind) const {
@@ -82,7 +82,7 @@ private:
 		std::size_t sum = 0;
 		for (std::size_t i = 0; i < ind.size(); ++i) {
 			if (ind[i] >= dim[i]) { throw std::invalid_argument("MTensor:: Error: Input index " 
-                + std::to_string(i) + " over bounds"); }
+                + std::to_string(i) + " over bounds: " + std::to_string(ind[i]) + " >= " + std::to_string(dim[i]) ); }
 			std::size_t product = 1;
 			for (std::size_t j = i + 1; j < ind.size(); ++j) {
 				product *= dim[j];

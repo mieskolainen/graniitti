@@ -155,6 +155,10 @@ void Init2DHistogram(std::map<std::string, std::unique_ptr<h2Multiplet>>& h,
     h[name] = std::make_unique<h2Multiplet>(name, "d#sigma^2/dMdP_{t}  (" + units + "/GeV/GeV) | " + title + ";System M (GeV); System P_{t} (GeV)",
         bM.N, bM.min, bM.max, bP.N, bP.min, bP.max, legendtext);
     
+    name = "h2_S_M_pt";
+    h[name] = std::make_unique<h2Multiplet>(name, "d#sigma^2/dMdp_{t}  (" + units + "/GeV/GeV) | " + title + ";System M (GeV); Final state p_{t} (GeV)",
+        bM.N, bM.min, bM.max, bP.N, bP.min, bP.max, legendtext);
+
     // 2-Body
     if (std::find(multiplicity.begin(), multiplicity.end(), 2) != multiplicity.end()) {
         name = "h2_2B_M_dphi";

@@ -1379,7 +1379,7 @@ namespace kinematics {
       p[1].Print();
     }
     // ********************************************************************
-
+    
     // Boost particles to the central system rest frame
     for (const auto& i : gra::aux::indices(p)) {
       gra::kinematics::LorentzBoost(X, X.M(), p[i], -1); // Note the minus sign

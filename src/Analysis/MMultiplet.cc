@@ -304,10 +304,10 @@ std::vector<double> h1Multiplet::SaveFig(const std::string& fullpath) const {
 	// Save pdf
 	std::string fullfile = fullpath + name_ + ".pdf";
 	c0.SaveAs(fullfile.c_str());
-
+	
 	// Save logscale pdf
 	pad1->cd()->SetLogy(); // pad2 becomes the current pad
-	h[0]->GetYaxis()->SetRangeUser(h[0]->GetMaximum() * 1e-5, h[0]->GetMaximum());
+	//h[0]->GetYaxis()->SetRangeUser(h[0]->GetMaximum() * 1e-3, h[0]->GetMaximum());
 	//h[0]->GetYaxis()->SetRangeUser(1e-4, 1e2);
 	fullfile = fullpath + name_ + "_logy" + ".pdf";
 	c0.SaveAs(fullfile.c_str());

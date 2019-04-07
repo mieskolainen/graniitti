@@ -73,8 +73,11 @@ void MSubProc::ConstructDescriptions(const std::string& first) {
 
 		std::map<std::string, std::string> channels;
 		channels.insert(std::pair<std::string, std::string>("CONTENSOR",    "Regge continuum 2-body                   [Tensor Pomeron] x [Tensor Pomeron] @@ UNDER TESTING @@"));
+		channels.insert(std::pair<std::string, std::string>("RESTENSOR",    "Regge resonance                          [Tensor Pomeron] x [Tensor Pomeron] @@ UNDER TESTING @@"));
+
 		channels.insert(std::pair<std::string, std::string>("CON",          "Regge continuum 2/4/6-body               [Pomeron] x [Pomeron]"));
 		channels.insert(std::pair<std::string, std::string>("CON-",         "Regge continuum 2-body negative subamp   [Pomeron] x [Pomeron]"));
+
 		channels.insert(std::pair<std::string, std::string>("RES+CON",      "Regge cont. 2-body + complex resonances  [Pomeron] x [Gamma/Pomeron]"));
 		channels.insert(std::pair<std::string, std::string>("RES",          "Regge parametric resonance               [Pomeron] x [Pomeron]"));
 		channels.insert(std::pair<std::string, std::string>("RESHEL",       "Regge sliding helicity amplitudes        [Pomeron] x [Pomeron] @@ UNDER CONSTRUCTION @@"));
@@ -234,7 +237,16 @@ inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR& lt
 	else if (CHANNEL == "RESHEL") {
 		A = ME3HEL(lts, lts.RESONANCES.begin()->second);
 	}
-
+	
+	else if (CHANNEL == "RESTENSOR") {
+		if      (lts.decaytree.size() == 2) {
+			static MTensorPomeron TensorPomeron;
+			A = TensorPomeron.ME3(lts);
+		} else {
+			throw std::invalid_argument("MSubProc: Only 2-body + sequential final states for [RESTENSOR] process");
+		}
+	}
+	
 	else if (CHANNEL == "CONTENSOR") {
 		if      (lts.decaytree.size() == 2) {
 			static MTensorPomeron TensorPomeron;
