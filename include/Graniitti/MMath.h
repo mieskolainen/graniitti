@@ -267,7 +267,7 @@ constexpr int Cbinom(int n, int k) {
 }
 
 
-// N-dim epsilon tensor e_{\mu_1,\mu_2,\mu_3,...}:
+// N-dim epsilon tensor e_{\mu_1,\mu_2,\mu_3,...,\mu_N}:
 //  + 1 if even permutation of arguments
 //  - 1 if odd permutation of arguments
 //    0 otherwise
@@ -307,12 +307,12 @@ inline MTensor<int> EpsTensor(std::size_t N) {
     	// --------------------------------------------------------------
 		
         ind[0]++;
-        
+
         // Carry
         while (ind[index] == MAX) {
-        	
+
             if (index == N - 1) { return T; }
-            
+
             ind[index++] = 0;
             ind[index]++;
         }
