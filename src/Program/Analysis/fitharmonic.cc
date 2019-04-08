@@ -94,7 +94,7 @@ int main(int argc, char* argv[]) {
     if (r.count("help") || NARGC == 0) {
         std::cout << options.help({""}) << std::endl;
         std::cout << "Example:" << std::endl;
-        std::cout << "  " << argv[0] << " -r SPHERICAL_2pi_FLAT -i SPHERICAL_2pi -l 4 -f HE -m 40,0.4,1.5"
+        std::cout << "  " << argv[0] << " -r SH_2pi_REF -i SH_2pi -l 4 -f HE -m 40,0.4,1.5"
                   << std::endl << std::endl;
         return EXIT_FAILURE;
     }
@@ -193,10 +193,8 @@ int main(int argc, char* argv[]) {
   return EXIT_SUCCESS;
 }
 
-
 // Fast toy simulation pt-efficiency parameter (put infinite for perfect pt-efficiency)
 const double pt_scale = 4.5;
-
 
 // Read events in
 void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega>& events, const std::string& FRAME, int MAXEVENTS) {
@@ -243,32 +241,38 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega>& eve
     }
     
     // Mesons
-    M4Vec pip;
-    M4Vec pim;
+    std::vector<M4Vec> pip;
+    std::vector<M4Vec> pim;
 
     // Find out central particles
-    int found = 0;
-    //FOREACH(const HepMC::GenParticlePtr& p1, search_pip.results()) {
-    for (HepMC3::ConstGenParticlePtr p1: HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_STABLE 
-                                                            && *abs(HepMC3::Selector::PDG_ID) == PDG::PDG_pip, evt.particles())) {
-      pip = gra::aux::HepMC2M4Vec(p1->momentum());
-      ++found;
+    std::vector<HepMC3::GenParticlePtr> find_pip = 
+      HepMC3::applyFilter(HepMC3::Selector::PDG_ID == PDG::PDG_pip, evt.particles());
+
+    std::vector<HepMC3::GenParticlePtr> find_pim = 
+      HepMC3::applyFilter(HepMC3::Selector::PDG_ID == PDG::PDG_pim, evt.particles());
+
+    for (const HepMC3::GenParticlePtr& p1 : find_pip) {
+      pip.push_back(gra::aux::HepMC2M4Vec(p1->momentum()));
     }
-    for (HepMC3::ConstGenParticlePtr p1: HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_STABLE 
-                                                            && *abs(HepMC3::Selector::PDG_ID) == PDG::PDG_pim, evt.particles())) {
-      pim = gra::aux::HepMC2M4Vec(p1->momentum());
-      ++found;
+    for (const HepMC3::GenParticlePtr& p1 : find_pim) {
+      pim.push_back(gra::aux::HepMC2M4Vec(p1->momentum()));
     }
 
     // CHECK CONDITION
-    if (found != 2)
+    if (!(pip.size() == 1 && pim.size() == 1)) {
+
+      //HepMC3::Print::listing(evt);
+      //HepMC3::Print::content(evt);
       continue; // skip event, something is wrong
+    } else {
+      //printf("Found valid \n");
+    }
 
     // ------------------------------------------------------------------
     // Valid events
 
     // System
-    M4Vec sys_ = pip + pim;
+    M4Vec sys_ = pip[0] + pim[0];
 
     // Find out beam protons
     M4Vec p_beam_plus;
@@ -278,7 +282,7 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega>& eve
 
     if (FRAME == "GJ" || FRAME == "PG") {
     for (HepMC3::ConstGenParticlePtr p1: HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_BEAM 
-                                                            && *abs(HepMC3::Selector::PDG_ID) == PDG::PDG_p, evt.particles())) {
+                                                            && HepMC3::Selector::PDG_ID == PDG::PDG_p, evt.particles())) {
         // Print::line(p1);
         pvec = gra::aux::HepMC2M4Vec(p1->momentum());
         if (pvec.Pz() > 0) {
@@ -291,7 +295,7 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega>& eve
 
     if (FRAME == "GJ") {
     for (HepMC3::ConstGenParticlePtr p1: HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_STABLE 
-                                                            && *abs(HepMC3::Selector::PDG_ID) == PDG::PDG_p, evt.particles())) {
+                                                            && HepMC3::Selector::PDG_ID == PDG::PDG_p, evt.particles())) {
         // Print::line(p1);
         pvec = gra::aux::HepMC2M4Vec(p1->momentum());
         if (pvec.Pz() > 0) {
@@ -304,9 +308,7 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega>& eve
 
     // ------------------------------------------------------------------
     // Do the frame transformation
-    std::vector<M4Vec> boosted;
-    boosted.push_back(pip);
-    boosted.push_back(pim);
+    std::vector<M4Vec> boosted = {pip[0], pim[0]};
 
     // Helicity frame
     if (FRAME == "HE") {
@@ -346,10 +348,10 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega>& eve
     // ------------------------------------------------------------------
     // FIDUCIAL CUTS
     
-    if ((std::abs(pip.Eta()) < ETACUT) &&
-        (std::abs(pim.Eta()) < ETACUT) &&
-        pip.Pt() > PTCUT &&
-        pim.Pt() > PTCUT) {
+    if ((std::abs(pip[0].Eta()) < ETACUT) &&
+        (std::abs(pim[0].Eta()) < ETACUT) &&
+         pip[0].Pt() > PTCUT &&
+         pim[0].Pt() > PTCUT) {
       evt.fiducial = true;
     }
 
@@ -360,7 +362,8 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega>& eve
     // This is a simple parametrization to mimick pt-efficiency effects.
 
     // Fast simulate smooth detector pt-efficiency curve here by hyperbolic tangent per particle
-    if ((std::tanh(pip.Pt() * pt_scale) > rrand.U(0,1)) && (std::tanh(pim.Pt() * pt_scale) > rrand.U(0,1)) ) {
+    if ((std::tanh(pip[0].Pt() * pt_scale) > rrand.U(0,1)) &&
+        (std::tanh(pim[0].Pt() * pt_scale) > rrand.U(0,1)) ) {
       evt.selected = true;
     }
     // ------------------------------------------------------------------
