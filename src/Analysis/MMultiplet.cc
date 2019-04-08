@@ -161,25 +161,19 @@ std::vector<double> h1Multiplet::SaveFig(const std::string& fullpath) const {
 	double MAXVAL = 0.0;
 	for (const auto& i : indices(h)) {
 
-		if (h[i]->GetMaximum() > MAXVAL) {
-			MAXVAL = h[i]->GetMaximum();
+		const double max = h[i]->GetMaximum();
+		if (max > MAXVAL) {
+			MAXVAL = max;
 		}
 	}
 
 	// Find minimum (non-zero) value for y-range limits
 	double MINVAL = 1e32;
-	const int nq = 20;
 	for (const auto& i : indices(h)) {
 
-        double xq[nq];  // position where to compute the quantiles in [0,1]
-        double yq[nq];  // array to contain the quantiles
-
-        for (int j = 0; j < nq; j++) {
-        	xq[j] = static_cast<double>(j+1)/nq;
-        }
-        h[i]->GetQuantiles(nq,yq,xq);
-        if (yq[0] < MINVAL) {
-        	MINVAL = yq[0];
+		const double min = h[i]->GetMinimum();
+        if (min < MINVAL && min > 0) {
+        	MINVAL = min;
         }
 	}
 
@@ -193,7 +187,7 @@ std::vector<double> h1Multiplet::SaveFig(const std::string& fullpath) const {
 		h[i]->SetMarkerSize(0.73);
 		
 		std::cout << MINVAL << std::endl;
-		h[i]->GetYaxis()->SetRangeUser(MINVAL / 50, MAXVAL * 1.5);
+		h[i]->GetYaxis()->SetRangeUser(0, MAXVAL * 1.5);
 
 	    //h[i]->Draw("e2 same");   // Needs this combo to draw box-lines
 		h[i]->Draw("hist same");
@@ -310,8 +304,9 @@ std::vector<double> h1Multiplet::SaveFig(const std::string& fullpath) const {
 	// Save logscale pdf
 	if (MINVAL > 0) {
 	pad1->cd()->SetLogy(); // pad2 becomes the current pad
-	//h[0]->GetYaxis()->SetRangeUser(h[0]->GetMaximum() * 1e-3, h[0]->GetMaximum());
-	//h[0]->GetYaxis()->SetRangeUser(1e-4, 1e2);
+	for (const auto& i : indices(h)) {
+		h[i]->GetYaxis()->SetRangeUser(MINVAL / 10, MAXVAL * 5);
+	}
 	fullfile = fullpath + name_ + "_logy" + ".pdf";
 	c0.SaveAs(fullfile.c_str());
 	}
