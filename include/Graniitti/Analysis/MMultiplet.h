@@ -62,7 +62,7 @@ public:
 			h[i]->Fill(x[i], weight[i]);
 		}
 	}
-	void NormalizeAll(const std::vector<double>& cross_section, double multiplier);
+	void NormalizeAll(const std::vector<double>& cross_section, const std::vector<double>& multiplier);
 
 	// Plot and save 1D-histogram Multiplet
 	std::vector<double> SaveFig(const std::string& fullpath) const;
@@ -102,7 +102,7 @@ public:
 			h[i]->Fill(x[i][0], x[i][1], weight[i]);
 		}
 	}
-	void NormalizeAll(const std::vector<double>& cross_section, double multiplier);
+	void NormalizeAll(const std::vector<double>& cross_section, const std::vector<double>& multiplier);
 
 	// Plot and save histogram Multiplet
 	double SaveFig(const std::string& fullpath) const;

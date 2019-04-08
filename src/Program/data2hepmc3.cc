@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
 		std::cerr << "Example: ./data2hepmc3 datafile.csv" << std::endl;
 		return EXIT_FAILURE;
     }
-
+    
     std::string DATAFILE(argv[1]);
     std::string outputfile = "./output/" + DATAFILE + ".hepmc3";
 

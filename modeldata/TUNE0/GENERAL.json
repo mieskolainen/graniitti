@@ -57,7 +57,7 @@
       //
       // Note that with (interfering) resonances, the continuum parameters
       // should be fitted together with the resonances.
-      "offshellFF" : 2,
+      "offshellFF" : 1,
       
       // Form factor parameters
       "b_EXP" :   1.224,           // GeV^-2

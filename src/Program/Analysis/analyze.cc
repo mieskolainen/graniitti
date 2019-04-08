@@ -109,22 +109,21 @@ void Init1DHistogram(std::map<std::string, std::unique_ptr<h1Multiplet>>& h,
 
     // Central track observables
     name = "h1_1B_pt";
-    h[name] = std::make_unique<h1Multiplet>(name, title + ";Final state p_{T} (GeV);d#sigma/dp_{T}  (" + units + "/GeV)", bP.N, bP.min, bP.max, legendtext);
+    h[name] = std::make_unique<h1Multiplet>(name, title + ";Central final state p_{T} (GeV);d#sigma/dp_{T}  (" + units + "/GeV)", bP.N, bP.min, bP.max, legendtext);
 
     name = "h1_1B_eta";
-    h[name] = std::make_unique<h1Multiplet>(name, title + ";Final state #eta;d#sigma/d#eta  (" + units + ")", bY.N, bY.min, bY.max, legendtext);
+    h[name] = std::make_unique<h1Multiplet>(name, title + ";Central final state #eta;d#sigma/d#eta  (" + units + ")", bY.N, bY.min, bY.max, legendtext);
 
 
     // 2-Body observables
     if (std::find(multiplicity.begin(), multiplicity.end(), 2) != multiplicity.end()) {
     name = "h1_2B_acop";
     h[name] = std::make_unique<h1Multiplet>(
-        name, title + ";Final state acoplanarity #rho = 1 - |#delta#phi|/#pi;d#sigma/d#rho  (" + units + "/rad)", 100, 0.0, 1.0, legendtext);
+        name, title + ";Central final state acoplanarity #rho = 1 - |#delta#phi|/#pi;d#sigma/d#rho  (" + units + "/rad)", 100, 0.0, 1.0, legendtext);
     
     name = "h1_2B_diffrap";
     h[name] = std::make_unique<h1Multiplet>(
-        name, title + ";#deltay;d#sigma/d#deltay  (" + units + ")", bY.N, bY.min, bY.max, legendtext);
-    
+        name, title + ";#deltay #equiv y_{1} - y_{2};d#sigma/d#deltay  (" + units + ")", bY.N, bY.min, bY.max, legendtext);
     }
 
     // 4-Body observables
@@ -155,35 +154,34 @@ void Init2DHistogram(std::map<std::string, std::unique_ptr<h2Multiplet>>& h,
     name = "h2_S_M_Pt";
     h[name] = std::make_unique<h2Multiplet>(name, "d#sigma^2/dMdP_{T}  (" + units + "/GeV/GeV) | " + title + ";System M (GeV); System P_{T} (GeV)",
         bM.N, bM.min, bM.max, bP.N, bP.min, bP.max, legendtext);
-        
+    
+    name = "h2_S_M_sqrt1";
+    h[name] = std::make_unique<h2Multiplet>(name, "d#sigma^2/dMd#sqrt{-t_{1}}  (" + units + "/GeV/GeV) | " + title + ";System M (GeV); #sqrt{t_{1}} (GeV)",
+        bM.N, bM.min, bM.max, bP.N, bP.min, bP.max, legendtext);
+    
     name = "h2_S_M_pt";
-    h[name] = std::make_unique<h2Multiplet>(name, "d#sigma^2/dMdp_{T}  (" + units + "/GeV/GeV) | " + title + ";System M (GeV); Final state p_{T} (GeV)",
+    h[name] = std::make_unique<h2Multiplet>(name, "d#sigma^2/dMdp_{T}  (" + units + "/GeV/GeV) | " + title + ";System M (GeV); Central final state p_{T} (GeV)",
         bM.N, bM.min, bM.max, bP.N, bP.min, bP.max, legendtext);
 
     name = "h2_S_M_dphipp";
     h[name] = std::make_unique<h2Multiplet>(name, "d#sigma^2/dMd#delta_{pp}  (" + units + "/GeV/rad) | " + title + ";System M (GeV); Forward proton #delta#phi_{pp}",
         bM.N, bM.min, bM.max, 100, 0.0, gra::math::PI, legendtext);
 
+    name = "h2_S_M_dpt";
+    h[name] = std::make_unique<h2Multiplet>(name, "d#sigma^2/dMd|#delta#bar{p}_{T}|  (" + units + "/GeV/GeV) | " + title + ";System M (GeV); Proton pair |#delta#bar{p}_{T}| (GeV)",
+        bM.N, bM.min, bM.max, 100, 0.0, 2.0, legendtext);
 
     // 2-Body
     if (std::find(multiplicity.begin(), multiplicity.end(), 2) != multiplicity.end()) {
         name = "h2_2B_M_dphi";
-        h[name] = std::make_unique<h2Multiplet>(name, "d#sigma^2/dMd#delta#phi  (" + units + "/GeV/rad) | " + title + ";System M (GeV); Final state #delta#phi (rad)",
+        h[name] = std::make_unique<h2Multiplet>(name, "d#sigma^2/dMd#delta#phi  (" + units + "/GeV/rad) | " + title + ";System M (GeV); Central final state #delta#phi (rad)",
             bM.N, bM.min, bM.max, 100, 0.0, gra::math::PI, legendtext);
-
-        name = "h2_2B_dphipp_costhetaRF";
-        h[name] = std::make_unique<h2Multiplet>(name, "d#sigma^2/d#delta#phi_{pp}dcos(#theta)  (" + units + "/rad) | " + title + ";Forward proton #delta#phi_{pp} (rad); cos(#theta)",
-            100, 0.0, gra::math::PI, bP.N, -1.0, 1.0, legendtext);
-
-        name = "h2_2B_dphipp_phiRF";
-        h[name] = std::make_unique<h2Multiplet>(name, "d#sigma^2/d#delta#phi_{pp}d#phi  (" + units + "/rad/rad) | " + title + ";Forward proton #delta#phi_{pp} (rad); #phi (rad)",
-            100, 0.0, gra::math::PI, bP.N, 0.0, gra::math::PI, legendtext);
 
         name = "h2_2B_eta1_eta2";
         h[name] = std::make_unique<h2Multiplet>(name, "d#sigma^2/d#eta_{1}d#eta_{2}  (" + units + ") | " + title + ";#eta_{1}; #eta_{2}",
             bY.N, bY.min, bY.max, bY.N, bY.min, bY.max, legendtext);
     }
-    
+
     // 4-Body observables
     if (std::find(multiplicity.begin(), multiplicity.end(), 4) != multiplicity.end()) {
         // ...
@@ -196,18 +194,26 @@ void InitPrHistogram(std::map<std::string, std::unique_ptr<hProfMultiplet>>& h,
     const std::vector<std::string>& legendtext, std::vector<int> multiplicity, const std::string& title,
     const h1Bound& bM, const h1Bound& bP, const h1Bound& bY) {
 
-    std::string name   = "null";
+    std::string name = "null";
 
     // Central system observables
     name = "hP_S_M_Pt";
     h[name] = std::make_unique<hProfMultiplet>(
-        name, title + ";System M  (GeV); System #LTP_{T}#GT  (GeV)",  bM.N, bM.min, bM.max, bP.min, bP.max, legendtext);
+        name, title + ";System M  (GeV); System #LTP_{T}#GT (GeV)",  bM.N, bM.min, bM.max, bP.min, bP.max, legendtext);
+
+    name = "hP_S_M_PL2";
+    h[name] = std::make_unique<hProfMultiplet>(
+        name, title + ";System M  (GeV); Legendre #LTP_{l=2}(cos #theta)#GT | r.f.",  bM.N, bM.min, bM.max, -0.4, 0.4, legendtext);
+
+    name = "hP_S_M_PL4";
+    h[name] = std::make_unique<hProfMultiplet>(
+        name, title + ";System M  (GeV); Legendre #LTP_{l=4}(cos #theta)#GT | r.f.",  bM.N, bM.min, bM.max, -0.4, 0.4, legendtext);    
 
     // 2-body
     if (std::find(multiplicity.begin(), multiplicity.end(), 2) != multiplicity.end()) {
     name = "hP_2B_M_dphi";
     h[name] = std::make_unique<hProfMultiplet>(
-        name, title + ";System M (GeV); Final state pair #LT#delta#phi#GT  (rad)",  bM.N, bM.min, bM.max, 0.0, 3.14159, legendtext);
+        name, title + ";System M (GeV); Central final state pair #LT#delta#phi#GT  (rad)",  bM.N, bM.min, bM.max, 0.0, 3.14159, legendtext);
     }
 
     // 4-Body observables
@@ -244,8 +250,8 @@ try {
     cxxopts::Options options(argv[0], "");
     options.add_options()
         ("i,input",     "input HepMC3 file        <input1,input2,...> (without .hepmc3)", cxxopts::value<std::string>() )
-        ("g,pdg",       "final state PDG          <input1,input2,...>",      cxxopts::value<std::string>() )
-        ("n,number",    "final state multiplicity <input1,input2,...>",      cxxopts::value<std::string>() )
+        ("g,pdg",       "Central final state PDG          <input1,input2,...>",      cxxopts::value<std::string>() )
+        ("n,number",    "Central final state multiplicity <input1,input2,...>",      cxxopts::value<std::string>() )
         ("l,labels",    "plot legend string       <input1,input2,...>",      cxxopts::value<std::string>() )
         ("t,title",     "plot title string        <input>            ",      cxxopts::value<std::string>() )
         ("u,units",     "cross section unit       <barn|mb|ub|nb|pb|fb>",    cxxopts::value<std::string>() )
@@ -253,7 +259,7 @@ try {
         ("Y,rapidity",  "plot rapidity limit",      cxxopts::value<double>() )
         ("P,momentum",  "plot momentum limit",      cxxopts::value<double>() )
         ("X,maximum",   "maximum number of events", cxxopts::value<int>() )
-        ("S,scale",     "scale histograms",         cxxopts::value<double>() )
+        ("S,scale",     "scale histograms",         cxxopts::value<std::string>() )
         ("H,help",      "Help")
         ;
         
@@ -281,8 +287,17 @@ try {
     std::vector<int> multiplicity      = gra::aux::SplitStr2Int(r["number"].as<std::string>());
     
     // Scaling
-    double scale = 1.0;
-    if (r.count("scale")) { scale = r["scale"].as<double>(); }
+    std::vector<double> scale(inputfile.size(), 1.0); // Default 1.0 for all
+    if (r.count("scale")) {
+        const std::vector<std::string> str_vals = gra::aux::SplitStr2Str(r["scale"].as<std::string>());
+        if (str_vals.size() == 1 || str_vals.size() == inputfile.size()) {
+            for (auto const& i : indices(str_vals)) {
+                scale[i] = std::stod(str_vals[i]);
+            }
+        } else {
+            throw std::invalid_argument("analyzer::scale input list needs to be of length 0,1, or N");
+        }
+    }
 
     // Title string
     std::string title = "";
@@ -325,6 +340,11 @@ try {
 	   throw std::invalid_argument("Commandline input length do not match!");
     }
     
+    // Scale each data source
+    for (const auto& i : indices(scale)) {
+        scale[i] *= multiplier;
+    }
+
     // ---------------------------------------------------------------------
     // Create histogram and add pointer to the map
 
@@ -354,13 +374,13 @@ try {
 
     // Iterate over all 1D-histograms
     for (const auto& x : h1) {
-    	x.second->NormalizeAll(cross_section, multiplier * scale);
+    	x.second->NormalizeAll(cross_section, scale);
     	x.second->SaveFig(fullpath); // Select second member of map
     }
 
     // Iterate over all 2D-histograms
     for (const auto& x : h2) {
-    	x.second->NormalizeAll(cross_section, multiplier * scale);
+    	x.second->NormalizeAll(cross_section, scale);
     	x.second->SaveFig(fullpath);
     }
 

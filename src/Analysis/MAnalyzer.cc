@@ -63,7 +63,7 @@ namespace gra {
 
 // Constructor
 MAnalyzer::MAnalyzer() {
-
+	
 	// Initialize histograms
 	const int NBINS = 150;
 
@@ -74,23 +74,22 @@ MAnalyzer::MAnalyzer() {
 	hE_GammaNeutron = std::make_unique<TH1D>("Energy y+n (GeV)",    ";Energy (GeV);Events", NBINS, 0, sqrts / 2.0);
 	
 	// Feynman-x
-	hXF_Pions    = std::make_unique<TH1D>("xF #pi",    ";Feynman-x;Events", NBINS, -1.0, 1.0);
-	hXF_Gamma    = std::make_unique<TH1D>("xF #gamma", ";Feynman-x;Events", NBINS, -1.0, 1.0);
-	hXF_Neutron  = std::make_unique<TH1D>("xF n",      ";Feynman-x;Events", NBINS, -1.0, 1.0);
+	hXF_Pions       = std::make_unique<TH1D>("xF #pi",    ";Feynman-x;Events", NBINS, -1.0, 1.0);
+	hXF_Gamma       = std::make_unique<TH1D>("xF #gamma", ";Feynman-x;Events", NBINS, -1.0, 1.0);
+	hXF_Neutron     = std::make_unique<TH1D>("xF n",      ";Feynman-x;Events", NBINS, -1.0, 1.0);
 
 	// Forward systems
-	hEta_Pions   = std::make_unique<TH1D>("#eta pi", ";#eta;Events", NBINS, -12, 12);
-	hEta_Gamma   = std::make_unique<TH1D>("#eta y",  ";#eta;Events", NBINS, -12, 12);
-	hEta_Neutron = std::make_unique<TH1D>("#eta n",  ";#eta;Events", NBINS, -12, 12);
-	hM_NSTAR     = std::make_unique<TH1D>("M (GeV)", ";M (GeV);Events", NBINS, 0, 10);
-
-
+	hEta_Pions      = std::make_unique<TH1D>("#eta pi", ";#eta;Events",    NBINS, -12, 12);
+	hEta_Gamma      = std::make_unique<TH1D>("#eta y",  ";#eta;Events",    NBINS, -12, 12);
+	hEta_Neutron    = std::make_unique<TH1D>("#eta n",  ";#eta;Events",    NBINS, -12, 12);
+	hM_NSTAR        = std::make_unique<TH1D>("M (GeV)", ";M (GeV);Events", NBINS,   0, 10);
+	
 	// Legendre polynomials, DO NOT CHANGE THE Y-RANGE [-1,1]
 	for (std::size_t i = 0; i < 8; ++i) {
 		hPl[i] = std::make_unique<TProfile>(Form("hPl%lu", i + 1), "", 100, 0.0, 4.0, -1, 1);
 		hPl[i]->Sumw2(); // Error saving on
 		hPl[i]->SetXTitle(Form("System M (GeV)"));
-		hPl[i]->SetYTitle(Form("#LTP_{l}(cos(#theta)#GT |_{ r.f.}"));
+		hPl[i]->SetYTitle(Form("Legendre #LTP_{l}(cos #theta)#GT | r.f."));
 	}
 
 	// Costheta correlations between different frames
@@ -394,19 +393,19 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 				h1["h1_PP_dphi"]->h[SID]->Fill(deltaphi_pp, W);
 				h1["h1_PP_t1"]->h[SID]->Fill(t1, W);
 				h1["h1_PP_dpt"]->h[SID]->Fill(pp_dpt, W);
+
+				h2["h2_S_M_dphipp"]->h[SID]->Fill(M,  deltaphi_pp, W);
+				h2["h2_S_M_dpt"]->h[SID]->Fill(M, pp_dpt, W);
+				h2["h2_S_M_sqrt1"]->h[SID]->Fill(M, msqrt(t1), W);
 			}
 
 			// 2D
 			h2["h2_S_M_Pt"]->h[SID]->Fill(M,  Pt, W);
 			h2["h2_S_M_pt"]->h[SID]->Fill(M,  a.Pt(), W);
-			
-			if (deltaphi_pp > 0) {
-				h2["h2_S_M_dphipp"]->h[SID]->Fill(M,  deltaphi_pp, W);
-			}
 
 			// 2-Body only
 			if (multiplicity == 2) {
-	
+				
 				hP["hP_2B_M_dphi"]->h[SID]->Fill(M, a.DeltaPhi(b), W);
 				h1["h1_2B_acop"]->h[SID]->Fill(1.0 - a.DeltaPhi(b) / gra::math::PI, W);
 				h1["h1_2B_diffrap"]->h[SID]->Fill(b.Rap() - a.Rap(), W);
@@ -414,14 +413,11 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 				h2["h2_2B_M_dphi"]->h[SID]->Fill(M, a.DeltaPhi(b), W);
 
 				// Frame transform
-				std::vector<M4Vec> pions = {a,b};
-				gra::kinematics::SRframe(pions);
-
-				if (deltaphi_pp > 0) {
-				h2["h2_2B_dphipp_costhetaRF"]->h[SID]->Fill(deltaphi_pp, pions[0].CosTheta(), W);
-				h2["h2_2B_dphipp_phiRF"]->h[SID]->Fill(deltaphi_pp, pions[0].Phi(), W);
-				}
-
+				std::vector<M4Vec> rf = {a,b};
+				gra::kinematics::SRframe(rf);
+				
+				hP["hP_S_M_PL2"]->h[SID]->Fill(M, math::LegendrePl(2, rf[0].CosTheta()), W);
+				hP["hP_S_M_PL4"]->h[SID]->Fill(M, math::LegendrePl(4, rf[0].CosTheta()), W);
 				h2["h2_2B_eta1_eta2"]->h[SID]->Fill(a.Eta(), b.Eta(), W);	
 			}
 

@@ -99,14 +99,15 @@ h1Multiplet::h1Multiplet(const std::string& name, const std::string& labeltext,
 
 
 // Histogram normalization
-void h1Multiplet::NormalizeAll(const std::vector<double>& cross_section, double multiplier) {
+void h1Multiplet::NormalizeAll(const std::vector<double>& cross_section, const std::vector<double>& multiplier) {
 
 	for (const auto& i : indices(h)) {
 
 		double scale = 1.0;
 
 		// Takes into account weighted and unweight (weight=1) filling
-		const double integral = h[i]->Integral();
+		// We take into account also under/overflow here with macro: (0, Nbins+1)
+		const double integral = h[i]->Integral(0, h[i]->GetNbinsX()+1);
 		if (integral > 0) { scale /= integral; }
 		
 		// Binwidth
@@ -117,10 +118,12 @@ void h1Multiplet::NormalizeAll(const std::vector<double>& cross_section, double 
 		// Cross Section
 		if (cross_section[i] > 0) { scale *= cross_section[i]; }
 
-		h[i]->Scale(scale * multiplier);
+		// Additional scale factor
+		scale *= multiplier[i];
+
+		h[i]->Scale(scale);
 	}
 }
-
 
 
 std::vector<double> h1Multiplet::SaveFig(const std::string& fullpath) const {
@@ -261,7 +264,6 @@ std::vector<double> h1Multiplet::SaveFig(const std::string& fullpath) const {
 		// Ratio plot (h3) settings
 		hx->SetTitle(""); // Remove the ratio title
 
-
 		// Y axis ratio plot settings
 		hx->GetYaxis()->SetTitle("Ratio");
 		hx->GetYaxis()->CenterTitle();
@@ -306,11 +308,13 @@ std::vector<double> h1Multiplet::SaveFig(const std::string& fullpath) const {
 	c0.SaveAs(fullfile.c_str());
 	
 	// Save logscale pdf
+	if (MINVAL > 0) {
 	pad1->cd()->SetLogy(); // pad2 becomes the current pad
 	//h[0]->GetYaxis()->SetRangeUser(h[0]->GetMaximum() * 1e-3, h[0]->GetMaximum());
 	//h[0]->GetYaxis()->SetRangeUser(1e-4, 1e2);
 	fullfile = fullpath + name_ + "_logy" + ".pdf";
 	c0.SaveAs(fullfile.c_str());
+	}
 
 	// Remove histograms
 	for (const auto& i : indices(ratios)) {
@@ -348,14 +352,15 @@ h2Multiplet::h2Multiplet(const std::string& name, const std::string& labeltext,
 	}
 }
 
-void h2Multiplet::NormalizeAll(const std::vector<double>& cross_section, double multiplier) {
+void h2Multiplet::NormalizeAll(const std::vector<double>& cross_section, const std::vector<double>& multiplier) {
 
 	for (const auto& i : indices(h)) {
 	
 		double scale = 1.0;
 
 		// Takes into account weighted and unweight (weight=1) filling
-		const double integral = h[i]->Integral();
+		// We take into account also under/overflow here with macro: (0, Nbins+1)
+		const double integral = h[i]->Integral(0, h[i]->GetNbinsX()+1, 0, h[i]->GetNbinsY()+1);
 		if (integral > 0) { scale /= integral; }
 		
 		// Binwidth
@@ -367,7 +372,10 @@ void h2Multiplet::NormalizeAll(const std::vector<double>& cross_section, double 
 		// Cross Section
 		if (cross_section[i] > 0) { scale *= cross_section[i]; }
 
-		h[i]->Scale(scale * multiplier);
+		// Additional scale factor
+		scale *= multiplier[i];
+
+		h[i]->Scale(scale);
 	}
 }
 
@@ -439,7 +447,7 @@ hProfMultiplet::hProfMultiplet(const std::string& name,
 	minval2_ = minval2;
 	maxval2_ = maxval2;
 
-	legendtext_ = legendtext;
+	legendtext_     = legendtext;
 	legendposition_ = "northeast";
 
 	// Initialize histogram vector container size
@@ -469,6 +477,20 @@ double hProfMultiplet::SaveFig(const std::string& fullpath) const {
 	pad1->cd();        // pad1 becomes the current pad
 	h[0]->SetStats(0); // No statistics on upper plot
 
+
+	// Find maximum value for y-range limits
+	double MAXVAL = 0.0;
+	double MINVAL = 1e32;
+	for (const auto& i : indices(h)) {
+
+		if (h[i]->GetMaximum() > MAXVAL) {
+			MAXVAL = h[i]->GetMaximum();
+		}
+		if (h[i]->GetMinimum() < MINVAL) {
+			MINVAL = h[i]->GetMinimum();
+		}
+	}
+
 	// Loop over histograms
 	for (const auto& i : indices(h)) {
 
@@ -476,6 +498,7 @@ double hProfMultiplet::SaveFig(const std::string& fullpath) const {
 		h[i]->SetMarkerColor(color[i]);
 		h[i]->SetMarkerStyle(20);
 		h[i]->SetMarkerSize(0.5);
+		h[i]->GetYaxis()->SetRangeUser(MINVAL * 1.5, MAXVAL * 1.5);
 
 		h[i]->Draw("L SAME");
 	}
@@ -508,12 +531,27 @@ double hProfMultiplet::SaveFig(const std::string& fullpath) const {
 	pad2->cd(); // pad2 becomes the current pad
 
 	// *** Ratio histograms ***
-	std::vector<TProfile*> ratios;
+	std::vector<TH1D*> ratios;
 
 	for (const auto& i : indices(h)) {
 
-		TProfile* hx = (TProfile*)h[i]->Clone(Form("ratio_%lu", i));
-		hx->Divide(h[0]);
+		TProfile* hxP = (TProfile*)h[i]->Clone(Form("ratio_%lu", i));
+
+		// --------------------------------------------------------------
+		// To get proper errors, we need to use TH1 instead of TProfile
+		TH1D* hx = hxP->ProjectionX();
+		TH1D* h0 = h[0]->ProjectionX();
+
+		// Set same colors as above
+		hx->SetLineColor(color[i]);
+		hx->SetMarkerColor(color[i]);
+		hx->SetMarkerStyle(20);
+		hx->SetMarkerSize(0.5);
+
+		// --------------------------------------------------------------
+
+		// Get ratio
+		hx->Divide(h0);
 
 		hx->SetMinimum(0.0); // y-range
 		hx->SetMaximum(2.0); //
@@ -567,9 +605,11 @@ double hProfMultiplet::SaveFig(const std::string& fullpath) const {
 	c0.SaveAs(fullfile.c_str());
 
 	// Save logscale pdf
+	if (MINVAL > 0) {
 	pad1->cd()->SetLogy(); // pad2 becomes the current pad
 	fullfile = fullpath + name_ + "_logy" + ".pdf";
 	c0.SaveAs(fullfile.c_str());
+	}
 
 	// Remove histograms
 	for (const auto& i : indices(ratios)) {
