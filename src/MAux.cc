@@ -476,7 +476,6 @@ std::cout << rang::fg::reset << std::endl;
 
 }
 
-
 void PrintGameOver() {
 	std::cout << std::endl;
 	std::cout <<
@@ -744,7 +743,6 @@ std::vector<std::size_t> FindOccurance(const std::string& str, const std::string
 	}
 	return positions;
 }
-
 
 } // aux namespace ends
 } // gra namespace ends
