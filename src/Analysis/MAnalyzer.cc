@@ -379,34 +379,49 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 			h1["h1_1B_eta"]->h[SID]->Fill(a.Eta(), W);
 
 			// 1D: Forward proton pair
+			double deltaphi_pp = -1.0;
 			if (p_final_plus.M() > 0) {
 
-			// Mandelstam -t_1,2
-			const double t1 = -(p_beam_plus - p_final_plus).M2();
-			//const double t2 = -(p_beam_minus - p_final_minus).M2();
+				// Mandelstam -t_1,2
+				const double t1 = -(p_beam_plus - p_final_plus).M2();
+				//const double t2 = -(p_beam_minus - p_final_minus).M2();
 
-			// Deltaphi
-			const double deltaphi_pp = p_final_plus.DeltaPhiAbs(p_final_minus);
-			M4Vec pp_diff = p_final_plus - p_final_minus;
-			const double pp_dpt = pp_diff.Pt();
+				// Deltaphi
+				deltaphi_pp = p_final_plus.DeltaPhiAbs(p_final_minus);
+				M4Vec pp_diff = p_final_plus - p_final_minus;
+				const double pp_dpt = pp_diff.Pt();
 
-			h1["h1_PP_dphi"]->h[SID]->Fill(deltaphi_pp, W);
-			h1["h1_PP_t1"]->h[SID]->Fill(t1, W);
-			h1["h1_PP_dpt"]->h[SID]->Fill(pp_dpt, W);
+				h1["h1_PP_dphi"]->h[SID]->Fill(deltaphi_pp, W);
+				h1["h1_PP_t1"]->h[SID]->Fill(t1, W);
+				h1["h1_PP_dpt"]->h[SID]->Fill(pp_dpt, W);
 			}
 
 			// 2D
 			h2["h2_S_M_Pt"]->h[SID]->Fill(M,  Pt, W);
 			h2["h2_S_M_pt"]->h[SID]->Fill(M,  a.Pt(), W);
 			
+			if (deltaphi_pp > 0) {
+				h2["h2_S_M_dphipp"]->h[SID]->Fill(M,  deltaphi_pp, W);
+			}
+
 			// 2-Body only
 			if (multiplicity == 2) {
-
+	
 				hP["hP_2B_M_dphi"]->h[SID]->Fill(M, a.DeltaPhi(b), W);
 				h1["h1_2B_acop"]->h[SID]->Fill(1.0 - a.DeltaPhi(b) / gra::math::PI, W);
 				h1["h1_2B_diffrap"]->h[SID]->Fill(b.Rap() - a.Rap(), W);
 				
 				h2["h2_2B_M_dphi"]->h[SID]->Fill(M, a.DeltaPhi(b), W);
+
+				// Frame transform
+				std::vector<M4Vec> pions = {a,b};
+				gra::kinematics::SRframe(pions);
+
+				if (deltaphi_pp > 0) {
+				h2["h2_2B_dphipp_costhetaRF"]->h[SID]->Fill(deltaphi_pp, pions[0].CosTheta(), W);
+				h2["h2_2B_dphipp_phiRF"]->h[SID]->Fill(deltaphi_pp, pions[0].Phi(), W);
+				}
+
 				h2["h2_2B_eta1_eta2"]->h[SID]->Fill(a.Eta(), b.Eta(), W);	
 			}
 

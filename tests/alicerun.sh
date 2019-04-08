@@ -15,6 +15,6 @@ make -j4 && ./bin/gr -i ./tests/processes/ALICE7_2pi.json -n 100000 -l false -w 
 fi
 
 # Analyze
-make -j4 ROOT=TRUE && ./bin/analyze -i ALICE7_2pi,ALICE7PIPI.csv -g 211,211 -n 2,2 -l \
+make -j4 ROOT=TRUE && ./bin/analyze -i ALICE7_2pi,ALICE7_2pi.csv -g 211,211 -n 2,2 -l \
 	'GRANIITTI','XYZ' -t '#pi^{+}#pi^{-}, #sqrt{s} = 7 TeV, |#eta| < 0.9, p_{T} > 0.1 GeV' \
 	-M 2.5 -Y 1.25 -P 2.0 -u ub -S $S2

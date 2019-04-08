@@ -40,7 +40,7 @@ using FTensor::Tensor4;
 namespace gra {
 
 // 2 -> 3 amplitudes
-std::complex<double> MTensorPomeron::ME3(gra::LORENTZSCALAR& lts) const {
+std::complex<double> MTensorPomeron::ME3(gra::LORENTZSCALAR& lts) {
 
 	// Kinematics
 	const M4Vec pa = lts.pbeam1;
@@ -96,6 +96,9 @@ std::complex<double> MTensorPomeron::ME3(gra::LORENTZSCALAR& lts) const {
 	Tensor4<std::complex<double>,4,4,4,4> CT;
 
 	if      (J == 0 && P ==  1) {
+		
+		// TEST COUPLING HERE
+		g_PPS = {0.7, 4.0};
 
 		// Pomeron-Pomeron-Scalar coupling
 		CT = iG_PPS_total(lts.q1, lts.q2, M0, "scalar");
@@ -117,6 +120,9 @@ std::complex<double> MTensorPomeron::ME3(gra::LORENTZSCALAR& lts) const {
 	}
 	else if (J == 0 && P == -1) {
 
+		// TEST COUPLING HERE
+		g_PPS = {0.1, 0.0};
+
 		// Pomeron-Pomeron-Pseudoscalar coupling
 		CT = iG_PPS_total(lts.q1, lts.q2, M0, "pseudoscalar");
 
@@ -136,6 +142,9 @@ std::complex<double> MTensorPomeron::ME3(gra::LORENTZSCALAR& lts) const {
 
 	}
 	else if (J == 2) {
+
+		// TEST COUPLING HERE
+		g_PPT = {0.1, 0.1, 0.1};
 
 		// Pomeron-Pomeron-Tensor coupling
 		const MTensor<std::complex<double>>       iGPPf2 = iG_PPT_total(lts.q1, lts.q2, M0);
@@ -807,9 +816,8 @@ Tensor4<std::complex<double>,4,4,4,4> MTensorPomeron::iG_PPS_total(
 //
 Tensor4<std::complex<double>,4,4,4,4> MTensorPomeron::iG_PPS_1() const {
 
-	const double gprime = 1.0;    // Coupling
 	const double S0     = 1.0;    // Mass scale (GeV)
-	const std::complex<double> FACTOR = zi * gprime * S0;
+	const std::complex<double> FACTOR = zi * g_PPS[0] * S0;
 
 	Tensor4<std::complex<double>,4,4,4,4> T;
 	for (const auto& u : LI) {
@@ -829,10 +837,9 @@ Tensor4<std::complex<double>,4,4,4,4> MTensorPomeron::iG_PPS_1() const {
 //
 Tensor4<std::complex<double>,4,4,4,4> MTensorPomeron::iG_PPS_2(const M4Vec& q1, const M4Vec& q2) const {
 
-	const double gprime = 1.0;    // Coupling
 	const double S0     = 1.0;    // Mass scale (GeV)
 	const double q1q2   = q1*q2;
-	const std::complex<double> FACTOR = zi * gprime / (2*S0);
+	const std::complex<double> FACTOR = zi * g_PPS[1] / (2*S0);
 
 	Tensor4<std::complex<double>,4,4,4,4> T;
 	for (const auto& u : LI) {
@@ -856,13 +863,12 @@ Tensor4<std::complex<double>,4,4,4,4> MTensorPomeron::iG_PPS_2(const M4Vec& q1, 
 //
 Tensor4<std::complex<double>,4,4,4,4> MTensorPomeron::iG_PPPS_1(const M4Vec& q1, const M4Vec& q2) const {
 
-	const double gprime = 1.0;     // Coupling
 	const double S0     = 1.0;     // Mass scale (GeV)
 	
 	const M4Vec   q1_q2 = q1 - q2;
 	const M4Vec       q = q1 + q2;
 
-	const std::complex<double> FACTOR = zi * gprime / (2.0*S0);
+	const std::complex<double> FACTOR = zi * g_PPS[0] / (2.0*S0);
 	Tensor4<std::complex<double>,4,4,4,4> T;
 
 	for (const auto& u : LI) {
@@ -894,12 +900,11 @@ Tensor4<std::complex<double>,4,4,4,4> MTensorPomeron::iG_PPPS_1(const M4Vec& q1,
 //
 Tensor4<std::complex<double>,4,4,4,4> MTensorPomeron::iG_PPPS_2(const M4Vec& q1, const M4Vec& q2) const {
 
-	const double gprime = 1.0;     // Coupling
 	const double S0     = 1.0;     // Mass scale (GeV)
 	const M4Vec   q1_q2 = q1 - q2;
 	const M4Vec       q = q1 + q2;
 	const double   q1q2 = q1*q2;
-	const std::complex<double> FACTOR = zi * gprime / (gra::math::pow3(S0));
+	const std::complex<double> FACTOR = zi * g_PPS[1] / (gra::math::pow3(S0));
 
 	Tensor4<std::complex<double>,4,4,4,4> T;
 
@@ -975,7 +980,7 @@ MTensor<std::complex<double>> MTensorPomeron::iG_PPT_1() const {
 	
 	MTensor<std::complex<double>> T = MTensor({4,4,4,4,4,4}, std::complex<double>(0.0));
 	const double M0 = 1.0;
-	const std::complex<double> FACTOR = (2.0*zi) * g_PPT[1] * M0;
+	const std::complex<double> FACTOR = (2.0*zi) * g_PPT[0] * M0;
 
 	for (auto const& u : LI) {
 	for (auto const& v : LI) {
@@ -1011,7 +1016,7 @@ MTensor<std::complex<double>> MTensorPomeron::iG_PPT_23(const M4Vec& q1, const M
 	MTensor<std::complex<double>> T = MTensor({4,4,4,4,4,4}, std::complex<double>(0.0));
 	const double   M0   = 1.0;
 	const double   q1q2 = q1*q2;
-	const std::complex<double> FACTOR = -(2.0*zi) / M0 * g_PPT[mode];
+	const std::complex<double> FACTOR = -(2.0*zi) / M0 * g_PPT[mode-1];
 
 	// Coupling structure 2 or 3
 	double sign = 0.0;

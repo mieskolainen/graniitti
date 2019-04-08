@@ -34,14 +34,13 @@ public:
 		CalcRTensor(); // Pre-Calculate tensors
 		
 		// Couplings
-		g_PPS  = std::vector<double>(2 + 1, 1.0); // We index from 1
-		g_PPPS = std::vector<double>(2 + 1, 1.0); // We index from 1
-		g_PPT  = std::vector<double>(7 + 1, 1.0); // We index from 1
+		g_PPS  = std::vector<double>(2, 0.0);
+		g_PPT  = std::vector<double>(7, 0.0);
 	}
 	~MTensorPomeron() {}
 
 	// Amplitudes
-	std::complex<double> ME3(gra::LORENTZSCALAR& lts) const;
+	std::complex<double> ME3(gra::LORENTZSCALAR& lts);
 	std::complex<double> ME4(gra::LORENTZSCALAR& lts) const;
 
 	// Spin/spinor state collectors
@@ -141,7 +140,6 @@ public:
 
 	// Pomeron-Pomeron-Scalar/Pseudoscalar/Tensor meson couplings
 	std::vector<double> g_PPS;
-	std::vector<double> g_PPPS;
 	std::vector<double> g_PPT;
 
 

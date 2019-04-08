@@ -34,6 +34,7 @@
 #include "TTree.h"
 
 // Own
+#include "Graniitti/MMath.h"
 #include "Graniitti/MAux.h"
 #include "Graniitti/Analysis/MAnalyzer.h"
 #include "Graniitti/Analysis/MMultiplet.h"
@@ -101,14 +102,14 @@ void Init1DHistogram(std::map<std::string, std::unique_ptr<h1Multiplet>>& h,
     h[name] = std::make_unique<h1Multiplet>(name, title + ";System M  (GeV);d#sigma/dM  (" + units + "/GeV)", bM.N, bM.min, bM.max, legendtext);
 
     name = "h1_S_Pt";
-    h[name] = std::make_unique<h1Multiplet>(name, title + ";System P_{t} (GeV);d#sigma/dP_{t}  (" + units + "/GeV)", bP.N, bP.min, bP.max, legendtext);
+    h[name] = std::make_unique<h1Multiplet>(name, title + ";System P_{T} (GeV);d#sigma/dP_{T}  (" + units + "/GeV)", bP.N, bP.min, bP.max, legendtext);
 
     name = "h1_S_Y";
     h[name] = std::make_unique<h1Multiplet>(name, title + ";System Y;d#sigma/dY  (" + units + ")", bY.N, bY.min, bY.max, legendtext);
 
     // Central track observables
     name = "h1_1B_pt";
-    h[name] = std::make_unique<h1Multiplet>(name, title + ";Final state p_{t} (GeV);d#sigma/dp_{t}  (" + units + "/GeV)", bP.N, bP.min, bP.max, legendtext);
+    h[name] = std::make_unique<h1Multiplet>(name, title + ";Final state p_{T} (GeV);d#sigma/dp_{T}  (" + units + "/GeV)", bP.N, bP.min, bP.max, legendtext);
 
     name = "h1_1B_eta";
     h[name] = std::make_unique<h1Multiplet>(name, title + ";Final state #eta;d#sigma/d#eta  (" + units + ")", bY.N, bY.min, bY.max, legendtext);
@@ -139,7 +140,7 @@ void Init1DHistogram(std::map<std::string, std::unique_ptr<h1Multiplet>>& h,
     h[name] = std::make_unique<h1Multiplet>(name, title + ";Mandelstam -t_{1} (GeV^{2});d#sigma/dt  ("   + units + "/GeV^{2})", bP.N, bP.min, bP.max, legendtext);
 
     name = "h1_PP_dpt";
-    h[name] = std::make_unique<h1Multiplet>(name, title + ";Proton pair |#delta#bar{p}_{t}| (GeV);d#sigma/|#delta#bar{p}_{t}|  (" + units + "/GeV)", bP.N, bP.min, bP.max, legendtext);
+    h[name] = std::make_unique<h1Multiplet>(name, title + ";Proton pair |#delta#bar{p}_{T}| (GeV);d#sigma/|#delta#bar{p}_{T}|  (" + units + "/GeV)", bP.N, bP.min, bP.max, legendtext);
 }
 
 
@@ -149,21 +150,34 @@ void Init2DHistogram(std::map<std::string, std::unique_ptr<h2Multiplet>>& h,
                      const h1Bound& bM, const h1Bound& bP, const h1Bound& bY) {
 
     std::string name  = "null";
-
+    
     // Central system observables
     name = "h2_S_M_Pt";
-    h[name] = std::make_unique<h2Multiplet>(name, "d#sigma^2/dMdP_{t}  (" + units + "/GeV/GeV) | " + title + ";System M (GeV); System P_{t} (GeV)",
+    h[name] = std::make_unique<h2Multiplet>(name, "d#sigma^2/dMdP_{T}  (" + units + "/GeV/GeV) | " + title + ";System M (GeV); System P_{T} (GeV)",
         bM.N, bM.min, bM.max, bP.N, bP.min, bP.max, legendtext);
-    
+        
     name = "h2_S_M_pt";
-    h[name] = std::make_unique<h2Multiplet>(name, "d#sigma^2/dMdp_{t}  (" + units + "/GeV/GeV) | " + title + ";System M (GeV); Final state p_{t} (GeV)",
+    h[name] = std::make_unique<h2Multiplet>(name, "d#sigma^2/dMdp_{T}  (" + units + "/GeV/GeV) | " + title + ";System M (GeV); Final state p_{T} (GeV)",
         bM.N, bM.min, bM.max, bP.N, bP.min, bP.max, legendtext);
+
+    name = "h2_S_M_dphipp";
+    h[name] = std::make_unique<h2Multiplet>(name, "d#sigma^2/dMd#delta_{pp}  (" + units + "/GeV/rad) | " + title + ";System M (GeV); Forward proton #delta#phi_{pp}",
+        bM.N, bM.min, bM.max, 100, 0.0, gra::math::PI, legendtext);
+
 
     // 2-Body
     if (std::find(multiplicity.begin(), multiplicity.end(), 2) != multiplicity.end()) {
         name = "h2_2B_M_dphi";
         h[name] = std::make_unique<h2Multiplet>(name, "d#sigma^2/dMd#delta#phi  (" + units + "/GeV/rad) | " + title + ";System M (GeV); Final state #delta#phi (rad)",
-            bM.N, bM.min, bM.max, 100, 0.0, 3.14159, legendtext);
+            bM.N, bM.min, bM.max, 100, 0.0, gra::math::PI, legendtext);
+
+        name = "h2_2B_dphipp_costhetaRF";
+        h[name] = std::make_unique<h2Multiplet>(name, "d#sigma^2/d#delta#phi_{pp}dcos(#theta)  (" + units + "/rad) | " + title + ";Forward proton #delta#phi_{pp} (rad); cos(#theta)",
+            100, 0.0, gra::math::PI, bP.N, -1.0, 1.0, legendtext);
+
+        name = "h2_2B_dphipp_phiRF";
+        h[name] = std::make_unique<h2Multiplet>(name, "d#sigma^2/d#delta#phi_{pp}d#phi  (" + units + "/rad/rad) | " + title + ";Forward proton #delta#phi_{pp} (rad); #phi (rad)",
+            100, 0.0, gra::math::PI, bP.N, 0.0, gra::math::PI, legendtext);
 
         name = "h2_2B_eta1_eta2";
         h[name] = std::make_unique<h2Multiplet>(name, "d#sigma^2/d#eta_{1}d#eta_{2}  (" + units + ") | " + title + ";#eta_{1}; #eta_{2}",
@@ -187,7 +201,7 @@ void InitPrHistogram(std::map<std::string, std::unique_ptr<hProfMultiplet>>& h,
     // Central system observables
     name = "hP_S_M_Pt";
     h[name] = std::make_unique<hProfMultiplet>(
-        name, title + ";System M  (GeV); System #LTP_{t}#GT  (GeV)",  bM.N, bM.min, bM.max, bP.min, bP.max, legendtext);
+        name, title + ";System M  (GeV); System #LTP_{T}#GT  (GeV)",  bM.N, bM.min, bM.max, bP.min, bP.max, legendtext);
 
     // 2-body
     if (std::find(multiplicity.begin(), multiplicity.end(), 2) != multiplicity.end()) {
