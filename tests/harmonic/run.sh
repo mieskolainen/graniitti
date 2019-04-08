@@ -15,4 +15,4 @@ then
 fi
 
 # Analyze
-./bin/fitharmonic -r SH_2pi_REF -i SH_2pi -l 4 -f HE -m 40,0.4,1.5
+./bin/fitharmonic -r SH_2pi_REF -i SH_2pi -l 2 -f HE -m 20,0.4,1.5

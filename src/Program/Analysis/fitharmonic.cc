@@ -227,17 +227,9 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega>& eve
     // Read event from input file
     input_file.read_event(evt);
 
-    // FIND SYSTEM PARTICLES
-    //HepMC3::FindParticles search_pip(evt, HepMC::FIND_ALL, HepMC::PDG_ID == PDG::PDG_pip && HepMC::STATUS == PDG::PDG_STABLE);
-    //HepMC3::FindParticles search_pim(evt, HepMC::FIND_ALL, HepMC::PDG_ID == PDG::PDG_pim && HepMC::STATUS == PDG::PDG_STABLE);
-
-    // FIND BEAM PROTONS
-    //HepMC3::FindParticles  search_beam_p(evt, HepMC::FIND_ALL, HepMC::PDG_ID == PDG::PDG_p && HepMC::STATUS == PDG::PDG_BEAM);
-    //HepMC3::FindParticles search_final_p(evt, HepMC::FIND_ALL, HepMC::PDG_ID == PDG::PDG_p && HepMC::STATUS == PDG::PDG_STABLE);
-
     if (events_read == 0) {
-      //    Print::listing(evt);
-      //    Print::content(evt);
+      HepMC3::Print::listing(evt);
+      HepMC3::Print::content(evt);
     }
     
     // Mesons
