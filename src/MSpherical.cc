@@ -110,19 +110,20 @@ MMatrix<double> GetGMixing(const std::vector<Omega>& events, const std::vector<s
     }
   }
 
-  if (mode == 1) {
-    printf("Fiducial  MC phase space events = %d (acceptance %0.3f percent) \n\n",
-        fiducial, fiducial / static_cast<double>(ind.size() * 100));
+  if (mode == 1 || mode == 2) {
+    printf("Fiducial  MC phase space events = %d (acceptance %0.3f percent) \n",
+        fiducial, fiducial / static_cast<double>(ind.size()) * 100);
   }
   if (mode == 2) {
-    printf("Selected  MC phase space events = %d (efficiency %0.3f percent) \n\n",
-        selected, selected / static_cast<double>(fiducial * 100));
+    printf("Selected  MC phase space events = %d (efficiency %0.3f percent) \n",
+        selected, selected / static_cast<double>(fiducial) * 100);
   }
   if (mode == 1 || mode == 2) {
     if (fiducial < 50 || selected < 50) {
       printf("GetGMixing:: Too low MC event count in the mass bin! \n");
     }
   }
+  std::cout << std::endl;
 
   // Do the normalization
   const double N_generated = static_cast<double>(ind.size()); // Generated events within this mass interval
@@ -259,12 +260,12 @@ std::pair<std::vector<double>,std::vector<double>>
   if (mode == 1 || mode == 2) {
     printf(
         "Fiducial  MC phase space events = %d (geometric-kinematic acceptance %0.3f percent) \n\n",
-        fiducial, fiducial / static_cast<double>(ind.size() * 100));
+        fiducial, fiducial / static_cast<double>(ind.size()) * 100);
   }
   if (mode == 2) {
     printf(
         "Selected  MC phase space events = %d (fiducial efficiency %0.3f percent) \n\n",
-        selected, selected / static_cast<double>(fiducial * 100));
+        selected, selected / static_cast<double>(fiducial) * 100);
   }
   if (mode == 1) {
     if (fiducial < 1000) {

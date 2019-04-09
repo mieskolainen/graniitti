@@ -3,7 +3,7 @@
 # Hard-coded integrated screening factor (for speed, set 1 if Pomeron loop was on)
 S2=0.18
 
-read -p "Generate events (or only analyze)? [y/n]" -n 1 -r
+read -p "Generate events (or only analyze)? [y/n] " -n 1 -r
 echo # New line
 
 if [[ $REPLY =~ ^[Yy]$ ]]

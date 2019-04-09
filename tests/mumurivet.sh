@@ -7,7 +7,7 @@
 
 
 # Generate events
-./bin/gr ./burncard/CMS11_mumu.json
+./bin/gr ./tests/processes/CMS11_mumu.json
 
 # Set source here (otherwise collapse between HepMC2 and HepMC3 libraries!)
 

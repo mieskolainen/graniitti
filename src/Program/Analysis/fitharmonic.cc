@@ -55,8 +55,14 @@ MHarmonic ha;
 // Random numbers for fast detector simulation
 MRandom rrand;
 
-const double ETACUT = 0.9;
-const double PTCUT  = 0.1;
+// Final state fiducial cuts
+struct FIDCUTS {
+
+  std::vector<double> ETA = {0.0, 0.0};
+  std::vector<double> PT  = {0.0, 0.0};
+};
+
+FIDCUTS fidcuts;
 
 // TMinuit fit wrapper calling the global object
 void fitwrapper(int& npar, double* gin, double& f, double* par, int iflag) {
@@ -81,47 +87,66 @@ int main(int argc, char* argv[]) {
 
     cxxopts::Options options(argv[0], "");
     options.add_options()
-        ("r,ref",     "Reference MC (angular flat MC sample)", cxxopts::value<std::string>() )
-        ("i,input",   "Input sample MC or DATA",               cxxopts::value<std::string>() )
-        ("l,lmax",    "Maximum angular order <1|2|3|...>",     cxxopts::value<uint>() )
-        ("f,frame",   "Lorentz rest frame <HE|CS|GJ|PG|AH>",   cxxopts::value<std::string>() )
-        ("m,mass",    "Mass binning [bins,min,max]",           cxxopts::value<std::string>() )
-        ("X,maximum", "Maximum number of events",              cxxopts::value<uint>() )
-        ("H,help",    "Help")
+        ("r,ref",      "Reference MC (angular flat MC sample) <filename without .hepmc3>",     cxxopts::value<std::string>()  )
+        ("i,input",    "Input sample MC or DATA               <filename without .hepmc3>",     cxxopts::value<std::string>()  )
+        ("l,lmax",     "Maximum angular order                 <1|2|3|...>",                    cxxopts::value<unsigned int>() )
+        ("f,frame",    "Lorentz rest frame                    <HE|CS|GJ|PG|SR>",               cxxopts::value<std::string>()  )
+        ("c,cuts",     "Fiducial cuts                         <ETAMIN, ETAMAX, PTMIN, PTMAX>", cxxopts::value<std::string>()  )
+        ("M,mass",     "System mass binning                   <bins,min,max>",                 cxxopts::value<std::string>()  )
+        ("P,pt",       "System pt binning                     <bins,min,max>",                 cxxopts::value<std::string>()  )
+        ("Y,rapidity", "System rapidity binning               <bins,min,max>",                 cxxopts::value<std::string>()  )
+        ("X,maximum",  "Maximum number of events              <N>",                            cxxopts::value<unsigned int>() )
+        ("H,help",     "Help")
         ;
     auto r = options.parse(argc, argv);
-    
+          
     if (r.count("help") || NARGC == 0) {
         std::cout << options.help({""}) << std::endl;
         std::cout << "Example:" << std::endl;
-        std::cout << "  " << argv[0] << " -r SH_2pi_REF -i SH_2pi -l 4 -f HE -m 40,0.4,1.5"
+        std::cout << "  " << argv[0] << " -r SH_2pi_REF -i SH_2pi -l 4 -f HE -M 40,0.4,1.5"
                   << std::endl << std::endl;
         return EXIT_FAILURE;
     }
     
-    const uint LMAX          = r["lmax"].as<uint>();
-    const std::string FRAME  = r["frame"].as<std::string>();
+    const uint LMAX         = r["lmax"].as<unsigned int>();
+    const std::string FRAME = r["frame"].as<std::string>();
 
-    const std::string Mstr   = r["mass"].as<std::string>();
-    std::vector<double> M    = gra::aux::SplitStr(Mstr,double(0),',');
-  
-    /*
-    const std::string Pstr   = r["pt"].as<std::string>();
-    std::vector<double> PT   = gra::aux::SplitStr(Pstr,double(0),',');
-
-    const std::string Ystr   = r["Y"].as<std::string>();
-    std::vector<double> Y    = gra::aux::SplitStr(Ystr,double(0),',');
-    */
-
-    // ------------------------------------------------------------------
-    // INITIALIZE HARMONIC EXPANSION
+    // Fiducial cuts
+    if (r.count("cuts")) {
+      const std::string str = r["cuts"].as<std::string>();
+      std::vector<double> cuts = gra::aux::SplitStr(str,double(0),',');
+      if (cuts.size() != 4)  { throw std::invalid_argument("fitharmonic:: cuts not size 4 <ETAMIN,ETAMAX,PTMIN,PTMAX>"); }
+      fidcuts.ETA = {cuts[0],cuts[1]};
+      fidcuts.PT  = {cuts[2],cuts[3]};     
+    } else {
+      throw std::invalid_argument("fitharmonic:: cuts parameter not given");
+    }
 
     MHarmonic::HPARAM hparam;
 
-    // Discretization
-    //hparam.M  = {M_BIN,   M_MIN,  M_MAX};
-    //hparam.PT = {PT_BIN, PT_MIN, PT_MAX};
-    //hparam.Y  = {Y_BIN,   Y_MIN,  Y_MAX};
+    // Default discretization
+    hparam.M  = {20, 0.0,   2.5}; // system mass
+    hparam.PT = {1,  0.0, 100.0}; // system pt
+    hparam.Y  = {1, -10.0, 10.0}; // system rapidity
+
+    if (r.count("mass")) {
+      const std::string Mstr = r["M"].as<std::string>();
+      hparam.M = gra::aux::SplitStr(Mstr,double(0),',');
+      if (hparam.M.size() != 3)  { throw std::invalid_argument("fitharmonic:: mass discretization not size 3 <bins,min,max>"); }
+    }
+    if (r.count("pt")) {
+      const std::string Pstr = r["P"].as<std::string>();
+      hparam.PT = gra::aux::SplitStr(Pstr,double(0),',');
+      if (hparam.PT.size() != 3) { throw std::invalid_argument("fitharmonic:: pt discretization not size 3 <bins,min,max>"); }
+    }
+    if (r.count("rapidity")) {
+      const std::string Ystr = r["Y"].as<std::string>();
+      hparam.Y  = gra::aux::SplitStr(Ystr,double(0),',');
+      if (hparam.Y.size() != 3)  { throw std::invalid_argument("fitharmonic:: rapidity discretization not size 3 <bins,min,max>"); }
+    }
+
+    // ------------------------------------------------------------------
+    // INITIALIZE HARMONIC EXPANSION PARAMETERS
 
     // Moments
     hparam.LMAX            = LMAX;
@@ -130,7 +155,6 @@ int main(int argc, char* argv[]) {
     hparam.LAMBDA          = 1e-6;
 
     ha.Init(hparam);
-
 
     // ------------------------------------------------------------------
     // DATA
@@ -141,7 +165,7 @@ int main(int argc, char* argv[]) {
     // Read in MC
     int MAXEVENTS = 1E9;
     if (r.count("X")) {
-      MAXEVENTS = r["X"].as<uint>();
+      MAXEVENTS = r["X"].as<unsigned int>();
     }
     
     // Read in reference MC
@@ -152,11 +176,10 @@ int main(int argc, char* argv[]) {
     std::vector<gra::spherical::Omega> DATA_events;
     ReadIn(datinput, DATA_events, FRAME, MAXEVENTS);
 
-
     // ------------------------------------------------------------------
     // LOOP OVER HYPERBINS
 
-    ha.HyperLoop(fitwrapper, MC_events, DATA_events);
+    ha.HyperLoop(fitwrapper, MC_events, DATA_events, hparam);
 
     // Print out results for external analysis
     std::string outputname(argv[2]);
@@ -272,53 +295,49 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega>& eve
     M4Vec p_final_plus;
     M4Vec p_final_minus;
 
+    // Beam protons
     if (FRAME == "GJ" || FRAME == "PG") {
-    for (HepMC3::ConstGenParticlePtr p1: HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_BEAM 
-                                                            && HepMC3::Selector::PDG_ID == PDG::PDG_p, evt.particles())) {
+    for (HepMC3::ConstGenParticlePtr p1 :
+          HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_BEAM &&
+                            HepMC3::Selector::PDG_ID == PDG::PDG_p, evt.particles())) {
         // Print::line(p1);
         pvec = gra::aux::HepMC2M4Vec(p1->momentum());
-        if (pvec.Pz() > 0) {
-          p_beam_plus = pvec;
-        } else {
-          p_beam_minus = pvec;
-        }
+        if (pvec.Pz() > 0) { p_beam_plus = pvec; } else { p_beam_minus = pvec; }
       }
     }
 
+    // Final state protons
     if (FRAME == "GJ") {
-    for (HepMC3::ConstGenParticlePtr p1: HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_STABLE 
-                                                            && HepMC3::Selector::PDG_ID == PDG::PDG_p, evt.particles())) {
+    for (HepMC3::ConstGenParticlePtr p1 :
+          HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_STABLE &&
+                              HepMC3::Selector::PDG_ID == PDG::PDG_p, evt.particles())) {
         // Print::line(p1);
         pvec = gra::aux::HepMC2M4Vec(p1->momentum());
-        if (pvec.Pz() > 0) {
-          p_final_plus = pvec;
-        } else {
-          p_final_minus = pvec;
-        }
+        if (pvec.Pz() > 0) { p_final_plus = pvec; } else { p_final_minus = pvec; }
       }
     }
 
     // ------------------------------------------------------------------
-    // Do the frame transformation
-    std::vector<M4Vec> boosted = {pip[0], pim[0]};
+    // Do the frame transformations
+    std::vector<M4Vec> rf = {pip[0], pim[0]};
 
+    // Non-rotated rest frame
+    if        (FRAME == "SR") {
+      gra::kinematics::SRframe(rf);
     // Helicity frame
-    if (FRAME == "HE") {
-      gra::kinematics::HEframe(boosted);
-    }
+    } else if (FRAME == "HE") {
+      gra::kinematics::HEframe(rf);
     // Pseudo GJ-frame
-    else if (FRAME == "GJ") {
-      const uint direction = 1; // (1,-1) which proton direction
-      gra::kinematics::PGframe(boosted, direction, p_beam_plus, p_beam_minus);
-    }
+    } else if (FRAME == "PG") {
+      const unsigned int direction = 1; // (1,-1) which proton direction
+      gra::kinematics::PGframe(rf, direction, p_beam_plus, p_beam_minus);
     // Collins-Soper frame
-    else if (FRAME == "CS") {
-      gra::kinematics::CSframe(boosted);
-    }
+    } else if (FRAME == "CS") {
+      gra::kinematics::CSframe(rf);
     // Gottfried-Jackson frame
-    else if (FRAME == "GJ") {
+    } else if (FRAME == "GJ") {
       M4Vec propagator = p_beam_plus - p_final_plus;
-      gra::kinematics::GJframe(boosted, propagator);
+      gra::kinematics::GJframe(rf, propagator);
     }
     else {
       throw std::invalid_argument("MHarmonic::ReadIn: Unknown Lorentz frame: " + FRAME);
@@ -329,8 +348,8 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega>& eve
     gra::spherical::Omega evt;
 
     // Event data
-    evt.costheta = std::cos(boosted[0].Theta());
-    evt.phi      = boosted[0].Phi();
+    evt.costheta = std::cos(rf[0].Theta());
+    evt.phi      = rf[0].Phi();
     evt.M        = sys_.M();
     evt.Pt       = sys_.Pt();
     evt.Y        = sys_.Rap();
@@ -340,10 +359,11 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega>& eve
     // ------------------------------------------------------------------
     // FIDUCIAL CUTS
     
-    if ((std::abs(pip[0].Eta()) < ETACUT) &&
-        (std::abs(pim[0].Eta()) < ETACUT) &&
-         pip[0].Pt() > PTCUT &&
-         pim[0].Pt() > PTCUT) {
+    if (pip[0].Eta() > fidcuts.ETA[0] && pip[0].Eta() < fidcuts.ETA[1] &&
+        pip[0].Pt()  > fidcuts.PT[0]  && pip[0].Pt()  < fidcuts.PT[1]  &&
+
+        pim[0].Eta() > fidcuts.ETA[0] && pim[0].Eta() < fidcuts.ETA[1] &&
+        pim[0].Pt()  > fidcuts.PT[0]  && pim[0].Pt()  < fidcuts.PT[1]) {
       evt.fiducial = true;
     }
 

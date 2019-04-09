@@ -113,9 +113,9 @@ void MHarmonic::Init(const HPARAM& hp) {
 	std::cout << std::endl;
 	std::cout << "{S} subset of {F} subset of {G} (this strict hierarchy might be violated in some special cases)" << std::endl;
 	std::cout << std::endl;
-	std::cout << "  Basic idea is to define {G} such that minimal extrapolation " << std::endl;
+	std::cout << "  The basic idea is to define {G} such that minimal extrapolation " << std::endl;
 	std::cout << "  is required from the strict fiducial (geometric) phase space {F}. " << std::endl;
-	std::cout << "  Flatness requirement of {G} is strictly required to represent moments in unmixed basis (non-flat phase space <=> geometric moment mixing)." << std::endl;
+	std::cout << "  Flatness requirement of {G} is strictly required to represent moments in an unmixed basis (non-flat phase space <=> geometric moment mixing)." << std::endl;
 	std::cout << std::endl;
 	std::cout << rang::fg::yellow << "EXAMPLE OF A FORMALLY VALID DEFINITION:" << rang::fg::reset << std::endl;
 	std::cout << "  G = {|Y(system)| < 0.9}" << std::endl;
@@ -123,6 +123,8 @@ void MHarmonic::Init(const HPARAM& hp) {
 	std::cout << std::endl << std::endl;
 	std::cout << "Note also the rotation between inactive coefficients and active one, due to moment mixing." << std::endl;
 	std::cout << std::endl << std::endl;
+	
+	//pause(5);
 }
 
 
@@ -158,7 +160,7 @@ bool MHarmonic::PrintLoop(const std::string& output) const {
 		fprintf(fp, "%d ", (int)ACTIVE[i]);
 	}
 	fprintf(fp, "]; \n\n");
-	fprintf(fp, "McellS = [");
+	fprintf(fp, "M_CELL = [");
 
 	for (std::size_t i = 0; i < masscenter.size(); ++i) {
 		fprintf(fp, "%0.3f ", masscenter[i]);
@@ -166,7 +168,7 @@ bool MHarmonic::PrintLoop(const std::string& output) const {
 	fprintf(fp, "]; \n\n");
 
 	fprintf(fp, "A{1} = [");
-	PrintMatrix(fp, ful.t_lm_FIT);
+	PrintMatrix(fp, ref.t_lm_FIT);
 	fprintf(fp, "];\n");
 	fprintf(fp, "A{2} = [");
 	PrintMatrix(fp, fid.t_lm_FIT);
@@ -176,7 +178,7 @@ bool MHarmonic::PrintLoop(const std::string& output) const {
 	fprintf(fp, "];\n");
 
 	fprintf(fp, "A{4} = [");
-	PrintMatrix(fp, ful.t_lm_OBS);
+	PrintMatrix(fp, ref.t_lm_OBS);
 	fprintf(fp, "];\n");
 	fprintf(fp, "A{5} = [");
 	PrintMatrix(fp, fid.t_lm_OBS);
@@ -192,30 +194,30 @@ bool MHarmonic::PrintLoop(const std::string& output) const {
 
 
 void MHarmonic::PlotAll() const {
-/*
-	// **** EFFICIENCY ****
-	PlotFigures(ful.E_lm,     "E_lm_ful", 47);
-	PlotFigures(fid.E_lm,     "E_lm_fid", 44);
-	PlotFigures(det.E_lm,     "E_lm_det", 41);
 
-	// **** FITTED MOMENTS ****
-	PlotFigures(ful.t_lm_FIT, "t_lm_FIT_ful", 16);
-	PlotFigures(fid.t_lm_FIT, "t_lm_FIT_fid", 38);
-	PlotFigures(det.t_lm_FIT, "t_lm_FIT_det", 29);
-	
-	// **** ALGEBRAIC MOMENTS ****
-	PlotFigures(ful.t_lm_OBS, "t_lm_OBS_ful", 28);
-	PlotFigures(fid.t_lm_OBS, "t_lm_OBS_fid", 25);
-	PlotFigures(det.t_lm_OBS, "t_lm_OBS_det", 25);
-*/
+	// **** EFFICIENCY DECOMPOSITION ****
+	PlotFigures(ref, "E_lm",     "Response level = <REF> : FLAT REFERENCE",  47);
+	PlotFigures(fid, "E_lm",     "Response level = <FID> : FIDUCIAL ACCEPTANCE", 44);
+	PlotFigures(det, "E_lm",     "Response level = <DET> : ACCEPTANCE x EFFICIENCY", 41);
+
+	// **** ALGEBRAIC INVERSE MOMENTS ****
+	PlotFigures(ref, "t_lm_OBS", "Moments level = <REF>, Algorithm <MPP>", 28);
+	PlotFigures(fid, "t_lm_OBS", "Moments level = <FID>, Algorithm <MPP>", 25);
+	PlotFigures(det, "t_lm_OBS", "Moments level = <DET>, Algorithm <MPP>", 23);
+
+	// **** EXTENDED MAXIMUM LIKELIHOOD INVERSE ****
+	PlotFigures(ref, "t_lm_FIT", "Moments level = <REF>, Algorithm <EML>", 16);
+	PlotFigures(fid, "t_lm_FIT", "Moments level = <FID>, Algorithm <EML>", 38);
+	PlotFigures(det, "t_lm_FIT", "Moments level = <DET>, Algorithm <EML>", 29);
 }
 
 
 // Print figures
-void MHarmonic::PlotFigures(const std::vector<std::vector<double>>& matrix,
-                            const std::string& outputfile, int barcolor) const {
+void MHarmonic::PlotFigures(const MTensor<gra::spherical::SH>& tensor,
+							const std::string& DATATYPE,
+                            const std::string& outputfile,
+                            int barcolor) const {
 
-	/*
 	TCanvas* c1 = new TCanvas("c1", "c1", 700, 500); // horizontal, vertical
 	c1->Divide(sqrt(NCOEF), std::sqrt(NCOEF), 0.002, 0.001);
 
@@ -230,31 +232,43 @@ void MHarmonic::PlotFigures(const std::vector<std::vector<double>>& matrix,
 			// Set canvas position
 			c1->cd(kk + 1);
 
-			// Loop over mass cells
-			double x[MASScellS]     = {0};
-			double y[MASScellS]     = {0};
-			double x_err[MASScellS] = {1e-2};
-			double y_err[MASScellS] = {1e-2};
+			const std::size_t BINS = tensor.size(0); // Dim 0
+			
+			// Loop over mass
+			double x[BINS]     = {0};
+			double y[BINS]     = {0};
+			double x_err[BINS] = {1e-2};
+			double y_err[BINS] = {1e-2};
 
-			for (std::size_t k = 0; k < MASScellS; ++k) {
-				x[k] = masscenter[k];
-				y[k] = matrix[k][index];
+			for (std::size_t k = 0; k < BINS; ++k) {
+				x[k] = k; // FIX THIS
+				std::vector<std::size_t> cell = {k, 0, 0};
+
+				// CHOOSE DATATYPE
+				if      (DATATYPE == "t_lm_OBS") {
+					y[k]     = tensor(cell).t_lm_OBS[index];
+					y_err[k] = tensor(cell).t_lm_OBS_error[index];
+				}
+				else if (DATATYPE == "t_lm_FIT") {
+					y[k]     = tensor(cell).t_lm_FIT[index];
+					y_err[k] = tensor(cell).t_lm_FIT_error[index]; 				
+				}
+				else if (DATATYPE == "E_lm") {
+					y[k]     = tensor(cell).E_lm[index];
+					y_err[k] = tensor(cell).E_lm_error[index]; 
+				} else {
+					throw std::invalid_argument("MHarmonic::PlotFigures: Unknown MODE = " + DATATYPE);
+				}
 			}
 			
-			// Draw horizontal line
-			
-			//TLine* line = new TLine(x[0]*0.9, 0.0,
-			//x[MASScellS-1]*1.1, 0.0);
-			//
-			//if (!(l == 0 && m == 0)) {
-			//    line->SetLineColor(kRed);
-			//    line->SetLineWidth(1.0);
-			//    line->Draw("same");
-			//}
-			
 			// Create the TGraphErrors and draw it
-			gr[kk] = new TGraphErrors(MASScellS, x, y, x_err, y_err);
-			gr[kk]->SetTitle(Form("<%d,%d>", l, m));
+			gr[kk] = new TGraphErrors(BINS, x, y, x_err, y_err);
+
+			if (!(l == 0 && m == 0)) {
+				gr[kk]->SetTitle(Form("#it{lm} = <%d,%d>", l, m));
+			} else {
+				gr[kk]->SetTitle(Form("%s: #it{lm} = <%d,%d>", outputfile.c_str(), l, m));
+			}
 
 			// gr->SetMarkerColor(4); // blue
 
@@ -275,24 +289,35 @@ void MHarmonic::PlotFigures(const std::vector<std::vector<double>>& matrix,
 			gr[kk]->Draw("A B");
 			// gr[kk]->Draw("ALP");
 			// c1->Update();
+
+			// Draw horizontal line
+			TLine* line = new TLine(x[0]*0.9, 0.0, x[BINS-1]*1.1, 0.0);
+			
+			if (!(l == 0 && m == 0)) {
+			    line->SetLineColor(kRed);
+			    line->SetLineWidth(1.0);
+			    line->Draw("same");
+			}
+
 			++kk;
 		}
 	}
-	c1->Print(Form("./harmonicfit/%s_FRAME_%s.pdf", outputfile.c_str(), FRAME.c_str()));
+	aux::CreateDirectory("./figs");
+	aux::CreateDirectory("./figs/harmonicfit");
+	c1->Print(Form("./figs/harmonicfit/%s.pdf", outputfile.c_str()));
 
 	for (std::size_t i = 0; i < gr.size(); ++i) {
 		delete gr[i];
 	}
 
 	delete c1;
-	*/
 }
 
 
-// Loop over system mass and pt-cells
+// Loop over system mass, pt, rapidity
 void MHarmonic::HyperLoop(void (*fitfunc)(int&, double*, double&, double*, int),
 		const std::vector<gra::spherical::Omega>& MC,
-		const std::vector<gra::spherical::Omega>& DATA) {
+		const std::vector<gra::spherical::Omega>& DATA, const HPARAM& hp) {
 
 	// --------------------------------------------------------
 	// Pre-Calculate once Spherical Harmonics for MINUIT fit
@@ -302,46 +327,43 @@ void MHarmonic::HyperLoop(void (*fitfunc)(int&, double*, double&, double*, int),
 
 	double chi2 = 0.0;
 
-	const unsigned int MASScellS  = 50;
-	const unsigned int PTcellS    = 1;
-	const unsigned int YcellS     = 1;
+	const unsigned int MASS_CELL  = hp.M[0];
+	const unsigned int PT_CELL    = hp.PT[0];
+	const unsigned int Y_CELL     = hp.Y[0];
 
-	ful = MTensor<gra::spherical::SH>({MASScellS, PTcellS, YcellS});
-	fid = MTensor<gra::spherical::SH>({MASScellS, PTcellS, YcellS});
-	det = MTensor<gra::spherical::SH>({MASScellS, PTcellS, YcellS});
+	ref = MTensor<gra::spherical::SH>({MASS_CELL, PT_CELL, Y_CELL});
+	fid = MTensor<gra::spherical::SH>({MASS_CELL, PT_CELL, Y_CELL});
+	det = MTensor<gra::spherical::SH>({MASS_CELL, PT_CELL, Y_CELL});
 	
 	// System Mass limits
-	const double M_MIN   = 0.4;
-	const double M_MAX   = 2.0;
+	const double M_MIN   = hp.M[1];
+	const double M_MAX   = hp.M[2];
 
 	// System Pt limits
-	const double PT_MIN  = 0.0;
-	const double PT_MAX  = 5.0;
+	const double PT_MIN  = hp.PT[1];
+	const double PT_MAX  = hp.PT[2];
 
 	// System rapidity limits
-	const double Y_MIN   = -2.0;
-	const double Y_MAX   =  2.0;
+	const double Y_MIN   = hp.Y[1];
+	const double Y_MAX   = hp.Y[2];
 
-	const double  M_STEP = (M_MAX  - M_MIN)  / MASScellS;
-	const double PT_STEP = (PT_MAX - PT_MIN) / PTcellS;
-	const double  Y_STEP = (Y_MAX  - Y_MIN)  / YcellS;
+	const double  M_STEP = (M_MAX  - M_MIN)  / MASS_CELL;
+	const double PT_STEP = (PT_MAX - PT_MIN) / PT_CELL;
+	const double  Y_STEP = (Y_MAX  - Y_MIN)  / Y_CELL;
 
 	// ------------------------------------------------------------------
 	// Hyperloop
-	for (std::size_t i = 0; i < MASScellS; ++i) {
+	for (std::size_t i = 0; i < MASS_CELL; ++i) {
 		const double M_min = i * M_STEP + M_MIN;
 		const double M_max = M_min + M_STEP;
 
-	for (std::size_t j = 0; j < PTcellS;   ++j) {
+	for (std::size_t j = 0; j < PT_CELL;   ++j) {
 		const double Pt_min = j * PT_STEP + PT_MIN;
 		const double Pt_max = Pt_min + PT_STEP;
 
-	for (std::size_t k = 0; k < YcellS;    ++k) {
+	for (std::size_t k = 0; k < Y_CELL;    ++k) {
 		const double Y_min = k * Y_STEP + Y_MIN;
 		const double Y_max = Y_min + Y_STEP;
-
-		// Cell
-		const std::vector<std::size_t> cell = {i,j,k};
 		
 		// --------------------------------------------------------------
 		// Get indices for this interval
@@ -358,9 +380,9 @@ void MHarmonic::HyperLoop(void (*fitfunc)(int&, double*, double&, double*, int),
 
 		// --------------------------------------------------------------
 		// Acceptance mixing matrices
-		ful(cell).MIXlm = gra::spherical::GetGMixing(MC, MC_ind, LMAX, 0);
-		fid(cell).MIXlm = gra::spherical::GetGMixing(MC, MC_ind, LMAX, 1);
-		det(cell).MIXlm = gra::spherical::GetGMixing(MC, MC_ind, LMAX, 2);
+		ref({i,j,k}).MIXlm = gra::spherical::GetGMixing(MC, MC_ind, LMAX, 0);
+		fid({i,j,k}).MIXlm = gra::spherical::GetGMixing(MC, MC_ind, LMAX, 1);
+		det({i,j,k}).MIXlm = gra::spherical::GetGMixing(MC, MC_ind, LMAX, 2);
 		// --------------------------------------------------------------
 
 		// --------------------------------------------------------------
@@ -369,8 +391,8 @@ void MHarmonic::HyperLoop(void (*fitfunc)(int&, double*, double&, double*, int),
 		std::pair<std::vector<double>, std::vector<double>> E1 = gra::spherical::GetELM(MC, MC_ind, LMAX, 1);
 		std::pair<std::vector<double>, std::vector<double>> E2 = gra::spherical::GetELM(MC, MC_ind, LMAX, 2);
 
-		ful({i,j,k}).E_lm       = E0.first;
-		ful({i,j,k}).E_lm_error = E0.second;
+		ref({i,j,k}).E_lm       = E0.first;
+		ref({i,j,k}).E_lm_error = E0.second;
 
 		fid({i,j,k}).E_lm       = E1.first;
 		fid({i,j,k}).E_lm_error = E1.second;
@@ -395,19 +417,19 @@ void MHarmonic::HyperLoop(void (*fitfunc)(int&, double*, double&, double*, int),
 		Eigen::VectorXd x     = gra::math::PseudoInverse(M, REGPARAM) * b;
 
 		// Collect the inversion result
-		ful({i,j,k}).t_lm_OBS = gra::aux::Eigen2Vector(x);
+		ref({i,j,k}).t_lm_OBS = gra::aux::Eigen2Vector(x);
 
 		// ==============================================================
 
 
 		// Update these to proper errors (TBD. PUT ZERO FOR NOW!!)
-		ful({i,j,k}).t_lm_OBS_error = std::vector<double>(ful({i,j,k}).t_lm_OBS.size(), 0.0);
+		ref({i,j,k}).t_lm_OBS_error = std::vector<double>(ref({i,j,k}).t_lm_OBS.size(), 0.0);
 		fid({i,j,k}).t_lm_OBS_error = std::vector<double>(fid({i,j,k}).t_lm_OBS.size(), 0.0);
 		det({i,j,k}).t_lm_OBS_error = std::vector<double>(det({i,j,k}).t_lm_OBS.size(), 0.0);
 
 		
 		std::cout << "Algebraic Moore-Penrose/SVD (unmixed) moments in the (angular flat) reference phase space:" << std::endl;
-		gra::spherical::PrintOutMoments(ful({i,j,k}).t_lm_OBS, ful({i,j,k}).t_lm_OBS_error, ACTIVE, LMAX);
+		gra::spherical::PrintOutMoments(ref({i,j,k}).t_lm_OBS, ref({i,j,k}).t_lm_OBS_error, ACTIVE, LMAX);
 
 		std::cout << "Algebraic (mixed) moments in the fiducial space:" << std::endl;
 		gra::spherical::PrintOutMoments(fid({i,j,k}).t_lm_OBS, fid({i,j,k}).t_lm_OBS_error, ACTIVE, LMAX);
@@ -423,12 +445,12 @@ void MHarmonic::HyperLoop(void (*fitfunc)(int&, double*, double&, double*, int),
 		MomentFit({i,j,k}, fitfunc);
 
 		// Save result
-		ful({i,j,k}).t_lm_FIT = t_lm;
+		ref({i,j,k}).t_lm_FIT = t_lm;
 		fid({i,j,k}).t_lm_FIT = fid({i,j,k}).MIXlm * t_lm; // Moment forward rotation: Matrix * Vector
 		det({i,j,k}).t_lm_FIT = det({i,j,k}).MIXlm * t_lm; // Moment forward rotation: Matrix * Vector
 
 		// Errors should be propagated after moment rotation (PUT SAME FOR ALL NOW)
-		ful({i,j,k}).t_lm_FIT_error = t_lm_error;
+		ref({i,j,k}).t_lm_FIT_error = t_lm_error;
 		fid({i,j,k}).t_lm_FIT_error = t_lm_error;
 		det({i,j,k}).t_lm_FIT_error = t_lm_error;
 
@@ -436,7 +458,7 @@ void MHarmonic::HyperLoop(void (*fitfunc)(int&, double*, double&, double*, int),
 
 
 		std::cout << "Maximum-Likelihood (unmixed) moments in the (angular flat) reference phase space:" << std::endl;
-		gra::spherical::PrintOutMoments(ful({i,j,k}).t_lm_FIT, ful({i,j,k}).t_lm_FIT_error, ACTIVE, LMAX);
+		gra::spherical::PrintOutMoments(ref({i,j,k}).t_lm_FIT, ref({i,j,k}).t_lm_FIT_error, ACTIVE, LMAX);
 
 		std::cout << "Maximum-Likelihood Re-Back-Projected (mixed) moments in the fiducial space:" << std::endl;
 		gra::spherical::PrintOutMoments(fid({i,j,k}).t_lm_FIT, fid({i,j,k}).t_lm_FIT_error, ACTIVE, LMAX);
@@ -465,14 +487,14 @@ void MHarmonic::HyperLoop(void (*fitfunc)(int&, double*, double&, double*, int),
 	}}}
 
 	gra::aux::PrintBar("=");
-	double reducedchi2 = chi2 / (double)(ACTIVENDF * MASScellS);
+	double reducedchi2 = chi2 / (double)(ACTIVENDF * MASS_CELL);
 	if (reducedchi2 < 3) {
 		std::cout << rang::fg::green;
 	} else {
 		std::cout << rang::fg::red;
 	}
-	printf("Total Chi2 / (ACTIVENDF x MASScellS) = %0.2f / (%d x %d) = %0.2f \n", 
-		chi2, ACTIVENDF, MASScellS, reducedchi2);
+	printf("Total Chi2 / (ACTIVENDF x MASS_CELL) = %0.2f / (%d x %d) = %0.2f \n", 
+		chi2, ACTIVENDF, MASS_CELL, reducedchi2);
 	std::cout << rang::fg::reset;
 	gra::aux::PrintBar("=");
 	std::cout << std::endl << std::endl;
@@ -510,8 +532,8 @@ double MHarmonic::PrintOutHyperCell(const std::vector<std::size_t>& cell) {
 	
 
 	// From the Maximum Likelihood fit
-	double sum_FUL = t_lm[0];
-	printf("Estimate of events in the reference phase space = %0.1f +- %0.1f \n", sum_FUL, 0.0);
+	double sum_ref = t_lm[0];
+	printf("Estimate of events in the reference phase space = %0.1f +- %0.1f \n", sum_ref, 0.0);
 
 	double sum_FID = gra::spherical::HarmDotProd(fid(cell).E_lm, t_lm, ACTIVE, LMAX);
 	printf("Estimate of events in the fiducial  phase space = %0.1f +- %0.1f \n", sum_FID, 0.0);
@@ -567,7 +589,7 @@ void MHarmonic::MomentFit(const std::vector<std::size_t>& cell,
 
 				// ======================================================
 				// *** Use the algebraic inverse solution as a good starting value ***
-				const double start_value = ful(activecell).t_lm_OBS[index];
+				const double start_value = ref(activecell).t_lm_OBS[index];
 				// ======================================================
 				
 				const double step_value = 0.1; // in units of Events

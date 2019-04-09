@@ -47,7 +47,8 @@ public:
 
 	void   Init(const HPARAM& hp);
 	void   HyperLoop(void (*fitfunc)(int&, double*, double&, double*, int),
-					 const std::vector<gra::spherical::Omega>& MC, const std::vector<gra::spherical::Omega>& DATA);
+					 const std::vector<gra::spherical::Omega>& MC,
+					 const std::vector<gra::spherical::Omega>& DATA, const HPARAM& hp);
 	void   MomentFit(const std::vector<std::size_t>& cell, void (*fitfunc)(int&, double*, double&, double*, int));
 	double PrintOutHyperCell(const std::vector<std::size_t>& cell);
 	void   logLfunc(int& npar, double* gin, double& f, double* par, int iflag) const;
@@ -55,8 +56,8 @@ public:
 
 	bool   PrintLoop(const std::string& output) const;
 	void   PlotAll() const;
-	void   PlotFigures(const std::vector<std::vector<double>>& matrix, const std::string& outputfile, int barcolor) const;
-
+	void   PlotFigures(const MTensor<gra::spherical::SH>& tensor, const std::string& DATATYPE,
+					   const std::string& outputfile, int barcolor) const;
 
 	int    LMAX;            // Maximum spherical harmonic truncation degree (e.g. 4)
 	bool   REMOVEODD;       // Fix odd moments to zero (due to lacking spesific spin states, for example)
@@ -90,10 +91,10 @@ private:
 
 	// Tensor data:
 	//
-	// ful = full reference phase space
+	// ref = reference phase space
 	// fid = fiducial phase space
 	// det = detector level
-	MTensor<gra::spherical::SH> ful;
+	MTensor<gra::spherical::SH> ref;
 	MTensor<gra::spherical::SH> fid;
 	MTensor<gra::spherical::SH> det;
 };
