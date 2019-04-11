@@ -24,6 +24,10 @@
 #include <thread>
 #include <vector>
 
+// ROOT
+#include "TColor.h"
+#include "TStyle.h"
+
 // Own
 #include "Graniitti/Analysis/MHarmonic.h"
 #include "Graniitti/MAux.h"
@@ -69,10 +73,60 @@ void fitwrapper(int& npar, double* gin, double& f, double* par, int iflag) {
     ha.logLfunc(npar, gin, f, par, iflag);
 }
 
-void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega>& events, const std::string& FRAME, int MAXEVENTS);
+void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega>& events,
+            const std::string& FRAME, int MAXEVENTS, bool SIMULATE);
+
+// Set "nice" 2D-plot style
+// Read here more about problems with the Rainbow
+void set_plot_style() {
+    
+    // Set Smooth color gradients
+    const Int_t NRGBs = 5;
+    const Int_t NCont = 255;
+
+    Double_t stops[NRGBs] = {0.00, 0.34, 0.61, 0.84, 1.00};
+    Double_t red[NRGBs]   = {0.00, 0.00, 0.87, 1.00, 0.51};
+    Double_t green[NRGBs] = {0.00, 0.81, 1.00, 0.20, 0.00};
+    Double_t blue[NRGBs]  = {0.51, 1.00, 0.12, 0.00, 0.00};
+    TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+    gStyle->SetNumberContours(NCont);
+
+    // Black-Red palette
+    gStyle->SetPalette(53); // 53/56 for inverted
+    gStyle->SetTitleOffset(1.6, "x"); // X-axis title offset from axis
+    gStyle->SetTitleOffset(1.0, "y"); // X-axis title offset from axis
+    gStyle->SetTitleSize(0.03,  "x");  // X-axis title size
+    gStyle->SetTitleSize(0.035, "y");
+    gStyle->SetTitleSize(0.03,  "z");
+    gStyle->SetLabelOffset(0.025);
+}
+
+
+// Global Style Setup
+void setROOTstyle() {
+    gStyle->SetOptStat(0); // Statistics BOX OFF [0,1]
+
+    gStyle->SetOptFit(); // Fit parameters
+
+    gStyle->SetTitleSize(0.04, "t"); // Title with "t" (or anything else than xyz)
+    gStyle->SetStatY(1.0);
+    gStyle->SetStatX(1.0);
+    gStyle->SetStatW(0.15);
+    gStyle->SetStatH(0.09);
+    
+    // See below
+    set_plot_style();
+}
+
+
+// Fast toy simulation pt-efficiency parameter (put infinite for perfect pt-efficiency)
+const double pt_scale = 4.5;
+
 
 // Main function
 int main(int argc, char* argv[]) {
+
+    setROOTstyle();
 
     gra::aux::PrintFlashScreen(rang::fg::blue);
     std::cout << rang::style::bold
@@ -87,19 +141,27 @@ int main(int argc, char* argv[]) {
 
     cxxopts::Options options(argv[0], "");
     options.add_options()
-        ("r,ref",      "Reference MC (angular flat MC sample) <filename without .hepmc3>",     cxxopts::value<std::string>()  )
-        ("i,input",    "Input sample MC or DATA               <filename without .hepmc3>",     cxxopts::value<std::string>()  )
-        ("l,lmax",     "Maximum angular order                 <1|2|3|...>",                    cxxopts::value<unsigned int>() )
-        ("f,frame",    "Lorentz rest frame                    <HE|CS|GJ|PG|SR>",               cxxopts::value<std::string>()  )
-        ("c,cuts",     "Fiducial cuts                         <ETAMIN, ETAMAX, PTMIN, PTMAX>", cxxopts::value<std::string>()  )
-        ("M,mass",     "System mass binning                   <bins,min,max>",                 cxxopts::value<std::string>()  )
-        ("P,pt",       "System pt binning                     <bins,min,max>",                 cxxopts::value<std::string>()  )
-        ("Y,rapidity", "System rapidity binning               <bins,min,max>",                 cxxopts::value<std::string>()  )
-        ("X,maximum",  "Maximum number of events              <N>",                            cxxopts::value<unsigned int>() )
-        ("H,help",     "Help")
+        ("r,ref",             "Reference MC (angular flat MC sample)   <filename without .hepmc3>",  cxxopts::value<std::string>()  )
+        ("i,input",           "Input sample MC or DATA                 <filename without .hepmc3>",  cxxopts::value<std::string>()  )
+        ("c,cuts",            "Fiducial cuts                           <ETAMIN,ETAMAX,PTMIN,PTMAX>", cxxopts::value<std::string>()  )
+        
+        ("f,frame",           "Lorentz rest frame                      <HE|CS|GJ|PG|SR>",            cxxopts::value<std::string>()  )
+        ("l,lmax",            "Maximum angular order                   <1|2|3|...>",                 cxxopts::value<unsigned int>() )
+        ("o,removeodd",       "Remove negative M                       <true|false>",                cxxopts::value<std::string>()  )
+        ("n,removenegative",  "Remove odd M                            <true|false>",                cxxopts::value<std::string>()  )
+        ("e,eml",             "Extended Maximum Likelihood             <true|false>",                cxxopts::value<std::string>()  )
+        ("a,lambda",          "L1-regularization weight                <value>",                     cxxopts::value<double>()       )
+                
+        ("M,mass",            "System mass binning                     <bins,min,max>",              cxxopts::value<std::string>()  )
+        ("P,pt",              "System pt binning                       <bins,min,max>",              cxxopts::value<std::string>()  )
+        ("Y,rapidity",        "System rapidity binning                 <bins,min,max>",              cxxopts::value<std::string>()  )
+        
+        ("s,simulate",        "Fast simulation of efficiency response  <true|false>",                cxxopts::value<std::string>()  )
+        ("X,maximum",         "Maximum number of events                <N>",                         cxxopts::value<unsigned int>() )
+        ("H,help",            "Help")
         ;
     auto r = options.parse(argc, argv);
-          
+
     if (r.count("help") || NARGC == 0) {
         std::cout << options.help({""}) << std::endl;
         std::cout << "Example:" << std::endl;
@@ -107,9 +169,6 @@ int main(int argc, char* argv[]) {
                   << std::endl << std::endl;
         return EXIT_FAILURE;
     }
-    
-    const uint LMAX         = r["lmax"].as<unsigned int>();
-    const std::string FRAME = r["frame"].as<std::string>();
 
     // Fiducial cuts
     if (r.count("cuts")) {
@@ -148,19 +207,25 @@ int main(int argc, char* argv[]) {
     // ------------------------------------------------------------------
     // INITIALIZE HARMONIC EXPANSION PARAMETERS
 
-    // Moments
-    hparam.LMAX            = LMAX;
-    hparam.REMOVEODD       = false;
-    hparam.REMOVENEGATIVEM = true;
-    hparam.LAMBDA          = 1e-6;
+    hparam.LMAX            = r["lmax"].as<unsigned int>();
+    hparam.REMOVEODD       = r["removeodd"].as<std::string>() == "true"      ? true : false;
+    hparam.REMOVENEGATIVEM = r["removenegative"].as<std::string>() == "true" ? true : false;
+    hparam.EML             = r["eml"].as<std::string>() == "true"            ? true : false;
+    hparam.LAMBDA          = r["lambda"].as<double>();
 
     ha.Init(hparam);
-
+    
     // ------------------------------------------------------------------
     // DATA
 
     const std::string refinput = r["ref"].as<std::string>();
     const std::string datinput = r["input"].as<std::string>();
+
+    // Lorentz frame
+    const std::string FRAME = r["frame"].as<std::string>();
+
+    // Fast efficiency simulation
+    const bool SIMULATE = r["simulate"].as<std::string>() == "true" ? true : false;
 
     // Read in MC
     int MAXEVENTS = 1E9;
@@ -170,11 +235,11 @@ int main(int argc, char* argv[]) {
     
     // Read in reference MC
     std::vector<gra::spherical::Omega> MC_events;
-    ReadIn(refinput, MC_events, FRAME, MAXEVENTS);
+    ReadIn(refinput, MC_events, FRAME, MAXEVENTS, true);
     
     // Read in DATA
     std::vector<gra::spherical::Omega> DATA_events;
-    ReadIn(datinput, DATA_events, FRAME, MAXEVENTS);
+    ReadIn(datinput, DATA_events, FRAME, MAXEVENTS, SIMULATE);
 
     // ------------------------------------------------------------------
     // LOOP OVER HYPERBINS
@@ -216,11 +281,11 @@ int main(int argc, char* argv[]) {
   return EXIT_SUCCESS;
 }
 
-// Fast toy simulation pt-efficiency parameter (put infinite for perfect pt-efficiency)
-const double pt_scale = 4.5;
 
 // Read events in
-void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega>& events, const std::string& FRAME, int MAXEVENTS) {
+void ReadIn(const std::string inputfile,
+            std::vector<gra::spherical::Omega>& events,
+            const std::string& FRAME, int MAXEVENTS, bool SIMULATE) {
 
   const std::string total_input = gra::aux::GetBasePath(2) + "/output/" + inputfile + ".hepmc3";
   printf("ReadIn:: Maximum event count %d \n", MAXEVENTS);
@@ -373,10 +438,16 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega>& eve
     // This block can be replaced with FULL GEANT SIMULATION / DELPHES style fast simulation
     // This is a simple parametrization to mimick pt-efficiency effects.
 
+    evt.selected = true;
+
     // Fast simulate smooth detector pt-efficiency curve here by hyperbolic tangent per particle
-    if ((std::tanh(pip[0].Pt() * pt_scale) > rrand.U(0,1)) &&
-        (std::tanh(pim[0].Pt() * pt_scale) > rrand.U(0,1)) ) {
-      evt.selected = true;
+    if (SIMULATE) {
+      if ((std::tanh(pip[0].Pt() * pt_scale) > rrand.U(0,1)) &&
+          (std::tanh(pim[0].Pt() * pt_scale) > rrand.U(0,1)) ) {
+        // fine
+      } else {
+        evt.selected = false;
+      }
     }
     // ------------------------------------------------------------------
 

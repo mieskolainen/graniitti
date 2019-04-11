@@ -23,7 +23,6 @@
 
 namespace gra {
 
-
 class MHarmonic {
 
 public:
@@ -38,7 +37,16 @@ public:
 		int    LMAX;            // Maximum spherical harmonic truncation degree (e.g. 4)
 		bool   REMOVEODD;       // Fix odd moments to zero (due to lacking spesific spin states, for example)
 		bool   REMOVENEGATIVEM; // Fix negative m to zero (due to parity conservation, for example)
+		bool   EML;             // Use Extended Maximum Likelihood fit
 		double LAMBDA;          // L1-norm regularization (put 0 for no regularization)
+		
+		void Print() {
+			std::cout << "LMAX            = " << LMAX << std::endl;
+			std::cout << "REMOVEODD       = " << (REMOVEODD ? "true" : "false") << std::endl;
+			std::cout << "REMOVENEGATIVEM = " << (REMOVENEGATIVEM ? "true" : "false") << std::endl;
+			std::cout << "EML             = " << (EML ? "true" : "false") << std::endl;
+			std::cout << "LAMBDA          = " << LAMBDA << std::endl;
+		}
 	};
 
 	// Constructor, destructor
@@ -57,12 +65,16 @@ public:
 	bool   PrintLoop(const std::string& output) const;
 	void   PlotAll() const;
 	void   PlotFigures(const MTensor<gra::spherical::SH>& tensor, const std::string& DATATYPE,
+					   unsigned int OBSERVABLE,
 					   const std::string& outputfile, int barcolor) const;
 
-	int    LMAX;            // Maximum spherical harmonic truncation degree (e.g. 4)
-	bool   REMOVEODD;       // Fix odd moments to zero (due to lacking spesific spin states, for example)
-	bool   REMOVENEGATIVEM; // Fix negative m to zero (due to parity conservation, for example)
-	double LAMBDA;          // L1-norm regularization (put 0 for no regularization)
+	void   PlotFigures2D(const MTensor<gra::spherical::SH>& tensor,
+				         const std::string& DATATYPE, std::vector<int> OBSERVABLE,
+                         const std::string& outputfile,
+                         int barcolor) const;
+
+	// Parameters
+	HPARAM param;
 	int    NCOEF;
 
 private:
@@ -97,6 +109,9 @@ private:
 	MTensor<gra::spherical::SH> ref;
 	MTensor<gra::spherical::SH> fid;
 	MTensor<gra::spherical::SH> det;
+
+	// x-axis center points
+	std::vector<std::vector<double>> xcenter;
 };
 
 } // gra namespace ends

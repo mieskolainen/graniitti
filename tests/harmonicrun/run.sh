@@ -19,14 +19,31 @@ fi
 FIDCUTS=-0.9,0.9,0.1,100.0
 # ***********************************************************************
 
-# Maximum angular order <positive integer>
-LMAX=2
+# Lorentz frame (HE,CS,GJ,PG,SR)
+FRAME=HE
 
-# Lorentz frame (HE,CS,GJ,PG,RF)
-FRAME=CS
+# System kinematic variables binning <bins,min,max>
+MBINS=40,0.25,1.5
+PBINS=1,0.0,1.0
+YBINS=40,-0.9,0.9
 
-# Mass binning <bins,min,max>
-MBINS=40,0.25,2.5
+# PARAMETERS
+LMAX=4
+REMOVEODD=true
+REMOVENEGATIVE=true
+LAMBDA=0.001
+EML=false
+
+# Fast simulation
+FS=true
 
 # Analyze
-./bin/fitharmonic -r SH_2pi_REF -i SH_2pi -c $FIDCUTS -l $LMAX -f $FRAME -M $MBINS
+#./bin/fitharmonic -r SH_2pi_REF -i ALICE7_2pi.csv \
+./bin/fitharmonic -r SH_2pi_REF -i SH_2pi \
+-c $FIDCUTS -f \
+$FRAME -l $LMAX -o $REMOVEODD -n $REMOVENEGATIVE -a $LAMBDA -e $EML \
+-M $MBINS -P $PBINS -Y $YBINS \
+-s $FS -X 100000
+
+# Implement 2D harmonic plots (M,Pt)
+# ...
