@@ -23,6 +23,11 @@
     // 3 = spin barrier relativistic
     "BW" : 2,
 
+    // ------------------------------------------------------------------
+    // Tensor Pomeron model couplings (2 for scalar/pseudoscalar, 7 for tensors)
+    "g_Tensor" : [0.5, 0.5],
+    // ------------------------------------------------------------------
+    
     // Set 0 for density matrix below, or an integer > 0 for a random sampled
     // Different integers give different matrices.
     "random_rho" : 0,

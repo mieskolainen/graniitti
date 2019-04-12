@@ -11,7 +11,7 @@
   
   "GENERALPARAM" : {
 
-    "OUTPUT"  : "SH_2pi",      // Output filename
+    "OUTPUT"  : "SH_2pi_CMS",      // Output filename
     "FORMAT"  : "hepmc3",      // hepmc3, hepmc2, hepevt
     "CORES"   : 0,             // Number of CPU threads (0 for automatic)
     "NEVENTS" : 1E5,           // Number of unweighted (weight = 1) events
@@ -73,10 +73,10 @@
   "GENCUTS" : {
 
     "<C>" : {
-      "Rap" : [-4.0, 4.0]  // Rapidity boundaries of the final states (<C> class)
+      "Rap" : [-5.0, 5.0]  // Rapidity boundaries of the final states (<C> class)
     },
     "<F>" : {
-      "Rap" : [-0.9, 0.9], // Rapidity boundaries of the system (<F> class)
+      "Rap" : [-2.5, 2.5], // Rapidity boundaries of the system (<F> class)
       "M"   : [0.0, 3.0]
     },
     "<Q>" : {

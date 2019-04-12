@@ -32,15 +32,11 @@ public:
 	
 	MTensorPomeron() {
 		CalcRTensor(); // Pre-Calculate tensors
-		
-		// Couplings
-		g_PPS  = std::vector<double>(2, 0.0);
-		g_PPT  = std::vector<double>(7, 0.0);
 	}
 	~MTensorPomeron() {}
 
 	// Amplitudes
-	std::complex<double> ME3(gra::LORENTZSCALAR& lts);
+	std::complex<double> ME3(gra::LORENTZSCALAR& lts, gra::PARAM_RES& resonance) const;
 	std::complex<double> ME4(gra::LORENTZSCALAR& lts) const;
 
 	// Spin/spinor state collectors
@@ -48,16 +44,16 @@ public:
 	std::array<FTensor::Tensor1<std::complex<double>,4>, 3> Spin1States(const M4Vec& p, std::string type) const;
 
 	// Scalar, Pseudoscalar, Tensor coupling structures
-	FTensor::Tensor4<std::complex<double>,4,4,4,4>  iG_PPS_1() const;
-	FTensor::Tensor4<std::complex<double>,4,4,4,4>  iG_PPS_2(const M4Vec& q1, const M4Vec& q2) const;
-	FTensor::Tensor4<std::complex<double>,4,4,4,4> iG_PPPS_1(const M4Vec& q1, const M4Vec& q2) const;
-	FTensor::Tensor4<std::complex<double>,4,4,4,4> iG_PPPS_2(const M4Vec& q1, const M4Vec& q2) const;
-	MTensor<std::complex<double>> iG_PPT_1() const;
-	MTensor<std::complex<double>> iG_PPT_23(const M4Vec& q1, const M4Vec& q2, int mode) const;
-
+	FTensor::Tensor4<std::complex<double>,4,4,4,4>  iG_PPS_1(double g_PPS) const;
+	FTensor::Tensor4<std::complex<double>,4,4,4,4>  iG_PPS_2(const M4Vec& q1, const M4Vec& q2, double g_PPS) const;
+	FTensor::Tensor4<std::complex<double>,4,4,4,4> iG_PPPS_1(const M4Vec& q1, const M4Vec& q2, double g_PPPS) const;
+	FTensor::Tensor4<std::complex<double>,4,4,4,4> iG_PPPS_2(const M4Vec& q1, const M4Vec& q2, double g_PPPS) const;
+	MTensor<std::complex<double>> iG_PPT_1(double g_PPT) const;
+	MTensor<std::complex<double>> iG_PPT_23(const M4Vec& q1, const M4Vec& q2, int mode, double g_PPT) const;
+	
 	// Vertex functions
-	FTensor::Tensor4<std::complex<double>,4,4,4,4> iG_PPS_total(const M4Vec& q1, const M4Vec& q2, double M0, const std::string& mode) const;
-	MTensor<std::complex<double>>                  iG_PPT_total(const M4Vec& q1, const M4Vec& q2, double M0) const;
+	FTensor::Tensor4<std::complex<double>,4,4,4,4> iG_PPS_total(const M4Vec& q1, const M4Vec& q2, double M0, const std::string& mode, const std::vector<double>& g_PPS) const;
+	MTensor<std::complex<double>>                  iG_PPT_total(const M4Vec& q1, const M4Vec& q2, double M0, const std::vector<double>& g_PPT) const;
 
 	FTensor::Tensor2<std::complex<double>,4,4>     iG_PppHE(const M4Vec& prime, const M4Vec p) const;
 

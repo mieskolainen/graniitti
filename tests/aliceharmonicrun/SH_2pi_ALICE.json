@@ -5,18 +5,18 @@
 //
 // mikael.mieskolainen@cern.ch, 2018
 {
-  
+
   // ----------------------------------------------------------------------
   // GENERAL setup
   
   "GENERALPARAM" : {
-    
-    "OUTPUT"  : "SH_2pi_REF",  // Output filename
+
+    "OUTPUT"  : "SH_2pi_ALICE",      // Output filename
     "FORMAT"  : "hepmc3",      // hepmc3, hepmc2, hepevt
     "CORES"   : 0,             // Number of CPU threads (0 for automatic)
-    "NEVENTS" : 1E4,           // Number of unweighted (weight = 1) events
-    "INTEGRATOR"  : "VEGAS",   // Integrator (default VEGAS)
-    "WEIGHTED" : false,        // Weighted events (default false)
+    "NEVENTS" : 1E5,           // Number of unweighted (weight = 1) events
+    "INTEGRATOR" : "VEGAS",    // Integrator (default VEGAS)
+    "WEIGHTED"   : false,      // Weighted events (default false)
     "MODELPARAM" : "TUNE0"     // General model tune
   },
   
@@ -27,11 +27,11 @@
 
     "BEAM" :   ["p+","p+"],    // Beam PDG-ID / Name
     "ENERGY" : [3500, 3500],   // Beam energy in the lab (GeV)
-    "PROCESS" : "PP[RES]<F> -> pi+ pi- @FLATAMP:2", // Process
-    "RES" : ["flat"],
+    "PROCESS" : "PP[RES+CON]<F> -> pi+ pi-",  // Process
+    "RES" : ["f0_500", "rho_770", "f0_980", "phi_1020", "f2_1270", "f0_1500", "f2_1525", "f0_1710"],
     "POMLOOP" : false,         // Eikonal Pomeron loop screening
-    "NSTARS" : 0,              // N* excitation (0 = elastic, 1 = single, 2 = double)
-    "LHAPDF" : "CT10nlo",      // LHAPDF parton distribution set
+    "NSTARS"  : 0,             // N* excitation (0 = elastic, 1 = single, 2 = double)
+    "LHAPDF"  : "CT10nlo",     // LHAPDF parton distribution set
     "HIST"    : 1,             // On-the-flight histograms (0 = off,1,2)
     "RNDSEED" : 12345678,      // Random seed (int32)
   },
@@ -43,7 +43,7 @@
       
     // Loop integration
     "POMLOOP" : {
-      "ND" : 10              // Loop integral discretization  
+      "ND" : 10                // Loop integral discretization  
     },
     
     // VEGAS integrator
@@ -73,15 +73,15 @@
   "GENCUTS" : {
 
     "<C>" : {
-      "Rap" : [-4.0, 4.0] // Rapidity boundaries of the final states (<C> class)
+      "Rap" : [-4.0, 4.0]  // Rapidity boundaries of the final states (<C> class)
     },
     "<F>" : {
       "Rap" : [-0.9, 0.9], // Rapidity boundaries of the system (<F> class)
-      "M"   : [0.0, 3.0]   // System mass
+      "M"   : [0.0, 3.0]
     },
     "<Q>" : {
-      "Xi" : [0, 0.05]    // Invariant scale M^2/s (forward excitation)
+      "Xi" : [0, 0.05]     // Invariant scale M^2/s (forward excitation)
     }
-  }
-
+  },
+  
 }

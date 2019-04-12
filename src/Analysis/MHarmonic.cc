@@ -14,6 +14,7 @@
 #include <vector>
 
 // ROOT
+#include "TLatex.h"
 #include "TCanvas.h"
 #include "TColor.h"
 #include "TGraphErrors.h"
@@ -163,23 +164,23 @@ bool MHarmonic::PrintLoop(const std::string& output) const {
 	fprintf(fp, "]; \n\n");
 
 	fprintf(fp, "A{1} = [");
-	PrintMatrix(fp, ref.t_lm_FIT);
+	PrintMatrix(fp, ref.t_lm_EML);
 	fprintf(fp, "];\n");
 	fprintf(fp, "A{2} = [");
-	PrintMatrix(fp, fid.t_lm_FIT);
+	PrintMatrix(fp, fid.t_lm_EML);
 	fprintf(fp, "];\n");
 	fprintf(fp, "A{3} = [");
-	PrintMatrix(fp, det.t_lm_FIT);
+	PrintMatrix(fp, det.t_lm_EML);
 	fprintf(fp, "];\n");
-
+	
 	fprintf(fp, "A{4} = [");
-	PrintMatrix(fp, ref.t_lm_OBS);
+	PrintMatrix(fp, ref.t_lm_MPP);
 	fprintf(fp, "];\n");
 	fprintf(fp, "A{5} = [");
-	PrintMatrix(fp, fid.t_lm_OBS);
+	PrintMatrix(fp, fid.t_lm_MPP);
 	fprintf(fp, "];\n");
 	fprintf(fp, "A{6} = [");
-	PrintMatrix(fp, det.t_lm_OBS);
+	PrintMatrix(fp, det.t_lm_MPP);
 	fprintf(fp, "];\n");
 
 	fclose(fp);
@@ -188,24 +189,26 @@ bool MHarmonic::PrintLoop(const std::string& output) const {
 }
 
 
-void MHarmonic::PlotAll() const {
+void MHarmonic::PlotAll(const std::string& legendstr, const std::string& outputpath) const {
 
 	for (const auto& OBSERVABLE : {0,1,2}) {
 
 	// **** EFFICIENCY DECOMPOSITION ****
-	PlotFigures(ref, "E_lm",     OBSERVABLE, "Response level = <REF> : FLAT REFERENCE",  47);
-	PlotFigures(fid, "E_lm",     OBSERVABLE, "Response level = <FID> : FIDUCIAL ACCEPTANCE", 44);
-	PlotFigures(det, "E_lm",     OBSERVABLE, "Response level = <DET> : ACCEPTANCE x EFFICIENCY", 41);
+	PlotFigures(ref, "E_lm",     OBSERVABLE, "Response[FLAT_REFERENCE]<REF>",  17, legendstr, outputpath);
+	PlotFigures(fid, "E_lm",     OBSERVABLE, "Response[FIDUCIAL_ACCEPTANCE]<FID>", 33, legendstr, outputpath);
+	PlotFigures(det, "E_lm",     OBSERVABLE, "Response[ACCEPTANCE_x_EFFICIENCY]<DET>", 29, legendstr, outputpath);
 
 	// **** ALGEBRAIC INVERSE MOMENTS ****
-	PlotFigures(ref, "t_lm_OBS", OBSERVABLE, "Moments level = <REF>, Algorithm <MPP>", 28);
-	PlotFigures(fid, "t_lm_OBS", OBSERVABLE, "Moments level = <FID>, Algorithm <MPP>", 25);
-	PlotFigures(det, "t_lm_OBS", OBSERVABLE, "Moments level = <DET>, Algorithm <MPP>", 23);
+	PlotFigures(ref, "t_lm_MPP", OBSERVABLE, "Moments[MPP]<REF>", 17, legendstr, outputpath);
+	PlotFigures(fid, "t_lm_MPP", OBSERVABLE, "Moments[MPP]<FID>", 33, legendstr, outputpath);
+	PlotFigures(det, "t_lm_MPP", OBSERVABLE, "Moments[MPP]<DET>", 29, legendstr, outputpath);
 
 	// **** EXTENDED MAXIMUM LIKELIHOOD INVERSE MOMENTS ****
-	PlotFigures(ref, "t_lm_FIT", OBSERVABLE, "Moments level = <REF>, Algorithm <EML>", 16);
-	PlotFigures(fid, "t_lm_FIT", OBSERVABLE, "Moments level = <FID>, Algorithm <EML>", 38);
-	PlotFigures(det, "t_lm_FIT", OBSERVABLE, "Moments level = <DET>, Algorithm <EML>", 29);
+	if (param.EML) {
+	PlotFigures(ref, "t_lm_EML", OBSERVABLE, "Moments[EML]<REF>", 17, legendstr, outputpath);
+	PlotFigures(fid, "t_lm_EML", OBSERVABLE, "Moments[EML]<FID>", 33, legendstr, outputpath);
+	PlotFigures(det, "t_lm_EML", OBSERVABLE, "Moments[EML]<DET>", 29, legendstr, outputpath);
+	}
 
 	}
 
@@ -215,30 +218,188 @@ void MHarmonic::PlotAll() const {
 	for (const auto& OBSERVABLE2 : OBSERVABLES) {
 
 	// **** EFFICIENCY DECOMPOSITION ****
-	PlotFigures2D(ref, "E_lm",     OBSERVABLE2, "Response level = <REF> : FLAT REFERENCE",  47);
-	PlotFigures2D(fid, "E_lm",     OBSERVABLE2, "Response level = <FID> : FIDUCIAL ACCEPTANCE", 44);
-	PlotFigures2D(det, "E_lm",     OBSERVABLE2, "Response level = <DET> : ACCEPTANCE x EFFICIENCY", 41);
+	PlotFigures2D(ref, "E_lm",     OBSERVABLE2, "Response[FLAT_REFERENCE]<REF>",  17, legendstr, outputpath);
+	PlotFigures2D(fid, "E_lm",     OBSERVABLE2, "Response[FIDUCIAL_ACCEPTANCE]<FID>", 33, legendstr, outputpath);
+	PlotFigures2D(det, "E_lm",     OBSERVABLE2, "Response[ACCEPTANCE_x_EFFICIENCY]<DET>", 29, legendstr, outputpath);
 
 	// **** ALGEBRAIC INVERSE MOMENTS ****
-	PlotFigures2D(ref, "t_lm_OBS", OBSERVABLE2, "Moments level = <REF>, Algorithm <MPP>", 28);
-	PlotFigures2D(fid, "t_lm_OBS", OBSERVABLE2, "Moments level = <FID>, Algorithm <MPP>", 25);
-	PlotFigures2D(det, "t_lm_OBS", OBSERVABLE2, "Moments level = <DET>, Algorithm <MPP>", 23);
+	PlotFigures2D(ref, "t_lm_MPP", OBSERVABLE2, "Moments[MPP]<REF>", 17, legendstr, outputpath);
+	PlotFigures2D(fid, "t_lm_MPP", OBSERVABLE2, "Moments[MPP]<FID>", 33, legendstr, outputpath);
+	PlotFigures2D(det, "t_lm_MPP", OBSERVABLE2, "Moments[MPP]<DET>", 29, legendstr, outputpath);
 
 	// **** EXTENDED MAXIMUM LIKELIHOOD INVERSE MOMENTS ****
-	PlotFigures2D(ref, "t_lm_FIT", OBSERVABLE2, "Moments level = <REF>, Algorithm <EML>", 16);
-	PlotFigures2D(fid, "t_lm_FIT", OBSERVABLE2, "Moments level = <FID>, Algorithm <EML>", 38);
-	PlotFigures2D(det, "t_lm_FIT", OBSERVABLE2, "Moments level = <DET>, Algorithm <EML>", 29);
+	if (param.EML) {
+	PlotFigures2D(ref, "t_lm_EML", OBSERVABLE2, "Moments[EML]<REF>", 17, legendstr, outputpath);
+	PlotFigures2D(fid, "t_lm_EML", OBSERVABLE2, "Moments[EML]<FID>", 33, legendstr, outputpath);
+	PlotFigures2D(det, "t_lm_EML", OBSERVABLE2, "Moments[EML]<DET>", 29, legendstr, outputpath);
+	}
 
 	}
 }
 
 
+// Print 1D-figures
+void MHarmonic::PlotFigures(const MTensor<gra::spherical::SH>& tensor,
+							const std::string& DATATYPE, unsigned int OBSERVABLE,
+                            const std::string& outputfile,
+                            int barcolor, const std::string& legendstr, const std::string& outputpath) const {
 
-// Print figures
+	TCanvas* c1 = new TCanvas("c1", "c1", 700, 600); // horizontal, vertical
+	c1->Divide(sqrt(NCOEF), std::sqrt(NCOEF), 0.002, 0.001); // y, x
+
+	// Loop over moments
+	int kk = 0;
+	std::vector<TGraphErrors*> gr(NCOEF, NULL);
+
+	std::string xlabel = "";
+	if      (OBSERVABLE == 0) {
+		xlabel = "M (GeV)";
+	}
+	else if (OBSERVABLE == 1) {
+		xlabel = "P_{T} (GeV)";
+	}
+	else if (OBSERVABLE == 2) {
+		xlabel = "Y";
+	} else {
+		throw std::invalid_argument("MHarmonic::PlotFigures: Unknown observable " + std::to_string(OBSERVABLE));
+	}
+
+	const std::size_t BINS = tensor.size(OBSERVABLE);
+
+
+	// Set max
+	double maxcount = 0.0;
+
+	for (int l = 0; l <= param.LMAX; ++l) {
+		for (int m = -l; m <= l; ++m) {
+			const int index = gra::spherical::LinearInd(l, m);
+
+			// Set canvas position
+			c1->cd(kk + 1);
+
+			// Loop over mass
+			double x[BINS]     = {0};
+			double y[BINS]     = {0};
+			double x_err[BINS] = {0};
+			double y_err[BINS] = {0};
+
+			for (std::size_t k = 0; k < BINS; ++k) {
+
+				// Get x-axis point
+				x[k] = xcenter[OBSERVABLE][k];
+
+				// Set indices {0,0,0, ..., 0}
+				std::vector<std::size_t> cell(xcenter.size(),0);
+				cell[OBSERVABLE] = k;
+
+				// CHOOSE DATATYPE
+				if      (DATATYPE == "t_lm_MPP") {
+					y[k]     = tensor(cell).t_lm_MPP[index];
+					y_err[k] = tensor(cell).t_lm_MPP_error[index];
+				}
+				else if (DATATYPE == "t_lm_EML") {
+					y[k]     = tensor(cell).t_lm_EML[index];
+					y_err[k] = tensor(cell).t_lm_EML_error[index]; 				
+				}
+				else if (DATATYPE == "E_lm") {
+					y[k]     = tensor(cell).E_lm[index];
+					y_err[k] = tensor(cell).E_lm_error[index]; 
+				} else {
+					throw std::invalid_argument("MHarmonic::PlotFigures: Unknown MODE = " + DATATYPE);
+				}
+
+				// Save maximum for visualization
+				if (l == 0 && m == 0) {
+					maxcount = y[k] > maxcount ? y[k] : maxcount;
+				}
+			}
+			
+			// Data displayed using TGraphErrors
+			gr[kk] = new TGraphErrors(BINS, x, y, x_err, y_err);
+
+			const std::string titletxt = (DATATYPE == "E_lm") ? "MC" : param.TYPE; // Efficiency always MC 
+			if (!(l == 0 && m == 0)) {
+				gr[kk]->SetTitle(Form("%s: #it{lm} = <%d,%d>", titletxt.c_str(), l, m));
+			} else {
+				gr[kk]->SetTitle(Form("%s: %s: #it{lm} = <%d,%d>", titletxt.c_str(), outputfile.c_str(), l, m));
+			}
+
+			// Set x-axis label
+			gr[kk]->GetXaxis()->SetTitle(xlabel.c_str());
+
+			gr[kk]->SetMarkerStyle(20);
+			gr[kk]->SetMarkerSize(0.05);
+
+			gStyle->SetBarWidth(0.5);
+			gr[kk]->SetFillColor(barcolor);
+
+			gr[kk]->GetXaxis()->SetTitleSize(0.05);
+			gr[kk]->GetXaxis()->SetLabelSize(0.05);
+
+			gr[kk]->GetYaxis()->SetTitleSize(0.05);
+			gr[kk]->GetYaxis()->SetLabelSize(0.05);
+
+			gStyle->SetTitleFontSize(0.08);
+
+			// gr->SetMarkerColor(4); // blue
+			
+			// Y-axis range
+			if (DATATYPE != "E_lm") {
+		   		if (!(l==0 && m==0)) { gr[kk]->GetHistogram()->SetMaximum(     2.0/3.0 * maxcount); }
+		  		gr[kk]->GetHistogram()->SetMinimum((l == 0 && m == 0) ? 0.0 : -2.0/3.0 * maxcount);  // Y  
+			} else {
+				gr[kk]->GetHistogram()->SetMaximum((l == 0 && m == 0) ? 1.0 :  0.3);
+		  		gr[kk]->GetHistogram()->SetMinimum((l == 0 && m == 0) ? 0.0 : -0.3);  // Y  
+			}
+			
+			gr[kk]->Draw("A B");
+			// gr[kk]->Draw("ALP");
+
+			// Draw legend string
+			TText* t = new TText(0.82, 0.85, legendstr.c_str());
+			t->SetNDC();
+			t->SetTextAlign(22);
+			t->SetTextColor(kRed+2);
+			t->SetTextFont(43);
+			t->SetTextSize(14);
+			//t->SetTextAngle(45);
+			t->Draw("same");
+
+			// Draw horizontal line
+			TLine* line = new TLine(x[0], 0.0, x[BINS-1], 0.0);
+
+			if (!(l == 0 && m == 0)) {
+			    line->SetLineColor(kRed);
+			    line->SetLineWidth(1.0);
+			    line->Draw("same");
+			}
+			++kk;
+		}
+	}
+
+	// Require that we have data
+	if (BINS > 1) {
+	aux::CreateDirectory("./figs");
+	aux::CreateDirectory("./figs/harmonicfit");
+	aux::CreateDirectory("./figs/harmonicfit/" + outputpath);
+	const std::string subpath = "OBS_" + std::to_string(OBSERVABLE) + "_" + legendstr;
+	aux::CreateDirectory("./figs/harmonicfit/" + outputpath + "/" + subpath);
+	c1->Print(Form("./figs/harmonicfit/%s/%s/%s.pdf", outputpath.c_str(), subpath.c_str(), outputfile.c_str()));
+	}
+
+	for (std::size_t i = 0; i < gr.size(); ++i) {
+		delete gr[i];
+	}
+
+	delete c1;
+}
+
+
+// Print 2D-figures
 void MHarmonic::PlotFigures2D(const MTensor<gra::spherical::SH>& tensor,
 							const std::string& DATATYPE, std::vector<int> OBSERVABLE,
                             const std::string& outputfile,
-                            int barcolor) const {
+                            int barcolor, const std::string& legendstr, const std::string& outputpath) const {
 
 	TCanvas* c1 = new TCanvas("c1", "c1", 700, 500); // horizontal, vertical
 	c1->Divide(sqrt(NCOEF), std::sqrt(NCOEF), 0.002, 0.001);
@@ -263,6 +424,8 @@ void MHarmonic::PlotFigures2D(const MTensor<gra::spherical::SH>& tensor,
 	}
 	int kk = 0;
 
+	std::vector<std::size_t> BINS = {tensor.size(OBSERVABLE[0]), tensor.size(OBSERVABLE[1])};
+
 	for (int l = 0; l <= param.LMAX; ++l) {
 		for (int m = -l; m <= l; ++m) {
 			const int index = gra::spherical::LinearInd(l, m);
@@ -270,8 +433,6 @@ void MHarmonic::PlotFigures2D(const MTensor<gra::spherical::SH>& tensor,
 			// Set canvas position
 			c1->cd(kk + 1);
 
-			std::vector<std::size_t> BINS = {tensor.size(OBSERVABLE[0]), tensor.size(OBSERVABLE[1])};
-			
 			// Loop over mass
 			double x[BINS[0]] = {0};
 			double y[BINS[1]] = {0};
@@ -291,11 +452,11 @@ void MHarmonic::PlotFigures2D(const MTensor<gra::spherical::SH>& tensor,
 					cell[OBSERVABLE[1]] = k2;
 
 					// CHOOSE DATATYPE
-					if      (DATATYPE == "t_lm_OBS") {
-						z[k1][k2] = tensor(cell).t_lm_OBS[index];
+					if      (DATATYPE == "t_lm_MPP") {
+						z[k1][k2] = tensor(cell).t_lm_MPP[index];
 					}
-					else if (DATATYPE == "t_lm_FIT") {
-						z[k1][k2] = tensor(cell).t_lm_FIT[index];			
+					else if (DATATYPE == "t_lm_EML") {
+						z[k1][k2] = tensor(cell).t_lm_EML[index];			
 					}
 					else if (DATATYPE == "E_lm") {
 						z[k1][k2] = tensor(cell).E_lm[index];
@@ -313,10 +474,12 @@ void MHarmonic::PlotFigures2D(const MTensor<gra::spherical::SH>& tensor,
 							   BINS[0], x[0]-xw, x[BINS[0]-1]+xw,
 							   BINS[1], y[0]-yw, y[BINS[1]-1]+yw);
 
+
+			const std::string titletxt = (DATATYPE == "E_lm") ? "MC" : param.TYPE; // Efficiency always MC 
 			if (!(l == 0 && m == 0)) {
-				gr[kk]->SetTitle(Form("#it{lm} = <%d,%d>", l, m));
+				gr[kk]->SetTitle(Form("%s: #it{lm} = <%d,%d>", titletxt.c_str(), l, m));
 			} else {
-				gr[kk]->SetTitle(Form("%s: #it{lm} = <%d,%d>", outputfile.c_str(), l, m));
+				gr[kk]->SetTitle(Form("%s: %s: #it{lm} = <%d,%d>", titletxt.c_str(), outputfile.c_str(), l, m));
 			}
 
 			// Set x-axis label
@@ -346,139 +509,20 @@ void MHarmonic::PlotFigures2D(const MTensor<gra::spherical::SH>& tensor,
 			++kk;
 		}
 	}
+
+	// Require that we have truly 2D data
+	if (BINS[0] > 1 && BINS[1] > 1) {
 	aux::CreateDirectory("./figs");
 	aux::CreateDirectory("./figs/harmonicfit");
-	aux::CreateDirectory("./figs/harmonicfit/2D_OBS_" + std::to_string(OBSERVABLE[0]) + "_OBS_" + std::to_string(OBSERVABLE[1]));
-	c1->Print(Form("./figs/harmonicfit/2D_OBS_%d_OBS_%d/%s.pdf", OBSERVABLE[0], OBSERVABLE[1], outputfile.c_str()));
+	aux::CreateDirectory("./figs/harmonicfit/" + outputpath);
+	const std::string subpath = "2D_OBS_" + std::to_string(OBSERVABLE[0]) + "_OBS_" + std::to_string(OBSERVABLE[1]) + "_" + legendstr;
+	aux::CreateDirectory("./figs/harmonicfit/" + outputpath + "/" + subpath);
+	c1->Print(Form("./figs/harmonicfit/%s/%s/%s.pdf", outputpath.c_str(), subpath.c_str(), outputfile.c_str()));
+	}
 
 	for (std::size_t i = 0; i < gr.size(); ++i) {
 		delete gr[i];
 	}
-
-	delete c1;
-}
-
-
-// Print figures
-void MHarmonic::PlotFigures(const MTensor<gra::spherical::SH>& tensor,
-							const std::string& DATATYPE, unsigned int OBSERVABLE,
-                            const std::string& outputfile,
-                            int barcolor) const {
-
-	TCanvas* c1 = new TCanvas("c1", "c1", 700, 500); // horizontal, vertical
-	c1->Divide(sqrt(NCOEF), std::sqrt(NCOEF), 0.002, 0.001);
-
-	// Loop over moments
-	int kk = 0;
-	std::vector<TGraphErrors*> gr(NCOEF, NULL);
-
-	std::string xlabel = "";
-	if      (OBSERVABLE == 0) {
-		xlabel = "M (GeV)";
-	}
-	else if (OBSERVABLE == 1) {
-		xlabel = "P_{T} (GeV)";
-	}
-	else if (OBSERVABLE == 2) {
-		xlabel = "Y";
-	} else {
-		throw std::invalid_argument("MHarmonic::PlotFigures: Unknown observable " + std::to_string(OBSERVABLE));
-	}
-
-	for (int l = 0; l <= param.LMAX; ++l) {
-		for (int m = -l; m <= l; ++m) {
-			const int index = gra::spherical::LinearInd(l, m);
-
-			// Set canvas position
-			c1->cd(kk + 1);
-
-			const std::size_t BINS = tensor.size(OBSERVABLE);
-			
-			// Loop over mass
-			double x[BINS]     = {0};
-			double y[BINS]     = {0};
-			double x_err[BINS] = {1e-2};
-			double y_err[BINS] = {1e-2};
-
-			for (std::size_t k = 0; k < BINS; ++k) {
-
-				// Get x-axis point
-				x[k] = xcenter[OBSERVABLE][k];
-
-				// Set indices {0,0,0, ..., 0}
-				std::vector<std::size_t> cell(xcenter.size(),0);
-				cell[OBSERVABLE] = k;
-
-				// CHOOSE DATATYPE
-				if      (DATATYPE == "t_lm_OBS") {
-					y[k]     = tensor(cell).t_lm_OBS[index];
-					y_err[k] = tensor(cell).t_lm_OBS_error[index];
-				}
-				else if (DATATYPE == "t_lm_FIT") {
-					y[k]     = tensor(cell).t_lm_FIT[index];
-					y_err[k] = tensor(cell).t_lm_FIT_error[index]; 				
-				}
-				else if (DATATYPE == "E_lm") {
-					y[k]     = tensor(cell).E_lm[index];
-					y_err[k] = tensor(cell).E_lm_error[index]; 
-				} else {
-					throw std::invalid_argument("MHarmonic::PlotFigures: Unknown MODE = " + DATATYPE);
-				}
-			}
-			
-			// Data displayed using TGraphErrors
-			gr[kk] = new TGraphErrors(BINS, x, y, x_err, y_err);
-
-			if (!(l == 0 && m == 0)) {
-				gr[kk]->SetTitle(Form("#it{lm} = <%d,%d>", l, m));
-			} else {
-				gr[kk]->SetTitle(Form("%s: #it{lm} = <%d,%d>", outputfile.c_str(), l, m));
-			}
-
-			// gr->SetMarkerColor(4); // blue
-
-			// Set x-axis label
-			gr[kk]->GetXaxis()->SetTitle(xlabel.c_str());
-
-			gr[kk]->SetMarkerStyle(20);
-			gr[kk]->SetMarkerSize(0.5);
-
-			gStyle->SetBarWidth(0.8);
-			gr[kk]->SetFillColor(barcolor); // gray
-
-			gr[kk]->GetXaxis()->SetTitleSize(0.05);
-			gr[kk]->GetXaxis()->SetLabelSize(0.05);
-
-			gr[kk]->GetYaxis()->SetTitleSize(0.05);
-			gr[kk]->GetYaxis()->SetLabelSize(0.05);
-
-			gStyle->SetTitleFontSize(0.08);
-
-			gr[kk]->Draw("A B");
-			// gr[kk]->Draw("ALP");
-			// c1->Update();
-
-			// Draw horizontal line
-			TLine* line = new TLine(x[0]*0.9, 0.0, x[BINS-1]*1.1, 0.0);
-			
-			if (!(l == 0 && m == 0)) {
-			    line->SetLineColor(kRed);
-			    line->SetLineWidth(1.0);
-			    line->Draw("same");
-			}
-
-			++kk;
-		}
-	}
-	aux::CreateDirectory("./figs");
-	aux::CreateDirectory("./figs/harmonicfit");
-	aux::CreateDirectory("./figs/harmonicfit/OBS_" + std::to_string(OBSERVABLE));
-	c1->Print(Form("./figs/harmonicfit/OBS_%d/%s.pdf", OBSERVABLE, outputfile.c_str()));
-
-	for (std::size_t i = 0; i < gr.size(); ++i) {
-		delete gr[i];
-	}
-
 	delete c1;
 }
 
@@ -587,75 +631,78 @@ void MHarmonic::HyperLoop(void (*fitfunc)(int&, double*, double&, double*, int),
 		// ==============================================================
 		// ALGORITHM 1: DIRECT / OBSERVED / ALGEBRAIC decomposition
 
-		fid({i,j,k}).t_lm_OBS = gra::spherical::SphericalMoments(DATA_events, DATA_ind, param.LMAX, 1);
-		det({i,j,k}).t_lm_OBS = gra::spherical::SphericalMoments(DATA_events, DATA_ind, param.LMAX, 2);
+		fid({i,j,k}).t_lm_MPP = gra::spherical::SphericalMoments(DATA_events, DATA_ind, param.LMAX, 1);
+		det({i,j,k}).t_lm_MPP = gra::spherical::SphericalMoments(DATA_events, DATA_ind, param.LMAX, 2);
 
 		// Forward matrix
 		Eigen::MatrixXd M     = gra::aux::Matrix2Eigen(det({i,j,k}).MIXlm);
 
 		// Matrix pseudoinverse
-		const double REGPARAM = 1e-3; // SVD singular value regularization strength
-		Eigen::VectorXd b     = gra::aux::Vector2Eigen(det({i,j,k}).t_lm_OBS);
-		Eigen::VectorXd x     = gra::math::PseudoInverse(M, REGPARAM) * b;
+		Eigen::VectorXd b     = gra::aux::Vector2Eigen(det({i,j,k}).t_lm_MPP);
+		Eigen::VectorXd x     = gra::math::PseudoInverse(M, param.SVDREG) * b;
 
 		// Collect the inversion result
-		ref({i,j,k}).t_lm_OBS = gra::aux::Eigen2Vector(x);
+		ref({i,j,k}).t_lm_MPP = gra::aux::Eigen2Vector(x);
 
 		// ==============================================================
 
 
 		// Update these to proper errors (TBD. PUT ZERO FOR NOW!!)
-		ref({i,j,k}).t_lm_OBS_error = std::vector<double>(ref({i,j,k}).t_lm_OBS.size(), 0.0);
-		fid({i,j,k}).t_lm_OBS_error = std::vector<double>(fid({i,j,k}).t_lm_OBS.size(), 0.0);
-		det({i,j,k}).t_lm_OBS_error = std::vector<double>(det({i,j,k}).t_lm_OBS.size(), 0.0);
+		ref({i,j,k}).t_lm_MPP_error = std::vector<double>(ref({i,j,k}).t_lm_MPP.size(), 0.0);
+		fid({i,j,k}).t_lm_MPP_error = std::vector<double>(fid({i,j,k}).t_lm_MPP.size(), 0.0);
+		det({i,j,k}).t_lm_MPP_error = std::vector<double>(det({i,j,k}).t_lm_MPP.size(), 0.0);
 
 		
-		std::cout << "Algebraic Moore-Penrose/SVD (unmixed) moments in the (angular flat) reference phase space:" << std::endl;
-		gra::spherical::PrintOutMoments(ref({i,j,k}).t_lm_OBS, ref({i,j,k}).t_lm_OBS_error, ACTIVE, param.LMAX);
+		std::cout << "Algebraic Moore-Penrose/SVD inverted (unmixed) moments in the (angular flat) reference phase space:" << std::endl;
+		gra::spherical::PrintOutMoments(ref({i,j,k}).t_lm_MPP, ref({i,j,k}).t_lm_MPP_error, ACTIVE, param.LMAX);
 
-		std::cout << "Algebraic (mixed) moments in the fiducial space:" << std::endl;
-		gra::spherical::PrintOutMoments(fid({i,j,k}).t_lm_OBS, fid({i,j,k}).t_lm_OBS_error, ACTIVE, param.LMAX);
+		std::cout << "Algebraic (mixed) moments in the fiducial phase space:" << std::endl;
+		gra::spherical::PrintOutMoments(fid({i,j,k}).t_lm_MPP, fid({i,j,k}).t_lm_MPP_error, ACTIVE, param.LMAX);
 
 		std::cout << "Algebraic (mixed) moments in the detector space:" << std::endl;
-		gra::spherical::PrintOutMoments(det({i,j,k}).t_lm_OBS, det({i,j,k}).t_lm_OBS_error, ACTIVE, param.LMAX);
+		gra::spherical::PrintOutMoments(det({i,j,k}).t_lm_MPP, det({i,j,k}).t_lm_MPP_error, ACTIVE, param.LMAX);
 
 
 		// ==============================================================
 		// ALGORITHM 2: Extended Maximum Likelihood Fit
 
-		// *** Get TMinuit based fit decomposition ***
 		if (param.EML) {
+
+		// *** Get TMinuit based fit decomposition ***
 		MomentFit({i,j,k}, fitfunc);
-		}
 
 		// Save result
-		ref({i,j,k}).t_lm_FIT = t_lm;
-		fid({i,j,k}).t_lm_FIT = fid({i,j,k}).MIXlm * t_lm; // Moment forward rotation: Matrix * Vector
-		det({i,j,k}).t_lm_FIT = det({i,j,k}).MIXlm * t_lm; // Moment forward rotation: Matrix * Vector
+		ref({i,j,k}).t_lm_EML = t_lm;
+		fid({i,j,k}).t_lm_EML = fid({i,j,k}).MIXlm * t_lm; // Moment forward rotation: Matrix * Vector
+		det({i,j,k}).t_lm_EML = det({i,j,k}).MIXlm * t_lm; // Moment forward rotation: Matrix * Vector
 
-		// Errors should be propagated after moment rotation (PUT SAME FOR ALL NOW)
-		ref({i,j,k}).t_lm_FIT_error = t_lm_error;
-		fid({i,j,k}).t_lm_FIT_error = t_lm_error;
-		det({i,j,k}).t_lm_FIT_error = t_lm_error;
-		
+		// Uncertanties
+		ref({i,j,k}).t_lm_EML_error = t_lm_error;
+		fid({i,j,k}).t_lm_EML_error = fid({i,j,k}).MIXlm * t_lm_error; // Simple rotation for now (should vector Taylor expand)
+		det({i,j,k}).t_lm_EML_error = det({i,j,k}).MIXlm * t_lm_error; // Simple rotation for now (should vector Taylor expand)
 		// ==============================================================
 
 
-		std::cout << "Maximum-Likelihood (unmixed) moments in the (angular flat) reference phase space:" << std::endl;
-		gra::spherical::PrintOutMoments(ref({i,j,k}).t_lm_FIT, ref({i,j,k}).t_lm_FIT_error, ACTIVE, param.LMAX);
+		std::cout << "Extended Maximum-Likelihood inverse fitted (unmixed) moments in the (angular flat) reference phase space:" << std::endl;
+		gra::spherical::PrintOutMoments(ref({i,j,k}).t_lm_EML, ref({i,j,k}).t_lm_EML_error, ACTIVE, param.LMAX);
 
-		std::cout << "Maximum-Likelihood Re-Back-Projected (mixed) moments in the fiducial space:" << std::endl;
-		gra::spherical::PrintOutMoments(fid({i,j,k}).t_lm_FIT, fid({i,j,k}).t_lm_FIT_error, ACTIVE, param.LMAX);
+		std::cout << "Extended Maximum-Likelihood Re-Back-Projected (mixed) moments in the fiducial phase space:" << std::endl;
+		gra::spherical::PrintOutMoments(fid({i,j,k}).t_lm_EML, fid({i,j,k}).t_lm_EML_error, ACTIVE, param.LMAX);
 
-		std::cout << "Maximum-Likelihood Re-Back-Projected (mixed) moments in the detector space:" << std::endl;
-		gra::spherical::PrintOutMoments(det({i,j,k}).t_lm_FIT, det({i,j,k}).t_lm_FIT_error, ACTIVE, param.LMAX);
+		std::cout << "Extended Maximum-Likelihood Re-Back-Projected (mixed) moments in the detector space:" << std::endl;
+		gra::spherical::PrintOutMoments(det({i,j,k}).t_lm_EML, det({i,j,k}).t_lm_EML_error, ACTIVE, param.LMAX);
+		
+		}
 
 		// --------------------------------------------------------------
 		// Print results
 		chi2 += PrintOutHyperCell({i,j,k});
 
 		// --------------------------------------------------------------
-		// Make comparison of synthetic data vs estimate
+		// Make comparison of synthetic MC data vs estimate
+		
+		if (param.TYPE == "MC") {
+
 		int fiducial = 0;
 		int selected = 0;
 		for (const auto& l : DATA_ind) {
@@ -663,40 +710,49 @@ void MHarmonic::HyperLoop(void (*fitfunc)(int&, double*, double&, double*, int),
 			if (DATA_events[l].fiducial && DATA_events[l].selected) { ++selected; }
 		}
 		std::cout << std::endl;
-		printf("cf. Synthetic data events generated               = %u \n", (unsigned int) DATA_ind.size());
-		printf("    Synthetic data events fiducial                = %d (acceptance %0.1f percent) \n",
+
+		std::cout << rang::fg::yellow << "MC GROUND TRUTH: " << rang::fg::reset << std::endl;
+		printf("   MC 'synthetic data' events generated               = %u \n", (unsigned int) DATA_ind.size());
+		printf("   MC 'synthetic data' events fiducial                = %d (acceptance %0.1f percent) \n",
 			fiducial, fiducial / (double) DATA_ind.size() * 100);
-		printf("    Synthetic data events fiducial and selected   = %d (efficiency %0.1f percent) \n", 
+		printf("   MC 'synthetic data' events fiducial and selected   = %d (efficiency %0.1f percent) \n", 
 			selected, selected / (double) fiducial * 100);
+		std::cout << std::endl;
+		}
 	}}}
 
+	if (param.EML) {
 	gra::aux::PrintBar("=");
-	double reducedchi2 = chi2 / (double)(ACTIVENDF * MASS_BINS);
+	double reducedchi2 = chi2 / (double)(ACTIVENDF * MASS_BINS * PT_BINS * Y_BINS);
 	if (reducedchi2 < 3) {
 		std::cout << rang::fg::green;
 	} else {
 		std::cout << rang::fg::red;
 	}
-	printf("Total Chi2 / (ACTIVENDF x MASS_BINS) = %0.2f / (%d x %d) = %0.2f \n", 
-		chi2, ACTIVENDF, MASS_BINS, reducedchi2);
+	printf("Total chi2(MPP - EML) / (ACTIVENDF x BINS) = %0.2f / (%d x %d) = %0.2f \n", 
+		    chi2, ACTIVENDF, MASS_BINS * PT_BINS * Y_BINS, reducedchi2);
 	std::cout << rang::fg::reset;
 	gra::aux::PrintBar("=");
 	std::cout << std::endl << std::endl;
-
+	}
 }
 
 
 // Print out results for the hypercell
 double MHarmonic::PrintOutHyperCell(const std::vector<std::size_t>& cell) {
 	
-	// Loop over moments
 	double chi2 = 0;
+
+	// Extended Maximum Likelihood
+	if (param.EML == true) {
+
+	// Loop over moments
 	for (int l = 0; l <= param.LMAX; ++l) {
 		for (int m = -l; m <= l; ++m) {
 			const  int index = gra::spherical::LinearInd(l, m);
 			
-			const double obs = det(cell).t_lm_OBS[index];
-			const double fit = det(cell).t_lm_FIT[index];
+			const double obs = det(cell).t_lm_MPP[index];
+			const double fit = det(cell).t_lm_EML[index];
 			
 			// Moment active
 			if (ACTIVE[index]) {
@@ -712,19 +768,30 @@ double MHarmonic::PrintOutHyperCell(const std::vector<std::size_t>& cell) {
 	} else {
 		std::cout << rang::fg::red;
 	}
-	printf("Chi2 / ndf = %0.3f / %d = %0.3f \n", chi2, ACTIVENDF, reducedchi2);
+	printf("chi2(MPP - EML) / ndf = %0.3f / %d = %0.3f \n", chi2, ACTIVENDF, reducedchi2);
 	std::cout << rang::fg::reset << std::endl;
-	
 
-	// From the Maximum Likelihood fit
-	double sum_ref = t_lm[0];
-	printf("Estimate of events in the reference phase space = %0.1f +- %0.1f \n", sum_ref, 0.0);
+	const double sum_ref = ref(cell).t_lm_EML[gra::spherical::LinearInd(0,0)];
+	printf("EML: Estimate of events in this hyperbin in the reference phase space = %0.1f +- %0.1f \n", sum_ref, 0.0);
 
-	double sum_FID = gra::spherical::HarmDotProd(fid(cell).E_lm, t_lm, ACTIVE, param.LMAX);
-	printf("Estimate of events in the fiducial  phase space = %0.1f +- %0.1f \n", sum_FID, 0.0);
+	const double sum_FID = gra::spherical::HarmDotProd(fid(cell).E_lm, ref(cell).t_lm_EML, ACTIVE, param.LMAX);
+	printf("EML: Estimate of events in this hyperbin in the fiducial  phase space = %0.1f +- %0.1f \n", sum_FID, 0.0);
 
-	double sum_DET = gra::spherical::HarmDotProd(det(cell).E_lm, t_lm, ACTIVE, param.LMAX);
-	printf("Estimate of events in the detector        space = %0.1f +- %0.1f \n", sum_DET, 0.0);
+	const double sum_DET = gra::spherical::HarmDotProd(det(cell).E_lm, ref(cell).t_lm_EML, ACTIVE, param.LMAX);
+	printf("EML: Estimate of events in this hyperbin in the detector        space = %0.1f +- %0.1f \n", sum_DET, 0.0);
+
+	}
+	std::cout << std::endl;
+
+	// Algebraic inverse
+	const double sum_ref = ref(cell).t_lm_MPP[gra::spherical::LinearInd(0,0)];
+	printf("MPP: Estimate of events in this hyperbin in the reference phase space = %0.1f +- %0.1f \n", sum_ref, 0.0);
+
+	const double sum_FID = gra::spherical::HarmDotProd(fid(cell).E_lm, ref(cell).t_lm_MPP, ACTIVE, param.LMAX);
+	printf("MPP: Estimate of events in this hyperbin in the fiducial  phase space = %0.1f +- %0.1f \n", sum_FID, 0.0);
+
+	const double sum_DET = gra::spherical::HarmDotProd(det(cell).E_lm, ref(cell).t_lm_MPP, ACTIVE, param.LMAX);
+	printf("MPP: Estimate of events in this hyperbin in the detector        space = %0.1f +- %0.1f \n", sum_DET, 0.0);
 
 	return chi2;
 }
@@ -759,7 +826,7 @@ void MHarmonic::MomentFit(const std::vector<std::size_t>& cell,
 
 	//double fminbest = 1e32;
 	// Try different initial values to find out true minimum
-	const std::size_t TRIALMAX = 3;
+	const std::size_t TRIALMAX = 1;
 
 	for (std::size_t trials = 0; trials < TRIALMAX; ++trials) {
 
@@ -774,18 +841,18 @@ void MHarmonic::MomentFit(const std::vector<std::size_t>& cell,
 
 				// ======================================================
 				// *** Use the algebraic inverse solution as a good starting value ***
-				const double start_value = ref(activecell).t_lm_OBS[index];
+				const double start_value = ref(activecell).t_lm_MPP[index];
 				// ======================================================
 				
 				const double step_value = 0.1; // in units of Events
 
 				gMinuit->mnparm(index, str, start_value, step_value, min, max, ierflg);
 
-				// After first trial, fix t_00
-				if (trials > 0) {
-					gMinuit->mnparm(0, "t_00", t_lm[0], 0, 0, 0, ierflg);
-					gMinuit->FixParameter(0);
-				}
+				// After first trial, fix t_00 (error are not estimated with constant parameters)
+				//if (trials > 0) {
+				//	gMinuit->mnparm(0, "t_00", t_lm[0], 0, 0, 0, ierflg);
+				//	gMinuit->FixParameter(0);
+				//}
 				// FIX ODD MOMENTS TO ZERO
 				if (param.REMOVEODD && ((l % 2) != 0)) {
 					gMinuit->mnparm(index, str, 0, 0, 0, 0, ierflg);
@@ -860,7 +927,7 @@ void MHarmonic::MomentFit(const std::vector<std::size_t>& cell,
 }
 
 
-// Uncellned Extended Maximum Likelihood function
+// Unbinned Extended Maximum Likelihood function
 // Extended means that the number of events (itself) is a Poisson distributed
 // random variable and that is incorporated to the fit.
 void MHarmonic::logLfunc(int& npar, double* gin, double& f, double* par, int iflag) const {
@@ -956,9 +1023,7 @@ void MHarmonic::logLfunc(int& npar, double* gin, double& f, double* par, int ifl
 	for (std::size_t i = START; i < T.size(); ++i) {
 		l1term += std::abs(T[i]);
 	}
-	l1term /= T[0]; // Normalization
-
-	f += l1term * param.LAMBDA;
+	f += l1term * param.L1REG * nhat; // nhat for scale normalization
 
 	// printf("MHarmonic:: cost-functional = %0.4E, nhat = %0.1f \n", f, nhat);
 }

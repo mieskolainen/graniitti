@@ -43,7 +43,7 @@ MMatrix<double> GetGMixing(const std::vector<Omega>& events, const std::vector<s
   const int NCOEF = (LMAX+1)*(LMAX+1);
 
   std::cout << "GetGMixing: mode = " << mode << std::endl;
-  std::cout << "Generated MC phase space events = " << ind.size() << std::endl;
+  std::cout << "Generated reference MC phase space events = " << ind.size() << std::endl;
 
   // Construct the efficiency coefficients EPSILON_LM with linear
   // indexing
@@ -111,11 +111,11 @@ MMatrix<double> GetGMixing(const std::vector<Omega>& events, const std::vector<s
   }
 
   if (mode == 1 || mode == 2) {
-    printf("Fiducial  MC phase space events = %d (acceptance %0.3f percent) \n",
+    printf("Fiducial reference MC phase space events = %d (acceptance %0.3f percent) \n",
         fiducial, fiducial / static_cast<double>(ind.size()) * 100);
   }
   if (mode == 2) {
-    printf("Selected  MC phase space events = %d (efficiency %0.3f percent) \n",
+    printf("Selected referemce MC phase space events = %d (efficiency %0.3f percent) \n",
         selected, selected / static_cast<double>(fiducial) * 100);
   }
   if (mode == 1 || mode == 2) {
@@ -205,7 +205,7 @@ std::pair<std::vector<double>,std::vector<double>>
   const int NCOEF = (LMAX+1)*(LMAX+1);
 
   std::cout << "GetELM: mode = " << mode << std::endl;
-  std::cout << "Generated MC phase space events = " << ind.size() << std::endl;
+  std::cout << "Generated reference MC phase space events = " << ind.size() << std::endl;
 
   // Construct the efficiency coefficients E_LM with linear indexing
   std::vector<double>  E(NCOEF, 0.0);
@@ -259,12 +259,12 @@ std::pair<std::vector<double>,std::vector<double>>
   }
   if (mode == 1 || mode == 2) {
     printf(
-        "Fiducial  MC phase space events = %d (geometric-kinematic acceptance %0.3f percent) \n\n",
+        "Fiducial reference MC phase space events = %d (geometric-kinematic acceptance %0.3f percent) \n\n",
         fiducial, fiducial / static_cast<double>(ind.size()) * 100);
   }
   if (mode == 2) {
     printf(
-        "Selected  MC phase space events = %d (fiducial efficiency %0.3f percent) \n\n",
+        "Selected reference MC phase space events = %d (fiducial efficiency %0.3f percent) \n\n",
         selected, selected / static_cast<double>(fiducial) * 100);
   }
   if (mode == 1) {
@@ -453,8 +453,8 @@ std::vector<std::size_t> GetIndices(const std::vector<Omega>& events,
 
   gra::aux::PrintBar("-");
   std::cout << rang::fg::green;
-  printf("Events %lu/%lu :: MASS INTERVAL: [%0.3f, %0.3f] GeV, PT INTERVAL: [%0.3f, %0.3f] GeV, Y INTERVAL: [%0.3f, %0.3f] \n\n",
-         ind.size(), events.size(), M[0], M[1], Pt[0], Pt[1], Y[0], Y[1]);
+  printf("MASS RANGE: [%0.3f, %0.3f] GeV, PT RANGE: [%0.3f, %0.3f] GeV, Y RANGE: [%0.3f, %0.3f] : Events in this hyperbin %lu/%lu \n\n",
+          M[0], M[1], Pt[0], Pt[1], Y[0], Y[1], ind.size(), events.size());
   std::cout << rang::fg::reset;
 
   return ind;

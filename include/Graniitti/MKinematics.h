@@ -1542,8 +1542,13 @@ public:
 
   // Particle class
   MParticle p;
+  
+  // -------------------------------------------------------------------
+  // Tensor Pomeron couplings
+  std::vector<double> g_Tensor;
+  // -------------------------------------------------------------------
 
-  // (Complex) coupling constant
+  // (Complex) production coupling constant
   std::complex<double> g = 0.0;
   
   // Form factor

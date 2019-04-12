@@ -74,11 +74,12 @@ void MSubProc::ConstructDescriptions(const std::string& first) {
 		std::map<std::string, std::string> channels;
 		channels.insert(std::pair<std::string, std::string>("CONTENSOR",    "Regge continuum 2-body                   [Tensor Pomeron] x [Tensor Pomeron] @@ UNDER TESTING @@"));
 		channels.insert(std::pair<std::string, std::string>("RESTENSOR",    "Regge resonance                          [Tensor Pomeron] x [Tensor Pomeron] @@ UNDER TESTING @@"));
+		channels.insert(std::pair<std::string, std::string>("RES+CONTENSOR","Regge resonances + continuum 2-body      [Tensor Pomeron] x [Tensor Pomeron] @@ UNDER TESTING @@"));
 
 		channels.insert(std::pair<std::string, std::string>("CON",          "Regge continuum 2/4/6-body               [Pomeron] x [Pomeron]"));
 		channels.insert(std::pair<std::string, std::string>("CON-",         "Regge continuum 2-body negative subamp   [Pomeron] x [Pomeron]"));
 
-		channels.insert(std::pair<std::string, std::string>("RES+CON",      "Regge cont. 2-body + complex resonances  [Pomeron] x [Gamma/Pomeron]"));
+		channels.insert(std::pair<std::string, std::string>("RES+CON",      "Regge resonances + continuum 2-body      [Pomeron] x [Gamma/Pomeron]"));
 		channels.insert(std::pair<std::string, std::string>("RES",          "Regge parametric resonance               [Pomeron] x [Pomeron]"));
 		channels.insert(std::pair<std::string, std::string>("RESHEL",       "Regge sliding helicity amplitudes        [Pomeron] x [Pomeron] @@ UNDER CONSTRUCTION @@"));
 			descriptions.insert(std::pair<std::string, std::map<std::string,std::string>>("PP", channels));
@@ -237,16 +238,19 @@ inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR& lt
 	else if (CHANNEL == "RESHEL") {
 		A = ME3HEL(lts, lts.RESONANCES.begin()->second);
 	}
-	
 	else if (CHANNEL == "RESTENSOR") {
 		if      (lts.decaytree.size() == 2) {
 			static MTensorPomeron TensorPomeron;
-			A = TensorPomeron.ME3(lts);
+
+			if (lts.RESONANCES.begin()->second.p.spinX2 == 2) {
+				throw std::invalid_argument("MSubProc: RESTENSOR process does not currently support J = 1 resonances");
+			}
+
+			A = TensorPomeron.ME3(lts, lts.RESONANCES.begin()->second);
 		} else {
 			throw std::invalid_argument("MSubProc: Only 2-body + sequential final states for [RESTENSOR] process");
 		}
 	}
-	
 	else if (CHANNEL == "CONTENSOR") {
 		if      (lts.decaytree.size() == 2) {
 			static MTensorPomeron TensorPomeron;
@@ -255,7 +259,46 @@ inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR& lt
 			throw std::invalid_argument("MSubProc: Only 2-body + sequential final states for [CONTENSOR] process");
 		}
 	}
-	
+	else if (CHANNEL == "RES+CONTENSOR") {
+		if      (lts.decaytree.size() == 2) {
+			static MTensorPomeron TensorPomeron;
+
+			// 1. Continuum matrix element
+			TensorPomeron.ME4(lts);
+			
+			// Add to temp
+			std::vector<std::complex<double>> tempsum(lts.hamp.size(), 0.0);
+			std::transform(tempsum.begin(), tempsum.end(), lts.hamp.begin(), tempsum.begin(), std::plus<std::complex<double>>());
+
+			// 2. Coherent sum of Resonances (loop over)
+			for (auto& x : lts.RESONANCES) {
+
+				if (x.second.p.spinX2 == 2) {
+					throw std::invalid_argument("MSubProc: RES+CONTENSOR process does not currently support J = 1 resonances");
+				}
+				
+				// Pomeron-Pomeron
+				TensorPomeron.ME3(lts, x.second);
+				// Add to temp
+				std::transform(tempsum.begin(), tempsum.end(), lts.hamp.begin(), tempsum.begin(), std::plus<std::complex<double>>());
+			}
+			
+			// Total sum
+			lts.hamp = tempsum;
+			
+			// Get total amplitude squared 1/4 \sum_h |A_h|^2
+			double SumAmp2 = 0.0;
+			for (std::size_t i = 0; i < lts.hamp.size(); ++i) {
+				SumAmp2 += gra::math::abs2(lts.hamp[i]);
+			}
+			SumAmp2 /= 4; // Initial state helicity average
+			
+			A = msqrt(SumAmp2); // We expect amplitude
+
+		} else {
+			throw std::invalid_argument("MSubProc: Only 2-body + sequential final states for [RES+CONTENSOR] process");
+		}
+	}
 	else if (CHANNEL == "CON") {
 		if      (lts.decaytree.size() == 2) {
 			A = ME4(lts,1);
@@ -269,7 +312,6 @@ inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR& lt
 			throw std::invalid_argument("MSubProc: Only 2/4/6-body + sequential final states for [CON] process");
 		}
 	}
-	
 	else if (CHANNEL == "CON-") {
 		if      (lts.decaytree.size() == 2) {
 			A = ME4(lts, -1);
@@ -277,7 +319,6 @@ inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR& lt
 			throw std::invalid_argument("MSubProc: Only 2-body final states for [CON-] process");
 		}
 	}
-	
 	else if (CHANNEL == "RES+CON") {
 
 		// 1. Continuum matrix element
@@ -297,7 +338,6 @@ inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR& lt
 				A += ME3(lts, x.second);
 			}
 		}
-
 	} else {
 		throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown CHANNEL = " + CHANNEL);
 	}

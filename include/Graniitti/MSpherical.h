@@ -36,9 +36,9 @@ struct Omega {
 };
 
 
-// Data for one hypercell (M,Pt,Y)
+// Data for one hypercell, e.g., in (M,Pt,Y)
 struct SH {
-
+	
 	// Moment mixing matrix
 	MMatrix<double>     MIXlm;
 
@@ -47,12 +47,12 @@ struct SH {
 	std::vector<double> E_lm_error;
 
 	// Diractly (algebraic) observed moments
-	std::vector<double> t_lm_OBS;
-	std::vector<double> t_lm_OBS_error;		
+	std::vector<double> t_lm_MPP;
+	std::vector<double> t_lm_MPP_error;		
 
-	// Maximum Likelihood fitted moments
-	std::vector<double> t_lm_FIT;
-	std::vector<double> t_lm_FIT_error;
+	// Extended Maximum Likelihood fitted moments
+	std::vector<double> t_lm_EML;
+	std::vector<double> t_lm_EML_error;
 };
 
 

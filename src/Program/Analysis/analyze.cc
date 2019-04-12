@@ -38,6 +38,7 @@
 #include "Graniitti/MAux.h"
 #include "Graniitti/Analysis/MAnalyzer.h"
 #include "Graniitti/Analysis/MMultiplet.h"
+#include "Graniitti/Analysis/MROOT.h"
 
 // Libraries
 #include "cxxopts.hpp"
@@ -46,48 +47,6 @@
 using gra::aux::indices;
 
 using namespace gra;
-
-// Set "nice" 2D-plot style
-// Read here more about problems with the Rainbow
-void set_plot_style() {
-    
-    // Set Smooth color gradients
-    const Int_t NRGBs = 5;
-    const Int_t NCont = 255;
-
-    Double_t stops[NRGBs] = {0.00, 0.34, 0.61, 0.84, 1.00};
-    Double_t red[NRGBs]   = {0.00, 0.00, 0.87, 1.00, 0.51};
-    Double_t green[NRGBs] = {0.00, 0.81, 1.00, 0.20, 0.00};
-    Double_t blue[NRGBs]  = {0.51, 1.00, 0.12, 0.00, 0.00};
-    TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
-    gStyle->SetNumberContours(NCont);
-
-    // Black-Red palette
-    gStyle->SetPalette(53); // 53/56 for inverted
-    gStyle->SetTitleOffset(1.6, "x"); // X-axis title offset from axis
-    gStyle->SetTitleOffset(1.0, "y"); // X-axis title offset from axis
-    gStyle->SetTitleSize(0.03,  "x");  // X-axis title size
-    gStyle->SetTitleSize(0.035, "y");
-    gStyle->SetTitleSize(0.03,  "z");
-    gStyle->SetLabelOffset(0.025);
-}
-
-
-// Global Style Setup
-void setROOTstyle() {
-    gStyle->SetOptStat(0); // Statistics BOX OFF [0,1]
-
-    gStyle->SetOptFit(); // Fit parameters
-
-    gStyle->SetTitleSize(0.04, "t"); // Title with "t" (or anything else than xyz)
-    gStyle->SetStatY(1.0);
-    gStyle->SetStatX(1.0);
-    gStyle->SetStatW(0.15);
-    gStyle->SetStatH(0.09);
-    
-    // See below
-    set_plot_style();
-}
 
 
 // Initialize 1D-histograms
@@ -233,8 +192,9 @@ std::map<std::string, std::unique_ptr<hProfMultiplet>> hP;
 
 // Main program
 int main(int argc, char* argv[]) {
-    setROOTstyle();
-
+    
+    gra::rootstyle::SetROOTStyle();
+    
     gra::aux::PrintFlashScreen(rang::fg::green);
     std::cout << rang::style::bold
               << "GRANIITTI - Fast Analyzer"
