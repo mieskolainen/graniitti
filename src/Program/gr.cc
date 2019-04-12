@@ -74,8 +74,9 @@ int main(int argc, char* argv[]) {
 		std::cout << rang::style::bold << " Inline 'on-the-flight' parameters to concatenate with PROCESS string:" << rang::style::reset << std::endl;
 		std::cout << "  @FLATAMP:N                flat matrix element for 'pure' phase space generation, set N to -1 for more info" << std::endl;
 		std::cout << "  @PDG[X]{M:350.0, W:5.0}   new mass and width for pdg particle id X" << std::endl;
-		std::cout << "  @OFFSHELL:X               how many +- full widths particles can be off-shell in decay trees (0 for on-shell, 5 is default)" << std::endl;
+		std::cout << "  @OFFSHELL:X               how many +- full widths particles can be off-shell in decay trees (X = 0 for on-shell, X = 5 is default)" << std::endl;
 		std::cout << "  @FLATMASS2:true           flat sampling in mass^2 instead of relativistic Breit-Wigner f(M^2) in decay trees" << std::endl;
+		std::cout << "  @FRAME:X                  set common Lorentz frame for parametric spin correlated resonance decays (X = SR, HE, CS)" << std::endl;
 		std::cout << std::endl;
 		std::cout << rang::style::bold << " PROCESS string examples:" << rang::style::reset << std::endl;
 		std::cout << "  yy[CON]<C> -> mu+ mu-" << std::endl;
@@ -88,10 +89,10 @@ int main(int argc, char* argv[]) {
 		
 		std::cout << rang::style::bold << " A steering card example with no additional input:" << rang::style::reset << std::endl;
 		std::cout << "  " << argv[0] << " -i ./input/test.json" << std::endl << std::endl;
-
+		
 		std::cout << rang::style::bold << " A steering card example + commandline input override:" << rang::style::reset << std::endl;
 		std::cout << "  " << argv[0] << " -i ./input/test.json -p \"yy[C]<F> -> W+ W-\"" << std::endl << std::endl;
-
+		
 		return EXIT_FAILURE;
 	}
 

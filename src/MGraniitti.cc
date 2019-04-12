@@ -611,6 +611,9 @@ void MGraniitti::ReadProcessParam(const std::string& inputfile, const std::strin
 		if (syntax[i].id == "OFFSHELL") {
 			proc->SetOFFSHELL(std::stod(syntax[i].arg["_SINGLET_"]));
 		}
+		if (syntax[i].id == "FRAME") {
+			proc->SetFRAME(syntax[i].arg["_SINGLET_"]);
+		}
 	}
 
 	// ...

@@ -133,6 +133,15 @@ public:
 		return OFFSHELL;
 	}
 
+	// Set common Lorentz frame for all resonances
+	void SetFRAME(const std::string& FRAME) {
+
+		std::cout << rang::fg::red << "MProcess::SetFRAME: Set common Lorentz frame for the resonance decays : " << FRAME << rang::fg::reset << std::endl;
+		for (const auto& x : lts.RESONANCES) {
+			lts.RESONANCES[x.first].hc.FRAME = FRAME;
+		}
+	}
+	
 	// Get initial state
 	std::vector<gra::MParticle> GetInitialState() {
 		std::vector<gra::MParticle> beams = {beam1, beam2};
