@@ -194,8 +194,8 @@ int main(int argc, char* argv[]) {
     const std::string FRAME = r["frame"].as<std::string>();
 
     // Fast pt-efficiency simulation
-    const bool SIMULATE = r["simulate"].as<std::string>() == "true" ? true : false;
-
+    const bool SIMULATE     = r["simulate"].as<std::string>() == "true" ? true : false;
+    
     // Maximum number of events
     int MAXEVENTS = 1E9;
     if (r.count("X")) {

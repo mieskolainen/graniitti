@@ -12,6 +12,8 @@
 #include <iostream>
 #include <random>
 #include <vector>
+#include <string>
+#include <regex>
 
 // ROOT
 #include "TLatex.h"
@@ -218,9 +220,9 @@ void MHarmonic::PlotAll(const std::string& legendstr, const std::string& outputp
 	for (const auto& OBSERVABLE2 : OBSERVABLES) {
 
 	// **** EFFICIENCY DECOMPOSITION ****
-	PlotFigures2D(ref, "E_lm",     OBSERVABLE2, "Response[FLAT_REFERENCE]<REF>",  17, legendstr, outputpath);
-	PlotFigures2D(fid, "E_lm",     OBSERVABLE2, "Response[FIDUCIAL_ACCEPTANCE]<FID>", 33, legendstr, outputpath);
-	PlotFigures2D(det, "E_lm",     OBSERVABLE2, "Response[ACCEPTANCE_x_EFFICIENCY]<DET>", 29, legendstr, outputpath);
+	PlotFigures2D(ref, "E_lm",     OBSERVABLE2, "Response[FLAT REFERENCE]<REF>",  17, legendstr, outputpath);
+	PlotFigures2D(fid, "E_lm",     OBSERVABLE2, "Response[FIDUCIAL ACCEPTANCE]<FID>", 33, legendstr, outputpath);
+	PlotFigures2D(det, "E_lm",     OBSERVABLE2, "Response[ACCEPTANCE x EFFICIENCY]<DET>", 29, legendstr, outputpath);
 
 	// **** ALGEBRAIC INVERSE MOMENTS ****
 	PlotFigures2D(ref, "t_lm_MPP", OBSERVABLE2, "Moments[MPP]<REF>", 17, legendstr, outputpath);
@@ -266,6 +268,22 @@ void MHarmonic::PlotFigures(const MTensor<gra::spherical::SH>& tensor,
 
 	const std::size_t BINS = tensor.size(OBSERVABLE);
 
+	// --------------------------------------
+	// Extract name strings
+	// find <string>
+  	std::smatch sma;
+  	std::regex_match(outputfile, sma, std::regex("\\<.*?\\>"));
+
+  	std::string SPACE = "";
+  	if (sma.size() > 0) { SPACE = sma[0]; }
+
+  	// find [string]
+  	std::smatch sms;
+  	std::regex_match(outputfile, sms, std::regex("\\[.*?\\]"));
+
+  	std::string ALGO = "";
+  	if (sms.size() > 0) { ALGO = sms[0]; }
+	// --------------------------------------
 
 	// Set max
 	double maxcount = 0.0;
@@ -355,15 +373,25 @@ void MHarmonic::PlotFigures(const MTensor<gra::spherical::SH>& tensor,
 			gr[kk]->Draw("A B");
 			// gr[kk]->Draw("ALP");
 
-			// Draw legend string
-			TText* t = new TText(0.82, 0.85, legendstr.c_str());
-			t->SetNDC();
-			t->SetTextAlign(22);
-			t->SetTextColor(kRed+2);
-			t->SetTextFont(43);
-			t->SetTextSize(14);
-			//t->SetTextAngle(45);
-			t->Draw("same");
+			// Draw SPACE string
+			TText* t1 = new TText(0.02, 0.85, SPACE.c_str());
+			t1->SetNDC();
+			t1->SetTextAlign(22);
+			t1->SetTextColor(kBlack);
+			t1->SetTextFont(43);
+			t1->SetTextSize(14);
+			//t1->SetTextAngle(45);
+			t1->Draw("same");
+
+			// Draw FRAME string
+			TText* t2 = new TText(0.82, 0.85, legendstr.c_str());
+			t2->SetNDC();
+			t2->SetTextAlign(22);
+			t2->SetTextColor(kRed+2);
+			t2->SetTextFont(43);
+			t2->SetTextSize(14);
+			//t2->SetTextAngle(45);
+			t2->Draw("same");
 
 			// Draw horizontal line
 			TLine* line = new TLine(x[0], 0.0, x[BINS-1], 0.0);

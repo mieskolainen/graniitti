@@ -41,7 +41,6 @@ do
 -c $FIDCUTS \
 -f $FRAME -l $LMAX -o $REMOVEODD -n $REMOVENEGATIVE -a $SVDREG -b $L1REG -e $EML \
 -M $MBINS -P $PBINS -Y $YBINS \
--s $FS \
 -X 100000
 
 done

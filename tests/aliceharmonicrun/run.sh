@@ -9,8 +9,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
 # Generate
-./bin/gr -i ./tests/aliceharmonicrun/SH_2pi_REF_ALICE.json -n 10000000
-./bin/gr -i ./tests/aliceharmonicrun/SH_2pi_ALICE.json     -n 10000000
+./bin/gr -i ./tests/aliceharmonicrun/SH_2pi_REF_ALICE.json -n 1000000
+./bin/gr -i ./tests/aliceharmonicrun/SH_2pi_ALICE.json     -n 1000000
 
 fi
 
@@ -37,15 +37,14 @@ for FRAME in HE CS PG SR
 do
 
 # Analyze
-#./bin/fitharmonic -r SH_2pi_REF_ALICE -i SH_2pi_ALICE -s true -t MC \
-./bin/fitharmonic -r SH_2pi_REF_ALICE -i ALICE7_2pi.csv -t DATA -s false \
+#./bin/fitharmonic -r SH_2pi_REF_ALICE -i ALICE7_2pi.csv -t DATA -s false \
+./bin/fitharmonic -r SH_2pi_REF_ALICE -i SH_2pi_ALICE -t MC -s true  \
 -c $FIDCUTS \
 -f $FRAME -l $LMAX -o $REMOVEODD -n $REMOVENEGATIVE -a $SVDREG -b $L1REG -e $EML \
 -M $MBINS -P $PBINS -Y $YBINS \
--s $FS \
--X 1000000
+-X 10000
 
 done
 
 # Implement 2D harmonic plots (M,Pt)
-# ...
+# ... 
