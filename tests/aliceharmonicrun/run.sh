@@ -9,8 +9,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
 # Generate
-./bin/gr -i ./tests/aliceharmonicrun/SH_2pi_J0_ALICE.json -n 100000
-./bin/gr -i ./tests/aliceharmonicrun/SH_2pi_ALICE.json    -n 100000
+./bin/gr -i ./tests/aliceharmonicrun/SH_2pi_J0_ALICE.json -n 1000000
+./bin/gr -i ./tests/aliceharmonicrun/SH_2pi_ALICE.json    -n 1000000
 
 fi
 
@@ -25,15 +25,15 @@ PBINS=1,0.0,2.0
 YBINS=1,-0.9,0.9
 
 # PARAMETERS
-LMAX=2
+LMAX=4
 REMOVEODD=true
 REMOVENEGATIVE=true
 SVDREG=1e-4
 L1REG=0 #1e-5
-EML=true
+EML=false
 
 # Lorentz frames
-for FRAME in HE # CS PG SR
+for FRAME in HE CS PG SR
 do
 
 # Analyze

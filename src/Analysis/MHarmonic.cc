@@ -20,6 +20,7 @@
 #include "TCanvas.h"
 #include "TColor.h"
 #include "TGraphErrors.h"
+#include "TMultiGraph.h"
 #include "TH1.h"
 #include "TH2.h"
 #include "TLegend.h"
@@ -316,6 +317,17 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 	std::vector<double> MINVAL(ACTIVENDF,  1e32);
 	std::vector<double> MAXVAL(ACTIVENDF, -1e32);
 
+	// Turn of horizontal errors
+	gStyle -> SetErrorX(0);
+
+	std::vector<TMultiGraph*> mg(ACTIVENDF, NULL);
+	for (std::size_t k = 0; k < ACTIVENDF; ++k) {
+		mg[k] = new TMultiGraph();
+	}
+
+	std::string FRAME;
+	std::vector<std::string> TITLES;
+
 	for (const auto& source : tensor) {
 
 		legendstrs[ind] = source.first.LEGEND;
@@ -359,8 +371,19 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 						y_err[bin] = source.second(cell).t_lm_EML_error[index];        
 					}
 					else if (DATAMODE == "Response") {
-						//y[bin]     = source.second(cell).E_lm[index];
-						//y_err[bin] = source.second(cell).E_lm_error[index]; 
+
+						if      (SPACE == "det") {
+						y[bin]     = det_DET(cell).E_lm[index];
+						y_err[bin] = det_DET(cell).E_lm_error[index];
+						}
+						else if (SPACE == "fid") {
+						y[bin]     = fid_DET(cell).E_lm[index];
+						y_err[bin] = fid_DET(cell).E_lm_error[index];
+						}
+						else if (SPACE == "fla") {
+						y[bin]     = fla_DET(cell).E_lm[index];
+						y_err[bin] = fla_DET(cell).E_lm_error[index];							
+						}
 					} else {
 						throw std::invalid_argument("MHarmonic::PlotFigures: Unknown input: DATAMODE = " + DATAMODE + " ALGO = " + ALGO);
 					}
@@ -373,119 +396,121 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 				// Data displayed using TGraphErrors
 				gr[ind][k] = new TGraphErrors(BINS, x, y, x_err, y_err);
 
-				const std::string titletxt = (DATAMODE == "E_lm") ? "MC" : source.first.MODE; // Efficiency always MC
-				if (!(l == 0 && m == 0)) {
-					gr[ind][k]->SetTitle(Form("#it{lm} = <%d,%d>", l, m));
-				} else {
-					if (SPACE == "det") { gr[ind][k]->SetTitle(Form("%s | #it{lm} = <%d,%d>", source.first.TITLES[0].c_str(), l, m)); }
-					if (SPACE == "fid") { gr[ind][k]->SetTitle(Form("%s | #it{lm} = <%d,%d>", source.first.TITLES[1].c_str(), l, m)); }
-					if (SPACE == "fla") { gr[ind][k]->SetTitle(Form("%s | #it{lm} = <%d,%d>", source.first.TITLES[2].c_str(), l, m)); }
-				}
-
-				// Set x-axis label
-				gr[ind][k]->GetXaxis()->SetTitle(xlabel.c_str());
-
-				gr[ind][k]->SetMarkerStyle(21); // square
-				gr[ind][k]->SetMarkerSize(0.3);
-				
-				gStyle->SetBarWidth(0.5);
-				//gr[k]->SetFillStyle(0);
-
-				gr[ind][k]->GetXaxis()->SetTitleSize(0.05);
-				gr[ind][k]->GetXaxis()->SetLabelSize(0.05);
-
-				gr[ind][k]->GetYaxis()->SetTitleSize(0.05);
-				gr[ind][k]->GetYaxis()->SetLabelSize(0.05);
-
-				gStyle->SetTitleFontSize(0.08);
-				if (l == 0 && m == 0) {
-					gStyle->SetTitleW(0.95); // width percentage
-				}
-
 				// Colors
 				gr[ind][k]->SetMarkerColor(barcolor + 5*ind);
 				gr[ind][k]->SetLineColor(barcolor + 5*ind);
 				gr[ind][k]->SetFillColor(barcolor + 5*ind);
+				gr[ind][k]->SetMarkerStyle(21); // square
+				gr[ind][k]->SetMarkerSize(0.3);
 
-				// Y-axis range
-				if (DATAMODE != "E_lm") {
-					
-					if (l == 0 && m == 0) {
-					gr[ind][k]->GetHistogram()->SetMaximum(MAXVAL[k]*1.25);
-					gr[ind][k]->GetHistogram()->SetMinimum(0.0);
-					} else {
+				FRAME  = source.first.FRAME;
+				TITLES = source.first.TITLES;
 
-					const double bound = std::max(std::abs(MINVAL[k]), std::abs(MAXVAL[k]));
-					gr[ind][k]->GetHistogram()->SetMaximum( bound*1.25);
-					gr[ind][k]->GetHistogram()->SetMinimum(-bound*1.25);
-					}
-
-				// Efficiency distribution
-				} else {
-					gr[ind][k]->GetHistogram()->SetMaximum((l == 0 && m == 0) ? 1.0 :  0.3);
-					gr[ind][k]->GetHistogram()->SetMinimum((l == 0 && m == 0) ? 0.0 : -0.3);  // Y  
-				}
-
-				if (ind == 0) { // A only for the first -> otherwise problems
-				gr[ind][k]->Draw("AC* same");
-				} else {
-				gr[ind][k]->Draw("C*");
-				}
-
-				// gr[ind][k]->Draw("A B same");
-				// gr[ind][k]->Draw("ALP same");
-
-				/*
-				// Draw SPACE string
-				TText* t1 = new TText(0.1, 0.85, SPACE.c_str());
-				t1->SetNDC();
-				t1->SetTextAlign(22);
-				t1->SetTextColor(kBlack);
-				t1->SetTextFont(43);
-				t1->SetTextSize(14);
-				//t1->SetTextAngle(45);
-				t1->Draw("same");
-				*/
-
-				// Draw Lorentz FRAME string on left
-				if (ind == 0) {
-
-				TText* t2 = new TText(0.2, 0.85, source.first.FRAME.c_str());
-				t2->SetNDC();
-				t2->SetTextAlign(22);
-				t2->SetTextColor(kRed+2);
-				t2->SetTextFont(43);
-				t2->SetTextSize(std::ceil(1.0/msqrt(ACTIVENDF)) * 20);
-				//t2->SetTextAngle(45);
-				t2->Draw("same");
-
-				// Draw horizontal red line
-				if (!(l == 0 && m == 0)) {
-					TLine* line = new TLine(grid[OBSERVABLE][0].min - 0.1, 0.0, grid[OBSERVABLE][grid[OBSERVABLE].size()-1].max + 0.1, 0.0);
-					line->SetLineColor(kRed);
-					line->SetLineWidth(1.0);
-					line->Draw("same");
-				}
-
-				}
+				// Add to the multigraph
+				mg[k]->Add(gr[ind][k]);
 
 				++k;
 
 		    } // over m
 		  }   // over l
 
+		  if (DATAMODE == "Response") { break; }
+
 		  ++ind;
 	} // Loop over sources
 
+
+	// Draw multigraph
+	int k = 0;
+
+	for (int l = 0; l <= param.LMAX; ++l) {
+	for (int m = -l; m <= l; ++m) {
+
+		const int index = gra::spherical::LinearInd(l, m);
+
+		if (!ACTIVE[index]) { continue; } // Not active
+
+		// Set canvas position
+		c1->cd(k + 1);
+
+		// First draw, then setup (otherwise crash)
+		mg[k]->Draw("AC*");
+
+		// Title
+		if (k != 0) {
+			mg[k]->SetTitle(Form("#it{lm} = <%d,%d>", l, m));
+		} else {
+			if (SPACE == "det") { mg[k]->SetTitle(Form("%s | #it{lm} = <%d,%d>", TITLES[0].c_str(), l, m)); }
+			if (SPACE == "fid") { mg[k]->SetTitle(Form("%s | #it{lm} = <%d,%d>", TITLES[1].c_str(), l, m)); }
+			if (SPACE == "fla") { mg[k]->SetTitle(Form("%s | #it{lm} = <%d,%d>", TITLES[2].c_str(), l, m)); }
+		}
+		
+		// Set x-axis label
+		mg[k]->GetXaxis()->SetTitle(xlabel.c_str());
+		//gStyle->SetBarWidth(0.5);
+		//mg[k]->SetFillStyle(0);
+		
+		mg[k]->GetXaxis()->SetTitleSize(0.05);
+		mg[k]->GetXaxis()->SetLabelSize(0.05);
+
+		mg[k]->GetYaxis()->SetTitleSize(0.05);
+		mg[k]->GetYaxis()->SetLabelSize(0.05);
+
+		gStyle->SetTitleFontSize(0.08);
+		
+		if (k == 0) {
+			gStyle->SetTitleW(0.95); // width percentage
+		}
+
+		// Y-axis range
+		if (DATAMODE != "Response") {
+			
+			if (k == 0) {
+			mg[k]->GetHistogram()->SetMaximum(MAXVAL[k]*1.1);
+			mg[k]->GetHistogram()->SetMinimum(0.0);
+			} else {
+
+			const double bound = std::max(std::abs(MINVAL[k]), std::abs(MAXVAL[k]));
+			mg[k]->GetHistogram()->SetMaximum( bound*1.1);
+			mg[k]->GetHistogram()->SetMinimum(-bound*1.1);
+			}
+
+		// Efficiency distribution
+		} else {
+			mg[k]->GetHistogram()->SetMaximum((k == 0) ? 1.0 :  0.3);
+			mg[k]->GetHistogram()->SetMinimum((k == 0) ? 0.0 : -0.3);  // Y  
+		}
+
+		// Draw Lorentz FRAME string on left
+		TText* t2 = new TText(0.2, 0.85, FRAME.c_str());
+		t2->SetNDC();
+		t2->SetTextAlign(22);
+		t2->SetTextColor(kRed+2);
+		t2->SetTextFont(43);
+		t2->SetTextSize(std::ceil(1.0/msqrt(ACTIVENDF)) * 20);
+		//t2->SetTextAngle(45);
+		t2->Draw("same");
+
+		// Draw horizontal red line
+		if (k != 0) {
+			TLine* line = new TLine(grid[OBSERVABLE][0].min, 0.0, grid[OBSERVABLE][grid[OBSERVABLE].size()-1].max, 0.0);
+			line->SetLineColor(kRed);
+			line->SetLineWidth(1.0);
+			line->Draw("same");
+		}
+		++k;
+	}}
+
 	// ------------------------------------------------------------------
 	// Draw legend to the upper left most
+	if (DATAMODE != "Response") {
 	c1->cd(1);
 
 	// Create legend
 	double x1,x2,y1,y2 = 0.0;
 	const std::string legendposition = "northeast";
 	GetLegendPosition2(tensor.size(),x1,x2,y1,y2, legendposition);
-	std::unique_ptr<TLegend> legend = std::make_unique<TLegend>(x1, y1, x2, y2);
+	TLegend* legend = new TLegend(x1, y1, x2, y2);
 	legend->SetFillColor(0);    // White background
 	legend->SetBorderSize(0);   // No box
 	legend->SetTextSize(0.035);
@@ -497,6 +522,7 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 
   	// Draw legend
 	legend->Draw("same");
+	}
 	// ------------------------------------------------------------------
 
 	// Require that we have data
