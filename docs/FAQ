@@ -1,4 +1,4 @@
-GRANIITTI (BETA) FAQ: 24.3.2019
+GRANIITTI (BETA) FAQ: 15.4.2019
 
 mikael.mieskolainen@cern.ch
 -----------
@@ -48,7 +48,7 @@ A:  After the '->' arrow, write down the final state in terms of PDG
     numbers such as '22 22' or their names such as 'gamma gamma'.
     Events are distributed according to the phase space in the case
     no amplitude is explicitly constructed for that particular
-    decay. Any (cascade) final state is possible wihin phase space.
+    decay. Any (cascade) final state is possible within the phase space.
     For example '-> A > {A1 > {A11 A12} A2 A3} B > {B1 B2 > {B21 B22} B3}'.
 
 
@@ -63,7 +63,7 @@ A:  Different ways to organize phase space sampling.
     identical results. However, the (other) one can be faster
     or more numerically stable with difficult amplitudes. In general,
     we recommend '<C>' for continuum / continuum+resonance processes
-    and '<F>' for isolated resonances and high leg continuum processes.
+    and '<F>' for isolated resonances and high final state leg continuum processes.
 
 
 Q:  What are '->' versus '&>' operators?

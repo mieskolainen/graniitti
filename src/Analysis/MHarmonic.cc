@@ -198,21 +198,21 @@ void MHarmonic::PlotAll(const std::string& legendstr, const std::string& outputp
   for (const auto& OBSERVABLE : {0,1,2}) {
   
   // **** EFFICIENCY DECOMPOSITION ****
-  PlotFigures(det, OBSERVABLE, "(Response)[ACCEPTANCE_x_EFFICIENCY]<det>", 33, legendstr, outputpath);
-  PlotFigures(fid, OBSERVABLE, "(Response)[FIDUCIAL_ACCEPTANCE]<fid>",     33, legendstr, outputpath);
-  PlotFigures(fla, OBSERVABLE, "(Response)[FLAT_REFERENCE]<fla>",          33, legendstr, outputpath);
+  PlotFigures(det, OBSERVABLE, "{Response}[ACCEPTANCE_x_EFFICIENCY]<det>", 33, legendstr, outputpath);
+  PlotFigures(fid, OBSERVABLE, "{Response}[FIDUCIAL_ACCEPTANCE]<fid>",     33, legendstr, outputpath);
+  PlotFigures(fla, OBSERVABLE, "{Response}[FLAT_REFERENCE]<fla>",          33, legendstr, outputpath);
 
   // **** ALGEBRAIC INVERSE MOMENTS ****
-  PlotFigures(det, OBSERVABLE, "(Moments)[MPP]<det>", 33, legendstr, outputpath);
-  PlotFigures(fid, OBSERVABLE, "(Moments)[MPP]<fid>", 33, legendstr, outputpath);
-  PlotFigures(fla, OBSERVABLE, "(Moments)[MPP]<fla>", 33, legendstr, outputpath);
+  PlotFigures(det, OBSERVABLE, "{Moments}[MPP]<det>", 33, legendstr, outputpath);
+  PlotFigures(fid, OBSERVABLE, "{Moments}[MPP]<fid>", 33, legendstr, outputpath);
+  PlotFigures(fla, OBSERVABLE, "{Moments}[MPP]<fla>", 33, legendstr, outputpath);
 
 
   // **** EXTENDED MAXIMUM LIKELIHOOD INVERSE MOMENTS ****
   if (param.EML) {
-  PlotFigures(det, OBSERVABLE, "(Moments)[EML]<det>", 33, legendstr, outputpath);
-  PlotFigures(fid, OBSERVABLE, "(Moments)[EML]<fid>", 33, legendstr, outputpath);
-  PlotFigures(fla, OBSERVABLE, "(Moments)[EML]<fla>", 33, legendstr, outputpath);
+  PlotFigures(det, OBSERVABLE, "{Moments}[EML]<det>", 33, legendstr, outputpath);
+  PlotFigures(fid, OBSERVABLE, "{Moments}[EML]<fid>", 33, legendstr, outputpath);
+  PlotFigures(fla, OBSERVABLE, "{Moments}[EML]<fla>", 33, legendstr, outputpath);
   }
 
   }
@@ -223,20 +223,20 @@ void MHarmonic::PlotAll(const std::string& legendstr, const std::string& outputp
   for (const auto& OBSERVABLE2 : OBSERVABLES) {
 
   // **** EFFICIENCY DECOMPOSITION ****
-  PlotFigures2D(fla, OBSERVABLE2, "(Response)[FLAT_REFERENCE]<fla>",  17, legendstr, outputpath);
-  PlotFigures2D(fid, OBSERVABLE2, "(Response)[FIDUCIAL_ACCEPTANCE]<fid>", 33, legendstr, outputpath);
-  PlotFigures2D(det, OBSERVABLE2, "(Response)[ACCEPTANCE_x_EFFICIENCY]<det>", 29, legendstr, outputpath);
+  PlotFigures2D(fla, OBSERVABLE2, "{Response}[FLAT_REFERENCE]<fla>",  17, legendstr, outputpath);
+  PlotFigures2D(fid, OBSERVABLE2, "{Response}[FIDUCIAL_ACCEPTANCE]<fid>", 33, legendstr, outputpath);
+  PlotFigures2D(det, OBSERVABLE2, "{Response}[ACCEPTANCE_x_EFFICIENCY]<det>", 29, legendstr, outputpath);
 
   // **** ALGEBRAIC INVERSE MOMENTS ****
-  PlotFigures2D(fla, OBSERVABLE2, "(Moments)[MPP]<fla>", 17, legendstr, outputpath);
-  PlotFigures2D(fid, OBSERVABLE2, "(Moments)[MPP]<fid>", 33, legendstr, outputpath);
-  PlotFigures2D(det, OBSERVABLE2, "(Moments)[MPP]<det>", 29, legendstr, outputpath);
+  PlotFigures2D(fla, OBSERVABLE2, "{Moments}[MPP]<fla>", 17, legendstr, outputpath);
+  PlotFigures2D(fid, OBSERVABLE2, "{Moments}[MPP]<fid>", 33, legendstr, outputpath);
+  PlotFigures2D(det, OBSERVABLE2, "{Moments}[MPP]<det>", 29, legendstr, outputpath);
 
   // **** EXTENDED MAXIMUM LIKELIHOOD INVERSE MOMENTS ****
   if (param.EML) {
-  PlotFigures2D(fla, OBSERVABLE2, "(Moments)[EML]<fla>", 17, legendstr, outputpath);
-  PlotFigures2D(fid, OBSERVABLE2, "(Moments)[EML]<fid>", 33, legendstr, outputpath);
-  PlotFigures2D(det, OBSERVABLE2, "(Moments)[EML]<det>", 29, legendstr, outputpath);
+  PlotFigures2D(fla, OBSERVABLE2, "{Moments}[EML]<fla>", 17, legendstr, outputpath);
+  PlotFigures2D(fid, OBSERVABLE2, "{Moments}[EML]<fid>", 33, legendstr, outputpath);
+  PlotFigures2D(det, OBSERVABLE2, "{Moments}[EML]<det>", 29, legendstr, outputpath);
   }
 
   }
@@ -289,11 +289,11 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 	// --------------------------------------
 	// Extract name strings
 
-	// find (string)
+	// find {string}
 	std::smatch sma;
-	std::regex_search(TYPESTRING, sma, std::regex(R"(\(.*?\))")); // R"()" for Raw string literals
+	std::regex_search(TYPESTRING, sma, std::regex(R"(\{.*?\})")); // R"()" for Raw string literals
 	std::string DATAMODE = sma[0]; DATAMODE = DATAMODE.substr(1, DATAMODE.size()-2);
-
+	
 	// find <string>
 	std::smatch smb;
 	std::regex_search(TYPESTRING, smb, std::regex(R"(\<.*?\>)")); // R"()" for Raw string literals
@@ -512,7 +512,7 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 		}
 		++k;
 	}}
-	
+
 	// ------------------------------------------------------------------
 	// Draw legend to the upper left most
 	if (DATAMODE != "Response") {

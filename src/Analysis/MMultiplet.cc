@@ -404,10 +404,13 @@ double h2Multiplet::SaveFig(const std::string& fullpath) const {
 
 	// -------------------------------------------------------------------
 	// Create labels
+	c0.cd(); // Important!
+	TPad* tpad = gra::rootstyle::TransparentPad();
+
 	TLatex* l1; TLatex* l2;
 	std::tie(l1,l2) = gra::rootstyle::MadeInFinland();
 	// -------------------------------------------------------------------
-	
+
     // Create output directory if it does not exist
     aux::CreateDirectory(fullpath);
 
@@ -419,6 +422,9 @@ double h2Multiplet::SaveFig(const std::string& fullpath) const {
 	for (const auto& i : indices(ratios)) {
 		delete ratios[i];
 	}
+	delete tpad;
+	delete l1;
+	delete l2;
 
 	return 0.0;
 }
@@ -468,7 +474,6 @@ double hProfMultiplet::SaveFig(const std::string& fullpath) const {
 	pad1->cd();        // pad1 becomes the current pad
 	h[0]->SetStats(0); // No statistics on upper plot
 
-
 	// Find maximum value for y-range limits
 	double MAXVAL = 0.0;
 	double MINVAL = 1e32;
@@ -510,6 +515,12 @@ double hProfMultiplet::SaveFig(const std::string& fullpath) const {
 		legend->AddEntry(h[i], legendtext_[i].c_str());
 	}
 	legend->Draw();
+
+	// -------------------------------------------------------------------
+	// GRANIITTI text
+	TLatex* l1; TLatex* l2;
+	std::tie(l1,l2) = gra::rootstyle::MadeInFinland();
+	// -------------------------------------------------------------------
 
 	// -------------------------------------------------------------------
 	// Ratio plots
@@ -571,7 +582,7 @@ double hProfMultiplet::SaveFig(const std::string& fullpath) const {
 
 		ratios.push_back(hx);
 	}
-
+	
 	// Draw horizontal line
 	const double ymax = 1.0;
 	std::unique_ptr<TLine> line = std::make_unique<TLine>(minval1_, ymax, maxval1_, ymax);
@@ -587,7 +598,7 @@ double hProfMultiplet::SaveFig(const std::string& fullpath) const {
 	// Give y-axis title some offset to avoid overlapping with numbers
 	h[0]->GetYaxis()->SetTitleOffset(1.45);
 	// -------------------------------------------------------------------
-
+	
     // Create output directory if it does not exist
     aux::CreateDirectory(fullpath);
 
@@ -606,6 +617,9 @@ double hProfMultiplet::SaveFig(const std::string& fullpath) const {
 	for (const auto& i : indices(ratios)) {
 		delete ratios[i];
 	}
+	delete l1;
+	delete l2;
+
 	return 0.0;
 }
 

@@ -1,17 +1,22 @@
-GRANIITTI (BETA) FAQ: 28.3.2019
+GRANIITTI (BETA) FAQ: 15.4.2019
 
 mikael.mieskolainen@cern.ch
 -----------
 
+Algorithms under construction
+
+- Fully automated spherical harmonics inverse expansion nearly fully implemented
+
 Processes under construction/validation:
 
-- forward excitation is now implemented also for gamma-gamma (via F2 structure functions) but not fully validated
 - tensor pomeron amplitudes for 2xPS,2xV,2xF implemented but not fully validated
-- "sliding helicity amplitudes" under implementation
+- tensor pomeron amplitudes for S,PS,T resonances implemented. S,PS working, T not yet.
+- forward excitation is now implemented also for gamma-gamma (via F2 structure functions) but not fully validated
+- "sliding regge helicity amplitudes" under implementation
 - perturbative meson pair (higher mass) continuum under construction
 - vetocuts are not activated
 - exhaustive unit testing of kinematics and dynamics, and consistency tests under implementation
 
 - a known problem with creating & destroying MGraniitti() instances in a loop with LHAPDF access.
-  Something to do with LHAPDF memory access & its use here.
-
+  If the PDFset is different -> faulty results. No effect for single ./gr instance.
+  Something to do with LHAPDF library memory model & its use here.

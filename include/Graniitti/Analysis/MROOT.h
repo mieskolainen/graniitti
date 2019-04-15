@@ -78,7 +78,7 @@ inline TPad* TransparentPad() {
 }
 
 // Create GRANIITTI Text
-inline std::tuple<TLatex*,TLatex*> MadeInFinland(double xpos = 0.924) {
+inline std::tuple<TLatex*,TLatex*> MadeInFinland(double xpos = 0.93) {
     
     TLatex* l1 = new TLatex(xpos, 0.03, gra::aux::GetVersionTLatex().c_str());
     l1->SetNDC(); // Normalized coordinates
