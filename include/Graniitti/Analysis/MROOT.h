@@ -12,6 +12,7 @@
 #include <tuple>
 
 // ROOT
+#include "TCanvas.h"
 #include "TColor.h"
 #include "TROOT.h"
 #include "TStyle.h"
