@@ -5,6 +5,12 @@ mikael.mieskolainen@cern.ch
 
 First run ./bin/gr
 
+
+Q:  It does not compile.
+A:  If you use MACOSX, try to obtain the latest GCC toolchain.
+    The software is being tested and developed on Ubuntu linux (+ ROOT 6).
+
+
 Q:  Which features or processes are "under construction"
 A:  See /docs/UNDERWORK or send email.
 
