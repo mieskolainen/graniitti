@@ -262,17 +262,11 @@ void GetLegendPosition2(unsigned int N, double& x1, double& x2, double& y1, doub
 void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::spherical::SH>>& tensor, unsigned int OBSERVABLE,
                             const std::string& TYPESTRING, int barcolor,
                             const std::string& legendstr, const std::string& outputpath) const {
-
-	TCanvas* c1 = new TCanvas("c1", "c1", 700, 600);          // horizontal, vertical
-
-	int ADD = 0;
-	while (true) { // Adjust grid size
-		const int val = std::sqrt(ACTIVENDF + ADD); 
-		if ( val*val == (ACTIVENDF + ADD) ) { break; }
-		++ADD;
-	}
-	c1->Divide(msqrt(ACTIVENDF+ADD), msqrt(ACTIVENDF+ADD), 0.002, 0.001);  // y, x
-
+	
+	// ------------------------------------------------------------------
+	TCanvas* c1 = gra::rootstyle::AutoGridCanvas(ACTIVENDF);
+	// ------------------------------------------------------------------
+	
 	std::string xlabel = "";
 	if      (OBSERVABLE == 0) {
 		xlabel = "M (GeV)";

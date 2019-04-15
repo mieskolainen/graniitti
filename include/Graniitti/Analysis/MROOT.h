@@ -22,6 +22,38 @@
 namespace gra {
 namespace rootstyle {
 
+
+// Create grid canvas with N subpads
+inline TCanvas* AutoGridCanvas(unsigned int N) {
+    
+    TCanvas* c1;
+    
+    unsigned int ADD = 0;
+    while (true) { // Adjust grid size
+        const unsigned int val = std::sqrt(N + ADD); 
+        if ( val*val == (N + ADD) ) { break; }
+        ++ADD;
+    }
+    // Calculate if we have a full empty row -> remove that
+    unsigned int DEL = 0;
+    if (ADD*ADD - ADD == N) {DEL = 1;}
+    
+    const unsigned int COLS = std::sqrt(N+ADD);
+    const unsigned int ROWS = std::sqrt(N+ADD)-DEL;
+    
+    // Adjust aspect ratio
+    if (ROWS == COLS) {
+    c1 = new TCanvas("c1", "c1", 700, 600); // horizontal, vertical
+    }
+    if (ROWS != COLS) {
+    c1 = new TCanvas("c1", "c1", 700, 450); // horizontal, vertical
+    }
+    
+    c1->Divide(COLS, ROWS, 0.002, 0.001);
+    
+    return c1;
+}
+
 // Set "nice" 2D-plot style
 inline void SetPlotStyle() {
     
