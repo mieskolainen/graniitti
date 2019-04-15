@@ -11,8 +11,8 @@
   
   "GENERALPARAM" : {
     
-    "OUTPUT"  : "SH_2pi_REF_CMS",  // Output filename
-    "FORMAT"  : "hepmc3",      // hepmc3, hepmc2, hepevt
+    "OUTPUT"  : "SH_2pi_J0_CMS",  // Output filename
+    "FORMAT"  : "hepmc3",        // hepmc3, hepmc2, hepevt
     "CORES"   : 0,             // Number of CPU threads (0 for automatic)
     "NEVENTS" : 1E4,           // Number of unweighted (weight = 1) events
     "INTEGRATOR"  : "VEGAS",   // Integrator (default VEGAS)

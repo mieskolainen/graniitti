@@ -10,7 +10,7 @@
   // GENERAL setup
   
   "GENERALPARAM" : {
-
+    
     "OUTPUT"  : "SH_2pi_ALICE",      // Output filename
     "FORMAT"  : "hepmc3",      // hepmc3, hepmc2, hepevt
     "CORES"   : 0,             // Number of CPU threads (0 for automatic)

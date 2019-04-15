@@ -18,15 +18,45 @@
 namespace gra {
 namespace spherical {
 
+
+// Metadata
+struct Meta {
+
+	std::string NAME;      // Input name ID
+	std::string LEGEND;    // Legend string
+	std::string MODE;      // MC or DATA
+	bool FASTSIM = false;  // Fast simulation on
+	std::string FRAME;     // Lorentz frame
+
+	std::vector<std::string> TITLES; // Phase space titles
+
+	// So we can use this in std::map<>
+    bool operator < (const Meta& rhs) const {
+        return NAME < rhs.NAME;
+    }
+
+    void Print() const {
+    	std::cout << "NAME:     " << NAME   << std::endl;
+    	std::cout << "LEGEND:   " << LEGEND << std::endl;
+    	std::cout << "MODE:     " << MODE   << std::endl;
+    	std::cout << "FRAME:    " << FRAME  << std::endl;
+    	std::cout << "FASTSIM:  " << (FASTSIM ? "true" : "false") << std::endl;
+    	std::cout << std::endl;
+    	for (std::size_t i = 0; i < TITLES.size(); ++i) {
+    		printf("TITLES[%lu] = %s \n", i, TITLES[i].c_str());
+    	}
+    }
+};
+
 // Microevent structure
 struct Omega {
-	
+		
 	// Decay daughter
 	// rest frame variables
 	double costheta = 0.0;
 	double phi      = 0.0;
 	
-	// System lab frame
+	// Invariant / system lab frame variables
 	double M        = 0.0;
 	double Pt       = 0.0;
 	double Y        = 0.0;
@@ -35,18 +65,32 @@ struct Omega {
 	bool selected   = false;
 };
 
+// Container
+struct Data {
+		
+	// Metadata
+	spherical::Meta META;
 
-// Data for one hypercell, e.g., in (M,Pt,Y)
-struct SH {
-	
+	// Events
+	std::vector<spherical::Omega> EVENTS;
+};
+
+
+// Detector data for one hypercell, e.g., in (M,Pt,Y)
+struct SH_DET {
+
 	// Moment mixing matrix
 	MMatrix<double>     MIXlm;
 
 	// Efficiency decomposition coefficients
 	std::vector<double> E_lm;
 	std::vector<double> E_lm_error;
+};
 
-	// Diractly (algebraic) observed moments
+// Data for one hypercell, e.g., in (M,Pt,Y)
+struct SH {
+
+	// Directly (algebraic) observed moments
 	std::vector<double> t_lm_MPP;
 	std::vector<double> t_lm_MPP_error;		
 
@@ -57,14 +101,14 @@ struct SH {
 
 
 MMatrix<double>     GetGMixing(const std::vector<Omega>& events,
-							   const std::vector<std::size_t>& ind, int LMAX, int mode);
+							   const std::vector<std::size_t>& ind, int LMAX, const std::string& mode);
 
-std::pair<std::vector<double>,std::vector<double>>
+std::pair<std::vector<double>, std::vector<double>>
                     GetELM(const std::vector<Omega>& MC,
-                    	   const std::vector<std::size_t>& ind, int LMAX, int mode);
+                    	   const std::vector<std::size_t>& ind, int LMAX, const std::string& mode);
 
 std::vector<double> SphericalMoments(const std::vector<Omega>& input,
-	                                 const std::vector<std::size_t>& ind, int LMAX, int mode);
+	                                 const std::vector<std::size_t>& ind, int LMAX, const std::string& mode);
 
 MMatrix<double>     YLM(const std::vector<Omega>& events, int LMAX);
 

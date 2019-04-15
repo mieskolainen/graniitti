@@ -45,7 +45,7 @@ void SetPlotStyle() {
 
     // Necessary with multiple plots per canvas
     gStyle->SetPadTopMargin(0.1);
-    gStyle->SetPadRightMargin(0.1);
+    gStyle->SetPadRightMargin(0.01); // Keep this small
     gStyle->SetPadBottomMargin(0.15);
     gStyle->SetPadLeftMargin(0.1);
 }

@@ -11,7 +11,7 @@
   
   "GENERALPARAM" : {
     
-    "OUTPUT"  : "SH_2pi_REF_ALICE",  // Output filename
+    "OUTPUT"  : "SH_2pi_J0_ALICE",  // Output filename
     "FORMAT"  : "hepmc3",      // hepmc3, hepmc2, hepevt
     "CORES"   : 0,             // Number of CPU threads (0 for automatic)
     "NEVENTS" : 1E4,           // Number of unweighted (weight = 1) events

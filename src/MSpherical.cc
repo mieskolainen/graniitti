@@ -38,59 +38,57 @@ namespace spherical {
 // is flat (uniform). In a geometrically restricted phase space, these basis
 // functions get mixed => lost orthogonality.
 
-MMatrix<double> GetGMixing(const std::vector<Omega>& events, const std::vector<std::size_t>& ind, int LMAX, int mode) {
+MMatrix<double> GetGMixing(const std::vector<Omega>& events, const std::vector<std::size_t>& ind, int LMAX, const std::string& mode) {
   
   const int NCOEF = (LMAX+1)*(LMAX+1);
-
+  
   std::cout << "GetGMixing: mode = " << mode << std::endl;
-  std::cout << "Generated reference MC phase space events = " << ind.size() << std::endl;
-
+  std::cout << "Generated flaerence MC phase space events = " << ind.size() << std::endl;
+  
   // Construct the efficiency coefficients EPSILON_LM with linear
   // indexing
-  MMatrix<double>   E(NCOEF, NCOEF, 0.0);
-  MMatrix<double>  E2(NCOEF, NCOEF, 0.0); // for the uncertainty
-
+  MMatrix<double>  E(NCOEF, NCOEF, 0.0);
+  MMatrix<double> E2(NCOEF, NCOEF, 0.0); // for the uncertainty
+  
   // Loop over GENERATED MC events and do the integral in effect via
   // uniform MC sampling
   // We evaluate the integral:
   //
-  // eta_LM = \int eta(Omega) Re Y_LM(Omega) dOmega, Omega =
-  // (costheta,phi)
-  //
+  // eta_LM = \int eta(Omega) Re Y_LM(Omega) dOmega, Omega = (costheta,phi)
   int fiducial = 0;
   int selected = 0;
-
+  
   const double VOL = 4.0*PI; // [costheta] x [phi] plane area
-
+  
   for (const auto& k : ind) {
-
-    const bool fidtrue = events[k].fiducial;
-    const bool seltrue = events[k].selected;
-
-    // Full reference phase space
-    if (mode == 0) {
+    
+    const bool fid = events[k].fiducial;
+    const bool sel = events[k].selected;
+    
+    // Flat flaerence phase space
+    if      (mode == "fla") {
       // all fine
     }
-    // Geometric acceptance
-    if (mode == 1) {
-      if (!fidtrue) { continue; } else { ++fiducial; }
+    // Geometric acceptance ("Fiducial phase space")
+    else if (mode == "fid") {
+      if (!fid) { continue; } else { ++fiducial; }
     }
-    // Geometric x Efficiency
-    if (mode == 2) {
-      if (!fidtrue) { continue; } else { ++fiducial; }
-      if (!seltrue) { continue; } else { ++selected; }
-    }
-
+    // Geometric x Efficiency ("Detector level")
+    else if (mode == "det") {
+      if (!fid) { continue; } else { ++fiducial; }
+      if (!sel) { continue; } else { ++selected; }
+    } else { throw std::invalid_argument("spherical::GetELM: Unknown mode " + mode); }
+    
     const double costheta = events[k].costheta;
     const double phi      = events[k].phi;
-
+    
     for (int l = 0; l <= LMAX; ++l) {
       for (int m = -l; m <= l; ++m) {
         const int index = LinearInd(l, m);
-
+        
         const std::complex<double> Y = gra::math::Y_complex_basis(costheta, phi, l, m);
         const double ReY = gra::math::NReY(Y, l, m);
-
+        
         for (int lprime = 0; lprime <= LMAX; ++lprime) {
           for (int mprime = -lprime; mprime <= lprime; ++mprime) {
 
@@ -98,29 +96,27 @@ MMatrix<double> GetGMixing(const std::vector<Omega>& events, const std::vector<s
             const std::complex<double> Yprime = gra::math::Y_complex_basis(costheta, phi, lprime, mprime);
             const double ReYprime = gra::math::NReY(Yprime, lprime, mprime);
 
-            // Sum to the MC integral and
-            // its squared version (for
-            // uncertainty)
+            // Sum to the MC integral and its squared version (for uncertainty)
             const double f = VOL * ReY * ReYprime; // Note volume term
             E[index][indexprime]  += f;
-            E2[index][indexprime] += f * f;
+            E2[index][indexprime] += f*f;
           }
         }
       }
     }
   }
 
-  if (mode == 1 || mode == 2) {
-    printf("Fiducial reference MC phase space events = %d (acceptance %0.3f percent) \n",
+  if (mode == "fid" || mode == "det") {
+    printf("Fiducial flaerence MC phase space events = %d (acceptance %0.3f percent) \n",
         fiducial, fiducial / static_cast<double>(ind.size()) * 100);
   }
-  if (mode == 2) {
-    printf("Selected referemce MC phase space events = %d (efficiency %0.3f percent) \n",
+  if (mode == "det") {
+    printf("Selected flaerence MC phase space events = %d (efficiency %0.3f percent) \n",
         selected, selected / static_cast<double>(fiducial) * 100);
   }
-  if (mode == 1 || mode == 2) {
+  if (mode == "fid" || mode == "det") {
     if (fiducial < 50 || selected < 50) {
-      printf("GetGMixing:: Too low MC event count in the mass bin! \n");
+      std::cout << rang::fg::red << "GetGMixing:: Too low MC event count in the mass bin!" << rang::fg::reset << std::endl;
     }
   }
   std::cout << std::endl;
@@ -200,12 +196,12 @@ MMatrix<double> GetGMixing(const std::vector<Omega>& events, const std::vector<s
 
 // Acceptance expansion coefficients using MC events
 std::pair<std::vector<double>,std::vector<double>>
-  GetELM(const std::vector<Omega>& MC, const std::vector<std::size_t>& ind, int LMAX, int mode) {
+  GetELM(const std::vector<Omega>& MC, const std::vector<std::size_t>& ind, int LMAX, const std::string& mode) {
   
   const int NCOEF = (LMAX+1)*(LMAX+1);
 
   std::cout << "GetELM: mode = " << mode << std::endl;
-  std::cout << "Generated reference MC phase space events = " << ind.size() << std::endl;
+  std::cout << "Generated flaerence MC phase space events = " << ind.size() << std::endl;
 
   // Construct the efficiency coefficients E_LM with linear indexing
   std::vector<double>  E(NCOEF, 0.0);
@@ -226,19 +222,19 @@ std::pair<std::vector<double>,std::vector<double>>
     bool fid = MC[k].fiducial;
     bool sel = MC[k].selected;
 
-    // Full reference phase space
-    if (mode == 0) {
+    // Flat flaerence phase space
+    if      (mode == "fla") {
       // all fine
     }
-    // Geometric acceptance
-    if (mode == 1) {
+    // Geometric acceptance ("Fiducial phase space")
+    else if (mode == "fid") {
       if (!fid) { continue; } else { ++fiducial; }
     }
-    // Geometric x Efficiency
-    if (mode == 2) {
+    // Geometric x Efficiency ("Detector level")
+    else if (mode == "det") {
       if (!fid) { continue; } else { ++fiducial; }
       if (!sel) { continue; } else { ++selected; }
-    }
+    } else { throw std::invalid_argument("spherical::GetELM: Unknown mode " + mode); }
     
     const double costheta = MC[k].costheta;
     const double phi      = MC[k].phi;
@@ -257,22 +253,22 @@ std::pair<std::vector<double>,std::vector<double>>
       }
     }
   }
-  if (mode == 1 || mode == 2) {
+  if (mode == "fid" || mode == "det") {
     printf(
-        "Fiducial reference MC phase space events = %d (geometric-kinematic acceptance %0.3f percent) \n\n",
+        "Fiducial flaerence MC phase space events = %d (geometric-kinematic acceptance %0.3f percent) \n\n",
         fiducial, fiducial / static_cast<double>(ind.size()) * 100);
   }
-  if (mode == 2) {
+  if (mode == "det") {
     printf(
-        "Selected reference MC phase space events = %d (fiducial efficiency %0.3f percent) \n\n",
+        "Selected flaerence MC phase space events = %d (fiducial efficiency %0.3f percent) \n\n",
         selected, selected / static_cast<double>(fiducial) * 100);
   }
-  if (mode == 1) {
+  if (mode == "fid") {
     if (fiducial < 1000) {
       std::cout << "GetELM:: Very low [fiducial] MC event count = "<< fiducial << " in the mass bin!" << std::endl;
     }
   }
-  if (mode == 2) {
+  if (mode == "det") {
     if (selected < 1000) {
       std::cout << "GetELM:: Very low [selected] MC event count = "<< selected << " in the mass bin!" << std::endl;
     }
@@ -311,7 +307,7 @@ std::pair<std::vector<double>,std::vector<double>>
 // Calculate expansion coefficients directly via algebraic expansion
 //
 std::vector<double> SphericalMoments(const std::vector<Omega>& input,
-                                     const std::vector<std::size_t>& ind, int LMAX, int mode) {
+                                     const std::vector<std::size_t>& ind, int LMAX, const std::string& mode) {
 
   const double V = sqrt(4.0 * PI); // Normalization volume
   const unsigned int NCOEF = (LMAX + 1) * (LMAX + 1);
@@ -328,19 +324,20 @@ std::vector<double> SphericalMoments(const std::vector<Omega>& input,
         const bool fidtrue = input[k].fiducial;
         const bool seltrue = input[k].selected;
 
-        // Full reference phase space
-        if (mode == 0) {
+        // Flat flaerence phase space
+        if      (mode == "fla") {
           // all fine
         }
-        // Geometric acceptance
-        if (mode == 1) {
+        // Geometric acceptance ("Fiducial level")
+        else if (mode == "fid") {
           if (!fidtrue) { continue; }
         }
-        // Geometric x Efficiency
-        if (mode == 2) {
+        // Geometric x Efficiency ("Detector level")
+        else if (mode == "det") {
           if (!fidtrue) { continue; }
           if (!seltrue) { continue; }
-        }
+        } else { throw std::invalid_argument("spherical::SphericalMoments: Unknown mode " + mode); }
+
         const double costheta        = input[k].costheta;
         const double phi             = input[k].phi;
         const std::complex<double> Y = gra::math::Y_complex_basis(costheta, phi, l, m);

@@ -9,8 +9,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
 # Generate
-./bin/gr -i ./tests/aliceharmonicrun/SH_2pi_REF_ALICE.json -n 1000000
-./bin/gr -i ./tests/aliceharmonicrun/SH_2pi_ALICE.json     -n 1000000
+./bin/gr -i ./tests/aliceharmonicrun/SH_2pi_J0_ALICE.json -n 100000
+./bin/gr -i ./tests/aliceharmonicrun/SH_2pi_ALICE.json    -n 100000
 
 fi
 
@@ -20,12 +20,12 @@ FIDCUTS=-0.9,0.9,0.1,100.0
 # ***********************************************************************
 
 # System kinematic variables binning <bins,min,max>
-MBINS=30,0.28,1.75
-PBINS=1,0.0,1.75
+MBINS=40,0.28,2.0
+PBINS=1,0.0,2.0
 YBINS=1,-0.9,0.9
 
 # PARAMETERS
-LMAX=4
+LMAX=2
 REMOVEODD=true
 REMOVENEGATIVE=true
 SVDREG=1e-4
@@ -33,16 +33,17 @@ L1REG=0 #1e-5
 EML=true
 
 # Lorentz frames
-for FRAME in HE CS PG SR
+for FRAME in HE # CS PG SR
 do
 
 # Analyze
-#./bin/fitharmonic -r SH_2pi_REF_ALICE -i ALICE7_2pi.csv -t DATA -s false \
-./bin/fitharmonic -r SH_2pi_REF_ALICE -i SH_2pi_ALICE -t MC -s true  \
+./bin/fitharmonic -r SH_2pi_J0_ALICE -i SH_2pi_J0_ALICE,SH_2pi_ALICE,ALICE7_2pi.csv \
+-l 'GRANIITTI (J=0),GRANIITTI,#pi^{+}#pi^{-} 7 TeV (DATA)' -m MC,MC,DATA -s true,true,false  \
+-t '#Omega{Detector}: |#eta| < 0.9 #wedge p_{T} > 0.1 GeV,#Omega{Fiducial}: |#eta| < 0.9 #wedge p_{T} > 0.1 GeV,#Omega{Flat}: |Y_{x}| < 0.9' \
 -c $FIDCUTS \
--f $FRAME -l $LMAX -o $REMOVEODD -n $REMOVENEGATIVE -a $SVDREG -b $L1REG -e $EML \
+-f $FRAME -g $LMAX -o $REMOVEODD -n $REMOVENEGATIVE -a $SVDREG -b $L1REG -e $EML \
 -M $MBINS -P $PBINS -Y $YBINS \
--X 10000
+-X 100000
 
 done
 

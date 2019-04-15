@@ -88,6 +88,17 @@ inline std::valarray<T> vector2valarray(const std::vector<T>& x) {
     return y;
 }
 
+// Absolute values per vector element
+template <typename T>
+inline std::vector<T> vabs(const std::vector<T>& x) {
+	
+    std::vector<T> y(x.size());
+    for (std::size_t k = 0; k < x.size(); ++k) {
+        y[k] = std::abs(x[k]);
+    }
+    return y;
+}
+
 
 // MATLAB style, H is std::vector, std::valarray or similar
 // use like:

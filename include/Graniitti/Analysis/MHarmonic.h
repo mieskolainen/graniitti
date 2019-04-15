@@ -27,6 +27,17 @@ class MHarmonic {
 
 public:
 
+	// Bin edges
+	struct EDGE {
+
+		double min = 0;
+		double max = 0;
+
+		double center() const {
+			return (max+min)/2.0;
+		}
+	};
+
 	// Parameters
 	struct HPARAM {
 
@@ -34,13 +45,12 @@ public:
 		std::vector<double> Y  = {0,0,0};
 		std::vector<double> PT = {0,0,0};
 
-		int    LMAX = 2;                // Maximum spherical harmonic truncation degree (non-negative integer)
-		bool   REMOVEODD = true;        // Fix odd moments to zero (due to lacking spesific spin states, for example)
-		bool   REMOVENEGATIVEM = true;  // Fix negative m to zero (due to parity conservation, for example)
-		bool   EML = false;             // Use Extended Maximum Likelihood fit
-		double SVDREG = 0.001;          // SVD regularization strength in algebraic inverse (put 0 for no regularization) 
-		double L1REG = 0.001;           // L1-norm regularization in EML fit (put 0 for no regularization)
-		std::string TYPE = "DATA";      // MC or DATA input
+		int    LMAX            = 2;      // Maximum spherical harmonic truncation degree (non-negative integer)
+		bool   REMOVEODD       = true;   // Fix odd moments to zero (due to lacking spesific spin states, for example)
+		bool   REMOVENEGATIVEM = true;   // Fix negative m to zero (due to parity conservation, for example)
+		bool   EML             = false;  // Use Extended Maximum Likelihood fit
+		double SVDREG          = 0.001;  // SVD regularization strength in algebraic inverse (put 0 for no regularization) 
+		double L1REG           = 0.001;  // L1-norm regularization in EML fit (put 0 for no regularization)
 		
 		void Print() {
 			std::cout << "HARMONIC EXPANSION PARAMETERS:" << std::endl << std::endl;
@@ -51,35 +61,35 @@ public:
 			std::cout << "EML             = " << (EML ? "true" : "false") << std::endl;
 			std::cout << "SVDREG          = " << SVDREG << std::endl;
 			std::cout << "L1REG           = " << L1REG << std::endl;
-			std::cout << "TYPE            = " << TYPE << std::endl;
 		}
 	};
 
 	// Constructor, destructor
-	 MHarmonic();
+	MHarmonic();
 	~MHarmonic();
 
 	void   Init(const HPARAM& hp);
+
 	void   HyperLoop(void (*fitfunc)(int&, double*, double&, double*, int),
 					 const std::vector<gra::spherical::Omega>& MC,
-					 const std::vector<gra::spherical::Omega>& DATA, const HPARAM& hp);
-	void   MomentFit(const std::vector<std::size_t>& cell, void (*fitfunc)(int&, double*, double&, double*, int));
-	double PrintOutHyperCell(const std::vector<std::size_t>& cell);
+					 const std::vector<gra::spherical::Data>& DATA, const HPARAM& hp);
+	
+	void   MomentFit(const gra::spherical::Meta& META, const std::vector<std::size_t>& cell,
+					 void (*fitfunc)(int&, double*, double&, double*, int));
+
+	double PrintOutHyperCell(const gra::spherical::Meta& META, const std::vector<std::size_t>& cell);
 	void   logLfunc(int& npar, double* gin, double& f, double* par, int iflag) const;
 
 	bool   PrintLoop(const std::string& output) const;
 	void   PlotAll(const std::string& legendstr, const std::string& outputpath) const;
-	void   PlotFigures(const MTensor<gra::spherical::SH>& tensor,
-					   const std::string& DATATYPE, unsigned int OBSERVABLE,
-					   const std::string& outputfile, int barcolor,
-					   const std::string& legendstr, const std::string& outputpath) const;
 
-	void   PlotFigures2D(const MTensor<gra::spherical::SH>& tensor,
-				         const std::string& DATATYPE, std::vector<int> OBSERVABLE,
-                         const std::string& outputfile,
-                         int barcolor, const std::string& legendstr,
-                         const std::string& outputpath) const;
+	void   PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::spherical::SH>>& tensor, unsigned int OBSERVABLE,
+                       const std::string& TYPESTRING, int barcolor,
+                       const std::string& legendstr, const std::string& outputpath) const;
 
+	void   PlotFigures2D(const std::map<gra::spherical::Meta, MTensor<gra::spherical::SH>>& tensor, const std::vector<int>& OBSERVABLE2,
+                         const std::string& TYPESTRING, int barcolor,
+                         const std::string& legendstr, const std::string& outputpath) const;
 	// Parameters
 	HPARAM param;
 	int    NCOEF;
@@ -95,8 +105,8 @@ private:
 	// Currently active
 	std::vector<std::size_t> DATA_ind;
 	std::vector<std::size_t> activecell;			  // Hypercell indices
-	std::vector<double> t_lm;					 	  // Fitted moments
-	std::vector<double> t_lm_error;					  // Their errors
+	std::vector<double>      t_lm;					  // Fitted moments
+	std::vector<double>      t_lm_error;			  // Their errors
 
 	// Error and covariance matrices
 	MMatrix<double> errmat;
@@ -108,20 +118,20 @@ private:
 	std::vector<bool> ACTIVE;
 	unsigned int ACTIVENDF = 0;
 
-	// Tensor data:
-	//
-	// ref = reference phase space
-	// fid = fiducial phase space
-	// det = detector level
-	MTensor<gra::spherical::SH> ref;
-	MTensor<gra::spherical::SH> fid;
-	MTensor<gra::spherical::SH> det;
+	// Detector expansion tensor data
+	MTensor<gra::spherical::SH_DET> det_DET;
+	MTensor<gra::spherical::SH_DET> fid_DET;
+	MTensor<gra::spherical::SH_DET> fla_DET;
+	
+	// Expanded data in a map for different data sources
+	std::map<gra::spherical::Meta, MTensor<gra::spherical::SH>> det;	
+	std::map<gra::spherical::Meta, MTensor<gra::spherical::SH>> fid;
+	std::map<gra::spherical::Meta, MTensor<gra::spherical::SH>> fla;
 
-	// x-axis center points
-	std::vector<std::vector<double>> xcenter;
+	// Discretization
+	std::vector<std::vector<EDGE>> grid;
 };
 
 } // gra namespace ends
-
 
 #endif

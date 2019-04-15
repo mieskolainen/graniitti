@@ -77,7 +77,6 @@ void fitwrapper(int& npar, double* gin, double& f, double* par, int iflag) {
 void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega>& events,
             const std::string& FRAME, int MAXEVENTS, bool SIMULATE);
 
-
 // Fast toy simulation pt-efficiency parameter (put infinite for perfect pt-efficiency)
 const double pt_scale = 4.5;
 
@@ -86,8 +85,8 @@ const double pt_scale = 4.5;
 int main(int argc, char* argv[]) {
 
     gra::rootstyle::SetROOTStyle();
-
     gra::aux::PrintFlashScreen(rang::fg::blue);
+
     std::cout << rang::style::bold
               << "GRANIITTI - Spherical Harmonics Inverse Expansion"
               << rang::style::reset << std::endl
@@ -100,35 +99,38 @@ int main(int argc, char* argv[]) {
 
     cxxopts::Options options(argv[0], "");
     options.add_options()
-        ("r,ref",             "Reference MC (angular flat MC sample)   <filename without .hepmc3>",  cxxopts::value<std::string>()  )
-        ("i,input",           "Input sample                            <filename without .hepmc3>",  cxxopts::value<std::string>()  )
-        ("t,type",            "Input type                              <MC|DATA>                 ",  cxxopts::value<std::string>()  )
-        ("c,cuts",            "Fiducial cuts                           <ETAMIN,ETAMAX,PTMIN,PTMAX>", cxxopts::value<std::string>()  )
+        ("r,ref",            "Reference MC (angular flat MC sample)   <filename without .hepmc3>",             cxxopts::value<std::string>()  )
+        ("i,input",          "Input sample                            <filename1,filename2 without .hepmc3>",  cxxopts::value<std::string>()  )
+        ("t,titles",         "Phase space titles (3 of them)          <titleA,titleB,titleC>",                 cxxopts::value<std::string>()  )
+        ("l,legend",         "Legend text                             <title1,title2,...>",                    cxxopts::value<std::string>()  )
+        ("m,mode",           "Input mode                              <MC|DATA>                 ",             cxxopts::value<std::string>()  )
+        ("c,cuts",           "Fiducial cuts                           <ETAMIN,ETAMAX,PTMIN,PTMAX>",            cxxopts::value<std::string>()  )
         
-        ("f,frame",           "Lorentz rest frame                      <HE|CS|GJ|PG|SR>",            cxxopts::value<std::string>()  )
-        ("l,lmax",            "Maximum angular order                   <1|2|3|...>",                 cxxopts::value<unsigned int>() )
-        ("o,removeodd",       "Remove negative M                       <true|false>",                cxxopts::value<std::string>()  )
-        ("n,removenegative",  "Remove odd M                            <true|false>",                cxxopts::value<std::string>()  )
-        ("e,eml",             "Extended Maximum Likelihood             <true|false>",                cxxopts::value<std::string>()  )
-        ("a,svdreg",          "SVD regularization weight               <value>",                     cxxopts::value<double>()       )
-        ("b,l1reg",           "L1 regularization weight                <value>",                     cxxopts::value<double>()       )
+        ("f,frame",          "Lorentz rest frame                      <HE|CS|GJ|PG|SR>",            cxxopts::value<std::string>()  )
+        ("g,lmax",           "Maximum angular order                   <1|2|3|...>",                 cxxopts::value<unsigned int>() )
+        ("o,removeodd",      "Remove negative M                       <true|false>",                cxxopts::value<std::string>()  )
+        ("n,removenegative", "Remove odd M                            <true|false>",                cxxopts::value<std::string>()  )
+        ("e,eml",            "Extended Maximum Likelihood             <true|false>",                cxxopts::value<std::string>()  )
+        ("a,svdreg",         "SVD regularization weight               <value>",                     cxxopts::value<double>()       )
+        ("b,l1reg",          "L1 regularization weight                <value>",                     cxxopts::value<double>()       )
         
-        ("M,mass",            "System mass binning                     <bins,min,max>",              cxxopts::value<std::string>()  )
-        ("P,pt",              "System pt binning                       <bins,min,max>",              cxxopts::value<std::string>()  )
-        ("Y,rapidity",        "System rapidity binning                 <bins,min,max>",              cxxopts::value<std::string>()  )
-        
-        ("s,simulate",        "Fast simulation of efficiency response  <true|false>",                cxxopts::value<std::string>()  )
-        ("X,maximum",         "Maximum number of events                <N>",                         cxxopts::value<unsigned int>() )
-        ("H,help",            "Help")
+        ("M,mass",           "System mass binning                     <bins,min,max>",              cxxopts::value<std::string>()  )
+        ("P,pt",             "System pt binning                       <bins,min,max>",              cxxopts::value<std::string>()  )
+        ("Y,rapidity",       "System rapidity binning                 <bins,min,max>",              cxxopts::value<std::string>()  )
+            
+        ("s,fastsim",        "Fast simulation of efficiency response  <true|false>",                cxxopts::value<std::string>()  )
+        ("X,maximum",        "Maximum number of events                <N>",                         cxxopts::value<unsigned int>() )
+        ("H,help",           "Help")
         ;
+
     auto r = options.parse(argc, argv);
 
     if (r.count("help") || NARGC == 0) {
-        std::cout << options.help({""}) << std::endl;
-        std::cout << "Example:" << std::endl;
-        std::cout << "  " << argv[0] << " -r SH_2pi_REF -i SH_2pi -t MC -c -2.5,2.5,0.1,100 -l 4 -f HE -M 40,0.4,1.5"
-                  << std::endl << std::endl;
-        return EXIT_FAILURE;
+      std::cout << options.help({""}) << std::endl;
+      std::cout << "Example:" << std::endl;
+      std::cout << "  " << argv[0] << " -r SH_2pi_REF -i SH_2pi -t MC -c -2.5,2.5,0.1,100 -l 4 -f HE -M 40,0.4,1.5"
+                << std::endl << std::endl;
+      return EXIT_FAILURE;
     }
 
     // Fiducial cuts
@@ -145,9 +147,9 @@ int main(int argc, char* argv[]) {
     MHarmonic::HPARAM hparam;
 
     // Default discretization
-    hparam.M  = {20, 0.0,   2.5}; // system mass
-    hparam.PT = {1,  0.0, 100.0}; // system pt
-    hparam.Y  = {1, -10.0, 10.0}; // system rapidity
+    hparam.M  = {20, 0.0,   2.5};  // System mass
+    hparam.PT = {1,  0.0, 100.0};  // System pt
+    hparam.Y  = {1, -10.0, 10.0};  // System rapidity
 
     if (r.count("mass")) {
       const std::string Mstr = r["M"].as<std::string>();
@@ -174,55 +176,88 @@ int main(int argc, char* argv[]) {
     hparam.EML             = r["eml"].as<std::string>() == "true"            ? true : false;
     hparam.SVDREG          = r["svdreg"].as<double>();
     hparam.L1REG           = r["l1reg"].as<double>();
-    hparam.TYPE            = r["type"].as<std::string>();
 
     // Check valid values
     if (  hparam.LMAX   < 1) { throw std::invalid_argument("fitharmonic: Parameter 'lmax' should be integer >= 1"); }
     if (  hparam.SVDREG < 0) { throw std::invalid_argument("fitharmonic: Parameter 'svdreg' should be > 0"); }
     if (  hparam.L1REG  < 0) { throw std::invalid_argument("fitharmonic: Parameter 'l1reg' should be > 0"); }
-    if (!(hparam.TYPE == "MC" || hparam.TYPE == "DATA")) { throw std::invalid_argument("fitharmonic: Parameter 'type' should be either MC or DATA"); }
 
     ha.Init(hparam);
-    
+
     // ------------------------------------------------------------------
     // INPUT
-
     const std::string ref   = r["ref"].as<std::string>();
-    const std::string input = r["input"].as<std::string>();
 
     // Lorentz frame
     const std::string FRAME = r["frame"].as<std::string>();
 
-    // Fast pt-efficiency simulation
-    const bool SIMULATE     = r["simulate"].as<std::string>() == "true" ? true : false;
-    
     // Maximum number of events
     int MAXEVENTS = 1E9;
     if (r.count("X")) {
       MAXEVENTS = r["X"].as<unsigned int>();
     }
-    
-    // Read in reference MC
-    std::vector<gra::spherical::Omega> MC_events;
-    ReadIn(ref, MC_events, FRAME, MAXEVENTS, true); // Always simulate reference here
-    
-    // Read in real DATA or MC
-    std::vector<gra::spherical::Omega> DATA_events;
-    ReadIn(input, DATA_events, FRAME, MAXEVENTS, SIMULATE);
 
-    // ------------------------------------------------------------------
+    // Read in reference MC for detector expansion (needs to be the same FRAME for all)
+    std::vector<gra::spherical::Omega> REFMC;
+    ReadIn(ref, REFMC, FRAME, MAXEVENTS, true); // Always simulate reference here
+    
+    // Check dimensions
+    auto checkdim = [] (const std::vector<std::vector<std::string>>& vec) {
+      std::vector<std::size_t> dim(vec.size(), 0);
+      for (const auto& i : indices(vec)) {
+        dim[i] = vec[i].size();
+      }
+      if ( (std::equal( dim.begin()+1, dim.end(), dim.begin()) ) ) {
+        return true;
+      } else { return false; }
+    };
+
+    // Read in real DATA/MC
+    const std::vector<std::string> input   = gra::aux::SplitStr2Str(r["input"].as<std::string>());
+    const std::vector<std::string> legend  = gra::aux::SplitStr2Str(r["legend"].as<std::string>());
+    const std::vector<std::string> mode    = gra::aux::SplitStr2Str(r["mode"].as<std::string>());
+    const std::vector<std::string> fastsim = gra::aux::SplitStr2Str(r["fastsim"].as<std::string>());
+
+    if (!checkdim({input,legend,mode,fastsim})) {
+      throw std::invalid_argument("fitharmonic:: Input list with different dimensions");
+    }
+
+    std::vector<gra::spherical::Data> DATA;
+    DATA.resize(input.size());
+
+    const std::vector<std::string> titles  = gra::aux::SplitStr2Str(r["titles"].as<std::string>());
+    if (titles.size() != 3) {
+      throw std::invalid_argument("fitharmonic:: 'titles' list should be of size 3 (detector,fiducial,reference)");
+    }
+    
+    for (const auto& i : indices(input)) {
+
+      // Read in data
+      gra::spherical::Data data;
+      data.META.NAME    = input[i];
+      data.META.LEGEND  = legend[i];
+      data.META.MODE    = mode[i];
+      data.META.FRAME   = FRAME;
+      data.META.FASTSIM = (fastsim[i] == "true") ? true : false;
+
+      data.META.TITLES  = titles;
+      ReadIn(data.META.NAME, data.EVENTS, data.META.FRAME, MAXEVENTS, data.META.FASTSIM);
+
+      // Set data
+      DATA[i] = data;
+    }
+
     // LOOP OVER HYPERBINS
-
-    ha.HyperLoop(fitwrapper, MC_events, DATA_events, hparam);
+    ha.HyperLoop(fitwrapper, REFMC, DATA, hparam);
 
     // Print out results for external analysis
     //ha.PrintLoop(outputname);
 
     // Plot all
     const std::string legendstr  = FRAME;
-    const std::string outputpath = ref + "+" + input;
+    const std::string outputpath = ref + "+" + r["input"].as<std::string>();
     ha.PlotAll(legendstr, outputpath);
-    
+
   } catch (const std::invalid_argument& e) {
       gra::aux::PrintGameOver();
       std::cerr << rang::fg::red
@@ -432,4 +467,3 @@ void ReadIn(const std::string inputfile,
   // Close HepMC file
   input_file.close();
 }
-
