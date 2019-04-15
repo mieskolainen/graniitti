@@ -38,7 +38,7 @@ do
 
 # Analyze
 ./bin/fitharmonic -r SH_2pi_J0_CMS -i SH_2pi_J0_CMS,SH_2pi_CMS \
--l 'GRANIITTI (J=0),GRANIITTI #pi^{+}#pi^{-} 13 TeV' -m MC,MC -s true,true  \
+-l 'GRANIITTI (J=0),GRANIITTI #pi^{+}#pi^{-}' -m MC,MC -s true,true  \
 -t '#Omega{Detector}: |#eta| < 2.5 #wedge p_{T} > 0.1 GeV,#Omega{Fiducial}: |#eta| < 2.5 #wedge p_{T} > 0.1 GeV,#Omega{Flat}: |Y_{x}| < 2.5' \
 -c $FIDCUTS \
 -f $FRAME -g $LMAX -o $REMOVEODD -n $REMOVENEGATIVE -a $SVDREG -b $L1REG -e $EML \

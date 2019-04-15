@@ -122,17 +122,17 @@ int main(int argc, char* argv[]) {
         ("X,maximum",        "Maximum number of events                <N>",                         cxxopts::value<unsigned int>() )
         ("H,help",           "Help")
         ;
-        
+
     auto r = options.parse(argc, argv);
-    
+
     if (r.count("help") || NARGC == 0) {
       std::cout << options.help({""}) << std::endl;
       std::cout << "Example:" << std::endl;
-      std::cout << "  " << argv[0] << " -r SH_2pi_REF -i SH_2pi -t MC -c -2.5,2.5,0.1,100 -l 4 -f HE -M 40,0.4,1.5"
+      std::cout << "  " << argv[0] << " -r SH_2pi_REF -i SH_2pi ..."
                 << std::endl << std::endl;
       return EXIT_FAILURE;
     }
-
+    
     // Fiducial cuts
     if (r.count("cuts")) {
       const std::string str = r["cuts"].as<std::string>();
@@ -229,7 +229,7 @@ int main(int argc, char* argv[]) {
     if (titles.size() != 3) {
       throw std::invalid_argument("fitharmonic:: 'titles' list should be of size 3 (detector,fiducial,reference)");
     }
-    
+
     for (const auto& i : indices(input)) {
 
       // Read in data

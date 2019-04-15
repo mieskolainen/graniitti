@@ -471,7 +471,11 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 			mg[k]->GetHistogram()->SetMinimum(0.0);
 			} else {
 
-			const double bound = std::max(std::abs(MINVAL[k]), std::abs(MAXVAL[k]));
+			// Skip the first element (lm=00)
+			const double maxval = *std::max_element(std::begin(MAXVAL)+1, std::end(MAXVAL));
+			const double minval = *std::min_element(std::begin(MINVAL)+1, std::end(MINVAL));
+			const double bound = std::max(std::abs(minval), std::abs(maxval));
+			
 			mg[k]->GetHistogram()->SetMaximum( bound*1.1);
 			mg[k]->GetHistogram()->SetMinimum(-bound*1.1);
 			}
@@ -491,7 +495,7 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 		t2->SetTextSize(std::ceil(1.0/msqrt(ACTIVENDF)) * 20);
 		//t2->SetTextAngle(45);
 		t2->Draw("same");
-
+		
 		// Draw horizontal red line
 		if (k != 0) {
 			TLine* line = new TLine(grid[OBSERVABLE][0].min, 0.0, grid[OBSERVABLE][grid[OBSERVABLE].size()-1].max, 0.0);
@@ -499,25 +503,25 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 			line->SetLineWidth(1.0);
 			line->Draw("same");
 		}
-
+		
 		// Who made it
 		if (k == ACTIVENDF - 1) {
 			// New pad on top of all
 			c1->cd(); // Important!
 			TPad* tpad = gra::rootstyle::TransparentPad();
-
+			
 			TLatex* l1; TLatex* l2;
 			const double xpos = 0.99;
 			std::tie(l1,l2) = gra::rootstyle::MadeInFinland(xpos);
 		}
 		++k;
 	}}
-
+	
 	// ------------------------------------------------------------------
 	// Draw legend to the upper left most
 	if (DATAMODE != "Response") {
 	c1->cd(1);
-
+	
 	// Create legend
 	double x1,x2,y1,y2 = 0.0;
 	const std::string legendposition = "northeast";
@@ -526,12 +530,12 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 	legend->SetFillColor(0);    // White background
 	legend->SetBorderSize(0);   // No box
 	legend->SetTextSize(0.035);
-
+	
 	// Add legend entries
 	for (const auto& i : indices(gr)) {
 		legend->AddEntry(gr[i][0], legendstrs[i].c_str());
 	}
-
+	
   	// Draw legend
 	legend->Draw("same");
 	}

@@ -16,9 +16,10 @@
 #include "TROOT.h"
 #include "TStyle.h"
 #include "TLatex.h"
+#include "TPad.h"
+
 
 namespace gra {
-
 namespace rootstyle {
 
 // Set "nice" 2D-plot style
