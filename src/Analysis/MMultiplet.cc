@@ -5,6 +5,7 @@
 
 // C++
 #include <string>
+#include <tuple>
 
 // ROOT
 #include "TGaxis.h"
@@ -18,6 +19,7 @@
 
 // Own
 #include "Graniitti/Analysis/MMultiplet.h"
+#include "Graniitti/Analysis/MROOT.h"
 #include "Graniitti/MAux.h"
 
 using gra::aux::indices;
@@ -215,22 +217,10 @@ std::vector<double> h1Multiplet::SaveFig(const std::string& fullpath) const {
 	}
 	legend->Draw();
 
-
-	// ----------------------------------------------------------------------------
-	// Create GRANIITTI Text
-	double latex_x = 0.924;
-	TLatex l1(latex_x, 0.03, gra::aux::GetVersionTLatex().c_str());
-	l1.SetNDC(); // Normalized coordinates
-	l1.SetTextAngle(90);
-	l1.Draw();
-
-	TLatex l2(latex_x, 0.58, gra::aux::GetWebTLatex().c_str());
-	l2.SetNDC(); // Normalized coordinates
-	l2.SetTextAngle(90);
-	l2.Draw();
-
-	// ----------------------------------------------------------------------------
-	
+	// -------------------------------------------------------------------
+	// Create labels
+	TLatex* l1; TLatex* l2;
+	std::tie(l1,l2) = gra::rootstyle::MadeInFinland();
 
 	// -------------------------------------------------------------------
 	// Ratio plots
@@ -412,6 +402,12 @@ double h2Multiplet::SaveFig(const std::string& fullpath) const {
 		ratios.push_back(hR); // Save pointer
 	}
 
+	// -------------------------------------------------------------------
+	// Create labels
+	TLatex* l1; TLatex* l2;
+	std::tie(l1,l2) = gra::rootstyle::MadeInFinland();
+	// -------------------------------------------------------------------
+	
     // Create output directory if it does not exist
     aux::CreateDirectory(fullpath);
 

@@ -9,19 +9,20 @@
 #include <complex>
 #include <memory>
 #include <vector>
+#include <tuple>
 
 // ROOT
 #include "TColor.h"
 #include "TROOT.h"
 #include "TStyle.h"
-
+#include "TLatex.h"
 
 namespace gra {
 
 namespace rootstyle {
 
 // Set "nice" 2D-plot style
-void SetPlotStyle() {
+inline void SetPlotStyle() {
     
     // Set Smooth color gradients
     const Int_t NRGBs = 5;
@@ -45,14 +46,14 @@ void SetPlotStyle() {
 
     // Necessary with multiple plots per canvas
     gStyle->SetPadTopMargin(0.1);
-    gStyle->SetPadRightMargin(0.01); // Keep this small
     gStyle->SetPadBottomMargin(0.15);
+
     gStyle->SetPadLeftMargin(0.1);
+    gStyle->SetPadRightMargin(0.09);
 }
 
-
 // Global Style Setup
-void SetROOTStyle() {
+inline void SetROOTStyle() {
     gStyle->SetOptStat(0); // Statistics BOX OFF [0,1]
 
     gStyle->SetOptFit(); // Fit parameters
@@ -64,6 +65,32 @@ void SetROOTStyle() {
     gStyle->SetStatH(0.09);
     
     SetPlotStyle();
+}
+
+// Before calling this, call mother TCanvas cd->()
+inline TPad* TransparentPad() {
+
+    TPad* newpad = new TPad("newpad", "a transparent pad", 0,0,1,1);
+    newpad->SetFillStyle(4000);
+    newpad->Draw();
+    newpad->cd();
+    return newpad;
+}
+
+// Create GRANIITTI Text
+inline std::tuple<TLatex*,TLatex*> MadeInFinland(double xpos = 0.924) {
+    
+    TLatex* l1 = new TLatex(xpos, 0.03, gra::aux::GetVersionTLatex().c_str());
+    l1->SetNDC(); // Normalized coordinates
+    l1->SetTextAngle(90);
+    l1->Draw();
+
+    TLatex* l2 = new TLatex(xpos, 0.68, gra::aux::GetWebTLatex().c_str());
+    l2->SetNDC(); // Normalized coordinates
+    l2->SetTextAngle(90);
+    l2->Draw();
+
+    return std::make_tuple(l1, l2);
 }
 
 } // rootstyle namespace ends

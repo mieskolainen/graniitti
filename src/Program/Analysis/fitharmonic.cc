@@ -122,9 +122,9 @@ int main(int argc, char* argv[]) {
         ("X,maximum",        "Maximum number of events                <N>",                         cxxopts::value<unsigned int>() )
         ("H,help",           "Help")
         ;
-
+        
     auto r = options.parse(argc, argv);
-
+    
     if (r.count("help") || NARGC == 0) {
       std::cout << options.help({""}) << std::endl;
       std::cout << "Example:" << std::endl;

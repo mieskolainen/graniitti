@@ -32,6 +32,7 @@
 
 // Own
 #include "Graniitti/Analysis/MHarmonic.h"
+#include "Graniitti/Analysis/MROOT.h"
 #include "Graniitti/MSpherical.h"
 #include "Graniitti/MMath.h"
 #include "Graniitti/MKinematics.h"
@@ -421,7 +422,7 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 
 
 	// Draw multigraph
-	int k = 0;
+	unsigned int k = 0;
 
 	for (int l = 0; l <= param.LMAX; ++l) {
 	for (int m = -l; m <= l; ++m) {
@@ -444,7 +445,7 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 			if (SPACE == "fid") { mg[k]->SetTitle(Form("%s | #it{lm} = <%d,%d>", TITLES[1].c_str(), l, m)); }
 			if (SPACE == "fla") { mg[k]->SetTitle(Form("%s | #it{lm} = <%d,%d>", TITLES[2].c_str(), l, m)); }
 		}
-		
+
 		// Set x-axis label
 		mg[k]->GetXaxis()->SetTitle(xlabel.c_str());
 		//gStyle->SetBarWidth(0.5);
@@ -498,9 +499,20 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 			line->SetLineWidth(1.0);
 			line->Draw("same");
 		}
+
+		// Who made it
+		if (k == ACTIVENDF - 1) {
+			// New pad on top of all
+			c1->cd(); // Important!
+			TPad* tpad = gra::rootstyle::TransparentPad();
+
+			TLatex* l1; TLatex* l2;
+			const double xpos = 0.99;
+			std::tie(l1,l2) = gra::rootstyle::MadeInFinland(xpos);
+		}
 		++k;
 	}}
-
+	
 	// ------------------------------------------------------------------
 	// Draw legend to the upper left most
 	if (DATAMODE != "Response") {

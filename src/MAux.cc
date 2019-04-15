@@ -500,26 +500,26 @@ void PrintGameOver() {
 }
 
 double GetVersion() {
-	return 0.30;
+	return 0.31;
 }
 
 std::string GetVersionString() {
 	char buff[100];
-	snprintf(buff, sizeof(buff), "Version %0.2f (BETA) 110419", GetVersion());
+	snprintf(buff, sizeof(buff), "Version %0.2f (BETA) 150419", GetVersion());
 	std::string str = buff;
 	return str;
 }
 
 std::string GetVersionTLatex() {
 	char buff[100];
-	snprintf(buff, sizeof(buff), "#color[15]{#scale[0.6]{GRANIITTI #scale[0.8]{%0.2f}#it{#beta}}}", GetVersion());
+	snprintf(buff, sizeof(buff), "#color[16]{#scale[0.6]{GRANIITTI #scale[0.8]{%0.2f}#it{#beta}}}", GetVersion());
 	std::string str = buff;
 	return str;
 }
 
 std::string GetWebTLatex() {
 	char buff[100];
-	snprintf(buff, sizeof(buff), "#color[15]{#scale[0.5]{#LTgithub.com/mieskolainen#GT}}");
+	snprintf(buff, sizeof(buff), "#color[16]{#scale[0.5]{#LTgithub.com/mieskolainen#GT}}");
 	std::string str = buff;
 	return str;
 }
