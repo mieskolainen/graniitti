@@ -19,18 +19,31 @@ Q:  Where are the examples of .json steering cards?
 A:  Under /tests/processes folder. Make a copy to /input and modify.
 
 
-Q:  Hey, for the analysis purposes, I just want to generate J=0 amplitude with a smooth
+Q:  For the analysis purposes, I just want to generate J=0 amplitude with a smooth
     invariant mass distribution and peripheral (exponential) t-distributions.
 A:  Add @FLATAMP:X at the end of your process string with X = 1,2,3,... (try them out).
     For the b-slope parameter, adjust /modeldata/TUNE/GENERAL.json.
 
 
-Q:  I want to generate a tensor particle decaying to vector daughters with sequential spin correlations.
-    This is supported via Jacob-Wick amplitudes. First setup the mother resonance
+Q:  I want to generate a tensor J=2 particle decaying to vector daughters with sequential spin correlations.
+A:  This is supported via Jacob-Wick amplitudes. First setup the mother resonance
     with a spin polarization density matrix under /modeldata/TUNE/RES_xxx.json
     (create a new file) and choose the Lorentz reference frame there.
     Second, adjust the decay (l,s)-couplings for the intermediate daughters
     under /modeldata/TUNE/BRANCHING.json. Then create a process steering card following the examples.
+
+
+Q:  How to do fast plotting of the fiducial observables of a given MC sample
+    and stack different MC samples in the same plot?
+A:  If you have ROOT installed, just try some examples under /tests/.
+    GRANIITTI includes a very large collection of automated publication quality plots
+    for arbitrary central production processes. We recommend also one to use RIVET via HepMC2.
+
+
+Q:  Simple fiducial observables are not enough, I want to do a full spherical harmonics expansion!
+A:  Sure, if you have ROOT installed, which is needed for plotting and extended maximum likelihood via TMinuit. 
+    This advanced analysis algorithm is fully automated including the efficiency and
+    acceptance corrections and inversions. See examples under /tests/harmonicrun.
 
 
 Q:  Integrated cross section seems very high?
