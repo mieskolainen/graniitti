@@ -447,12 +447,14 @@ void MProcess::SetInitialState(const std::vector<std::string>& beam,
 }
 
 
-// Return "flat" matrix element squared |A|^2 -> for evaluating the phase space
+// Return "flat/special" matrix element squared |A|^2 
+// for evaluating the phase space and other special purposes
 double MProcess::GetFlatAmp2(const gra::LORENTZSCALAR& lts) const {
+	
 	double W = 1.0;
 
 	// Peripheral phase space: |A|^2 ~ exp(bt1) exp(bt2)
-	if (FLATAMP == 1) {
+	if      (FLATAMP == 1) {
 		W = std::exp(PARAM_FLAT::b * lts.t1) *
 		    std::exp(PARAM_FLAT::b * lts.t2);
 	}
@@ -466,13 +468,18 @@ double MProcess::GetFlatAmp2(const gra::LORENTZSCALAR& lts) const {
 		W = std::exp(PARAM_FLAT::b * lts.t1) *
 		    std::exp(PARAM_FLAT::b * lts.t2) / lts.s_hat;
 	}
-	// Constant
+	// Peripheral phase space: |A|^2 ~ exp(bt1) exp(bt2) x exp(-shat)
 	else if (FLATAMP == 4) {
+		W = std::exp(PARAM_FLAT::b * lts.t1) *
+		    std::exp(PARAM_FLAT::b * lts.t2) * std::exp(-lts.s_hat);
+	}
+	// Constant
+	else if (FLATAMP == 5) {
 		W = 1.0;
 	} else {
 		// Throw an error, unknown mode
 		std::string str =
-		    "MProcess::GetFlatAmp2: Unknown FLATAMP mode (|A|^2 :: 0 = off, 1 = exp{b(t1+t2)}, 2 = exp{b(t1+t2)}/M, 3 = exp{b(t1+t2)}/M^2, 4 = 1.0) : input was " + std::to_string(FLATAMP);
+		    "MProcess::GetFlatAmp2: Unknown FLATAMP mode (|A|^2 :: 0 = off, 1 = exp{b(t1+t2)}, 2 = exp{b(t1+t2)}/shat^{1/2}, 3 = exp{b(t1+t2)}/shat, 4 = exp{b(t1+t2)} x exp(-shat), 5 = 1.0) : input was " + std::to_string(FLATAMP);
 		throw std::invalid_argument(str);
 	}
 	return W;

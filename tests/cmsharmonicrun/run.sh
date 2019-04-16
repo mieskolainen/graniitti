@@ -21,8 +21,8 @@ FIDCUTS=-2.5,2.5,0.1,100.0
 
 # System kinematic variables binning <bins,min,max>
 MBINS=40,0.28,2.0
-PBINS=1,0.0,2.0
-YBINS=1,-0.9,0.9
+PBINS=1,0.0,10.0
+YBINS=1,-2.5,2.5
 
 # PARAMETERS
 LMAX=4
@@ -43,7 +43,7 @@ do
 -c $FIDCUTS \
 -f $FRAME -g $LMAX -o $REMOVEODD -n $REMOVENEGATIVE -a $SVDREG -b $L1REG -e $EML \
 -M $MBINS -P $PBINS -Y $YBINS \
--X 100000
+-X 1000000
 
 done
 

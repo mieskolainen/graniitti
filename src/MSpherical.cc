@@ -43,7 +43,7 @@ MMatrix<double> GetGMixing(const std::vector<Omega>& events, const std::vector<s
   const int NCOEF = (LMAX+1)*(LMAX+1);
   
   std::cout << "GetGMixing: mode = " << mode << std::endl;
-  std::cout << "Generated flaerence MC phase space events = " << ind.size() << std::endl;
+  std::cout << "Generated flat MC phase space events = " << ind.size() << std::endl;
   
   // Construct the efficiency coefficients EPSILON_LM with linear
   // indexing
@@ -65,7 +65,7 @@ MMatrix<double> GetGMixing(const std::vector<Omega>& events, const std::vector<s
     const bool fid = events[k].fiducial;
     const bool sel = events[k].selected;
     
-    // Flat flaerence phase space
+    // Flat phase space
     if      (mode == "fla") {
       // all fine
     }
@@ -107,11 +107,11 @@ MMatrix<double> GetGMixing(const std::vector<Omega>& events, const std::vector<s
   }
 
   if (mode == "fid" || mode == "det") {
-    printf("Fiducial flaerence MC phase space events = %d (acceptance %0.3f percent) \n",
+    printf("Fiducial flat MC phase space events = %d (acceptance %0.3f percent) \n",
         fiducial, fiducial / static_cast<double>(ind.size()) * 100);
   }
   if (mode == "det") {
-    printf("Selected flaerence MC phase space events = %d (efficiency %0.3f percent) \n",
+    printf("Selected flat MC phase space events = %d (efficiency %0.3f percent) \n",
         selected, selected / static_cast<double>(fiducial) * 100);
   }
   if (mode == "fid" || mode == "det") {
@@ -201,7 +201,7 @@ std::pair<std::vector<double>,std::vector<double>>
   const int NCOEF = (LMAX+1)*(LMAX+1);
 
   std::cout << "GetELM: mode = " << mode << std::endl;
-  std::cout << "Generated flaerence MC phase space events = " << ind.size() << std::endl;
+  std::cout << "Generated flat MC phase space events = " << ind.size() << std::endl;
 
   // Construct the efficiency coefficients E_LM with linear indexing
   std::vector<double>  E(NCOEF, 0.0);
@@ -222,7 +222,7 @@ std::pair<std::vector<double>,std::vector<double>>
     bool fid = MC[k].fiducial;
     bool sel = MC[k].selected;
 
-    // Flat flaerence phase space
+    // Flat flat phase space
     if      (mode == "fla") {
       // all fine
     }
@@ -255,12 +255,12 @@ std::pair<std::vector<double>,std::vector<double>>
   }
   if (mode == "fid" || mode == "det") {
     printf(
-        "Fiducial flaerence MC phase space events = %d (geometric-kinematic acceptance %0.3f percent) \n\n",
+        "Fiducial flat MC phase space events = %d (geometric-kinematic acceptance %0.3f percent) \n\n",
         fiducial, fiducial / static_cast<double>(ind.size()) * 100);
   }
   if (mode == "det") {
     printf(
-        "Selected flaerence MC phase space events = %d (fiducial efficiency %0.3f percent) \n\n",
+        "Selected flat MC phase space events = %d (fiducial efficiency %0.3f percent) \n\n",
         selected, selected / static_cast<double>(fiducial) * 100);
   }
   if (mode == "fid") {
@@ -324,7 +324,7 @@ std::vector<double> SphericalMoments(const std::vector<Omega>& input,
         const bool fidtrue = input[k].fiducial;
         const bool seltrue = input[k].selected;
 
-        // Flat flaerence phase space
+        // Flat flat phase space
         if      (mode == "fla") {
           // all fine
         }

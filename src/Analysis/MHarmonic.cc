@@ -201,19 +201,18 @@ void MHarmonic::PlotAll(const std::string& outputpath) const {
   Plot1DEfficiency(OBSERVABLE, outputpath);
 
   // **** ALGEBRAIC INVERSE MOMENTS ****
-  PlotFigures(det, OBSERVABLE, "{Moments}[MPP]<det>", 33, outputpath);
-  PlotFigures(fid, OBSERVABLE, "{Moments}[MPP]<fid>", 33, outputpath);
-  PlotFigures(fla, OBSERVABLE, "{Moments}[MPP]<fla>", 33, outputpath);
-
+  PlotFigures(det, OBSERVABLE, "h_{Moments}[MPP]<det>", 33, outputpath);
+  PlotFigures(fid, OBSERVABLE, "h_{Moments}[MPP]<fid>", 33, outputpath);
+  PlotFigures(fla, OBSERVABLE, "h_{Moments}[MPP]<fla>", 33, outputpath);
 
   // **** EXTENDED MAXIMUM LIKELIHOOD INVERSE MOMENTS ****
   if (param.EML) {
-  PlotFigures(det, OBSERVABLE, "{Moments}[EML]<det>", 33, outputpath);
-  PlotFigures(fid, OBSERVABLE, "{Moments}[EML]<fid>", 33, outputpath);
-  PlotFigures(fla, OBSERVABLE, "{Moments}[EML]<fla>", 33, outputpath);
+  PlotFigures(det, OBSERVABLE, "h_{Moments}[EML]<det>", 33, outputpath);
+  PlotFigures(fid, OBSERVABLE, "h_{Moments}[EML]<fid>", 33, outputpath);
+  PlotFigures(fla, OBSERVABLE, "h_{Moments}[EML]<fla>", 33, outputpath);
+  }
   }
 
-  }
 
   // 2D
   std::vector<std::vector<int>> OBSERVABLES = {{0,1},{0,2},{1,2}}; // Different pairs
@@ -396,8 +395,7 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 
 		  ++ind;
 	} // Loop over sources
-
-
+	
 	// Draw multigraph
 	unsigned int k = 0;
 
@@ -405,7 +403,7 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 	for (int m = -l; m <= l; ++m) {
 
 		const int index = gra::spherical::LinearInd(l, m);
-
+		
 		if (!ACTIVE[index]) { continue; } // Not active
 
 		// Set canvas position
@@ -415,12 +413,12 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 		mg[k]->Draw("AC*");
 
 		// Title
-		if (k != 0) {
-			mg[k]->SetTitle(Form("#it{lm} = <%d,%d>", l, m));
-		} else {
+		if (k == 0) {
 			if (SPACE == "det") { mg[k]->SetTitle(Form("%s | #it{lm} = <%d,%d>", TITLES[0].c_str(), l, m)); }
 			if (SPACE == "fid") { mg[k]->SetTitle(Form("%s | #it{lm} = <%d,%d>", TITLES[1].c_str(), l, m)); }
 			if (SPACE == "fla") { mg[k]->SetTitle(Form("%s | #it{lm} = <%d,%d>", TITLES[2].c_str(), l, m)); }
+		} else {
+			mg[k]->SetTitle(Form("Moment #it{lm} = <%d,%d>", l, m));
 		}
 
 		// Set x-axis
@@ -436,7 +434,7 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 
 		// Set y-axis
 		//mg[k]->GetYaxis()->SetTitle("Intensity");
-		
+
 		gStyle->SetTitleFontSize(0.08);
 		
 		if (k == 0) {
@@ -524,8 +522,15 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 		aux::CreateDirectory("./figs/harmonicfit");
 		aux::CreateDirectory("./figs/harmonicfit/" + outputpath);
 		const std::string subpath = "OBS_" + std::to_string(OBSERVABLE) + "_" + FRAME;
-		aux::CreateDirectory("./figs/harmonicfit/" + outputpath + "/" + subpath);
-		c1->Print(Form("./figs/harmonicfit/%s/%s/%s.pdf", outputpath.c_str(), subpath.c_str(), TYPESTRING.c_str()));
+		const std::string fullpath = "./figs/harmonicfit/" + outputpath + "/" + subpath;
+		aux::CreateDirectory(fullpath);
+		c1->Print(Form("%s/%s.pdf", fullpath.c_str(), TYPESTRING.c_str()));
+
+	    // Merge pdfs using Ghostscript (gs)
+	    const std::string cmd = "gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=" + fullpath + "/merged.pdf " + fullpath + "/h*.pdf";
+	    if (system(cmd.c_str()) == -1) {
+	        throw std::invalid_argument("Error: Problem executing Ghostscript merge on pdfs!");
+	    }	
 	}
 
 	/*
@@ -677,9 +682,9 @@ void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string& out
 		
 		// Title
 		if (k == 0) {
-			mg[k]->SetTitle(Form("Response expansion: #it{lm} = <%d,%d>", l, m));
+			mg[k]->SetTitle(Form("Acceptance decomposition: #it{lm} = <%d,%d>", l, m));
 		} else {
-			mg[k]->SetTitle(Form("#it{lm} = <%d,%d>", l, m));
+			mg[k]->SetTitle(Form("Moment #it{lm} = <%d,%d>", l, m));
 		}
 
 		// Set x-axis
@@ -694,7 +699,7 @@ void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string& out
 		mg[k]->GetYaxis()->SetLabelSize(0.05);
 
 		// Set y-axis
-		mg[k]->GetYaxis()->SetTitle("Response");
+		//mg[k]->GetYaxis()->SetTitle("");
 
 		gStyle->SetTitleFontSize(0.08);
 		
@@ -757,7 +762,7 @@ void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string& out
 	double x1,x2,y1,y2 = 0.0;
 	const std::string legendposition = "southeast";
 	GetLegendPosition2(3, x1,x2,y1,y2, legendposition);
-	TLegend* legend = new TLegend(x1-0.3, y1+0.15, x2-0.3, y2+0.15);
+	TLegend* legend = new TLegend(x1-0.3, y1+0.1, x2-0.3, y2+0.1);
 	legend->SetFillColor(0);    // White background
 	legend->SetBorderSize(0);   // No box
 	legend->SetTextSize(0.04);
@@ -778,8 +783,9 @@ void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string& out
 		aux::CreateDirectory("./figs/harmonicfit");
 		aux::CreateDirectory("./figs/harmonicfit/" + outputpath);
 		const std::string subpath = "OBS_" + std::to_string(OBSERVABLE) + "_" + FRAME;
-		aux::CreateDirectory("./figs/harmonicfit/" + outputpath + "/" + subpath);
-		c1->Print(Form("./figs/harmonicfit/%s/%s/Response.pdf", outputpath.c_str(), subpath.c_str()) );
+		const std::string fullpath = "./figs/harmonicfit/" + outputpath + "/" + subpath;
+		aux::CreateDirectory(fullpath);
+		c1->Print(Form("%s/h_Response.pdf", fullpath.c_str()));
 	}
 
 	/*

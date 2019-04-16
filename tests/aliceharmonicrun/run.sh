@@ -21,19 +21,19 @@ FIDCUTS=-0.9,0.9,0.1,100.0
 
 # System kinematic variables binning <bins,min,max>
 MBINS=40,0.28,2.0
-PBINS=1,0.0,2.0
+PBINS=1,0.0,10.0
 YBINS=1,-0.9,0.9
 
 # PARAMETERS
 LMAX=4
 REMOVEODD=true
 REMOVENEGATIVE=true
-SVDREG=1e-4
+SVDREG=1e-5
 L1REG=0 #1e-5
 EML=false
 
 # Lorentz frames
-for FRAME in HE # CS PG SR
+for FRAME in HE CS PG SR
 do
 
 # Analyze
@@ -43,7 +43,7 @@ do
 -c $FIDCUTS \
 -f $FRAME -g $LMAX -o $REMOVEODD -n $REMOVENEGATIVE -a $SVDREG -b $L1REG -e $EML \
 -M $MBINS -P $PBINS -Y $YBINS \
--X 100000
+-X 10000
 
 done
 

@@ -27,8 +27,8 @@
 
     "BEAM" :   ["p+","p+"],    // Beam PDG-ID / Name
     "ENERGY" : [3500, 3500],   // Beam energy in the lab (GeV)
-    "PROCESS" : "PP[RES]<F> -> pi+ pi- @FLATAMP:2", // Process
-    "RES" : ["flat"],
+    "PROCESS" : "PP[RES]<C> -> pi+ pi- @FLATAMP:4", // Process
+    "RES" : [],
     "POMLOOP" : false,         // Eikonal Pomeron loop screening
     "NSTARS" : 0,              // N* excitation (0 = elastic, 1 = single, 2 = double)
     "LHAPDF" : "CT10nlo",      // LHAPDF parton distribution set
