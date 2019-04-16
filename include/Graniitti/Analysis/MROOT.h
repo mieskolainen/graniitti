@@ -52,6 +52,9 @@ inline TCanvas* AutoGridCanvas(unsigned int N) {
     
     c1->Divide(COLS, ROWS, 0.002, 0.001);
     
+    // This is needed
+    gStyle->SetPadLeftMargin(0.15);
+
     return c1;
 }
 
@@ -71,13 +74,13 @@ inline void SetPlotStyle() {
     
     // Black-Red palette
     gStyle->SetPalette(53); // 53/56 for inverted
-    gStyle->SetTitleOffset(1.6, "x");  // X-axis title offset from axis
-    gStyle->SetTitleOffset(1.0, "y");  // X-axis title offset from axis
-    gStyle->SetTitleSize(0.03,  "x");  // X-axis title size
+    gStyle->SetTitleOffset(1.6, "x");  // title offset from axis
+    gStyle->SetTitleOffset(1.0, "y");  // 
+    gStyle->SetTitleSize(0.03,  "x");  // title size
     gStyle->SetTitleSize(0.035, "y");
     gStyle->SetTitleSize(0.03,  "z");
     gStyle->SetLabelOffset(0.025);
-
+    
     // Necessary with multiple plots per canvas
     gStyle->SetPadTopMargin(0.1);
     gStyle->SetPadBottomMargin(0.15);

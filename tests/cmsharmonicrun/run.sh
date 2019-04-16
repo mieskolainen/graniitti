@@ -26,11 +26,11 @@ YBINS=1,-0.9,0.9
 
 # PARAMETERS
 LMAX=4
-REMOVEODD=false
-REMOVENEGATIVE=false
+REMOVEODD=true
+REMOVENEGATIVE=true
 SVDREG=1e-5
 L1REG=0 #1e-5
-EML=true
+EML=false
 
 # Lorentz frames
 for FRAME in HE CS PG SR
@@ -43,7 +43,7 @@ do
 -c $FIDCUTS \
 -f $FRAME -g $LMAX -o $REMOVEODD -n $REMOVENEGATIVE -a $SVDREG -b $L1REG -e $EML \
 -M $MBINS -P $PBINS -Y $YBINS \
--X 1000000
+-X 100000
 
 done
 

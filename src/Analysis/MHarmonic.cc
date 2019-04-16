@@ -264,6 +264,7 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 	TCanvas* c1 = gra::rootstyle::AutoGridCanvas(ACTIVENDF);
 	// ------------------------------------------------------------------
 	
+
 	std::string xlabel = "";
 	if      (OBSERVABLE == 0) {
 		xlabel = "M (GeV)";
@@ -277,7 +278,7 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 		throw std::invalid_argument("MHarmonic::PlotFigures: Unknown observable " + std::to_string(OBSERVABLE));
 	}
 
-	// --------------------------------------
+	// ------------------------------------------------------------------
 	// Extract name strings
 
 	// find {string}
@@ -294,6 +295,8 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 	std::smatch smc;
 	std::regex_search(TYPESTRING, smc, std::regex(R"(\[.*?\])")); // R"()" for Raw string literals
 	std::string     ALGO = smc[0]; ALGO = ALGO.substr(1, ALGO.size()-2);
+
+	// ------------------------------------------------------------------
 
 	// Loop over data sources
 	std::size_t BINS = 0;
@@ -360,22 +363,7 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 					}
 					else if (ALGO == "EML") {
 						y[bin]     = source.second(cell).t_lm_EML[index];
-						y_err[bin] = source.second(cell).t_lm_EML_error[index];        
-					}
-					else if (DATAMODE == "Response") {
-
-						if      (SPACE == "det") {
-						y[bin]     = det_DET(cell).E_lm[index];
-						y_err[bin] = det_DET(cell).E_lm_error[index];
-						}
-						else if (SPACE == "fid") {
-						y[bin]     = fid_DET(cell).E_lm[index];
-						y_err[bin] = fid_DET(cell).E_lm_error[index];
-						}
-						else if (SPACE == "fla") {
-						y[bin]     = fla_DET(cell).E_lm[index];
-						y_err[bin] = fla_DET(cell).E_lm_error[index];							
-						}
+						y_err[bin] = source.second(cell).t_lm_EML_error[index];
 					} else {
 						throw std::invalid_argument("MHarmonic::PlotFigures: Unknown input: DATAMODE = " + DATAMODE + " ALGO = " + ALGO);
 					}
@@ -406,8 +394,6 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 		    } // over m
 		  }   // over l
 
-		  if (DATAMODE == "Response") { break; }
-
 		  ++ind;
 	} // Loop over sources
 
@@ -437,7 +423,7 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 			if (SPACE == "fla") { mg[k]->SetTitle(Form("%s | #it{lm} = <%d,%d>", TITLES[2].c_str(), l, m)); }
 		}
 
-		// Set x-axis label
+		// Set x-axis
 		mg[k]->GetXaxis()->SetTitle(xlabel.c_str());
 		//gStyle->SetBarWidth(0.5);
 		//mg[k]->SetFillStyle(0);
@@ -448,45 +434,43 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 		mg[k]->GetYaxis()->SetTitleSize(0.05);
 		mg[k]->GetYaxis()->SetLabelSize(0.05);
 
+		// Set y-axis
+		//mg[k]->GetYaxis()->SetTitle("Intensity");
+		
 		gStyle->SetTitleFontSize(0.08);
 		
 		if (k == 0) {
 			gStyle->SetTitleW(0.95); // width percentage
 		}
 
-		// Y-axis range
-		if (DATAMODE != "Response") {
-			
-			if (k == 0) {
-			mg[k]->GetHistogram()->SetMaximum(MAXVAL[k]*1.1);
-			mg[k]->GetHistogram()->SetMinimum(0.0);
-			} else {
-
-			// Skip the first element (lm=00)
-			const double maxval = *std::max_element(std::begin(MAXVAL)+1, std::end(MAXVAL));
-			const double minval = *std::min_element(std::begin(MINVAL)+1, std::end(MINVAL));
-			const double bound = std::max(std::abs(minval), std::abs(maxval));
-			
-			mg[k]->GetHistogram()->SetMaximum( bound*1.1);
-			mg[k]->GetHistogram()->SetMinimum(-bound*1.1);
-			}
-
-		// Efficiency distribution
+		// Y-axis range			
+		if (k == 0) {
+		mg[k]->GetHistogram()->SetMaximum(MAXVAL[k]*1.1);
+		mg[k]->GetHistogram()->SetMinimum(0.0);
 		} else {
-			mg[k]->GetHistogram()->SetMaximum((k == 0) ? 1.0 :  0.3);
-			mg[k]->GetHistogram()->SetMinimum((k == 0) ? 0.0 : -0.3);  // Y  
+
+		// Skip the first element (lm=00)
+		const double maxval = *std::max_element(std::begin(MAXVAL)+1, std::end(MAXVAL));
+		const double minval = *std::min_element(std::begin(MINVAL)+1, std::end(MINVAL));
+		const double bound = std::max(std::abs(minval), std::abs(maxval));
+		
+		mg[k]->GetHistogram()->SetMaximum( bound*1.1);
+		mg[k]->GetHistogram()->SetMinimum(-bound*1.1);
 		}
 
+		// --------------------------------------------------------------
 		// Draw Lorentz FRAME string on left
-		TText* t2 = new TText(0.2, 0.85, FRAME.c_str());
+		TText* t2 = new TText(0.225, 0.825, FRAME.c_str());
 		t2->SetNDC();
 		t2->SetTextAlign(22);
 		t2->SetTextColor(kRed+2);
 		t2->SetTextFont(43);
-		t2->SetTextSize(std::ceil(1.0/msqrt(ACTIVENDF)) * 20);
+		t2->SetTextSize(std::ceil(1.0/msqrt(ACTIVENDF)) * 16);
 		//t2->SetTextAngle(45);
 		t2->Draw("same");
+		// --------------------------------------------------------------
 		
+		// --------------------------------------------------------------
 		// Draw horizontal red line
 		if (k != 0) {
 			TLine* line = new TLine(grid[OBSERVABLE][0].min, 0.0, grid[OBSERVABLE][grid[OBSERVABLE].size()-1].max, 0.0);
@@ -494,7 +478,9 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 			line->SetLineWidth(1.0);
 			line->Draw("same");
 		}
+		// --------------------------------------------------------------
 		
+		// --------------------------------------------------------------
 		// Who made it
 		if (k == ACTIVENDF - 1) {
 			// New pad on top of all
@@ -505,12 +491,13 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 			const double xpos = 0.99;
 			std::tie(l1,l2) = gra::rootstyle::MadeInFinland(xpos);
 		}
+		// --------------------------------------------------------------
+
 		++k;
 	}}
 	
 	// ------------------------------------------------------------------
 	// Draw legend to the upper left most
-	if (DATAMODE != "Response") {
 	c1->cd(1);
 	
 	// Create legend
@@ -529,7 +516,6 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 	
   	// Draw legend
 	legend->Draw("same");
-	}
 	// ------------------------------------------------------------------
 
 	// Require that we have data
@@ -696,7 +682,7 @@ void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string& out
 			mg[k]->SetTitle(Form("#it{lm} = <%d,%d>", l, m));
 		}
 
-		// Set x-axis label
+		// Set x-axis
 		mg[k]->GetXaxis()->SetTitle(xlabel.c_str());
 		//gStyle->SetBarWidth(0.5);
 		//mg[k]->SetFillStyle(0);
@@ -706,6 +692,9 @@ void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string& out
 
 		mg[k]->GetYaxis()->SetTitleSize(0.05);
 		mg[k]->GetYaxis()->SetLabelSize(0.05);
+
+		// Set y-axis
+		mg[k]->GetYaxis()->SetTitle("Response");
 
 		gStyle->SetTitleFontSize(0.08);
 		
@@ -727,14 +716,14 @@ void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string& out
 			mg[k]->GetHistogram()->SetMaximum( bound*1.1);
 			mg[k]->GetHistogram()->SetMinimum(-bound*1.1);
 		}
-		
+
 		// Draw Lorentz FRAME string on left
-		TText* t2 = new TText(0.2, 0.85, FRAME.c_str());
+		TText* t2 = new TText(0.225, 0.825, FRAME.c_str());
 		t2->SetNDC();
 		t2->SetTextAlign(22);
 		t2->SetTextColor(kRed+2);
 		t2->SetTextFont(43);
-		t2->SetTextSize(std::ceil(1.0/msqrt(ACTIVENDF)) * 20);
+		t2->SetTextSize(std::ceil(1.0/msqrt(ACTIVENDF)) * 16);
 		//t2->SetTextAngle(45);
 		t2->Draw("same");
 
