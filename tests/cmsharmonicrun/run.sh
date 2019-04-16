@@ -9,8 +9,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
 # Generate
-./bin/gr -i ./tests/cmsharmonicrun/SH_2pi_J0_CMS.json -n 100000
-./bin/gr -i ./tests/cmsharmonicrun/SH_2pi_CMS.json    -n 100000
+./bin/gr -i ./tests/cmsharmonicrun/SH_2pi_J0_CMS.json -n 1000000
+./bin/gr -i ./tests/cmsharmonicrun/SH_2pi_CMS.json    -n 1000000
 
 fi
 
@@ -25,15 +25,15 @@ PBINS=1,0.0,2.0
 YBINS=1,-0.9,0.9
 
 # PARAMETERS
-LMAX=2
-REMOVEODD=true
-REMOVENEGATIVE=true
+LMAX=4
+REMOVEODD=false
+REMOVENEGATIVE=false
 SVDREG=1e-5
 L1REG=0 #1e-5
 EML=true
 
 # Lorentz frames
-for FRAME in HE # CS PG SR
+for FRAME in HE CS PG SR
 do
 
 # Analyze
@@ -43,7 +43,7 @@ do
 -c $FIDCUTS \
 -f $FRAME -g $LMAX -o $REMOVEODD -n $REMOVENEGATIVE -a $SVDREG -b $L1REG -e $EML \
 -M $MBINS -P $PBINS -Y $YBINS \
--X 100000
+-X 1000000
 
 done
 

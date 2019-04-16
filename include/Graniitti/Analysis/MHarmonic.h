@@ -81,15 +81,18 @@ public:
 	void   logLfunc(int& npar, double* gin, double& f, double* par, int iflag) const;
 
 	bool   PrintLoop(const std::string& output) const;
-	void   PlotAll(const std::string& legendstr, const std::string& outputpath) const;
+	void   PlotAll(const std::string& outputpath) const;
 
 	void   PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::spherical::SH>>& tensor, unsigned int OBSERVABLE,
                        const std::string& TYPESTRING, int barcolor,
-                       const std::string& legendstr, const std::string& outputpath) const;
+                       const std::string& outputpath) const;
 
 	void   PlotFigures2D(const std::map<gra::spherical::Meta, MTensor<gra::spherical::SH>>& tensor, const std::vector<int>& OBSERVABLE2,
                          const std::string& TYPESTRING, int barcolor,
-                         const std::string& legendstr, const std::string& outputpath) const;
+                         const std::string& outputpath) const;
+
+	void   Plot1DEfficiency(unsigned int OBSERVABLE, const std::string& outputpath) const;
+
 	// Parameters
 	HPARAM param;
 	int    NCOEF;

@@ -254,9 +254,8 @@ int main(int argc, char* argv[]) {
     //ha.PrintLoop(outputname);
 
     // Plot all
-    const std::string legendstr  = FRAME;
     const std::string outputpath = ref + "+" + r["input"].as<std::string>();
-    ha.PlotAll(legendstr, outputpath);
+    ha.PlotAll(outputpath);
 
   } catch (const std::invalid_argument& e) {
       gra::aux::PrintGameOver();

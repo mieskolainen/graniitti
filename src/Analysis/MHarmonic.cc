@@ -193,26 +193,24 @@ bool MHarmonic::PrintLoop(const std::string& output) const {
 }
 
 
-void MHarmonic::PlotAll(const std::string& legendstr, const std::string& outputpath) const {
+void MHarmonic::PlotAll(const std::string& outputpath) const {
 
   for (const auto& OBSERVABLE : {0,1,2}) {
-  
+  	
   // **** EFFICIENCY DECOMPOSITION ****
-  PlotFigures(det, OBSERVABLE, "{Response}[ACCEPTANCE_x_EFFICIENCY]<det>", 33, legendstr, outputpath);
-  PlotFigures(fid, OBSERVABLE, "{Response}[FIDUCIAL_ACCEPTANCE]<fid>",     33, legendstr, outputpath);
-  PlotFigures(fla, OBSERVABLE, "{Response}[FLAT_REFERENCE]<fla>",          33, legendstr, outputpath);
+  Plot1DEfficiency(OBSERVABLE, outputpath);
 
   // **** ALGEBRAIC INVERSE MOMENTS ****
-  PlotFigures(det, OBSERVABLE, "{Moments}[MPP]<det>", 33, legendstr, outputpath);
-  PlotFigures(fid, OBSERVABLE, "{Moments}[MPP]<fid>", 33, legendstr, outputpath);
-  PlotFigures(fla, OBSERVABLE, "{Moments}[MPP]<fla>", 33, legendstr, outputpath);
+  PlotFigures(det, OBSERVABLE, "{Moments}[MPP]<det>", 33, outputpath);
+  PlotFigures(fid, OBSERVABLE, "{Moments}[MPP]<fid>", 33, outputpath);
+  PlotFigures(fla, OBSERVABLE, "{Moments}[MPP]<fla>", 33, outputpath);
 
 
   // **** EXTENDED MAXIMUM LIKELIHOOD INVERSE MOMENTS ****
   if (param.EML) {
-  PlotFigures(det, OBSERVABLE, "{Moments}[EML]<det>", 33, legendstr, outputpath);
-  PlotFigures(fid, OBSERVABLE, "{Moments}[EML]<fid>", 33, legendstr, outputpath);
-  PlotFigures(fla, OBSERVABLE, "{Moments}[EML]<fla>", 33, legendstr, outputpath);
+  PlotFigures(det, OBSERVABLE, "{Moments}[EML]<det>", 33, outputpath);
+  PlotFigures(fid, OBSERVABLE, "{Moments}[EML]<fid>", 33, outputpath);
+  PlotFigures(fla, OBSERVABLE, "{Moments}[EML]<fla>", 33, outputpath);
   }
 
   }
@@ -223,20 +221,20 @@ void MHarmonic::PlotAll(const std::string& legendstr, const std::string& outputp
   for (const auto& OBSERVABLE2 : OBSERVABLES) {
 
   // **** EFFICIENCY DECOMPOSITION ****
-  PlotFigures2D(fla, OBSERVABLE2, "{Response}[FLAT_REFERENCE]<fla>",  17, legendstr, outputpath);
-  PlotFigures2D(fid, OBSERVABLE2, "{Response}[FIDUCIAL_ACCEPTANCE]<fid>", 33, legendstr, outputpath);
-  PlotFigures2D(det, OBSERVABLE2, "{Response}[ACCEPTANCE_x_EFFICIENCY]<det>", 29, legendstr, outputpath);
+  PlotFigures2D(fla, OBSERVABLE2, "{Response}[FLAT_REFERENCE]<fla>",          17, outputpath);
+  PlotFigures2D(fid, OBSERVABLE2, "{Response}[FIDUCIAL_ACCEPTANCE]<fid>",     33, outputpath);
+  PlotFigures2D(det, OBSERVABLE2, "{Response}[ACCEPTANCE_x_EFFICIENCY]<det>", 29, outputpath);
 
   // **** ALGEBRAIC INVERSE MOMENTS ****
-  PlotFigures2D(fla, OBSERVABLE2, "{Moments}[MPP]<fla>", 17, legendstr, outputpath);
-  PlotFigures2D(fid, OBSERVABLE2, "{Moments}[MPP]<fid>", 33, legendstr, outputpath);
-  PlotFigures2D(det, OBSERVABLE2, "{Moments}[MPP]<det>", 29, legendstr, outputpath);
+  PlotFigures2D(fla, OBSERVABLE2, "{Moments}[MPP]<fla>", 17, outputpath);
+  PlotFigures2D(fid, OBSERVABLE2, "{Moments}[MPP]<fid>", 33, outputpath);
+  PlotFigures2D(det, OBSERVABLE2, "{Moments}[MPP]<det>", 29, outputpath);
 
   // **** EXTENDED MAXIMUM LIKELIHOOD INVERSE MOMENTS ****
   if (param.EML) {
-  PlotFigures2D(fla, OBSERVABLE2, "{Moments}[EML]<fla>", 17, legendstr, outputpath);
-  PlotFigures2D(fid, OBSERVABLE2, "{Moments}[EML]<fid>", 33, legendstr, outputpath);
-  PlotFigures2D(det, OBSERVABLE2, "{Moments}[EML]<det>", 29, legendstr, outputpath);
+  PlotFigures2D(fla, OBSERVABLE2, "{Moments}[EML]<fla>", 17, outputpath);
+  PlotFigures2D(fid, OBSERVABLE2, "{Moments}[EML]<fid>", 33, outputpath);
+  PlotFigures2D(det, OBSERVABLE2, "{Moments}[EML]<det>", 29, outputpath);
   }
 
   }
@@ -260,8 +258,7 @@ void GetLegendPosition2(unsigned int N, double& x1, double& x2, double& y1, doub
 
 // Print 1D-figures
 void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::spherical::SH>>& tensor, unsigned int OBSERVABLE,
-                            const std::string& TYPESTRING, int barcolor,
-                            const std::string& legendstr, const std::string& outputpath) const {
+                            const std::string& TYPESTRING, int barcolor, const std::string& outputpath) const {
 	
 	// ------------------------------------------------------------------
 	TCanvas* c1 = gra::rootstyle::AutoGridCanvas(ACTIVENDF);
@@ -540,7 +537,7 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 		aux::CreateDirectory("./figs");
 		aux::CreateDirectory("./figs/harmonicfit");
 		aux::CreateDirectory("./figs/harmonicfit/" + outputpath);
-		const std::string subpath = "OBS_" + std::to_string(OBSERVABLE) + "_" + legendstr;
+		const std::string subpath = "OBS_" + std::to_string(OBSERVABLE) + "_" + FRAME;
 		aux::CreateDirectory("./figs/harmonicfit/" + outputpath + "/" + subpath);
 		c1->Print(Form("./figs/harmonicfit/%s/%s/%s.pdf", outputpath.c_str(), subpath.c_str(), TYPESTRING.c_str()));
 	}
@@ -554,10 +551,262 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 }
 
 
+// Print 1D-figures
+void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string& outputpath) const {
+
+	// ------------------------------------------------------------------
+	TCanvas* c1 = gra::rootstyle::AutoGridCanvas(ACTIVENDF);
+	// ------------------------------------------------------------------
+		
+	std::string xlabel = "";
+	if      (OBSERVABLE == 0) {
+		xlabel = "M (GeV)";
+	}
+	else if (OBSERVABLE == 1) {
+		xlabel = "P_{T} (GeV)";
+	}
+	else if (OBSERVABLE == 2) {
+		xlabel = "Y";
+	} else {
+		throw std::invalid_argument("MHarmonic::PlotFigures: Unknown observable " + std::to_string(OBSERVABLE));
+	}
+
+	// Graphs for each efficiency [level] x [lm-moment]
+	std::vector<std::vector<TGraphErrors*>> gr(3, std::vector<TGraphErrors*>(ACTIVENDF, NULL));
+
+	// Legend titles
+	std::vector<std::string> legendstrs(3);
+
+	// Minimum and maximum y-values for each plot
+	std::vector<double> MINVAL(ACTIVENDF,  1e32);
+	std::vector<double> MAXVAL(ACTIVENDF, -1e32);
+
+	// Turn of horizontal errors
+	gStyle -> SetErrorX(0);
+
+	std::vector<TMultiGraph*> mg(ACTIVENDF, NULL);
+	for (std::size_t k = 0; k < ACTIVENDF; ++k) {
+		mg[k] = new TMultiGraph();
+	}
+
+	std::size_t BINS  = det_DET.size(OBSERVABLE);
+
+
+	// Read data
+	std::string FRAME;
+	std::vector<std::string> TITLES;
+
+	for (const auto& source : det) {
+		FRAME = source.first.FRAME;
+		TITLES = source.first.TITLES;
+		break;
+	}
+
+	const unsigned int barcolor = 33;
+
+	for (std::size_t level = 0; level < 3; ++level) {
+
+		// Loop over moments
+		int k = 0;
+		for (int l = 0; l <= param.LMAX; ++l) {
+		for (int m = -l; m <= l; ++m) {
+
+			const int index = gra::spherical::LinearInd(l, m);
+
+			if (!ACTIVE[index]) { continue; } // Not active
+
+			// Set canvas position
+			c1->cd(k + 1);
+
+			// Loop over mass
+			double x[BINS]     = {0};
+			double y[BINS]     = {0};
+			double x_err[BINS] = {0};
+			double y_err[BINS] = {0};
+
+	      	for (std::size_t bin = 0; bin < BINS; ++bin) {
+
+				// Get x-axis point
+				x[bin] = grid[OBSERVABLE][bin].center();
+
+				// Set indices {0,0,0, ..., 0}
+				std::vector<std::size_t> cell(grid.size(), 0);
+				cell[OBSERVABLE] = bin;
+
+				// CHOOSE DATAMODE
+				if      (level == 0) {
+				y[bin]     = det_DET(cell).E_lm[index];
+				y_err[bin] = det_DET(cell).E_lm_error[index];
+				}
+				else if (level == 1) {
+				y[bin]     = fid_DET(cell).E_lm[index];
+				y_err[bin] = fid_DET(cell).E_lm_error[index];
+				}
+				else if (level == 2) {
+				y[bin]     = fla_DET(cell).E_lm[index];
+				y_err[bin] = fla_DET(cell).E_lm_error[index];							
+				}
+
+				// Save maximum for visualization
+				MAXVAL[k] = y[bin] > MAXVAL[k] ? y[bin] : MAXVAL[k];
+				MINVAL[k] = y[bin] < MINVAL[k] ? y[bin] : MINVAL[k];
+			}
+
+			// Data displayed using TGraphErrors
+			gr[level][k] = new TGraphErrors(BINS, x, y, x_err, y_err);
+
+			// Colors
+			gr[level][k]->SetMarkerColor(barcolor + 5*level);
+			gr[level][k]->SetLineColor(barcolor   + 5*level);
+			gr[level][k]->SetFillColor(barcolor   + 5*level);
+			gr[level][k]->SetMarkerStyle(21); // square
+			gr[level][k]->SetMarkerSize(0.3);
+
+			// Add to the multigraph
+			mg[k]->Add(gr[level][k]);
+
+			++k;
+
+	    } // over m
+		} // over l
+
+	} // Loop over level
+
+
+	// Draw multigraph
+	unsigned int k = 0;
+
+	for (int l = 0; l <= param.LMAX; ++l) {
+	for (int m = -l; m <= l; ++m) {
+
+		const int index = gra::spherical::LinearInd(l, m);
+
+		if (!ACTIVE[index]) { continue; } // Not active
+
+		// Set canvas position
+		c1->cd(k + 1);
+
+		// First draw, then setup (otherwise crash)
+		mg[k]->Draw("AC*");
+		
+		// Title
+		if (k == 0) {
+			mg[k]->SetTitle(Form("Response expansion: #it{lm} = <%d,%d>", l, m));
+		} else {
+			mg[k]->SetTitle(Form("#it{lm} = <%d,%d>", l, m));
+		}
+
+		// Set x-axis label
+		mg[k]->GetXaxis()->SetTitle(xlabel.c_str());
+		//gStyle->SetBarWidth(0.5);
+		//mg[k]->SetFillStyle(0);
+		
+		mg[k]->GetXaxis()->SetTitleSize(0.05);
+		mg[k]->GetXaxis()->SetLabelSize(0.05);
+
+		mg[k]->GetYaxis()->SetTitleSize(0.05);
+		mg[k]->GetYaxis()->SetLabelSize(0.05);
+
+		gStyle->SetTitleFontSize(0.08);
+		
+		if (k == 0) {
+			gStyle->SetTitleW(0.95); // width percentage
+		}
+
+		// Y-axis range
+		if (k == 0) {
+			mg[k]->GetHistogram()->SetMaximum(1.2);
+			mg[k]->GetHistogram()->SetMinimum(0.0);	
+		} else {
+
+			// Skip the first element (lm=00)
+			const double maxval = *std::max_element(std::begin(MAXVAL)+1, std::end(MAXVAL));
+			const double minval = *std::min_element(std::begin(MINVAL)+1, std::end(MINVAL));
+			const double bound = std::max(std::abs(minval), std::abs(maxval));
+			
+			mg[k]->GetHistogram()->SetMaximum( bound*1.1);
+			mg[k]->GetHistogram()->SetMinimum(-bound*1.1);
+		}
+		
+		// Draw Lorentz FRAME string on left
+		TText* t2 = new TText(0.2, 0.85, FRAME.c_str());
+		t2->SetNDC();
+		t2->SetTextAlign(22);
+		t2->SetTextColor(kRed+2);
+		t2->SetTextFont(43);
+		t2->SetTextSize(std::ceil(1.0/msqrt(ACTIVENDF)) * 20);
+		//t2->SetTextAngle(45);
+		t2->Draw("same");
+
+		// Draw horizontal red line
+		if (k != 0) {
+			TLine* line = new TLine(grid[OBSERVABLE][0].min, 0.0, grid[OBSERVABLE][grid[OBSERVABLE].size()-1].max, 0.0);
+			line->SetLineColor(kRed);
+			line->SetLineWidth(1.0);
+			line->Draw("same");
+		}
+		
+		// Who made it
+		if (k == ACTIVENDF - 1) {
+			// New pad on top of all
+			c1->cd(); // Important!
+			TPad* tpad = gra::rootstyle::TransparentPad();
+			
+			TLatex* l1; TLatex* l2;
+			const double xpos = 0.99;
+			std::tie(l1,l2) = gra::rootstyle::MadeInFinland(xpos);
+		}
+		++k;
+	}}
+	
+	// ------------------------------------------------------------------
+	// Draw legend to the upper left most
+	
+	c1->cd(1);
+	
+	// Create legend
+	double x1,x2,y1,y2 = 0.0;
+	const std::string legendposition = "southeast";
+	GetLegendPosition2(3, x1,x2,y1,y2, legendposition);
+	TLegend* legend = new TLegend(x1-0.3, y1+0.15, x2-0.3, y2+0.15);
+	legend->SetFillColor(0);    // White background
+	legend->SetBorderSize(0);   // No box
+	legend->SetTextSize(0.04);
+	
+	// Add legend entries
+	legend->AddEntry(gr[0][0], TITLES[0].c_str());
+	legend->AddEntry(gr[1][0], TITLES[1].c_str());
+	legend->AddEntry(gr[2][0], TITLES[2].c_str());
+
+  	// Draw legend
+	legend->Draw("same");
+	
+	// ------------------------------------------------------------------
+
+	// Require that we have data
+	if (BINS > 1) {
+		aux::CreateDirectory("./figs");
+		aux::CreateDirectory("./figs/harmonicfit");
+		aux::CreateDirectory("./figs/harmonicfit/" + outputpath);
+		const std::string subpath = "OBS_" + std::to_string(OBSERVABLE) + "_" + FRAME;
+		aux::CreateDirectory("./figs/harmonicfit/" + outputpath + "/" + subpath);
+		c1->Print(Form("./figs/harmonicfit/%s/%s/Response.pdf", outputpath.c_str(), subpath.c_str()) );
+	}
+
+	/*
+	for (std::size_t i = 0; i < gr.size(); ++i) {
+		delete gr[i];
+	}
+	*/
+
+	delete c1;
+}
+
+
 // Print 2D-figures
 void MHarmonic::PlotFigures2D(const std::map<gra::spherical::Meta, MTensor<gra::spherical::SH>>& tensor, const std::vector<int>& OBSERVABLE2,
                             const std::string& TYPESTRING, int barcolor,
-                            const std::string& legendstr, const std::string& outputpath) const {
+                            const std::string& outputpath) const {
 
 /*
 	TCanvas* c1 = new TCanvas("c1", "c1", 700, 500); // horizontal, vertical
