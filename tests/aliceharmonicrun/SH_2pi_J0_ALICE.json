@@ -27,7 +27,7 @@
 
     "BEAM" :   ["p+","p+"],    // Beam PDG-ID / Name
     "ENERGY" : [3500, 3500],   // Beam energy in the lab (GeV)
-    "PROCESS" : "PP[RES]<C> -> pi+ pi- @FLATAMP:4", // Process
+    "PROCESS" : "PP[CON]<F> -> pi+ pi- @FLATAMP:4", // Process
     "RES" : [],
     "POMLOOP" : false,         // Eikonal Pomeron loop screening
     "NSTARS" : 0,              // N* excitation (0 = elastic, 1 = single, 2 = double)
@@ -73,14 +73,14 @@
   "GENCUTS" : {
 
     "<C>" : {
-      "Rap" : [-4.0, 4.0] // Rapidity boundaries of the final states (<C> class)
+      "Rap" : [-4.0, 4.0]  // Rapidity boundaries of the final states (<C> class)
     },
     "<F>" : {
       "Rap" : [-0.9, 0.9], // Rapidity boundaries of the system (<F> class)
-      "M"   : [0.0, 3.0]   // System mass
+      "M"   : [0.0,  3.0]  // System mass
     },
     "<Q>" : {
-      "Xi" : [0, 0.05]    // Invariant scale M^2/s (forward excitation)
+      "Xi" : [0, 0.05]     // Invariant scale M^2/s (forward excitation)
     }
   }
 

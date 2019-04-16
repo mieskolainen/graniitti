@@ -471,7 +471,7 @@ double MProcess::GetFlatAmp2(const gra::LORENTZSCALAR& lts) const {
 	// Peripheral phase space: |A|^2 ~ exp(bt1) exp(bt2) x exp(-shat)
 	else if (FLATAMP == 4) {
 		W = std::exp(PARAM_FLAT::b * lts.t1) *
-		    std::exp(PARAM_FLAT::b * lts.t2) * std::exp(-lts.s_hat);
+		    std::exp(PARAM_FLAT::b * lts.t2) * std::exp(-std::pow(lts.s_hat, 1.16));
 	}
 	// Constant
 	else if (FLATAMP == 5) {
