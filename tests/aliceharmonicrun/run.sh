@@ -43,7 +43,7 @@ do
 -c $FIDCUTS \
 -f $FRAME -g $LMAX -o $REMOVEODD -n $REMOVENEGATIVE -a $SVDREG -b $L1REG -e $EML \
 -M $MBINS -P $PBINS -Y $YBINS \
--X 10000
+-X 1000000
 
 done
 

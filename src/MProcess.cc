@@ -453,25 +453,25 @@ double MProcess::GetFlatAmp2(const gra::LORENTZSCALAR& lts) const {
 	
 	double W = 1.0;
 
-	// Peripheral phase space: |A|^2 ~ exp(bt1) exp(bt2)
+	// Ansatz: |A|^2 ~ exp(bt1) exp(bt2)
 	if      (FLATAMP == 1) {
 		W = std::exp(PARAM_FLAT::b * lts.t1) *
 		    std::exp(PARAM_FLAT::b * lts.t2);
 	}
-	// Peripheral phase space: |A|^2 ~ exp(bt1) exp(bt2) / sqrt(shat)
+	// Ansatz: |A|^2 ~ exp(bt1) exp(bt2) / sqrt(shat)
 	else if (FLATAMP == 2) {
 		W = std::exp(PARAM_FLAT::b * lts.t1) *
 		    std::exp(PARAM_FLAT::b * lts.t2) / msqrt(lts.s_hat);
 	}
-	// Peripheral phase space: |A|^2 ~ exp(bt1) exp(bt2) / shat
+	// Ansatz: |A|^2 ~ exp(bt1) exp(bt2) / shat
 	else if (FLATAMP == 3) {
 		W = std::exp(PARAM_FLAT::b * lts.t1) *
 		    std::exp(PARAM_FLAT::b * lts.t2) / lts.s_hat;
 	}
-	// Peripheral phase space: |A|^2 ~ exp(bt1) exp(bt2) x exp(-shat)
+	// Ansatz: |A|^2 ~ exp(bt1) exp(bt2) x exp(-shat)
 	else if (FLATAMP == 4) {
 		W = std::exp(PARAM_FLAT::b * lts.t1) *
-		    std::exp(PARAM_FLAT::b * lts.t2) * std::exp(-std::pow(lts.s_hat, 1.16));
+		    std::exp(PARAM_FLAT::b * lts.t2) * std::exp(-lts.s_hat);
 	}
 	// Constant
 	else if (FLATAMP == 5) {
@@ -479,7 +479,7 @@ double MProcess::GetFlatAmp2(const gra::LORENTZSCALAR& lts) const {
 	} else {
 		// Throw an error, unknown mode
 		std::string str =
-		    "MProcess::GetFlatAmp2: Unknown FLATAMP mode (|A|^2 :: 0 = off, 1 = exp{b(t1+t2)}, 2 = exp{b(t1+t2)}/shat^{1/2}, 3 = exp{b(t1+t2)}/shat, 4 = exp{b(t1+t2)} x exp(-shat), 5 = 1.0) : input was " + std::to_string(FLATAMP);
+		    "MProcess::GetFlatAmp2: Unknown FLATAMP mode (|A|^2 is 0 = off, 1 = exp{b(t1+t2)}, 2 = exp{b(t1+t2)}/shat^{1/2}, 3 = exp{b(t1+t2)}/shat, 4 = exp{b(t1+t2)} x exp(-shat), 5 = 1.0) : input was " + std::to_string(FLATAMP);
 		throw std::invalid_argument(str);
 	}
 	return W;
