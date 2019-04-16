@@ -11,7 +11,7 @@ A:  If you use MACOSX, try to obtain the latest GCC toolchain.
     The software is being tested and developed on Ubuntu linux (+ ROOT 6).
 
 
-Q:  Which features or processes are "under construction"
+Q:  Which features or processes are "under construction"?
 A:  See /docs/UNDERWORK or send email.
 
 
@@ -19,8 +19,14 @@ Q:  Where are the examples of .json steering cards?
 A:  Under /tests/processes folder. Make a copy to /input and modify.
 
 
+Q:  Hey, for the analysis purposes, I just want to generate J=0 with a smooth
+    invariant mass distribution and peripheral (exponential) t-distributions.
+A:  Add @FLATAMP:X at the end of your process string with X = 1,2,3,... (try them out).
+    For the b-slope parameter, adjust /modeldata/TUNE/GENERAL.json.
+
+
 Q:  Integrated cross section seems very high?
-A:  Turn on the screening integral (pomeron loop). The effect can be
+A:  Turn on the screening integral (Pomeron loop). The effect can be
     very high, depending on the process - less for gamma-gamma processes.
     Also, take care of the branching ratios and phase space volumes (see below).
 
@@ -38,9 +44,10 @@ A:  The soft central production amplitude parameters are such that an approximat
     words also for the PDG resonance branching ratios, which are not too well known
     in all cases (see /modeldata/BRANCHING.json). Elastic "eikonal pomeron"
     parameters are tuned with better accuracy to high energy elastic dsigma/dt.
+    Low energy data seems to require additional parametrizations.
 
 
-Q:  MC integral does not converge (stat. error estimate is very high)
+Q:  MC integral does not converge (stat. error estimate is very high)!
 A:  This can happen if the generation cuts are too loose, the process
     is localized into spesific regime of the phase space and VEGAS
     cannot find suitable binning -> manually tighten up the generation cuts.
@@ -88,6 +95,6 @@ A:  Generation cuts are applied at the level of phase space sampling
 
 
 Q:  Something seems just weird.
-A:  Just send email.
+A:  Just send email, it might a bug.
 
 ...
