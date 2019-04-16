@@ -19,7 +19,7 @@ Q:  Where are the examples of .json steering cards?
 A:  Under /tests/processes folder. Make a copy to /input and modify.
 
 
-Q:  Hey, for the analysis purposes, I just want to generate J=0 with a smooth
+Q:  Hey, for the analysis purposes, I just want to generate J=0 amplitude with a smooth
     invariant mass distribution and peripheral (exponential) t-distributions.
 A:  Add @FLATAMP:X at the end of your process string with X = 1,2,3,... (try them out).
     For the b-slope parameter, adjust /modeldata/TUNE/GENERAL.json.
