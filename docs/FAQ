@@ -25,6 +25,14 @@ A:  Add @FLATAMP:X at the end of your process string with X = 1,2,3,... (try the
     For the b-slope parameter, adjust /modeldata/TUNE/GENERAL.json.
 
 
+Q:  I want to generate a tensor particle decaying to vector daughters with sequential spin correlations.
+    This is supported via Jacob-Wick amplitudes. First setup the mother resonance
+    with a spin polarization density matrix under /modeldata/TUNE/RES_xxx.json
+    (create a new file) and choose the Lorentz reference frame there.
+    Second, adjust the decay (l,s)-couplings for the intermediate daughters
+    under /modeldata/TUNE/BRANCHING.json. Then create a process steering card following the examples.
+
+
 Q:  Integrated cross section seems very high?
 A:  Turn on the screening integral (Pomeron loop). The effect can be
     very high, depending on the process - less for gamma-gamma processes.
