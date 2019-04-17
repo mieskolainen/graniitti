@@ -36,7 +36,7 @@ EML=false
 for FRAME in HE CS PG SR
 do
 
-# Analyze
+# Expand the data
 ./bin/fitharmonic -r SH_2pi_J0_ALICE -i SH_2pi_J0_ALICE,SH_2pi_ALICE,ALICE7_2pi.csv \
 -l 'GRANIITTI J=0,GRANIITTI,#pi^{+}#pi^{-} 7 TeV (DATA)' -d MC,MC,DATA -z true,true,false  \
 -t '#Omega{Detector}: |#eta| < 0.9 #wedge p_{T} > 0.1 GeV,#Omega{Fiducial}: |#eta| < 0.9 #wedge p_{T} > 0.1 GeV,#Omega{Flat}: |Y_{x}| < 0.9' \

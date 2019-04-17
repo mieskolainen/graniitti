@@ -50,7 +50,9 @@ A:  If you have ROOT installed, just try some examples under /tests/.
 Q:  I want to do a full spherical harmonics expansion!
 A:  Sure, if you have ROOT installed, which is needed for plotting and Extended Maximum Likelihood via TMinuit. 
     This advanced analysis algorithm is fully automated including the efficiency and
-    acceptance inversion. See examples under /tests/harmonicrun.
+    acceptance inversion. See examples under /tests/harmonicrun. Please do note that this is an ill-posed
+    inverse problem. You need to inspect the condition number of moment mixing matrices which is automatically
+    calculated, take care of regularization, have very large MC statistics for the detector expansion and so on.
 
 
 Q:  Can I add some arbitrary new process / amplitude?
