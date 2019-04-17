@@ -99,16 +99,16 @@ int main(int argc, char* argv[]) {
 
     cxxopts::Options options(argv[0], "");
     options.add_options()
-        ("r,ref",            "Reference MC (angular flat MC sample)     <filename without .hepmc3>",                cxxopts::value<std::string>()  )
-        ("i,input",          "Input sample                              <filename1,filename2,... without .hepmc3>", cxxopts::value<std::string>()  )
+        ("r,ref",            "Reference MC (angular flat MC sample)     <filename> without .hepmc3",                cxxopts::value<std::string>()  )
+        ("i,input",          "Input sample                              <filename1,filename2,...> without .hepmc3", cxxopts::value<std::string>()  )
         ("t,titles",         "Phase space titles (3 of them)            <titleA,titleB,titleC>",                    cxxopts::value<std::string>()  )
         ("l,legend",         "Legend text                               <title1,title2,...>",                       cxxopts::value<std::string>()  )
-        ("m,mode",           "Input mode                                <MC|DATA>                 ",                cxxopts::value<std::string>()  )
+        ("d,mode",           "Input mode                                <MC|DATA,...>      ",                       cxxopts::value<std::string>()  )
         ("c,cuts",           "Fiducial cuts                             <ETAMIN,ETAMAX,PTMIN,PTMAX>",               cxxopts::value<std::string>()  )
         ("S,scale",          "Scale plots (set -1 for unit normalized)  <scale1,scale2,...>",                       cxxopts::value<std::string>()  )
         
         ("f,frame",          "Lorentz rest frame                        <HE|CS|GJ|PG|SR>",   cxxopts::value<std::string>()  )
-        ("g,lmax",           "Maximum angular order                     <1|2|3|...>",        cxxopts::value<unsigned int>() )
+        ("g,lmax",           "Maximum angular order                     <1|2|3|4|...>",      cxxopts::value<unsigned int>() )
         ("o,removeodd",      "Remove negative M                         <true|false>",       cxxopts::value<std::string>()  )
         ("v,removenegative", "Remove odd M                              <true|false>",       cxxopts::value<std::string>()  )
         ("e,eml",            "Extended Maximum Likelihood               <true|false>",       cxxopts::value<std::string>()  )
@@ -119,7 +119,7 @@ int main(int argc, char* argv[]) {
         ("P,pt",             "System pt binning                         <bins,min,max>",     cxxopts::value<std::string>()  )
         ("Y,rapidity",       "System rapidity binning                   <bins,min,max>",     cxxopts::value<std::string>()  )
         
-        ("s,fastsim",        "Fast simulation of efficiency response    <true|false>",       cxxopts::value<std::string>()  )
+        ("z,fastsim",        "Fast simulation of efficiency response    <true|false,...>",   cxxopts::value<std::string>()  )
         ("X,maximum",        "Maximum number of events                  <value>",            cxxopts::value<unsigned int>() )
         ("H,help",           "Help")
         ;
@@ -151,19 +151,19 @@ int main(int argc, char* argv[]) {
     hparam.M  = {20, 0.0,   2.5};  // System mass
     hparam.PT = {1,  0.0, 100.0};  // System pt
     hparam.Y  = {1, -10.0, 10.0};  // System rapidity
-
+    
     if (r.count("mass")) {
-      const std::string Mstr = r["M"].as<std::string>();
+      const std::string Mstr = r["mass"].as<std::string>();
       hparam.M = gra::aux::SplitStr(Mstr,double(0),',');
       if (hparam.M.size() != 3)  { throw std::invalid_argument("fitharmonic:: mass discretization not size 3 <bins,min,max>"); }
     }
     if (r.count("pt")) {
-      const std::string Pstr = r["P"].as<std::string>();
+      const std::string Pstr = r["pt"].as<std::string>();
       hparam.PT = gra::aux::SplitStr(Pstr,double(0),',');
       if (hparam.PT.size() != 3) { throw std::invalid_argument("fitharmonic:: pt discretization not size 3 <bins,min,max>"); }
     }
     if (r.count("rapidity")) {
-      const std::string Ystr = r["Y"].as<std::string>();
+      const std::string Ystr = r["rapidity"].as<std::string>();
       hparam.Y  = gra::aux::SplitStr(Ystr,double(0),',');
       if (hparam.Y.size() != 3)  { throw std::invalid_argument("fitharmonic:: rapidity discretization not size 3 <bins,min,max>"); }
     }
@@ -194,8 +194,8 @@ int main(int argc, char* argv[]) {
 
     // Maximum number of events
     int MAXEVENTS = 1E9;
-    if (r.count("X")) {
-      MAXEVENTS = r["X"].as<unsigned int>();
+    if (r.count("maximum")) {
+      MAXEVENTS = r["maximum"].as<unsigned int>();
     }
 
     // Read in reference MC for detector expansion (needs to be the same FRAME for all)
