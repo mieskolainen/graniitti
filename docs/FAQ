@@ -1,4 +1,4 @@
-GRANIITTI (BETA) FAQ: 15.4.2019
+GRANIITTI (BETA) FAQ: 17.4.2019
 
 mikael.mieskolainen@cern.ch
 -----------
@@ -31,6 +31,13 @@ A:  This is supported via Jacob-Wick amplitudes. First setup the mother resonanc
     (create a new file) and choose the Lorentz reference frame there.
     Second, adjust the decay (l,s)-couplings for the intermediate daughters
     under /modeldata/TUNE/BRANCHING.json. Then create a process steering card following the examples.
+
+
+Q:  I want to know exactly what your algorithms actually do?
+A:  Very good, that is the right attitude! You find my heavily commented code
+    under /src and /include folders. If you feel something is too murky, just send email --
+    I am interested in what is right in terms of physics, what is wrong and improving the code quality.
+    All original calculations etc. are inline referenced to arXiv for more information.
 
 
 Q:  How to do fast plotting of the fiducial observables of a given MC sample
@@ -119,3 +126,5 @@ Q:  Something seems just weird.
 A:  Just send email, it might a bug.
 
 ...
+
+
