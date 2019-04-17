@@ -468,19 +468,13 @@ double MProcess::GetFlatAmp2(const gra::LORENTZSCALAR& lts) const {
 		W = std::exp(PARAM_FLAT::b * lts.t1) *
 		    std::exp(PARAM_FLAT::b * lts.t2) / lts.s_hat;
 	}
-	// Ansatz: |A|^2 ~ exp(bt1) exp(bt2) / shat^{a}
-	else if (FLATAMP == 4) {
-		const double a = 1.1;
-		W = std::exp(PARAM_FLAT::b * lts.t1) *
-		    std::exp(PARAM_FLAT::b * lts.t2) / std::pow(lts.s_hat, a);
-	}
 	// Constant
 	else if (FLATAMP == 5) {
 		W = 1.0;
 	} else {
 		// Throw an error, unknown mode
 		std::string str =
-		    "MProcess::GetFlatAmp2: Unknown FLATAMP mode (|A|^2 is 0 = off, 1 = exp{b(t1+t2)}, 2 = exp{b(t1+t2)}/shat^{1/2}, 3 = exp{b(t1+t2)}/shat, 4 = exp{b(t1+t2)}/shat^{a}, 5 = 1.0) : input was " + std::to_string(FLATAMP);
+		    "MProcess::GetFlatAmp2: Unknown FLATAMP mode (|A|^2 is 0 = off, 1 = exp{b(t1+t2)}, 2 = exp{b(t1+t2)}/shat^{1/2}, 3 = exp{b(t1+t2)}/shat, 4 = 1.0) : input was " + std::to_string(FLATAMP);
 		throw std::invalid_argument(str);
 	}
 	return W;

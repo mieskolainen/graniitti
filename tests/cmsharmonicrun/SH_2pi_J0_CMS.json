@@ -27,7 +27,7 @@
 
     "BEAM" :   ["p+","p+"],    // Beam PDG-ID / Name
     "ENERGY" : [3500, 3500],   // Beam energy in the lab (GeV)
-    "PROCESS" : "PP[CON]<F> -> pi+ pi- @FLATAMP:4", // Process
+    "PROCESS" : "PP[CON]<F> -> pi+ pi- @FLATAMP:3", // Process
     "RES" : [],
     "POMLOOP" : false,         // Eikonal Pomeron loop screening
     "NSTARS" : 0,              // N* excitation (0 = elastic, 1 = single, 2 = double)
