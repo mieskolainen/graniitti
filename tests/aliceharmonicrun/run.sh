@@ -33,7 +33,7 @@ L1REG=0 #1e-5
 EML=false
 
 # Lorentz frames
-for FRAME in HE # CS PG SR
+for FRAME in HE CS PG SR
 do
 
 # Analyze
