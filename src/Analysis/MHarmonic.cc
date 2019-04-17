@@ -330,6 +330,9 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 		// Loop over moments
 		int k = 0;
 
+
+		double SCALE = source.first.SCALE;
+
 		for (int l = 0; l <= param.LMAX; ++l) {
 			for (int m = -l; m <= l; ++m) {
 
@@ -364,14 +367,35 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 						y[bin]     = source.second(cell).t_lm_EML[index];
 						y_err[bin] = source.second(cell).t_lm_EML_error[index];
 					} else {
-						throw std::invalid_argument("MHarmonic::PlotFigures: Unknown input: DATAMODE = " + DATAMODE + " ALGO = " + ALGO);
+						throw std::invalid_argument("MHarmonic::PlotFigures: Unknown input: DATAMODE = "
+							+ DATAMODE + " ALGO = " + ALGO);
 					}
+				}
 
-					// Save maximum for visualization
+				// ------------------------------------------------------
+				// Scaling (e.g. luminosity)
+				// Normalize lm = 00 to sum to 1 -> then apply to all
+				if ((l == 0 && m == 0) && SCALE < 0.0) { 
+					double sum = 0.0;
+					for (std::size_t bin = 0; bin < BINS; ++bin) {
+						sum += y[bin];
+					}
+					if (sum > 0) { SCALE = 1.0/sum; }
+				}
+
+				// Apply scale by user
+				for (std::size_t bin = 0; bin < BINS; ++bin) {
+					y[bin]     *= SCALE;
+					y_err[bin] *= SCALE;
+				}
+				// ------------------------------------------------------
+
+				// Save maximum for visualization
+				for (std::size_t bin = 0; bin < BINS; ++bin) {
+
 					MAXVAL[k] = y[bin] > MAXVAL[k] ? y[bin] : MAXVAL[k];
 					MINVAL[k] = y[bin] < MINVAL[k] ? y[bin] : MINVAL[k];
 				}
-
 				// Data displayed using TGraphErrors
 				gr[ind][k] = new TGraphErrors(BINS, x, y, x_err, y_err);
 

@@ -27,6 +27,7 @@ struct Meta {
 	std::string MODE;      // MC or DATA
 	bool FASTSIM = false;  // Fast simulation on
 	std::string FRAME;     // Lorentz frame
+	double SCALE;          // Scale/normalization value
 
 	std::vector<std::string> TITLES; // Phase space titles
 
@@ -41,6 +42,8 @@ struct Meta {
     	std::cout << "MODE:     " << MODE   << std::endl;
     	std::cout << "FRAME:    " << FRAME  << std::endl;
     	std::cout << "FASTSIM:  " << (FASTSIM ? "true" : "false") << std::endl;
+    	std::cout << "SCALE:    " << SCALE  << std::endl;
+    	
     	std::cout << std::endl;
     	for (std::size_t i = 0; i < TITLES.size(); ++i) {
     		printf("TITLES[%lu] = %s \n", i, TITLES[i].c_str());

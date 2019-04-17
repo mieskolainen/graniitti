@@ -99,27 +99,29 @@ int main(int argc, char* argv[]) {
 
     cxxopts::Options options(argv[0], "");
     options.add_options()
-        ("r,ref",            "Reference MC (angular flat MC sample)   <filename without .hepmc3>",             cxxopts::value<std::string>()  )
-        ("i,input",          "Input sample                            <filename1,filename2 without .hepmc3>",  cxxopts::value<std::string>()  )
-        ("t,titles",         "Phase space titles (3 of them)          <titleA,titleB,titleC>",                 cxxopts::value<std::string>()  )
-        ("l,legend",         "Legend text                             <title1,title2,...>",                    cxxopts::value<std::string>()  )
-        ("m,mode",           "Input mode                              <MC|DATA>                 ",             cxxopts::value<std::string>()  )
-        ("c,cuts",           "Fiducial cuts                           <ETAMIN,ETAMAX,PTMIN,PTMAX>",            cxxopts::value<std::string>()  )
+        ("r,ref",            "Reference MC (angular flat MC sample)    <filename without .hepmc3>",             cxxopts::value<std::string>()  )
+        ("i,input",          "Input sample                             <filename1,filename2 without .hepmc3>",  cxxopts::value<std::string>()  )
+        ("t,titles",         "Phase space titles (3 of them)           <titleA,titleB,titleC>",                 cxxopts::value<std::string>()  )
+        ("l,legend",         "Legend text                              <title1,title2,...>",                    cxxopts::value<std::string>()  )
+        ("m,mode",           "Input mode                               <MC|DATA>                 ",             cxxopts::value<std::string>()  )
+        ("c,cuts",           "Fiducial cuts                            <ETAMIN,ETAMAX,PTMIN,PTMAX>",            cxxopts::value<std::string>()  )
         
-        ("f,frame",          "Lorentz rest frame                      <HE|CS|GJ|PG|SR>",            cxxopts::value<std::string>()  )
-        ("g,lmax",           "Maximum angular order                   <1|2|3|...>",                 cxxopts::value<unsigned int>() )
-        ("o,removeodd",      "Remove negative M                       <true|false>",                cxxopts::value<std::string>()  )
-        ("n,removenegative", "Remove odd M                            <true|false>",                cxxopts::value<std::string>()  )
-        ("e,eml",            "Extended Maximum Likelihood             <true|false>",                cxxopts::value<std::string>()  )
-        ("a,svdreg",         "SVD regularization weight               <value>",                     cxxopts::value<double>()       )
-        ("b,l1reg",          "L1 regularization weight                <value>",                     cxxopts::value<double>()       )
+        ("f,frame",          "Lorentz rest frame                       <HE|CS|GJ|PG|SR>",            cxxopts::value<std::string>()  )
+        ("g,lmax",           "Maximum angular order                    <1|2|3|...>",                 cxxopts::value<unsigned int>() )
+        ("o,removeodd",      "Remove negative M                        <true|false>",                cxxopts::value<std::string>()  )
+        ("n,removenegative", "Remove odd M                             <true|false>",                cxxopts::value<std::string>()  )
+        ("e,eml",            "Extended Maximum Likelihood              <true|false>",                cxxopts::value<std::string>()  )
+        ("a,svdreg",         "SVD regularization weight                <value>",                     cxxopts::value<double>()       )
+        ("b,l1reg",          "L1 regularization weight                 <value>",                     cxxopts::value<double>()       )
         
-        ("M,mass",           "System mass binning                     <bins,min,max>",              cxxopts::value<std::string>()  )
-        ("P,pt",             "System pt binning                       <bins,min,max>",              cxxopts::value<std::string>()  )
-        ("Y,rapidity",       "System rapidity binning                 <bins,min,max>",              cxxopts::value<std::string>()  )
-            
-        ("s,fastsim",        "Fast simulation of efficiency response  <true|false>",                cxxopts::value<std::string>()  )
-        ("X,maximum",        "Maximum number of events                <N>",                         cxxopts::value<unsigned int>() )
+        ("M,mass",           "System mass binning                      <bins,min,max>",              cxxopts::value<std::string>()  )
+        ("P,pt",             "System pt binning                        <bins,min,max>",              cxxopts::value<std::string>()  )
+        ("Y,rapidity",       "System rapidity binning                  <bins,min,max>",              cxxopts::value<std::string>()  )
+        
+        ("S,scale",          "Scale plots (set -1 for unit normalized) <scale1,...scaleN>",          cxxopts::value<std::string>()  )
+        
+        ("s,fastsim",        "Fast simulation of efficiency response   <true|false>",                cxxopts::value<std::string>()  )
+        ("X,maximum",        "Maximum number of events                 <N>",                         cxxopts::value<unsigned int>() )
         ("H,help",           "Help")
         ;
 
@@ -222,6 +224,19 @@ int main(int argc, char* argv[]) {
       throw std::invalid_argument("fitharmonic:: Input list with different dimensions");
     }
 
+    // Scaling
+    std::vector<double> scale(input.size(), 1.0); // Default 1.0 for all
+    if (r.count("scale")) {
+        const std::vector<std::string> str_vals = gra::aux::SplitStr2Str(r["scale"].as<std::string>());
+        if (str_vals.size() == 1 || str_vals.size() == input.size()) {
+            for (auto const& i : indices(str_vals)) {
+                scale[i] = std::stod(str_vals[i]);
+            }
+        } else {
+            throw std::invalid_argument("analyzer::scale input list needs to be of length 0,1, or N");
+        }
+    }
+
     std::vector<gra::spherical::Data> DATA;
     DATA.resize(input.size());
 
@@ -239,6 +254,7 @@ int main(int argc, char* argv[]) {
       data.META.MODE    = mode[i];
       data.META.FRAME   = FRAME;
       data.META.FASTSIM = (fastsim[i] == "true") ? true : false;
+      data.META.SCALE   = scale[i];
 
       data.META.TITLES  = titles;
       ReadIn(data.META.NAME, data.EVENTS, data.META.FRAME, MAXEVENTS, data.META.FASTSIM);
