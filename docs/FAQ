@@ -53,6 +53,11 @@ A:  Sure, if you have ROOT installed, which is needed for plotting and Extended 
     acceptance inversion. See examples under /tests/harmonicrun.
 
 
+Q:  Can I add some arbitrary new process / amplitude?
+A:  Yes you can, the kinematics is constructed to be fully generic and obey standard QFT normalization rules.
+    What you need is some knowledge of C++ and then follow how the existing amplitudes are implemented.
+
+
 Q:  Integrated cross section seems very high?
 A:  Turn on the screening integral (Pomeron loop). The effect can be
     very high, depending on the process - less for gamma-gamma processes.
