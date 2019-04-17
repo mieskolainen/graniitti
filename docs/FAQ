@@ -28,7 +28,7 @@ A:  Add @FLATAMP:X at the end of your process string with X = 1,2,3,... (try the
 Q:  I want to generate a tensor J=2 particle decaying to vector daughters with sequential spin correlations.
 A:  This is supported via Jacob-Wick amplitudes. First setup the mother resonance
     with a spin polarization density matrix under /modeldata/TUNE/RES_xxx.json
-    (create a new file) and choose the Lorentz reference frame there.
+    (create a new file) and choose the Lorentz reference rest frame there (e.g. helicity frame).
     Second, adjust the decay (l,s)-couplings for the intermediate daughters
     under /modeldata/TUNE/BRANCHING.json. Then create a process steering card following the examples.
 
@@ -48,7 +48,7 @@ A:  If you have ROOT installed, just try some examples under /tests/.
 
 
 Q:  I want to do a full spherical harmonics expansion!
-A:  Sure, if you have ROOT installed, which is needed for plotting and extended maximum likelihood via TMinuit. 
+A:  Sure, if you have ROOT installed, which is needed for plotting and Extended Maximum Likelihood via TMinuit. 
     This advanced analysis algorithm is fully automated including the efficiency and
     acceptance inversion. See examples under /tests/harmonicrun.
 
@@ -59,8 +59,8 @@ A:  Turn on the screening integral (Pomeron loop). The effect can be
     Also, take care of the branching ratios and phase space volumes (see below).
 
 
-Q:  Are the soft central production parameters independent of the screening loop.
-A:  NO. Strictly speaking one should have two sets of parameters (or tunes),
+Q:  Are the soft central production parameters independent of the screening loop?
+A:  No. Strictly speaking one should have two sets of parameters (or tunes),
     one for the screening turned on, one without.
     Or just one, always screening turned on (computationally very demanding, though).
 
@@ -102,7 +102,7 @@ Q:  What are '<C>' and '<F>' phase space classes?
 A:  Different ways to organize phase space sampling.
     With equivalent generation+fiducial cuts, they should produce
     identical results. However, the (other) one can be faster
-    or more numerically stable with difficult amplitudes. In general,
+    or numerically more stable with difficult amplitudes. In general,
     we recommend '<C>' for continuum / continuum+resonance processes
     and '<F>' for isolated resonances and high final state leg continuum processes.
 
