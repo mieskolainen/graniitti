@@ -47,7 +47,7 @@ A:  If you have ROOT installed, just try some examples under /tests/.
     for arbitrary central production processes. We recommend also one to use RIVET via HepMC2.
 
 
-Q:  I want to do a full spherical harmonics expansion!
+Q:  I want to do a full spherical harmonics expansion.
 A:  Sure, if you have ROOT installed, which is needed for plotting and Extended Maximum Likelihood via TMinuit. 
     This advanced analysis algorithm is fully automated including the efficiency and
     acceptance inversion. See examples under /tests/harmonicrun. Please do note that this is an ill-posed
