@@ -30,7 +30,7 @@ A:  This is supported via Jacob-Wick amplitudes. First setup the mother resonanc
     with a spin polarization density matrix under /modeldata/TUNE/RES_xxx.json
     (create a new file) and choose the Lorentz reference rest frame there (e.g. helicity frame).
     Second, adjust the decay (l,s)-couplings for the intermediate daughters
-    under /modeldata/TUNE/BRANCHING.json. Then create a process steering card following the examples.
+    under /modeldata/TUNE/BRANCHING.json. Then create a process steering card by following the examples.
 
 
 Q:  I want to know exactly what your algorithms actually do?
@@ -108,7 +108,7 @@ A:  Write down something (dummy) after the '->' arrow,
 
 
 Q:  What are '<C>' and '<F>' phase space classes?
-A:  Different ways to organize phase space sampling.
+A:  Different ways to organize the phase space sampling.
     With equivalent generation+fiducial cuts, they should produce
     identical results. However, the (other) one can be faster
     or numerically more stable with difficult amplitudes. In general,
