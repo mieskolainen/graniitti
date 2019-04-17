@@ -105,6 +105,7 @@ int main(int argc, char* argv[]) {
         ("l,legend",         "Legend text                              <title1,title2,...>",                    cxxopts::value<std::string>()  )
         ("m,mode",           "Input mode                               <MC|DATA>                 ",             cxxopts::value<std::string>()  )
         ("c,cuts",           "Fiducial cuts                            <ETAMIN,ETAMAX,PTMIN,PTMAX>",            cxxopts::value<std::string>()  )
+        ("S,scale",          "Scale plots (set -1 for unit normalized) <scale1,...scaleN>",          cxxopts::value<std::string>()  )
         
         ("f,frame",          "Lorentz rest frame                       <HE|CS|GJ|PG|SR>",            cxxopts::value<std::string>()  )
         ("g,lmax",           "Maximum angular order                    <1|2|3|...>",                 cxxopts::value<unsigned int>() )
@@ -117,8 +118,6 @@ int main(int argc, char* argv[]) {
         ("M,mass",           "System mass binning                      <bins,min,max>",              cxxopts::value<std::string>()  )
         ("P,pt",             "System pt binning                        <bins,min,max>",              cxxopts::value<std::string>()  )
         ("Y,rapidity",       "System rapidity binning                  <bins,min,max>",              cxxopts::value<std::string>()  )
-        
-        ("S,scale",          "Scale plots (set -1 for unit normalized) <scale1,...scaleN>",          cxxopts::value<std::string>()  )
         
         ("s,fastsim",        "Fast simulation of efficiency response   <true|false>",                cxxopts::value<std::string>()  )
         ("X,maximum",        "Maximum number of events                 <N>",                         cxxopts::value<unsigned int>() )
