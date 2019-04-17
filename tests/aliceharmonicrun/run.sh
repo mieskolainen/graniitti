@@ -9,8 +9,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
 # Generate
-./bin/gr -i ./tests/aliceharmonicrun/SH_2pi_J0_ALICE.json -n 100000
-./bin/gr -i ./tests/aliceharmonicrun/SH_2pi_ALICE.json    -n 100000
+./bin/gr -i ./tests/aliceharmonicrun/SH_2pi_J0_ALICE.json -n 1000000
+./bin/gr -i ./tests/aliceharmonicrun/SH_2pi_ALICE.json    -n 1000000
 
 fi
 
@@ -41,7 +41,7 @@ do
 -l 'GRANIITTI J=0,GRANIITTI,#pi^{+}#pi^{-} 7 TeV (DATA)' -m MC,MC,DATA -s true,true,false  \
 -t '#Omega{Detector}: |#eta| < 0.9 #wedge p_{T} > 0.1 GeV,#Omega{Fiducial}: |#eta| < 0.9 #wedge p_{T} > 0.1 GeV,#Omega{Flat}: |Y_{x}| < 0.9' \
 -c $FIDCUTS \
--f $FRAME -g $LMAX -o $REMOVEODD -n $REMOVENEGATIVE -a $SVDREG -b $L1REG -e $EML \
+-f $FRAME -g $LMAX -o $REMOVEODD -v $REMOVENEGATIVE -a $SVDREG -b $L1REG -e $EML \
 -M $MBINS -P $PBINS -Y $YBINS \
 -S -1.0,-1.0,-1.0 \
 -X 1000000

@@ -330,7 +330,6 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 		// Loop over moments
 		int k = 0;
 
-
 		double SCALE = source.first.SCALE;
 
 		for (int l = 0; l <= param.LMAX; ++l) {
@@ -551,12 +550,13 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 		c1->Print(Form("%s/%s.pdf", fullpath.c_str(), TYPESTRING.c_str()));
 
 	    // Merge pdfs using Ghostscript (gs)
-	    const std::string cmd = "gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=" + fullpath + "/merged.pdf " + fullpath + "/h*.pdf";
+	    const std::string cmd = "gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=" +
+	    						fullpath + "/" + FRAME + "_merged.pdf " + fullpath + "/h*.pdf";
 	    if (system(cmd.c_str()) == -1) {
 	        throw std::invalid_argument("Error: Problem executing Ghostscript merge on pdfs!");
-	    }	
+	    }
 	}
-
+	
 	/*
 	for (std::size_t i = 0; i < gr.size(); ++i) {
 		delete gr[i];
