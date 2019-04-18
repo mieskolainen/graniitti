@@ -172,7 +172,8 @@ A:  The soft central production amplitude parameters are such that an approximat
 
 Q:  Can I make my own tune?
 A:  Sure, just copy /modeldata/TUNE0 to e.g. /modeldata/TUNE1, change the
-    reference to that in your .json steering card and start tuning.
+    reference to that in your .json steering card and start tuning. Then go beyond
+    and put in your own scattering amplitudes.
 
 
 
