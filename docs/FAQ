@@ -177,6 +177,10 @@ A:  Sure, just copy /modeldata/TUNE0 to e.g. /modeldata/TUNE1, change the
 OTHER
 -----------
 
+Q:  Your .json files are not obeying JSON standard.
+A:  Yes, I use a subset of JSON5 standard which allows commenting and other
+    user friendly properties.
+
 
 Q:  Something seems just weird.
 A:  Just send email, it might a bug.
