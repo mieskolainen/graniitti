@@ -133,6 +133,10 @@ private:
 
 	// Discretization
 	std::vector<std::vector<EDGE>> grid;
+	
+	// Plotting
+	const std::vector<int>          colors = {46,38,43,30,25,14,9,19,29,39,49};
+	const std::vector<std::string> xlabels = {"M (GeV)", "P_{T} (GeV)", "Y"};
 };
 
 } // gra namespace ends

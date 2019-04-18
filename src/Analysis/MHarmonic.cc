@@ -213,7 +213,6 @@ void MHarmonic::PlotAll(const std::string& outputpath) const {
   }
   }
 
-
   // 2D
   std::vector<std::vector<int>> OBSERVABLES = {{0,1},{0,2},{1,2}}; // Different pairs
   
@@ -262,20 +261,11 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 	// ------------------------------------------------------------------
 	TCanvas* c1 = gra::rootstyle::AutoGridCanvas(ACTIVENDF);
 	// ------------------------------------------------------------------
-	
 
-	std::string xlabel = "";
-	if      (OBSERVABLE == 0) {
-		xlabel = "M (GeV)";
+	if (OBSERVABLE > xlabels.size()-1) {
+	throw std::invalid_argument("MHarmonic::PlotFigures: Unknown observable " + std::to_string(OBSERVABLE));
 	}
-	else if (OBSERVABLE == 1) {
-		xlabel = "P_{T} (GeV)";
-	}
-	else if (OBSERVABLE == 2) {
-		xlabel = "Y";
-	} else {
-		throw std::invalid_argument("MHarmonic::PlotFigures: Unknown observable " + std::to_string(OBSERVABLE));
-	}
+	const std::string xlabel = xlabels[OBSERVABLE];
 
 	// ------------------------------------------------------------------
 	// Extract name strings
@@ -399,9 +389,10 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 				gr[ind][k] = new TGraphErrors(BINS, x, y, x_err, y_err);
 
 				// Colors
-				gr[ind][k]->SetMarkerColor(barcolor + 5*ind);
-				gr[ind][k]->SetLineColor(barcolor + 5*ind);
-				gr[ind][k]->SetFillColor(barcolor + 5*ind);
+				gr[ind][k]->SetMarkerColor(colors[ind]);
+				gr[ind][k]->SetLineColor(colors[ind]);
+				gr[ind][k]->SetFillColor(colors[ind]);
+				gr[ind][k]->SetLineWidth(2.0);
 				gr[ind][k]->SetMarkerStyle(21); // square
 				gr[ind][k]->SetMarkerSize(0.3);
 
@@ -492,10 +483,10 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 		// --------------------------------------------------------------
 		
 		// --------------------------------------------------------------
-		// Draw horizontal red line
+		// Draw horizontal line
 		if (k != 0) {
 			TLine* line = new TLine(grid[OBSERVABLE][0].min, 0.0, grid[OBSERVABLE][grid[OBSERVABLE].size()-1].max, 0.0);
-			line->SetLineColor(kRed);
+			line->SetLineColor(kBlack);
 			line->SetLineWidth(1.0);
 			line->Draw("same");
 		}
@@ -573,18 +564,11 @@ void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string& out
 	TCanvas* c1 = gra::rootstyle::AutoGridCanvas(ACTIVENDF);
 	// ------------------------------------------------------------------
 		
-	std::string xlabel = "";
-	if      (OBSERVABLE == 0) {
-		xlabel = "M (GeV)";
+	if (OBSERVABLE > xlabels.size()-1) {
+	throw std::invalid_argument("MHarmonic::PlotFigures: Unknown observable " + std::to_string(OBSERVABLE));
 	}
-	else if (OBSERVABLE == 1) {
-		xlabel = "P_{T} (GeV)";
-	}
-	else if (OBSERVABLE == 2) {
-		xlabel = "Y";
-	} else {
-		throw std::invalid_argument("MHarmonic::PlotFigures: Unknown observable " + std::to_string(OBSERVABLE));
-	}
+	const std::string xlabel = xlabels[OBSERVABLE];
+
 
 	// Graphs for each efficiency [level] x [lm-moment]
 	std::vector<std::vector<TGraphErrors*>> gr(3, std::vector<TGraphErrors*>(ACTIVENDF, NULL));
@@ -616,8 +600,6 @@ void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string& out
 		TITLES = source.first.TITLES;
 		break;
 	}
-
-	const unsigned int barcolor = 33;
 
 	for (std::size_t level = 0; level < 3; ++level) {
 
@@ -666,17 +648,18 @@ void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string& out
 				MAXVAL[k] = y[bin] > MAXVAL[k] ? y[bin] : MAXVAL[k];
 				MINVAL[k] = y[bin] < MINVAL[k] ? y[bin] : MINVAL[k];
 			}
-
+			
 			// Data displayed using TGraphErrors
 			gr[level][k] = new TGraphErrors(BINS, x, y, x_err, y_err);
 
 			// Colors
-			gr[level][k]->SetMarkerColor(barcolor + 5*level);
-			gr[level][k]->SetLineColor(barcolor   + 5*level);
-			gr[level][k]->SetFillColor(barcolor   + 5*level);
+			gr[level][k]->SetMarkerColor(colors[level]);
+			gr[level][k]->SetLineColor(colors[level]);
+			gr[level][k]->SetFillColor(colors[level]);
+			gr[level][k]->SetLineWidth(2.0);
 			gr[level][k]->SetMarkerStyle(21); // square
 			gr[level][k]->SetMarkerSize(0.3);
-
+			
 			// Add to the multigraph
 			mg[k]->Add(gr[level][k]);
 
@@ -686,7 +669,6 @@ void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string& out
 		} // over l
 
 	} // Loop over level
-
 
 	// Draw multigraph
 	unsigned int k = 0;
@@ -730,13 +712,11 @@ void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string& out
 		if (k == 0) {
 			gStyle->SetTitleW(0.95); // width percentage
 		}
-
 		// Y-axis range
 		if (k == 0) {
 			mg[k]->GetHistogram()->SetMaximum(1.2);
 			mg[k]->GetHistogram()->SetMinimum(0.0);	
 		} else {
-
 			// Skip the first element (lm=00)
 			const double maxval = *std::max_element(std::begin(MAXVAL)+1, std::end(MAXVAL));
 			const double minval = *std::min_element(std::begin(MINVAL)+1, std::end(MINVAL));
@@ -756,10 +736,10 @@ void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string& out
 		//t2->SetTextAngle(45);
 		t2->Draw("same");
 
-		// Draw horizontal red line
+		// Draw horizontal line
 		if (k != 0) {
 			TLine* line = new TLine(grid[OBSERVABLE][0].min, 0.0, grid[OBSERVABLE][grid[OBSERVABLE].size()-1].max, 0.0);
-			line->SetLineColor(kRed);
+			line->SetLineColor(kBlack);
 			line->SetLineWidth(1.0);
 			line->Draw("same");
 		}
@@ -817,7 +797,6 @@ void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string& out
 		delete gr[i];
 	}
 	*/
-
 	delete c1;
 }
 
