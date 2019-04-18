@@ -166,7 +166,7 @@ A:  The soft central production amplitude parameters are such that an approximat
     in all cases (see /modeldata/TUNE/BRANCHING.json). Elastic "eikonal pomeron"
     parameters are tuned with better accuracy to high energy elastic dsigma/dt.
     Low energy data seems to require additional parametrizations (reggeology), which we
-    are not currently interested to fit. The ultimate goal is to find minimal
+    are not currently interested to fit. My ultimate goal is to find minimal
     descriptions, better theoretical understanding of (high energy) data, not a perfect fit.
 
 
