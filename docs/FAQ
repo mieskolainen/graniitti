@@ -55,7 +55,7 @@ A:  Generation cuts are applied at the level of phase space sampling
 
 
 Q:  For the analysis/reference purposes, I just want to generate pure J=0 amplitude (S-wave)
-    with a smooth invariant mass distribution and peripheral (exponential) t-distributions.
+    with a smooth invariant mass distribution, flat over rapidity and peripheral (exponential) t-distributions.
 A:  Add @FLATAMP:X at the end of your process string with X = 1,2,3,... (try them out).
     For the b-slope parameter, adjust /modeldata/TUNE/GENERAL.json.
 
