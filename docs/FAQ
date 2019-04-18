@@ -1,4 +1,4 @@
-GRANIITTI (BETA) FAQ: 17.4.2019
+GRANIITTI (BETA) FAQ: 18.4.2019
 
 mikael.mieskolainen@cern.ch
 -----------
@@ -6,7 +6,10 @@ mikael.mieskolainen@cern.ch
 First run ./bin/gr
 
 
-Q:  It does not compile.
+GENERAL
+-----------
+
+Q:  It does not compile :(
 A:  If you use MACOSX, try to obtain the latest GCC toolchain.
     The software is being tested and developed on Ubuntu linux (+ ROOT 6).
 
@@ -15,82 +18,20 @@ Q:  Which features or processes are "under construction"?
 A:  See /docs/UNDERWORK or send email.
 
 
-Q:  Where are the examples of .json steering cards?
-A:  Under /tests/processes folder. Make a copy to /input and modify.
-
-
-Q:  For the analysis purposes, I just want to generate J=0 amplitude with a smooth
-    invariant mass distribution and peripheral (exponential) t-distributions.
-A:  Add @FLATAMP:X at the end of your process string with X = 1,2,3,... (try them out).
-    For the b-slope parameter, adjust /modeldata/TUNE/GENERAL.json.
-
-
-Q:  I want to generate a tensor J=2 particle decaying to vector daughters with sequential spin correlations.
-A:  This is supported via Jacob-Wick amplitudes. First setup the mother resonance
-    with a spin polarization density matrix under /modeldata/TUNE/RES_xxx.json
-    (create a new file) and choose the Lorentz reference rest frame there (e.g. helicity frame).
-    Second, adjust the decay (l,s)-couplings for the intermediate daughters
-    under /modeldata/TUNE/BRANCHING.json. Then create a process steering card by following the examples.
-
-
 Q:  I want to know exactly what your algorithms actually do?
 A:  Very good, that is the right attitude! You find my heavily commented code
-    under /src and /include folders. If you feel something is too murky, just send email --
-    I am interested in what is right in terms of physics, what is wrong and improving the code quality.
-    All original calculations etc. are inline referenced to arXiv for more information.
+    under /src and /include folders. If you feel something is too dark, just send email --
+    I am interested in what is right in terms of physics, what is wrong and in
+    improving the code quality. All original calculations etc. are inline referenced
+    to arXiv for more information.
 
 
-Q:  How to do fast plotting of the fiducial observables of a given MC sample
-    and stack different MC samples in the same plot?
-A:  If you have ROOT installed, just try some examples under /tests/.
-    GRANIITTI includes a very large collection of automated publication quality plots
-    for arbitrary central production processes. We recommend also one to use RIVET via HepMC2.
 
+BASIC OPERATION
+-----------
 
-Q:  I want to do a full spherical harmonics expansion.
-A:  Sure, if you have ROOT installed, which is needed for plotting and
-    Extended Maximum Likelihood via TMinuit. This advanced analysis algorithm is fully automated
-    including the efficiency and acceptance inversion. See examples under /tests/harmonicrun.
-    Please do note that this is an ill-posed inverse problem, like unfolding. You need to
-    inspect the condition number of moment mixing matrices which is automatically calculated,
-    take care of regularization, have very large MC statistics for the detector expansion and so on.
-
-
-Q:  Can I add some arbitrary new process / amplitude?
-A:  Yes you can, the kinematics is constructed to be fully generic and obey standard QFT normalization rules.
-    What you need is some knowledge of C++ and then you need to study a little bit
-    how the existing amplitudes are implemented in the machinery.
-
-
-Q:  Integrated cross section seems very high?
-A:  Turn on the screening integral (Pomeron loop). The effect can be
-    very high, depending on the process - less for gamma-gamma processes.
-    Also, take care of the branching ratios and phase space volumes (see below).
-
-
-Q:  Are the soft central production parameters independent of the screening loop?
-A:  No. Strictly speaking one should have two sets of parameters (or tunes),
-    one for the screening turned on, one without.
-    Or just one, always screening turned on (computationally very demanding, though).
-
-
-Q:  How well are the soft parameters tuned/fitted?
-A:  The soft central production amplitude parameters are such that an approximate
-    match with LHC data can be obtained. More high precision, fully exclusive
-    but also semi-exclusive (proton dissociative) data is needed. The same
-    words also for the PDG resonance branching ratios, which are not too well known
-    in all cases (see /modeldata/BRANCHING.json). Elastic "eikonal pomeron"
-    parameters are tuned with better accuracy to high energy elastic dsigma/dt.
-    Low energy data seems to require additional parametrizations.
-
-
-Q:  MC integral does not converge (stat. error estimate is very high)!
-A:  This can happen if the generation cuts are too loose, the process
-    is localized into spesific regime of the phase space and VEGAS
-    cannot find suitable binning -> manually tighten up the generation cuts.
-    For example, if you generate an isolated resonance with mass M,
-    use '<F>' phase space and put the mass boundaries around the
-    resonance peak M +- N full widths.
+Q:  Where are the examples of .json steering cards?
+A:  Under /tests/processes folder. Make a copy to /input and modify.
 
 
 Q:  How do I choose the final state?
@@ -105,6 +46,50 @@ A:  After the '->' arrow, write down the final state in terms of PDG
 Q:  How do I know the PDG numbers/names?
 A:  Write down something (dummy) after the '->' arrow,
     and try to generate. You will get a list of all particles.
+
+
+Q:  What do generation cuts versus fiducial cuts mean?
+A:  Generation cuts are applied at the level of phase space sampling
+    kinematic construction, completely necessary. Fiducial cuts are
+    applied after the event kinematics has been constructed - this is optional.
+
+
+Q:  For the analysis/reference purposes, I just want to generate pure J=0 amplitude (S-wave)
+    with a smooth invariant mass distribution and peripheral (exponential) t-distributions.
+A:  Add @FLATAMP:X at the end of your process string with X = 1,2,3,... (try them out).
+    For the b-slope parameter, adjust /modeldata/TUNE/GENERAL.json.
+
+
+Q:  I want to generate a tensor J=2 particle decaying to vector daughters with sequential spin correlations.
+A:  This is supported via Jacob-Wick amplitudes. First setup the mother resonance
+    with a spin polarization density matrix under /modeldata/TUNE/RES_xxx.json
+    (create a new file) and choose the Lorentz reference rest frame there (e.g. helicity frame).
+    Second, adjust the decay (l,s)-couplings for the intermediate daughters
+    under /modeldata/TUNE/BRANCHING.json. Then create a process steering card by following the examples.
+
+
+Q:  Integrated cross section seems very high?
+A:  Turn on the screening integral (event-by-event Pomeron loop). The effect can be
+    very high, depending on the process - less for gamma-gamma processes.
+    Also, take care of the branching ratios and phase space volumes (see below).
+
+
+
+MONTE CARLO TECHNIQUES
+-----------
+
+Q:  I am running it on a GRID / distributed computing system, what do I need to do?
+A:  Remember to set the random number seed differently on separate instances/machines
+    when generating events. Example: './bin/gr -i mycard.json -r 12345'.
+
+
+Q:  MC integral does not converge (stat. error estimate is very high)!
+A:  This can happen if the generation cuts are too loose, the process
+    is localized into spesific regime of the phase space and VEGAS
+    cannot find suitable binning -> manually tighten up the generation cuts.
+    For example, if you generate an isolated resonance with mass M,
+    use '<F>' phase space and put the mass boundaries around the
+    resonance peak M +- N full widths.
 
 
 Q:  What are '<C>' and '<F>' phase space classes?
@@ -125,15 +110,75 @@ A:  The '->' uses full 2->N phase space volume in the cross section
     'yy[Higgs]<F>'. Be careful, however, one should not use it without care.
 
 
-Q:  What do generation cuts versus fiducial cuts mean?
-A:  Generation cuts are applied at the level of phase space sampling
-    kinematic construction, completely necessary. Fiducial cuts are
-    applied after the event kinematics has been constructed - this is optional.
+Q:  What do you mean by weighted / unweighted events?
+A:  Weighted events have a positive definite weight associated with them, this comes
+    naturally from the Monte Carlo sampling. Unweighted have weight == 1
+    and generating them is based on acceptance-rejection sampling.
+
+
+Q:  How many CPU multithreading threads can GRANIITTI handle?
+A:  As many as your system can. You can try out which number gives the best performance.
+
+
+
+ANALYSIS
+-----------
+
+
+Q:  How to do fast plotting of the fiducial observables of a given MC sample
+    and stack different MC samples in the same plot?
+A:  If you have ROOT installed, just try some examples under /tests/.
+    GRANIITTI includes a very large collection of automated publication quality plots
+    for arbitrary central production processes. We recommend also one to use RIVET via HepMC2.
+
+
+Q:  I want to do a full spherical harmonics expansion.
+A:  Sure, if you have ROOT installed, which is needed for plotting and
+    Extended Maximum Likelihood via TMinuit. This advanced analysis algorithm is fully automated
+    including the efficiency and acceptance inversion. See examples under /tests/harmonicrun.
+    Please do note that this is an ill-posed inverse problem, like unfolding. You need to
+    inspect the condition number of moment mixing matrices which is automatically calculated,
+    take care of regularization, have very large MC statistics for the detector expansion and so on.
+
+
+
+ADVANCED
+-----------
+
+
+Q:  Can I add some arbitrary new process / amplitude?
+A:  Yes you can, the kinematics is constructed to be fully generic and obey standard
+    QFT normalization rules. What you need is some knowledge of C++ and then you need
+    to study a little bit how the existing amplitudes are implemented in the machinery.
+
+
+Q:  Are the soft central production parameters independent of the screening loop?
+A:  No. Strictly speaking one should have two sets of parameters (or tunes),
+    one for the screening turned on, one without.
+    Or just one, always screening turned on (computationally very demanding, though).
+
+
+Q:  How well are the soft parameters tuned/fitted?
+A:  The soft central production amplitude parameters are such that an approximate
+    match with LHC data can be obtained. More high precision, fully exclusive
+    but also semi-exclusive (proton dissociative) data is needed. The same
+    words also for the PDG resonance branching ratios, which are not too well known
+    in all cases (see /modeldata/BRANCHING.json). Elastic "eikonal pomeron"
+    parameters are tuned with better accuracy to high energy elastic dsigma/dt.
+    Low energy data seems to require additional parametrizations.
+
+
+Q:  Can I make my own tune?
+A:  Sure, just copy /modeldata/TUNE0 to e.g. /modeldata/TUNE1, change the
+    reference to that in your .json steering card and start tuning.
+
+
+OTHER
+-----------
 
 
 Q:  Something seems just weird.
 A:  Just send email, it might a bug.
 
 ...
-
 
