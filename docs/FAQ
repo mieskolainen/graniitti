@@ -182,6 +182,16 @@ A:  Yes, I use a subset of JSON5 standard which allows commenting and other
     user friendly properties.
 
 
+Q:  I want to install it into our collaboration software platform.
+A:  Great! However, do NOT embed or create custom interfaces to the
+    generator at the level of GRANIITTI classes, instead, use it only through
+    .json files and commandline interface and take the HepMC3/2 output.
+    First of all, this allows very streamlined and fast updates. Second,
+    the generator engine is fully multithreaded and high expert knowledge is
+    required for any safe modifications or interfacing at the level of code.
+    Just keep the package factorized!
+
+
 Q:  Something seems just weird.
 A:  Just send email, it might a bug.
 
