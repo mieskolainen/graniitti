@@ -163,7 +163,7 @@ A:  The soft central production amplitude parameters are such that an approximat
     match with LHC data can be obtained. More high precision, fully exclusive
     but also semi-exclusive (proton dissociative) data is needed. The same
     words also for the PDG resonance branching ratios, which are not too well known
-    in all cases (see /modeldata/BRANCHING.json). Elastic "eikonal pomeron"
+    in all cases (see /modeldata/TUNE/BRANCHING.json). Elastic "eikonal pomeron"
     parameters are tuned with better accuracy to high energy elastic dsigma/dt.
     Low energy data seems to require additional parametrizations, in which we
     are not currently interested to fit. The ultimate goal is to find minimal
