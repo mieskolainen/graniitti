@@ -178,7 +178,7 @@ OTHER
 -----------
 
 Q:  Your .json files are not obeying JSON standard.
-A:  Yes, I use a subset of JSON5 standard which allows commenting and other
+A:  Yes, I use an extended, new JSON5 standard subset which allows commenting and other
     user friendly properties.
 
 
