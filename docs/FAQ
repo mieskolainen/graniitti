@@ -18,7 +18,7 @@ Q:  Which features or processes are "under construction"?
 A:  See /docs/UNDERWORK or send email.
 
 
-Q:  I want to know exactly what your algorithms actually do?
+Q:  I want to know exactly what your algorithms and calculations actually do?
 A:  Very good, that is the right attitude! You find my heavily commented code
     under /src and /include folders. If you feel something is too dark, just send email --
     I am interested in what is right in terms of physics, what is wrong and in
@@ -165,7 +165,9 @@ A:  The soft central production amplitude parameters are such that an approximat
     words also for the PDG resonance branching ratios, which are not too well known
     in all cases (see /modeldata/BRANCHING.json). Elastic "eikonal pomeron"
     parameters are tuned with better accuracy to high energy elastic dsigma/dt.
-    Low energy data seems to require additional parametrizations.
+    Low energy data seems to require additional parametrizations, in which we
+    are not currently interested to fit. The ultimate goal is to find minimal
+    descriptions, better theoretical understanding of data, not a perfect fit.
 
 
 Q:  Can I make my own tune?
