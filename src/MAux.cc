@@ -500,12 +500,12 @@ void PrintGameOver() {
 }
 
 double GetVersion() {
-	return 0.31;
+	return 0.32;
 }
 
 std::string GetVersionString() {
 	char buff[100];
-	snprintf(buff, sizeof(buff), "Version %0.2f (BETA) 150419", GetVersion());
+	snprintf(buff, sizeof(buff), "Version %0.2f (BETA) 190419", GetVersion());
 	std::string str = buff;
 	return str;
 }
