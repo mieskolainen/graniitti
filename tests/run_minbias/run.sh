@@ -1,9 +1,8 @@
 #!/bin/bash
 #
+# Simple minimum bias simulation and RIVET analysis
 #
-# Toy minimum bias simulation and RIVET analysis
-#
-# mikael.mieskolainen@cern.ch, 2018
+# Run with: source ./tests/run_xxx/run.sh
 
 
 make -j4

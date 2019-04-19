@@ -34,7 +34,7 @@
     
     // Production coupling constant at amplitude level
     "g_A"   : 0.12,
-    "g_phi" : 4.3,
+    "g_phi" : -2.36,  // 3/4 pi
     
     // Production form factor on
     "g_FF"  : true,

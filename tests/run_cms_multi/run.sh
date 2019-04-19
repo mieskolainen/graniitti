@@ -1,6 +1,8 @@
 #!/bin/sh
 #
-# Run with: source ./tests/alicerun/run.sh
+# Simulation and analysis with CMS cuts
+#
+# Run with: source ./tests/run_xxx/run.sh
 
 read -p "cmsrun: Generate events (or only analyze)? [y/n] " -n 1 -r
 echo # New line

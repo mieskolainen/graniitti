@@ -1,10 +1,8 @@
 #!/bin/bash
 #
+# Rivet analysis example of exlusive lepton pair production
 #
-# RIVET analysis of GRANIITTI simulations via HepMC2
-#
-# mikael.mieskolainen@cern.ch, 2018
-
+# Run with: source ./tests/run_xxx/run.sh
 
 # Generate events
 ./bin/gr ./tests/processes/CMS11_mumu.json

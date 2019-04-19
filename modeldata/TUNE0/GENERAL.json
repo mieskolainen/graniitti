@@ -57,19 +57,19 @@
       //
       // Note that with (interfering) resonances, the continuum parameters
       // should be fitted together with the resonances.
-      "offshellFF" : 1,
+      "offshellFF" : 2,
       
       // Form factor parameters
-      "b_EXP" :   1.224,           // GeV^-2
-      "a_OREAR" : 0.383,           // GeV^-1
-      "b_OREAR" : 1.663,           // GeV^-1
-      "b_POW" :   0.450,             // GeV^2
+      "b_EXP" :   0.944,            // GeV^-2
+      "a_OREAR" : 0.638,            // GeV^-1
+      "b_OREAR" : 1.886,            // GeV^-1
+      "b_POW" :   0.620,            // GeV^2
       
       // Regge-trajectory parameters (pomeron, f2, a2)
-      "a0"  : [1.088, 0.55, 0.55], // Intercept (alpha_0 = 1 + DELTA)
-      "ap"  : [0.20, 0.93, 0.93],  // Slope (alpha') [GeV^{-2}]
-      "sgn" : [1, -1, 1],          // Regge signature (sigma) (+-1)
-      "s0"  : 1.0,                 // Normalization scale (GeV^2)
+      "a0"  : [1.088, 0.55, 0.55],  // Intercept (alpha_0 = 1 + DELTA)
+      "ap"  : [0.20, 0.93, 0.93],   // Slope (alpha') [GeV^{-2}]
+      "sgn" : [1, -1, 1],           // Regge signature (sigma) (+-1)
+      "s0"  : 1.0,                  // Normalization scale (GeV^2)
       
       // Intermediate off-shell meson M* propagator "Reggeization"
       // (NOT IMPLEMENTED CURRENTLY)

@@ -147,7 +147,7 @@ TEST_CASE("Drell-Yan u u~ -> mu+ mu- & LHAPDF test", "[single-file]") {
 							( (k * pf[0])*(p * pf[1]) + (p * pf[0])*(k * pf[1]) );
 
 		// Total event weight
-		if (q.M() > 60) // cut
+		if (q.M() > 60) // invariant mass cut
 		sumw += PS.GetW() * Amp2 * f1 * f2 / (2.0*Q2) * PDG::GeV2barn;
 	}
 	}

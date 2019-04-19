@@ -23,7 +23,7 @@
     // 2 = running width relativistic
     // 3 = spin barrier relativistic
     "BW" : 2,
-
+    
     // ------------------------------------------------------------------
     // Tensor Pomeron model couplings (2 for scalar/pseudoscalar, 7 for tensors)
     "g_Tensor" : [1.0, 1.0],
@@ -35,7 +35,7 @@
 
     // Production coupling constant at amplitude level
     "g_A"   :  0.098,
-    "g_phi" : -2.795,
+    "g_phi" : -3.14159,
 
     // Production form factor on
     "g_FF"  : true,
