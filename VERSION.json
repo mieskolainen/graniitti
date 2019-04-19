@@ -2,6 +2,6 @@
 	"name" : "GRANIITTI",
 	"version" : 0.32,
 	"type" : "beta",
-	"date" : 190419,
-	"author" : "mikael.mieskolainen@cern.ch"
+	"date" : "19/04/19",
+	"update": "Inverse algorithms & tensor amplitudes"
 }
