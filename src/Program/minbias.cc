@@ -40,8 +40,8 @@ int main(int argc, char *argv[]) {
 
 	try {
 		if (argc < 3) { // We expect > 2 arguments: the program name, energies,
-			        // total number
-			        // of events
+			// total number
+			// of events
 			std::stringstream ss;
 			ss << "Usage: ./minbias <ENERGY_0,ENERGY_1,...,ENERGY_K> <EVENTS>";
 			throw std::invalid_argument(ss.str());
