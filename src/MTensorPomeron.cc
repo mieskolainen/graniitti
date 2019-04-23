@@ -880,7 +880,7 @@ Tensor4<std::complex<double>, 4, 4, 4, 4>
 	// Contract r and s indices
 	for(const auto& r : LI) {
 		for(const auto& s : LI) {
-			
+
 			// Note +=
 			T(u, v, k, l) += FACTOR *
 							 (g[u][k] * eps_lo(v, l, r, s) + g[v][k] * eps_lo(u, l, r, s) +
@@ -967,6 +967,8 @@ MTensor<std::complex<double>> MTensorPomeron::iG_PPT_total(const M4Vec& q1, cons
 
 // Pomeron-Pomeron-Tensor coupling structure #1 ~ (l,s) = (0,2)
 //
+// DEBUG THIS ONE - MALFUNCTION!
+//
 MTensor<std::complex<double>> MTensorPomeron::iG_PPT_1(double g_PPT) const {
 	MTensor<std::complex<double>> T = MTensor({4, 4, 4, 4, 4, 4}, std::complex<double>(0.0));
 	const double M0 = 1.0;
@@ -1000,6 +1002,9 @@ MTensor<std::complex<double>> MTensorPomeron::iG_PPT_1(double g_PPT) const {
 
 // Pomeron-Pomeron-Tensor coupling structure #2 ~ (l,s) = (2,0) - (2,2)
 // Pomeron-Pomeron-Tensor coupling structure #3 ~ (l,s) = (2,0) + (2,2)
+//
+//
+// DEBUG THIS ONE - MALFUNCTION!
 //
 MTensor<std::complex<double>> MTensorPomeron::iG_PPT_23(const M4Vec& q1, const M4Vec& q2, int mode,
 														double g_PPT) const {
