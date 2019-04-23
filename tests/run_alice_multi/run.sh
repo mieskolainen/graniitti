@@ -11,9 +11,9 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
 # Generate
-source ./tests/alicerun/combogr.sh
+source ./tests/run_alice_multi/combogr.sh
 
 fi
 
 # Analyze
-source ./tests/alicerun/comboanalyze.sh
+source ./tests/run_alice_multi/comboanalyze.sh
