@@ -304,12 +304,12 @@ std::complex<double> MTensorPomeron::ME4(gra::LORENTZSCALAR& lts) const {
 	const MMatrix<std::complex<double>> iSF_u = iD_F(pu, m);
 
 	// Central spinors (2 helicities)
-	const std::array<std::vector<std::complex<double>>, 2> v_3 = SpinorStates(p3, "v");
+	const std::array<std::vector<std::complex<double>>, 2> v_3    = SpinorStates(p3, "v");
 	const std::array<std::vector<std::complex<double>>, 2> ubar_4 = SpinorStates(p4, "ubar");
-
+	
 	// Reset
 	lts.hamp.clear();
-
+	
 	// Free Lorentz indices [second parameter denotes the range of index]
 	FTensor::Index<'a', 4> mu1;
 	FTensor::Index<'b', 4> nu1;
