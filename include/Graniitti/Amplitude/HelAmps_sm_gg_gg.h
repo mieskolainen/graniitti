@@ -16,7 +16,6 @@
 using namespace std;
 
 namespace MG5_sm_gg_gg {
-
 void ixxxxx(double p[4], double fmass, int nhel, int nsf, std::complex<double> fi[6]);
 
 double Sgn(double e, double f);
@@ -30,19 +29,19 @@ void oxxxxx(double p[4], double fmass, int nhel, int nsf, std::complex<double> f
 void vxxxxx(double p[4], double vmass, int nhel, int nsv, std::complex<double> v[6]);
 
 void VVV1_0(std::complex<double> V1[], std::complex<double> V2[], std::complex<double> V3[],
-            std::complex<double> COUP, std::complex<double> &vertex);
+			std::complex<double> COUP, std::complex<double>& vertex);
 
 void VVVV4_0(std::complex<double> V1[], std::complex<double> V2[], std::complex<double> V3[],
-             std::complex<double> V4[], std::complex<double> COUP, std::complex<double> &vertex);
+			 std::complex<double> V4[], std::complex<double> COUP, std::complex<double>& vertex);
 
 void VVVV1_0(std::complex<double> V1[], std::complex<double> V2[], std::complex<double> V3[],
-             std::complex<double> V4[], std::complex<double> COUP, std::complex<double> &vertex);
+			 std::complex<double> V4[], std::complex<double> COUP, std::complex<double>& vertex);
 
 void VVV1P0_1(std::complex<double> V2[], std::complex<double> V3[], std::complex<double> COUP,
-              double M1, double W1, std::complex<double> V1[]);
+			  double M1, double W1, std::complex<double> V1[]);
 
 void VVVV3_0(std::complex<double> V1[], std::complex<double> V2[], std::complex<double> V3[],
-             std::complex<double> V4[], std::complex<double> COUP, std::complex<double> &vertex);
+			 std::complex<double> V4[], std::complex<double> COUP, std::complex<double>& vertex);
 
 } // end namespace MG5_sm
 

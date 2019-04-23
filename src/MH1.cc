@@ -18,7 +18,6 @@
 #include "rang.hpp"
 
 namespace gra {
-
 // Constructor
 template <class T>
 MH1<T>::MH1(int xbins, double xmin, double xmax, std::string namestr) {
@@ -45,12 +44,11 @@ MH1<T>::MH1() {
 
 // Destructor
 template <class T>
-MH1<T>::~MH1() {
-}
+MH1<T>::~MH1() {}
 
 template <class T>
 void MH1<T>::Print(double width) const {
-	if (!(fills > 0)) { // No fills
+	if(!(fills > 0)) { // No fills
 		std::cout << "MH1::Print: <" << name << "> Fills = " << fills << std::endl;
 		return;
 	}
@@ -58,16 +56,16 @@ void MH1<T>::Print(double width) const {
 	// Histogram name
 	std::cout << "MH1::Print: <" << name << ">" << std::endl;
 
-	const std::size_t N = XBINS * width;     // Number of ascii columns (PARAMETER)
+	const std::size_t N = XBINS * width; // Number of ascii columns (PARAMETER)
 	double maxvisual = 1.1 * GetMaxWeight(); // Give some % space to top
 
 	std::cout << "          |"; // Empty top left corner
-	for (std::size_t i = 0; i < N; ++i) {
+	for(std::size_t i = 0; i < N; ++i) {
 		std::cout << "=";
 	}
 	std::cout << "| " << std::endl;
 
-	for (std::size_t idx = 0; idx < static_cast<unsigned int>(XBINS); ++idx) {
+	for(std::size_t idx = 0; idx < static_cast<unsigned int>(XBINS); ++idx) {
 		const int boundary = 0; // (lower,center,upper)
 		printf("%9.2E |", GetBinXVal(idx, boundary));
 
@@ -82,17 +80,17 @@ void MH1<T>::Print(double width) const {
 		const std::size_t ind = std::round(w * (N - 1));
 
 		const int Nc = GetBinCount(idx);
-		if (Nc > 0) { // non-zero bin
+		if(Nc > 0) { // non-zero bin
 
 			// Error on value (only on double histograms)
 			const double relative_err = value_err / value;
-			const std::size_t U = std::ceil(w * (N - 1) * (1 + relative_err));  // up
+			const std::size_t U = std::ceil(w * (N - 1) * (1 + relative_err)); // up
 			const std::size_t D = std::floor(w * (N - 1) * (1 - relative_err)); // down
 			// Print now
-			for (std::size_t j = 0; j < N; ++j) {
-				if (j == ind) {
+			for(std::size_t j = 0; j < N; ++j) {
+				if(j == ind) {
 					std::cout << rang::bg::magenta << "+" << rang::bg::reset;
-				} else if (j >= D && j != ind && j <= U) {
+				} else if(j >= D && j != ind && j <= U) {
 					std::cout << rang::bg::magenta << " " << rang::bg::reset;
 				} else {
 					std::cout << " ";
@@ -100,7 +98,7 @@ void MH1<T>::Print(double width) const {
 			}
 			// No events in the bin
 		} else {
-			for (std::size_t j = 0; j < N; ++j) {
+			for(std::size_t j = 0; j < N; ++j) {
 				std::cout << " ";
 			}
 		}
@@ -108,12 +106,11 @@ void MH1<T>::Print(double width) const {
 		// Raw value +- error
 		// printf("| %0.1E +- %0.1E \n", value, value_err);
 		// raw value +- stat | dO/dx (differential cross section, for example)
-		printf("| %0.1E +- %0.1E [dO/dx] = %0.1E \n", value, value_err,
-		       value / fills / BINWIDTH);
+		printf("| %0.1E +- %0.1E [dO/dx] = %0.1E \n", value, value_err, value / fills / BINWIDTH);
 	}
 
 	std::cout << "          |"; // Empty bottom left corner
-	for (std::size_t i = 0; i < N; ++i) {
+	for(std::size_t i = 0; i < N; ++i) {
 		std::cout << "=";
 	}
 	std::cout << "| " << std::endl;
@@ -125,10 +122,9 @@ void MH1<T>::Print(double width) const {
 
 	const double mean = GetMean();
 	const double sqmean = GetSquareMean();
-	printf(
-	    " <X> = %0.3f, <X^2> = %0.3f, <X^2> - <X>^2 = %0.3f [F = %lld | "
-	    "U/O = %lld/%lld] \n",
-	    mean, sqmean, sqmean - std::pow(mean, 2), fills, underflow, overflow);
+	printf(" <X> = %0.3f, <X^2> = %0.3f, <X^2> - <X>^2 = %0.3f [F = %lld | "
+		   "U/O = %lld/%lld] \n",
+		   mean, sqmean, sqmean - std::pow(mean, 2), fills, underflow, overflow);
 
 	std::cout << std::endl;
 }
@@ -145,10 +141,10 @@ std::pair<double, double> MH1<T>::WeightMeanAndError() const {
 
 // Get valarrays containing X values and corresponding density values
 template <class T>
-void MH1<T>::GetXPositiveDefinite(std::valarray<double> &x, std::valarray<double> &y) const {
+void MH1<T>::GetXPositiveDefinite(std::valarray<double>& x, std::valarray<double>& y) const {
 	x.resize(XBINS);
 	y.resize(XBINS);
-	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
+	for(std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
 		x[i] = GetBinXVal(i, 0); // Get center value
 		y[i] = GetPositiveDefinite(i);
 	}
@@ -161,14 +157,14 @@ double MH1<T>::GetMean() const {
 	double norm = 0.0; // Normalization
 	const double binwidth = (XMAX - XMIN) / XBINS;
 
-	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
+	for(std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
 		const double value = binwidth * (i + 1) - binwidth / 2.0 + XMIN;
 		const double weight = GetPositiveDefinite(i);
 		sum += weight * value;
 		norm += weight;
 	}
 
-	if (norm > 0) {
+	if(norm > 0) {
 		return sum / norm;
 	} else {
 		return 0.0;
@@ -182,14 +178,14 @@ double MH1<T>::GetSquareMean() const {
 	double norm = 0.0; // Normalization
 	const double binwidth = (XMAX - XMIN) / XBINS;
 
-	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
+	for(std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
 		const double value = std::pow(binwidth * (i + 1) - binwidth / 2.0 + XMIN, 2);
 		const double weight = GetPositiveDefinite(i);
 		sum += weight * value;
 		norm += weight;
 	}
 
-	if (norm > 0) {
+	if(norm > 0) {
 		return sum / norm;
 	} else {
 		return 0.0;
@@ -198,7 +194,7 @@ double MH1<T>::GetSquareMean() const {
 
 template <class T>
 bool MH1<T>::ValidBin(int idx) const {
-	if (idx >= 0 && idx < XBINS) {
+	if(idx >= 0 && idx < XBINS) {
 		return true;
 	}
 	return false;
@@ -214,21 +210,21 @@ void MH1<T>::Fill(double xvalue) {
 // Weighted fill
 template <class T>
 void MH1<T>::Fill(double xvalue, T weight) {
-	if (!FILLBUFF) { // Normal filling
+	if(!FILLBUFF) { // Normal filling
 
 		fills += 1;
 
 		// Find out bin
 		const int idx = GetIdx(xvalue, XMIN, XMAX, XBINS, LOGX);
 
-		if (idx == -1) {
+		if(idx == -1) {
 			underflow += 1;
 		}
-		if (idx == -2) {
+		if(idx == -2) {
 			overflow += 1;
 		}
 
-		if (ValidBin(idx)) {
+		if(ValidBin(idx)) {
 			weights[idx] += weight;
 			weights2[idx] += std::abs(std::conj(weight) * weight);
 			counts[idx] += 1;
@@ -237,7 +233,7 @@ void MH1<T>::Fill(double xvalue, T weight) {
 		buff_values.push_back(xvalue);
 		buff_weights.push_back(weight);
 
-		if (buff_values.size() > static_cast<unsigned int>(AUTOBUFFSIZE)) {
+		if(buff_values.size() > static_cast<unsigned int>(AUTOBUFFSIZE)) {
 			FlushBuffer();
 		}
 	}
@@ -246,26 +242,26 @@ void MH1<T>::Fill(double xvalue, T weight) {
 // Automatic histogram range algorithm
 template <class T>
 void MH1<T>::FlushBuffer() {
-	if (FILLBUFF && buff_values.size() > 0) {
+	if(FILLBUFF && buff_values.size() > 0) {
 		FILLBUFF = false; // no more filling buffer
 
 		// Find out mean
 		double mu = 0;
 		double sumW = 0;
-		for (std::size_t i = 0; i < buff_values.size(); ++i) {
+		for(std::size_t i = 0; i < buff_values.size(); ++i) {
 			mu += std::abs(buff_values[i] * buff_weights[i]);
 			sumW += std::abs(buff_weights[i]);
 		}
-		if (sumW > 0) {
+		if(sumW > 0) {
 			mu /= sumW;
 		}
 
 		// Variance
 		double var = 0;
-		for (std::size_t i = 0; i < buff_values.size(); ++i) {
+		for(std::size_t i = 0; i < buff_values.size(); ++i) {
 			var += std::abs(buff_weights[i]) * std::pow(buff_values[i] - mu, 2);
 		}
-		if (sumW > 0) {
+		if(sumW > 0) {
 			var /= sumW;
 		}
 
@@ -279,21 +275,21 @@ void MH1<T>::FlushBuffer() {
 		double xmax = mu + 2.5 * std;
 
 		// If symmetric setup set by user
-		if (AUTOSYMMETRY) {
+		if(AUTOSYMMETRY) {
 			double val = (std::abs(xmin) + std::abs(xmax)) / 2.0;
 			xmin = -val;
 			xmax = val;
 		}
 
 		// We have only positive values, such as invariant mass
-		if (minval > 0.0) {
+		if(minval > 0.0) {
 			xmin = std::max(0.0, xmin);
 		}
 
 		ResetBounds(XBINS, xmin, xmax);
 
 		// Fill buffered events
-		for (std::size_t i = 0; i < buff_values.size(); ++i) {
+		for(std::size_t i = 0; i < buff_values.size(); ++i) {
 			Fill(buff_values[i], buff_weights[i]);
 		}
 
@@ -331,7 +327,7 @@ void MH1<T>::ResetBounds(int xbins, double xmin, double xmax) {
 // Clear the histogram data but keep the bounds
 template <class T>
 void MH1<T>::Clear() {
-	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
+	for(std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
 		weights[i] = 0.0;
 		weights2[i] = 0.0;
 		counts[i] = 0;
@@ -345,7 +341,7 @@ void MH1<T>::Clear() {
 template <class T>
 T MH1<T>::SumWeights() const {
 	T sum = 0.0;
-	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
+	for(std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
 		sum += weights[i];
 	}
 	return sum;
@@ -355,7 +351,7 @@ T MH1<T>::SumWeights() const {
 template <class T>
 T MH1<T>::SumWeights2() const {
 	T sum = 0.0;
-	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
+	for(std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
 		sum += weights2[i];
 	}
 	return sum;
@@ -365,7 +361,7 @@ T MH1<T>::SumWeights2() const {
 template <class T>
 long long int MH1<T>::SumBinCounts() const {
 	long long int sum = 0;
-	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
+	for(std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
 		sum += counts[i];
 	}
 	return sum;
@@ -375,8 +371,8 @@ long long int MH1<T>::SumBinCounts() const {
 template <class T>
 double MH1<T>::GetMaxWeight() const {
 	double maxval = 0;
-	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
-		if (GetPositiveDefinite(i) > maxval) {
+	for(std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
+		if(GetPositiveDefinite(i) > maxval) {
 			maxval = GetPositiveDefinite(i);
 		}
 	}
@@ -387,8 +383,8 @@ double MH1<T>::GetMaxWeight() const {
 template <class T>
 double MH1<T>::GetMinWeight() const {
 	double minval = 1e128;
-	for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
-		if (GetPositiveDefinite(i) < minval) {
+	for(std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
+		if(GetPositiveDefinite(i) < minval) {
 			minval = GetPositiveDefinite(i);
 		}
 	}
@@ -398,7 +394,7 @@ double MH1<T>::GetMinWeight() const {
 // Get number of event fills in the bin
 template <class T>
 long long int MH1<T>::GetBinCount(int idx) const {
-	if (ValidBin(idx)) {
+	if(ValidBin(idx)) {
 		return counts[idx];
 	} else {
 		return 0;
@@ -408,7 +404,7 @@ long long int MH1<T>::GetBinCount(int idx) const {
 // Get weight of the bin, for complex return complex number
 template <class T>
 T MH1<T>::GetBinWeight(int idx) const {
-	if (ValidBin(idx)) {
+	if(ValidBin(idx)) {
 		return weights[idx];
 	} else {
 		return 0.0;
@@ -418,7 +414,7 @@ T MH1<T>::GetBinWeight(int idx) const {
 // Get weight of the bin, for complex return complex number
 template <class T>
 T MH1<T>::GetBinWeight2(int idx) const {
-	if (ValidBin(idx)) {
+	if(ValidBin(idx)) {
 		return weights2[idx];
 	} else {
 		return 0.0;
@@ -428,12 +424,12 @@ T MH1<T>::GetBinWeight2(int idx) const {
 // Error estimate on bin
 template <class T>
 double MH1<T>::GetBinError(int idx) const {
-	if (!ValidBin(idx)) {
+	if(!ValidBin(idx)) {
 		return 0.0;
 	}
 	double err = 0;
-	if (GetBinCount(idx) > 0) {
-		if (IsReal()) {
+	if(GetBinCount(idx) > 0) {
+		if(IsReal()) {
 			err = std::sqrt(std::abs(GetBinWeight2(idx))); // [\sum_i w_i^2)]^{1/2}
 		} else {
 			err = std::abs(GetBinWeight2(idx)); // [\sum_i w_i^2)]^{1/2}
@@ -445,8 +441,8 @@ double MH1<T>::GetBinError(int idx) const {
 // Return weight (double) or |w|^2 (complex case)
 template <class T>
 double MH1<T>::GetPositiveDefinite(int idx) const {
-	if (ValidBin(idx)) {
-		if (IsReal()) {
+	if(ValidBin(idx)) {
+		if(IsReal()) {
 			return std::abs(weights[idx]);
 		}
 		return std::pow(std::abs(weights[idx]), 2);
@@ -457,7 +453,7 @@ double MH1<T>::GetPositiveDefinite(int idx) const {
 
 // Get bin index (idx) corresponding to value (xvalue)
 template <class T>
-void MH1<T>::GetBinIdx(double xvalue, int &idx) {
+void MH1<T>::GetBinIdx(double xvalue, int& idx) {
 	// Find out bins
 	idx = GetIdx(xvalue, XMIN, XMAX, XBINS, LOGX);
 }
@@ -466,36 +462,34 @@ void MH1<T>::GetBinIdx(double xvalue, int &idx) {
 // boundary = -1,0,1 (lower, center, upper)
 template <class T>
 double MH1<T>::GetBinXVal(int idx, int boundary) const {
-	if (idx > XBINS - 1) {
+	if(idx > XBINS - 1) {
 		throw std::invalid_argument("MH1::GetBinXVal: idx = " + std::to_string(idx) +
-		                            " > XBINS-1 = " + std::to_string(XBINS - 1));
+									" > XBINS-1 = " + std::to_string(XBINS - 1));
 	}
-	if (LOGX) {
+	if(LOGX) {
 		const double log10step = (std::log10(XMAX) - std::log10(XMIN)) / XBINS;
-		if (boundary == -1) {
+		if(boundary == -1) {
 			return std::pow(10, std::log10(XMIN) + idx * log10step);
-		} else if (boundary == 0) {
+		} else if(boundary == 0) {
 			return (std::pow(10, std::log10(XMIN) + idx * log10step) +
-			        std::pow(10, std::log10(XMIN) + (idx + 1) * log10step)) /
-			       2;
-		} else if (boundary == 1) {
+					std::pow(10, std::log10(XMIN) + (idx + 1) * log10step)) /
+				   2;
+		} else if(boundary == 1) {
 			return std::pow(10, std::log10(XMIN) + (idx + 1) * log10step);
 		} else {
-			throw std::invalid_argument(
-			    "MH1::GetBinXVal: Bin boundary not valid (-1,0,1)");
+			throw std::invalid_argument("MH1::GetBinXVal: Bin boundary not valid (-1,0,1)");
 		}
 	} else {
 		const double binwidth = (XMAX - XMIN) / XBINS;
 		const double value = XMIN + (idx + 1) * binwidth;
-		if (boundary == -1) {
+		if(boundary == -1) {
 			return value - binwidth;
-		} else if (boundary == 0) {
+		} else if(boundary == 0) {
 			return value - binwidth / 2.0;
-		} else if (boundary == 1) {
+		} else if(boundary == 1) {
 			return value;
 		} else {
-			throw std::invalid_argument(
-			    "MH1::GetBinXVal: Bin boundary not valid (-1,0,1)");
+			throw std::invalid_argument("MH1::GetBinXVal: Bin boundary not valid (-1,0,1)");
 		}
 	}
 }
@@ -511,20 +505,20 @@ double MH1<T>::GetBinXVal(int idx, int boundary) const {
 // Overflow  returns -2
 template <class T>
 int MH1<T>::GetIdx(double value, double minval, double maxval, int nbins, bool logbins) const {
-	if (value < minval) {
+	if(value < minval) {
 		return -1;
 	} // underflow
-	if (value > maxval) {
+	if(value > maxval) {
 		return -2;
 	} // overflow
 
 	int idx = 0;
 	// Logarithmic binning
-	if (logbins) {
+	if(logbins) {
 		// Check do we have non-negative input
 		idx = value > 0 ? std::floor(nbins * (std::log10(value) - std::log10(minval)) /
-		                             (std::log10(maxval) - std::log10(minval)))
-		                : -1;
+									 (std::log10(maxval) - std::log10(minval)))
+						: -1;
 		// Linear binning
 	} else {
 		const double BINWIDTH = (maxval - minval) / nbins;

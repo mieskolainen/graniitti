@@ -10,13 +10,13 @@
 // production at the LHC.
 
 // C++
-#include <math.h>
 #include <algorithm>
 #include <chrono>
 #include <complex>
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
+#include <math.h>
 #include <mutex>
 #include <random>
 #include <stdexcept>
@@ -68,25 +68,25 @@ struct FIDCUTS {
 FIDCUTS fidcuts;
 
 // TMinuit fit wrapper calling the global object
-void fitwrapper(int &npar, double *gin, double &f, double *par, int iflag) {
+void fitwrapper(int& npar, double* gin, double& f, double* par, int iflag) {
 	ha.logLfunc(npar, gin, f, par, iflag);
 }
 
-void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &events,
-            const std::string &FRAME, int MAXEVENTS, bool SIMULATE);
+void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega>& events,
+			const std::string& FRAME, int MAXEVENTS, bool SIMULATE);
 
 // Fast toy simulation pt-efficiency parameter (put infinite for perfect
 // pt-efficiency)
 const double pt_scale = 4.5;
 
 // Main function
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
 	gra::rootstyle::SetROOTStyle();
 	gra::aux::PrintFlashScreen(rang::fg::blue);
 
 	std::cout << rang::style::bold << "GRANIITTI - Spherical Harmonics Inverse Expansion"
-	          << rang::style::reset << std::endl
-	          << std::endl;
+			  << rang::style::reset << std::endl
+			  << std::endl;
 	gra::aux::PrintVersion();
 
 	// Save the number of input arguments
@@ -94,70 +94,65 @@ int main(int argc, char *argv[]) {
 	try {
 		cxxopts::Options options(argv[0], "");
 		options.add_options()(
-		    "r,ref", "Reference MC (angular flat MC sample)     <filename> without .hepmc3",
-		    cxxopts::value<std::string>())("i,input",
-		                                   "Input sample                              "
-		                                   "<filename1,filename2,...> without .hepmc3",
-		                                   cxxopts::value<std::string>())(
-		    "t,titles", "Phase space titles (3 of them)            <titleA,titleB,titleC>",
-		    cxxopts::value<std::string>())(
-		    "l,legend", "Legend text                               <title1,title2,...>",
-		    cxxopts::value<std::string>())(
-		    "d,mode", "Input mode                                <MC|DATA,...>      ",
-		    cxxopts::value<std::string>())(
-		    "c,cuts",
-		    "Fiducial cuts                             <ETAMIN,ETAMAX,PTMIN,PTMAX>",
-		    cxxopts::value<std::string>())(
-		    "S,scale", "Scale plots (set -1 for unit normalized)  <scale1,scale2,...>",
-		    cxxopts::value<std::string>())
+			"r,ref", "Reference MC (angular flat MC sample)     <filename> without .hepmc3",
+			cxxopts::value<std::string>())("i,input", "Input sample                              "
+													  "<filename1,filename2,...> without .hepmc3",
+										   cxxopts::value<std::string>())(
+			"t,titles", "Phase space titles (3 of them)            <titleA,titleB,titleC>",
+			cxxopts::value<std::string>())(
+			"l,legend", "Legend text                               <title1,title2,...>",
+			cxxopts::value<std::string>())(
+			"d,mode", "Input mode                                <MC|DATA,...>      ",
+			cxxopts::value<std::string>())(
+			"c,cuts", "Fiducial cuts                             <ETAMIN,ETAMAX,PTMIN,PTMAX>",
+			cxxopts::value<std::string>())(
+			"S,scale", "Scale plots (set -1 for unit normalized)  <scale1,scale2,...>",
+			cxxopts::value<std::string>())
 
-		    ("f,frame", "Lorentz rest frame                        <HE|CS|GJ|PG|SR>",
-		     cxxopts::value<std::string>())(
-		        "g,lmax", "Maximum angular order                     <1|2|3|4|...>",
-		        cxxopts::value<unsigned int>())(
-		        "o,removeodd", "Remove negative M                         <true|false>",
-		        cxxopts::value<std::string>())(
-		        "v,removenegative",
-		        "Remove odd M                              <true|false>",
-		        cxxopts::value<std::string>())(
-		        "e,eml", "Extended Maximum Likelihood               <true|false>",
-		        cxxopts::value<std::string>())(
-		        "a,svdreg", "SVD regularization weight                 <value>",
-		        cxxopts::value<double>())(
-		        "b,l1reg", "L1 regularization weight                  <value>",
-		        cxxopts::value<double>())
+			("f,frame", "Lorentz rest frame                        <HE|CS|GJ|PG|SR>",
+			 cxxopts::value<std::string>())(
+				"g,lmax", "Maximum angular order                     <1|2|3|4|...>",
+				cxxopts::value<unsigned int>())(
+				"o,removeodd", "Remove negative M                         <true|false>",
+				cxxopts::value<std::string>())(
+				"v,removenegative", "Remove odd M                              <true|false>",
+				cxxopts::value<std::string>())(
+				"e,eml", "Extended Maximum Likelihood               <true|false>",
+				cxxopts::value<std::string>())("a,svdreg",
+											   "SVD regularization weight                 <value>",
+											   cxxopts::value<double>())(
+				"b,l1reg", "L1 regularization weight                  <value>",
+				cxxopts::value<double>())
 
-		        ("M,mass", "System mass binning                       <bins,min,max>",
-		         cxxopts::value<std::string>())(
-		            "P,pt", "System pt binning                         <bins,min,max>",
-		            cxxopts::value<std::string>())(
-		            "Y,rapidity",
-		            "System rapidity binning                   <bins,min,max>",
-		            cxxopts::value<std::string>())
+				("M,mass", "System mass binning                       <bins,min,max>",
+				 cxxopts::value<std::string>())(
+					"P,pt", "System pt binning                         <bins,min,max>",
+					cxxopts::value<std::string>())(
+					"Y,rapidity", "System rapidity binning                   <bins,min,max>",
+					cxxopts::value<std::string>())
 
-		            ("z,fastsim",
-		             "Fast simulation of efficiency response    <true|false,...>",
-		             cxxopts::value<std::string>())(
-		                "X,maximum", "Maximum number of events                  <value>",
-		                cxxopts::value<unsigned int>())("H,help", "Help");
+					("z,fastsim", "Fast simulation of efficiency response    <true|false,...>",
+					 cxxopts::value<std::string>())(
+						"X,maximum", "Maximum number of events                  <value>",
+						cxxopts::value<unsigned int>())("H,help", "Help");
 
 		auto r = options.parse(argc, argv);
 
-		if (r.count("help") || NARGC == 0) {
+		if(r.count("help") || NARGC == 0) {
 			std::cout << options.help({""}) << std::endl;
 			std::cout << "Example:" << std::endl;
 			std::cout << "  " << argv[0] << " -r SH_2pi_REF -i SH_2pi ..." << std::endl
-			          << std::endl;
+					  << std::endl;
 			return EXIT_FAILURE;
 		}
 
 		// Fiducial cuts
-		if (r.count("cuts")) {
+		if(r.count("cuts")) {
 			const std::string str = r["cuts"].as<std::string>();
 			std::vector<double> cuts = gra::aux::SplitStr(str, double(0), ',');
-			if (cuts.size() != 4) {
+			if(cuts.size() != 4) {
 				throw std::invalid_argument(
-				    "fitharmonic:: cuts not size 4 <ETAMIN,ETAMAX,PTMIN,PTMAX>");
+					"fitharmonic:: cuts not size 4 <ETAMIN,ETAMAX,PTMIN,PTMAX>");
 			}
 			fidcuts.ETA = {cuts[0], cuts[1]};
 			fidcuts.PT = {cuts[2], cuts[3]};
@@ -168,33 +163,32 @@ int main(int argc, char *argv[]) {
 		MHarmonic::HPARAM hparam;
 
 		// Default discretization
-		hparam.M = {20, 0.0, 2.5};   // System mass
+		hparam.M = {20, 0.0, 2.5}; // System mass
 		hparam.PT = {1, 0.0, 100.0}; // System pt
 		hparam.Y = {1, -10.0, 10.0}; // System rapidity
 
-		if (r.count("mass")) {
+		if(r.count("mass")) {
 			const std::string Mstr = r["mass"].as<std::string>();
 			hparam.M = gra::aux::SplitStr(Mstr, double(0), ',');
-			if (hparam.M.size() != 3) {
+			if(hparam.M.size() != 3) {
 				throw std::invalid_argument(
-				    "fitharmonic:: mass discretization not size 3 <bins,min,max>");
+					"fitharmonic:: mass discretization not size 3 <bins,min,max>");
 			}
 		}
-		if (r.count("pt")) {
+		if(r.count("pt")) {
 			const std::string Pstr = r["pt"].as<std::string>();
 			hparam.PT = gra::aux::SplitStr(Pstr, double(0), ',');
-			if (hparam.PT.size() != 3) {
+			if(hparam.PT.size() != 3) {
 				throw std::invalid_argument(
-				    "fitharmonic:: pt discretization not size 3 <bins,min,max>");
+					"fitharmonic:: pt discretization not size 3 <bins,min,max>");
 			}
 		}
-		if (r.count("rapidity")) {
+		if(r.count("rapidity")) {
 			const std::string Ystr = r["rapidity"].as<std::string>();
 			hparam.Y = gra::aux::SplitStr(Ystr, double(0), ',');
-			if (hparam.Y.size() != 3) {
-				throw std::invalid_argument(
-				    "fitharmonic:: rapidity discretization not size 3 "
-				    "<bins,min,max>");
+			if(hparam.Y.size() != 3) {
+				throw std::invalid_argument("fitharmonic:: rapidity discretization not size 3 "
+											"<bins,min,max>");
 			}
 		}
 
@@ -203,22 +197,19 @@ int main(int argc, char *argv[]) {
 
 		hparam.LMAX = r["lmax"].as<unsigned int>();
 		hparam.REMOVEODD = r["removeodd"].as<std::string>() == "true" ? true : false;
-		hparam.REMOVENEGATIVEM =
-		    r["removenegative"].as<std::string>() == "true" ? true : false;
+		hparam.REMOVENEGATIVEM = r["removenegative"].as<std::string>() == "true" ? true : false;
 		hparam.EML = r["eml"].as<std::string>() == "true" ? true : false;
 		hparam.SVDREG = r["svdreg"].as<double>();
 		hparam.L1REG = r["l1reg"].as<double>();
 
 		// Check valid values
-		if (hparam.LMAX < 1) {
-			throw std::invalid_argument(
-			    "fitharmonic: Parameter 'lmax' should be integer >= 1");
+		if(hparam.LMAX < 1) {
+			throw std::invalid_argument("fitharmonic: Parameter 'lmax' should be integer >= 1");
 		}
-		if (hparam.SVDREG < 0) {
-			throw std::invalid_argument(
-			    "fitharmonic: Parameter 'svdreg' should be > 0");
+		if(hparam.SVDREG < 0) {
+			throw std::invalid_argument("fitharmonic: Parameter 'svdreg' should be > 0");
 		}
-		if (hparam.L1REG < 0) {
+		if(hparam.L1REG < 0) {
 			throw std::invalid_argument("fitharmonic: Parameter 'l1reg' should be > 0");
 		}
 
@@ -233,7 +224,7 @@ int main(int argc, char *argv[]) {
 
 		// Maximum number of events
 		int MAXEVENTS = 1E9;
-		if (r.count("maximum")) {
+		if(r.count("maximum")) {
 			MAXEVENTS = r["maximum"].as<unsigned int>();
 		}
 
@@ -243,12 +234,12 @@ int main(int argc, char *argv[]) {
 		ReadIn(ref, REFMC, FRAME, MAXEVENTS, true); // Always simulate reference here
 
 		// Check dimensions
-		auto checkdim = [](const std::vector<std::vector<std::string>> &vec) {
+		auto checkdim = [](const std::vector<std::vector<std::string>>& vec) {
 			std::vector<std::size_t> dim(vec.size(), 0);
-			for (const auto &i : indices(vec)) {
+			for(const auto& i : indices(vec)) {
 				dim[i] = vec[i].size();
 			}
-			if ((std::equal(dim.begin() + 1, dim.end(), dim.begin()))) {
+			if((std::equal(dim.begin() + 1, dim.end(), dim.begin()))) {
 				return true;
 			} else {
 				return false;
@@ -256,32 +247,29 @@ int main(int argc, char *argv[]) {
 		};
 
 		// Read in real DATA/MC
-		const std::vector<std::string> input =
-		    gra::aux::SplitStr2Str(r["input"].as<std::string>());
+		const std::vector<std::string> input = gra::aux::SplitStr2Str(r["input"].as<std::string>());
 		const std::vector<std::string> legend =
-		    gra::aux::SplitStr2Str(r["legend"].as<std::string>());
-		const std::vector<std::string> mode =
-		    gra::aux::SplitStr2Str(r["mode"].as<std::string>());
+			gra::aux::SplitStr2Str(r["legend"].as<std::string>());
+		const std::vector<std::string> mode = gra::aux::SplitStr2Str(r["mode"].as<std::string>());
 		const std::vector<std::string> fastsim =
-		    gra::aux::SplitStr2Str(r["fastsim"].as<std::string>());
+			gra::aux::SplitStr2Str(r["fastsim"].as<std::string>());
 
-		if (!checkdim({input, legend, mode, fastsim})) {
-			throw std::invalid_argument(
-			    "fitharmonic:: Input list with different dimensions");
+		if(!checkdim({input, legend, mode, fastsim})) {
+			throw std::invalid_argument("fitharmonic:: Input list with different dimensions");
 		}
 
 		// Scaling
 		std::vector<double> scale(input.size(), 1.0); // Default 1.0 for all
-		if (r.count("scale")) {
+		if(r.count("scale")) {
 			const std::vector<std::string> str_vals =
-			    gra::aux::SplitStr2Str(r["scale"].as<std::string>());
-			if (str_vals.size() == 1 || str_vals.size() == input.size()) {
-				for (auto const &i : indices(str_vals)) {
+				gra::aux::SplitStr2Str(r["scale"].as<std::string>());
+			if(str_vals.size() == 1 || str_vals.size() == input.size()) {
+				for(auto const& i : indices(str_vals)) {
 					scale[i] = std::stod(str_vals[i]);
 				}
 			} else {
 				throw std::invalid_argument(
-				    "analyzer::scale input list needs to be of length 0,1, or N");
+					"analyzer::scale input list needs to be of length 0,1, or N");
 			}
 		}
 
@@ -289,14 +277,13 @@ int main(int argc, char *argv[]) {
 		DATA.resize(input.size());
 
 		const std::vector<std::string> titles =
-		    gra::aux::SplitStr2Str(r["titles"].as<std::string>());
-		if (titles.size() != 3) {
-			throw std::invalid_argument(
-			    "fitharmonic:: 'titles' list should be of size 3 "
-			    "(detector,fiducial,reference)");
+			gra::aux::SplitStr2Str(r["titles"].as<std::string>());
+		if(titles.size() != 3) {
+			throw std::invalid_argument("fitharmonic:: 'titles' list should be of size 3 "
+										"(detector,fiducial,reference)");
 		}
 
-		for (const auto &i : indices(input)) {
+		for(const auto& i : indices(input)) {
 			// Read in data
 			gra::spherical::Data data;
 			data.META.NAME = input[i];
@@ -307,8 +294,7 @@ int main(int argc, char *argv[]) {
 			data.META.SCALE = scale[i];
 
 			data.META.TITLES = titles;
-			ReadIn(data.META.NAME, data.EVENTS, data.META.FRAME, MAXEVENTS,
-			       data.META.FASTSIM);
+			ReadIn(data.META.NAME, data.EVENTS, data.META.FRAME, MAXEVENTS, data.META.FASTSIM);
 
 			// Set data
 			DATA[i] = data;
@@ -323,29 +309,26 @@ int main(int argc, char *argv[]) {
 		// Plot all
 		const std::string outputpath = ref + "+" + r["input"].as<std::string>();
 		ha.PlotAll(outputpath);
-
-	} catch (const std::invalid_argument &e) {
+	} catch(const std::invalid_argument& e) {
 		gra::aux::PrintGameOver();
 		std::cerr << rang::fg::red << "Exception catched: " << rang::fg::reset << e.what()
-		          << std::endl;
+				  << std::endl;
 		return EXIT_FAILURE;
-	} catch (const std::ios_base::failure &e) {
+	} catch(const std::ios_base::failure& e) {
 		gra::aux::PrintGameOver();
 		std::cerr << rang::fg::red
-		          << "Exception catched: std::ios_base::failure: " << rang::fg::reset
-		          << e.what() << std::endl;
+				  << "Exception catched: std::ios_base::failure: " << rang::fg::reset << e.what()
+				  << std::endl;
 		return EXIT_FAILURE;
-	} catch (const cxxopts::OptionException &e) {
+	} catch(const cxxopts::OptionException& e) {
 		gra::aux::PrintGameOver();
-		std::cerr << rang::fg::red
-		          << "Exception catched: Commandline options: " << rang::fg::reset
-		          << e.what() << std::endl;
+		std::cerr << rang::fg::red << "Exception catched: Commandline options: " << rang::fg::reset
+				  << e.what() << std::endl;
 		return EXIT_FAILURE;
-	} catch (...) {
+	} catch(...) {
 		gra::aux::PrintGameOver();
-		std::cerr << rang::fg::red
-		          << "Exception catched: Unspecified (...) (Probably input)"
-		          << rang::fg::reset << std::endl;
+		std::cerr << rang::fg::red << "Exception catched: Unspecified (...) (Probably input)"
+				  << rang::fg::reset << std::endl;
 		return EXIT_FAILURE;
 	}
 
@@ -353,18 +336,16 @@ int main(int argc, char *argv[]) {
 }
 
 // Read events in
-void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &events,
-            const std::string &FRAME, int MAXEVENTS, bool SIMULATE) {
-	const std::string total_input =
-	    gra::aux::GetBasePath(2) + "/output/" + inputfile + ".hepmc3";
+void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega>& events,
+			const std::string& FRAME, int MAXEVENTS, bool SIMULATE) {
+	const std::string total_input = gra::aux::GetBasePath(2) + "/output/" + inputfile + ".hepmc3";
 	printf("ReadIn:: Maximum event count %d \n", MAXEVENTS);
 	printf("Reading %s \n", total_input.c_str());
 
 	HepMC3::ReaderAscii input_file(total_input);
 	// Reading failed
-	if (input_file.failed()) {
-		throw std::invalid_argument("MHarmonic::ReadIn: Failed to open <" + total_input +
-		                            ">");
+	if(input_file.failed()) {
+		throw std::invalid_argument("MHarmonic::ReadIn: Failed to open <" + total_input + ">");
 	}
 	// Event loop
 	int events_read = 0;
@@ -378,15 +359,15 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
 	printf("Memory allocated \n");
 
 	// Event loop
-	while (!input_file.failed()) {
-		if (events_read >= MAXEVENTS) {
+	while(!input_file.failed()) {
+		if(events_read >= MAXEVENTS) {
 			break;
 		}
 
 		// Read event from input file
 		input_file.read_event(evt);
 
-		if (events_read == 0) {
+		if(events_read == 0) {
 			HepMC3::Print::listing(evt);
 			HepMC3::Print::content(evt);
 		}
@@ -397,20 +378,20 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
 
 		// Find out central particles
 		std::vector<HepMC3::GenParticlePtr> find_pip =
-		    HepMC3::applyFilter(HepMC3::Selector::PDG_ID == PDG::PDG_pip, evt.particles());
+			HepMC3::applyFilter(HepMC3::Selector::PDG_ID == PDG::PDG_pip, evt.particles());
 
 		std::vector<HepMC3::GenParticlePtr> find_pim =
-		    HepMC3::applyFilter(HepMC3::Selector::PDG_ID == PDG::PDG_pim, evt.particles());
+			HepMC3::applyFilter(HepMC3::Selector::PDG_ID == PDG::PDG_pim, evt.particles());
 
-		for (const HepMC3::GenParticlePtr &p1 : find_pip) {
+		for(const HepMC3::GenParticlePtr& p1 : find_pip) {
 			pip.push_back(gra::aux::HepMC2M4Vec(p1->momentum()));
 		}
-		for (const HepMC3::GenParticlePtr &p1 : find_pim) {
+		for(const HepMC3::GenParticlePtr& p1 : find_pim) {
 			pim.push_back(gra::aux::HepMC2M4Vec(p1->momentum()));
 		}
 
 		// CHECK CONDITION
-		if (!(pip.size() == 1 && pim.size() == 1)) {
+		if(!(pip.size() == 1 && pim.size() == 1)) {
 			// HepMC3::Print::listing(evt);
 			// HepMC3::Print::content(evt);
 			continue; // skip event, something is wrong
@@ -431,14 +412,14 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
 		M4Vec p_final_minus;
 
 		// Beam protons
-		if (FRAME == "GJ" || FRAME == "PG") {
-			for (HepMC3::ConstGenParticlePtr p1 :
-			     HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_BEAM &&
-			                             HepMC3::Selector::PDG_ID == PDG::PDG_p,
-			                         evt.particles())) {
+		if(FRAME == "GJ" || FRAME == "PG") {
+			for(HepMC3::ConstGenParticlePtr p1 :
+				HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_BEAM &&
+										HepMC3::Selector::PDG_ID == PDG::PDG_p,
+									evt.particles())) {
 				// Print::line(p1);
 				pvec = gra::aux::HepMC2M4Vec(p1->momentum());
-				if (pvec.Pz() > 0) {
+				if(pvec.Pz() > 0) {
 					p_beam_plus = pvec;
 				} else {
 					p_beam_minus = pvec;
@@ -447,14 +428,14 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
 		}
 
 		// Final state protons
-		if (FRAME == "GJ") {
-			for (HepMC3::ConstGenParticlePtr p1 :
-			     HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_STABLE &&
-			                             HepMC3::Selector::PDG_ID == PDG::PDG_p,
-			                         evt.particles())) {
+		if(FRAME == "GJ") {
+			for(HepMC3::ConstGenParticlePtr p1 :
+				HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_STABLE &&
+										HepMC3::Selector::PDG_ID == PDG::PDG_p,
+									evt.particles())) {
 				// Print::line(p1);
 				pvec = gra::aux::HepMC2M4Vec(p1->momentum());
-				if (pvec.Pz() > 0) {
+				if(pvec.Pz() > 0) {
 					p_final_plus = pvec;
 				} else {
 					p_final_minus = pvec;
@@ -467,25 +448,24 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
 		std::vector<M4Vec> rf = {pip[0], pim[0]};
 
 		// Non-rotated rest frame
-		if (FRAME == "SR") {
+		if(FRAME == "SR") {
 			gra::kinematics::SRframe(rf);
 			// Helicity frame
-		} else if (FRAME == "HE") {
+		} else if(FRAME == "HE") {
 			gra::kinematics::HEframe(rf);
 			// Pseudo GJ-frame
-		} else if (FRAME == "PG") {
+		} else if(FRAME == "PG") {
 			const unsigned int direction = 1; // (1,-1) which proton direction
 			gra::kinematics::PGframe(rf, direction, p_beam_plus, p_beam_minus);
 			// Collins-Soper frame
-		} else if (FRAME == "CS") {
+		} else if(FRAME == "CS") {
 			gra::kinematics::CSframe(rf);
 			// Gottfried-Jackson frame
-		} else if (FRAME == "GJ") {
+		} else if(FRAME == "GJ") {
 			M4Vec propagator = p_beam_plus - p_final_plus;
 			gra::kinematics::GJframe(rf, propagator);
 		} else {
-			throw std::invalid_argument("MHarmonic::ReadIn: Unknown Lorentz frame: " +
-			                            FRAME);
+			throw std::invalid_argument("MHarmonic::ReadIn: Unknown Lorentz frame: " + FRAME);
 		}
 
 		// ------------------------------------------------------------------
@@ -504,11 +484,11 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
 		// ------------------------------------------------------------------
 		// FIDUCIAL CUTS
 
-		if (pip[0].Eta() > fidcuts.ETA[0] && pip[0].Eta() < fidcuts.ETA[1] &&
-		    pip[0].Pt() > fidcuts.PT[0] && pip[0].Pt() < fidcuts.PT[1] &&
+		if(pip[0].Eta() > fidcuts.ETA[0] && pip[0].Eta() < fidcuts.ETA[1] &&
+		   pip[0].Pt() > fidcuts.PT[0] && pip[0].Pt() < fidcuts.PT[1] &&
 
-		    pim[0].Eta() > fidcuts.ETA[0] && pim[0].Eta() < fidcuts.ETA[1] &&
-		    pim[0].Pt() > fidcuts.PT[0] && pim[0].Pt() < fidcuts.PT[1]) {
+		   pim[0].Eta() > fidcuts.ETA[0] && pim[0].Eta() < fidcuts.ETA[1] &&
+		   pim[0].Pt() > fidcuts.PT[0] && pim[0].Pt() < fidcuts.PT[1]) {
 			evt.fiducial = true;
 		}
 
@@ -525,9 +505,9 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
 		// Fast simulate smooth detector pt-efficiency curve here by hyperbolic
 		// tangent per
 		// particle
-		if (SIMULATE) {
-			if ((std::tanh(pip[0].Pt() * pt_scale) > rrand.U(0, 1)) &&
-			    (std::tanh(pim[0].Pt() * pt_scale) > rrand.U(0, 1))) {
+		if(SIMULATE) {
+			if((std::tanh(pip[0].Pt() * pt_scale) > rrand.U(0, 1)) &&
+			   (std::tanh(pim[0].Pt() * pt_scale) > rrand.U(0, 1))) {
 				// fine
 			} else {
 				evt.selected = false;
@@ -538,7 +518,7 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
 		events[events_read] = evt;
 
 		++events_read;
-		if (events_read % 500000 == 0) {
+		if(events_read % 500000 == 0) {
 			printf("Event %d \n", events_read);
 		}
 	}

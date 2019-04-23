@@ -23,9 +23,9 @@
 #include "HepMC3/WriterAscii.h"
 
 // Return filesize for statistics
-long GetFileSize(const std::string &filename) {
+long GetFileSize(const std::string& filename) {
 	std::ifstream file(filename.c_str(), std::ifstream::in | std::ifstream::binary);
-	if (!file.is_open())
+	if(!file.is_open())
 		return -1;
 
 	file.seekg(0, std::ios::end);
@@ -40,8 +40,8 @@ using namespace HepMC3;
 // For LHE event format see:
 // [REFERENCE: http://home.thep.lu.se/~torbjorn/talks/fnal04lha.pdf]
 //
-int main(int argc, char *argv[]) {
-	if (argc != 2) {
+int main(int argc, char* argv[]) {
+	if(argc != 2) {
 		std::cerr << "<< HepMC3 to LHEF converter>>" << std::endl;
 		std::cerr << "Example: ./hepmc3tolhe filename.hepmc3" << std::endl;
 		return EXIT_FAILURE;
@@ -63,10 +63,10 @@ int main(int argc, char *argv[]) {
 	HepMC3::GenEvent ev(HepMC3::Units::GEV, HepMC3::Units::MM);
 
 	// Event loop over all events in HepMC3 file
-	while (!input.failed()) {
+	while(!input.failed()) {
 		// Read event from input file
 		input.read_event(ev);
-		if (input.failed())
+		if(input.failed())
 			break;
 
 		// Create LHE HEPEUP event
@@ -75,17 +75,16 @@ int main(int argc, char *argv[]) {
 		// ** Particle properties **
 		std::vector<long> IDUP; // PDG code
 		std::vector<int> ISTUP; // status code (-1 in state, 1 = final state, 2
-		                        // = intermediate)
+		// = intermediate)
 		std::vector<std::pair<int, int>> MOTHUP; // position of 1 or 2 mothers
-		std::vector<std::pair<int, int>>
-		    ICOLUP;                           // color charges (1 for quarks, 2 for gluons)
+		std::vector<std::pair<int, int>> ICOLUP; // color charges (1 for quarks, 2 for gluons)
 		std::vector<std::vector<double>> PUP; // (px,py,pz,E,m)
-		std::vector<double> VTIMUP;           // invariant lifetime ctau
-		std::vector<double> SPINUP;           // helicity (spin) information
+		std::vector<double> VTIMUP; // invariant lifetime ctau
+		std::vector<double> SPINUP; // helicity (spin) information
 
 		// Loop over all particles
 		int NUP = 0;
-		for (HepMC3::ConstGenParticlePtr p1 : ev.particles()) {
+		for(HepMC3::ConstGenParticlePtr p1 : ev.particles()) {
 			// IDUP
 			IDUP.push_back(p1->pid());
 
@@ -94,16 +93,16 @@ int main(int argc, char *argv[]) {
 
 			// Find mother ids
 			std::vector<int> mother_ids;
-			for (HepMC3::ConstGenParticlePtr k : Relatives::ANCESTORS(p1)) {
+			for(HepMC3::ConstGenParticlePtr k : Relatives::ANCESTORS(p1)) {
 				// HepMC3::Print::line(k);
 				mother_ids.push_back(k->id());
 			}
 			std::pair<int, int> MOTHUP_this(0, 0);
 			const int offset = 0; // convention
-			if (mother_ids.size() == 1) {
+			if(mother_ids.size() == 1) {
 				MOTHUP_this.first = mother_ids.at(0) + offset;
 			}
-			if (mother_ids.size() >= 2) {
+			if(mother_ids.size() >= 2) {
 				MOTHUP_this.first = mother_ids.at(0) + offset;
 				MOTHUP_this.second = mother_ids.at(mother_ids.size() - 1) + offset;
 			}
@@ -117,8 +116,7 @@ int main(int argc, char *argv[]) {
 
 			// PUP
 			HepMC3::FourVector pvec = p1->momentum();
-			std::vector<double> PUP_this = {pvec.px(), pvec.py(), pvec.pz(), pvec.e(),
-			                                pvec.m()};
+			std::vector<double> PUP_this = {pvec.px(), pvec.py(), pvec.pz(), pvec.e(), pvec.m()};
 			PUP.push_back(PUP_this);
 
 			// VTIMUP
@@ -172,18 +170,18 @@ int main(int argc, char *argv[]) {
 		writer.writeEvent();
 		++events;
 
-		if (events % 10000 == 0)
+		if(events % 10000 == 0)
 			printf("%d events processed \n", events);
 	}
 
-	if (events > 0) {
+	if(events > 0) {
 		double input_size = GetFileSize(inputfile) / 1.0e6;
 		double output_size = GetFileSize(outputfile) / 1.0e6;
 
-		printf("HepMC33:: input  (%0.1f MB, %0.5f MB/event) %s \n", input_size,
-		       input_size / events, inputfile.c_str());
+		printf("HepMC33:: input  (%0.1f MB, %0.5f MB/event) %s \n", input_size, input_size / events,
+			   inputfile.c_str());
 		printf("LHEF::   output (%0.1f MB, %0.5f MB/event) %s \n", output_size,
-		       output_size / events, outputfile.c_str());
+			   output_size / events, outputfile.c_str());
 		printf("Total %d events converted from HepMC33 to LHE \n", events);
 	}
 

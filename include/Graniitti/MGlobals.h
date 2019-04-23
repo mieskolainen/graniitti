@@ -7,7 +7,6 @@
 #define MGLOBALS_H
 
 namespace gra {
-
 // ======================================================================
 // These variables are initialized by MGraniitti.cc
 
@@ -15,11 +14,11 @@ namespace gra {
 extern std::string MODELPARAM;
 
 // Sudakov/pdf routines
-extern MSudakov *GlobalSudakovPtr;
+extern MSudakov* GlobalSudakovPtr;
 
 // Normal pdfs
 extern std::string LHAPDFSET;
-extern LHAPDF::PDF *GlobalPdfPtr;
+extern LHAPDF::PDF* GlobalPdfPtr;
 extern int pdf_trials;
 
 // Multithreading lock

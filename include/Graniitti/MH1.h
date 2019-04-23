@@ -11,10 +11,9 @@
 #include <vector>
 
 namespace gra {
-
 template <class T>
 class MH1 {
-       public:
+  public:
 	MH1(int xbins, double xmin, double xmax, std::string namestr = "noname");
 	MH1(int xbins, std::string namestr = "noname");
 	MH1();
@@ -33,7 +32,7 @@ class MH1 {
 
 	std::pair<double, double> WeightMeanAndError() const;
 
-	void GetXPositiveDefinite(std::valarray<double> &x, std::valarray<double> &y) const;
+	void GetXPositiveDefinite(std::valarray<double>& x, std::valarray<double>& y) const;
 
 	T SumWeights() const;
 	T SumWeights2() const;
@@ -49,7 +48,7 @@ class MH1 {
 	double GetPositiveDefinite(int i) const;
 
 	double GetBinXVal(int idx, int boundary = 0) const;
-	void GetBinIdx(double xvalue, int &idx);
+	void GetBinIdx(double xvalue, int& idx);
 	void Print(double width = 1.25) const; // default argument
 
 	void ResetBounds(int xbins);
@@ -57,10 +56,9 @@ class MH1 {
 
 	// Set logarithmic binning
 	void SetLogX() {
-		if (XMIN < 1e-9) {
-			throw std::invalid_argument(
-			    "MH1::SetLogX: Error: Minimum boundary XMIN = " + std::to_string(XMIN) +
-			    " < 0");
+		if(XMIN < 1e-9) {
+			throw std::invalid_argument("MH1::SetLogX: Error: Minimum boundary XMIN = " +
+										std::to_string(XMIN) + " < 0");
 		}
 		LOGX = true;
 	}
@@ -74,10 +72,9 @@ class MH1 {
 	// MH1<T> MH1(const MH1<T>& obj) {}
 
 	// Overload + operator to add two histograms
-	MH1<T> operator+(const MH1<T> &rhs) {
-		if (this->XBINS != rhs.XBINS) {
-			throw std::domain_error(
-			    "MH1<T> + operator: Histograms with different number of bins");
+	MH1<T> operator+(const MH1<T>& rhs) {
+		if(this->XBINS != rhs.XBINS) {
+			throw std::domain_error("MH1<T> + operator: Histograms with different number of bins");
 		}
 
 		MH1<T> h(this->XBINS, this->XMIN, this->XMAX, this->name);
@@ -90,7 +87,7 @@ class MH1 {
 		h.weights = this->weights;
 		h.weights2 = this->weights2;
 		h.counts = this->counts;
-		for (std::size_t i = 0; i < h.weights.size(); ++i) {
+		for(std::size_t i = 0; i < h.weights.size(); ++i) {
 			h.weights[i] += rhs.weights[i];
 			h.weights2[i] += rhs.weights2[i];
 			h.counts[i] += rhs.counts[i];
@@ -99,10 +96,9 @@ class MH1 {
 	}
 
 	// Overload - operator to subtract two histograms
-	MH1<T> operator-(const MH1<T> &rhs) {
-		if (this->XBINS != rhs.XBINS) {
-			throw std::domain_error(
-			    "MH1<T> - operator: Histograms with different number of bins");
+	MH1<T> operator-(const MH1<T>& rhs) {
+		if(this->XBINS != rhs.XBINS) {
+			throw std::domain_error("MH1<T> - operator: Histograms with different number of bins");
 		}
 
 		MH1<T> h(this->XBINS, this->XMIN, this->XMAX, this->name);
@@ -115,7 +111,7 @@ class MH1 {
 		h.weights = this->weights;
 		h.weights2 = this->weights2;
 		h.counts = this->counts;
-		for (std::size_t i = 0; i < h.weights.size(); ++i) {
+		for(std::size_t i = 0; i < h.weights.size(); ++i) {
 			h.weights[i] -= rhs.weights[i];
 			h.weights2[i] -= rhs.weights2[i];
 			h.counts[i] -= rhs.counts[i];
@@ -124,10 +120,9 @@ class MH1 {
 	}
 
 	// Overload * operator to multiply two histograms
-	MH1<T> operator*(const MH1<T> &rhs) {
-		if (this->XBINS != rhs.XBINS) {
-			throw std::domain_error(
-			    "MH1<T> * operator: Histograms with different number of bins");
+	MH1<T> operator*(const MH1<T>& rhs) {
+		if(this->XBINS != rhs.XBINS) {
+			throw std::domain_error("MH1<T> * operator: Histograms with different number of bins");
 		}
 
 		MH1<T> h(this->XBINS, this->XMIN, this->XMAX, this->name);
@@ -140,7 +135,7 @@ class MH1 {
 		h.weights = this->weights;
 		h.weights2 = this->weights2;
 		h.counts = this->counts;
-		for (std::size_t i = 0; i < h.weights.size(); ++i) {
+		for(std::size_t i = 0; i < h.weights.size(); ++i) {
 			h.weights[i] *= rhs.weights[i];
 			h.weights2[i] *= rhs.weights2[i];
 			h.counts[i] *= rhs.counts[i];
@@ -149,10 +144,9 @@ class MH1 {
 	}
 
 	// Overload / operator to divide two histograms
-	MH1<T> operator/(const MH1<T> &rhs) {
-		if (this->XBINS != rhs.XBINS) {
-			throw std::domain_error(
-			    "MH1<T> / operator: Histograms with different number of bins");
+	MH1<T> operator/(const MH1<T>& rhs) {
+		if(this->XBINS != rhs.XBINS) {
+			throw std::domain_error("MH1<T> / operator: Histograms with different number of bins");
 		}
 
 		MH1<T> h(this->XBINS, this->XMIN, this->XMAX, this->name);
@@ -165,11 +159,9 @@ class MH1 {
 		h.weights = this->weights;
 		h.weights2 = this->weights2;
 		h.counts = this->counts;
-		for (std::size_t i = 0; i < h.weights.size(); ++i) {
-			h.weights[i] =
-			    (std::abs(rhs.weights[i]) > 0) ? h.weights[i] / rhs.weights[i] : 0;
-			h.weights2[i] =
-			    (std::abs(rhs.weights2[i]) > 0) ? h.weights2[i] / rhs.weights2[i] : 0;
+		for(std::size_t i = 0; i < h.weights.size(); ++i) {
+			h.weights[i] = (std::abs(rhs.weights[i]) > 0) ? h.weights[i] / rhs.weights[i] : 0;
+			h.weights2[i] = (std::abs(rhs.weights2[i]) > 0) ? h.weights2[i] / rhs.weights2[i] : 0;
 			h.counts[i] = (rhs.counts[i] > 0) ? h.counts[i] / rhs.counts[i] : 0;
 		}
 		return h;
@@ -187,24 +179,22 @@ class MH1 {
 	}
 
 	// Get histogram bounds
-	void GetBounds(int &xbins, double &xmin, double &xmax) const {
+	void GetBounds(int& xbins, double& xmin, double& xmax) const {
 		xbins = XBINS;
 		xmin = XMIN;
 		xmax = XMAX;
 	}
 
-	void FuseBuffer(const MH1<T> &rhs) {
-		buff_values.insert(buff_values.end(), rhs.buff_values.begin(),
-		                   rhs.buff_values.end());
-		buff_weights.insert(buff_weights.end(), rhs.buff_weights.begin(),
-		                    rhs.buff_weights.end());
+	void FuseBuffer(const MH1<T>& rhs) {
+		buff_values.insert(buff_values.end(), rhs.buff_values.begin(), rhs.buff_values.end());
+		buff_weights.insert(buff_weights.end(), rhs.buff_weights.begin(), rhs.buff_weights.end());
 	}
 
 	// Keep it public for buffer fusion
 	std::vector<double> buff_values;
 	std::vector<T> buff_weights;
 
-       private:
+  private:
 	std::string name; // Histogram name
 
 	// -----------------------------------------------------------

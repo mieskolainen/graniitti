@@ -25,7 +25,6 @@
 #include <vector>
 
 namespace gra {
-
 // ----------------------------------------------------------------------
 // C++17 allows class template argument default deduction without brackets
 //
@@ -41,7 +40,7 @@ namespace gra {
 // ----------------------------------------------------------------------
 
 class M4Vec {
-       public:
+  public:
 	// All default to zero
 	M4Vec() {
 		k = {0.0, 0.0, 0.0, 0.0};
@@ -51,7 +50,7 @@ class M4Vec {
 		k = {t, x, y, z};
 	}
 	// Copy constructor
-	M4Vec(const M4Vec &rhs) {
+	M4Vec(const M4Vec& rhs) {
 		k = rhs.k;
 	}
 
@@ -246,36 +245,36 @@ class M4Vec {
 	// 2-BODY ALGEBRA
 
 	// Minkowski 4-product
-	double DotM(const M4Vec &rhs) const {
+	double DotM(const M4Vec& rhs) const {
 		return E() * rhs.E() - (Px() * rhs.Px() + Py() * rhs.Py() + Pz() * rhs.Pz());
 	}
 
 	// 3-vector dot product
-	double Dot3(const M4Vec &rhs) const {
+	double Dot3(const M4Vec& rhs) const {
 		return Px() * rhs.Px() + Py() * rhs.Py() + Pz() * rhs.Pz();
 	}
 
 	// 3-vector cross product (return vector with 0 energy/time)
-	M4Vec Cross3(const M4Vec &rhs) const {
+	M4Vec Cross3(const M4Vec& rhs) const {
 		M4Vec a(Py() * rhs.Pz() - Pz() * rhs.Py(), Pz() * rhs.Px() - Px() * rhs.Pz(),
-		        Px() * rhs.Py() - Py() * rhs.Px(), 0.0);
+				Px() * rhs.Py() - Py() * rhs.Px(), 0.0);
 		return a;
 	}
 
 	// Azimuth angle difference between [-PI,PI]
-	double DeltaPhi(const M4Vec &v) const {
+	double DeltaPhi(const M4Vec& v) const {
 		double D = Phi() - v.Phi();
-		while (D >= PI) {
+		while(D >= PI) {
 			D -= 2.0 * PI;
 		}
-		while (D < -PI) {
+		while(D < -PI) {
 			D += 2.0 * PI;
 		}
 		return D;
 	}
 
 	// Azimuth angle between [0,PI]
-	double DeltaPhiAbs(const M4Vec &v) const {
+	double DeltaPhiAbs(const M4Vec& v) const {
 		return std::abs(DeltaPhi(v));
 	}
 
@@ -283,7 +282,7 @@ class M4Vec {
 	double operator[](size_t mu) const {
 		return k[mu];
 	} // for reading only
-	double &operator[](size_t mu) {
+	double& operator[](size_t mu) {
 		return k[mu];
 	} // for substituting
 
@@ -294,7 +293,7 @@ class M4Vec {
 
 	// Access operator with simultaneous lowering with metric (covariant index)
 	double operator%(size_t mu) const {
-		if (mu == E_) {
+		if(mu == E_) {
 			return k[E_];
 		} else {
 			return -k[mu];
@@ -303,18 +302,16 @@ class M4Vec {
 	}
 
 	// Minkowski scalar product
-	double operator*(const M4Vec &rhs) const {
+	double operator*(const M4Vec& rhs) const {
 		return DotM(rhs);
 	}
 
 	// 4-vector + 4-vector
-	M4Vec operator+(const M4Vec &rhs) const {
-		return M4Vec(k[X_] + rhs.k[X_], k[Y_] + rhs.k[Y_], k[Z_] + rhs.k[Z_],
-		             k[E_] + rhs.k[E_]);
+	M4Vec operator+(const M4Vec& rhs) const {
+		return M4Vec(k[X_] + rhs.k[X_], k[Y_] + rhs.k[Y_], k[Z_] + rhs.k[Z_], k[E_] + rhs.k[E_]);
 	}
-	M4Vec operator-(const M4Vec &rhs) const {
-		return M4Vec(k[X_] - rhs.k[X_], k[Y_] - rhs.k[Y_], k[Z_] - rhs.k[Z_],
-		             k[E_] - rhs.k[E_]);
+	M4Vec operator-(const M4Vec& rhs) const {
+		return M4Vec(k[X_] - rhs.k[X_], k[Y_] - rhs.k[Y_], k[Z_] - rhs.k[Z_], k[E_] - rhs.k[E_]);
 	}
 
 	// Flip sign of all components
@@ -331,23 +328,23 @@ class M4Vec {
 	}
 
 	// Comparison
-	bool operator==(const M4Vec &rhs) const {
+	bool operator==(const M4Vec& rhs) const {
 		const double EPS = 1e-10;
 		return std::abs(k[E_] - rhs.k[E_]) < EPS && std::abs(k[X_] - rhs.k[X_]) < EPS &&
-		       std::abs(k[Y_] - rhs.k[Y_]) < EPS && std::abs(k[Z_] - rhs.k[Z_]) < EPS;
+			   std::abs(k[Y_] - rhs.k[Y_]) < EPS && std::abs(k[Z_] - rhs.k[Z_]) < EPS;
 	}
-	bool operator!=(const M4Vec &rhs) const {
+	bool operator!=(const M4Vec& rhs) const {
 		return !(*this == rhs);
 	}
 
 	// 4-vector +-= 4-vector
-	void operator+=(const M4Vec &rhs) {
+	void operator+=(const M4Vec& rhs) {
 		k[E_] += rhs.k[E_];
 		k[X_] += rhs.k[X_];
 		k[Y_] += rhs.k[Y_];
 		k[Z_] += rhs.k[Z_];
 	}
-	void operator-=(const M4Vec &rhs) {
+	void operator-=(const M4Vec& rhs) {
 		k[E_] -= rhs.k[E_];
 		k[X_] -= rhs.k[X_];
 		k[Y_] -= rhs.k[Y_];
@@ -370,8 +367,7 @@ class M4Vec {
 
 	void Print(const std::string name = "") const {
 		std::cout << "M4Vec::" << name << " Px / X: " << Px() << ", Py / Y: " << Py()
-		          << ", Pz / Z: " << Pz() << ", E / T: " << E() << ", M / dS: " << M()
-		          << std::endl;
+				  << ", Pz / Z: " << Pz() << ", E / T: " << E() << ", M / dS: " << M() << std::endl;
 	}
 
 	// Particle 4-position starting starting propagation from (0,0,0,0)
@@ -387,13 +383,13 @@ class M4Vec {
 
 		// End point 4-position
 		return M4Vec(tau * c * beta * Px() / P3mod() * scale,
-		             tau * c * beta * Py() / P3mod() * scale,
-		             tau * c * beta * Pz() / P3mod() * scale, tau * c * scale);
+					 tau * c * beta * Py() / P3mod() * scale,
+					 tau * c * beta * Pz() / P3mod() * scale, tau * c * scale);
 	}
 
-       private:
+  private:
 	static constexpr const double PI =
-	    3.141592653589793238462643383279502884197169399375105820974944L;
+		3.141592653589793238462643383279502884197169399375105820974944L;
 
 	// speed of light, c = [m/s] (EXACT/DEFINITION)
 	static constexpr const double c = 2.99792458E8;

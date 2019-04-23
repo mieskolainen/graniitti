@@ -21,48 +21,45 @@
 #include "FTensor.hpp"
 
 namespace gra {
-
 class MDirac {
-       public:
+  public:
 	MDirac();
-	~MDirac() {
-	}
+	~MDirac() {}
 
-	void InitGammaMatrices(const std::string &basis);
+	void InitGammaMatrices(const std::string& basis);
 	bool GammaAntiCommutation() const;
 
 	// Polarization vectors/tensors
-	FTensor::Tensor1<std::complex<double>, 4> EpsSpin1(const M4Vec &k, int m) const;
-	FTensor::Tensor1<std::complex<double>, 4> EpsMassiveSpin1(const M4Vec &k, int m) const;
-	FTensor::Tensor2<std::complex<double>, 4, 4> EpsMassiveSpin2(const M4Vec &k, int m) const;
+	FTensor::Tensor1<std::complex<double>, 4> EpsSpin1(const M4Vec& k, int m) const;
+	FTensor::Tensor1<std::complex<double>, 4> EpsMassiveSpin1(const M4Vec& k, int m) const;
+	FTensor::Tensor2<std::complex<double>, 4, 4> EpsMassiveSpin2(const M4Vec& k, int m) const;
 
 	// Helicity spinors
-	std::vector<std::complex<double>> XiSpinor(const M4Vec &p, int helicity) const;
-	std::vector<std::complex<double>> uHelChiral(const M4Vec &p, int helicity) const;
-	std::vector<std::complex<double>> vHelChiral(const M4Vec &p, int helicity) const;
+	std::vector<std::complex<double>> XiSpinor(const M4Vec& p, int helicity) const;
+	std::vector<std::complex<double>> uHelChiral(const M4Vec& p, int helicity) const;
+	std::vector<std::complex<double>> vHelChiral(const M4Vec& p, int helicity) const;
 
-	std::vector<std::complex<double>> uHelDirac(const M4Vec &p, int helicity) const;
-	std::vector<std::complex<double>> vHelDirac(const M4Vec &p, int helicity) const;
+	std::vector<std::complex<double>> uHelDirac(const M4Vec& p, int helicity) const;
+	std::vector<std::complex<double>> vHelDirac(const M4Vec& p, int helicity) const;
 
 	// Dirac adjoint
-	std::vector<std::complex<double>> Bar(
-	    const std::vector<std::complex<double>> &spinor) const;
+	std::vector<std::complex<double>> Bar(const std::vector<std::complex<double>>& spinor) const;
 
 	// Feynman slash matrix operator
-	MMatrix<std::complex<double>> FSlash(const M4Vec &a) const;
+	MMatrix<std::complex<double>> FSlash(const M4Vec& a) const;
 
 	// Propagators
-	FTensor::Tensor2<std::complex<double>, 4, 4> iD_y(const M4Vec &q) const;
-	MMatrix<std::complex<double>> iD_F(const M4Vec &q, double m) const;
+	FTensor::Tensor2<std::complex<double>, 4, 4> iD_y(const M4Vec& q) const;
+	MMatrix<std::complex<double>> iD_F(const M4Vec& q, double m) const;
 
 	// Dirac spinors
-	std::vector<std::complex<double>> uDirac(const M4Vec &p, int spin) const;
-	std::vector<std::complex<double>> vDirac(const M4Vec &p, int spin) const;
+	std::vector<std::complex<double>> uDirac(const M4Vec& p, int spin) const;
+	std::vector<std::complex<double>> vDirac(const M4Vec& p, int spin) const;
 
 	// Spinor-Helicity style methods
-	std::complex<double> sProd(const M4Vec &p1, const M4Vec &p2, int helicity) const;
-	std::vector<std::complex<double>> uGauge(const M4Vec &p, int helicity) const;
-	std::vector<std::complex<double>> vGauge(const M4Vec &p, int helicity) const;
+	std::complex<double> sProd(const M4Vec& p1, const M4Vec& p2, int helicity) const;
+	std::vector<std::complex<double>> uGauge(const M4Vec& p, int helicity) const;
+	std::vector<std::complex<double>> vGauge(const M4Vec& p, int helicity) const;
 
 	// Charge conjugate operator
 	MMatrix<std::complex<double>> C_up() const;
@@ -74,11 +71,11 @@ class MDirac {
 	// Angular Momentum operators
 	MMatrix<std::complex<double>> J_operator(unsigned int i) const;
 
-	bool SpinorHELimit(const M4Vec &p1, const M4Vec &p2) const;
-	bool DiracSpinorComplete(const M4Vec &p, const std::string &type,
-	                         const std::string &basis) const;
-	bool MassiveSpin1Complete(const M4Vec &k) const;
-	double FSlashFSlash(const M4Vec &p) const;
+	bool SpinorHELimit(const M4Vec& p1, const M4Vec& p2) const;
+	bool DiracSpinorComplete(const M4Vec& p, const std::string& type,
+							 const std::string& basis) const;
+	bool MassiveSpin1Complete(const M4Vec& k) const;
+	double FSlashFSlash(const M4Vec& p) const;
 
 	// Kronecker delta
 	double Delta(int i, int j) const {
@@ -99,23 +96,20 @@ class MDirac {
 	// S = 1/\sqrt{2}(1 + y^5y^0)
 	//
 	MMatrix<std::complex<double>> S_basis = {
-	    std::vector<std::complex<double>>{1.0 / std::sqrt(2.0), 0.0, 1.0 / std::sqrt(2.0), 0.0},
-	    std::vector<std::complex<double>>{0.0, 1.0 / std::sqrt(2.0), 0.0, 1.0 / std::sqrt(2.0)},
-	    std::vector<std::complex<double>>{1.0 / std::sqrt(2.0), 0.0, -1.0 / std::sqrt(2.0),
-	                                      0.0},
-	    std::vector<std::complex<double>>{0.0, 1.0 / std::sqrt(2.0), 0.0,
-	                                      -1.0 / std::sqrt(2.0)}};
+		std::vector<std::complex<double>>{1.0 / std::sqrt(2.0), 0.0, 1.0 / std::sqrt(2.0), 0.0},
+		std::vector<std::complex<double>>{0.0, 1.0 / std::sqrt(2.0), 0.0, 1.0 / std::sqrt(2.0)},
+		std::vector<std::complex<double>>{1.0 / std::sqrt(2.0), 0.0, -1.0 / std::sqrt(2.0), 0.0},
+		std::vector<std::complex<double>>{0.0, 1.0 / std::sqrt(2.0), 0.0, -1.0 / std::sqrt(2.0)}};
 
 	// Pauli matrices
 	MMatrix<std::complex<double>> sigma_x = {std::vector<std::complex<double>>{0.0, 1.0},
-	                                         std::vector<std::complex<double>>{1.0, 0.0}};
+											 std::vector<std::complex<double>>{1.0, 0.0}};
 
-	MMatrix<std::complex<double>> sigma_y = {
-	    std::vector<std::complex<double>>{0.0, -gra::math::zi},
-	    std::vector<std::complex<double>>{gra::math::zi, 0.0}};
+	MMatrix<std::complex<double>> sigma_y = {std::vector<std::complex<double>>{0.0, -gra::math::zi},
+											 std::vector<std::complex<double>>{gra::math::zi, 0.0}};
 
 	MMatrix<std::complex<double>> sigma_z = {std::vector<std::complex<double>>{1.0, 0.0},
-	                                         std::vector<std::complex<double>>{0.0, 1.0}};
+											 std::vector<std::complex<double>>{0.0, 1.0}};
 
 	// Contravariant (up) and covariant (lo) gamma matrix set
 	std::vector<MMatrix<std::complex<double>>> gamma_up;
@@ -135,7 +129,7 @@ class MDirac {
 	// Identity matrix
 	MMatrix<std::complex<double>> I4 = MMatrix<std::complex<double>>(4, 4, "eye");
 
-       protected:
+  protected:
 	std::string BASIS = ""; // D for Dirac, C for Chiral
 };
 

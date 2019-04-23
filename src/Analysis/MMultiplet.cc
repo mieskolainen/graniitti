@@ -25,54 +25,53 @@
 using gra::aux::indices;
 
 namespace gra {
-
 // Returns a new colormap
 std::vector<int> CreateColorMap(int COLORSCHEME = 1) {
 	std::vector<std::vector<double>> colormap(150);
 
-	if (COLORSCHEME == 1) {
+	if(COLORSCHEME == 1) {
 		// "Modern colormap"
-		std::vector<std::vector<double>> cm = {
-		    {0, 0.4470, 0.7410},      {0.8500, 0.3250, 0.0980}, {0.9290, 0.6940, 0.1250},
-		    {0.4940, 0.1840, 0.5560}, {0.4660, 0.6740, 0.1880}, {0.3010, 0.7450, 0.9330},
-		    {0.6350, 0.0780, 0.1840}};
+		std::vector<std::vector<double>> cm = {{0, 0.4470, 0.7410},		 {0.8500, 0.3250, 0.0980},
+											   {0.9290, 0.6940, 0.1250}, {0.4940, 0.1840, 0.5560},
+											   {0.4660, 0.6740, 0.1880}, {0.3010, 0.7450, 0.9330},
+											   {0.6350, 0.0780, 0.1840}};
 		colormap = cm;
 	}
 
-	if (COLORSCHEME == 2) {
+	if(COLORSCHEME == 2) {
 		// "Classic colormap"
-		std::vector<std::vector<double>> cm = {
-		    {0, 0, 0.9},     {0, 0.5, 0},     {0.9, 0, 0},       {0, 0.75, 0.75},
-		    {0.75, 0, 0.75}, {0.75, 0.75, 0}, {0.25, 0.25, 0.25}};
+		std::vector<std::vector<double>> cm = {{0, 0, 0.9},		  {0, 0.5, 0},	 {0.9, 0, 0},
+											   {0, 0.75, 0.75},   {0.75, 0, 0.75}, {0.75, 0.75, 0},
+											   {0.25, 0.25, 0.25}};
 		colormap = cm;
 	}
 
 	std::vector<int> colors(colormap.size(), 0);
-	for (const auto &i : indices(colors)) {
+	for(const auto& i : indices(colors)) {
 		// colors.at(i)  = TColor::GetFreeColorIndex();
 		colors.at(i) = 9000 + i; // some big number not used
-		TColor *color = new TColor(colors.at(i), colormap.at(i).at(0), colormap.at(i).at(1),
-		                           colormap.at(i).at(2));
+		TColor* color = new TColor(colors.at(i), colormap.at(i).at(0), colormap.at(i).at(1),
+								   colormap.at(i).at(2));
 	}
 	return colors;
 }
 
-void GetLegendPosition(unsigned int N, double &x1, double &x2, double &y1, double &y2,
-                       const std::string &legendposition) {
+void GetLegendPosition(unsigned int N, double& x1, double& x2, double& y1, double& y2,
+					   const std::string& legendposition) {
 	// North-East
 	x1 = 0.70;
 	x2 = x1 + 0.18;
 	y1 = 0.75 - 0.01 * N;
 
 	// South-East
-	if (legendposition.compare("southeast") == 0) {
+	if(legendposition.compare("southeast") == 0) {
 		y1 = 0.10 - 0.01 * N;
 	}
 	y2 = y1 + 0.05 * N; // Scale by the number of histograms
 }
 
-h1Multiplet::h1Multiplet(const std::string &name, const std::string &labeltext, int N,
-                         double minval, double maxval, const std::vector<std::string> &legendtext) {
+h1Multiplet::h1Multiplet(const std::string& name, const std::string& labeltext, int N,
+						 double minval, double maxval, const std::vector<std::string>& legendtext) {
 	N_ = N;
 	name_ = name;
 	minval_ = minval;
@@ -83,35 +82,34 @@ h1Multiplet::h1Multiplet(const std::string &name, const std::string &labeltext, 
 	// Initialize histogram vector container size
 	h.resize(legendtext.size());
 
-	for (const auto &i : indices(h)) {
-		h[i] =
-		    new TH1D(Form("%s_%lu", name.c_str(), i), labeltext.c_str(), N, minval, maxval);
+	for(const auto& i : indices(h)) {
+		h[i] = new TH1D(Form("%s_%lu", name.c_str(), i), labeltext.c_str(), N, minval, maxval);
 		h[i]->Sumw2(); // Error saving on
 	}
 }
 
 // Histogram normalization
-void h1Multiplet::NormalizeAll(const std::vector<double> &cross_section,
-                               const std::vector<double> &multiplier) {
-	for (const auto &i : indices(h)) {
+void h1Multiplet::NormalizeAll(const std::vector<double>& cross_section,
+							   const std::vector<double>& multiplier) {
+	for(const auto& i : indices(h)) {
 		double scale = 1.0;
 
 		// Takes into account weighted and unweight (weight=1) filling
 		// We take into account also under/overflow here with macro: (0, Nbins+1)
 		const double integral = h[i]->Integral(0, h[i]->GetNbinsX() + 1);
-		if (integral > 0) {
+		if(integral > 0) {
 			scale /= integral;
 		}
 
 		// Binwidth
 		const int bin = 1;
 		const double binwidth = h[i]->GetXaxis()->GetBinWidth(bin);
-		if (binwidth > 0) {
+		if(binwidth > 0) {
 			scale /= binwidth;
 		}
 
 		// Cross Section
-		if (cross_section[i] > 0) {
+		if(cross_section[i] > 0) {
 			scale *= cross_section[i];
 		}
 
@@ -122,7 +120,7 @@ void h1Multiplet::NormalizeAll(const std::vector<double> &cross_section,
 	}
 }
 
-std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
+std::vector<double> h1Multiplet::SaveFig(const std::string& fullpath) const {
 	std::vector<int> color = CreateColorMap();
 
 	// ----------------------------------------------------
@@ -130,7 +128,7 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
 	gra::aux::PrintBar("*");
 	std::vector<double> chi2ndf(h.size(), 0.0);
 
-	for (const auto &i : indices(h)) {
+	for(const auto& i : indices(h)) {
 		double res[N_];
 		printf("%s [%lu] :: \n", legendtext_[i].c_str(), i);
 		double c2ndf = h[0]->Chi2Test(h[i], "WW P CHI2/NDF", res);
@@ -147,30 +145,30 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
 
 	pad1->SetBottomMargin(0.015); // Upper and lower plot are joined
 	// pad1->SetGridx();          // Vertical grid
-	pad1->Draw();      // Draw the upper pad: pad1
-	pad1->cd();        // pad1 becomes the current pad
+	pad1->Draw(); // Draw the upper pad: pad1
+	pad1->cd(); // pad1 becomes the current pad
 	h[0]->SetStats(0); // No statistics on upper plot
 
 	// Find maximum value for y-range limits
 	double MAXVAL = 0.0;
-	for (const auto &i : indices(h)) {
+	for(const auto& i : indices(h)) {
 		const double max = h[i]->GetMaximum();
-		if (max > MAXVAL) {
+		if(max > MAXVAL) {
 			MAXVAL = max;
 		}
 	}
 
 	// Find minimum (non-zero) value for y-range limits
 	double MINVAL = 1e32;
-	for (const auto &i : indices(h)) {
+	for(const auto& i : indices(h)) {
 		const double min = h[i]->GetMinimum();
-		if (min < MINVAL && min > 0) {
+		if(min < MINVAL && min > 0) {
 			MINVAL = min;
 		}
 	}
 
 	// Loop over histograms
-	for (const auto &i : indices(h)) {
+	for(const auto& i : indices(h)) {
 		h[i]->SetLineColor(color[i]);
 		h[i]->SetLineWidth(2);
 		h[i]->SetMarkerColor(color[i]);
@@ -201,15 +199,15 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
 	// legend->SetBorderSize(0); // No box
 
 	// Add legend entries
-	for (const auto &i : indices(h)) {
+	for(const auto& i : indices(h)) {
 		legend->AddEntry(h[i], legendtext_[i].c_str());
 	}
 	legend->Draw();
 
 	// -------------------------------------------------------------------
 	// Create labels
-	TLatex *l1;
-	TLatex *l2;
+	TLatex* l1;
+	TLatex* l2;
 	std::tie(l1, l2) = gra::rootstyle::MadeInFinland();
 
 	// -------------------------------------------------------------------
@@ -223,16 +221,16 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
 	pad2->cd(); // pad2 becomes the current pad
 
 	// *** Ratio histograms ***
-	std::vector<TH1D *> ratios;
+	std::vector<TH1D*> ratios;
 
-	for (const auto &i : indices(h)) {
-		TH1D *hx = (TH1D *)h[i]->Clone(Form("ratio_%lu", i));
+	for(const auto& i : indices(h)) {
+		TH1D* hx = (TH1D*)h[i]->Clone(Form("ratio_%lu", i));
 		hx->Divide(h[0]);
 
 		hx->SetMinimum(0.0); // y-axis range
 		hx->SetMaximum(2.0); //
-		hx->SetStats(0);     // statistics box off
-		hx->Draw("same");    // ratio plot
+		hx->SetStats(0); // statistics box off
+		hx->Draw("same"); // ratio plot
 
 		// Ratio plot (h3) settings
 		hx->SetTitle(""); // Remove the ratio title
@@ -281,9 +279,9 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
 	c0.SaveAs(fullfile.c_str());
 
 	// Save logscale pdf
-	if (MINVAL > 0) {
+	if(MINVAL > 0) {
 		pad1->cd()->SetLogy(); // pad2 becomes the current pad
-		for (const auto &i : indices(h)) {
+		for(const auto& i : indices(h)) {
 			h[i]->GetYaxis()->SetRangeUser(MINVAL / 10, MAXVAL * 5);
 		}
 		fullfile = fullpath + name_ + "_logy" + ".pdf";
@@ -291,16 +289,16 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
 	}
 
 	// Remove histograms
-	for (const auto &i : indices(ratios)) {
+	for(const auto& i : indices(ratios)) {
 		delete ratios[i];
 	}
 
 	return chi2ndf;
 }
 
-h2Multiplet::h2Multiplet(const std::string &name, const std::string &labeltext, int N1,
-                         double minval1, double maxval1, int N2, double minval2, double maxval2,
-                         const std::vector<std::string> &legendtext) {
+h2Multiplet::h2Multiplet(const std::string& name, const std::string& labeltext, int N1,
+						 double minval1, double maxval1, int N2, double minval2, double maxval2,
+						 const std::vector<std::string>& legendtext) {
 	name_ = name;
 
 	N1_ = N1;
@@ -316,36 +314,35 @@ h2Multiplet::h2Multiplet(const std::string &name, const std::string &labeltext, 
 	// Initialize histogram vector container size
 	h.resize(legendtext.size());
 
-	for (const auto &i : indices(h)) {
-		h[i] = new TH2D(Form("%s_%lu", name.c_str(), i), labeltext.c_str(), N1, minval1,
-		                maxval1, N2, minval2, maxval2);
+	for(const auto& i : indices(h)) {
+		h[i] = new TH2D(Form("%s_%lu", name.c_str(), i), labeltext.c_str(), N1, minval1, maxval1,
+						N2, minval2, maxval2);
 		h[i]->Sumw2(); // Error saving on
 	}
 }
 
-void h2Multiplet::NormalizeAll(const std::vector<double> &cross_section,
-                               const std::vector<double> &multiplier) {
-	for (const auto &i : indices(h)) {
+void h2Multiplet::NormalizeAll(const std::vector<double>& cross_section,
+							   const std::vector<double>& multiplier) {
+	for(const auto& i : indices(h)) {
 		double scale = 1.0;
 
 		// Takes into account weighted and unweight (weight=1) filling
 		// We take into account also under/overflow here with macro: (0, Nbins+1)
-		const double integral =
-		    h[i]->Integral(0, h[i]->GetNbinsX() + 1, 0, h[i]->GetNbinsY() + 1);
-		if (integral > 0) {
+		const double integral = h[i]->Integral(0, h[i]->GetNbinsX() + 1, 0, h[i]->GetNbinsY() + 1);
+		if(integral > 0) {
 			scale /= integral;
 		}
 
 		// Binwidth
 		const int bin = 1;
 		const double binwidth =
-		    h[i]->GetXaxis()->GetBinWidth(bin) * h[i]->GetYaxis()->GetBinWidth(bin);
-		if (binwidth > 0) {
+			h[i]->GetXaxis()->GetBinWidth(bin) * h[i]->GetYaxis()->GetBinWidth(bin);
+		if(binwidth > 0) {
 			scale /= binwidth;
 		}
 
 		// Cross Section
-		if (cross_section[i] > 0) {
+		if(cross_section[i] > 0) {
 			scale *= cross_section[i];
 		}
 
@@ -356,16 +353,15 @@ void h2Multiplet::NormalizeAll(const std::vector<double> &cross_section,
 	}
 }
 
-double h2Multiplet::SaveFig(const std::string &fullpath) const {
-	TCanvas c0("c", "c", 800 / 3.0 * h.size(),
-	           525);                    // scale canvas according to number of sources
+double h2Multiplet::SaveFig(const std::string& fullpath) const {
+	TCanvas c0("c", "c", 800 / 3.0 * h.size(), 525); // scale canvas according to number of sources
 	c0.Divide(h.size(), 2, 0.01, 0.02); // [columns] x [rows]
 
 	// Normalize by the first histogram
 	const double ZMAX = h[0]->GetMaximum();
 
 	// Histograms on TOP ROW
-	for (const auto &i : indices(h)) {
+	for(const auto& i : indices(h)) {
 		c0.cd(i + 1); // choose position
 
 		h[i]->SetStats(0);
@@ -376,18 +372,17 @@ double h2Multiplet::SaveFig(const std::string &fullpath) const {
 	}
 
 	// Ratio histograms on BOTTOM ROW
-	std::vector<TH2D *> ratios;
-	for (const auto &i : indices(h)) {
+	std::vector<TH2D*> ratios;
+	for(const auto& i : indices(h)) {
 		c0.cd(i + 1 + h.size()); // choose position
-		TH2D *hR = (TH2D *)h[i]->Clone(Form("h2R_%lu", i));
+		TH2D* hR = (TH2D*)h[i]->Clone(Form("h2R_%lu", i));
 
 		hR->Divide(h[0]); // Divide by 0-th histogram
 		hR->GetYaxis()->SetTitleOffset(1.3);
 		hR->SetStats(0); // No statistics on upper plot
 		hR->Draw("COLZ");
 		hR->GetZaxis()->SetRangeUser(0.0, 2.0);
-		hR->SetTitle(
-		    Form("Ratio: %s / %s", legendtext_[i].c_str(), legendtext_[0].c_str()));
+		hR->SetTitle(Form("Ratio: %s / %s", legendtext_[i].c_str(), legendtext_[0].c_str()));
 
 		ratios.push_back(hR); // Save pointer
 	}
@@ -395,10 +390,10 @@ double h2Multiplet::SaveFig(const std::string &fullpath) const {
 	// -------------------------------------------------------------------
 	// Create labels
 	c0.cd(); // Important!
-	TPad *tpad = gra::rootstyle::TransparentPad();
+	TPad* tpad = gra::rootstyle::TransparentPad();
 
-	TLatex *l1;
-	TLatex *l2;
+	TLatex* l1;
+	TLatex* l2;
 	std::tie(l1, l2) = gra::rootstyle::MadeInFinland();
 	// -------------------------------------------------------------------
 
@@ -410,7 +405,7 @@ double h2Multiplet::SaveFig(const std::string &fullpath) const {
 	c0.SaveAs(fullfile.c_str());
 
 	// Delete ratio histograms from memory
-	for (const auto &i : indices(ratios)) {
+	for(const auto& i : indices(ratios)) {
 		delete ratios[i];
 	}
 	delete tpad;
@@ -420,9 +415,9 @@ double h2Multiplet::SaveFig(const std::string &fullpath) const {
 	return 0.0;
 }
 
-hProfMultiplet::hProfMultiplet(const std::string &name, const std::string &labeltext, int N,
-                               double minval1, double maxval1, double minval2, double maxval2,
-                               const std::vector<std::string> &legendtext) {
+hProfMultiplet::hProfMultiplet(const std::string& name, const std::string& labeltext, int N,
+							   double minval1, double maxval1, double minval2, double maxval2,
+							   const std::vector<std::string>& legendtext) {
 	name_ = name;
 
 	N_ = N;
@@ -438,14 +433,14 @@ hProfMultiplet::hProfMultiplet(const std::string &name, const std::string &label
 	// Initialize histogram vector container size
 	h.resize(legendtext.size());
 
-	for (const auto &i : indices(h)) {
-		h[i] = new TProfile(Form("%s_%lu", name.c_str(), i), labeltext.c_str(), N, minval1,
-		                    maxval1, minval2, maxval2);
+	for(const auto& i : indices(h)) {
+		h[i] = new TProfile(Form("%s_%lu", name.c_str(), i), labeltext.c_str(), N, minval1, maxval1,
+							minval2, maxval2);
 		h[i]->Sumw2(); // Error saving on
 	}
 }
 
-double hProfMultiplet::SaveFig(const std::string &fullpath) const {
+double hProfMultiplet::SaveFig(const std::string& fullpath) const {
 	std::vector<int> color = CreateColorMap();
 
 	TCanvas c0("c", "c", 750, 800);
@@ -454,24 +449,24 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
 	std::unique_ptr<TPad> pad1 = std::make_unique<TPad>("pad1", "pad1", 0, 0.3, 1, 1.0);
 	pad1->SetBottomMargin(0.015); // Upper and lower plot are joined
 	// pad1->SetGridx();           // Vertical grid
-	pad1->Draw();      // Draw the upper pad: pad1
-	pad1->cd();        // pad1 becomes the current pad
+	pad1->Draw(); // Draw the upper pad: pad1
+	pad1->cd(); // pad1 becomes the current pad
 	h[0]->SetStats(0); // No statistics on upper plot
 
 	// Find maximum value for y-range limits
 	double MAXVAL = 0.0;
 	double MINVAL = 1e32;
-	for (const auto &i : indices(h)) {
-		if (h[i]->GetMaximum() > MAXVAL) {
+	for(const auto& i : indices(h)) {
+		if(h[i]->GetMaximum() > MAXVAL) {
 			MAXVAL = h[i]->GetMaximum();
 		}
-		if (h[i]->GetMinimum() < MINVAL) {
+		if(h[i]->GetMinimum() < MINVAL) {
 			MINVAL = h[i]->GetMinimum();
 		}
 	}
 
 	// Loop over histograms
-	for (const auto &i : indices(h)) {
+	for(const auto& i : indices(h)) {
 		h[i]->SetLineColor(color[i]);
 		h[i]->SetMarkerColor(color[i]);
 		h[i]->SetMarkerStyle(20);
@@ -492,15 +487,15 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
 	// legend->SetBorderSize(0); // No box
 
 	// Add legend entries
-	for (const auto &i : indices(h)) {
+	for(const auto& i : indices(h)) {
 		legend->AddEntry(h[i], legendtext_[i].c_str());
 	}
 	legend->Draw();
 
 	// -------------------------------------------------------------------
 	// GRANIITTI text
-	TLatex *l1;
-	TLatex *l2;
+	TLatex* l1;
+	TLatex* l2;
 	std::tie(l1, l2) = gra::rootstyle::MadeInFinland();
 	// -------------------------------------------------------------------
 
@@ -515,15 +510,15 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
 	pad2->cd(); // pad2 becomes the current pad
 
 	// *** Ratio histograms ***
-	std::vector<TH1D *> ratios;
+	std::vector<TH1D*> ratios;
 
-	for (const auto &i : indices(h)) {
-		TProfile *hxP = (TProfile *)h[i]->Clone(Form("ratio_%lu", i));
+	for(const auto& i : indices(h)) {
+		TProfile* hxP = (TProfile*)h[i]->Clone(Form("ratio_%lu", i));
 
 		// --------------------------------------------------------------
 		// To get proper errors, we need to use TH1 instead of TProfile
-		TH1D *hx = hxP->ProjectionX();
-		TH1D *h0 = h[0]->ProjectionX();
+		TH1D* hx = hxP->ProjectionX();
+		TH1D* h0 = h[0]->ProjectionX();
 
 		// Set same colors as above
 		hx->SetLineColor(color[i]);
@@ -538,8 +533,8 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
 
 		hx->SetMinimum(0.0); // y-range
 		hx->SetMaximum(2.0); //
-		hx->SetStats(0);     // no statistics box
-		hx->Draw("same");    // ratio plot
+		hx->SetStats(0); // no statistics box
+		hx->Draw("same"); // ratio plot
 
 		// Ratio plot (h3) settings
 		hx->SetTitle(""); // remove title
@@ -588,14 +583,14 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
 	c0.SaveAs(fullfile.c_str());
 
 	// Save logscale pdf
-	if (MINVAL > 0) {
+	if(MINVAL > 0) {
 		pad1->cd()->SetLogy(); // pad2 becomes the current pad
 		fullfile = fullpath + name_ + "_logy" + ".pdf";
 		c0.SaveAs(fullfile.c_str());
 	}
 
 	// Remove histograms
-	for (const auto &i : indices(ratios)) {
+	for(const auto& i : indices(ratios)) {
 		delete ratios[i];
 	}
 	delete l1;

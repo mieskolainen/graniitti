@@ -39,6 +39,6 @@ echo "clang-format processing "$*" ..."
 sleep 1
 
 # -sort-includes
-$FORMAT -i $*
+$FORMAT -fallback-style=none -i $*
 
 echo "clang-format done!"

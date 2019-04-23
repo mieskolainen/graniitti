@@ -14,11 +14,10 @@
 #include "Graniitti/MMatrix.h"
 
 namespace gra {
-
 class MH2 {
-       public:
+  public:
 	MH2(int xbins, double xmin, double xmax, int ybins, double ymin, double ymax,
-	    std::string namestr = "noname");
+		std::string namestr = "noname");
 
 	MH2(int xbins, int ybins, std::string namestr = "noname");
 	MH2();
@@ -39,7 +38,7 @@ class MH2 {
 
 	double GetBinWeight(int xbin, int ybin) const;
 	long long int GetBinCount(int xbin, int ybin) const;
-	void GetBinIdx(double xvalue, double yvalue, int &xbin, int &ybin) const;
+	void GetBinIdx(double xvalue, double yvalue, int& xbin, int& ybin) const;
 	double GetMaxWeight() const;
 	double GetMinWeight() const;
 	void Print() const;
@@ -59,20 +58,17 @@ class MH2 {
 	}
 
 	// Overload + operator to add two histograms
-	MH2 operator+(const MH2 &rhs) {
-		if ((this->XBINS != rhs.XBINS) || (this->YBINS != rhs.YBINS)) {
-			throw std::domain_error(
-			    "MH2 + operator: Histograms with different number of bins");
+	MH2 operator+(const MH2& rhs) {
+		if((this->XBINS != rhs.XBINS) || (this->YBINS != rhs.YBINS)) {
+			throw std::domain_error("MH2 + operator: Histograms with different number of bins");
 		}
 
-		MH2 h(this->XBINS, this->XMIN, this->XMAX, this->YBINS, this->YMIN, this->YMAX,
-		      this->name);
+		MH2 h(this->XBINS, this->XMIN, this->XMAX, this->YBINS, this->YMIN, this->YMAX, this->name);
 
 		h.fills = this->fills + rhs.fills;
 		h.underflow = {this->underflow[0] + rhs.underflow[0],
-		               this->underflow[1] + rhs.underflow[1]};
-		h.overflow = {this->overflow[0] + rhs.overflow[0],
-		              this->overflow[1] + rhs.overflow[1]};
+					   this->underflow[1] + rhs.underflow[1]};
+		h.overflow = {this->overflow[0] + rhs.overflow[0], this->overflow[1] + rhs.overflow[1]};
 
 		// DATA
 		h.weights = this->weights + rhs.weights;
@@ -89,16 +85,16 @@ class MH2 {
 	void FlushBuffer();
 
 	// Symmetric bounds
-	void SetAutoSymmetry(const std::vector<bool> &in) {
-		if (in.size() != 2) {
+	void SetAutoSymmetry(const std::vector<bool>& in) {
+		if(in.size() != 2) {
 			throw std::invalid_argument(
-			    "MH2::SetAutoSymmetry: Input should be size 2 boolean vector");
+				"MH2::SetAutoSymmetry: Input should be size 2 boolean vector");
 		}
 		AUTOSYMMETRY = in;
 	}
 
-	void GetBounds(int &xbins, double &xmin, double &xmax, int &ybins, double &ymin,
-	               double &ymax) const {
+	void GetBounds(int& xbins, double& xmin, double& xmax, int& ybins, double& ymin,
+				   double& ymax) const {
 		xbins = XBINS;
 		xmin = XMIN;
 		xmax = XMAX;
@@ -107,18 +103,16 @@ class MH2 {
 		ymax = YMAX;
 	}
 
-	void FuseBuffer(const MH2 &rhs) {
-		buff_values.insert(buff_values.end(), rhs.buff_values.begin(),
-		                   rhs.buff_values.end());
-		buff_weights.insert(buff_weights.end(), rhs.buff_weights.begin(),
-		                    rhs.buff_weights.end());
+	void FuseBuffer(const MH2& rhs) {
+		buff_values.insert(buff_values.end(), rhs.buff_values.begin(), rhs.buff_values.end());
+		buff_weights.insert(buff_weights.end(), rhs.buff_weights.begin(), rhs.buff_weights.end());
 	}
 
 	// Keep it public for buffer fusion
 	std::vector<std::vector<double>> buff_values;
 	std::vector<double> buff_weights;
 
-       private:
+  private:
 	std::string name; // Histogram name
 
 	// -----------------------------------------------------------

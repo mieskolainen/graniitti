@@ -7,13 +7,13 @@
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
-#include <math.h>
 #include <algorithm>
 #include <chrono>
 #include <complex>
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
+#include <math.h>
 #include <memory>
 #include <memory>
 #include <mutex>
@@ -35,11 +35,11 @@ using gra::aux::indices;
 using namespace gra;
 
 // Main
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
 	MTimer timer(true);
 
 	try {
-		if (argc < 3) { // We expect > 2 arguments: the program name, energies,
+		if(argc < 3) { // We expect > 2 arguments: the program name, energies,
 			// total number
 			// of events
 			std::stringstream ss;
@@ -57,12 +57,11 @@ int main(int argc, char *argv[]) {
 
 		std::cout << "EVENTS: " << EVENTS << std::endl;
 
-		std::vector<std::string> json_in = {"./tests/minbias/sd.json",
-		                                    "./tests/minbias/dd.json",
-		                                    "./tests/minbias/nd.json"};
+		std::vector<std::string> json_in = {"./tests/minbias/sd.json", "./tests/minbias/dd.json",
+											"./tests/minbias/nd.json"};
 
 		// Loop over energies
-		for (const auto &e : indices(sqrtsvec)) {
+		for(const auto& e : indices(sqrtsvec)) {
 			std::vector<double> xs0 = {0, 0};
 			std::vector<double> xs0_err = {0, 0};
 
@@ -95,7 +94,7 @@ int main(int argc, char *argv[]) {
 			}
 
 			// First calculate screened SD and DD integrated cross section
-			for (unsigned int i = 0; i < 2; ++i) {
+			for(unsigned int i = 0; i < 2; ++i) {
 				gra::MGraniitti g;
 
 				// Read process input from file
@@ -139,14 +138,14 @@ int main(int argc, char *argv[]) {
 
 			// HepMC32
 			const std::string OUTPUTNAME =
-			    "minbias_" + std::to_string(static_cast<int>(sqrtsvec[e])); // Note x 2
+				"minbias_" + std::to_string(static_cast<int>(sqrtsvec[e])); // Note x 2
 			const std::string outputstr = "./output/" + OUTPUTNAME + ".hepmc2";
 			std::shared_ptr<HepMC3::WriterAsciiHepMC2> outputHepMC2 =
-			    std::make_shared<HepMC3::WriterAsciiHepMC2>(outputstr);
+				std::make_shared<HepMC3::WriterAsciiHepMC2>(outputstr);
 
 			// Loop over processes
-			for (std::size_t i = 0; i < NEVT.size(); ++i) {
-				MGraniitti *g = new MGraniitti();
+			for(std::size_t i = 0; i < NEVT.size(); ++i) {
+				MGraniitti* g = new MGraniitti();
 
 				// Read the process input from a file
 				g->ReadInput(json_in[i]);
@@ -174,23 +173,21 @@ int main(int argc, char *argv[]) {
 			// Finalize
 			outputHepMC2->close();
 		}
-
-	} catch (const std::invalid_argument &e) {
+	} catch(const std::invalid_argument& e) {
 		gra::aux::PrintGameOver();
 		std::cerr << rang::fg::red << "Exception catched: " << rang::fg::reset << e.what()
-		          << std::endl;
+				  << std::endl;
 		return EXIT_FAILURE;
-	} catch (const std::ios_base::failure &e) {
+	} catch(const std::ios_base::failure& e) {
 		gra::aux::PrintGameOver();
 		std::cerr << rang::fg::red
-		          << "Exception catched: std::ios_base::failure: " << rang::fg::reset
-		          << e.what() << std::endl;
+				  << "Exception catched: std::ios_base::failure: " << rang::fg::reset << e.what()
+				  << std::endl;
 		return EXIT_FAILURE;
-	} catch (...) {
+	} catch(...) {
 		gra::aux::PrintGameOver();
-		std::cerr << rang::fg::red
-		          << "Exception catched: Unspecified (...) (Probably JSON input)"
-		          << rang::fg::reset << std::endl;
+		std::cerr << rang::fg::red << "Exception catched: Unspecified (...) (Probably JSON input)"
+				  << rang::fg::reset << std::endl;
 		return EXIT_FAILURE;
 	}
 

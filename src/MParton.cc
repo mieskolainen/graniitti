@@ -41,7 +41,6 @@ using gra::math::abs2;
 using gra::PDG::GeV2barn;
 
 namespace gra {
-
 // This is needed by construction
 MParton::MParton() {
 	std::vector<std::string> supported = {"yy_LUX", "yy_DZ"};
@@ -50,43 +49,40 @@ MParton::MParton() {
 }
 
 // Constructor
-MParton::MParton(std::string process, const std::vector<aux::OneCMD> &syntax) {
+MParton::MParton(std::string process, const std::vector<aux::OneCMD>& syntax) {
 	InitHistograms();
 	SetProcess(process, syntax);
 
 	// Init final states
 	M4Vec zerovec(0, 0, 0, 0);
-	for (std::size_t i = 0; i < 10; ++i) {
+	for(std::size_t i = 0; i < 10; ++i) {
 		lts.pfinal.push_back(zerovec);
 	}
 	std::cout << "MParton:: [Constructor done]" << std::endl;
 }
 
 // Destructor
-MParton::~MParton() {
-}
+MParton::~MParton() {}
 
 // This is manually constructed and updated here
 void MParton::ConstructProcesses() {
 	Processes.clear();
 	CID = "P";
-	for (auto const &x : ProcPtr.descriptions) {
+	for(auto const& x : ProcPtr.descriptions) {
 		std::map<std::string, std::string> value = x.second;
-		for (auto const &y : value) {
-			Processes.insert(
-			    std::make_pair(x.first + "[" + y.first + "]<" + CID + ">", y.second));
+		for(auto const& y : value) {
+			Processes.insert(std::make_pair(x.first + "[" + y.first + "]<" + CID + ">", y.second));
 		}
 	}
 }
 
 // Initialize cut and process spesific postsetup
 void MParton::post_Constructor() {
-	if (ProcPtr.CHANNEL == "RES") {
+	if(ProcPtr.CHANNEL == "RES") {
 		// Here we support only single resonances
-		if (lts.RESONANCES.size() != 1) {
-			std::string str =
-			    "MParton::post_Constructor: Only single resonance supported for this "
-			    "process (RESPARAM.size() != 1)";
+		if(lts.RESONANCES.size() != 1) {
+			std::string str = "MParton::post_Constructor: Only single resonance supported for this "
+							  "process (RESPARAM.size() != 1)";
 			throw std::invalid_argument(str);
 		}
 	}
@@ -105,12 +101,12 @@ void MParton::post_Constructor() {
 // Exact 4-momentum conservation at loop vertices, that is, by using this one
 // does not assume vanishing external momenta in the screening loop calculation.
 
-bool MParton::LoopKinematics(const std::vector<double> &p1p, const std::vector<double> &p2p) {
+bool MParton::LoopKinematics(const std::vector<double>& p1p, const std::vector<double>& p2p) {
 	return false;
 }
 
 // Return Monte Carlo integrand weight
-double MParton::EventWeight(const std::vector<double> &randvec, AuxIntData &aux) {
+double MParton::EventWeight(const std::vector<double>& randvec, AuxIntData& aux) {
 	double W = 0.0;
 
 	// Kinematics and cuts
@@ -118,7 +114,7 @@ double MParton::EventWeight(const std::vector<double> &randvec, AuxIntData &aux)
 	aux.fidcuts_ok = FiducialCuts();
 	aux.vetocuts_ok = VetoCuts();
 
-	if (aux.Valid()) {
+	if(aux.Valid()) {
 		// Matrix element squared
 		const double MatESQ = (FLATAMP == 0) ? abs2(S3ScreenedAmp()) : GetFlatAmp2(lts);
 
@@ -132,13 +128,13 @@ double MParton::EventWeight(const std::vector<double> &randvec, AuxIntData &aux)
 
 		double C_space = 1.0;
 		// We have some legs in the central system
-		if (lts.decaytree.size() != 0 && !ISOLATE) {
+		if(lts.decaytree.size() != 0 && !ISOLATE) {
 			C_space = lts.DW.Integral();
 		}
 
 		// ** EVENT WEIGHT **
-		W = C_space * (1.0 / S_factor) * MatESQ * B2IntegralVolume() *
-		    B2PhaseSpaceWeight() * GeV2barn / MollerFlux();
+		W = C_space * (1.0 / S_factor) * MatESQ * B2IntegralVolume() * B2PhaseSpaceWeight() *
+			GeV2barn / MollerFlux();
 	}
 
 	aux.amplitude_ok = CheckInfNan(W);
@@ -158,12 +154,12 @@ bool MParton::FiducialCuts() const {
 }
 
 // Record event
-bool MParton::EventRecord(HepMC3::GenEvent &evt) {
+bool MParton::EventRecord(HepMC3::GenEvent& evt) {
 	return CommonRecord(evt);
 }
 
 void MParton::PrintInit(bool silent) const {
-	if (!silent) {
+	if(!silent) {
 		PrintSetup();
 
 		// Construct prettyprint diagram
@@ -172,22 +168,22 @@ void MParton::PrintInit(bool silent) const {
 
 		/*
 		if (EXCITATION == 1) {
-		        proton1 = "-----------F2-xxxxxxxx>";
+				proton1 = "-----------F2-xxxxxxxx>";
 		}
 		if (EXCITATION == 2) {
-		        proton1 = "-----------F2-xxxxxxxx>";
-		        proton2 = "-----------F2-xxxxxxxx>";
+				proton1 = "-----------F2-xxxxxxxx>";
+				proton2 = "-----------F2-xxxxxxxx>";
 		}
 		*/
 
 		std::vector<std::string> feynmangraph;
 		feynmangraph = {"||          ", "||          ", "xx--------->", "||          ",
-		                "||          "};
+						"||          "};
 
 		// Print diagram
 		std::cout << proton1 << std::endl;
-		for (const auto &i : indices(feynmangraph)) {
-			if (SCREENING) { // Put red
+		for(const auto& i : indices(feynmangraph)) {
+			if(SCREENING) { // Put red
 				std::cout << rang::fg::red << "     **    " << rang::style::reset;
 			} else {
 				std::cout << rang::fg::red << "           " << rang::style::reset;
@@ -200,33 +196,32 @@ void MParton::PrintInit(bool silent) const {
 		// --------------------------------------------------------------
 		// Amplitude setup printout
 		// Monopolium
-		if (ProcPtr.CHANNEL == "monopolium(0)") {
+		if(ProcPtr.CHANNEL == "monopolium(0)") {
 			PARAM_MONOPOLE::PrintParam(lts.sqrt_s);
 		}
 
 		// Custom resonances processes
-		if (ProcPtr.CHANNEL == "RES") {
-			for (auto &x : lts.RESONANCES) {
+		if(ProcPtr.CHANNEL == "RES") {
+			for(auto& x : lts.RESONANCES) {
 				x.second.PrintParam(lts.sqrt_s);
 			}
 		}
 		// --------------------------------------------------------------
 
 		std::cout << std::endl;
-		std::cout << rang::style::bold << "Generation cuts:" << rang::style::reset
-		          << std::endl
-		          << std::endl;
+		std::cout << rang::style::bold << "Generation cuts:" << rang::style::reset << std::endl
+				  << std::endl;
 
 		std::cout << "- None" << std::endl;
 		/*
 		printf("- System rapidity (Rap) [min, max] = [%0.2f, %0.2f]     \t(user) \n"
-		           "- System mass (M)       [min, max] = [%0.2f, %0.2f] GeV \t(user)
+				   "- System mass (M)       [min, max] = [%0.2f, %0.2f] GeV \t(user)
 		\n"
-		       "- Forward leg (Pt)      [min, max] = [%0.2f, %0.2f] GeV
+			   "- Forward leg (Pt)      [min, max] = [%0.2f, %0.2f] GeV
 		\t(fixed/user) \n",
-		    gcuts.Y_min, gcuts.Y_max,
-		    gcuts.M_min, gcuts.M_max,
-		    gcuts.forward_pt_min, gcuts.forward_pt_max);
+			gcuts.Y_min, gcuts.Y_max,
+			gcuts.M_min, gcuts.M_max,
+			gcuts.forward_pt_min, gcuts.forward_pt_max);
 
 		if (EXCITATION != 0) {
 		printf("- Forward leg (Xi)      [min, max] = [%0.2E, %0.2E]
@@ -240,29 +235,29 @@ void MParton::PrintInit(bool silent) const {
 }
 
 // 2-dimensional phase space vector initialization
-bool MParton::B2RandomKin(const std::vector<double> &randvec) {
+bool MParton::B2RandomKin(const std::vector<double>& randvec) {
 	double x1 = randvec[0];
 	double x2 = randvec[1];
 
 	const unsigned int MAXTRIAL = 1e4;
 	unsigned int trials = 0;
-	while (true) {
+	while(true) {
 		double M_sum = 0.0;
 
 		// Pick daughter masses
 		// ==============================================================
-		for (const auto &i : indices(lts.decaytree)) {
+		for(const auto& i : indices(lts.decaytree)) {
 			GetOffShellMass(lts.decaytree[i], lts.decaytree[i].m_offshell);
 			M_sum += lts.decaytree[i].m_offshell;
 		}
 		// ==============================================================
 
-		if (x1 * x2 * lts.s > pow2(M_sum)) {
+		if(x1 * x2 * lts.s > pow2(M_sum)) {
 			break;
 		} // kinematics possible
 
 		++trials;
-		if (trials > MAXTRIAL) {
+		if(trials > MAXTRIAL) {
 			return false; // Impossible given daughter masses and this x1 and x2 value
 		}
 	}
@@ -281,7 +276,7 @@ bool MParton::B2BuildKin(double x1, double x2) {
 
 	// ------------------------------------------------------------------
 	// Now boost if asymmetric beams
-	if (std::abs(beamsum.Pz()) > 1e-6) {
+	if(std::abs(beamsum.Pz()) > 1e-6) {
 		constexpr int sign = 1; // positive -> boost to the lab
 		kinematics::LorentzBoost(beamsum, lts.sqrt_s, q1, sign);
 		kinematics::LorentzBoost(beamsum, lts.sqrt_s, q2, sign);
@@ -290,7 +285,7 @@ bool MParton::B2BuildKin(double x1, double x2) {
 
 	M4Vec p1 = lts.pbeam1 - q1; // Remnant
 	M4Vec p2 = lts.pbeam2 - q2; // Remnant
-	M4Vec pX = q1 + q2;         // System
+	M4Vec pX = q1 + q2; // System
 
 	// Save
 	lts.pfinal[1] = p1;
@@ -301,7 +296,7 @@ bool MParton::B2BuildKin(double x1, double x2) {
 	// Kinematic checks
 
 	// Total 4-momentum conservation
-	if (!CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2] + lts.pfinal[0]))) {
+	if(!CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2] + lts.pfinal[0]))) {
 		return false;
 	}
 
@@ -313,7 +308,7 @@ bool MParton::B2BuildKin(double x1, double x2) {
 	std::vector<double> masses;
 
 	// Collect decay product masses
-	for (const auto &i : indices(lts.decaytree)) {
+	for(const auto& i : indices(lts.decaytree)) {
 		// @@ Note, we need to take offshell masses here @@
 		masses.push_back(lts.decaytree[i].m_offshell);
 	}
@@ -325,34 +320,34 @@ bool MParton::B2BuildKin(double x1, double x2) {
 
 	gra::kinematics::MCW w;
 	// 2-body
-	if (lts.decaytree.size() == 2) {
-		w = gra::kinematics::TwoBodyPhaseSpace(lts.pfinal[0], lts.pfinal[0].M(), masses,
-		                                       products, random);
+	if(lts.decaytree.size() == 2) {
+		w = gra::kinematics::TwoBodyPhaseSpace(lts.pfinal[0], lts.pfinal[0].M(), masses, products,
+											   random);
 		// 3-body
-	} else if (lts.decaytree.size() == 3) {
-		w = gra::kinematics::ThreeBodyPhaseSpace(lts.pfinal[0], lts.pfinal[0].M(), masses,
-		                                         products, UNWEIGHT, random);
+	} else if(lts.decaytree.size() == 3) {
+		w = gra::kinematics::ThreeBodyPhaseSpace(lts.pfinal[0], lts.pfinal[0].M(), masses, products,
+												 UNWEIGHT, random);
 		// N-body
-	} else if (lts.decaytree.size() > 3) {
-		w = gra::kinematics::NBodyPhaseSpace(lts.pfinal[0], lts.pfinal[0].M(), masses,
-		                                     products, UNWEIGHT, random);
+	} else if(lts.decaytree.size() > 3) {
+		w = gra::kinematics::NBodyPhaseSpace(lts.pfinal[0], lts.pfinal[0].M(), masses, products,
+											 UNWEIGHT, random);
 	}
 
-	if (w.GetW() < 0) {
+	if(w.GetW() < 0) {
 		return false; // Kinematically impossible
 	}
 	lts.DW = w;
 
 	// Collect decay products
 	const unsigned int offset = 3;
-	for (const auto &i : indices(lts.decaytree)) {
+	for(const auto& i : indices(lts.decaytree)) {
 		lts.decaytree[i].p4 = products[i];
 		lts.pfinal[i + offset] = products[i];
 	}
 
 	// Treat decaytree recursively
-	for (const auto &i : indices(lts.decaytree)) {
-		if (!ConstructDecayKinematics(lts.decaytree[i])) {
+	for(const auto& i : indices(lts.decaytree)) {
+		if(!ConstructDecayKinematics(lts.decaytree[i])) {
 			return false;
 		}
 	}
@@ -365,15 +360,15 @@ bool MParton::B2BuildKin(double x1, double x2) {
 }
 
 // Calculate Pure Phase Space Decay Width (Volume)
-void MParton::DecayWidthPS(double &exact) const {
+void MParton::DecayWidthPS(double& exact) const {
 	exact = 0;
 	// Massive exact closed form for 2-body case
-	if (lts.decaytree.size() == 2) {
+	if(lts.decaytree.size() == 2) {
 		exact = gra::kinematics::PS2Massive(lts.m2, pow2(lts.decaytree[0].p4.M()),
-		                                    pow2(lts.decaytree[1].p4.M()));
+											pow2(lts.decaytree[1].p4.M()));
 	}
 	// Massless case
-	if (lts.decaytree.size() > 2) {
+	if(lts.decaytree.size() > 2) {
 		exact = gra::kinematics::PSnMassless(lts.m2, lts.decaytree.size());
 	}
 }

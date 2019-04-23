@@ -22,8 +22,7 @@
 #include "Graniitti/MMath.h"
 
 MAmpMG5_yy_ww::MAmpMG5_yy_ww() {
-	std::string param_card_name =
-	    gra::aux::GetBasePath(2) + "/MG5cards/" + "yy_ww_param_card.dat";
+	std::string param_card_name = gra::aux::GetBasePath(2) + "/MG5cards/" + "yy_ww_param_card.dat";
 
 	// Instantiate the model class and set parameters that stay fixed
 	// during run
@@ -43,17 +42,16 @@ MAmpMG5_yy_ww::MAmpMG5_yy_ww() {
 	jamp2[0] = new double[1];
 }
 
-MAmpMG5_yy_ww::~MAmpMG5_yy_ww() {
-}
+MAmpMG5_yy_ww::~MAmpMG5_yy_ww() {}
 
 // Get amplitude
-std::complex<double> MAmpMG5_yy_ww::CalcAmp(gra::LORENTZSCALAR &lts) {
+std::complex<double> MAmpMG5_yy_ww::CalcAmp(gra::LORENTZSCALAR& lts) {
 	const double mgamma1 = 0; // on-shell
 	const double mgamma2 = 0;
 
 	// *** Set masses for HELAS ***
 	const std::vector<double> masses = {mgamma1, mgamma2, lts.decaytree[0].p4.M(),
-	                                    lts.decaytree[1].p4.M()};
+										lts.decaytree[1].p4.M()};
 	mME = masses;
 
 	// *** Set particle 4-momentum: [E,px,py,pz] convention here! ***
@@ -62,16 +60,16 @@ std::complex<double> MAmpMG5_yy_ww::CalcAmp(gra::LORENTZSCALAR &lts) {
 	/*
 	double p1[] = {lts.q1.p3mod(), lts.q1.Px(), lts.q1.Py(), lts.q1.Pz()};
 	double p2[] = {lts.q2.p3mod(), lts.q2.Px(), lts.q2.Py(), lts.q2.Pz()};
-      */
+	  */
 
 	// force E = p (gamma on-shell)
 	double p1[] = {lts.q1.P3mod(), lts.q1.Px(), lts.q1.Py(), lts.q1.Pz()};
 	double p2[] = {lts.q2.P3mod(), lts.q2.Px(), lts.q2.Py(), lts.q2.Pz()};
 
 	double p3[] = {lts.decaytree[0].p4.E(), lts.decaytree[0].p4.Px(), lts.decaytree[0].p4.Py(),
-	               lts.decaytree[0].p4.Pz()};
+				   lts.decaytree[0].p4.Pz()};
 	double p4[] = {lts.decaytree[1].p4.E(), lts.decaytree[1].p4.Px(), lts.decaytree[1].p4.Py(),
-	               lts.decaytree[1].p4.Pz()};
+				   lts.decaytree[1].p4.Pz()};
 
 	/*
 	// TEST INPUT
@@ -97,36 +95,36 @@ std::complex<double> MAmpMG5_yy_ww::CalcAmp(gra::LORENTZSCALAR &lts) {
 
 	// Helicities for the process
 	static const int helicities[ncomb][nexternal] = {
-	    {-1, -1, -1, -1}, {-1, -1, -1, 0}, {-1, -1, -1, 1}, {-1, -1, 0, -1}, {-1, -1, 0, 0},
-	    {-1, -1, 0, 1},   {-1, -1, 1, -1}, {-1, -1, 1, 0},  {-1, -1, 1, 1},  {-1, 1, -1, -1},
-	    {-1, 1, -1, 0},   {-1, 1, -1, 1},  {-1, 1, 0, -1},  {-1, 1, 0, 0},   {-1, 1, 0, 1},
-	    {-1, 1, 1, -1},   {-1, 1, 1, 0},   {-1, 1, 1, 1},   {1, -1, -1, -1}, {1, -1, -1, 0},
-	    {1, -1, -1, 1},   {1, -1, 0, -1},  {1, -1, 0, 0},   {1, -1, 0, 1},   {1, -1, 1, -1},
-	    {1, -1, 1, 0},    {1, -1, 1, 1},   {1, 1, -1, -1},  {1, 1, -1, 0},   {1, 1, -1, 1},
-	    {1, 1, 0, -1},    {1, 1, 0, 0},    {1, 1, 0, 1},    {1, 1, 1, -1},   {1, 1, 1, 0},
-	    {1, 1, 1, 1}};
+		{-1, -1, -1, -1}, {-1, -1, -1, 0}, {-1, -1, -1, 1}, {-1, -1, 0, -1}, {-1, -1, 0, 0},
+		{-1, -1, 0, 1},   {-1, -1, 1, -1}, {-1, -1, 1, 0},  {-1, -1, 1, 1},  {-1, 1, -1, -1},
+		{-1, 1, -1, 0},   {-1, 1, -1, 1},  {-1, 1, 0, -1},  {-1, 1, 0, 0},   {-1, 1, 0, 1},
+		{-1, 1, 1, -1},   {-1, 1, 1, 0},   {-1, 1, 1, 1},   {1, -1, -1, -1}, {1, -1, -1, 0},
+		{1, -1, -1, 1},   {1, -1, 0, -1},  {1, -1, 0, 0},   {1, -1, 0, 1},   {1, -1, 1, -1},
+		{1, -1, 1, 0},	{1, -1, 1, 1},   {1, 1, -1, -1},  {1, 1, -1, 0},   {1, 1, -1, 1},
+		{1, 1, 0, -1},	{1, 1, 0, 0},	{1, 1, 0, 1},	{1, 1, 1, -1},   {1, 1, 1, 0},
+		{1, 1, 1, 1}};
 
 	// Permutations
 	int perm[nexternal];
 
 	// Define permutation
-	for (int i = 0; i < nexternal; ++i) {
+	for(int i = 0; i < nexternal; ++i) {
 		perm[i] = i;
 	}
 
 	// Loop over helicity combinations
-	for (int ihel = 0; ihel < ncomb; ++ihel) {
+	for(int ihel = 0; ihel < ncomb; ++ihel) {
 		calculate_wavefunctions(perm, helicities[ihel]);
 
 		// Sum of subamplitudes (s,t,u,...)
-		for (int k = 0; k < namplitudes; ++k) {
+		for(int k = 0; k < namplitudes; ++k) {
 			lts.hamp[ihel] += amp[k];
 		}
 	}
 
 	// Total amplitude squared over all helicity combinations individually
 	double amp2 = 0.0;
-	for (int ihel = 0; ihel < ncomb; ++ihel) {
+	for(int ihel = 0; ihel < ncomb; ++ihel) {
 		amp2 += gra::math::abs2(lts.hamp[ihel]);
 	}
 	amp2 /= 4.0; // spin average matrix element squared
@@ -174,15 +172,15 @@ double MAmpMG5_yy_ww::matrix_1_aa_wpwm() {
 
 	// Sum and square the color flows to get the matrix element
 	double matrix = 0;
-	for (i = 0; i < ncolor; i++) {
+	for(i = 0; i < ncolor; i++) {
 		ztemp = 0.;
-		for (j = 0; j < ncolor; j++)
+		for(j = 0; j < ncolor; j++)
 			ztemp = ztemp + cf[i][j] * jamp[j];
 		matrix = matrix + real(ztemp * conj(jamp[i])) / denom[i];
 	}
 
 	// Store the leading color flows for choice of color
-	for (i = 0; i < ncolor; i++)
+	for(i = 0; i < ncolor; i++)
 		jamp2[0][i] += real(jamp[i] * conj(jamp[i]));
 
 	return matrix;

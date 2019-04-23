@@ -5,13 +5,13 @@
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
-#include <math.h>
 #include <algorithm>
 #include <chrono>
 #include <complex>
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
+#include <math.h>
 #include <memory>
 #include <mutex>
 #include <random>
@@ -38,63 +38,60 @@ using namespace gra;
 
 // Function prototypes
 namespace fitsoft {
-
 const std::string INPUTFILE = gra::aux::GetBasePath(2) + "/fitcard/" + "EL.json";
 
 int iter = 0;
 
 // Global for the differential fit
 namespace DIFFMEAS {
+	std::vector<double> sqrts;
+	std::vector<std::vector<std::string>> initialstate;
 
-std::vector<double> sqrts;
-std::vector<std::vector<std::string>> initialstate;
-
-std::vector<std::vector<double>> x;
-std::vector<std::vector<double>> y;
-std::vector<std::vector<double>> err;
+	std::vector<std::vector<double>> x;
+	std::vector<std::vector<double>> y;
+	std::vector<std::vector<double>> err;
 }
 
 // Measurements and errors for each energy
 namespace INTEGMEAS {
+	// Which datasets are active in the fit
+	std::vector<bool> active = {false, false, true, true, false};
 
-// Which datasets are active in the fit
-std::vector<bool> active = {false, false, true, true, false};
+	std::vector<double> energy = {31, 62, 1800, 7000, 8000};
+	std::vector<std::vector<std::string>> beam = {
+		{"p+", "p-"}, {"p+", "p-"}, {"p+", "p-"}, {"p+", "p+"}, {"p+", "p+"}};
 
-std::vector<double> energy = {31, 62, 1800, 7000, 8000};
-std::vector<std::vector<std::string>> beam = {
-    {"p+", "p-"}, {"p+", "p-"}, {"p+", "p-"}, {"p+", "p+"}, {"p+", "p+"}};
+	std::vector<double> sigma_tot = {40.2, 43.9, 80.03, 98.3, 96.07};
+	std::vector<double> sigma_tot_e = {0.2, 0.3, 2.24, 2.8, 0.9225};
 
-std::vector<double> sigma_tot = {40.2, 43.9, 80.03, 98.3, 96.07};
-std::vector<double> sigma_tot_e = {0.2, 0.3, 2.24, 2.8, 0.9225};
-
-std::vector<double> sigma_el = {7.12, 7.61, 19.7, 24.3, 24.33};
-std::vector<double> sigma_el_e = {0.34, 0.22, 0.85, 1.2, 0.392};
+	std::vector<double> sigma_el = {7.12, 7.61, 19.7, 24.3, 24.33};
+	std::vector<double> sigma_el_e = {0.34, 0.22, 0.85, 1.2, 0.392};
 }
 
-std::vector<double> dsigma_el_dt(double *par, double sqrts, const std::vector<string> &beam,
-                                 std::vector<double> &x);
+std::vector<double> dsigma_el_dt(double* par, double sqrts, const std::vector<string>& beam,
+								 std::vector<double>& x);
 
-void SigmaXS(double *par, double &xs_tot, double &xs_el, double &xs_inel, const double sqrts,
-             const std::vector<std::string> &beam);
+void SigmaXS(double* par, double& xs_tot, double& xs_el, double& xs_inel, const double sqrts,
+			 const std::vector<std::string>& beam);
 
-bool ReadData(std::string inputfile, std::vector<double> &x, std::vector<double> &y,
-              std::vector<double> &err);
+bool ReadData(std::string inputfile, std::vector<double>& x, std::vector<double>& y,
+			  std::vector<double>& err);
 
 void PushNull();
 bool InitData();
-void Chi2Func(int &npar, double *gin, double &f, double *par, int iflag);
-void SetSoftParam(double *par);
+void Chi2Func(int& npar, double* gin, double& f, double* par, int iflag);
+void SetSoftParam(double* par);
 
 // Differential elastic
-std::vector<double> dsigma_el_dt(double *par, const double sqrts,
-                                 const std::vector<std::string> &beam, std::vector<double> &x) {
+std::vector<double> dsigma_el_dt(double* par, const double sqrts,
+								 const std::vector<std::string>& beam, std::vector<double>& x) {
 	// Mandelstam s
 	const double s = sqrts * sqrts;
 
 	// Create generator object first
 	std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
 
-	if (iter > 0) {
+	if(iter > 0) {
 		gen->HILJAA = true; // SILENT output
 	}
 
@@ -115,32 +112,31 @@ std::vector<double> dsigma_el_dt(double *par, const double sqrts,
 		gen->InitEikonal();
 
 		// Construct dsigma_el/dt
-		for (const auto &i : indices(values)) {
+		for(const auto& i : indices(values)) {
 			// Get amplitude
 			const double kt2 = x[i]; // |t| (Mandelstam)
 			const std::complex<double> A = gen->proc->Eikonal.MSA.Interpolate1D(kt2);
 
 			// dsigma/dt in units of millibarns
-			values[i] = gra::math::abs2(A) / (16.0 * gra::math::PI * s *
-			                                  (s - 4.0 * gra::math::pow2(PDG::mp))) *
-			            PDG::GeV2mb;
+			values[i] = gra::math::abs2(A) /
+						(16.0 * gra::math::PI * s * (s - 4.0 * gra::math::pow2(PDG::mp))) *
+						PDG::GeV2mb;
 		}
-	} catch (const std::invalid_argument &e) {
+	} catch(const std::invalid_argument& e) {
 		gra::aux::PrintGameOver();
 		std::cerr << rang::fg::red << "Exception catched: " << rang::fg::reset << e.what()
-		          << std::endl;
+				  << std::endl;
 		exit(0);
-	} catch (const std::ios_base::failure &e) {
+	} catch(const std::ios_base::failure& e) {
 		gra::aux::PrintGameOver();
 		std::cerr << rang::fg::red
-		          << "Exception catched: std::ios_base::failure: " << rang::fg::reset
-		          << e.what() << std::endl;
+				  << "Exception catched: std::ios_base::failure: " << rang::fg::reset << e.what()
+				  << std::endl;
 		exit(0);
-	} catch (...) {
+	} catch(...) {
 		gra::aux::PrintGameOver();
-		std::cerr << rang::fg::red
-		          << "Exception catched: Unspecified (...) (Probably JSON input)"
-		          << rang::fg::reset << std::endl;
+		std::cerr << rang::fg::red << "Exception catched: Unspecified (...) (Probably JSON input)"
+				  << rang::fg::reset << std::endl;
 		exit(0);
 	}
 
@@ -150,8 +146,8 @@ std::vector<double> dsigma_el_dt(double *par, const double sqrts,
 }
 
 // Integrated cross sections
-void SigmaXS(double *par, double &xs_tot, double &xs_el, double &xs_inel, const double sqrts,
-             const std::vector<std::string> &beam) {
+void SigmaXS(double* par, double& xs_tot, double& xs_el, double& xs_inel, const double sqrts,
+			 const std::vector<std::string>& beam) {
 	// Create generator object first
 	std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
 
@@ -167,22 +163,20 @@ void SigmaXS(double *par, double &xs_tot, double &xs_el, double &xs_inel, const 
 		// Initialize generator, always last
 		gen->InitEikonalOnly();
 		gen->proc->Eikonal.GetTotXS(xs_tot, xs_el, xs_inel);
-
-	} catch (const std::invalid_argument &e) {
+	} catch(const std::invalid_argument& e) {
 		gra::aux::PrintGameOver();
 		std::cerr << "Exception catched: " << e.what() << std::endl;
 		exit(0);
-	} catch (const std::ios_base::failure &e) {
+	} catch(const std::ios_base::failure& e) {
 		gra::aux::PrintGameOver();
-		std::cerr << "Exception catched: Caught std::ios_base::failure: " << e.what()
-		          << std::endl;
+		std::cerr << "Exception catched: Caught std::ios_base::failure: " << e.what() << std::endl;
 		exit(0);
 	}
 }
 
 // Read differential input
-bool ReadData(std::string inputfile, std::vector<double> &x, std::vector<double> &y,
-              std::vector<double> &err) {
+bool ReadData(std::string inputfile, std::vector<double>& x, std::vector<double>& y,
+			  std::vector<double>& err) {
 	printf("fitsoft::ReadData: using HepDATA inputfile %s \n", inputfile.c_str());
 
 	double xval = 0.0;
@@ -196,20 +190,19 @@ bool ReadData(std::string inputfile, std::vector<double> &x, std::vector<double>
 	double yerr_syst_p = 0.0;
 	double yerr_syst_m = 0.0;
 
-	FILE *fp;
+	FILE* fp;
 
-	if ((fp = fopen(inputfile.c_str(), "r+")) == NULL) {
+	if((fp = fopen(inputfile.c_str(), "r+")) == NULL) {
 		printf("No inputfile %s found \n", inputfile.c_str());
 		return false;
 	}
 
-	while (true) {
-		int ret =
-		    fscanf(fp, "%lf %lf %lf %lf %lf %lf %lf %lf", &xval, &xval_low, &xval_high,
-		           &yval, &yerr_stat_p, &yerr_stat_m, &yerr_syst_p, &yerr_syst_m);
-		if (ret == 8) {
+	while(true) {
+		int ret = fscanf(fp, "%lf %lf %lf %lf %lf %lf %lf %lf", &xval, &xval_low, &xval_high, &yval,
+						 &yerr_stat_p, &yerr_stat_m, &yerr_syst_p, &yerr_syst_m);
+		if(ret == 8) {
 			// Fine
-		} else if (ret == EOF) {
+		} else if(ret == EOF) {
 			break;
 		} else {
 			printf("Error in the file structure of %s!\n", inputfile.c_str());
@@ -221,11 +214,11 @@ bool ReadData(std::string inputfile, std::vector<double> &x, std::vector<double>
 
 		// Construct error
 		double error = std::sqrt(gra::math::pow2((yerr_stat_p - yerr_stat_m) / 2.0) +
-		                         gra::math::pow2((yerr_syst_p - yerr_syst_m) / 2.0));
+								 gra::math::pow2((yerr_syst_p - yerr_syst_m) / 2.0));
 		err.push_back(error);
 
 		printf("x = %0.8f, y = %0.8f, err = %0.8f, err/y = %0.8f \n", xval, yval, error,
-		       error / yval);
+			   error / yval);
 	}
 
 	printf("fitsoft::ReadData: [done] \n");
@@ -260,12 +253,12 @@ bool InitData() {
 	fitsoft::PushNull();
 	DIFFMEAS::sqrts[N] = 7000;
 	DIFFMEAS::initialstate[N] = {"p+", "p+"};
-	if (!fitsoft::ReadData(BASEPATH + "TOTEM_7_low_t.csv", DIFFMEAS::x[N], DIFFMEAS::y[N],
-	                       DIFFMEAS::err[N])) {
+	if(!fitsoft::ReadData(BASEPATH + "TOTEM_7_low_t.csv", DIFFMEAS::x[N], DIFFMEAS::y[N],
+						  DIFFMEAS::err[N])) {
 		return false;
 	}
-	if (!fitsoft::ReadData(BASEPATH + "TOTEM_7.csv", DIFFMEAS::x[N], DIFFMEAS::y[N],
-	                       DIFFMEAS::err[N])) {
+	if(!fitsoft::ReadData(BASEPATH + "TOTEM_7.csv", DIFFMEAS::x[N], DIFFMEAS::y[N],
+						  DIFFMEAS::err[N])) {
 		return false;
 	}
 	++N;
@@ -278,7 +271,7 @@ bool InitData() {
 	if (!fitsoft::ReadData(BASEPATH + "D0_1960.csv", DIFFMEAS::x[N],
 	DIFFMEAS::y[N],
 	DIFFMEAS::err[N]) ) {
-	    return false;
+		return false;
 	}
 	++N;
 	*/
@@ -287,8 +280,8 @@ bool InitData() {
 	fitsoft::PushNull();
 	DIFFMEAS::sqrts[N] = 1800;
 	DIFFMEAS::initialstate[N] = {"p+", "p-"};
-	if (!fitsoft::ReadData(BASEPATH + "ABE_1994_1800.csv", DIFFMEAS::x[N], DIFFMEAS::y[N],
-	                       DIFFMEAS::err[N])) {
+	if(!fitsoft::ReadData(BASEPATH + "ABE_1994_1800.csv", DIFFMEAS::x[N], DIFFMEAS::y[N],
+						  DIFFMEAS::err[N])) {
 		return false;
 	}
 	++N;
@@ -297,12 +290,12 @@ bool InitData() {
 	fitsoft::PushNull();
 	DIFFMEAS::sqrts[N] = 546;
 	DIFFMEAS::initialstate[N] = {"p+", "p-"};
-	if (!fitsoft::ReadData(BASEPATH + "FNAL_546.csv", DIFFMEAS::x[N], DIFFMEAS::y[N],
-	                       DIFFMEAS::err[N])) {
+	if(!fitsoft::ReadData(BASEPATH + "FNAL_546.csv", DIFFMEAS::x[N], DIFFMEAS::y[N],
+						  DIFFMEAS::err[N])) {
 		return false;
 	}
-	if (!fitsoft::ReadData(BASEPATH + "SPS_546.csv", DIFFMEAS::x[N], DIFFMEAS::y[N],
-	                       DIFFMEAS::err[N])) {
+	if(!fitsoft::ReadData(BASEPATH + "SPS_546.csv", DIFFMEAS::x[N], DIFFMEAS::y[N],
+						  DIFFMEAS::err[N])) {
 		return false;
 	}
 	++N;
@@ -320,20 +313,19 @@ bool InitData() {
 }
 
 // Chi^2 function
-void Chi2Func(int &npar, double *gin, double &f, double *par, int iflag) {
+void Chi2Func(int& npar, double* gin, double& f, double* par, int iflag) {
 	printf("fitsoft::Chi2Func: [iter = %d] \n", iter);
 	double chi2 = 0;
 	int points = 0;
 
 	// Loop over at different energies
-	for (const auto &i : indices(DIFFMEAS::sqrts)) {
+	for(const auto& i : indices(DIFFMEAS::sqrts)) {
 		// Get dsigma_el/dt values
 		std::vector<double> values = fitsoft::dsigma_el_dt(
-		    par, DIFFMEAS::sqrts[i], DIFFMEAS::initialstate[i], DIFFMEAS::x[i]);
+			par, DIFFMEAS::sqrts[i], DIFFMEAS::initialstate[i], DIFFMEAS::x[i]);
 
-		for (const auto &j : indices(values)) {
-			chi2 +=
-			    gra::math::pow2((DIFFMEAS::y[i][j] - values[j]) / DIFFMEAS::err[i][j]);
+		for(const auto& j : indices(values)) {
+			chi2 += gra::math::pow2((DIFFMEAS::y[i][j] - values[j]) / DIFFMEAS::err[i][j]);
 			++points;
 		}
 	}
@@ -344,15 +336,12 @@ void Chi2Func(int &npar, double *gin, double &f, double *par, int iflag) {
 	double xs_inel = 0.0;
 
 	// Loop over energies
-	for (const auto &i : indices(INTEGMEAS::active)) {
-		if (INTEGMEAS::active[i] == true) {
-			SigmaXS(par, xs_tot, xs_el, xs_inel, INTEGMEAS::energy[i],
-			        INTEGMEAS::beam[i]);
+	for(const auto& i : indices(INTEGMEAS::active)) {
+		if(INTEGMEAS::active[i] == true) {
+			SigmaXS(par, xs_tot, xs_el, xs_inel, INTEGMEAS::energy[i], INTEGMEAS::beam[i]);
 
-			chi2 += gra::math::pow2((INTEGMEAS::sigma_tot[i] - xs_tot) /
-			                        INTEGMEAS::sigma_tot_e[i]);
-			chi2 += gra::math::pow2((INTEGMEAS::sigma_el[i] - xs_el) /
-			                        INTEGMEAS::sigma_el_e[i]);
+			chi2 += gra::math::pow2((INTEGMEAS::sigma_tot[i] - xs_tot) / INTEGMEAS::sigma_tot_e[i]);
+			chi2 += gra::math::pow2((INTEGMEAS::sigma_el[i] - xs_el) / INTEGMEAS::sigma_el_e[i]);
 			++points;
 		}
 	}
@@ -360,7 +349,7 @@ void Chi2Func(int &npar, double *gin, double &f, double *par, int iflag) {
 	// Print out parameter values
 	PARAM_SOFT::PrintParam();
 
-	if (chi2 / (double)points < 2.0) {
+	if(chi2 / (double)points < 2.0) {
 		std::cout << rang::fg::green;
 	} else {
 		std::cout << rang::fg::red;
@@ -375,7 +364,7 @@ void Chi2Func(int &npar, double *gin, double &f, double *par, int iflag) {
 
 // Set soft parameters
 // These need to follow the same order as below in main()
-void SetSoftParam(double *par) {
+void SetSoftParam(double* par) {
 	printf("fitsoft::SetSoftParam: \n\n");
 
 	PARAM_SOFT::DELTA_P = par[0];
@@ -400,15 +389,15 @@ void SetSoftParam(double *par) {
 // is parameter 1 in MINUIT.
 //
 // Main function
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
 	gra::aux::PrintFlashScreen(rang::fg::red);
 	std::cout << rang::style::bold << "GRANIITTI - Eikonal Pomeron Fitter" << rang::style::reset
-	          << std::endl
-	          << std::endl;
+			  << std::endl
+			  << std::endl;
 	gra::aux::PrintVersion();
 
 	// Initialize input data
-	if (!fitsoft::InitData()) {
+	if(!fitsoft::InitData()) {
 		return EXIT_FAILURE;
 	}
 
@@ -417,7 +406,7 @@ int main(int argc, char *argv[]) {
 
 	// Init TMinuit
 	std::unique_ptr<TMinuit> gMinuit =
-	    std::make_unique<TMinuit>(NPARAM); // initialize TMinuit with a maximum of NPARAM params
+		std::make_unique<TMinuit>(NPARAM); // initialize TMinuit with a maximum of NPARAM params
 	gMinuit->SetFCN(fitsoft::Chi2Func);
 
 	double arglist[10];
@@ -441,7 +430,7 @@ int main(int argc, char *argv[]) {
 	// Couplings
 	gMinuit->mnparm(2, "gN_P", PARAM_SOFT::gN_P, 0.1, 1e-9, 12.0, ierflg);
 	gMinuit->mnparm(3, "g3P", PARAM_SOFT::g3P / PARAM_SOFT::gN_P, 0.1, 1e-9, 1.0,
-	                ierflg); // Convention
+					ierflg); // Convention
 	gMinuit->mnparm(4, "gamma", PARAM_SOFT::gamma, 0.01, 1e-9, 1.0 - 1e-9, ierflg);
 
 	// Proton (+ pion loop) form factor parameters (put maximum at least 15 GeV)
@@ -453,12 +442,12 @@ int main(int argc, char *argv[]) {
 	// diffraction here)
 	{
 		const std::vector<int> fixed = {3, 4};
-		for (const auto &x : fixed) {
+		for(const auto& x : fixed) {
 			gMinuit->FixParameter(x);
 		}
 	}
 	arglist[0] = 10000; // Maximum number of iterations
-	arglist[1] = 0.01;  // Cost function tolerance
+	arglist[1] = 0.01; // Cost function tolerance
 
 	// Now ready for minimization step
 

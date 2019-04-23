@@ -15,7 +15,6 @@
 #include <complex>
 
 namespace gra {
-
 // Note the index order below, in order to get the row major format
 //
 template <typename T, size_t D1, size_t D2, size_t... DN>

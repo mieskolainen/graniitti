@@ -29,13 +29,13 @@ void sxxxxx(double p[4], int nss, std::complex<double> sc[3]);
 void vxxxxx(double p[4], double vmass, int nhel, int nsv, std::complex<double> v[6]);
 
 void FFV1_0(std::complex<double> F1[], std::complex<double> F2[], std::complex<double> V3[],
-            std::complex<double> COUP, std::complex<double> &vertex);
+			std::complex<double> COUP, std::complex<double>& vertex);
 
 void FFV1_2(std::complex<double> F1[], std::complex<double> V3[], std::complex<double> COUP,
-            double M2, double W2, std::complex<double> F2[]);
+			double M2, double W2, std::complex<double> F2[]);
 
 void FFV1_1(std::complex<double> F2[], std::complex<double> V3[], std::complex<double> COUP,
-            double M1, double W1, std::complex<double> F1[]);
+			double M1, double W1, std::complex<double> F1[]);
 }
 
 #endif

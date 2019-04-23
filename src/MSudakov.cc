@@ -29,97 +29,93 @@
 #include "rang.hpp"
 
 namespace gra {
-
 using aux::indices;
 using math::msqrt;
 using math::pow2;
 using math::zi;
 
 namespace MSudakovNumerics {
+	double q2_MIN = 0.0;
+	double q2_MAX = 0.0;
+	double M_MIN = 0.0;
+	double M_MAX = 0.0;
+	double x_MIN = 0.0;
+	const double x_MAX = 1.0 - 1E-9;
 
-double q2_MIN = 0.0;
-double q2_MAX = 0.0;
-double M_MIN = 0.0;
-double M_MAX = 0.0;
-double x_MIN = 0.0;
-const double x_MAX = 1.0 - 1E-9;
+	// Numerical integral discretization [SET HERE]
+	const unsigned int SudakovIntegralN = 1000;
+	const unsigned int ShuvaevIntegralN = 400;
 
-// Numerical integral discretization [SET HERE]
-const unsigned int SudakovIntegralN = 1000;
-const unsigned int ShuvaevIntegralN = 400;
+	// Logarithmic stepping true/false
+	std::vector<bool> SUDA_log_ON;
+	std::vector<bool> SHUV_log_ON;
 
-// Logarithmic stepping true/false
-std::vector<bool> SUDA_log_ON;
-std::vector<bool> SHUV_log_ON;
+	// Number of discrete intervals
+	std::vector<unsigned int> SUDA_N;
+	std::vector<unsigned int> SHUV_N;
 
-// Number of discrete intervals
-std::vector<unsigned int> SUDA_N;
-std::vector<unsigned int> SHUV_N;
+	// CMS energy
+	double sqrts = 0.0;
 
-// CMS energy
-double sqrts = 0.0;
+	bool DEBUG = false;
 
-bool DEBUG = false;
+	void ReadParameters() {
+		// Read and parse
+		using json = nlohmann::json;
+		const std::string inputfile = gra::aux::GetBasePath(2) + "/modeldata/" + "NUMERICS.json";
+		const std::string data = gra::aux::GetInputData(inputfile);
+		json j;
 
-void ReadParameters() {
-	// Read and parse
-	using json = nlohmann::json;
-	const std::string inputfile = gra::aux::GetBasePath(2) + "/modeldata/" + "NUMERICS.json";
-	const std::string data = gra::aux::GetInputData(inputfile);
-	json j;
+		try {
+			j = json::parse(data);
 
-	try {
-		j = json::parse(data);
+			// JSON block identifier
+			const std::string XID = "NUMERICS_SUDAKOV";
 
-		// JSON block identifier
-		const std::string XID = "NUMERICS_SUDAKOV";
+			q2_MIN = j[XID]["q2_MIN"];
+			q2_MAX = j[XID]["q2_MAX"];
+			M_MIN = j[XID]["M_MIN"];
+			// M_MAX = j[XID]["M_MAX"]; // Post-Setup
+			// x_MIN = j[XID]["x_MIN"]; // Post-Setup
+			// x_MAX = j[XID]["x_MAX"]; // Set above
 
-		q2_MIN = j[XID]["q2_MIN"];
-		q2_MAX = j[XID]["q2_MAX"];
-		M_MIN = j[XID]["M_MIN"];
-		// M_MAX = j[XID]["M_MAX"]; // Post-Setup
-		// x_MIN = j[XID]["x_MIN"]; // Post-Setup
-		// x_MAX = j[XID]["x_MAX"]; // Set above
+			// Logarithmic stepping true/false [assign needed for <cast>]
+			std::vector<bool> xx = j[XID]["SUDA"]["log_ON"];
+			SUDA_log_ON = xx;
+			std::vector<bool> yy = j[XID]["SHUV"]["log_ON"];
+			SHUV_log_ON = yy;
 
-		// Logarithmic stepping true/false [assign needed for <cast>]
-		std::vector<bool> xx = j[XID]["SUDA"]["log_ON"];
-		SUDA_log_ON = xx;
-		std::vector<bool> yy = j[XID]["SHUV"]["log_ON"];
-		SHUV_log_ON = yy;
+			// Number of node points [assign needed for <cast>]
+			std::vector<unsigned int> nn = j[XID]["SUDA"]["N"];
+			SUDA_N = nn;
+			std::vector<unsigned int> mm = j[XID]["SHUV"]["N"];
+			SHUV_N = mm;
 
-		// Number of node points [assign needed for <cast>]
-		std::vector<unsigned int> nn = j[XID]["SUDA"]["N"];
-		SUDA_N = nn;
-		std::vector<unsigned int> mm = j[XID]["SHUV"]["N"];
-		SHUV_N = mm;
+			// Discretization
+			// ShuvaevIntegralN  = j[XID]["ShuvaevIntegralN"];
+			// SudakovIntegralN = j[XID]["SudakovIntegralN"];
 
-		// Discretization
-		// ShuvaevIntegralN  = j[XID]["ShuvaevIntegralN"];
-		// SudakovIntegralN = j[XID]["SudakovIntegralN"];
-
-		DEBUG = j[XID]["DEBUG"];
-
-	} catch (...) {
-		std::string str = "MSudakovNumerics::ReadParameters: Error parsing " + inputfile +
-		                  " (Check for extra/missing commas)";
-		throw std::invalid_argument(str);
+			DEBUG = j[XID]["DEBUG"];
+		} catch(...) {
+			std::string str = "MSudakovNumerics::ReadParameters: Error parsing " + inputfile +
+							  " (Check for extra/missing commas)";
+			throw std::invalid_argument(str);
+		}
 	}
-}
 }
 
 // Constructor
-MSudakov::MSudakov() {
-}
+MSudakov::MSudakov() {}
 
 // Destructor
 MSudakov::~MSudakov() {
-	if (PdfPtr != nullptr) {
+	if(PdfPtr != nullptr) {
 		delete PdfPtr;
 	}
 }
 
 // Init
-void MSudakov::Init(double _sqrts, const std::string &PDFSET, bool init_arrays) {
+void MSudakov::Init(double _sqrts, const std::string& PDFSET, bool init_arrays) {
 	// First this
 	MSudakovNumerics::ReadParameters();
 
@@ -133,7 +129,7 @@ void MSudakov::Init(double _sqrts, const std::string &PDFSET, bool init_arrays) 
 	// InitLHAPDF("CT10nlo");
 	InitLHAPDF(PDFSET);
 
-	if (init_arrays) {
+	if(init_arrays) {
 		InitArrays();
 	}
 }
@@ -146,23 +142,22 @@ void MSudakov::InitArrays() {
 		// q2,M
 		veto.sqrts = MSudakovNumerics::sqrts; // FIRST THIS
 		veto.Set(0, "q2", MSudakovNumerics::q2_MIN, MSudakovNumerics::q2_MAX,
-		         MSudakovNumerics::SUDA_N[0], MSudakovNumerics::SUDA_log_ON[0]);
+				 MSudakovNumerics::SUDA_N[0], MSudakovNumerics::SUDA_log_ON[0]);
 		veto.Set(1, "M", MSudakovNumerics::M_MIN, MSudakovNumerics::M_MAX,
-		         MSudakovNumerics::SUDA_N[1], MSudakovNumerics::SUDA_log_ON[1]);
+				 MSudakovNumerics::SUDA_N[1], MSudakovNumerics::SUDA_log_ON[1]);
 		veto.InitArray(); // Initialize (call last!)
 
 		const unsigned long hash = gra::aux::djb2hash(veto.GetHashString());
-		const std::string filename = "./sudakov/SUDA_" + gra::aux::ToString(veto.sqrts, 0) +
-		                             "_" + PDFSETNAME + "_" + std::to_string(hash);
+		const std::string filename = "./sudakov/SUDA_" + gra::aux::ToString(veto.sqrts, 0) + "_" +
+									 PDFSETNAME + "_" + std::to_string(hash);
 
 		// Try to read pre-calculated
 		bool ok = veto.ReadArray(filename);
 
-		while (!ok) { // Problem, re-calculate
+		while(!ok) { // Problem, re-calculate
 			// Pointer to member function: ReturnType
 			// (ClassType::*)(ParameterTypes...)
-			std::pair<double, double> (MSudakov::*f)(double, double) =
-			    &MSudakov::Sudakov_T;
+			std::pair<double, double> (MSudakov::*f)(double, double) = &MSudakov::Sudakov_T;
 			CalculateArray(veto, f);
 			veto.WriteArray(filename, true);
 			ok = veto.ReadArray(filename);
@@ -176,23 +171,22 @@ void MSudakov::InitArrays() {
 		// q2,x
 		spdf.sqrts = MSudakovNumerics::sqrts; // FIRST THIS
 		spdf.Set(0, "q2", MSudakovNumerics::q2_MIN, MSudakovNumerics::q2_MAX,
-		         MSudakovNumerics::SHUV_N[0], MSudakovNumerics::SHUV_log_ON[0]);
+				 MSudakovNumerics::SHUV_N[0], MSudakovNumerics::SHUV_log_ON[0]);
 		spdf.Set(1, "x", MSudakovNumerics::x_MIN, MSudakovNumerics::x_MAX,
-		         MSudakovNumerics::SHUV_N[1], MSudakovNumerics::SHUV_log_ON[1]);
+				 MSudakovNumerics::SHUV_N[1], MSudakovNumerics::SHUV_log_ON[1]);
 		spdf.InitArray(); // Initialize (call last!)
 
 		const unsigned long hash = gra::aux::djb2hash(spdf.GetHashString());
-		const std::string filename = "./sudakov/SHUV_" + gra::aux::ToString(spdf.sqrts, 0) +
-		                             "_" + PDFSETNAME + "_" + std::to_string(hash);
+		const std::string filename = "./sudakov/SHUV_" + gra::aux::ToString(spdf.sqrts, 0) + "_" +
+									 PDFSETNAME + "_" + std::to_string(hash);
 
 		// Try to read pre-calculated
 		bool ok = spdf.ReadArray(filename);
 
-		while (!ok) { // Problem, re-calculate
+		while(!ok) { // Problem, re-calculate
 			// Pointer to member function: ReturnType
 			// (ClassType::*)(ParameterTypes...)
-			std::pair<double, double> (MSudakov::*f)(double, double) =
-			    &MSudakov::Shuvaev_H;
+			std::pair<double, double> (MSudakov::*f)(double, double) = &MSudakov::Shuvaev_H;
 			CalculateArray(spdf, f);
 			spdf.WriteArray(filename, true);
 			ok = spdf.ReadArray(filename);
@@ -203,7 +197,7 @@ void MSudakov::InitArrays() {
 	initialized = true;
 	std::cout << std::endl;
 
-	if (MSudakovNumerics::DEBUG) {
+	if(MSudakovNumerics::DEBUG) {
 		TestPDF();
 	}
 }
@@ -213,9 +207,9 @@ double MSudakov::xg_xQ2(double x, double q2) const {
 	const int pid = 21; // gluon
 	try {
 		return PdfPtr->xfxQ2(pid, x, q2);
-	} catch (...) {
-		std::string str = "MSudakov::xg_xQ2: Problem with x = " + std::to_string(x) +
-		                  ", q2 = " + std::to_string(q2);
+	} catch(...) {
+		std::string str = "MSudakov::xg_xQ2: Problem with x = " + std::to_string(x) + ", q2 = " +
+						  std::to_string(q2);
 		throw std::invalid_argument(str);
 	}
 }
@@ -223,19 +217,19 @@ double MSudakov::xg_xQ2(double x, double q2) const {
 // PDF access
 //
 // [REFERENCE: LHAPDF6, https://arxiv.org/abs/1412.7420]
-void MSudakov::InitLHAPDF(const std::string &pdfname) {
+void MSudakov::InitLHAPDF(const std::string& pdfname) {
 	PDFSETNAME = pdfname;
 
 	// LHAPDF init
 	try {
 		PdfPtr = LHAPDF::mkPDF(pdfname, 0);
-	} catch (...) {
+	} catch(...) {
 		++init_trials;
 
 		std::string str = "MSudakov::InitLHAPDF: Trials = " + std::to_string(init_trials) +
-		                  " :: Problem with reading a pdfset '" + pdfname + "'";
+						  " :: Problem with reading a pdfset '" + pdfname + "'";
 
-		if (init_trials >= 2) { // Too many failures
+		if(init_trials >= 2) { // Too many failures
 			throw std::invalid_argument(str);
 		}
 
@@ -264,19 +258,18 @@ void MSudakov::TestPDF() const {
 	const double stepM = (MAXLOGM - MINLOGM) / NM;
 
 	// Test loop
-	for (std::size_t i = 0; i < NM + 1; ++i) {
+	for(std::size_t i = 0; i < NM + 1; ++i) {
 		const double log10M = MINLOGM + i * stepM;
 		const double M = std::pow(10, log10M);
 
-		printf("[M = %0.1f GeV] : alpha_s(Q = M GeV) = %0.3f \n\n", M,
-		       PdfPtr->alphasQ2(M * M));
+		printf("[M = %0.1f GeV] : alpha_s(Q = M GeV) = %0.3f \n\n", M, PdfPtr->alphasQ2(M * M));
 
-		for (std::size_t j = 0; j < NX + 1; ++j) {
+		for(std::size_t j = 0; j < NX + 1; ++j) {
 			const double log10x = MINLOGX + j * stepX;
 			const double x = std::pow(10, log10x);
 
 			printf("x = %0.5E \n", x);
-			for (std::size_t k = 0; k < NQ2 + 1; ++k) {
+			for(std::size_t k = 0; k < NQ2 + 1; ++k) {
 				const double log10q2 = MINLOGQ2 + k * stepQ2;
 				const double q2 = std::pow(10, log10q2);
 
@@ -286,10 +279,9 @@ void MSudakov::TestPDF() const {
 				// Durham flux
 				const double hxf = fg_xQ2M(x, q2, M);
 
-				printf(
-				    "(x = %0.3E, q2 = %0.2f, M = %0.1f) : [gluon pdf: xg(x,q2), "
-				    "Durham flux: fg(x,q2,M)] = (%0.2f,%0.2f) \n",
-				    x, q2, M, xf, hxf);
+				printf("(x = %0.3E, q2 = %0.2f, M = %0.1f) : [gluon pdf: xg(x,q2), "
+					   "Durham flux: fg(x,q2,M)] = (%0.2f,%0.2f) \n",
+					   x, q2, M, xf, hxf);
 			}
 			std::cout << std::endl;
 		}
@@ -301,7 +293,7 @@ void MSudakov::TestPDF() const {
 double MSudakov::AlphaS_Q2(double q2) const {
 	try {
 		return PdfPtr->alphasQ2(q2);
-	} catch (...) {
+	} catch(...) {
 		std::string str = "MSudakov::AlphaS_Q2: Problem with q2 = " + std::to_string(q2);
 		throw std::invalid_argument(str);
 	}
@@ -347,7 +339,7 @@ double MSudakov::fg_xQ2M(double x, double q2, double M) const {
 	// Chain rule's: d/dln(q^2) [ ... ]
 	double total = 0.0;
 
-	if (Tg > 1e-15) {
+	if(Tg > 1e-15) {
 		total = dHg * math::msqrt(Tg) + Hg * dTg / (2.0 * math::msqrt(Tg));
 	} else {
 		// printf("MSudakov::fg_xQ2M: Sudakov factor Tg = %0.2E [x = %0.1E, q2 =
@@ -392,14 +384,13 @@ std::pair<double, double> MSudakov::Shuvaev_H(double q2, double x) {
 
 	// Check that we are within valid domain (take into account floating points)
 	const double EPS = 1e-5;
-	if (x >= MSudakovNumerics::x_MIN * (1 - EPS) && x <= MSudakovNumerics::x_MAX * (1 + EPS) &&
-	    q2 >= MSudakovNumerics::q2_MIN * (1 - EPS) &&
-	    q2 <= MSudakovNumerics::q2_MAX * (1 + EPS)) {
+	if(x >= MSudakovNumerics::x_MIN * (1 - EPS) && x <= MSudakovNumerics::x_MAX * (1 + EPS) &&
+	   q2 >= MSudakovNumerics::q2_MIN * (1 - EPS) && q2 <= MSudakovNumerics::q2_MAX * (1 + EPS)) {
 		// N+1!
 		std::vector<double> fA(MSudakovNumerics::ShuvaevIntegralN + 1, 0.0);
 		std::vector<double> fB(MSudakovNumerics::ShuvaevIntegralN + 1, 0.0);
 
-		for (const auto &i : indices(fA)) {
+		for(const auto& i : indices(fA)) {
 			const double y = y_MIN + i * y_STEP;
 			const double argument = x / (4.0 * y);
 
@@ -414,12 +405,11 @@ std::pair<double, double> MSudakov::Shuvaev_H(double q2, double x) {
 		const double norm = 16.0 / math::PI;
 		Hg = norm * math::CSIntegral(fA, y_STEP);
 		dHg = norm * math::CSIntegral(fB, y_STEP);
-
 	} else {
 		// Fatal error
 		throw std::invalid_argument(
-		    "MSudakov::Shuvaev_H(q2,x): Input arguments out of domain: q2 = " +
-		    std::to_string(q2) + ", x = " + std::to_string(x));
+			"MSudakov::Shuvaev_H(q2,x): Input arguments out of domain: q2 = " + std::to_string(q2) +
+			", x = " + std::to_string(x));
 	}
 	return {Hg, dHg};
 }
@@ -458,7 +448,7 @@ std::pair<double, double> MSudakov::Sudakov_T(double qt2, double mu) {
 	//
 	// [INNER z-integral is analytic]:
 	std::vector<double> f(MSudakovNumerics::SudakovIntegralN + 1, 0.0);
-	for (const auto &i : indices(f)) {
+	for(const auto& i : indices(f)) {
 		const double u = MIN + i * STEP;
 		const double kt2 = std::exp(u);
 		const double delta = DeltaScale(kt2, mu);
@@ -470,7 +460,7 @@ std::pair<double, double> MSudakov::Sudakov_T(double qt2, double mu) {
 	const double Tg = std::exp(-integral);
 	const double delta = DeltaScale(qt2, mu);
 	const double dTg =
-	    Tg * AlphaS_Q2(qt2) / (2.0 * math::PI * qt2) * (AP_gg(delta) + AP_qg(delta, qt2));
+		Tg * AlphaS_Q2(qt2) / (2.0 * math::PI * qt2) * (AP_gg(delta) + AP_qg(delta, qt2));
 	return {Tg, dTg};
 }
 
@@ -496,8 +486,8 @@ std::pair<double, double> MSudakov::Sudakov_T(double qt2, double mu) {
 double MSudakov::AP_gg(double delta) const {
 	const double CA = 3.0; // Structure constant
 	return 2.0 * CA *
-	       (std::log(1.0 / delta) -
-	        math::pow2(1.0 - delta) * (3.0 * math::pow2(delta) - 2.0 * delta + 11.0) / 12.0);
+		   (std::log(1.0 / delta) -
+			math::pow2(1.0 - delta) * (3.0 * math::pow2(delta) - 2.0 * delta + 11.0) / 12.0);
 }
 
 // Altarelli-Parisi splitting function definite integral over z,
@@ -510,7 +500,7 @@ double MSudakov::AP_gg(double delta) const {
 double MSudakov::AP_qg(double delta, double qt2) const {
 	const double TR = 0.5; // Structure constant
 	return TR * (-2.0 * math::pow3(delta) / 3.0 + math::pow2(delta) - delta + 2.0 / 3.0) *
-	       NumFlavor(qt2);
+		   NumFlavor(qt2);
 }
 
 // Return the number of quark flavors at scale q^2
@@ -519,9 +509,9 @@ double MSudakov::NumFlavor(double q2) const {
 	const double m_charm = 1.275; // Gev, PDG-2018 (default definition)
 	const double m_bottom = 4.18; // Gev
 
-	if (q2 < math::pow2(m_charm)) {
+	if(q2 < math::pow2(m_charm)) {
 		return 3.0;
-	} else if (q2 < math::pow2(m_bottom)) {
+	} else if(q2 < math::pow2(m_bottom)) {
 		return 4.0;
 	} else {
 		return 5.0;
@@ -529,17 +519,17 @@ double MSudakov::NumFlavor(double q2) const {
 }
 
 // Constructs interpolation array values
-void MSudakov::CalculateArray(IArray2D &arr,
-                              std::pair<double, double> (MSudakov::*f)(double, double)) {
+void MSudakov::CalculateArray(IArray2D& arr,
+							  std::pair<double, double> (MSudakov::*f)(double, double)) {
 	MTimer timer;
-	for (const auto &i : indices(arr.F)) {
+	for(const auto& i : indices(arr.F)) {
 		const double a = arr.MIN[0] + i * arr.STEP[0];
 
 		// Transform input to linear if log stepping, for the function
 		const double var1 = (arr.islog[0]) ? std::exp(a) : a;
 		gra::aux::PrintProgress(i / static_cast<double>(arr.N[0] + 1));
 
-		for (const auto &j : indices(arr.F[i])) {
+		for(const auto& j : indices(arr.F[i])) {
 			const double b = arr.MIN[1] + j * arr.STEP[1];
 
 			// Transform input to linear if log stepping, for the function
@@ -560,9 +550,9 @@ void MSudakov::CalculateArray(IArray2D &arr,
 }
 
 // Write the array to a file
-bool IArray2D::WriteArray(const std::string &filename, bool overwrite) const {
+bool IArray2D::WriteArray(const std::string& filename, bool overwrite) const {
 	// Do not write if file exists already
-	if (gra::aux::FileExist(filename) && !overwrite) {
+	if(gra::aux::FileExist(filename) && !overwrite) {
 		// std::cout << "- Found pre-calculated" << std::endl;
 		return true;
 	}
@@ -570,18 +560,18 @@ bool IArray2D::WriteArray(const std::string &filename, bool overwrite) const {
 
 	std::ofstream file;
 	file.open(filename);
-	if (!file.is_open()) {
+	if(!file.is_open()) {
 		std::string str = "IArray2D::WriteArray: Fatal IO-error with: " + filename;
 		throw std::invalid_argument(str);
 	}
 
 	std::cout << "IArray2D::WriteArray: ";
 
-	for (const auto &i : indices(F)) {
-		for (const auto &j : indices(F[i])) {
+	for(const auto& i : indices(F)) {
+		for(const auto& j : indices(F[i])) {
 			// Write to file
-			file << std::setprecision(15) << F[i][j][0] << "," << F[i][j][1] << ","
-			     << F[i][j][2] << "," << F[i][j][3] << std::endl;
+			file << std::setprecision(15) << F[i][j][0] << "," << F[i][j][1] << "," << F[i][j][2]
+				 << "," << F[i][j][3] << std::endl;
 		}
 	}
 	file.close();
@@ -589,10 +579,10 @@ bool IArray2D::WriteArray(const std::string &filename, bool overwrite) const {
 }
 
 // Read the array from a file
-bool IArray2D::ReadArray(const std::string &filename) {
+bool IArray2D::ReadArray(const std::string& filename) {
 	std::ifstream file;
 	file.open(filename);
-	if (!file.is_open()) {
+	if(!file.is_open()) {
 		std::string str = "IArray2D::ReadArray: Fatal IO-error with: " + filename;
 		return false;
 	}
@@ -601,8 +591,8 @@ bool IArray2D::ReadArray(const std::string &filename) {
 	unsigned int fills = 0;
 	std::cout << "IArray2D::ReadArray: ";
 
-	for (const auto &i : indices(F)) {
-		for (const auto &j : indices(F[i])) {
+	for(const auto& i : indices(F)) {
+		for(const auto& j : indices(F[i])) {
 			// Read every line from the stream
 			getline(file, line);
 
@@ -612,7 +602,7 @@ bool IArray2D::ReadArray(const std::string &filename) {
 
 			// Get every line element (4 of them) separated by separator
 			int k = 0;
-			while (getline(stream, element, ',')) {
+			while(getline(stream, element, ',')) {
 				F[i][j][k] = std::stod(element); // string to double
 				++k;
 				++fills;
@@ -621,7 +611,7 @@ bool IArray2D::ReadArray(const std::string &filename) {
 	}
 	file.close();
 
-	if (fills != 4 * (N[0] + 1) * (N[1] + 1)) {
+	if(fills != 4 * (N[0] + 1) * (N[1] + 1)) {
 		std::string str = "Corrupted file: " + filename;
 		std::cout << str << std::endl;
 		return false;
@@ -637,27 +627,26 @@ bool IArray2D::ReadArray(const std::string &filename) {
 std::pair<double, double> IArray2D::Interpolate2D(double a, double b) const {
 	const double EPS = 1e-5;
 
-	if (a < MIN[0]) {
+	if(a < MIN[0]) {
 		a = MIN[0];
 	} // Truncate before (possible) logarithm
-	if (b < MIN[1]) {
+	if(b < MIN[1]) {
 		b = MIN[1];
 	} // Truncate before (possible) logarithm
 
 	// Logarithmic stepping or not
-	if (islog[0]) {
+	if(islog[0]) {
 		a = std::log(a);
 	}
-	if (islog[1]) {
+	if(islog[1]) {
 		b = std::log(b);
 	}
 
-	if (a > MAX[0] * (1 + EPS) || b > MAX[1] * (1 + EPS)) {
-		printf(
-		    "Interpolate2D(%s,%s) Input out of grid domain: "
-		    "%s = %0.3f [%0.3f, %0.3f], %s = %0.3f [%0.3f, %0.3f] \n",
-		    name[0].c_str(), name[1].c_str(), name[0].c_str(), a, MIN[0], MAX[0],
-		    name[1].c_str(), b, MIN[1], MAX[1]);
+	if(a > MAX[0] * (1 + EPS) || b > MAX[1] * (1 + EPS)) {
+		printf("Interpolate2D(%s,%s) Input out of grid domain: "
+			   "%s = %0.3f [%0.3f, %0.3f], %s = %0.3f [%0.3f, %0.3f] \n",
+			   name[0].c_str(), name[1].c_str(), name[0].c_str(), a, MIN[0], MAX[0],
+			   name[1].c_str(), b, MIN[1], MAX[1]);
 	}
 
 	// Get indices
@@ -665,18 +654,18 @@ std::pair<double, double> IArray2D::Interpolate2D(double a, double b) const {
 	int j = std::floor((b - MIN[1]) / STEP[1]);
 
 	// Lower boundary protection
-	if (i < 0) {
+	if(i < 0) {
 		i = 0;
 	} // Int needed for this (not unsigned int)
-	if (j < 0) {
+	if(j < 0) {
 		j = 0;
 	}
 
 	// Upper boundary protection
-	if (i >= (int)N[0]) {
+	if(i >= (int)N[0]) {
 		i = N[0] - 1;
 	} // We got N+1 elements in F
-	if (j >= (int)N[1]) {
+	if(j >= (int)N[1]) {
 		j = N[1] - 1;
 	}
 
@@ -697,7 +686,7 @@ std::pair<double, double> IArray2D::Interpolate2D(double a, double b) const {
 	double values[2] = {0.0};
 
 	// 2 == Z, 3 == dZ
-	for (std::size_t C = 2; C <= 3; ++C) {
+	for(std::size_t C = 2; C <= 3; ++C) {
 		const double Q11 = F[i][j][C];
 		const double Q12 = F[i][j + 1][C];
 		const double Q21 = F[i + 1][j][C];
@@ -705,9 +694,8 @@ std::pair<double, double> IArray2D::Interpolate2D(double a, double b) const {
 
 		// Interpolated valued
 		values[C - 2] =
-		    ((y2 - yval) / ystep) *
-		        ((x2 - xval) / xstep * Q11 + (xval - x1) / xstep * Q21) +
-		    ((yval - y1) / ystep) * ((x2 - xval) / xstep * Q12 + (xval - x1) / xstep * Q22);
+			((y2 - yval) / ystep) * ((x2 - xval) / xstep * Q11 + (xval - x1) / xstep * Q21) +
+			((yval - y1) / ystep) * ((x2 - xval) / xstep * Q12 + (xval - x1) / xstep * Q22);
 	}
 
 	return {values[0], values[1]};

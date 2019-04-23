@@ -18,7 +18,6 @@
 using namespace std;
 
 namespace MG5_sm_yy_ll {
-
 double Sgn(double a, double b) {
 	return (b < 0) ? -abs(a) : abs(a);
 }
@@ -34,9 +33,9 @@ void vxxxxx(double p[4], double vmass, int nhel, int nsv, complex<double> vc[6])
 	pt = min(pp, sqrt(pt2));
 	vc[0] = complex<double>(p[0] * nsv, p[3] * nsv);
 	vc[1] = complex<double>(p[1] * nsv, p[2] * nsv);
-	if (vmass != 0.0) {
+	if(vmass != 0.0) {
 		hel0 = 1.0 - std::abs(hel);
-		if (pp == 0.0) {
+		if(pp == 0.0) {
 			vc[2] = complex<double>(0.0, 0.0);
 			vc[3] = complex<double>(-hel * sqh, 0.0);
 			vc[4] = complex<double>(0.0, nsvahl * sqh);
@@ -45,12 +44,10 @@ void vxxxxx(double p[4], double vmass, int nhel, int nsv, complex<double> vc[6])
 			emp = p[0] / (vmass * pp);
 			vc[2] = complex<double>(hel0 * pp / vmass, 0.0);
 			vc[5] = complex<double>(hel0 * p[3] * emp + hel * pt / pp * sqh, 0.0);
-			if (pt != 0.0) {
+			if(pt != 0.0) {
 				pzpt = p[3] / (pp * pt) * sqh * hel;
-				vc[3] = complex<double>(hel0 * p[1] * emp - p[1] * pzpt,
-				                        -nsvahl * p[2] / pt * sqh);
-				vc[4] = complex<double>(hel0 * p[2] * emp - p[2] * pzpt,
-				                        nsvahl * p[1] / pt * sqh);
+				vc[3] = complex<double>(hel0 * p[1] * emp - p[1] * pzpt, -nsvahl * p[2] / pt * sqh);
+				vc[4] = complex<double>(hel0 * p[2] * emp - p[2] * pzpt, nsvahl * p[1] / pt * sqh);
 			} else {
 				vc[3] = complex<double>(-hel * sqh, 0.0);
 				vc[4] = complex<double>(0.0, nsvahl * Sgn(sqh, p[3]));
@@ -61,7 +58,7 @@ void vxxxxx(double p[4], double vmass, int nhel, int nsv, complex<double> vc[6])
 		pt = sqrt((p[1] * p[1]) + (p[2] * p[2]));
 		vc[2] = complex<double>(0.0, 0.0);
 		vc[5] = complex<double>(hel * pt / pp * sqh, 0.0);
-		if (pt != 0.0) {
+		if(pt != 0.0) {
 			pzpt = p[3] / (pp * pt) * sqh * hel;
 			vc[3] = complex<double>(-p[1] * pzpt, -nsv * p[2] / pt * sqh);
 			vc[4] = complex<double>(-p[2] * pzpt, nsv * p[1] / pt * sqh);
@@ -80,9 +77,9 @@ void ixxxxx(double p[4], double fmass, int nhel, int nsf, complex<double> fi[6])
 	fi[0] = complex<double>(-p[0] * nsf, -p[3] * nsf);
 	fi[1] = complex<double>(-p[1] * nsf, -p[2] * nsf);
 	nh = nhel * nsf;
-	if (fmass != 0.0) {
+	if(fmass != 0.0) {
 		pp = min(p[0], sqrt(p[1] * p[1] + p[2] * p[2] + p[3] * p[3]));
-		if (pp == 0.0) {
+		if(pp == 0.0) {
 			sqm[0] = sqrt(std::abs(fmass));
 			sqm[1] = Sgn(sqm[0], fmass);
 			ip = (1 + nh) / 2;
@@ -102,7 +99,7 @@ void ixxxxx(double p[4], double fmass, int nhel, int nsf, complex<double> fi[6])
 			sfomega[1] = sf[1] * omega[im];
 			pp3 = max(pp + p[3], 0.0);
 			chi[0] = complex<double>(sqrt(pp3 * 0.5 / pp), 0);
-			if (pp3 == 0.0) {
+			if(pp3 == 0.0) {
 				chi[1] = complex<double>(-nh, 0);
 			} else {
 				chi[1] = complex<double>(nh * p[1], p[2]) / sqrt(2.0 * pp * pp3);
@@ -113,18 +110,18 @@ void ixxxxx(double p[4], double fmass, int nhel, int nsf, complex<double> fi[6])
 			fi[5] = sfomega[1] * chi[ip];
 		}
 	} else {
-		if (p[1] == 0.0 and p[2] == 0.0 and p[3] < 0.0) {
+		if(p[1] == 0.0 and p[2] == 0.0 and p[3] < 0.0) {
 			sqp0p3 = 0.0;
 		} else {
 			sqp0p3 = sqrt(max(p[0] + p[3], 0.0)) * nsf;
 		}
 		chi[0] = complex<double>(sqp0p3, 0.0);
-		if (sqp0p3 == 0.0) {
+		if(sqp0p3 == 0.0) {
 			chi[1] = complex<double>(-nhel * sqrt(2.0 * p[0]), 0.0);
 		} else {
 			chi[1] = complex<double>(nh * p[1], p[2]) / sqp0p3;
 		}
-		if (nh == 1) {
+		if(nh == 1) {
 			fi[2] = complex<double>(0.0, 0.0);
 			fi[3] = complex<double>(0.0, 0.0);
 			fi[4] = chi[0];
@@ -153,9 +150,9 @@ void oxxxxx(double p[4], double fmass, int nhel, int nsf, complex<double> fo[6])
 	fo[0] = complex<double>(p[0] * nsf, p[3] * nsf);
 	fo[1] = complex<double>(p[1] * nsf, p[2] * nsf);
 	nh = nhel * nsf;
-	if (fmass != 0.000) {
+	if(fmass != 0.000) {
 		pp = min(p[0], sqrt((p[1] * p[1]) + (p[2] * p[2]) + (p[3] * p[3])));
-		if (pp == 0.000) {
+		if(pp == 0.000) {
 			sqm[0] = sqrt(std::abs(fmass));
 			sqm[1] = Sgn(sqm[0], fmass);
 			ip = -((1 - nh) / 2) * nhel;
@@ -176,7 +173,7 @@ void oxxxxx(double p[4], double fmass, int nhel, int nsf, complex<double> fo[6])
 			sfomeg[1] = sf[1] * omega[im];
 			pp3 = max(pp + p[3], 0.00);
 			chi[0] = complex<double>(sqrt(pp3 * 0.5 / pp), 0.00);
-			if (pp3 == 0.00) {
+			if(pp3 == 0.00) {
 				chi[1] = complex<double>(-nh, 0.00);
 			} else {
 				chi[1] = complex<double>(nh * p[1], -p[2]) / sqrt(2.0 * pp * pp3);
@@ -187,18 +184,18 @@ void oxxxxx(double p[4], double fmass, int nhel, int nsf, complex<double> fo[6])
 			fo[5] = sfomeg[0] * chi[ip];
 		}
 	} else {
-		if ((p[1] == 0.00) and (p[2] == 0.00) and (p[3] < 0.00)) {
+		if((p[1] == 0.00) and (p[2] == 0.00) and (p[3] < 0.00)) {
 			sqp0p3 = 0.00;
 		} else {
 			sqp0p3 = sqrt(max(p[0] + p[3], 0.00)) * nsf;
 		}
 		chi[0] = complex<double>(sqp0p3, 0.00);
-		if (sqp0p3 == 0.000) {
+		if(sqp0p3 == 0.000) {
 			chi[1] = complex<double>(-nhel, 0.00) * sqrt(2.0 * p[0]);
 		} else {
 			chi[1] = complex<double>(nh * p[1], -p[2]) / sqp0p3;
 		}
-		if (nh == 1) {
+		if(nh == 1) {
 			fo[2] = chi[0];
 			fo[3] = chi[1];
 			fo[4] = complex<double>(0.00, 0.00);
@@ -229,8 +226,8 @@ void txxxxx(double p[4], double tmass, int nhel, int nst, complex<double> tc[18]
 	ft[5][0] = complex<double>(p[1] * nst, p[2] * nst);
 
 	// construct eps+
-	if (nhel >= 0) {
-		if (pp == 0) {
+	if(nhel >= 0) {
+		if(pp == 0) {
 			ep[0] = complex<double>(0, 0);
 			ep[1] = complex<double>(-sqh, 0);
 			ep[2] = complex<double>(0, nst * sqh);
@@ -239,7 +236,7 @@ void txxxxx(double p[4], double tmass, int nhel, int nst, complex<double> tc[18]
 			ep[0] = complex<double>(0, 0);
 			ep[3] = complex<double>(pt / pp * sqh, 0);
 
-			if (pt != 0) {
+			if(pt != 0) {
 				pzpt = p[3] / (pp * pt) * sqh;
 				ep[1] = complex<double>(-p[1] * pzpt, -nst * p[2] / pt * sqh);
 				ep[2] = complex<double>(-p[2] * pzpt, nst * p[1] / pt * sqh);
@@ -251,8 +248,8 @@ void txxxxx(double p[4], double tmass, int nhel, int nst, complex<double> tc[18]
 	}
 
 	// construct eps-
-	if (nhel <= 0) {
-		if (pp == 0) {
+	if(nhel <= 0) {
+		if(pp == 0) {
 			em[0] = complex<double>(0, 0);
 			em[1] = complex<double>(sqh, 0);
 			em[2] = complex<double>(0, nst * sqh);
@@ -261,7 +258,7 @@ void txxxxx(double p[4], double tmass, int nhel, int nst, complex<double> tc[18]
 			em[0] = complex<double>(0, 0);
 			em[3] = complex<double>(-pt / pp * sqh, 0);
 
-			if (pt != 0) {
+			if(pt != 0) {
 				pzpt = -p[3] / (pp * pt) * sqh;
 				em[1] = complex<double>(-p[1] * pzpt, -nst * p[2] / pt * sqh);
 				em[2] = complex<double>(-p[2] * pzpt, nst * p[1] / pt * sqh);
@@ -273,8 +270,8 @@ void txxxxx(double p[4], double tmass, int nhel, int nst, complex<double> tc[18]
 	}
 
 	// construct eps0
-	if (std::labs(nhel) <= 1) {
-		if (pp == 0) {
+	if(std::labs(nhel) <= 1) {
+		if(pp == 0) {
 			e0[0] = complex<double>(0, 0);
 			e0[1] = complex<double>(0, 0);
 			e0[2] = complex<double>(0, 0);
@@ -284,7 +281,7 @@ void txxxxx(double p[4], double tmass, int nhel, int nst, complex<double> tc[18]
 			e0[0] = complex<double>(pp / tmass, 0);
 			e0[3] = complex<double>(p[3] * emp, 0);
 
-			if (pt != 0) {
+			if(pt != 0) {
 				e0[1] = complex<double>(p[1] * emp, 0);
 				e0[2] = complex<double>(p[2] * emp, 0);
 			} else {
@@ -294,37 +291,36 @@ void txxxxx(double p[4], double tmass, int nhel, int nst, complex<double> tc[18]
 		}
 	}
 
-	if (nhel == 2) {
-		for (j = 0; j < 4; j++) {
-			for (i = 0; i < 4; i++)
+	if(nhel == 2) {
+		for(j = 0; j < 4; j++) {
+			for(i = 0; i < 4; i++)
 				ft[i][j] = ep[i] * ep[j];
 		}
-	} else if (nhel == -2) {
-		for (j = 0; j < 4; j++) {
-			for (i = 0; i < 4; i++)
+	} else if(nhel == -2) {
+		for(j = 0; j < 4; j++) {
+			for(i = 0; i < 4; i++)
 				ft[i][j] = em[i] * em[j];
 		}
-	} else if (tmass == 0) {
-		for (j = 0; j < 4; j++) {
-			for (i = 0; i < 4; i++) {
+	} else if(tmass == 0) {
+		for(j = 0; j < 4; j++) {
+			for(i = 0; i < 4; i++) {
 				ft[i][j] = 0;
 			}
 		}
-	} else if (tmass != 0) {
-		if (nhel == 1) {
-			for (j = 0; j < 4; j++) {
-				for (i = 0; i < 4; i++)
+	} else if(tmass != 0) {
+		if(nhel == 1) {
+			for(j = 0; j < 4; j++) {
+				for(i = 0; i < 4; i++)
 					ft[i][j] = sqh * (ep[i] * e0[j] + e0[i] * ep[j]);
 			}
-		} else if (nhel == 0) {
-			for (j = 0; j < 4; j++) {
-				for (i = 0; i < 4; i++)
-					ft[i][j] = sqs * (ep[i] * em[j] + em[i] * ep[j] +
-					                  2.0 * e0[i] * e0[j]);
+		} else if(nhel == 0) {
+			for(j = 0; j < 4; j++) {
+				for(i = 0; i < 4; i++)
+					ft[i][j] = sqs * (ep[i] * em[j] + em[i] * ep[j] + 2.0 * e0[i] * e0[j]);
 			}
-		} else if (nhel == -1) {
-			for (j = 0; j < 4; j++) {
-				for (i = 0; i < 4; i++)
+		} else if(nhel == -1) {
+			for(j = 0; j < 4; j++) {
+				for(i = 0; i < 4; i++)
 					ft[i][j] = sqh * (em[i] * e0[j] + e0[i] * em[j]);
 			}
 		} else {
@@ -336,26 +332,26 @@ void txxxxx(double p[4], double tmass, int nhel, int nst, complex<double> tc[18]
 	tc[0] = ft[4][0];
 	tc[1] = ft[5][0];
 
-	for (j = 0; j < 4; j++) {
-		for (i = 0; i < 4; i++) {
+	for(j = 0; j < 4; j++) {
+		for(i = 0; i < 4; i++) {
 			tc[j * 4 + i + 2] = ft[j][i];
 		}
 	}
 }
 
 void FFV1_0(std::complex<double> F1[], std::complex<double> F2[], std::complex<double> V3[],
-            std::complex<double> COUP, std::complex<double> &vertex) {
+			std::complex<double> COUP, std::complex<double>& vertex) {
 	static std::complex<double> cI = std::complex<double>(0., 1.);
 	std::complex<double> TMP0;
 	TMP0 = (F1[2] * (F2[4] * (V3[2] + V3[5]) + F2[5] * (V3[3] + cI * (V3[4]))) +
-	        (F1[3] * (F2[4] * (V3[3] - cI * (V3[4])) + F2[5] * (V3[2] - V3[5])) +
-	         (F1[4] * (F2[2] * (V3[2] - V3[5]) - F2[3] * (V3[3] + cI * (V3[4]))) +
-	          F1[5] * (F2[2] * (+cI * (V3[4]) - V3[3]) + F2[3] * (V3[2] + V3[5])))));
+			(F1[3] * (F2[4] * (V3[3] - cI * (V3[4])) + F2[5] * (V3[2] - V3[5])) +
+			 (F1[4] * (F2[2] * (V3[2] - V3[5]) - F2[3] * (V3[3] + cI * (V3[4]))) +
+			  F1[5] * (F2[2] * (+cI * (V3[4]) - V3[3]) + F2[3] * (V3[2] + V3[5])))));
 	vertex = COUP * -cI * TMP0;
 }
 
 void FFV1_2(std::complex<double> F1[], std::complex<double> V3[], std::complex<double> COUP,
-            double M2, double W2, std::complex<double> F2[]) {
+			double M2, double W2, std::complex<double> F2[]) {
 	static std::complex<double> cI = std::complex<double>(0., 1.);
 	double P2[4];
 	std::complex<double> denom;
@@ -366,43 +362,43 @@ void FFV1_2(std::complex<double> F1[], std::complex<double> V3[], std::complex<d
 	P2[2] = -F2[1].imag();
 	P2[3] = -F2[0].imag();
 	denom = COUP / ((P2[0] * P2[0]) - (P2[1] * P2[1]) - (P2[2] * P2[2]) - (P2[3] * P2[3]) -
-	                M2 * (M2 - cI * W2));
-	F2[2] = denom * cI *
-	        (F1[2] * (P2[0] * (V3[2] + V3[5]) +
-	                  (P2[1] * (-1.) * (V3[3] + cI * (V3[4])) +
-	                   (P2[2] * (+cI * (V3[3]) - V3[4]) - P2[3] * (V3[2] + V3[5])))) +
-	         (F1[3] * (P2[0] * (V3[3] - cI * (V3[4])) +
-	                   (P2[1] * (V3[5] - V3[2]) + (P2[2] * (-cI * (V3[5]) + cI * (V3[2])) +
-	                                               P2[3] * (+cI * (V3[4]) - V3[3])))) +
-	          M2 * (F1[4] * (V3[2] - V3[5]) + F1[5] * (+cI * (V3[4]) - V3[3]))));
+					M2 * (M2 - cI * W2));
+	F2[2] =
+		denom * cI * (F1[2] * (P2[0] * (V3[2] + V3[5]) +
+							   (P2[1] * (-1.) * (V3[3] + cI * (V3[4])) +
+								(P2[2] * (+cI * (V3[3]) - V3[4]) - P2[3] * (V3[2] + V3[5])))) +
+					  (F1[3] * (P2[0] * (V3[3] - cI * (V3[4])) +
+								(P2[1] * (V3[5] - V3[2]) + (P2[2] * (-cI * (V3[5]) + cI * (V3[2])) +
+															P2[3] * (+cI * (V3[4]) - V3[3])))) +
+					   M2 * (F1[4] * (V3[2] - V3[5]) + F1[5] * (+cI * (V3[4]) - V3[3]))));
 	F2[3] = denom * (-cI) *
-	        (F1[2] * (P2[0] * (-1.) * (V3[3] + cI * (V3[4])) +
-	                  (P2[1] * (V3[2] + V3[5]) +
-	                   (P2[2] * (+cI * (V3[2] + V3[5])) - P2[3] * (V3[3] + cI * (V3[4]))))) +
-	         (F1[3] * (P2[0] * (V3[5] - V3[2]) +
-	                   (P2[1] * (V3[3] - cI * (V3[4])) +
-	                    (P2[2] * (V3[4] + cI * (V3[3])) + P2[3] * (V3[5] - V3[2])))) +
-	          M2 * (F1[4] * (V3[3] + cI * (V3[4])) - F1[5] * (V3[2] + V3[5]))));
+			(F1[2] * (P2[0] * (-1.) * (V3[3] + cI * (V3[4])) +
+					  (P2[1] * (V3[2] + V3[5]) +
+					   (P2[2] * (+cI * (V3[2] + V3[5])) - P2[3] * (V3[3] + cI * (V3[4]))))) +
+			 (F1[3] * (P2[0] * (V3[5] - V3[2]) +
+					   (P2[1] * (V3[3] - cI * (V3[4])) +
+						(P2[2] * (V3[4] + cI * (V3[3])) + P2[3] * (V3[5] - V3[2])))) +
+			  M2 * (F1[4] * (V3[3] + cI * (V3[4])) - F1[5] * (V3[2] + V3[5]))));
 	F2[4] = denom * (-cI) *
-	        (F1[4] * (P2[0] * (V3[5] - V3[2]) +
-	                  (P2[1] * (V3[3] + cI * (V3[4])) +
-	                   (P2[2] * (V3[4] - cI * (V3[3])) + P2[3] * (V3[5] - V3[2])))) +
-	         (F1[5] * (P2[0] * (V3[3] - cI * (V3[4])) +
-	                   (P2[1] * (-1.) * (V3[2] + V3[5]) +
-	                    (P2[2] * (+cI * (V3[2] + V3[5])) + P2[3] * (V3[3] - cI * (V3[4]))))) +
-	          M2 * (F1[2] * (-1.) * (V3[2] + V3[5]) + F1[3] * (+cI * (V3[4]) - V3[3]))));
+			(F1[4] * (P2[0] * (V3[5] - V3[2]) +
+					  (P2[1] * (V3[3] + cI * (V3[4])) +
+					   (P2[2] * (V3[4] - cI * (V3[3])) + P2[3] * (V3[5] - V3[2])))) +
+			 (F1[5] * (P2[0] * (V3[3] - cI * (V3[4])) +
+					   (P2[1] * (-1.) * (V3[2] + V3[5]) +
+						(P2[2] * (+cI * (V3[2] + V3[5])) + P2[3] * (V3[3] - cI * (V3[4]))))) +
+			  M2 * (F1[2] * (-1.) * (V3[2] + V3[5]) + F1[3] * (+cI * (V3[4]) - V3[3]))));
 	F2[5] = denom * cI *
-	        (F1[4] * (P2[0] * (-1.) * (V3[3] + cI * (V3[4])) +
-	                  (P2[1] * (V3[2] - V3[5]) + (P2[2] * (-cI * (V3[5]) + cI * (V3[2])) +
-	                                              P2[3] * (V3[3] + cI * (V3[4]))))) +
-	         (F1[5] * (P2[0] * (V3[2] + V3[5]) +
-	                   (P2[1] * (+cI * (V3[4]) - V3[3]) +
-	                    (P2[2] * (-1.) * (V3[4] + cI * (V3[3])) - P2[3] * (V3[2] + V3[5])))) +
-	          M2 * (F1[2] * (V3[3] + cI * (V3[4])) + F1[3] * (V3[2] - V3[5]))));
+			(F1[4] * (P2[0] * (-1.) * (V3[3] + cI * (V3[4])) +
+					  (P2[1] * (V3[2] - V3[5]) +
+					   (P2[2] * (-cI * (V3[5]) + cI * (V3[2])) + P2[3] * (V3[3] + cI * (V3[4]))))) +
+			 (F1[5] * (P2[0] * (V3[2] + V3[5]) +
+					   (P2[1] * (+cI * (V3[4]) - V3[3]) +
+						(P2[2] * (-1.) * (V3[4] + cI * (V3[3])) - P2[3] * (V3[2] + V3[5])))) +
+			  M2 * (F1[2] * (V3[3] + cI * (V3[4])) + F1[3] * (V3[2] - V3[5]))));
 }
 
 void FFV1_1(std::complex<double> F2[], std::complex<double> V3[], std::complex<double> COUP,
-            double M1, double W1, std::complex<double> F1[]) {
+			double M1, double W1, std::complex<double> F1[]) {
 	static std::complex<double> cI = std::complex<double>(0., 1.);
 	double P1[4];
 	std::complex<double> denom;
@@ -413,40 +409,39 @@ void FFV1_1(std::complex<double> F2[], std::complex<double> V3[], std::complex<d
 	P1[2] = -F1[1].imag();
 	P1[3] = -F1[0].imag();
 	denom = COUP / ((P1[0] * P1[0]) - (P1[1] * P1[1]) - (P1[2] * P1[2]) - (P1[3] * P1[3]) -
-	                M1 * (M1 - cI * W1));
-	F1[2] =
-	    denom * cI *
-	    (F2[2] * (P1[0] * (V3[5] - V3[2]) +
-	              (P1[1] * (V3[3] - cI * (V3[4])) +
-	               (P1[2] * (V3[4] + cI * (V3[3])) + P1[3] * (V3[5] - V3[2])))) +
-	     (F2[3] * (P1[0] * (V3[3] + cI * (V3[4])) +
-	               (P1[1] * (-1.) * (V3[2] + V3[5]) + (P1[2] * (-1.) * (+cI * (V3[2] + V3[5])) +
-	                                                   P1[3] * (V3[3] + cI * (V3[4]))))) +
-	      M1 * (F2[4] * (V3[2] + V3[5]) + F2[5] * (V3[3] + cI * (V3[4])))));
+					M1 * (M1 - cI * W1));
+	F1[2] = denom * cI *
+			(F2[2] * (P1[0] * (V3[5] - V3[2]) +
+					  (P1[1] * (V3[3] - cI * (V3[4])) +
+					   (P1[2] * (V3[4] + cI * (V3[3])) + P1[3] * (V3[5] - V3[2])))) +
+			 (F2[3] * (P1[0] * (V3[3] + cI * (V3[4])) +
+					   (P1[1] * (-1.) * (V3[2] + V3[5]) + (P1[2] * (-1.) * (+cI * (V3[2] + V3[5])) +
+														   P1[3] * (V3[3] + cI * (V3[4]))))) +
+			  M1 * (F2[4] * (V3[2] + V3[5]) + F2[5] * (V3[3] + cI * (V3[4])))));
 	F1[3] = denom * (-cI) *
-	        (F2[2] * (P1[0] * (+cI * (V3[4]) - V3[3]) +
-	                  (P1[1] * (V3[2] - V3[5]) + (P1[2] * (-cI * (V3[2]) + cI * (V3[5])) +
-	                                              P1[3] * (V3[3] - cI * (V3[4]))))) +
-	         (F2[3] * (P1[0] * (V3[2] + V3[5]) +
-	                   (P1[1] * (-1.) * (V3[3] + cI * (V3[4])) +
-	                    (P1[2] * (+cI * (V3[3]) - V3[4]) - P1[3] * (V3[2] + V3[5])))) +
-	          M1 * (F2[4] * (+cI * (V3[4]) - V3[3]) + F2[5] * (V3[5] - V3[2]))));
+			(F2[2] * (P1[0] * (+cI * (V3[4]) - V3[3]) +
+					  (P1[1] * (V3[2] - V3[5]) +
+					   (P1[2] * (-cI * (V3[2]) + cI * (V3[5])) + P1[3] * (V3[3] - cI * (V3[4]))))) +
+			 (F2[3] * (P1[0] * (V3[2] + V3[5]) +
+					   (P1[1] * (-1.) * (V3[3] + cI * (V3[4])) +
+						(P1[2] * (+cI * (V3[3]) - V3[4]) - P1[3] * (V3[2] + V3[5])))) +
+			  M1 * (F2[4] * (+cI * (V3[4]) - V3[3]) + F2[5] * (V3[5] - V3[2]))));
 	F1[4] = denom * (-cI) *
-	        (F2[4] * (P1[0] * (V3[2] + V3[5]) +
-	                  (P1[1] * (+cI * (V3[4]) - V3[3]) +
-	                   (P1[2] * (-1.) * (V3[4] + cI * (V3[3])) - P1[3] * (V3[2] + V3[5])))) +
-	         (F2[5] * (P1[0] * (V3[3] + cI * (V3[4])) +
-	                   (P1[1] * (V3[5] - V3[2]) + (P1[2] * (-cI * (V3[2]) + cI * (V3[5])) -
-	                                               P1[3] * (V3[3] + cI * (V3[4]))))) +
-	          M1 * (F2[2] * (V3[5] - V3[2]) + F2[3] * (V3[3] + cI * (V3[4])))));
-	F1[5] = denom * cI *
-	        (F2[4] * (P1[0] * (+cI * (V3[4]) - V3[3]) +
-	                  (P1[1] * (V3[2] + V3[5]) + (P1[2] * (-1.) * (+cI * (V3[2] + V3[5])) +
-	                                              P1[3] * (+cI * (V3[4]) - V3[3])))) +
-	         (F2[5] * (P1[0] * (V3[5] - V3[2]) +
-	                   (P1[1] * (V3[3] + cI * (V3[4])) +
-	                    (P1[2] * (V3[4] - cI * (V3[3])) + P1[3] * (V3[5] - V3[2])))) +
-	          M1 * (F2[2] * (+cI * (V3[4]) - V3[3]) + F2[3] * (V3[2] + V3[5]))));
+			(F2[4] * (P1[0] * (V3[2] + V3[5]) +
+					  (P1[1] * (+cI * (V3[4]) - V3[3]) +
+					   (P1[2] * (-1.) * (V3[4] + cI * (V3[3])) - P1[3] * (V3[2] + V3[5])))) +
+			 (F2[5] * (P1[0] * (V3[3] + cI * (V3[4])) +
+					   (P1[1] * (V3[5] - V3[2]) + (P1[2] * (-cI * (V3[2]) + cI * (V3[5])) -
+												   P1[3] * (V3[3] + cI * (V3[4]))))) +
+			  M1 * (F2[2] * (V3[5] - V3[2]) + F2[3] * (V3[3] + cI * (V3[4])))));
+	F1[5] =
+		denom * cI * (F2[4] * (P1[0] * (+cI * (V3[4]) - V3[3]) +
+							   (P1[1] * (V3[2] + V3[5]) + (P1[2] * (-1.) * (+cI * (V3[2] + V3[5])) +
+														   P1[3] * (+cI * (V3[4]) - V3[3])))) +
+					  (F2[5] * (P1[0] * (V3[5] - V3[2]) +
+								(P1[1] * (V3[3] + cI * (V3[4])) +
+								 (P1[2] * (V3[4] - cI * (V3[3])) + P1[3] * (V3[5] - V3[2])))) +
+					   M1 * (F2[2] * (+cI * (V3[4]) - V3[3]) + F2[3] * (V3[2] + V3[5]))));
 }
 
 } // end namespace $(namespace)s_sm

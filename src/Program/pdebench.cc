@@ -41,28 +41,28 @@ using namespace gra;
 // We follow MATLAB/Julia implementation from:
 // http://online.kitp.ucsb.edu/online/transturb17/gibson/html/5-kuramoto-sivashinksy.html
 //
-void CNAB2(std::valarray<std::complex<double>> &u, int Lx, double dt, int Nt, int nplot,
-           bool USE_EIGEN) {
+void CNAB2(std::valarray<std::complex<double>>& u, int Lx, double dt, int Nt, int nplot,
+		   bool USE_EIGEN) {
 	// number of gridpoints
 	const int Nx = u.size();
 
 	// Wavenumbers: exp(2*pi*i*kx*x/L)
 	std::valarray<std::complex<double>> kx(Nx);
 	unsigned int j = 0;
-	for (int i = 0; i <= Nx / 2 - 1; ++i) {
+	for(int i = 0; i <= Nx / 2 - 1; ++i) {
 		kx[j] = i;
 		++j;
 	}
 	kx[j] = 0.0;
 	++j;
-	for (int i = -Nx / 2 + 1; i <= -1; ++i) {
+	for(int i = -Nx / 2 + 1; i <= -1; ++i) {
 		kx[j] = i;
 		++j;
 	}
 
 	// Wavenumbers: exp(i*alpha*x)
 	std::valarray<std::complex<double>> alpha =
-	    std::complex<double>(2.0 * gra::math::PI / Lx, 0.0) * kx;
+		std::complex<double>(2.0 * gra::math::PI / Lx, 0.0) * kx;
 	gra::math::PrintArray(alpha, "alpha");
 
 	// Fourier space: D = d/dx operator
@@ -75,14 +75,14 @@ void CNAB2(std::valarray<std::complex<double>> &u, int Lx, double dt, int Nt, in
 
 	// Fourier space: linear operator -D^2 - D^4
 	std::valarray<std::complex<double>> L(alpha.size());
-	for (std::size_t i = 0; i < L.size(); ++i) {
+	for(std::size_t i = 0; i < L.size(); ++i) {
 		L[i] = alpha[i] * alpha[i] - alpha[i] * alpha[i] * alpha[i] * alpha[i];
 	}
 	gra::math::PrintArray(L, "L");
 
 	// Create x-vector
 	std::valarray<std::complex<double>> x(Nx);
-	for (int i = 0; i < (int)x.size(); ++i) {
+	for(int i = 0; i < (int)x.size(); ++i) {
 		x[i] = i * Lx / static_cast<double>(Nx);
 	}
 	gra::math::PrintArray(x, "x");
@@ -102,7 +102,7 @@ void CNAB2(std::valarray<std::complex<double>> &u, int Lx, double dt, int Nt, in
 	std::vector<std::complex<double>> freqvec;
 
 	std::valarray<std::complex<double>> uDOTu = u * u;
-	if (USE_EIGEN) {
+	if(USE_EIGEN) {
 		timevec = gra::math::valarray2vector(uDOTu);
 		fft.fwd(freqvec, timevec);
 		uDOTu = gra::math::vector2valarray(freqvec);
@@ -115,7 +115,7 @@ void CNAB2(std::valarray<std::complex<double>> &u, int Lx, double dt, int Nt, in
 
 	// To spectral domain
 	// FFT
-	if (USE_EIGEN) {
+	if(USE_EIGEN) {
 		timevec = gra::math::valarray2vector(u);
 		fft.fwd(freqvec, timevec);
 		u = gra::math::vector2valarray(freqvec);
@@ -127,9 +127,9 @@ void CNAB2(std::valarray<std::complex<double>> &u, int Lx, double dt, int Nt, in
 	std::valarray<std::complex<double>> temp;
 
 	// timestepping loop, index for saving
-	for (int n = 0; n < Nt; ++n) {
+	for(int n = 0; n < Nt; ++n) {
 		// IFFT
-		if (USE_EIGEN) {
+		if(USE_EIGEN) {
 			freqvec = gra::math::valarray2vector(Nn);
 			fft.inv(timevec, freqvec);
 			Nn = gra::math::vector2valarray(timevec);
@@ -138,13 +138,13 @@ void CNAB2(std::valarray<std::complex<double>> &u, int Lx, double dt, int Nt, in
 		}
 
 		// Square
-		for (std::size_t k = 0; k < Nn.size(); ++k) {
+		for(std::size_t k = 0; k < Nn.size(); ++k) {
 			Nn[k] = gra::math::pow2(std::real(Nn[k]));
 		}
 
 		// To spectral domain
 		// FFT
-		if (USE_EIGEN) {
+		if(USE_EIGEN) {
 			timevec = gra::math::valarray2vector(Nn);
 			fft.fwd(freqvec, timevec);
 			Nn = gra::math::vector2valarray(freqvec);
@@ -161,11 +161,11 @@ void CNAB2(std::valarray<std::complex<double>> &u, int Lx, double dt, int Nt, in
 		Nn = u;
 
 		// Plot
-		if ((n % nplot) == 0) {
+		if((n % nplot) == 0) {
 			std::valarray<std::complex<double>> temp2 = u;
 
 			// IFFT
-			if (USE_EIGEN) {
+			if(USE_EIGEN) {
 				freqvec = gra::math::valarray2vector(temp2);
 				fft.inv(timevec, freqvec);
 				temp2 = gra::math::vector2valarray(timevec);
@@ -174,20 +174,18 @@ void CNAB2(std::valarray<std::complex<double>> &u, int Lx, double dt, int Nt, in
 			}
 
 			const std::vector<std::string> asciiart = {" ", ".", ":", "-", "=",
-			                                           "+", "*", "#", "%", "@"};
+													   "+", "*", "#", "%", "@"};
 			double maxval = 0;
-			for (unsigned int i = 0; i < temp2.size(); ++i) {
-				maxval = gra::math::abs2(temp2[i]) > maxval
-				             ? gra::math::abs2(temp2[i])
-				             : maxval;
+			for(unsigned int i = 0; i < temp2.size(); ++i) {
+				maxval = gra::math::abs2(temp2[i]) > maxval ? gra::math::abs2(temp2[i]) : maxval;
 			}
 			std::cout << n << " ";
-			for (unsigned int i = 0; i < temp2.size(); ++i) {
+			for(unsigned int i = 0; i < temp2.size(); ++i) {
 				const double w = gra::math::abs2(temp2[i]) / (maxval + 1e-9);
 				unsigned int ind = std::round(w * 9);
-				if (ind < 0)
+				if(ind < 0)
 					ind = 0;
-				if (ind > 9)
+				if(ind > 9)
 					ind = 9;
 				std::cout << rang::fg::red << asciiart[ind];
 			}
@@ -200,27 +198,27 @@ void CNAB2(std::valarray<std::complex<double>> &u, int Lx, double dt, int Nt, in
 void testfft() {
 	// FFT test
 	std::valarray<float> xxx =
-	    gra::math::linspace<std::valarray>((float)0.0, (float)10.0, (unsigned int)16);
+		gra::math::linspace<std::valarray>((float)0.0, (float)10.0, (unsigned int)16);
 
 	std::valarray<std::complex<double>> X(xxx.size());
-	for (unsigned int i = 0; i < xxx.size(); ++i) {
+	for(unsigned int i = 0; i < xxx.size(); ++i) {
 		X[i] = xxx[i];
 	}
 	MFFT::fft(X);
 	std::cout << "FFT:" << std::endl;
-	for (unsigned int i = 0; i < X.size(); ++i) {
+	for(unsigned int i = 0; i < X.size(); ++i) {
 		std::cout << X[i] << std::endl;
 	}
 	MFFT::ifft(X);
 	std::cout << "IFFT:" << std::endl;
-	for (unsigned int i = 0; i < X.size(); ++i) {
+	for(unsigned int i = 0; i < X.size(); ++i) {
 		std::cout << X[i] << std::endl;
 	}
 }
 
 // Main
-int main(int argc, char *argv[]) {
-	if (argc != 7) {
+int main(int argc, char* argv[]) {
+	if(argc != 7) {
 		std::cout << "Kuramoto-Sivashinsky 4th order PDE FFT-testbench" << std::endl;
 		std::cout << "Usage: ./pdebench 64 128 16 4 2400 0" << std::endl;
 		return EXIT_FAILURE;
@@ -237,17 +235,16 @@ int main(int argc, char *argv[]) {
 	bool USE_EIGEN = std::atoi(argv[6]);
 
 	std::valarray<std::complex<double>> x(Nx);
-	for (int i = 0; i < (int)x.size(); ++i) {
+	for(int i = 0; i < (int)x.size(); ++i) {
 		x[i] = i * Lx / static_cast<double>(Nx);
 	}
 	std::valarray<std::complex<double>> u(Nx);
-	for (int i = 0; i < (int)u.size(); ++i) {
+	for(int i = 0; i < (int)u.size(); ++i) {
 		// Initialize with single wave
 		// u[i] = std::cos(x[i]/(double)Lx)*(1.0 + std::sin(x[i]/(double)Lx));
 
 		// Initialize with a canonic one
-		u[i] = std::cos(x[i]) +
-		       0.1 * std::cos(x[i] / 16.0) * (1.0 + 2.0 * std::sin(x[i] / 16.0));
+		u[i] = std::cos(x[i]) + 0.1 * std::cos(x[i] / 16.0) * (1.0 + 2.0 * std::sin(x[i] / 16.0));
 	}
 	gra::math::PrintArray(x, "x");
 	gra::math::PrintArray(u, "u");

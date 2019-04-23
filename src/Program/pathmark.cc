@@ -45,9 +45,9 @@ double V(double x) {
 }
 
 // 1D-lattice action
-double S_lat(std::vector<double> &x) {
+double S_lat(std::vector<double>& x) {
 	double S = 0.0;
-	for (int j = 0; j < N - 1; ++j) {
+	for(int j = 0; j < N - 1; ++j) {
 		S += (m / (2.0 * dt)) * gra::math::pow2(x[j + 1] - x[j]) - dt * V(x[j]);
 	}
 	return S;
@@ -55,14 +55,13 @@ double S_lat(std::vector<double> &x) {
 
 // Print variables
 void printvar() {
-	printf(
-	    "  N = %d, dt = %0.3f, m = %0.3f, k_slit = %d, SLIT = %0.3f, samples "
-	    "= %lu \n",
-	    N, dt, m, k_slit, SLIT, NS);
+	printf("  N = %d, dt = %0.3f, m = %0.3f, k_slit = %d, SLIT = %0.3f, samples "
+		   "= %lu \n",
+		   N, dt, m, k_slit, SLIT, NS);
 }
 
 // Main
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
 	// Detector observable histogram
 	const double XWIDTH = 18;
 	MH1<std::complex<double>> hx(50, -XWIDTH, XWIDTH, "Path Integral MC");
@@ -74,7 +73,7 @@ int main(int argc, char *argv[]) {
 
 	// double offset = 2.0;
 
-	if (argc != 7) { // Default
+	if(argc != 7) { // Default
 
 		N = 4;
 		dt = 0.8;
@@ -83,10 +82,9 @@ int main(int argc, char *argv[]) {
 		SLIT = 0.03;
 		NS = 10000000;
 
-		printf("Example input ./pathmark %d %0.3f %0.3f %d %0.3f %lu \n", N, dt, m, k_slit,
-		       SLIT, NS);
+		printf("Example input ./pathmark %d %0.3f %0.3f %d %0.3f %lu \n", N, dt, m, k_slit, SLIT,
+			   NS);
 		std::cout << std::endl;
-
 	} else {
 		// Collect input variables
 		N = atoi(argv[1]);
@@ -117,9 +115,9 @@ int main(int argc, char *argv[]) {
 	std::vector<std::future<std::complex<double>>> futures; // std::async return values
 
 	// MC samples
-	for (unsigned long i = 0; i < NS; ++i) {
+	for(unsigned long i = 0; i < NS; ++i) {
 		// Draw a single path configuration
-		for (int k = 1; k < N; ++k) {
+		for(int k = 1; k < N; ++k) {
 			x[k] = dis(gen);
 		}
 
@@ -134,7 +132,7 @@ int main(int argc, char *argv[]) {
 		// Fill histogram
 		hx.Fill(x[N - 1], W);
 
-		if (localtimer.ElapsedSec() > 0.1) {
+		if(localtimer.ElapsedSec() > 0.1) {
 			localtimer.Reset();
 			gra::aux::PrintProgress(i / static_cast<double>(NS));
 		}
@@ -146,8 +144,8 @@ int main(int argc, char *argv[]) {
 
 	double runtime = globaltimer.ElapsedSec();
 	std::cout << rang::style::bold << "<pathmark - complex path integral CPU benchmark>"
-	          << rang::style::reset << std::endl
-	          << std::endl;
+			  << rang::style::reset << std::endl
+			  << std::endl;
 	printf("- Runtime         = %0.2E sec\n", runtime);
 	printf("- Action integral = %0.3E eval/sec\n", NS / runtime);
 	printf("\n");

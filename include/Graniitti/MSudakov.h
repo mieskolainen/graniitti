@@ -19,12 +19,11 @@
 #include "Graniitti/MTimer.h"
 
 namespace gra {
-
 // Take care when copying this class - there is a pointer to LHAPDF
 
 // Interpolation container
 class IArray2D {
-       public:
+  public:
 	IArray2D(){};
 	~IArray2D(){};
 
@@ -37,32 +36,29 @@ class IArray2D {
 
 	// Setup discretization
 	void Set(unsigned int VAR, std::string _name, double _min, double _max, double _N,
-	         double _logarithmic) {
+			 double _logarithmic) {
 		// Out of index
-		if (VAR > 1) {
-			throw std::invalid_argument("IArray2D::Set: Error: VAR = " +
-			                            std::to_string(VAR) + " > 1");
+		if(VAR > 1) {
+			throw std::invalid_argument("IArray2D::Set: Error: VAR = " + std::to_string(VAR) +
+										" > 1");
 		}
 
 		// AT least two intervals
-		if (_N < 2) {
-			throw std::invalid_argument("IArray2D::Set: Error: N = " +
-			                            std::to_string(_N) + " < 2");
+		if(_N < 2) {
+			throw std::invalid_argument("IArray2D::Set: Error: N = " + std::to_string(_N) + " < 2");
 		}
 
 		// Sanity
-		if (_min >= _max) {
+		if(_min >= _max) {
+			throw std::invalid_argument("IArray2D::Set: Error: Variable " + _name + " MIN = " +
+										std::to_string(_min) + " >= MAX = " + std::to_string(_max));
+		}
+
+		// Sanity
+		if(_logarithmic && _min < 1e-9) {
 			throw std::invalid_argument("IArray2D::Set: Error: Variable " + _name +
-			                            " MIN = " + std::to_string(_min) +
-			                            " >= MAX = " + std::to_string(_max));
-		}
-
-		// Sanity
-		if (_logarithmic && _min < 1e-9) {
-			throw std::invalid_argument(
-			    "IArray2D::Set: Error: Variable " + _name +
-			    " is using logarithmic stepping with boundary MIN = " +
-			    std::to_string(_min));
+										" is using logarithmic stepping with boundary MIN = " +
+										std::to_string(_min));
 		}
 		islog[VAR] = _logarithmic;
 
@@ -79,8 +75,7 @@ class IArray2D {
 	void InitArray() {
 		// Note N+1 !
 		F = std::vector<std::vector<std::vector<double>>>(
-		    N[0] + 1,
-		    std::vector<std::vector<double>>(N[1] + 1, std::vector<double>(4, 0.0)));
+			N[0] + 1, std::vector<std::vector<double>>(N[1] + 1, std::vector<double>(4, 0.0)));
 	}
 
 	// N+1 per dimension!
@@ -90,26 +85,26 @@ class IArray2D {
 	double sqrts = 0.0;
 
 	std::string GetHashString() const {
-		std::string str =
-		    std::to_string(islog[0]) + std::to_string(islog[1]) + std::to_string(MIN[0]) +
-		    std::to_string(MIN[1]) + std::to_string(MAX[0]) + std::to_string(MAX[1]) +
-		    std::to_string(N[0]) + std::to_string(N[1]) + std::to_string(sqrts);
+		std::string str = std::to_string(islog[0]) + std::to_string(islog[1]) +
+						  std::to_string(MIN[0]) + std::to_string(MIN[1]) + std::to_string(MAX[0]) +
+						  std::to_string(MAX[1]) + std::to_string(N[0]) + std::to_string(N[1]) +
+						  std::to_string(sqrts);
 		return str;
 	}
 
-	bool WriteArray(const std::string &filename, bool overwrite) const;
-	bool ReadArray(const std::string &filename);
+	bool WriteArray(const std::string& filename, bool overwrite) const;
+	bool ReadArray(const std::string& filename);
 	std::pair<double, double> Interpolate2D(double A, double B) const;
 };
 
 // Sudakov suppression and skewed pdf
 class MSudakov {
-       public:
+  public:
 	MSudakov();
 	~MSudakov();
 
-	void Init(double sqrts_in, const std::string &PDFSET, bool init_arrays = true);
-	void InitLHAPDF(const std::string &PDFSET);
+	void Init(double sqrts_in, const std::string& PDFSET, bool init_arrays = true);
+	void InitLHAPDF(const std::string& PDFSET);
 	std::pair<double, double> Shuvaev_H(double q2, double x);
 	std::pair<double, double> Sudakov_T(double qt2, double M);
 
@@ -121,18 +116,17 @@ class MSudakov {
 
 	bool initialized = false;
 
-       private:
+  private:
 	int init_trials = 0;
 
 	void InitArrays();
 	double diff_xg_xQ2_wrt_Q2(double x, double q2) const;
 	double AP_gg(double delta) const;
 	double AP_qg(double delta, double qt2) const;
-	void CalculateArray(IArray2D &arr,
-	                    std::pair<double, double> (MSudakov::*f)(double, double));
+	void CalculateArray(IArray2D& arr, std::pair<double, double> (MSudakov::*f)(double, double));
 
 	std::string PDFSETNAME;
-	LHAPDF::PDF *PdfPtr = nullptr;
+	LHAPDF::PDF* PdfPtr = nullptr;
 
 	IArray2D veto; // Sudakov veto
 	IArray2D spdf; // Shuvaev pdf

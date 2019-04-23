@@ -20,7 +20,6 @@ using gra::aux::indices;
 using gra::math::PI;
 
 namespace gra {
-
 void MUserHistograms::InitHistograms() {
 	// Level 1
 	unsigned int Nbins = 40;
@@ -41,19 +40,18 @@ void MUserHistograms::InitHistograms() {
 	Nbins = 40;
 
 	h2["costhetaphi_CS"] =
-	    MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [Collins-Soper frame]");
+		MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [Collins-Soper frame]");
 	h2["costhetaphi_HE"] =
-	    MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [Helicity frame]");
+		MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [Helicity frame]");
 	h2["costhetaphi_AH"] =
-	    MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [Anti-Helicity frame]");
+		MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [Anti-Helicity frame]");
 	h2["costhetaphi_PG"] =
-	    MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [Pseudo-GJ frame]");
+		MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [Pseudo-GJ frame]");
 	h2["costhetaphi_GJ"] =
-	    MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [Gottfried-Jackson frame]");
+		MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [Gottfried-Jackson frame]");
 	h2["costhetaphi_SR"] =
-	    MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [Non-Rotated rest frame]");
-	h2["costhetaphi_LA"] =
-	    MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [LAB frame]");
+		MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [Non-Rotated rest frame]");
+	h2["costhetaphi_LA"] = MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [LAB frame]");
 
 	// Level 3
 	/*
@@ -79,9 +77,9 @@ void MUserHistograms::InitHistograms() {
 }
 
 // Input as the total event weight
-void MUserHistograms::FillHistograms(double totalweight, const gra::LORENTZSCALAR &lts) {
+void MUserHistograms::FillHistograms(double totalweight, const gra::LORENTZSCALAR& lts) {
 	// Level 1
-	if (HIST >= 1) {
+	if(HIST >= 1) {
 		h1["M"].Fill(gra::math::msqrt(lts.m2), totalweight);
 		h1["Rap"].Fill(lts.Y, totalweight);
 		h1["Pt"].Fill(lts.Pt, totalweight);
@@ -89,27 +87,26 @@ void MUserHistograms::FillHistograms(double totalweight, const gra::LORENTZSCALA
 		h1["pPt"].Fill(lts.pfinal[1].Pt(), totalweight);
 
 		// Cascade decay
-		if (lts.decaytree[0].legs.size() > 0) {
+		if(lts.decaytree[0].legs.size() > 0) {
 			h1["m0"].Fill(lts.decaytree[0].p4.M(), totalweight);
 		}
 
 		// Dissociated proton
-		if (lts.pfinal[1].M() > 1.0) {
+		if(lts.pfinal[1].M() > 1.0) {
 			h1["FM"].Fill(lts.pfinal[1].M(), totalweight);
 		}
 	}
 
 	// Level 2
-	if (HIST >= 2) {
-		h2["rap1rap2"].Fill(lts.decaytree[0].p4.Rap(), lts.decaytree[1].p4.Rap(),
-		                    totalweight);
+	if(HIST >= 2) {
+		h2["rap1rap2"].Fill(lts.decaytree[0].p4.Rap(), lts.decaytree[1].p4.Rap(), totalweight);
 		FillCosThetaPhi(totalweight, lts);
 	}
 }
 
 // (costheta,phi) of daughter in different Lorentz frames, input as the total
 // event weight
-void MUserHistograms::FillCosThetaPhi(double totalweight, const gra::LORENTZSCALAR &lts) {
+void MUserHistograms::FillCosThetaPhi(double totalweight, const gra::LORENTZSCALAR& lts) {
 	// Central final states
 	std::vector<M4Vec> pf;
 	pf.push_back(lts.decaytree[0].p4);
@@ -120,21 +117,19 @@ void MUserHistograms::FillCosThetaPhi(double totalweight, const gra::LORENTZSCAL
 	const int direction = 1;
 
 	// ** PREPARE LORENTZ TRANSFORMATION COMMON VARIABLES **
-	M4Vec pb1boost;             // beam1 particle boosted
-	M4Vec pb2boost;             // beam2 particle boosted
+	M4Vec pb1boost; // beam1 particle boosted
+	M4Vec pb2boost; // beam2 particle boosted
 	std::vector<M4Vec> pfboost; // central particles boosted
-	gra::kinematics::LorentFramePrepare(pf, lts.pbeam1, lts.pbeam2, pb1boost, pb2boost,
-	                                    pfboost);
+	gra::kinematics::LorentFramePrepare(pf, lts.pbeam1, lts.pbeam2, pb1boost, pb2boost, pfboost);
 
 	// ** TRANSFORM TO DIFFERENT LORENTZ FRAMES **
 	std::vector<std::string> frametype = {"CS", "HE", "AH", "PG", "SR"};
-	for (const auto &k : indices(frametype)) {
+	for(const auto& k : indices(frametype)) {
 		// Transform and histogram
 		std::vector<M4Vec> pfout;
-		gra::kinematics::LorentzFrame(pfout, pb1boost, pb2boost, pfboost, frametype[k],
-		                              direction);
+		gra::kinematics::LorentzFrame(pfout, pb1boost, pb2boost, pfboost, frametype[k], direction);
 		h2["costhetaphi_" + frametype[k]].Fill(std::cos(pfout[0].Theta()), pfout[0].Phi(),
-		                                       totalweight);
+											   totalweight);
 		// h2["Mphi_"+frametype[k]].Fill(gra::math::msqrt(lts.m2), pfout[0].Phi(),
 		// totalweight);
 	}
@@ -159,13 +154,13 @@ void MUserHistograms::FillCosThetaPhi(double totalweight, const gra::LORENTZSCAL
 
 // Print all histograms out
 void MUserHistograms::PrintHistograms() {
-	if (HIST >= 1) {
-		for (auto const &x : h1) {
+	if(HIST >= 1) {
+		for(auto const& x : h1) {
 			h1[x.first].Print();
 		}
 	}
-	if (HIST >= 2) {
-		for (auto const &x : h2) {
+	if(HIST >= 2) {
+		for(auto const& x : h2) {
 			h2[x.first].Print();
 		}
 	}

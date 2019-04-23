@@ -22,38 +22,37 @@
 #include "HepMC3/GenEvent.h"
 
 namespace gra {
-
 class MFactorized : public MProcess {
-       public:
+  public:
 	MFactorized();
-	MFactorized(std::string process, const std::vector<aux::OneCMD> &syntax);
+	MFactorized(std::string process, const std::vector<aux::OneCMD>& syntax);
 	virtual ~MFactorized();
 
 	void post_Constructor();
 
-	double operator()(const std::vector<double> &randvec, AuxIntData &aux) {
+	double operator()(const std::vector<double>& randvec, AuxIntData& aux) {
 		return EventWeight(randvec, aux);
 	}
-	double EventWeight(const std::vector<double> &randvec, AuxIntData &aux);
-	bool EventRecord(HepMC3::GenEvent &evt);
+	double EventWeight(const std::vector<double>& randvec, AuxIntData& aux);
+	bool EventRecord(HepMC3::GenEvent& evt);
 	void PrintInit(bool silent) const;
 
-       private:
+  private:
 	// Internal
-	bool LoopKinematics(const std::vector<double> &p1p, const std::vector<double> &p2p);
+	bool LoopKinematics(const std::vector<double>& p1p, const std::vector<double>& p2p);
 	bool FiducialCuts() const;
 	void ConstructProcesses();
 
 	// 5+1-Dim phase space, 2->3
-	bool B51RandomKin(const std::vector<double> &randvec);
+	bool B51RandomKin(const std::vector<double>& randvec);
 	bool B51BuildKin(double pt1, double pt2, double phi1, double phi2, double yX, double m2X,
-	                 double m1, double m2);
-	void B51RecordEvent(HepMC3::GenEvent &evt);
+					 double m1, double m2);
+	void B51RecordEvent(HepMC3::GenEvent& evt);
 
 	double B51IntegralVolume() const;
 	double B51PhaseSpaceWeight() const;
 
-	void DecayWidthPS(double &exact) const;
+	void DecayWidthPS(double& exact) const;
 
 	// Dynamic sampling boundaries based on resonance position and width
 	double M_MIN = 0.0;

@@ -12,12 +12,12 @@
 #include "Graniitti/MForm.h"
 
 class MAmpMG5_gg_qqbar {
-       public:
+  public:
 	MAmpMG5_gg_qqbar();
 	~MAmpMG5_gg_qqbar();
-	std::complex<double> CalcAmp(gra::LORENTZSCALAR &lts, double alpS);
+	std::complex<double> CalcAmp(gra::LORENTZSCALAR& lts, double alpS);
 
-       private:
+  private:
 	double calls = 0;
 	double ratiosum = 0;
 
@@ -39,16 +39,16 @@ class MAmpMG5_gg_qqbar {
 	double matrix_element[nprocesses];
 
 	// Color flows, used when selecting color
-	double *jamp2[nprocesses];
+	double* jamp2[nprocesses];
 
 	// Pointer to the model parameters
-	Parameters_sm *pars;
+	Parameters_sm* pars;
 
 	// vector with external particle masses
 	vector<double> mME;
 
 	// vector with momenta (to be changed each event)
-	vector<double *> p;
+	vector<double*> p;
 	// Initial particle ids
 	int id1, id2;
 };

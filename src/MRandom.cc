@@ -13,13 +13,12 @@
 #include "Graniitti/MRandom.h"
 
 namespace gra {
-
 // Poisson distributed random numbers with mean lambda
 int MRandom::PoissonRandom(double lambda) {
 	const unsigned int ALGO = 2;
 
 	// Knuth algorithm
-	if (ALGO == 1) {
+	if(ALGO == 1) {
 		const double L = std::exp(-lambda);
 		int k = 0;
 		double p = 1;
@@ -27,17 +26,17 @@ int MRandom::PoissonRandom(double lambda) {
 		do {
 			++k;
 			p *= U(0, 1);
-		} while (p > L);
+		} while(p > L);
 		return k - 1;
 	}
 	// Inversion search algorithm
-	if (ALGO == 2) {
+	if(ALGO == 2) {
 		int k = 0;
 		double p = std::exp(-lambda);
 		double s = p;
 		double u = U(0, 1);
 
-		while (u > s) {
+		while(u > s) {
 			++k;
 			p = p * lambda / k;
 			s += p;
@@ -81,13 +80,13 @@ double MRandom::RelativisticBWRandom(double m, double Gamma, double LIMIT) {
 	const double m2min = gra::math::pow2(m - LIMIT * Gamma);
 
 	double m2val = 0.0;
-	while (true) {
+	while(true) {
 		const double R = U(0, 1);
 		m2val = m2 +
-		        m * Gamma * std::tan(std::atan2(m2min - m2, m * Gamma) +
-		                             R * (std::atan2(m2max - m2, m * Gamma) -
-		                                  std::atan2(m2min - m2, m * Gamma)));
-		if (m2val > 0) {
+				m * Gamma * std::tan(std::atan2(m2min - m2, m * Gamma) +
+									 R * (std::atan2(m2max - m2, m * Gamma) -
+										  std::atan2(m2min - m2, m * Gamma)));
+		if(m2val > 0) {
 			break;
 		}
 	}
@@ -100,11 +99,11 @@ double MRandom::RelativisticBWRandom(double m, double Gamma, double LIMIT) {
 // Return mass (GeV)
 double MRandom::CauchyRandom(double m0, double Gamma, double LIMIT) {
 	double mval = 0.0;
-	while (true) {
+	while(true) {
 		const double R = U(0, 1);
 		const double value = (Gamma * 0.5) * std::tan(gra::math::PI * (R - 0.5)) + m0;
 
-		if (value > 0 && value < (m0 + LIMIT * Gamma) && value > (m0 - LIMIT * Gamma)) {
+		if(value > 0 && value < (m0 + LIMIT * Gamma) && value > (m0 - LIMIT * Gamma)) {
 			mval = value;
 			break;
 		}
@@ -113,22 +112,22 @@ double MRandom::CauchyRandom(double m0, double Gamma, double LIMIT) {
 }
 
 // K-dimensional Dirichlet distribution with parameter vector alpha of length K
-void MRandom::DirRandom(const std::vector<double> &alpha, std::vector<double> &y) {
+void MRandom::DirRandom(const std::vector<double>& alpha, std::vector<double>& y) {
 	unsigned int K = alpha.size();
 
 	// Draw K independent samples from Gamma(shape = alpha_i, scale = 1)
 	y.resize(K, 0.0);
-	for (std::size_t i = 0; i < K; ++i) {
+	for(std::size_t i = 0; i < K; ++i) {
 		std::gamma_distribution<double> gammarnd(alpha[i], 1.0);
 		y[i] = gammarnd(rng); // Draw sample
 	}
 	// Take the sum
 	double y_sum = 0.0;
-	for (std::size_t i = 0; i < K; ++i) {
+	for(std::size_t i = 0; i < K; ++i) {
 		y_sum += y[i];
 	}
 	// Normalize
-	for (std::size_t i = 0; i < K; ++i) {
+	for(std::size_t i = 0; i < K; ++i) {
 		y[i] /= y_sum;
 	}
 }
@@ -137,7 +136,7 @@ void MRandom::DirRandom(const std::vector<double> &alpha, std::vector<double> &y
 double MRandom::NBDpdf(int n, double avgN, double k) {
 	// return Cbinom(n+k-1,n)
 	return tgamma(n + k) / (tgamma(n + 1) * tgamma(k)) * std::pow(avgN / (k + avgN), n) *
-	       std::pow(k / (k + avgN), k);
+		   std::pow(k / (k + avgN), k);
 }
 
 // Random sample from NBD distribution with parameters avgN and k
@@ -149,14 +148,14 @@ int MRandom::NBDRandom(double avgN, double k, int maxvalue) {
 
 	// Acceptance-Rejection
 	unsigned int trials = 0;
-	while (true) {
+	while(true) {
 		const int n = RANDI(rng);
 		const double val = NBDpdf(n, avgN, k);
-		if (U(0, 1) < val) {
+		if(U(0, 1) < val) {
 			return n;
 		}
 		++trials;
-		if (trials > MAXTRIAL) {
+		if(trials > MAXTRIAL) {
 			return avgN; // Return the mean value
 		}
 	}
@@ -173,10 +172,10 @@ int MRandom::LogRandom(double p, int maxvalue) {
 	std::uniform_int_distribution<int> RANDI(0, maxvalue - 1);
 
 	// Acceptance-Rejection
-	while (true) {
+	while(true) {
 		const int n = RANDI(rng);
 		const double val = Logpdf(n, p);
-		if (U(0, 1) < val) {
+		if(U(0, 1) < val) {
 			return n;
 		}
 	}

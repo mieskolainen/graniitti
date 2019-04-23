@@ -7,13 +7,13 @@
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
-#include <math.h>
 #include <algorithm>
 #include <chrono>
 #include <complex>
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
+#include <math.h>
 #include <memory>
 #include <memory>
 #include <mutex>
@@ -51,12 +51,11 @@ struct MEASUREMENT {
 void experiment(bool screening);
 
 // Main
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
 	gra::aux::PrintFlashScreen(rang::fg::green);
-	std::cout << rang::style::bold
-	          << "GRANIITTI - Fiducial Measurements vs Monte Carlo Processes"
-	          << rang::style::reset << std::endl
-	          << std::endl;
+	std::cout << rang::style::bold << "GRANIITTI - Fiducial Measurements vs Monte Carlo Processes"
+			  << rang::style::reset << std::endl
+			  << std::endl;
 	gra::aux::PrintVersion();
 
 	// Save the number of input arguments
@@ -64,10 +63,10 @@ int main(int argc, char *argv[]) {
 	try {
 		cxxopts::Options options(argv[0], "");
 		options.add_options()("l,POMLOOP", "Screening Pomeron loop (slow)",
-		                      cxxopts::value<std::string>())("H,help", "Help");
+							  cxxopts::value<std::string>())("H,help", "Help");
 		auto r = options.parse(argc, argv);
 
-		if (r.count("help") || NARGC == 0) {
+		if(r.count("help") || NARGC == 0) {
 			std::cout << options.help({""}) << std::endl;
 			std::cout << "Example:" << std::endl;
 			std::cout << "  " << argv[0] << " -l false" << std::endl << std::endl;
@@ -75,36 +74,33 @@ int main(int argc, char *argv[]) {
 		}
 
 		bool screening = false;
-		if (r.count("l")) {
+		if(r.count("l")) {
 			const std::string val = r["l"].as<std::string>();
 			screening = (val == "true");
 		}
 
 		// Project
 		experiment(screening);
-
-	} catch (const std::invalid_argument &e) {
+	} catch(const std::invalid_argument& e) {
 		gra::aux::PrintGameOver();
 		std::cerr << rang::fg::red << "Exception catched: " << rang::fg::reset << e.what()
-		          << std::endl;
+				  << std::endl;
 		return EXIT_FAILURE;
-	} catch (const std::ios_base::failure &e) {
+	} catch(const std::ios_base::failure& e) {
 		gra::aux::PrintGameOver();
 		std::cerr << rang::fg::red
-		          << "Exception catched: std::ios_base::failure: " << rang::fg::reset
-		          << e.what() << std::endl;
+				  << "Exception catched: std::ios_base::failure: " << rang::fg::reset << e.what()
+				  << std::endl;
 		return EXIT_FAILURE;
-	} catch (const cxxopts::OptionException &e) {
+	} catch(const cxxopts::OptionException& e) {
 		gra::aux::PrintGameOver();
-		std::cerr << rang::fg::red
-		          << "Exception catched: Commandline options: " << rang::fg::reset
-		          << e.what() << std::endl;
+		std::cerr << rang::fg::red << "Exception catched: Commandline options: " << rang::fg::reset
+				  << e.what() << std::endl;
 		return EXIT_FAILURE;
-	} catch (...) {
+	} catch(...) {
 		gra::aux::PrintGameOver();
-		std::cerr << rang::fg::red
-		          << "Exception catched: Unspecified (...) (Probably JSON input)"
-		          << rang::fg::reset << std::endl;
+		std::cerr << rang::fg::red << "Exception catched: Unspecified (...) (Probably JSON input)"
+				  << rang::fg::reset << std::endl;
 		return EXIT_FAILURE;
 	}
 
@@ -208,19 +204,19 @@ void experiment(bool screening) {
 	FILE* fout;
 	fout = fopen("burn.csv", "w");
 	if (fout == NULL) {
-	            printf("Scan:: Error opening burn.csv file! \n");
-	            return;
+				printf("Scan:: Error opening burn.csv file! \n");
+				return;
 	}
 	FILE* fout_latex;
 	fout_latex = fopen("burn.tex", "w");
 	if (fout_latex == NULL) {
-	            printf("Scan:: Error opening burn.tex file! \n");
-	            return;
+				printf("Scan:: Error opening burn.tex file! \n");
+				return;
 	}
 
 	fprintf(fout, "sqrts\t\txstot\t\txsin\t\txsel");
 	for (unsigned int k = 0; k < input.size(); ++k) {
-	            fprintf(fout, "\txs%d", k);
+				fprintf(fout, "\txs%d", k);
 	}
 	fprintf(fout, "\n");
 	fflush(fout);
@@ -230,15 +226,15 @@ void experiment(bool screening) {
 	std::vector<std::vector<double>> xs0_err = xs0;
 
 	int MODEMAX = 1;
-	if (screening) {
+	if(screening) {
 		MODEMAX = 2;
 	}
 
 	// LOOP over ALL input
-	for (auto const &p : indices(input)) {
+	for(auto const& p : indices(input)) {
 		// Screening off/on
-		for (int mode = 0; mode < MODEMAX; ++mode) {
-			MGraniitti *gen = new MGraniitti();
+		for(int mode = 0; mode < MODEMAX; ++mode) {
+			MGraniitti* gen = new MGraniitti();
 
 			try {
 				// Silent output
@@ -263,16 +259,15 @@ void experiment(bool screening) {
 
 				// > Get process cross section and error
 				gen->GetXS(xs0[p][mode], xs0_err[p][mode]);
-
-			} catch (const std::invalid_argument &err) {
-				std::cerr << "PROCESS:: " << input[p].card
-				          << " : Exception catched: " << err.what() << std::endl;
+			} catch(const std::invalid_argument& err) {
+				std::cerr << "PROCESS:: " << input[p].card << " : Exception catched: " << err.what()
+						  << std::endl;
 				exit(0);
-			} catch (const std::ios_base::failure &err) {
-				std::cerr << "PROCESS:: " << input[p].card
-				          << " : Exception catched: " << err.what() << std::endl;
+			} catch(const std::ios_base::failure& err) {
+				std::cerr << "PROCESS:: " << input[p].card << " : Exception catched: " << err.what()
+						  << std::endl;
 				exit(0);
-			} catch (...) {
+			} catch(...) {
 				std::cerr << "Exception (...) catched!" << std::endl;
 				exit(0);
 			}
@@ -280,20 +275,19 @@ void experiment(bool screening) {
 			delete gen;
 
 		} // Screening on/off
-	}         // Process loop
+	} // Process loop
 
 	std::cout << std::endl;
 	printf("Finished in %0.1f sec \n\n", timer.ElapsedSec());
 
 	// Loop over processes
-	for (const auto &i : indices(input)) {
-		printf(
-		    "[%22s] DATA = %0.2E +- %0.2E (stat) +- %0.2E (syst) | MC BARE = "
-		    "%0.3E (ratio = %0.2f) | MC SCRN = %0.3E (ratio = %0.2f) | <S^2> = "
-		    "%0.3f \n",
-		    input[i].card.c_str(), input[i].value, input[i].stat, input[i].syst, xs0[i][0],
-		    xs0[i][0] / input[i].value, xs0[i][1], xs0[i][1] / input[i].value,
-		    xs0[i][1] / xs0[i][0]);
+	for(const auto& i : indices(input)) {
+		printf("[%22s] DATA = %0.2E +- %0.2E (stat) +- %0.2E (syst) | MC BARE = "
+			   "%0.3E (ratio = %0.2f) | MC SCRN = %0.3E (ratio = %0.2f) | <S^2> = "
+			   "%0.3f \n",
+			   input[i].card.c_str(), input[i].value, input[i].stat, input[i].syst, xs0[i][0],
+			   xs0[i][0] / input[i].value, xs0[i][1], xs0[i][1] / input[i].value,
+			   xs0[i][1] / xs0[i][0]);
 	}
 
 	printf("\n");

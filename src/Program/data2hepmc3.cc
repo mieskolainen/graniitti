@@ -32,10 +32,10 @@
 std::shared_ptr<HepMC3::GenRunInfo> runinfo = nullptr;
 std::shared_ptr<HepMC3::WriterAscii> outputHepMC3 = nullptr;
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
 	using namespace gra;
 
-	if (argc != 2) {
+	if(argc != 2) {
 		std::cerr << "<Data to HepMC3 container>" << std::endl;
 		std::cerr << "Example: ./data2hepmc3 datafile.csv" << std::endl;
 		return EXIT_FAILURE;
@@ -48,9 +48,9 @@ int main(int argc, char *argv[]) {
 	const double xsforced = 5.5e-6;
 
 	// Read events
-	FILE *fp;
+	FILE* fp;
 
-	if ((fp = fopen(DATAFILE.c_str(), "r+")) == NULL) {
+	if((fp = fopen(DATAFILE.c_str(), "r+")) == NULL) {
 		printf("No inputfile %s found \n", DATAFILE.c_str());
 		return false;
 	}
@@ -60,8 +60,8 @@ int main(int argc, char *argv[]) {
 	runinfo = std::make_shared<HepMC3::GenRunInfo>();
 
 	struct HepMC3::GenRunInfo::ToolInfo generator = {
-	    std::string("data2hepmc3"), std::to_string(gra::aux::GetVersion()).substr(0, 5),
-	    std::string("data")};
+		std::string("data2hepmc3"), std::to_string(gra::aux::GetVersion()).substr(0, 5),
+		std::string("data")};
 	runinfo->tools().push_back(generator);
 
 	// struct HepMC3::GenRunInfo::ToolInfo config = {
@@ -87,25 +87,24 @@ int main(int argc, char *argv[]) {
 
 	// Loop over events
 	unsigned int events = 0;
-	while (true) {
+	while(true) {
 		int ret = -1;
 
-		ret = fscanf(fp, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf", &P1_gen[0], &P1_gen[1],
-		             &P1_gen[2], &dummy, &P2_gen[0], &P2_gen[1], &P2_gen[2], &dummy,
-		             &PID_weight);
+		ret = fscanf(fp, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf", &P1_gen[0], &P1_gen[1], &P1_gen[2],
+					 &dummy, &P2_gen[0], &P2_gen[1], &P2_gen[2], &dummy, &PID_weight);
 
 		/*
 		ret = fscanf(fp, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%d,%d,%d",
-		                     &P1_gen[0], &P1_gen[1], &P1_gen[2],
-		                     &P2_gen[0], &P2_gen[1], &P2_gen[2],
-		                     &P1_rec[0], &P1_rec[1], &P1_rec[2],
-		                     &P2_rec[0], &P2_rec[1], &P2_rec[2],
-		                     &PDG1, &PDG2, &REC);
+							 &P1_gen[0], &P1_gen[1], &P1_gen[2],
+							 &P2_gen[0], &P2_gen[1], &P2_gen[2],
+							 &P1_rec[0], &P1_rec[1], &P1_rec[2],
+							 &P2_rec[0], &P2_rec[1], &P2_rec[2],
+							 &PDG1, &PDG2, &REC);
 		*/
 
-		if (ret == DATATYPE) { // number of values per line
-			               // Fine
-		} else if (ret == EOF) {
+		if(ret == DATATYPE) { // number of values per line
+			// Fine
+		} else if(ret == EOF) {
 			break;
 		} else {
 			printf("Error in the file structure of %s!\n", DATAFILE.c_str());
@@ -137,16 +136,16 @@ int main(int argc, char *argv[]) {
 		gra::M4Vec beam2(0, 0, -1000, 1000);
 
 		HepMC3::GenParticlePtr gen_beam1 = std::make_shared<HepMC3::GenParticle>(
-		    gra::aux::M4Vec2HepMC3(beam1), PDG::PDG_p, PDG::PDG_BEAM);
+			gra::aux::M4Vec2HepMC3(beam1), PDG::PDG_p, PDG::PDG_BEAM);
 		HepMC3::GenParticlePtr gen_beam2 = std::make_shared<HepMC3::GenParticle>(
-		    gra::aux::M4Vec2HepMC3(beam2), PDG::PDG_p, PDG::PDG_BEAM);
+			gra::aux::M4Vec2HepMC3(beam2), PDG::PDG_p, PDG::PDG_BEAM);
 
 		HepMC3::GenParticlePtr gen_system = std::make_shared<HepMC3::GenParticle>(
-		    gra::aux::M4Vec2HepMC3(system), PDG::PDG_system, PDG::PDG_INTERMEDIATE);
+			gra::aux::M4Vec2HepMC3(system), PDG::PDG_system, PDG::PDG_INTERMEDIATE);
 		HepMC3::GenParticlePtr gen_p1f = std::make_shared<HepMC3::GenParticle>(
-		    gra::aux::M4Vec2HepMC3(pf1), PDG::PDG_pip, PDG::PDG_STABLE);
+			gra::aux::M4Vec2HepMC3(pf1), PDG::PDG_pip, PDG::PDG_STABLE);
 		HepMC3::GenParticlePtr gen_p2f = std::make_shared<HepMC3::GenParticle>(
-		    gra::aux::M4Vec2HepMC3(pf2), PDG::PDG_pim, PDG::PDG_STABLE);
+			gra::aux::M4Vec2HepMC3(pf2), PDG::PDG_pim, PDG::PDG_STABLE);
 		HepMC3::GenVertexPtr v1 = std::make_shared<HepMC3::GenVertex>();
 		HepMC3::GenVertexPtr v2 = std::make_shared<HepMC3::GenVertex>();
 
@@ -164,7 +163,7 @@ int main(int argc, char *argv[]) {
 
 		// Save cross section information (HepMC3 format wants it event by event)
 		std::shared_ptr<HepMC3::GenCrossSection> xsobj =
-		    std::make_shared<HepMC3::GenCrossSection>();
+			std::make_shared<HepMC3::GenCrossSection>();
 		evt.add_attribute("GenCrossSection", xsobj);
 
 		// Now add the value in picobarns [HepMC3 convention]
@@ -181,7 +180,7 @@ int main(int argc, char *argv[]) {
 
 		++events;
 
-		if (events % 100000 == 0) {
+		if(events % 100000 == 0) {
 			std::cout << "Event " << events << " processed" << std::endl;
 		}
 	}

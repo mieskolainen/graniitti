@@ -12,12 +12,12 @@
 #include "Graniitti/MForm.h"
 
 class MAmpMG5_yy_ww {
-       public:
+  public:
 	MAmpMG5_yy_ww();
 	~MAmpMG5_yy_ww();
-	std::complex<double> CalcAmp(gra::LORENTZSCALAR &lts);
+	std::complex<double> CalcAmp(gra::LORENTZSCALAR& lts);
 
-       private:
+  private:
 	// Constants for array limits
 	static const int ninitial = 2;
 	static const int nexternal = 4;
@@ -37,16 +37,16 @@ class MAmpMG5_yy_ww {
 	double matrix_element[nprocesses];
 
 	// Color flows, used when selecting color
-	double *jamp2[nprocesses];
+	double* jamp2[nprocesses];
 
 	// Pointer to the model parameters
-	Parameters_sm *pars;
+	Parameters_sm* pars;
 
 	// vector with external particle masses
 	vector<double> mME;
 
 	// vector with momenta (to be changed each event)
-	vector<double *> p;
+	vector<double*> p;
 
 	// Initial particle ids
 	int id1, id2;

@@ -31,9 +31,8 @@ using gra::math::pow4;
 using gra::math::zi;
 
 namespace gra {
-
 // Initialize
-MSubProc::MSubProc(const std::string &_ISTATE, const std::string &_CHANNEL, const MPDG &_PDG) {
+MSubProc::MSubProc(const std::string& _ISTATE, const std::string& _CHANNEL, const MPDG& _PDG) {
 	ISTATE = _ISTATE;
 	CHANNEL = _CHANNEL;
 	PDG = _PDG;
@@ -49,191 +48,178 @@ MSubProc::MSubProc(const std::string &_ISTATE, const std::string &_CHANNEL, cons
 	PARAM_MONOPOLE::M0 = _PDG.FindByPDG(PDG::PDG_monopole).mass;
 }
 
-MSubProc::MSubProc(const std::vector<std::string> &first) {
-	for (std::size_t i = 0; i < first.size(); ++i) {
+MSubProc::MSubProc(const std::vector<std::string>& first) {
+	for(std::size_t i = 0; i < first.size(); ++i) {
 		ConstructDescriptions(first[i]);
 	}
 }
 
-void MSubProc::ConstructDescriptions(const std::string &first) {
-	if (first == "X") {
+void MSubProc::ConstructDescriptions(const std::string& first) {
+	if(first == "X") {
 		std::map<std::string, std::string> channels;
 		channels.insert(std::pair<std::string, std::string>(
-		    "EL", "Elastic                                  [Eikonal Pomeron]"));
-		channels.insert(std::pair<std::string, std::string>("SD",
-		                                                    "Single Diffractive            "
-		                                                    "           [Triple Pomeron]   "
-		                                                    "   @@ UNDER CONSTRUCTION @@"));
-		channels.insert(std::pair<std::string, std::string>("DD",
-		                                                    "Double Diffractive            "
-		                                                    "           [Triple Pomeron]   "
-		                                                    "   @@ UNDER CONSTRUCTION @@"));
+			"EL", "Elastic                                  [Eikonal Pomeron]"));
+		channels.insert(std::pair<std::string, std::string>("SD", "Single Diffractive            "
+																  "           [Triple Pomeron]   "
+																  "   @@ UNDER CONSTRUCTION @@"));
+		channels.insert(std::pair<std::string, std::string>("DD", "Double Diffractive            "
+																  "           [Triple Pomeron]   "
+																  "   @@ UNDER CONSTRUCTION @@"));
 		channels.insert(std::pair<std::string, std::string>(
-		    "ND",
-		    "Non-Diffractive                          [N-cut soft Pomerons] "
-		    "@@ UNDER "
-		    "CONSTRUCTION @@"));
+			"ND", "Non-Diffractive                          [N-cut soft Pomerons] "
+				  "@@ UNDER "
+				  "CONSTRUCTION @@"));
 		descriptions.insert(
-		    std::pair<std::string, std::map<std::string, std::string>>("X", channels));
-	} else if (first == "PP") {
+			std::pair<std::string, std::map<std::string, std::string>>("X", channels));
+	} else if(first == "PP") {
 		std::map<std::string, std::string> channels;
 		channels.insert(std::pair<std::string, std::string>(
-		    "CONTENSOR",
-		    "Regge continuum 2-body                   [Tensor "
-		    "Pomeron] x [Tensor Pomeron] "
-		    "@@ UNDER TESTING @@"));
+			"CONTENSOR", "Regge continuum 2-body                   [Tensor "
+						 "Pomeron] x [Tensor Pomeron] "
+						 "@@ UNDER TESTING @@"));
 		channels.insert(std::pair<std::string, std::string>(
-		    "RESTENSOR",
-		    "Regge resonance                          [Tensor "
-		    "Pomeron] x [Tensor Pomeron] "
-		    "@@ UNDER TESTING @@"));
+			"RESTENSOR", "Regge resonance                          [Tensor "
+						 "Pomeron] x [Tensor Pomeron] "
+						 "@@ UNDER TESTING @@"));
 		channels.insert(std::pair<std::string, std::string>(
-		    "RES+CONTENSOR",
-		    "Regge resonances + continuum 2-body      [Tensor "
-		    "Pomeron] x [Tensor Pomeron] "
-		    "@@ UNDER TESTING @@"));
+			"RES+CONTENSOR", "Regge resonances + continuum 2-body      [Tensor "
+							 "Pomeron] x [Tensor Pomeron] "
+							 "@@ UNDER TESTING @@"));
 
 		channels.insert(std::pair<std::string, std::string>(
-		    "CON", "Regge continuum 2/4/6-body               [Pomeron] x [Pomeron]"));
+			"CON", "Regge continuum 2/4/6-body               [Pomeron] x [Pomeron]"));
 		channels.insert(std::pair<std::string, std::string>(
-		    "CON-", "Regge continuum 2-body negative subamp   [Pomeron] x [Pomeron]"));
+			"CON-", "Regge continuum 2-body negative subamp   [Pomeron] x [Pomeron]"));
 
 		channels.insert(std::pair<std::string, std::string>(
-		    "RES+CON",
-		    "Regge resonances + continuum 2-body      [Pomeron] x "
-		    "[Gamma/Pomeron]"));
+			"RES+CON", "Regge resonances + continuum 2-body      [Pomeron] x "
+					   "[Gamma/Pomeron]"));
 		channels.insert(std::pair<std::string, std::string>(
-		    "RES", "Regge parametric resonance               [Pomeron] x [Pomeron]"));
+			"RES", "Regge parametric resonance               [Pomeron] x [Pomeron]"));
 		channels.insert(std::pair<std::string, std::string>(
-		    "RESHEL",
-		    "Regge sliding helicity amplitudes        [Pomeron] x "
-		    "[Pomeron] @@ UNDER "
-		    "CONSTRUCTION @@"));
+			"RESHEL", "Regge sliding helicity amplitudes        [Pomeron] x "
+					  "[Pomeron] @@ UNDER "
+					  "CONSTRUCTION @@"));
 		descriptions.insert(
-		    std::pair<std::string, std::map<std::string, std::string>>("PP", channels));
-	} else if (first == "yP") {
+			std::pair<std::string, std::map<std::string, std::string>>("PP", channels));
+	} else if(first == "yP") {
 		std::map<std::string, std::string> channels;
 		channels.insert(std::pair<std::string, std::string>(
-		    "RES", "Photoproduced parametric resonance       [EPA] x [Pomeron]"));
+			"RES", "Photoproduced parametric resonance       [EPA] x [Pomeron]"));
 		descriptions.insert(
-		    std::pair<std::string, std::map<std::string, std::string>>("yP", channels));
-	} else if (first == "yy") {
+			std::pair<std::string, std::map<std::string, std::string>>("yP", channels));
+	} else if(first == "yy") {
 		std::map<std::string, std::string> channels;
 		channels.insert(std::pair<std::string, std::string>(
-		    "RES", "Gamma-Gamma to parametric resonance      [EPA] x [EPA]"));
+			"RES", "Gamma-Gamma to parametric resonance      [EPA] x [EPA]"));
 		channels.insert(std::pair<std::string, std::string>(
-		    "Higgs", "Gamma-Gamma to SM Higgs                  [EPA] x [EPA]"));
+			"Higgs", "Gamma-Gamma to SM Higgs                  [EPA] x [EPA]"));
 		channels.insert(std::pair<std::string, std::string>("monopolium(0)",
-		                                                    "Gamma-Gamma to Monopolium "
-		                                                    "(J=0)          [EPA] x [EPA]  "
-		                                                    "       @@ UNDER TESTING @@"));
+															"Gamma-Gamma to Monopolium "
+															"(J=0)          [EPA] x [EPA]  "
+															"       @@ UNDER TESTING @@"));
 		channels.insert(std::pair<std::string, std::string>(
-		    "CON", "Gamma-Gamma to l+l-, w+w-, monopoles     [EPA] x [EPA]"));
-		channels.insert(std::pair<std::string, std::string>("QED",
-		                                                    "Gamma-Gamma qq -> q l+ l- q   "
-		                                                    "           [FULL QED]         "
-		                                                    "   @@ TEST PROCESS @@"));
+			"CON", "Gamma-Gamma to l+l-, w+w-, monopoles     [EPA] x [EPA]"));
+		channels.insert(std::pair<std::string, std::string>("QED", "Gamma-Gamma qq -> q l+ l- q   "
+																   "           [FULL QED]         "
+																   "   @@ TEST PROCESS @@"));
 		descriptions.insert(
-		    std::pair<std::string, std::map<std::string, std::string>>("yy", channels));
-	} else if (first == "gg") {
+			std::pair<std::string, std::map<std::string, std::string>>("yy", channels));
+	} else if(first == "gg") {
 		std::map<std::string, std::string> channels;
 		channels.insert(std::pair<std::string, std::string>(
-		    "chic(0)", "QCD resonance chic(0)                    [Durham QCD]"));
-		channels.insert(std::pair<std::string, std::string>("CON",
-		                                                    "QCD continuum to gg, 2 x "
-		                                                    "pseudoscalar    [Durham QCD]  "
-		                                                    "        @@ UNDER TESTING @@"));
+			"chic(0)", "QCD resonance chic(0)                    [Durham QCD]"));
+		channels.insert(std::pair<std::string, std::string>("CON", "QCD continuum to gg, 2 x "
+																   "pseudoscalar    [Durham QCD]  "
+																   "        @@ UNDER TESTING @@"));
 		descriptions.insert(
-		    std::pair<std::string, std::map<std::string, std::string>>("gg", channels));
-	} else if (first == "yy_DZ") {
+			std::pair<std::string, std::map<std::string, std::string>>("gg", channels));
+	} else if(first == "yy_DZ") {
 		std::map<std::string, std::string> channels;
 		channels.insert(std::pair<std::string, std::string>(
-		    "CON", "Collinear yy to l+l, w+w- or monopoles   [DZ] x [DZ]"));
+			"CON", "Collinear yy to l+l, w+w- or monopoles   [DZ] x [DZ]"));
 		descriptions.insert(
-		    std::pair<std::string, std::map<std::string, std::string>>("yy_DZ", channels));
-	} else if (first == "yy_LUX") {
+			std::pair<std::string, std::map<std::string, std::string>>("yy_DZ", channels));
+	} else if(first == "yy_LUX") {
 		std::map<std::string, std::string> channels;
-		channels.insert(std::pair<std::string, std::string>("CON",
-		                                                    "Collinear yy to l+l, w+w- or "
-		                                                    "monopoles   [LUX] x [LUX]     "
-		                                                    "    @@ UNDER TESTING @@"));
+		channels.insert(std::pair<std::string, std::string>("CON", "Collinear yy to l+l, w+w- or "
+																   "monopoles   [LUX] x [LUX]     "
+																   "    @@ UNDER TESTING @@"));
 		descriptions.insert(
-		    std::pair<std::string, std::map<std::string, std::string>>("yy_LUX", channels));
+			std::pair<std::string, std::map<std::string, std::string>>("yy_LUX", channels));
 	}
 }
 
 // This is called last by the initialization routines
 // as the last step before event generation.
-void MSubProc::SetTechnicalBoundaries(gra::GENCUT &gcuts, unsigned int EXCITATION) {
-	if (gcuts.forward_pt_min < 0.0) { // Not set yet
+void MSubProc::SetTechnicalBoundaries(gra::GENCUT& gcuts, unsigned int EXCITATION) {
+	if(gcuts.forward_pt_min < 0.0) { // Not set yet
 		gcuts.forward_pt_min = 0.0;
 	}
 
-	if (gcuts.forward_pt_max < 0.0) { // Not set yet
+	if(gcuts.forward_pt_max < 0.0) { // Not set yet
 
-		if (EXCITATION == 0) { // Fully elastic
-			if (ISTATE == "PP") {
+		if(EXCITATION == 0) { // Fully elastic
+			if(ISTATE == "PP") {
 				gcuts.forward_pt_max = 1.75;
-			} else if (ISTATE == "yP") {
+			} else if(ISTATE == "yP") {
 				gcuts.forward_pt_max = 1.75;
-			} else if (ISTATE == "yy") {
+			} else if(ISTATE == "yy") {
 				gcuts.forward_pt_max = 1.5;
-			} else if (ISTATE == "gg") {
+			} else if(ISTATE == "gg") {
 				gcuts.forward_pt_max = 2.0;
 			}
 		}
 
 		// Here, we cannot put too high if we use on-shell matrix (e.g. in EPA)
 		// because t ~ -pt^2
-		else if (EXCITATION == 1) { // Single
+		else if(EXCITATION == 1) { // Single
 			gcuts.forward_pt_max = 3.0;
-		} else if (EXCITATION == 2) { // Double
+		} else if(EXCITATION == 2) { // Double
 			gcuts.forward_pt_max = 3.0;
 		}
 	}
 }
 
-std::complex<double> MSubProc::GetBareAmplitude(gra::LORENTZSCALAR &lts) {
-	if (ISTATE == "X") {
+std::complex<double> MSubProc::GetBareAmplitude(gra::LORENTZSCALAR& lts) {
+	if(ISTATE == "X") {
 		return GetBareAmplitude_X(lts);
-	} else if (ISTATE == "PP") {
+	} else if(ISTATE == "PP") {
 		return GetBareAmplitude_PP(lts);
-	} else if (ISTATE == "yP") {
+	} else if(ISTATE == "yP") {
 		return GetBareAmplitude_yP(lts);
-	} else if (ISTATE == "yy") {
+	} else if(ISTATE == "yy") {
 		return GetBareAmplitude_yy(lts);
-	} else if (ISTATE == "gg") {
+	} else if(ISTATE == "gg") {
 		return GetBareAmplitude_gg(lts);
-	} else if (ISTATE == "yy_DZ") {
+	} else if(ISTATE == "yy_DZ") {
 		return GetBareAmplitude_yy_DZ(lts);
-	} else if (ISTATE == "yy_LUX") {
+	} else if(ISTATE == "yy_LUX") {
 		return GetBareAmplitude_yy_LUX(lts);
 	} else {
-		throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown ISTATE '" +
-		                            ISTATE + '"');
+		throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown ISTATE '" + ISTATE + '"');
 	}
 }
 
 // Inclusive processes
-inline std::complex<double> MSubProc::GetBareAmplitude_X(gra::LORENTZSCALAR &lts) {
+inline std::complex<double> MSubProc::GetBareAmplitude_X(gra::LORENTZSCALAR& lts) {
 	std::complex<double> A(0, 0);
-	if (CHANNEL == "EL" || CHANNEL == "SD" || CHANNEL == "DD") {
+	if(CHANNEL == "EL" || CHANNEL == "SD" || CHANNEL == "DD") {
 		A = ME2(lts, LIPSDIM);
-	} else if (CHANNEL == "ND") {
+	} else if(CHANNEL == "ND") {
 		A = 1.0;
 	} else {
-		throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown CHANNEL = " +
-		                            CHANNEL);
+		throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown CHANNEL = " + CHANNEL);
 	}
 	return A;
 }
 
 // Pomeron-Pomeron
-inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR &lts) {
+inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR& lts) {
 	// ------------------------------------------------------------------
 	// First run, init parameters
 	gra::g_mutex.lock();
-	if (!PARAM_REGGE::initialized) {
+	if(!PARAM_REGGE::initialized) {
 		const int PDG = std::abs(lts.decaytree[0].p.pdg);
 		InitReggeAmplitude(PDG, gra::MODELPARAM);
 		PARAM_REGGE::initialized = true;
@@ -243,13 +229,13 @@ inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR &lt
 
 	std::complex<double> A(0, 0);
 
-	if (CHANNEL == "RES") {
+	if(CHANNEL == "RES") {
 		// Coherent sum of Resonances (loop over)
-		for (auto &x : lts.RESONANCES) {
+		for(auto& x : lts.RESONANCES) {
 			const int J = static_cast<int>(x.second.p.spinX2 / 2.0);
 
 			// Gamma-Pomeron for vectors (could be Pomeron-Odderon too)
-			if (J == 1 && x.second.p.P == -1) {
+			if(J == 1 && x.second.p.P == -1) {
 				A += PhotoME3(lts, x.second);
 			}
 			// Pomeron-Pomeron, J = 0,1,2,... all ok
@@ -257,35 +243,35 @@ inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR &lt
 				A += ME3(lts, x.second);
 			}
 		}
-	} else if (CHANNEL == "RESHEL") {
+	} else if(CHANNEL == "RESHEL") {
 		A = ME3HEL(lts, lts.RESONANCES.begin()->second);
-	} else if (CHANNEL == "RESTENSOR") {
-		if (lts.decaytree.size() == 2) {
+	} else if(CHANNEL == "RESTENSOR") {
+		if(lts.decaytree.size() == 2) {
 			static MTensorPomeron TensorPomeron;
 
-			if (lts.RESONANCES.begin()->second.p.spinX2 == 2) {
+			if(lts.RESONANCES.begin()->second.p.spinX2 == 2) {
 				throw std::invalid_argument(
-				    "MSubProc: RESTENSOR process does not currently support J = 1 "
-				    "resonances");
+					"MSubProc: RESTENSOR process does not currently support J = 1 "
+					"resonances");
 			}
 
 			A = TensorPomeron.ME3(lts, lts.RESONANCES.begin()->second);
 		} else {
 			throw std::invalid_argument(
-			    "MSubProc: Only 2-body + sequential final states for [RESTENSOR] "
-			    "process");
+				"MSubProc: Only 2-body + sequential final states for [RESTENSOR] "
+				"process");
 		}
-	} else if (CHANNEL == "CONTENSOR") {
-		if (lts.decaytree.size() == 2) {
+	} else if(CHANNEL == "CONTENSOR") {
+		if(lts.decaytree.size() == 2) {
 			static MTensorPomeron TensorPomeron;
 			A = TensorPomeron.ME4(lts);
 		} else {
 			throw std::invalid_argument(
-			    "MSubProc: Only 2-body + sequential final states for [CONTENSOR] "
-			    "process");
+				"MSubProc: Only 2-body + sequential final states for [CONTENSOR] "
+				"process");
 		}
-	} else if (CHANNEL == "RES+CONTENSOR") {
-		if (lts.decaytree.size() == 2) {
+	} else if(CHANNEL == "RES+CONTENSOR") {
+		if(lts.decaytree.size() == 2) {
 			static MTensorPomeron TensorPomeron;
 
 			// 1. Continuum matrix element
@@ -293,22 +279,22 @@ inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR &lt
 
 			// Add to temp
 			std::vector<std::complex<double>> tempsum(lts.hamp.size(), 0.0);
-			std::transform(tempsum.begin(), tempsum.end(), lts.hamp.begin(),
-			               tempsum.begin(), std::plus<std::complex<double>>());
+			std::transform(tempsum.begin(), tempsum.end(), lts.hamp.begin(), tempsum.begin(),
+						   std::plus<std::complex<double>>());
 
 			// 2. Coherent sum of Resonances (loop over)
-			for (auto &x : lts.RESONANCES) {
-				if (x.second.p.spinX2 == 2) {
+			for(auto& x : lts.RESONANCES) {
+				if(x.second.p.spinX2 == 2) {
 					throw std::invalid_argument(
-					    "MSubProc: RES+CONTENSOR process does not currently "
-					    "support J = 1 resonances");
+						"MSubProc: RES+CONTENSOR process does not currently "
+						"support J = 1 resonances");
 				}
 
 				// Pomeron-Pomeron
 				TensorPomeron.ME3(lts, x.second);
 				// Add to temp
-				std::transform(tempsum.begin(), tempsum.end(), lts.hamp.begin(),
-				               tempsum.begin(), std::plus<std::complex<double>>());
+				std::transform(tempsum.begin(), tempsum.end(), lts.hamp.begin(), tempsum.begin(),
+							   std::plus<std::complex<double>>());
 			}
 
 			// Total sum
@@ -316,47 +302,45 @@ inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR &lt
 
 			// Get total amplitude squared 1/4 \sum_h |A_h|^2
 			double SumAmp2 = 0.0;
-			for (std::size_t i = 0; i < lts.hamp.size(); ++i) {
+			for(std::size_t i = 0; i < lts.hamp.size(); ++i) {
 				SumAmp2 += gra::math::abs2(lts.hamp[i]);
 			}
 			SumAmp2 /= 4; // Initial state helicity average
 
 			A = msqrt(SumAmp2); // We expect amplitude
-
 		} else {
 			throw std::invalid_argument(
-			    "MSubProc: Only 2-body + sequential final states for [RES+CONTENSOR] "
-			    "process");
+				"MSubProc: Only 2-body + sequential final states for [RES+CONTENSOR] "
+				"process");
 		}
-	} else if (CHANNEL == "CON") {
-		if (lts.decaytree.size() == 2) {
+	} else if(CHANNEL == "CON") {
+		if(lts.decaytree.size() == 2) {
 			A = ME4(lts, 1);
-		} else if (lts.decaytree.size() == 4) {
+		} else if(lts.decaytree.size() == 4) {
 			A = ME6(lts);
-		} else if (lts.decaytree.size() == 6) {
+		} else if(lts.decaytree.size() == 6) {
 			A = ME8(lts);
 		} else {
 			throw std::invalid_argument(
-			    "MSubProc: Only 2/4/6-body + sequential final states for [CON] "
-			    "process");
+				"MSubProc: Only 2/4/6-body + sequential final states for [CON] "
+				"process");
 		}
-	} else if (CHANNEL == "CON-") {
-		if (lts.decaytree.size() == 2) {
+	} else if(CHANNEL == "CON-") {
+		if(lts.decaytree.size() == 2) {
 			A = ME4(lts, -1);
 		} else {
-			throw std::invalid_argument(
-			    "MSubProc: Only 2-body final states for [CON-] process");
+			throw std::invalid_argument("MSubProc: Only 2-body final states for [CON-] process");
 		}
-	} else if (CHANNEL == "RES+CON") {
+	} else if(CHANNEL == "RES+CON") {
 		// 1. Continuum matrix element
 		A = ME4(lts, 1);
 
 		// 2. Coherent sum of Resonances (loop over)
-		for (auto &x : lts.RESONANCES) {
+		for(auto& x : lts.RESONANCES) {
 			const int J = static_cast<int>(x.second.p.spinX2 / 2.0);
 
 			// Gamma-Pomeron for vectors
-			if (J == 1 && x.second.p.P == -1) {
+			if(J == 1 && x.second.p.P == -1) {
 				A += PhotoME3(lts, x.second);
 			}
 			// Pomeron-Pomeron, J = 0,1,2,... all ok
@@ -365,63 +349,60 @@ inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR &lt
 			}
 		}
 	} else {
-		throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown CHANNEL = " +
-		                            CHANNEL);
+		throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown CHANNEL = " + CHANNEL);
 	}
 	return A;
 }
 
 // Gamma-Pomeron
-inline std::complex<double> MSubProc::GetBareAmplitude_yP(gra::LORENTZSCALAR &lts) {
+inline std::complex<double> MSubProc::GetBareAmplitude_yP(gra::LORENTZSCALAR& lts) {
 	std::complex<double> A(0, 0);
 
-	if (CHANNEL == "RES") {
+	if(CHANNEL == "RES") {
 		A = PhotoME3(lts, lts.RESONANCES.begin()->second);
 	} else {
-		throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown CHANNEL = " +
-		                            CHANNEL);
+		throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown CHANNEL = " + CHANNEL);
 	}
 	return A;
 }
 
 // Gamma-Gamma
-inline std::complex<double> MSubProc::GetBareAmplitude_yy(gra::LORENTZSCALAR &lts) {
+inline std::complex<double> MSubProc::GetBareAmplitude_yy(gra::LORENTZSCALAR& lts) {
 	std::complex<double> A(0, 0);
 
-	if (CHANNEL == "RES") {
+	if(CHANNEL == "RES") {
 		A = yyX(lts, lts.RESONANCES.begin()->second);
-	} else if (CHANNEL == "Higgs") {
+	} else if(CHANNEL == "Higgs") {
 		A = yyHiggs(lts);
-	} else if (CHANNEL == "monopolium(0)") {
+	} else if(CHANNEL == "monopolium(0)") {
 		A = yyMP(lts);
-	} else if (CHANNEL == "CON") {
-		if (std::abs(lts.decaytree[0].p.pdg) == 24 &&
-		    std::abs(lts.decaytree[1].p.pdg) == 24) { // W+W-
+	} else if(CHANNEL == "CON") {
+		if(std::abs(lts.decaytree[0].p.pdg) == 24 &&
+		   std::abs(lts.decaytree[1].p.pdg) == 24) { // W+W-
 			A = AmpMG5_yy_ww.CalcAmp(lts);
 		} else { // ffbar
 			A = yyffbar(lts);
 		}
-	} else if (CHANNEL == "QED") {
+	} else if(CHANNEL == "QED") {
 		A = AmpMG5_yy_ll_2to4.CalcAmp(lts);
 	} else {
-		throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown CHANNEL = " +
-		                            CHANNEL);
+		throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown CHANNEL = " + CHANNEL);
 	}
 
 	// Apply non-collinear EPA fluxes
 	const double gammaflux1 =
-	    lts.excite1 ? gra::form::IncohFlux(lts.x1, lts.t1, lts.qt1, lts.pfinal[1].M2())
-	                : form::CohFlux(lts.x1, lts.t1, lts.qt1);
+		lts.excite1 ? gra::form::IncohFlux(lts.x1, lts.t1, lts.qt1, lts.pfinal[1].M2())
+					: form::CohFlux(lts.x1, lts.t1, lts.qt1);
 	const double gammaflux2 =
-	    lts.excite2 ? gra::form::IncohFlux(lts.x2, lts.t2, lts.qt2, lts.pfinal[2].M2())
-	                : form::CohFlux(lts.x2, lts.t2, lts.qt2);
+		lts.excite2 ? gra::form::IncohFlux(lts.x2, lts.t2, lts.qt2, lts.pfinal[2].M2())
+					: form::CohFlux(lts.x2, lts.t2, lts.qt2);
 	const double phasespace = lts.s / lts.s_hat; // Moller flux replacement
 
 	// To "amplitude level"
 	const double flux = msqrt(gammaflux1 * gammaflux2 * phasespace);
 
 	// Helicity amplitudes
-	for (const auto &i : aux::indices(lts.hamp)) {
+	for(const auto& i : aux::indices(lts.hamp)) {
 		lts.hamp[i] *= flux;
 	}
 
@@ -429,7 +410,7 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy(gra::LORENTZSCALAR &lt
 }
 
 // Gamma-Gamma collinear Drees-Zeppenfeld (coherent flux)
-inline std::complex<double> MSubProc::GetBareAmplitude_yy_DZ(gra::LORENTZSCALAR &lts) {
+inline std::complex<double> MSubProc::GetBareAmplitude_yy_DZ(gra::LORENTZSCALAR& lts) {
 	// throw std::invalid_argument("yy_DZ::Not active in this version");
 
 	// Amplitude
@@ -445,23 +426,22 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy_DZ(gra::LORENTZSCALAR 
 
 // Gamma-Gamma LUX-pdf (use at \mu > 10 GeV)
 // *** UNDER TESTING ***
-inline std::complex<double> MSubProc::GetBareAmplitude_yy_LUX(gra::LORENTZSCALAR &lts) {
+inline std::complex<double> MSubProc::GetBareAmplitude_yy_LUX(gra::LORENTZSCALAR& lts) {
 	// @@ MULTITHREADING LOCK @@
 	gra::g_mutex.lock();
-	if (gra::GlobalPdfPtr == nullptr) {
+	if(gra::GlobalPdfPtr == nullptr) {
 		std::string pdfname = gra::LHAPDFSET;
 
 	retry:
 		try {
 			gra::GlobalPdfPtr = LHAPDF::mkPDF(pdfname, 0);
 			gra::pdf_trials = 0; // fine
-		} catch (...) {
+		} catch(...) {
 			++gra::pdf_trials;
-			std::string str =
-			    "MSubProc::InitLHAPDF: Problem with reading '" + pdfname + "'";
+			std::string str = "MSubProc::InitLHAPDF: Problem with reading '" + pdfname + "'";
 			aux::AutoDownloadLHAPDF(pdfname); // Try autodownload
-			gra::g_mutex.unlock();      // Remember before throw, otherwise deadlock
-			if (gra::pdf_trials >= 2) { // too many failures
+			gra::g_mutex.unlock(); // Remember before throw, otherwise deadlock
+			if(gra::pdf_trials >= 2) { // too many failures
 				throw std::invalid_argument(str);
 			} else {
 				goto retry;
@@ -473,16 +453,15 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy_LUX(gra::LORENTZSCALAR
 
 	// Amplitude
 	std::complex<double> A(0, 0);
-	if (CHANNEL == "CON") {
-		if (std::abs(lts.decaytree[0].p.pdg) == 24 &&
-		    std::abs(lts.decaytree[1].p.pdg) == 24) { // W+W-
+	if(CHANNEL == "CON") {
+		if(std::abs(lts.decaytree[0].p.pdg) == 24 &&
+		   std::abs(lts.decaytree[1].p.pdg) == 24) { // W+W-
 			A = AmpMG5_yy_ww.CalcAmp(lts);
 		} else { // ffbar
 			A = yyffbar(lts);
 		}
 	} else {
-		throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown CHANNEL = " +
-		                            CHANNEL);
+		throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown CHANNEL = " + CHANNEL);
 	}
 
 	// @@ MULTITHREADING LOCK @@
@@ -498,7 +477,7 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy_LUX(gra::LORENTZSCALAR
 		// Divide x out
 		f1 = gra::GlobalPdfPtr->xfxQ2(PDG::PDG_gamma, lts.x1, Q2) / lts.x1;
 		f2 = gra::GlobalPdfPtr->xfxQ2(PDG::PDG_gamma, lts.x2, Q2) / lts.x2;
-	} catch (...) {
+	} catch(...) {
 		gra::g_mutex.unlock(); // remember before throw, otherwise deadlock
 		throw std::invalid_argument("MSubProc:yy_LUX: Failed evaluating LHAPDF");
 	}
@@ -509,21 +488,19 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy_LUX(gra::LORENTZSCALAR
 }
 
 // Durham gg
-inline std::complex<double> MSubProc::GetBareAmplitude_gg(gra::LORENTZSCALAR &lts) {
+inline std::complex<double> MSubProc::GetBareAmplitude_gg(gra::LORENTZSCALAR& lts) {
 	std::complex<double> A(0, 0);
 
-	if (CHANNEL == "chic(0)") {
+	if(CHANNEL == "chic(0)") {
 		A = DurhamQCD(lts, CHANNEL);
-	} else if (CHANNEL == "CON") {
-		if (std::abs(lts.decaytree[0].p.pdg) == 21 &&
-		    std::abs(lts.decaytree[1].p.pdg) == 21) {
+	} else if(CHANNEL == "CON") {
+		if(std::abs(lts.decaytree[0].p.pdg) == 21 && std::abs(lts.decaytree[1].p.pdg) == 21) {
 			A = DurhamQCD(lts, "gg");
 		} else {
 			A = DurhamQCD(lts, "MMbar");
 		}
 	} else {
-		throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown CHANNEL = " +
-		                            CHANNEL);
+		throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown CHANNEL = " + CHANNEL);
 	}
 	return A;
 }

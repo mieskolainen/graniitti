@@ -40,7 +40,6 @@ using gra::math::abs2;
 using gra::PDG::GeV2barn;
 
 namespace gra {
-
 // This is needed by construction
 MFactorized::MFactorized() {
 	std::vector<std::string> supported = {"PP", "yP", "yy", "gg"};
@@ -49,43 +48,40 @@ MFactorized::MFactorized() {
 }
 
 // Constructor
-MFactorized::MFactorized(std::string process, const std::vector<aux::OneCMD> &syntax) {
+MFactorized::MFactorized(std::string process, const std::vector<aux::OneCMD>& syntax) {
 	InitHistograms();
 	SetProcess(process, syntax);
 
 	// Init final states
 	M4Vec zerovec(0, 0, 0, 0);
-	for (std::size_t i = 0; i < 10; ++i) {
+	for(std::size_t i = 0; i < 10; ++i) {
 		lts.pfinal.push_back(zerovec);
 	}
 	std::cout << "MFactorized:: [Constructor done]" << std::endl;
 }
 
 // Destructor
-MFactorized::~MFactorized() {
-}
+MFactorized::~MFactorized() {}
 
 // This is manually constructed and updated here
 void MFactorized::ConstructProcesses() {
 	Processes.clear();
 	CID = "F";
-	for (auto const &x : ProcPtr.descriptions) {
+	for(auto const& x : ProcPtr.descriptions) {
 		std::map<std::string, std::string> value = x.second;
-		for (auto const &y : value) {
-			Processes.insert(
-			    std::make_pair(x.first + "[" + y.first + "]<" + CID + ">", y.second));
+		for(auto const& y : value) {
+			Processes.insert(std::make_pair(x.first + "[" + y.first + "]<" + CID + ">", y.second));
 		}
 	}
 }
 
 // Initialize cut and process spesific postsetup
 void MFactorized::post_Constructor() {
-	if (ProcPtr.CHANNEL == "RES") {
+	if(ProcPtr.CHANNEL == "RES") {
 		// Here we support only single resonances
-		if (lts.RESONANCES.size() != 1) {
-			std::string str =
-			    "MFactorized::post_Constructor: Only single resonance supported for "
-			    "this process (RESPARAM.size() != 1)";
+		if(lts.RESONANCES.size() != 1) {
+			std::string str = "MFactorized::post_Constructor: Only single resonance supported for "
+							  "this process (RESPARAM.size() != 1)";
 			throw std::invalid_argument(str);
 		}
 	}
@@ -96,10 +92,10 @@ void MFactorized::post_Constructor() {
 	// Initialize phase space dimension
 	ProcPtr.LIPSDIM = 5 + 1; // All processes, +1 from central system mass
 
-	if (EXCITATION == 1) {
+	if(EXCITATION == 1) {
 		ProcPtr.LIPSDIM += 1;
 	}
-	if (EXCITATION == 2) {
+	if(EXCITATION == 2) {
 		ProcPtr.LIPSDIM += 2;
 	}
 }
@@ -108,7 +104,7 @@ void MFactorized::post_Constructor() {
 // Exact 4-momentum conservation at loop vertices, that is, by using this one
 // does not assume vanishing external momenta in the screening loop calculation.
 
-bool MFactorized::LoopKinematics(const std::vector<double> &p1p, const std::vector<double> &p2p) {
+bool MFactorized::LoopKinematics(const std::vector<double>& p1p, const std::vector<double>& p2p) {
 	static const M4Vec beamsum = lts.pbeam1 + lts.pbeam2;
 	const unsigned int Nf = lts.decaytree.size() + 2; // Number of final states
 
@@ -128,27 +124,27 @@ bool MFactorized::LoopKinematics(const std::vector<double> &p1p, const std::vect
 
 	// Central system momentum
 	lts.pfinal[0].SetPxPy(-(lts.pfinal[1].Px() + lts.pfinal[2].Px()),
-	                      -(lts.pfinal[1].Py() + lts.pfinal[2].Py()));
+						  -(lts.pfinal[1].Py() + lts.pfinal[2].Py()));
 
 	// Central system pz and E
 	const double mtX = msqrt(pow2(mX) + lts.pfinal[0].Pt2());
 	lts.pfinal[0].SetPzE(mtX * std::sinh(yX), mtX * std::cosh(yX));
 
 	// Energy overflow
-	if (lts.pfinal[0].E() > (lts.sqrt_s - (m1 + m2))) {
+	if(lts.pfinal[0].E() > (lts.sqrt_s - (m1 + m2))) {
 		return false;
 	}
 
-	double p1z = gra::kinematics::SolvePz(m1, m2, pt1, pt2, lts.pfinal[0].Pz(),
-	                                      lts.pfinal[0].E(), lts.s);
+	double p1z =
+		gra::kinematics::SolvePz(m1, m2, pt1, pt2, lts.pfinal[0].Pz(), lts.pfinal[0].E(), lts.s);
 	double p2z = -(lts.pfinal[0].Pz() + p1z); // by momentum conservation
-	if (std::isnan(p1z)) {
+	if(std::isnan(p1z)) {
 		return false;
 	}
 
 	// Enforce scattering direction +p -> +p, -p -> -p (VERY RARE POLYNOMIAL
 	// BRANCH FLIP)
-	if (p1z < 0 || p2z > 0) {
+	if(p1z < 0 || p2z > 0) {
 		return false;
 	}
 
@@ -158,7 +154,7 @@ bool MFactorized::LoopKinematics(const std::vector<double> &p1p, const std::vect
 
 	// ------------------------------------------------------------------
 	// Now boost if asymmetric beams
-	if (std::abs(beamsum.Pz()) > 1e-6) {
+	if(std::abs(beamsum.Pz()) > 1e-6) {
 		constexpr int sign = 1; // positive -> boost to the lab
 		kinematics::LorentzBoost(beamsum, lts.sqrt_s, lts.pfinal[1], sign);
 		kinematics::LorentzBoost(beamsum, lts.sqrt_s, lts.pfinal[2], sign);
@@ -166,7 +162,7 @@ bool MFactorized::LoopKinematics(const std::vector<double> &p1p, const std::vect
 	}
 	// ------------------------------------------------------------------
 
-	if (!CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2] + lts.pfinal[0]))) {
+	if(!CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2] + lts.pfinal[0]))) {
 		return false;
 	}
 
@@ -174,7 +170,7 @@ bool MFactorized::LoopKinematics(const std::vector<double> &p1p, const std::vect
 }
 
 // Return Monte Carlo integrand weight
-double MFactorized::EventWeight(const std::vector<double> &randvec, AuxIntData &aux) {
+double MFactorized::EventWeight(const std::vector<double>& randvec, AuxIntData& aux) {
 	double W = 0.0;
 
 	// Kinematics and cuts
@@ -182,7 +178,7 @@ double MFactorized::EventWeight(const std::vector<double> &randvec, AuxIntData &
 	aux.fidcuts_ok = FiducialCuts();
 	aux.vetocuts_ok = VetoCuts();
 
-	if (aux.Valid()) {
+	if(aux.Valid()) {
 		// Matrix element squared
 		const double MatESQ = (FLATAMP == 0) ? abs2(S3ScreenedAmp()) : GetFlatAmp2(lts);
 
@@ -195,15 +191,13 @@ double MFactorized::EventWeight(const std::vector<double> &randvec, AuxIntData &
 		lts.DW_sum.Add(lts.DW, aux.vegasweight);
 
 		double C_space = 1.0;
-		if (lts.decaytree.size() != 0 &&
-		    !ISOLATE) { // We have some legs in the central system
-			C_space = (lts.DW.Integral() /
-			           (2 * PI)); // /(2*PI) from phase space factorization
+		if(lts.decaytree.size() != 0 && !ISOLATE) { // We have some legs in the central system
+			C_space = (lts.DW.Integral() / (2 * PI)); // /(2*PI) from phase space factorization
 		}
 
 		// ** EVENT WEIGHT **
-		W = C_space * (1.0 / S_factor) * B51PhaseSpaceWeight() * B51IntegralVolume() *
-		    MatESQ * GeV2barn / MollerFlux();
+		W = C_space * (1.0 / S_factor) * B51PhaseSpaceWeight() * B51IntegralVolume() * MatESQ *
+			GeV2barn / MollerFlux();
 	}
 
 	aux.amplitude_ok = CheckInfNan(W);
@@ -221,34 +215,34 @@ bool MFactorized::FiducialCuts() const {
 }
 
 // Record event
-bool MFactorized::EventRecord(HepMC3::GenEvent &evt) {
+bool MFactorized::EventRecord(HepMC3::GenEvent& evt) {
 	return CommonRecord(evt);
 }
 
 void MFactorized::PrintInit(bool silent) const {
-	if (!silent) {
+	if(!silent) {
 		PrintSetup();
 
 		// Construct prettyprint diagram
 		std::string proton1 = "-----------EL--------->";
 		std::string proton2 = "-----------EL--------->";
 
-		if (EXCITATION == 1) {
+		if(EXCITATION == 1) {
 			proton1 = "-----------F2-xxxxxxxx>";
 		}
-		if (EXCITATION == 2) {
+		if(EXCITATION == 2) {
 			proton1 = "-----------F2-xxxxxxxx>";
 			proton2 = "-----------F2-xxxxxxxx>";
 		}
 
 		std::vector<std::string> feynmangraph;
 		feynmangraph = {"||          ", "||          ", "xx--------->", "||          ",
-		                "||          "};
+						"||          "};
 
 		// Print diagram
 		std::cout << proton1 << std::endl;
-		for (const auto &i : indices(feynmangraph)) {
-			if (SCREENING) { // Put red
+		for(const auto& i : indices(feynmangraph)) {
+			if(SCREENING) { // Put red
 				std::cout << rang::fg::red << "     **    " << rang::style::reset;
 			} else {
 				std::cout << rang::fg::red << "           " << rang::style::reset;
@@ -259,22 +253,19 @@ void MFactorized::PrintInit(bool silent) const {
 		std::cout << std::endl;
 
 		std::cout << std::endl;
-		std::cout << rang::style::bold << "Generation cuts:" << rang::style::reset
-		          << std::endl
-		          << std::endl;
-		printf(
-		    "- System rapidity (Rap) [min, max] = [%0.2f, %0.2f]     \t(user) \n"
-		    "- System mass (M)       [min, max] = [%0.2f, %0.2f] GeV \t(user) \n"
-		    "- Forward leg (Pt)      [min, max] = [%0.2f, %0.2f] GeV "
-		    "\t(fixed/user) \n",
-		    gcuts.Y_min, gcuts.Y_max, gcuts.M_min, gcuts.M_max, gcuts.forward_pt_min,
-		    gcuts.forward_pt_max);
+		std::cout << rang::style::bold << "Generation cuts:" << rang::style::reset << std::endl
+				  << std::endl;
+		printf("- System rapidity (Rap) [min, max] = [%0.2f, %0.2f]     \t(user) \n"
+			   "- System mass (M)       [min, max] = [%0.2f, %0.2f] GeV \t(user) \n"
+			   "- Forward leg (Pt)      [min, max] = [%0.2f, %0.2f] GeV "
+			   "\t(fixed/user) \n",
+			   gcuts.Y_min, gcuts.Y_max, gcuts.M_min, gcuts.M_max, gcuts.forward_pt_min,
+			   gcuts.forward_pt_max);
 
-		if (EXCITATION != 0) {
-			printf(
-			    "- Forward leg (Xi)      [min, max] = [%0.2E, %0.2E]     "
-			    "\t(fixed/user) \n",
-			    gcuts.XI_min, gcuts.XI_max);
+		if(EXCITATION != 0) {
+			printf("- Forward leg (Xi)      [min, max] = [%0.2E, %0.2E]     "
+				   "\t(fixed/user) \n",
+				   gcuts.XI_min, gcuts.XI_max);
 		}
 
 		PrintFiducialCuts();
@@ -282,11 +273,11 @@ void MFactorized::PrintInit(bool silent) const {
 }
 
 // 5+1-dimensional phase space vector initialization
-bool MFactorized::B51RandomKin(const std::vector<double> &randvec) {
+bool MFactorized::B51RandomKin(const std::vector<double>& randvec) {
 	const double pt1 =
-	    gcuts.forward_pt_min + (gcuts.forward_pt_max - gcuts.forward_pt_min) * randvec[0];
+		gcuts.forward_pt_min + (gcuts.forward_pt_max - gcuts.forward_pt_min) * randvec[0];
 	const double pt2 =
-	    gcuts.forward_pt_min + (gcuts.forward_pt_max - gcuts.forward_pt_min) * randvec[1];
+		gcuts.forward_pt_min + (gcuts.forward_pt_max - gcuts.forward_pt_min) * randvec[1];
 	const double phi1 = 2.0 * gra::math::PI * randvec[2];
 	const double phi2 = 2.0 * gra::math::PI * randvec[3];
 	const double yX = gcuts.Y_min + (gcuts.Y_max - gcuts.Y_min) * randvec[4];
@@ -295,11 +286,11 @@ bool MFactorized::B51RandomKin(const std::vector<double> &randvec) {
 	// retry
 	unsigned int trials = 0;
 	const unsigned int MAXTRIAL = 1e5;
-	while (true) {
+	while(true) {
 		double M_sum = 0.0;
 
 		// ==============================================================
-		for (const auto &i : indices(lts.decaytree)) {
+		for(const auto& i : indices(lts.decaytree)) {
 			GetOffShellMass(lts.decaytree[i], lts.decaytree[i].m_offshell);
 			M_sum += lts.decaytree[i].m_offshell;
 		}
@@ -313,28 +304,28 @@ bool MFactorized::B51RandomKin(const std::vector<double> &randvec) {
 		/*
 		// If a single resonance, Now tighten >>
 		if (ProcPtr.CHANNEL == "RES") {
-		        PARAM_RES res;
-		        for (auto const& x : lts.RESONANCES) {
-		                res = x.second;
-		        }
-		        if (res.p.mass > 0) {
-		                M_MIN = std::max(M_MIN, res.p.mass - res.p.width * 5);
-		                M_MAX = std::min(M_MAX, res.p.mass + res.p.width * 5);
-		        }
+				PARAM_RES res;
+				for (auto const& x : lts.RESONANCES) {
+						res = x.second;
+				}
+				if (res.p.mass > 0) {
+						M_MIN = std::max(M_MIN, res.p.mass - res.p.width * 5);
+						M_MAX = std::min(M_MAX, res.p.mass + res.p.width * 5);
+				}
 		}
 		*/
 		// Apply generator cuts (either automatic or user provided)
 		M_MIN = std::max(M_MIN, gcuts.M_min);
 		M_MAX = std::min(M_MAX, gcuts.M_max);
 
-		if (M_MIN < M_MAX) {
+		if(M_MIN < M_MAX) {
 			break;
 		}
 		++trials;
-		if (trials > MAXTRIAL) {
+		if(trials > MAXTRIAL) {
 			throw std::invalid_argument(
-			    "MFactorized::B51RandomKin: Infinite loop in kinematics. Check the "
-			    "decaymode and cuts!");
+				"MFactorized::B51RandomKin: Infinite loop in kinematics. Check the "
+				"decaymode and cuts!");
 		}
 	};
 
@@ -344,10 +335,10 @@ bool MFactorized::B51RandomKin(const std::vector<double> &randvec) {
 	// Forward N* system masses
 	std::vector<double> mvec;
 	std::vector<double> rvec;
-	if (EXCITATION == 1) {
+	if(EXCITATION == 1) {
 		rvec = {randvec[6]};
 	}
-	if (EXCITATION == 2) {
+	if(EXCITATION == 2) {
 		rvec = {randvec[6], randvec[7]};
 	}
 	SampleForwardMasses(mvec, rvec);
@@ -357,7 +348,7 @@ bool MFactorized::B51RandomKin(const std::vector<double> &randvec) {
 
 // Build kinematics for 2->3 skeleton
 bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, double yX,
-                              double m2X, double m1, double m2) {
+							  double m2X, double m1, double m2) {
 	static const M4Vec beamsum = lts.pbeam1 + lts.pbeam2;
 
 	// Final state 4-momenta, set px,py first
@@ -370,7 +361,7 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
 	pX.SetPzE(mtX * std::sinh(yX), mtX * std::cosh(yX));
 
 	// Energy overflow
-	if (pX.E() > (lts.sqrt_s - (m1 + m2))) {
+	if(pX.E() > (lts.sqrt_s - (m1 + m2))) {
 		return false;
 	}
 
@@ -379,7 +370,7 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
 
 	// Enforce scattering direction +p -> +p, -p -> -p (VERY RARE POLYNOMIAL
 	// BRANCH FLIP)
-	if (p1z < 0 || p2z > 0) {
+	if(p1z < 0 || p2z > 0) {
 		return false;
 	}
 
@@ -389,7 +380,7 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
 
 	// ------------------------------------------------------------------
 	// Now boost if asymmetric beams
-	if (std::abs(beamsum.Pz()) > 1e-6) {
+	if(std::abs(beamsum.Pz()) > 1e-6) {
 		constexpr int sign = 1; // positive -> boost to the lab
 		kinematics::LorentzBoost(beamsum, lts.sqrt_s, p1, sign);
 		kinematics::LorentzBoost(beamsum, lts.sqrt_s, p2, sign);
@@ -406,7 +397,7 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
 	// Kinematic checks
 
 	// Total 4-momentum conservation
-	if (!CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2] + lts.pfinal[0]))) {
+	if(!CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2] + lts.pfinal[0]))) {
 		return false;
 	}
 
@@ -418,7 +409,7 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
 	std::vector<double> masses;
 
 	// Collect decay product masses
-	for (const auto &i : indices(lts.decaytree)) {
+	for(const auto& i : indices(lts.decaytree)) {
 		// @@ Note, we need to take offshell masses here @@
 		masses.push_back(lts.decaytree[i].m_offshell);
 	}
@@ -430,43 +421,42 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
 
 	gra::kinematics::MCW w;
 	// 2-body
-	if (lts.decaytree.size() == 2) {
-		w = gra::kinematics::TwoBodyPhaseSpace(lts.pfinal[0], msqrt(m2X), masses, products,
-		                                       random);
+	if(lts.decaytree.size() == 2) {
+		w = gra::kinematics::TwoBodyPhaseSpace(lts.pfinal[0], msqrt(m2X), masses, products, random);
 		// 3-body
-	} else if (lts.decaytree.size() == 3) {
-		w = gra::kinematics::ThreeBodyPhaseSpace(lts.pfinal[0], msqrt(m2X), masses,
-		                                         products, UNWEIGHT, random);
+	} else if(lts.decaytree.size() == 3) {
+		w = gra::kinematics::ThreeBodyPhaseSpace(lts.pfinal[0], msqrt(m2X), masses, products,
+												 UNWEIGHT, random);
 		// N-body
-	} else if (lts.decaytree.size() > 3) {
-		w = gra::kinematics::NBodyPhaseSpace(lts.pfinal[0], msqrt(m2X), masses, products,
-		                                     UNWEIGHT, random);
+	} else if(lts.decaytree.size() > 3) {
+		w = gra::kinematics::NBodyPhaseSpace(lts.pfinal[0], msqrt(m2X), masses, products, UNWEIGHT,
+											 random);
 	}
 
-	if (w.GetW() < 0) {
+	if(w.GetW() < 0) {
 		return false; // Kinematically impossible
 	}
 	lts.DW = w;
 
 	// Collect decay products
 	const unsigned int offset = 3;
-	for (const auto &i : indices(lts.decaytree)) {
+	for(const auto& i : indices(lts.decaytree)) {
 		lts.decaytree[i].p4 = products[i];
 		lts.pfinal[i + offset] = products[i];
 	}
 
 	// Treat decaytree recursively
-	for (const auto &i : indices(lts.decaytree)) {
-		if (!ConstructDecayKinematics(lts.decaytree[i])) {
+	for(const auto& i : indices(lts.decaytree)) {
+		if(!ConstructDecayKinematics(lts.decaytree[i])) {
 			return false;
 		}
 	}
 
 	// Forward excitation
-	if (lts.excite1) {
+	if(lts.excite1) {
 		ExciteNstar(lts.pfinal[1], lts.decayforward1);
 	}
-	if (lts.excite2) {
+	if(lts.excite2) {
 		ExciteNstar(lts.pfinal[2], lts.decayforward2);
 	}
 
@@ -478,15 +468,15 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
 }
 
 // Calculate Pure Phase Space Decay Width (Volume)
-void MFactorized::DecayWidthPS(double &exact) const {
+void MFactorized::DecayWidthPS(double& exact) const {
 	exact = 0;
 	// Massive exact closed form for 2-body case
-	if (lts.decaytree.size() == 2) {
+	if(lts.decaytree.size() == 2) {
 		exact = gra::kinematics::PS2Massive(lts.m2, pow2(lts.decaytree[0].p4.M()),
-		                                    pow2(lts.decaytree[1].p4.M()));
+											pow2(lts.decaytree[1].p4.M()));
 	}
 	// Massless case
-	if (lts.decaytree.size() > 2) {
+	if(lts.decaytree.size() > 2) {
 		exact = gra::kinematics::PSnMassless(lts.m2, lts.decaytree.size());
 	}
 }
@@ -499,26 +489,26 @@ double MFactorized::B51IntegralVolume() const {
 	// Forward leg integration
 	double M2_forward_volume = 1.0;
 
-	if (EXCITATION == 1) {
+	if(EXCITATION == 1) {
 		M2_forward_volume = M2_f_max - M2_f_min;
-	} else if (EXCITATION == 2) {
+	} else if(EXCITATION == 2) {
 		M2_forward_volume = pow2(M2_f_max - M2_f_min);
 	}
 
 	return (pow2(M_MAX) - pow2(M_MIN)) * (2.0 * gra::math::PI) * (2.0 * gra::math::PI) *
-	       (gcuts.forward_pt_max - gcuts.forward_pt_min) *
-	       (gcuts.forward_pt_max - gcuts.forward_pt_min) * (gcuts.Y_max - gcuts.Y_min) *
-	       M2_forward_volume;
+		   (gcuts.forward_pt_max - gcuts.forward_pt_min) *
+		   (gcuts.forward_pt_max - gcuts.forward_pt_min) * (gcuts.Y_max - gcuts.Y_min) *
+		   M2_forward_volume;
 }
 
 // 5-Dim phase space weight
 double MFactorized::B51PhaseSpaceWeight() const {
 	const double J =
-	    1.0 / std::abs(lts.pfinal[1].Pz() / lts.pfinal[1].E() -
-	                   lts.pfinal[2].Pz() / lts.pfinal[2].E()); // Jacobian, close to 0.5
+		1.0 / std::abs(lts.pfinal[1].Pz() / lts.pfinal[1].E() -
+					   lts.pfinal[2].Pz() / lts.pfinal[2].E()); // Jacobian, close to 0.5
 	const double factor = (1.0 / 2.0) * (1.0 / pow5(2.0 * gra::math::PI)) * lts.pfinal[1].Pt() *
-	                      lts.pfinal[2].Pt() * (1.0 / (2.0 * lts.pfinal[1].E())) *
-	                      (1.0 / (2.0 * lts.pfinal[2].E()));
+						  lts.pfinal[2].Pt() * (1.0 / (2.0 * lts.pfinal[1].E())) *
+						  (1.0 / (2.0 * lts.pfinal[2].E()));
 	return J * factor;
 }
 

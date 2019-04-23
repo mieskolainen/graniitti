@@ -22,8 +22,7 @@
 #include "Graniitti/MMath.h"
 
 MAmpMG5_yy_ll::MAmpMG5_yy_ll() {
-	std::string param_card_name =
-	    gra::aux::GetBasePath(2) + "/MG5cards/" + "yy_ll_param_card.dat";
+	std::string param_card_name = gra::aux::GetBasePath(2) + "/MG5cards/" + "yy_ll_param_card.dat";
 
 	// Instantiate the model class and set parameters that stay fixed
 	// during run
@@ -43,18 +42,17 @@ MAmpMG5_yy_ll::MAmpMG5_yy_ll() {
 	jamp2[0] = new double[1];
 }
 
-MAmpMG5_yy_ll::~MAmpMG5_yy_ll() {
-}
+MAmpMG5_yy_ll::~MAmpMG5_yy_ll() {}
 
 // Get amplitude
-std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR &lts) {
+std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR& lts) {
 	// Photon masses
 	const double mgamma1 = 0; // use on-shell
 	const double mgamma2 = 0;
 
 	// *** Set masses for HELAS ***
 	const std::vector<double> masses = {mgamma1, mgamma2, lts.decaytree[0].p4.M(),
-	                                    lts.decaytree[1].p4.M()};
+										lts.decaytree[1].p4.M()};
 	mME = masses;
 
 	// *** Set particle 4-momentum: [E,px,py,pz] convention here! ***
@@ -62,22 +60,22 @@ std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR &lts) {
 	double p1[] = {lts.q1.P3mod(), lts.q1.Px(), lts.q1.Py(), lts.q1.Pz()};
 	double p2[] = {lts.q2.P3mod(), lts.q2.Px(), lts.q2.Py(), lts.q2.Pz()};
 	double p3[] = {lts.decaytree[0].p4.E(), lts.decaytree[0].p4.Px(), lts.decaytree[0].p4.Py(),
-	               lts.decaytree[0].p4.Pz()};
+				   lts.decaytree[0].p4.Pz()};
 	double p4[] = {lts.decaytree[1].p4.E(), lts.decaytree[1].p4.Px(), lts.decaytree[1].p4.Py(),
-	               lts.decaytree[1].p4.Pz()};
+				   lts.decaytree[1].p4.Pz()};
 
 	/*
 	  printf("\n");
 	  printf("Initial: E = %0.7E, PX = %0.7E, PY = %0.7E, PZ = %0.7E \n",
-	    lts.q1.Norm() + lts.q2.Norm(), lts.q1.Px() + lts.q2.Px(),
+		lts.q1.Norm() + lts.q2.Norm(), lts.q1.Px() + lts.q2.Px(),
 	  lts.q1.Py() + lts.q2.Py(), lts.q1.Pz() + lts.q2.Pz());
 
 	  printf("Final:   E = %0.7E, PX = %0.7E, PY = %0.7E, PZ = %0.7E (M =
 	  %0.5E) \n",
-	    lts.decaytree[0].p4.E()  + lts.decaytree[1].p4.E(),
-	    lts.decaytree[0].p4.Px() + lts.decaytree[1].p4.Px(),
-	    lts.decaytree[0].p4.Py() + lts.decaytree[1].p4.Py(),
-	    lts.decaytree[0].p4.Pz() + lts.decaytree[1].p4.Pz(),
+		lts.decaytree[0].p4.E()  + lts.decaytree[1].p4.E(),
+		lts.decaytree[0].p4.Px() + lts.decaytree[1].p4.Px(),
+		lts.decaytree[0].p4.Py() + lts.decaytree[1].p4.Py(),
+		lts.decaytree[0].p4.Pz() + lts.decaytree[1].p4.Pz(),
 	  std::sqrt(lts.m2));
 	*/
 	/*
@@ -101,16 +99,16 @@ std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR &lts) {
 	static const int ncomb = 16;
 
 	static const int helicities[ncomb][nexternal] = {
-	    {-1, -1, -1, -1}, {-1, -1, -1, 1}, {-1, -1, 1, -1}, {-1, -1, 1, 1},
-	    {-1, 1, -1, -1},  {-1, 1, -1, 1},  {-1, 1, 1, -1},  {-1, 1, 1, 1},
-	    {1, -1, -1, -1},  {1, -1, -1, 1},  {1, -1, 1, -1},  {1, -1, 1, 1},
-	    {1, 1, -1, -1},   {1, 1, -1, 1},   {1, 1, 1, -1},   {1, 1, 1, 1}};
+		{-1, -1, -1, -1}, {-1, -1, -1, 1}, {-1, -1, 1, -1}, {-1, -1, 1, 1},
+		{-1, 1, -1, -1},  {-1, 1, -1, 1},  {-1, 1, 1, -1},  {-1, 1, 1, 1},
+		{1, -1, -1, -1},  {1, -1, -1, 1},  {1, -1, 1, -1},  {1, -1, 1, 1},
+		{1, 1, -1, -1},   {1, 1, -1, 1},   {1, 1, 1, -1},   {1, 1, 1, 1}};
 
 	// Permutations
 	int perm[nexternal];
 
 	// Define permutation
-	for (int i = 0; i < nexternal; ++i) {
+	for(int i = 0; i < nexternal; ++i) {
 		perm[i] = i;
 	}
 
@@ -124,19 +122,19 @@ std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR &lts) {
 	lts.hamp = std::vector<std::complex<double>>(nonzero.size());
 
 	// Loop over helicity combinations
-	for (std::size_t i = 0; i < nonzero.size(); ++i) {
+	for(std::size_t i = 0; i < nonzero.size(); ++i) {
 		const unsigned int ihel = nonzero[i];
 		calculate_wavefunctions(perm, helicities[ihel]);
 
 		// Sum of subamplitudes (s,t,u,...)
-		for (int k = 0; k < namplitudes; ++k) {
+		for(int k = 0; k < namplitudes; ++k) {
 			lts.hamp[i] += amp[k];
 		}
 	}
 
 	// Total amplitude squared over all helicity combinations individually
 	double amp2 = 0.0;
-	for (std::size_t i = 0; i < lts.hamp.size(); ++i) {
+	for(std::size_t i = 0; i < lts.hamp.size(); ++i) {
 		amp2 += gra::math::abs2(lts.hamp[i]);
 	}
 	amp2 /= 4; // spin average matrix element squared
@@ -186,15 +184,15 @@ double MAmpMG5_yy_ll::matrix_1_aa_epem() {
 
 	// Sum and square the color flows to get the matrix element
 	double matrix = 0;
-	for (i = 0; i < ncolor; i++) {
+	for(i = 0; i < ncolor; i++) {
 		ztemp = 0.;
-		for (j = 0; j < ncolor; j++)
+		for(j = 0; j < ncolor; j++)
 			ztemp = ztemp + cf[i][j] * jamp[j];
 		matrix = matrix + real(ztemp * conj(jamp[i])) / denom[i];
 	}
 
 	// Store the leading color flows for choice of color
-	for (i = 0; i < ncolor; i++)
+	for(i = 0; i < ncolor; i++)
 		jamp2[0][i] += real(jamp[i] * conj(jamp[i]));
 
 	return matrix;

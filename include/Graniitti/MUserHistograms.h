@@ -16,22 +16,19 @@
 #include "Graniitti/MKinematics.h"
 
 namespace gra {
-
 class MUserHistograms {
-       public:
+  public:
 	// Constructor, destructor
-	MUserHistograms() {
-	}
-	~MUserHistograms() {
-	}
+	MUserHistograms() {}
+	~MUserHistograms() {}
 
 	void InitHistograms();
-	void FillHistograms(double totalweight, const gra::LORENTZSCALAR &scalar);
+	void FillHistograms(double totalweight, const gra::LORENTZSCALAR& scalar);
 	void PrintHistograms();
 	void SetHistograms(unsigned int in) {
 		HIST = in;
 	}
-	void FillCosThetaPhi(double totalweight, const gra::LORENTZSCALAR &scalar);
+	void FillCosThetaPhi(double totalweight, const gra::LORENTZSCALAR& scalar);
 
 	// Histograms indexed by name std::string
 	std::map<std::string, MH1<double>> h1;

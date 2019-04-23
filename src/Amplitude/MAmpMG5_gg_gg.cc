@@ -26,8 +26,7 @@
 #include "Graniitti/MMath.h"
 
 MAmpMG5_gg_gg::MAmpMG5_gg_gg() {
-	std::string param_card_name =
-	    gra::aux::GetBasePath(2) + "/MG5cards/" + "gg_gg_param_card.dat";
+	std::string param_card_name = gra::aux::GetBasePath(2) + "/MG5cards/" + "gg_gg_param_card.dat";
 
 	// Instantiate the model class and set parameters that stay fixed
 	// during run
@@ -46,11 +45,10 @@ MAmpMG5_gg_gg::MAmpMG5_gg_gg() {
 	jamp2[0] = new double[6];
 }
 
-MAmpMG5_gg_gg::~MAmpMG5_gg_gg() {
-}
+MAmpMG5_gg_gg::~MAmpMG5_gg_gg() {}
 
 // Get amplitude
-std::complex<double> MAmpMG5_gg_gg::CalcAmp(gra::LORENTZSCALAR &lts, double alpS) {
+std::complex<double> MAmpMG5_gg_gg::CalcAmp(gra::LORENTZSCALAR& lts, double alpS) {
 	// *** Set the parameters which change event by event ***
 	pars->setDependentParameters(alpS); // alphaS
 	pars->setDependentCouplings();
@@ -66,9 +64,9 @@ std::complex<double> MAmpMG5_gg_gg::CalcAmp(gra::LORENTZSCALAR &lts, double alpS
 	double p1[] = {lts.q1.E(), lts.q1.Px(), lts.q1.Py(), lts.q1.Pz()};
 	double p2[] = {lts.q2.E(), lts.q2.Px(), lts.q2.Py(), lts.q2.Pz()};
 	double p3[] = {lts.decaytree[0].p4.E(), lts.decaytree[0].p4.Px(), lts.decaytree[0].p4.Py(),
-	               lts.decaytree[0].p4.Pz()};
+				   lts.decaytree[0].p4.Pz()};
 	double p4[] = {lts.decaytree[1].p4.E(), lts.decaytree[1].p4.Px(), lts.decaytree[1].p4.Py(),
-	               lts.decaytree[1].p4.Pz()};
+				   lts.decaytree[1].p4.Pz()};
 
 	/*
 	// TEST INPUT
@@ -93,12 +91,12 @@ std::complex<double> MAmpMG5_gg_gg::CalcAmp(gra::LORENTZSCALAR &lts, double alpS
 	lts.hamp.resize(ncomb); // init helicity amplitudes
 
 	const static std::vector<int> nonzero = {0, 1, 2,  3,  4,  5,  6,  7,
-	                                         8, 9, 10, 11, 12, 13, 14, 15}; // All
+											 8, 9, 10, 11, 12, 13, 14, 15}; // All
 	// const static std::vector<int> nonzero = {5,6,9,10}; // High energy
 	// limit / Helicity conserving
 
 	// Reset color flows
-	for (int i = 0; i < 6; i++)
+	for(int i = 0; i < 6; i++)
 		jamp2[0][i] = 0.;
 
 	// Local variables and constants
@@ -111,41 +109,40 @@ std::complex<double> MAmpMG5_gg_gg::CalcAmp(gra::LORENTZSCALAR &lts, double alpS
 	double t[nprocesses];
 	// Helicities for the process
 	static const int helicities[ncomb][nexternal] = {
-	    {-1, -1, -1, -1}, {-1, -1, -1, 1}, {-1, -1, 1, -1}, {-1, -1, 1, 1},
-	    {-1, 1, -1, -1},  {-1, 1, -1, 1},  {-1, 1, 1, -1},  {-1, 1, 1, 1},
-	    {1, -1, -1, -1},  {1, -1, -1, 1},  {1, -1, 1, -1},  {1, -1, 1, 1},
-	    {1, 1, -1, -1},   {1, 1, -1, 1},   {1, 1, 1, -1},   {1, 1, 1, 1}};
+		{-1, -1, -1, -1}, {-1, -1, -1, 1}, {-1, -1, 1, -1}, {-1, -1, 1, 1},
+		{-1, 1, -1, -1},  {-1, 1, -1, 1},  {-1, 1, 1, -1},  {-1, 1, 1, 1},
+		{1, -1, -1, -1},  {1, -1, -1, 1},  {1, -1, 1, -1},  {1, -1, 1, 1},
+		{1, 1, -1, -1},   {1, 1, -1, 1},   {1, 1, 1, -1},   {1, 1, 1, 1}};
 	// Denominators: spins, colors and identical particles
 	const int denominators[nprocesses] = {512};
 
 	ntry = ntry + 1;
 
 	// Reset the matrix elements
-	for (int i = 0; i < nprocesses; i++) {
+	for(int i = 0; i < nprocesses; i++) {
 		matrix_element[i] = 0.;
 	}
 	// Define permutation
 	int perm[nexternal];
-	for (int i = 0; i < nexternal; i++) {
+	for(int i = 0; i < nexternal; i++) {
 		perm[i] = i;
 	}
 
-	if (sum_hel == 0 || ntry < 10) {
+	if(sum_hel == 0 || ntry < 10) {
 		// Calculate the matrix element for all helicities
-		for (int ihel = 0; ihel < ncomb; ihel++) {
-			if (goodhel[ihel] || ntry < 2) {
+		for(int ihel = 0; ihel < ncomb; ihel++) {
+			if(goodhel[ihel] || ntry < 2) {
 				calculate_wavefunctions(perm, helicities[ihel]);
 				t[0] = matrix_1_gg_gg();
-				lts.hamp[ihel] =
-				    t[0] / denominators[0]; // ** SET HELICITY AMPLITUDE **
+				lts.hamp[ihel] = t[0] / denominators[0]; // ** SET HELICITY AMPLITUDE **
 
 				double tsum = 0;
-				for (int iproc = 0; iproc < nprocesses; iproc++) {
+				for(int iproc = 0; iproc < nprocesses; iproc++) {
 					matrix_element[iproc] += t[iproc];
 					tsum += t[iproc];
 				}
 				// Store which helicities give non-zero result
-				if (tsum != 0. && !goodhel[ihel]) {
+				if(tsum != 0. && !goodhel[ihel]) {
 					goodhel[ihel] = true;
 					ngood++;
 					igood[ngood] = ihel;
@@ -156,24 +153,23 @@ std::complex<double> MAmpMG5_gg_gg::CalcAmp(gra::LORENTZSCALAR &lts, double alpS
 		sum_hel = min(sum_hel, ngood);
 	} else {
 		// Only use the "good" helicities
-		for (int j = 0; j < sum_hel; j++) {
+		for(int j = 0; j < sum_hel; j++) {
 			jhel++;
-			if (jhel >= ngood)
+			if(jhel >= ngood)
 				jhel = 0;
 			double hwgt = double(ngood) / double(sum_hel);
 			int ihel = igood[jhel];
 			calculate_wavefunctions(perm, helicities[ihel]);
 			t[0] = matrix_1_gg_gg();
-			lts.hamp[ihel] =
-			    0.0; // ** SET HELICITY AMPLITUDE: not enough, need color structure **
+			lts.hamp[ihel] = 0.0; // ** SET HELICITY AMPLITUDE: not enough, need color structure **
 
-			for (int iproc = 0; iproc < nprocesses; iproc++) {
+			for(int iproc = 0; iproc < nprocesses; iproc++) {
 				matrix_element[iproc] += t[iproc] * hwgt;
 			}
 		}
 	}
 
-	for (int i = 0; i < nprocesses; i++)
+	for(int i = 0; i < nprocesses; i++)
 		matrix_element[i] /= denominators[i];
 
 	return std::sqrt(matrix_element[0]); // square root, we take square later
@@ -212,12 +208,12 @@ void MAmpMG5_gg_gg::calculate_wavefunctions(const int perm[], const int hel[]) {
 
 // Six different [color,anticolor] flows
 static int colors[6][8] =
-        {{4, 1, 1, 2, 3, 2, 4, 3},
-         {3, 1, 1, 2, 3, 4, 4, 2},
-         {4, 1, 3, 2, 3, 1, 4, 2},
-         {2, 1, 4, 2, 3, 1, 4, 3},
-         {3, 1, 4, 2, 3, 2, 4, 1},
-         {2, 1, 3, 2, 3, 4, 4, 1}};
+		{{4, 1, 1, 2, 3, 2, 4, 3},
+		 {3, 1, 1, 2, 3, 4, 4, 2},
+		 {4, 1, 3, 2, 3, 1, 4, 2},
+		 {2, 1, 4, 2, 3, 1, 4, 3},
+		 {3, 1, 4, 2, 3, 2, 4, 1},
+		 {2, 1, 3, 2, 3, 4, 4, 1}};
 */
 
 // Returns matrix element squared |M|^2 for particular helicity
@@ -232,8 +228,8 @@ double MAmpMG5_gg_gg::matrix_1_gg_gg() {
 	// The color matrix;
 	static const double denom[ncolor] = {6, 6, 6, 6, 6, 6};
 	static const double cf[ncolor][ncolor] = {{19, -2, -2, -2, -2, 4}, {-2, 19, -2, 4, -2, -2},
-	                                          {-2, -2, 19, -2, 4, -2}, {-2, 4, -2, 19, -2, -2},
-	                                          {-2, -2, 4, -2, 19, -2}, {4, -2, -2, -2, -2, 19}};
+											  {-2, -2, 19, -2, 4, -2}, {-2, 4, -2, 19, -2, -2},
+											  {-2, -2, 4, -2, 19, -2}, {4, -2, -2, -2, -2, 19}};
 
 	// Calculate color flows
 	jamp[0] = +2. * (+amp[2] - amp[0] - amp[3] + amp[5]);
@@ -246,9 +242,9 @@ double MAmpMG5_gg_gg::matrix_1_gg_gg() {
 	// Sum and square the color flows to get the matrix element
 	// jamp^*_i CF^{ij} jamp_j
 	double matrix = 0;
-	for (i = 0; i < ncolor; i++) {
+	for(i = 0; i < ncolor; i++) {
 		ztemp = 0.;
-		for (j = 0; j < ncolor; j++)
+		for(j = 0; j < ncolor; j++)
 			ztemp = ztemp + cf[i][j] * jamp[j];
 		matrix = matrix + real(conj(jamp[i]) * ztemp) / denom[i];
 	}
@@ -257,7 +253,7 @@ double MAmpMG5_gg_gg::matrix_1_gg_gg() {
 	/*
 	double jamp2sum = 0.0;
 	for (i = 0; i < ncolor; i++) {
-	        jamp2[0][i] = real(jamp[i] * conj(jamp[i]));
+			jamp2[0][i] = real(jamp[i] * conj(jamp[i]));
 	}
 	*/
 

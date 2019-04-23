@@ -12,23 +12,20 @@
 #include <vector>
 
 namespace gra {
-
 class MRandom {
-       public:
+  public:
 	// Calling constructors of member functions
 	MRandom() : flat(0, 1), gaussian(0, 1) {
 		rng.seed(); // Default initialization
 	}
-	~MRandom() {
-	}
+	~MRandom() {}
 
 	// Set random number engine seed
 	void SetSeed(int seed) {
 		const int SEEDMAX = 2147483647;
-		if (seed > SEEDMAX) {
-			std::string str = "MRandom::SetSeed: Invalid input seed: " +
-			                  std::to_string(seed) + " > SEEDMAX = " +
-			                  std::to_string(SEEDMAX);
+		if(seed > SEEDMAX) {
+			std::string str = "MRandom::SetSeed: Invalid input seed: " + std::to_string(seed) +
+							  " > SEEDMAX = " + std::to_string(SEEDMAX);
 			throw std::invalid_argument(str);
 		}
 		rng.seed(seed);
@@ -50,7 +47,7 @@ class MRandom {
 	int PoissonRandom(double lambda);
 	double ExpRandom(double lambda);
 	int LogRandom(double p, int maxvalue);
-	void DirRandom(const std::vector<double> &alpha, std::vector<double> &y);
+	void DirRandom(const std::vector<double>& alpha, std::vector<double>& y);
 
 	double NBDpdf(int n, double avgN, double k);
 	double Logpdf(int k, double p);
@@ -68,7 +65,7 @@ class MRandom {
 	std::normal_distribution<double> gaussian;
 	unsigned int RNDSEED = 0; // Random seed set
 
-       private:
+  private:
 	// Nothing
 };
 

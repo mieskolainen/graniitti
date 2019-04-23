@@ -21,35 +21,34 @@
 #include "HepMC3/GenEvent.h"
 
 namespace gra {
-
 class MContinuum : public MProcess {
-       public:
+  public:
 	MContinuum();
-	MContinuum(std::string process, const std::vector<aux::OneCMD> &syntax);
+	MContinuum(std::string process, const std::vector<aux::OneCMD>& syntax);
 	virtual ~MContinuum();
 
 	void post_Constructor();
 
-	double operator()(const std::vector<double> &randvec, AuxIntData &aux) {
+	double operator()(const std::vector<double>& randvec, AuxIntData& aux) {
 		return EventWeight(randvec, aux);
 	}
-	double EventWeight(const std::vector<double> &randvec, AuxIntData &aux);
-	bool EventRecord(HepMC3::GenEvent &evt);
+	double EventWeight(const std::vector<double>& randvec, AuxIntData& aux);
+	bool EventRecord(HepMC3::GenEvent& evt);
 	void PrintInit(bool silent) const;
 
-       private:
-	bool LoopKinematics(const std::vector<double> &p1p, const std::vector<double> &p2p);
+  private:
+	bool LoopKinematics(const std::vector<double>& p1p, const std::vector<double>& p2p);
 	bool FiducialCuts() const;
 	void ConstructProcesses();
 
 	// 3*N-4 dimensional phase space, 2->N
-	bool BNRandomKin(unsigned int Nf, const std::vector<double> &randvec);
+	bool BNRandomKin(unsigned int Nf, const std::vector<double>& randvec);
 	bool BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1, double phi2,
-	                const std::vector<double> &kt, const std::vector<double> &phi,
-	                const std::vector<double> &y, double m1, double m2);
+					const std::vector<double>& kt, const std::vector<double>& phi,
+					const std::vector<double>& y, double m1, double m2);
 
-	void BLinearSystem(std::vector<M4Vec> &p, const std::vector<M4Vec> &q, const M4Vec &p1f,
-	                   const M4Vec &p2f) const;
+	void BLinearSystem(std::vector<M4Vec>& p, const std::vector<M4Vec>& q, const M4Vec& p1f,
+					   const M4Vec& p2f) const;
 
 	double BNIntegralVolume() const;
 	double BNPhaseSpaceWeight() const;
