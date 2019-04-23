@@ -14,8 +14,8 @@
 
 namespace gra {
 // User cuts (return false for events not passing the cuts)
-bool UserCut(int id, const gra::LORENTZSCALAR& lts);
+bool UserCut(int id, const gra::LORENTZSCALAR &lts);
 
-} // gra namespace ends
+}  // gra namespace ends
 
 #endif

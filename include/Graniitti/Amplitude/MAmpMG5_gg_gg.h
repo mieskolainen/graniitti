@@ -12,46 +12,46 @@
 #include "Graniitti/MForm.h"
 
 class MAmpMG5_gg_gg {
-  public:
-	MAmpMG5_gg_gg();
-	~MAmpMG5_gg_gg();
-	std::complex<double> CalcAmp(gra::LORENTZSCALAR& lts, double alpS);
+ public:
+  MAmpMG5_gg_gg();
+  ~MAmpMG5_gg_gg();
+  std::complex<double> CalcAmp(gra::LORENTZSCALAR &lts, double alpS);
 
-  private:
-	double calls = 0;
-	double ratiosum = 0;
+ private:
+  double calls = 0;
+  double ratiosum = 0;
 
-	// Constants for array limits
-	static const int ninitial = 2;
-	static const int nexternal = 4;
-	static const int nprocesses = 1;
+  // Constants for array limits
+  static const int ninitial = 2;
+  static const int nexternal = 4;
+  static const int nprocesses = 1;
 
-	// Private functions to calculate the matrix element for all subprocesses
-	// Calculate wavefunctions
-	void calculate_wavefunctions(const int perm[], const int hel[]);
-	static const int nwavefuncs = 7;
-	std::complex<double> w[nwavefuncs][18];
-	static const int namplitudes = 6;
-	std::complex<double> amp[namplitudes];
-	double matrix_1_gg_gg();
+  // Private functions to calculate the matrix element for all subprocesses
+  // Calculate wavefunctions
+  void calculate_wavefunctions(const int perm[], const int hel[]);
+  static const int nwavefuncs = 7;
+  std::complex<double> w[nwavefuncs][18];
+  static const int namplitudes = 6;
+  std::complex<double> amp[namplitudes];
+  double matrix_1_gg_gg();
 
-	// Store the matrix element value from sigmaKin
-	double matrix_element[nprocesses];
+  // Store the matrix element value from sigmaKin
+  double matrix_element[nprocesses];
 
-	// Color flows, used when selecting color
-	double* jamp2[nprocesses];
+  // Color flows, used when selecting color
+  double *jamp2[nprocesses];
 
-	// Pointer to the model parameters
-	Parameters_sm* pars;
+  // Pointer to the model parameters
+  Parameters_sm *pars;
 
-	// vector with external particle masses
-	vector<double> mME;
+  // vector with external particle masses
+  vector<double> mME;
 
-	// vector with momenta (to be changed each event)
-	vector<double*> p;
+  // vector with momenta (to be changed each event)
+  vector<double *> p;
 
-	// Initial particle ids
-	int id1, id2;
+  // Initial particle ids
+  int id1, id2;
 };
 
 #endif

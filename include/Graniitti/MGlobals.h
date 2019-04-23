@@ -14,11 +14,11 @@ namespace gra {
 extern std::string MODELPARAM;
 
 // Sudakov/pdf routines
-extern MSudakov* GlobalSudakovPtr;
+extern MSudakov *GlobalSudakovPtr;
 
 // Normal pdfs
 extern std::string LHAPDFSET;
-extern LHAPDF::PDF* GlobalPdfPtr;
+extern LHAPDF::PDF *GlobalPdfPtr;
 extern int pdf_trials;
 
 // Multithreading lock
@@ -29,6 +29,6 @@ extern std::exception_ptr globalExceptionPtr;
 
 // ======================================================================
 
-} // gra namespace ends
+}  // gra namespace ends
 
 #endif

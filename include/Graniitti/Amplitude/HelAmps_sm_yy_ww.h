@@ -31,16 +31,16 @@ void oxxxxx(double p[4], double fmass, int nhel, int nsf, std::complex<double> f
 void vxxxxx(double p[4], double vmass, int nhel, int nsv, std::complex<double> v[6]);
 
 void VVV1_0(std::complex<double> V1[], std::complex<double> V2[], std::complex<double> V3[],
-			std::complex<double> COUP, std::complex<double>& vertex);
+            std::complex<double> COUP, std::complex<double> &vertex);
 
 void VVV1_2(std::complex<double> V1[], std::complex<double> V3[], std::complex<double> COUP,
-			double M2, double W2, std::complex<double> V2[]);
+            double M2, double W2, std::complex<double> V2[]);
 
 void VVVV2_0(std::complex<double> V1[], std::complex<double> V2[], std::complex<double> V3[],
-			 std::complex<double> V4[], std::complex<double> COUP, std::complex<double>& vertex);
+             std::complex<double> V4[], std::complex<double> COUP, std::complex<double> &vertex);
 
 void VVV1_3(std::complex<double> V1[], std::complex<double> V2[], std::complex<double> COUP,
-			double M3, double W3, std::complex<double> V3[]);
+            double M3, double W3, std::complex<double> V3[]);
 }
 
 #endif

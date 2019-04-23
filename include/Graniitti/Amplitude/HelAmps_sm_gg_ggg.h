@@ -29,29 +29,29 @@ void oxxxxx(double p[4], double fmass, int nhel, int nsf, std::complex<double> f
 void vxxxxx(double p[4], double vmass, int nhel, int nsv, std::complex<double> v[6]);
 
 void VVVV4_0(std::complex<double> V1[], std::complex<double> V2[], std::complex<double> V3[],
-			 std::complex<double> V4[], std::complex<double> COUP, std::complex<double>& vertex);
+             std::complex<double> V4[], std::complex<double> COUP, std::complex<double> &vertex);
 
 void VVVV1_0(std::complex<double> V1[], std::complex<double> V2[], std::complex<double> V3[],
-			 std::complex<double> V4[], std::complex<double> COUP, std::complex<double>& vertex);
+             std::complex<double> V4[], std::complex<double> COUP, std::complex<double> &vertex);
 
 void VVV1_0(std::complex<double> V1[], std::complex<double> V2[], std::complex<double> V3[],
-			std::complex<double> COUP, std::complex<double>& vertex);
+            std::complex<double> COUP, std::complex<double> &vertex);
 
 void VVVV4P0_1(std::complex<double> V2[], std::complex<double> V3[], std::complex<double> V4[],
-			   std::complex<double> COUP, double M1, double W1, std::complex<double> V1[]);
+               std::complex<double> COUP, double M1, double W1, std::complex<double> V1[]);
 
 void VVVV3_0(std::complex<double> V1[], std::complex<double> V2[], std::complex<double> V3[],
-			 std::complex<double> V4[], std::complex<double> COUP, std::complex<double>& vertex);
+             std::complex<double> V4[], std::complex<double> COUP, std::complex<double> &vertex);
 
 void VVVV1P0_1(std::complex<double> V2[], std::complex<double> V3[], std::complex<double> V4[],
-			   std::complex<double> COUP, double M1, double W1, std::complex<double> V1[]);
+               std::complex<double> COUP, double M1, double W1, std::complex<double> V1[]);
 
 void VVVV3P0_1(std::complex<double> V2[], std::complex<double> V3[], std::complex<double> V4[],
-			   std::complex<double> COUP, double M1, double W1, std::complex<double> V1[]);
+               std::complex<double> COUP, double M1, double W1, std::complex<double> V1[]);
 
 void VVV1P0_1(std::complex<double> V2[], std::complex<double> V3[], std::complex<double> COUP,
-			  double M1, double W1, std::complex<double> V1[]);
+              double M1, double W1, std::complex<double> V1[]);
 
-} // end namespace MG5_sm
+}  // end namespace MG5_sm
 
-#endif // HelAmps_sm_H
+#endif  // HelAmps_sm_H
