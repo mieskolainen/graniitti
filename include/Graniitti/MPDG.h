@@ -94,21 +94,23 @@ static const std::map<int, double> fM_meson{
 } // Namespace PDG ends
 
 class MPDG {
-public:
-  MPDG() {}
-  ~MPDG() {}
+       public:
+	MPDG() {
+	}
+	~MPDG() {
+	}
 
-  void ReadParticleData(const std::string &filepath);
-  void TokenizeProcess(const std::string &str, int depth,
-                       std::vector<gra::MDecayBranch> &branches) const;
-  bool IsDecay(const std::string &str) const;
+	void ReadParticleData(const std::string &filepath);
+	void TokenizeProcess(const std::string &str, int depth,
+	                     std::vector<gra::MDecayBranch> &branches) const;
+	bool IsDecay(const std::string &str) const;
 
-  void PrintPDGTable() const;
-  const gra::MParticle &FindByPDG(int pdgcode) const;
-  const gra::MParticle &FindByPDGName(const std::string &pdgname) const;
+	void PrintPDGTable() const;
+	const gra::MParticle &FindByPDG(int pdgcode) const;
+	const gra::MParticle &FindByPDGName(const std::string &pdgname) const;
 
-  // PDG tables
-  std::map<int, gra::MParticle> PDG_table;
+	// PDG tables
+	std::map<int, gra::MParticle> PDG_table;
 };
 
 } // gra namespace ends

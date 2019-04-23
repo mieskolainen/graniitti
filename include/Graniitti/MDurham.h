@@ -50,52 +50,49 @@ void ReadParameters();
 
 // Matrix element dimension: " GeV^" << -(2*external_legs - 8)
 class MDurham {
-public:
-  MDurham() {}
-  ~MDurham() {}
+       public:
+	MDurham() {
+	}
+	~MDurham() {
+	}
 
-  std::complex<double> DurhamQCD(gra::LORENTZSCALAR &lts,
-                                 const std::string &process);
-  std::complex<double>
-  DQtloop(gra::LORENTZSCALAR &lts,
-          std::vector<std::vector<std::complex<double>>> Amp);
-  inline void DScaleChoise(double qt2, double q1_2, double q2_2,
-                           double &Q1_2_scale, double &Q2_2_scale) const;
+	std::complex<double> DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process);
+	std::complex<double> DQtloop(gra::LORENTZSCALAR &lts,
+	                             std::vector<std::vector<std::complex<double>>> Amp);
+	inline void DScaleChoise(double qt2, double q1_2, double q2_2, double &Q1_2_scale,
+	                         double &Q2_2_scale) const;
 
-  inline void Dgg2chic0(const gra::LORENTZSCALAR &lts,
-                        std::vector<std::vector<std::complex<double>>> &Amp,
-                        const std::vector<double> &qt1,
-                        const std::vector<double> &qt2) const;
+	inline void Dgg2chic0(const gra::LORENTZSCALAR &lts,
+	                      std::vector<std::vector<std::complex<double>>> &Amp,
+	                      const std::vector<double> &qt1, const std::vector<double> &qt2) const;
 
-  inline void DHelicity(const std::vector<double> &q1,
-                        const std::vector<double> &q2,
-                        std::vector<std::complex<double>> &JzP) const;
+	inline void DHelicity(const std::vector<double> &q1, const std::vector<double> &q2,
+	                      std::vector<std::complex<double>> &JzP) const;
 
-  inline std::complex<double>
-  DHelProj(const std::vector<std::complex<double>> &A,
-           const std::vector<std::complex<double>> &JzP) const;
+	inline std::complex<double> DHelProj(const std::vector<std::complex<double>> &A,
+	                                     const std::vector<std::complex<double>> &JzP) const;
 
-  void Dgg2gg(const gra::LORENTZSCALAR &lts,
-              std::vector<std::vector<std::complex<double>>> &Amp);
+	void Dgg2gg(const gra::LORENTZSCALAR &lts,
+	            std::vector<std::vector<std::complex<double>>> &Amp);
 
-  void Dgg2qqbar(const gra::LORENTZSCALAR &lts,
-                 std::vector<std::vector<std::complex<double>>> &Amp);
+	void Dgg2qqbar(const gra::LORENTZSCALAR &lts,
+	               std::vector<std::vector<std::complex<double>>> &Amp);
 
-  void Dgg2MMbar(const gra::LORENTZSCALAR &lts,
-                 std::vector<std::vector<std::complex<double>>> &Amp);
-  double phi_CZ(double x, double fM) const;
-  std::vector<double> EvalPhi(int N, int pdg) const;
+	void Dgg2MMbar(const gra::LORENTZSCALAR &lts,
+	               std::vector<std::vector<std::complex<double>>> &Amp);
+	double phi_CZ(double x, double fM) const;
+	std::vector<double> EvalPhi(int N, int pdg) const;
 
-  double Asum = 0.0;
-  double Nsum = 0.0;
+	double Asum = 0.0;
+	double Nsum = 0.0;
 
-  // ------------------------------------------------------------------
-  // MadGraph amplitudes here
-  MAmpMG5_gg_gg AmpMG5_gg_gg;
-  MAmpMG5_gg_ggg AmpMG5_gg_ggg;
-  MAmpMG5_gg_qqbar AmpMG5_gg_qqbar;
+	// ------------------------------------------------------------------
+	// MadGraph amplitudes here
+	MAmpMG5_gg_gg AmpMG5_gg_gg;
+	MAmpMG5_gg_ggg AmpMG5_gg_ggg;
+	MAmpMG5_gg_qqbar AmpMG5_gg_qqbar;
 
-private:
+       private:
 };
 
 } // gra namespace ends

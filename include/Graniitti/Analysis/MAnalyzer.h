@@ -45,83 +45,80 @@
 namespace gra {
 
 class MAnalyzer {
-public:
-  // Constructor, destructor
-  MAnalyzer();
-  ~MAnalyzer();
+       public:
+	// Constructor, destructor
+	MAnalyzer();
+	~MAnalyzer();
 
-  // Default particle name string
-  std::string pstr = "daughter";
+	// Default particle name string
+	std::string pstr = "daughter";
 
-  // Different Lorentz frame labels
-  const std::vector<TString> frame_labels = {"CS", "HE", "LAB",
-                                             "GJ", "PG", "SR"};
+	// Different Lorentz frame labels
+	const std::vector<TString> frame_labels = {"CS", "HE", "LAB", "GJ", "PG", "SR"};
 
-  // ----------------------------------------------------------
-  // Forward system quantities
-  std::unique_ptr<TH1D> hE_Pions;
-  std::unique_ptr<TH1D> hE_Gamma;
-  std::unique_ptr<TH1D> hE_Neutron;
-  std::unique_ptr<TH1D> hE_GammaNeutron;
+	// ----------------------------------------------------------
+	// Forward system quantities
+	std::unique_ptr<TH1D> hE_Pions;
+	std::unique_ptr<TH1D> hE_Gamma;
+	std::unique_ptr<TH1D> hE_Neutron;
+	std::unique_ptr<TH1D> hE_GammaNeutron;
 
-  std::unique_ptr<TH1D> hXF_Pions;
-  std::unique_ptr<TH1D> hXF_Gamma;
-  std::unique_ptr<TH1D> hXF_Neutron;
+	std::unique_ptr<TH1D> hXF_Pions;
+	std::unique_ptr<TH1D> hXF_Gamma;
+	std::unique_ptr<TH1D> hXF_Neutron;
 
-  std::unique_ptr<TH1D> hEta_Pions;
-  std::unique_ptr<TH1D> hEta_Gamma;
-  std::unique_ptr<TH1D> hEta_Neutron;
-  std::unique_ptr<TH1D> hM_NSTAR;
+	std::unique_ptr<TH1D> hEta_Pions;
+	std::unique_ptr<TH1D> hEta_Gamma;
+	std::unique_ptr<TH1D> hEta_Neutron;
+	std::unique_ptr<TH1D> hM_NSTAR;
 
-  // ----------------------------------------------------------
-  // Angular observables
-  std::unique_ptr<TProfile> hPl[8];
+	// ----------------------------------------------------------
+	// Angular observables
+	std::unique_ptr<TProfile> hPl[8];
 
-  static constexpr unsigned int NFR = 6; // number of frames
+	static constexpr unsigned int NFR = 6; // number of frames
 
-  // Correlations between frames
-  std::unique_ptr<TH2D> h2CosTheta[NFR][NFR];
-  std::unique_ptr<TH2D> h2Phi[NFR][NFR];
+	// Correlations between frames
+	std::unique_ptr<TH2D> h2CosTheta[NFR][NFR];
+	std::unique_ptr<TH2D> h2Phi[NFR][NFR];
 
-  std::unique_ptr<TH1D> hCosTheta_Meson_p[NFR];
-  std::unique_ptr<TH1D> hCosTheta_Meson_m[NFR];
-  std::unique_ptr<TH1D> hPhi_Meson_p[NFR];
-  std::unique_ptr<TH1D> hPhi_Meson_m[NFR];
-  std::unique_ptr<TH2D> h2CosTheta_Phi[NFR];
+	std::unique_ptr<TH1D> hCosTheta_Meson_p[NFR];
+	std::unique_ptr<TH1D> hCosTheta_Meson_m[NFR];
+	std::unique_ptr<TH1D> hPhi_Meson_p[NFR];
+	std::unique_ptr<TH1D> hPhi_Meson_m[NFR];
+	std::unique_ptr<TH2D> h2CosTheta_Phi[NFR];
 
-  std::unique_ptr<TH2D> h2M_CosTheta[NFR];
-  std::unique_ptr<TH2D> h2M_Phi[NFR];
+	std::unique_ptr<TH2D> h2M_CosTheta[NFR];
+	std::unique_ptr<TH2D> h2M_Phi[NFR];
 
-  // HepMC3 reader
-  double
-  HepMC3_OracleFill(const std::string inputfile, unsigned int multiplicity,
-                    int finalPDG, unsigned int MAXEVENTS,
-                    std::map<std::string, std::unique_ptr<h1Multiplet>> &h1,
-                    std::map<std::string, std::unique_ptr<h2Multiplet>> &h2,
-                    std::map<std::string, std::unique_ptr<hProfMultiplet>> &hP,
-                    unsigned int SID);
+	// HepMC3 reader
+	double HepMC3_OracleFill(const std::string inputfile, unsigned int multiplicity,
+	                         int finalPDG, unsigned int MAXEVENTS,
+	                         std::map<std::string, std::unique_ptr<h1Multiplet>> &h1,
+	                         std::map<std::string, std::unique_ptr<h2Multiplet>> &h2,
+	                         std::map<std::string, std::unique_ptr<hProfMultiplet>> &hP,
+	                         unsigned int SID);
 
-  // Plot out all local histograms
-  void PlotAll(const std::string &titlestr);
+	// Plot out all local histograms
+	void PlotAll(const std::string &titlestr);
 
-  double cross_section = 0;
+	double cross_section = 0;
 
-  double CheckEnergyMomentum(HepMC3::GenEvent &evt) const;
-  void FrameObservables(double W, HepMC3::GenEvent &evt,
-                        const M4Vec &p_beam_plus, const M4Vec &p_beam_minus,
-                        const M4Vec &p_final_plus, const M4Vec &p_final_minus,
-                        const std::vector<M4Vec> &pip,
-                        const std::vector<M4Vec> &pim);
-  void NStarObservables(double W, HepMC3::GenEvent &evt);
+	double CheckEnergyMomentum(HepMC3::GenEvent &evt) const;
+	void FrameObservables(double W, HepMC3::GenEvent &evt, const M4Vec &p_beam_plus,
+	                      const M4Vec &p_beam_minus, const M4Vec &p_final_plus,
+	                      const M4Vec &p_final_minus, const std::vector<M4Vec> &pip,
+	                      const std::vector<M4Vec> &pim);
+	void NStarObservables(double W, HepMC3::GenEvent &evt);
 
-private:
-  double sqrts = 0.0;
+       private:
+	double sqrts = 0.0;
 
-  // Name of the HepMC33 input
-  std::string inputfile;
+	// Name of the HepMC33 input
+	std::string inputfile;
 
-  // Proton excitation is turned on
-  bool N_STAR_ON = false;
+	// Proton excitation is turned on
+	bool N_STAR_ON = false;
 };
 
 } // gra namespace ends

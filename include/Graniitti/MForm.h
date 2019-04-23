@@ -116,12 +116,10 @@ double e_EM();
 double deltaBWxsec(double shat, double M0, double Gamma);
 double deltaBWamp(double shat, double M0, double Gamma);
 
-std::complex<double> CBW(const gra::LORENTZSCALAR &lts,
-                         const gra::PARAM_RES &resonance);
+std::complex<double> CBW(const gra::LORENTZSCALAR &lts, const gra::PARAM_RES &resonance);
 std::complex<double> CBW_FW(double m2, double M0, double Gamma);
 std::complex<double> CBW_RW(double m2, double M0, double Gamma);
-std::complex<double> CBW_BF(double m2, double M0, double Gamma, int J,
-                            double mA, double mB);
+std::complex<double> CBW_BF(double m2, double M0, double Gamma, int J, double mA, double mB);
 std::complex<double> CBW_JR(double m2, double M0, double Gamma, double J);
 
 } // form namespace

@@ -18,12 +18,14 @@ namespace gra {
 
 // Note the index order below, in order to get the row major format
 //
-template <typename T, size_t D1, size_t D2, size_t... DN> struct GetArray {
-  using type = std::array<typename GetArray<T, D2, DN...>::type, D1>;
+template <typename T, size_t D1, size_t D2, size_t... DN>
+struct GetArray {
+	using type = std::array<typename GetArray<T, D2, DN...>::type, D1>;
 };
 
-template <typename T, size_t D1, size_t D2> struct GetArray<T, D1, D2> {
-  using type = std::array<std::array<T, D2>, D1>;
+template <typename T, size_t D1, size_t D2>
+struct GetArray<T, D1, D2> {
+	using type = std::array<std::array<T, D2>, D1>;
 };
 
 template <typename T, size_t D1, size_t D2, size_t... DN>
