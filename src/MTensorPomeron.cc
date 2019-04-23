@@ -880,6 +880,8 @@ Tensor4<std::complex<double>, 4, 4, 4, 4>
 	// Contract r and s indices
 	for(const auto& r : LI) {
 		for(const auto& s : LI) {
+			
+			// Note +=
 			T(u, v, k, l) += FACTOR *
 							 (g[u][k] * eps_lo(v, l, r, s) + g[v][k] * eps_lo(u, l, r, s) +
 							  g[u][l] * eps_lo(v, k, r, s) + g[v][l] * eps_lo(u, k, r, s)) *
@@ -911,6 +913,8 @@ Tensor4<std::complex<double>, 4, 4, 4, 4>
 	// Contract r and s indices
 	for(const auto& r : LI) {
 		for(const auto& s : LI) {
+
+			// Note +=
 			T(u, v, k, l) += FACTOR *
 							 (eps_lo(v, l, r, s) * ((q1 % k) * (q2 % u) - q1q2 * g[u][k]) +
 							  eps_lo(u, l, r, s) * ((q1 % k) * (q2 % v) - q1q2 * g[v][k]) +
@@ -979,7 +983,8 @@ MTensor<std::complex<double>> MTensorPomeron::iG_PPT_1(double g_PPT) const {
 								continue;
 							} // speed it up
 
-							T({u, v, k, l, r, s}) = FACTOR * R_DDDD(u, v, u1, v1) *
+							// Note +=
+							T({u, v, k, l, r, s}) += FACTOR * R_DDDD(u, v, u1, v1) *
 													R_DDDD(k, l, a1, l1) * R_DDDD(r, s, r1, s1) *
 													g[v1][a1] * g[l1][r1] * g[s1][u1];
 						}
@@ -1018,7 +1023,9 @@ MTensor<std::complex<double>> MTensorPomeron::iG_PPT_23(const M4Vec& q1, const M
 		for(auto const& r1 : LI) {
 			for(auto const& s1 : LI) {
 				for(auto const& u1 : LI) {
-					T({u, v, k, l, r, s}) = FACTOR *
+
+					// Note +=
+					T({u, v, k, l, r, s}) += FACTOR *
 											(q1q2 * R_DDDD(u, v, r1, a1) * R_DDDU(k, l, s1, a1) +
 											 sign * (q1 % (r1)) * (q2 ^ (u1)) *
 												 R_DDDD(u, v, u1, a1) * R_DDDU(k, l, s1, a1) +
