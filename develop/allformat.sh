@@ -1,8 +1,12 @@
-./format.sh ./src/*.cc
-./format.sh ./src/analysis/*.cc
-./format.sh ./src/amplitude/*.cc
+# Run with: source ./develop/allformat.sh
 
-./format.sh ./include/*.h
-./format.sh ./include/analysis/*.h
-./format.sh ./include/amplitude/*.h
+source ./develop/format.sh ./src/*.cc
+source ./develop/format.sh ./src/Analysis/*.cc
+source ./develop/format.sh ./src/Amplitude/*.cc
+source ./develop/format.sh ./src/Program/*.cc
+source ./develop/format.sh ./src/Program/Analysis/*.cc
+
+source ./develop/format.sh ./include/Graniitti/*.h
+source ./develop/format.sh ./include/Graniitti/Analysis/*.h
+source ./develop/format.sh ./include/Graniitti/Amplitude/*.h
 

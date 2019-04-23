@@ -12,12 +12,10 @@
 #include <vector>
 
 // Own
-#include "Graniitti/MKinematics.h"
 #include "Graniitti/M4Vec.h"
-
+#include "Graniitti/MKinematics.h"
 
 namespace gra {
-
 
 // Regge amplitude parameters
 namespace PARAM_REGGE {
@@ -45,11 +43,11 @@ extern std::vector<bool> n;   // on/off
 void PrintParam();
 
 // Regge transverse coupling
-std::complex<double> JPCoupling(const gra::LORENTZSCALAR& lts,
-                                const gra::PARAM_RES& resonance);
+std::complex<double> JPCoupling(const gra::LORENTZSCALAR &lts,
+                                const gra::PARAM_RES &resonance);
 
-std::complex<double> JPC_CS_coupling(const gra::LORENTZSCALAR& lts,
-									 const gra::PARAM_RES& resonance);
+std::complex<double> JPC_CS_coupling(const gra::LORENTZSCALAR &lts,
+                                     const gra::PARAM_RES &resonance);
 
 // Amplitude_ form factors
 double Proton_FF(double tprime, double b);
@@ -61,51 +59,51 @@ double ResonanceFormFactor(double shat, double M2, bool active);
 double Meson_prop(double that, double M2);
 double Baryon_prop(double that, double M2);
 std::complex<double> FSI_prop(double t_hat, double M2);
-
 }
 
 // Matrix element dimension: " GeV^" << -(2*external_legs - 8)
 class MRegge {
-
 public:
-	
-	MRegge(){}
-	~MRegge(){}
-	
-	void InitReggeAmplitude(int PDG, const std::string& MODELPARAM);
+  MRegge() {}
+  ~MRegge() {}
 
-	// Regge amplitudes
-	std::complex<double> ME8(gra::LORENTZSCALAR& lts) const;
-	std::complex<double> ME6(gra::LORENTZSCALAR& lts) const;
-	std::complex<double> ME4(gra::LORENTZSCALAR& lts, double sign) const;
-	std::complex<double> ME2(gra::LORENTZSCALAR& lts, int mode) const;
-	std::complex<double> ME3(gra::LORENTZSCALAR& lts, gra::PARAM_RES& resonance) const;
-	std::complex<double> ME3HEL(gra::LORENTZSCALAR& lts, gra::PARAM_RES& resonance) const;
-	std::complex<double> PhotoME3(gra::LORENTZSCALAR& lts, gra::PARAM_RES& resonance) const;
+  void InitReggeAmplitude(int PDG, const std::string &MODELPARAM);
 
-	// Constructor amplitude leg permutations
-	void ConstructPerm(int type);
-	
-	// Amplitude_ permutations
-	std::vector<std::vector<int>> permutations4_;
-	std::vector<std::vector<int>> permutations6_;
+  // Regge amplitudes
+  std::complex<double> ME8(gra::LORENTZSCALAR &lts) const;
+  std::complex<double> ME6(gra::LORENTZSCALAR &lts) const;
+  std::complex<double> ME4(gra::LORENTZSCALAR &lts, double sign) const;
+  std::complex<double> ME2(gra::LORENTZSCALAR &lts, int mode) const;
+  std::complex<double> ME3(gra::LORENTZSCALAR &lts,
+                           gra::PARAM_RES &resonance) const;
+  std::complex<double> ME3HEL(gra::LORENTZSCALAR &lts,
+                              gra::PARAM_RES &resonance) const;
+  std::complex<double> PhotoME3(gra::LORENTZSCALAR &lts,
+                                gra::PARAM_RES &resonance) const;
 
-	// Regge propagators
-	std::complex<double> PropOnly(double s, double t) const;
-	std::complex<double> PhotoProp(double s, double t, double m2, bool excite, double M2_forward) const;
-	
-	// Helicity functions
-	double g_Vertex(double t, double lambda_i, double lambda_f) const;
-	std::complex<double> gik_Vertex(double t1, double t2, double phi, int lambda_h, int J, int P) const;
-	double gammaLambda(double t1, double t2, double m1, double m2) const;
-	int xi3(int J, int P, int P_i, int sigma_i, int P_k, int sigma_k) const;
+  // Constructor amplitude leg permutations
+  void ConstructPerm(int type);
+
+  // Amplitude_ permutations
+  std::vector<std::vector<int>> permutations4_;
+  std::vector<std::vector<int>> permutations6_;
+
+  // Regge propagators
+  std::complex<double> PropOnly(double s, double t) const;
+  std::complex<double> PhotoProp(double s, double t, double m2, bool excite,
+                                 double M2_forward) const;
+
+  // Helicity functions
+  double g_Vertex(double t, double lambda_i, double lambda_f) const;
+  std::complex<double> gik_Vertex(double t1, double t2, double phi,
+                                  int lambda_h, int J, int P) const;
+  double gammaLambda(double t1, double t2, double m1, double m2) const;
+  int xi3(int J, int P, int P_i, int sigma_i, int P_k, int sigma_k) const;
 
 private:
-
-	// Nothing
+  // Nothing
 };
 
 } // gra namespace ends
-
 
 #endif

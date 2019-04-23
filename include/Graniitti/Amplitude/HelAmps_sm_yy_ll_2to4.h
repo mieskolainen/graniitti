@@ -34,7 +34,7 @@ void vxxxxx(double p[4], double vmass, int nhel, int nsv,
 
 void FFV1_0(std::complex<double> F1[], std::complex<double> F2[],
             std::complex<double> V3[], std::complex<double> COUP,
-            std::complex<double>& vertex);
+            std::complex<double> &vertex);
 
 void FFV1_2(std::complex<double> F1[], std::complex<double> V3[],
             std::complex<double> COUP, double M2, double W2,

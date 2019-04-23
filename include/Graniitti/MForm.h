@@ -3,7 +3,6 @@
 // (c) 2017-2019 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
-
 #ifndef MFORM_H
 #define MFORM_H
 
@@ -16,14 +15,12 @@
 #include "json.hpp"
 
 // Keep this here to avoid backward/forward declaration problem
-#include "Graniitti/MKinematics.h"
-#include "Graniitti/MAux.h"
-#include "Graniitti/MRandom.h"
 #include "Graniitti/M4Vec.h"
-
+#include "Graniitti/MAux.h"
+#include "Graniitti/MKinematics.h"
+#include "Graniitti/MRandom.h"
 
 namespace gra {
-
 
 // Model parameters
 namespace PARAM_SOFT {
@@ -78,7 +75,7 @@ extern std::vector<double> rc;
 namespace form {
 
 // Read resonance
-gra::PARAM_RES ReadResonance(const std::string& resparam_str, MRandom& rng);
+gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng);
 
 // Regge signature
 std::complex<double> ReggeEta(double alpha_t, double sigma);
@@ -119,7 +116,8 @@ double e_EM();
 double deltaBWxsec(double shat, double M0, double Gamma);
 double deltaBWamp(double shat, double M0, double Gamma);
 
-std::complex<double> CBW(const gra::LORENTZSCALAR& lts, const gra::PARAM_RES& resonance);
+std::complex<double> CBW(const gra::LORENTZSCALAR &lts,
+                         const gra::PARAM_RES &resonance);
 std::complex<double> CBW_FW(double m2, double M0, double Gamma);
 std::complex<double> CBW_RW(double m2, double M0, double Gamma);
 std::complex<double> CBW_BF(double m2, double M0, double Gamma, int J,

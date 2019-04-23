@@ -17,42 +17,36 @@
 #include "Graniitti/Amplitude/MAmpMG5_yy_ww.h"
 
 // Own
-#include "Graniitti/MKinematics.h"
 #include "Graniitti/M4Vec.h"
-
+#include "Graniitti/MKinematics.h"
 
 namespace gra {
-
 
 // "Functionoid class"
 // Matrix element dimension: " GeV^" << -(2*external_legs - 8)
 class MGamma {
-
 public:
+  MGamma() {}
+  ~MGamma() {}
 
-	MGamma(){}
-	~MGamma(){}
+  // yy->resonance X
+  std::complex<double> yyX(const gra::LORENTZSCALAR &lts,
+                           gra::PARAM_RES &resonance) const;
 
-	// yy->resonance X
-	std::complex<double> yyX(const gra::LORENTZSCALAR& lts, gra::PARAM_RES& resonance) const;
-	
-	// yy->lepton pair, or monopole antimonopole amplitude
-	std::complex<double> yyffbar(gra::LORENTZSCALAR& lts);
-	
-	// yy->SM Higgs
-	std::complex<double> yyHiggs(gra::LORENTZSCALAR& lts) const;
+  // yy->lepton pair, or monopole antimonopole amplitude
+  std::complex<double> yyffbar(gra::LORENTZSCALAR &lts);
 
-	// yy->monopolium
-	std::complex<double> yyMP(const gra::LORENTZSCALAR& lts) const;
+  // yy->SM Higgs
+  std::complex<double> yyHiggs(gra::LORENTZSCALAR &lts) const;
 
+  // yy->monopolium
+  std::complex<double> yyMP(const gra::LORENTZSCALAR &lts) const;
 
 protected:
-
-	// MADGRAPH amplitudes added here
-	MAmpMG5_yy_ll_2to4  AmpMG5_yy_ll_2to4;
-	MAmpMG5_yy_ll       AmpMG5_yy_ll;
-	MAmpMG5_yy_ww       AmpMG5_yy_ww;
-
+  // MADGRAPH amplitudes added here
+  MAmpMG5_yy_ll_2to4 AmpMG5_yy_ll_2to4;
+  MAmpMG5_yy_ll AmpMG5_yy_ll;
+  MAmpMG5_yy_ww AmpMG5_yy_ww;
 };
 
 } // gra namespace ends
