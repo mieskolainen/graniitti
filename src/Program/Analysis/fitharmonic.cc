@@ -245,7 +245,7 @@ int main(int argc, char* argv[]) {
 				return false;
 			}
 		};
-
+		
 		// Read in real DATA/MC
 		const std::vector<std::string> input = gra::aux::SplitStr2Str(r["input"].as<std::string>());
 		const std::vector<std::string> legend =

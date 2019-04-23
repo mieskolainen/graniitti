@@ -161,9 +161,12 @@ std::vector<double> h1Multiplet::SaveFig(const std::string& fullpath) const {
 	// Find minimum (non-zero) value for y-range limits
 	double MINVAL = 1e32;
 	for(const auto& i : indices(h)) {
-		const double min = h[i]->GetMinimum();
-		if(min < MINVAL && min > 0) {
-			MINVAL = min;
+
+		for (int k = 0; k < h[i]->GetNbinsX(); ++k) {
+			double value = h[i]->GetBinContent(k);
+			if (value < MINVAL && value > 0) {
+				MINVAL = value;
+			}
 		}
 	}
 
@@ -282,7 +285,7 @@ std::vector<double> h1Multiplet::SaveFig(const std::string& fullpath) const {
 	if(MINVAL > 0) {
 		pad1->cd()->SetLogy(); // pad2 becomes the current pad
 		for(const auto& i : indices(h)) {
-			h[i]->GetYaxis()->SetRangeUser(MINVAL / 10, MAXVAL * 5);
+			h[i]->GetYaxis()->SetRangeUser(MINVAL / 2, MAXVAL * 5);
 		}
 		fullfile = fullpath + name_ + "_logy" + ".pdf";
 		c0.SaveAs(fullfile.c_str());
@@ -363,6 +366,7 @@ double h2Multiplet::SaveFig(const std::string& fullpath) const {
 	// Histograms on TOP ROW
 	for(const auto& i : indices(h)) {
 		c0.cd(i + 1); // choose position
+		c0.cd(i + 1)->SetRightMargin(0.13);
 
 		h[i]->SetStats(0);
 		h[i]->Draw("COLZ");
@@ -370,11 +374,13 @@ double h2Multiplet::SaveFig(const std::string& fullpath) const {
 		h[i]->GetZaxis()->SetRangeUser(0.0, ZMAX);
 		h[i]->SetTitle(legendtext_[i].c_str());
 	}
-
+	
 	// Ratio histograms on BOTTOM ROW
 	std::vector<TH2D*> ratios;
 	for(const auto& i : indices(h)) {
 		c0.cd(i + 1 + h.size()); // choose position
+		c0.cd(i + 1 + h.size())->SetRightMargin(0.13);
+
 		TH2D* hR = (TH2D*)h[i]->Clone(Form("h2R_%lu", i));
 
 		hR->Divide(h[0]); // Divide by 0-th histogram
