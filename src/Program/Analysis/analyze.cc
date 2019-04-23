@@ -55,27 +55,27 @@ void Init1DHistogram(std::map<std::string, std::unique_ptr<h1Multiplet>> &h,
   std::string name = "null";
 
   // Central system observables
-  name = "h1_S_M";
+  name    = "h1_S_M";
   h[name] = std::make_unique<h1Multiplet>(
       name, title + ";System M  (GeV);d#sigma/dM  (" + units + "/GeV)", bM.N, bM.min, bM.max,
       legendtext);
 
-  name = "h1_S_Pt";
+  name    = "h1_S_Pt";
   h[name] = std::make_unique<h1Multiplet>(
       name, title + ";System P_{T} (GeV);d#sigma/dP_{T}  (" + units + "/GeV)", bP.N, bP.min, bP.max,
       legendtext);
 
-  name = "h1_S_Y";
+  name    = "h1_S_Y";
   h[name] = std::make_unique<h1Multiplet>(name, title + ";System Y;d#sigma/dY  (" + units + ")",
                                           bY.N, bY.min, bY.max, legendtext);
 
   // Central track observables
-  name = "h1_1B_pt";
+  name    = "h1_1B_pt";
   h[name] = std::make_unique<h1Multiplet>(
       name, title + ";Central final state p_{T} (GeV);d#sigma/dp_{T}  (" + units + "/GeV)", bP.N,
       bP.min, bP.max, legendtext);
 
-  name = "h1_1B_eta";
+  name    = "h1_1B_eta";
   h[name] = std::make_unique<h1Multiplet>(
       name, title + ";Central final state #eta;d#sigma/d#eta  (" + units + ")", bY.N, bY.min,
       bY.max, legendtext);
@@ -90,7 +90,7 @@ void Init1DHistogram(std::map<std::string, std::unique_ptr<h1Multiplet>> &h,
                                                 units + "/rad)",
                                       100, 0.0, 1.0, legendtext);
 
-    name = "h1_2B_diffrap";
+    name    = "h1_2B_diffrap";
     h[name] = std::make_unique<h1Multiplet>(
         name, title + ";#deltay #equiv y_{1} - y_{2};d#sigma/d#deltay  (" + units + ")", bY.N,
         bY.min, bY.max, legendtext);
@@ -102,17 +102,17 @@ void Init1DHistogram(std::map<std::string, std::unique_ptr<h1Multiplet>> &h,
   }
 
   // Forward proton observables
-  name = "h1_PP_dphi";
+  name    = "h1_PP_dphi";
   h[name] = std::make_unique<h1Multiplet>(
       name, title + ";Proton pair #delta#phi (rad);d#sigma/#delta#phi  (" + units + "/rad)", 100,
       0.0, 3.14159, legendtext);
 
-  name = "h1_PP_t1";
+  name    = "h1_PP_t1";
   h[name] = std::make_unique<h1Multiplet>(
       name, title + ";Mandelstam -t_{1} (GeV^{2});d#sigma/dt  (" + units + "/GeV^{2})", bP.N,
       bP.min, bP.max, legendtext);
 
-  name = "h1_PP_dpt";
+  name    = "h1_PP_dpt";
   h[name] = std::make_unique<h1Multiplet>(name, title +
                                                     ";Proton pair |#delta#bar{p}_{T}| "
                                                     "(GeV);d#sigma/|#delta#bar{p}_{T}|  (" +
@@ -128,7 +128,7 @@ void Init2DHistogram(std::map<std::string, std::unique_ptr<h2Multiplet>> &h,
   std::string name = "null";
 
   // Central system observables
-  name = "h2_S_M_Pt";
+  name    = "h2_S_M_Pt";
   h[name] = std::make_unique<h2Multiplet>(name, "d#sigma^2/dMdP_{T}  (" + units + "/GeV/GeV) | " +
                                                     title + ";System M (GeV); System P_{T} (GeV)",
                                           bM.N, bM.min, bM.max, bP.N, bP.min, bP.max, legendtext);
@@ -145,13 +145,13 @@ void Init2DHistogram(std::map<std::string, std::unique_ptr<h2Multiplet>> &h,
                                               ";System M (GeV); Central final state p_{T} (GeV)",
                                     bM.N, bM.min, bM.max, bP.N, bP.min, bP.max, legendtext);
 
-  name = "h2_S_M_dphipp";
+  name    = "h2_S_M_dphipp";
   h[name] = std::make_unique<h2Multiplet>(
       name, "d#sigma^2/dMd#delta_{pp}  (" + units + "/GeV/rad) | " + title +
                 ";System M (GeV); Forward proton #delta#phi_{pp}",
       bM.N, bM.min, bM.max, 100, 0.0, gra::math::PI, legendtext);
 
-  name = "h2_S_M_dpt";
+  name    = "h2_S_M_dpt";
   h[name] = std::make_unique<h2Multiplet>(
       name, "d#sigma^2/dMd|#delta#bar{p}_{T}|  (" + units + "/GeV/GeV) | " + title +
                 ";System M (GeV); Proton pair |#delta#bar{p}_{T}| (GeV)",
@@ -159,13 +159,13 @@ void Init2DHistogram(std::map<std::string, std::unique_ptr<h2Multiplet>> &h,
 
   // 2-Body
   if (std::find(multiplicity.begin(), multiplicity.end(), 2) != multiplicity.end()) {
-    name = "h2_2B_M_dphi";
+    name    = "h2_2B_M_dphi";
     h[name] = std::make_unique<h2Multiplet>(
         name, "d#sigma^2/dMd#delta#phi  (" + units + "/GeV/rad) | " + title +
                   ";System M (GeV); Central final state #delta#phi (rad)",
         bM.N, bM.min, bM.max, 100, 0.0, gra::math::PI, legendtext);
 
-    name = "h2_2B_eta1_eta2";
+    name    = "h2_2B_eta1_eta2";
     h[name] = std::make_unique<h2Multiplet>(
         name, "d#sigma^2/d#eta_{1}d#eta_{2}  (" + units + ") | " + title + ";#eta_{1}; #eta_{2}",
         bY.N, bY.min, bY.max, bY.N, bY.min, bY.max, legendtext);
@@ -190,19 +190,19 @@ void InitPrHistogram(std::map<std::string, std::unique_ptr<hProfMultiplet>> &h,
       std::make_unique<hProfMultiplet>(name, title + ";System M  (GeV); System #LTP_{T}#GT (GeV)",
                                        bM.N, bM.min, bM.max, bP.min, bP.max, legendtext);
 
-  name = "hP_S_M_PL2";
+  name    = "hP_S_M_PL2";
   h[name] = std::make_unique<hProfMultiplet>(
       name, title + ";System M  (GeV); Legendre #LTP_{l=2}(cos #theta)#GT | r.f.", bM.N, bM.min,
       bM.max, -0.4, 0.4, legendtext);
 
-  name = "hP_S_M_PL4";
+  name    = "hP_S_M_PL4";
   h[name] = std::make_unique<hProfMultiplet>(
       name, title + ";System M  (GeV); Legendre #LTP_{l=4}(cos #theta)#GT | r.f.", bM.N, bM.min,
       bM.max, -0.4, 0.4, legendtext);
 
   // 2-body
   if (std::find(multiplicity.begin(), multiplicity.end(), 2) != multiplicity.end()) {
-    name = "hP_2B_M_dphi";
+    name    = "hP_2B_M_dphi";
     h[name] = std::make_unique<hProfMultiplet>(
         name, title + ";System M (GeV); Central final state pair #LT#delta#phi#GT  (rad)", bM.N,
         bM.min, bM.max, 0.0, 3.14159, legendtext);
@@ -215,8 +215,8 @@ void InitPrHistogram(std::map<std::string, std::unique_ptr<hProfMultiplet>> &h,
 }
 
 // Histogram collected here
-std::map<std::string, std::unique_ptr<h1Multiplet>> h1;
-std::map<std::string, std::unique_ptr<h2Multiplet>> h2;
+std::map<std::string, std::unique_ptr<h1Multiplet>>    h1;
+std::map<std::string, std::unique_ptr<h2Multiplet>>    h2;
 std::map<std::string, std::unique_ptr<hProfMultiplet>> hP;
 
 // -----------------------------------------------------------------------
@@ -270,10 +270,10 @@ int main(int argc, char *argv[]) {
     std::vector<MAnalyzer *> analysis;
 
     // Input list
-    std::vector<std::string> inputfile = gra::aux::SplitStr2Str(r["input"].as<std::string>());
-    std::vector<std::string> labels = gra::aux::SplitStr2Str(r["labels"].as<std::string>());
-    std::vector<int> finalstatePDG = gra::aux::SplitStr2Int(r["pdg"].as<std::string>());
-    std::vector<int> multiplicity = gra::aux::SplitStr2Int(r["number"].as<std::string>());
+    std::vector<std::string> inputfile     = gra::aux::SplitStr2Str(r["input"].as<std::string>());
+    std::vector<std::string> labels        = gra::aux::SplitStr2Str(r["labels"].as<std::string>());
+    std::vector<int>         finalstatePDG = gra::aux::SplitStr2Int(r["pdg"].as<std::string>());
+    std::vector<int>         multiplicity  = gra::aux::SplitStr2Int(r["number"].as<std::string>());
 
     // Scaling
     std::vector<double> scale(inputfile.size(), 1.0);  // Default 1.0 for all
@@ -281,9 +281,7 @@ int main(int argc, char *argv[]) {
       const std::vector<std::string> str_vals =
           gra::aux::SplitStr2Str(r["scale"].as<std::string>());
       if (str_vals.size() == inputfile.size()) {
-        for (auto const &i : indices(str_vals)) {
-          scale[i] = std::stod(str_vals[i]);
-        }
+        for (auto const &i : indices(str_vals)) { scale[i] = std::stod(str_vals[i]); }
       } else {
         throw std::invalid_argument("analyzer::scale input list needs to be of length 0 or N");
       }
@@ -291,29 +289,25 @@ int main(int argc, char *argv[]) {
 
     // Title string
     std::string title = "";
-    if (r.count("title")) {
-      title = r["title"].as<std::string>();
-    }
+    if (r.count("title")) { title = r["title"].as<std::string>(); }
 
     // Kinematic histogram boundaries
-    const double MMAX = r["mass"].as<double>();
-    const double YMAX = r["rapidity"].as<double>();
+    const double MMAX  = r["mass"].as<double>();
+    const double YMAX  = r["rapidity"].as<double>();
     const double PTMAX = r["momentum"].as<double>();
 
     int MAXEVENTS = 1e9;
-    if (r.count("X")) {
-      MAXEVENTS = r["X"].as<int>();
-    }
+    if (r.count("X")) { MAXEVENTS = r["X"].as<int>(); }
 
-    std::string units = r["units"].as<std::string>();
-    double multiplier = 0.0;
+    std::string units      = r["units"].as<std::string>();
+    double      multiplier = 0.0;
 
     if (units == "barn") {
       multiplier = 1.0;
     } else if (units == "mb") {
       multiplier = 1E3;
     } else if (units == "ub") {
-      units = "#mub";
+      units      = "#mub";
       multiplier = 1E6;
     } else if (units == "nb") {
       multiplier = 1E9;
@@ -330,9 +324,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Scale each data source
-    for (const auto &i : indices(scale)) {
-      scale[i] *= multiplier;
-    }
+    for (const auto &i : indices(scale)) { scale[i] *= multiplier; }
 
     // ---------------------------------------------------------------------
     // Create histogram and add pointer to the map
@@ -358,9 +350,7 @@ int main(int argc, char *argv[]) {
     std::string fullpath = gra::aux::GetBasePath(2) + "/figs/";
     for (const auto &i : indices(inputfile)) {
       fullpath += inputfile[i];
-      if (i < inputfile.size() - 1) {
-        fullpath += "+";
-      }
+      if (i < inputfile.size() - 1) { fullpath += "+"; }
     }
     fullpath += "/";  // important
 
@@ -377,9 +367,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Iterate over all Profile-histograms
-    for (const auto &x : hP) {
-      x.second->SaveFig(fullpath);
-    }
+    for (const auto &x : hP) { x.second->SaveFig(fullpath); }
 
     // Merge pdfs using Ghostscript (gs)
     const std::string cmd = "gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=" + fullpath +
@@ -389,9 +377,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Print all separate histograms
-    for (const auto &i : indices(analysis)) {
-      analysis[i]->PlotAll(title);
-    }
+    for (const auto &i : indices(analysis)) { analysis[i]->PlotAll(title); }
   } catch (const std::invalid_argument &e) {
     gra::aux::PrintGameOver();
     std::cerr << rang::fg::red << "Exception catched: " << rang::fg::reset << e.what() << std::endl;

@@ -22,15 +22,15 @@ double Sgn(double a, double b) { return (b < 0) ? -abs(a) : abs(a); }
 
 void vxxxxx(double p[4], double vmass, int nhel, int nsv, complex<double> vc[6]) {
   double hel, hel0, pt, pt2, pp, pzpt, emp, sqh;
-  int nsvahl;
-  sqh = sqrt(0.5);
-  hel = double(nhel);
+  int    nsvahl;
+  sqh    = sqrt(0.5);
+  hel    = double(nhel);
   nsvahl = nsv * std::abs(hel);
-  pt2 = (p[1] * p[1]) + (p[2] * p[2]);
-  pp = min(p[0], sqrt(pt2 + (p[3] * p[3])));
-  pt = min(pp, sqrt(pt2));
-  vc[0] = complex<double>(p[0] * nsv, p[3] * nsv);
-  vc[1] = complex<double>(p[1] * nsv, p[2] * nsv);
+  pt2    = (p[1] * p[1]) + (p[2] * p[2]);
+  pp     = min(p[0], sqrt(pt2 + (p[3] * p[3])));
+  pt     = min(pp, sqrt(pt2));
+  vc[0]  = complex<double>(p[0] * nsv, p[3] * nsv);
+  vc[1]  = complex<double>(p[1] * nsv, p[2] * nsv);
   if (vmass != 0.0) {
     hel0 = 1.0 - std::abs(hel);
     if (pp == 0.0) {
@@ -39,11 +39,11 @@ void vxxxxx(double p[4], double vmass, int nhel, int nsv, complex<double> vc[6])
       vc[4] = complex<double>(0.0, nsvahl * sqh);
       vc[5] = complex<double>(hel0, 0.0);
     } else {
-      emp = p[0] / (vmass * pp);
+      emp   = p[0] / (vmass * pp);
       vc[2] = complex<double>(hel0 * pp / vmass, 0.0);
       vc[5] = complex<double>(hel0 * p[3] * emp + hel * pt / pp * sqh, 0.0);
       if (pt != 0.0) {
-        pzpt = p[3] / (pp * pt) * sqh * hel;
+        pzpt  = p[3] / (pp * pt) * sqh * hel;
         vc[3] = complex<double>(hel0 * p[1] * emp - p[1] * pzpt, -nsvahl * p[2] / pt * sqh);
         vc[4] = complex<double>(hel0 * p[2] * emp - p[2] * pzpt, nsvahl * p[1] / pt * sqh);
       } else {
@@ -52,12 +52,12 @@ void vxxxxx(double p[4], double vmass, int nhel, int nsv, complex<double> vc[6])
       }
     }
   } else {
-    pp = p[0];
-    pt = sqrt((p[1] * p[1]) + (p[2] * p[2]));
+    pp    = p[0];
+    pt    = sqrt((p[1] * p[1]) + (p[2] * p[2]));
     vc[2] = complex<double>(0.0, 0.0);
     vc[5] = complex<double>(hel * pt / pp * sqh, 0.0);
     if (pt != 0.0) {
-      pzpt = p[3] / (pp * pt) * sqh * hel;
+      pzpt  = p[3] / (pp * pt) * sqh * hel;
       vc[3] = complex<double>(-p[1] * pzpt, -nsv * p[2] / pt * sqh);
       vc[4] = complex<double>(-p[2] * pzpt, nsv * p[1] / pt * sqh);
     } else {
@@ -70,33 +70,33 @@ void vxxxxx(double p[4], double vmass, int nhel, int nsv, complex<double> vc[6])
 
 void ixxxxx(double p[4], double fmass, int nhel, int nsf, complex<double> fi[6]) {
   complex<double> chi[2];
-  double sf[2], sfomega[2], omega[2], pp, pp3, sqp0p3, sqm[2];
-  int ip, im, nh;
+  double          sf[2], sfomega[2], omega[2], pp, pp3, sqp0p3, sqm[2];
+  int             ip, im, nh;
   fi[0] = complex<double>(-p[0] * nsf, -p[3] * nsf);
   fi[1] = complex<double>(-p[1] * nsf, -p[2] * nsf);
-  nh = nhel * nsf;
+  nh    = nhel * nsf;
   if (fmass != 0.0) {
     pp = min(p[0], sqrt(p[1] * p[1] + p[2] * p[2] + p[3] * p[3]));
     if (pp == 0.0) {
       sqm[0] = sqrt(std::abs(fmass));
       sqm[1] = Sgn(sqm[0], fmass);
-      ip = (1 + nh) / 2;
-      im = (1 - nh) / 2;
-      fi[2] = ip * sqm[ip];
-      fi[3] = im * nsf * sqm[ip];
-      fi[4] = ip * nsf * sqm[im];
-      fi[5] = im * sqm[im];
+      ip     = (1 + nh) / 2;
+      im     = (1 - nh) / 2;
+      fi[2]  = ip * sqm[ip];
+      fi[3]  = im * nsf * sqm[ip];
+      fi[4]  = ip * nsf * sqm[im];
+      fi[5]  = im * sqm[im];
     } else {
-      sf[0] = (1 + nsf + (1 - nsf) * nh) * 0.5;
-      sf[1] = (1 + nsf - (1 - nsf) * nh) * 0.5;
-      omega[0] = sqrt(p[0] + pp);
-      omega[1] = fmass / omega[0];
-      ip = (1 + nh) / 2;
-      im = (1 - nh) / 2;
+      sf[0]      = (1 + nsf + (1 - nsf) * nh) * 0.5;
+      sf[1]      = (1 + nsf - (1 - nsf) * nh) * 0.5;
+      omega[0]   = sqrt(p[0] + pp);
+      omega[1]   = fmass / omega[0];
+      ip         = (1 + nh) / 2;
+      im         = (1 - nh) / 2;
       sfomega[0] = sf[0] * omega[ip];
       sfomega[1] = sf[1] * omega[im];
-      pp3 = max(pp + p[3], 0.0);
-      chi[0] = complex<double>(sqrt(pp3 * 0.5 / pp), 0);
+      pp3        = max(pp + p[3], 0.0);
+      chi[0]     = complex<double>(sqrt(pp3 * 0.5 / pp), 0);
       if (pp3 == 0.0) {
         chi[1] = complex<double>(-nh, 0);
       } else {
@@ -143,34 +143,34 @@ void sxxxxx(double p[4], int nss, complex<double> sc[3]) {
 
 void oxxxxx(double p[4], double fmass, int nhel, int nsf, complex<double> fo[6]) {
   complex<double> chi[2];
-  double sf[2], sfomeg[2], omega[2], pp, pp3, sqp0p3, sqm[2];
-  int nh, ip, im;
+  double          sf[2], sfomeg[2], omega[2], pp, pp3, sqp0p3, sqm[2];
+  int             nh, ip, im;
   fo[0] = complex<double>(p[0] * nsf, p[3] * nsf);
   fo[1] = complex<double>(p[1] * nsf, p[2] * nsf);
-  nh = nhel * nsf;
+  nh    = nhel * nsf;
   if (fmass != 0.000) {
     pp = min(p[0], sqrt((p[1] * p[1]) + (p[2] * p[2]) + (p[3] * p[3])));
     if (pp == 0.000) {
       sqm[0] = sqrt(std::abs(fmass));
       sqm[1] = Sgn(sqm[0], fmass);
-      ip = -((1 - nh) / 2) * nhel;
-      im = (1 + nh) / 2 * nhel;
-      fo[2] = im * sqm[std::abs(ip)];
-      fo[3] = ip * nsf * sqm[std::abs(ip)];
-      fo[4] = im * nsf * sqm[std::abs(im)];
-      fo[5] = ip * sqm[std::abs(im)];
+      ip     = -((1 - nh) / 2) * nhel;
+      im     = (1 + nh) / 2 * nhel;
+      fo[2]  = im * sqm[std::abs(ip)];
+      fo[3]  = ip * nsf * sqm[std::abs(ip)];
+      fo[4]  = im * nsf * sqm[std::abs(im)];
+      fo[5]  = ip * sqm[std::abs(im)];
     } else {
-      pp = min(p[0], sqrt((p[1] * p[1]) + (p[2] * p[2]) + (p[3] * p[3])));
-      sf[0] = double(1 + nsf + (1 - nsf) * nh) * 0.5;
-      sf[1] = double(1 + nsf - (1 - nsf) * nh) * 0.5;
-      omega[0] = sqrt(p[0] + pp);
-      omega[1] = fmass / omega[0];
-      ip = (1 + nh) / 2;
-      im = (1 - nh) / 2;
+      pp        = min(p[0], sqrt((p[1] * p[1]) + (p[2] * p[2]) + (p[3] * p[3])));
+      sf[0]     = double(1 + nsf + (1 - nsf) * nh) * 0.5;
+      sf[1]     = double(1 + nsf - (1 - nsf) * nh) * 0.5;
+      omega[0]  = sqrt(p[0] + pp);
+      omega[1]  = fmass / omega[0];
+      ip        = (1 + nh) / 2;
+      im        = (1 - nh) / 2;
       sfomeg[0] = sf[0] * omega[ip];
       sfomeg[1] = sf[1] * omega[im];
-      pp3 = max(pp + p[3], 0.00);
-      chi[0] = complex<double>(sqrt(pp3 * 0.5 / pp), 0.00);
+      pp3       = max(pp + p[3], 0.00);
+      chi[0]    = complex<double>(sqrt(pp3 * 0.5 / pp), 0.00);
       if (pp3 == 0.00) {
         chi[1] = complex<double>(-nh, 0.00);
       } else {
@@ -210,15 +210,15 @@ void oxxxxx(double p[4], double fmass, int nhel, int nsf, complex<double> fo[6])
 
 void txxxxx(double p[4], double tmass, int nhel, int nst, complex<double> tc[18]) {
   complex<double> ft[6][4], ep[4], em[4], e0[4];
-  double pt, pt2, pp, pzpt, emp, sqh, sqs;
-  int i, j;
+  double          pt, pt2, pp, pzpt, emp, sqh, sqs;
+  int             i, j;
 
   sqh = sqrt(0.5);
   sqs = sqrt(0.5 / 3);
 
   pt2 = p[1] * p[1] + p[2] * p[2];
-  pp = min(p[0], sqrt(pt2 + p[3] * p[3]));
-  pt = min(pp, sqrt(pt2));
+  pp  = min(p[0], sqrt(pt2 + p[3] * p[3]));
+  pt  = min(pp, sqrt(pt2));
 
   ft[4][0] = complex<double>(p[0] * nst, p[3] * nst);
   ft[5][0] = complex<double>(p[1] * nst, p[2] * nst);
@@ -235,7 +235,7 @@ void txxxxx(double p[4], double tmass, int nhel, int nst, complex<double> tc[18]
       ep[3] = complex<double>(pt / pp * sqh, 0);
 
       if (pt != 0) {
-        pzpt = p[3] / (pp * pt) * sqh;
+        pzpt  = p[3] / (pp * pt) * sqh;
         ep[1] = complex<double>(-p[1] * pzpt, -nst * p[2] / pt * sqh);
         ep[2] = complex<double>(-p[2] * pzpt, nst * p[1] / pt * sqh);
       } else {
@@ -257,7 +257,7 @@ void txxxxx(double p[4], double tmass, int nhel, int nst, complex<double> tc[18]
       em[3] = complex<double>(-pt / pp * sqh, 0);
 
       if (pt != 0) {
-        pzpt = -p[3] / (pp * pt) * sqh;
+        pzpt  = -p[3] / (pp * pt) * sqh;
         em[1] = complex<double>(-p[1] * pzpt, -nst * p[2] / pt * sqh);
         em[2] = complex<double>(-p[2] * pzpt, nst * p[1] / pt * sqh);
       } else {
@@ -275,7 +275,7 @@ void txxxxx(double p[4], double tmass, int nhel, int nst, complex<double> tc[18]
       e0[2] = complex<double>(0, 0);
       e0[3] = complex<double>(1, 0);
     } else {
-      emp = p[0] / (tmass * pp);
+      emp   = p[0] / (tmass * pp);
       e0[0] = complex<double>(pp / tmass, 0);
       e0[3] = complex<double>(p[3] * emp, 0);
 
@@ -299,9 +299,7 @@ void txxxxx(double p[4], double tmass, int nhel, int nst, complex<double> tc[18]
     }
   } else if (tmass == 0) {
     for (j = 0; j < 4; j++) {
-      for (i = 0; i < 4; i++) {
-        ft[i][j] = 0;
-      }
+      for (i = 0; i < 4; i++) { ft[i][j] = 0; }
     }
   } else if (tmass != 0) {
     if (nhel == 1) {
@@ -310,7 +308,7 @@ void txxxxx(double p[4], double tmass, int nhel, int nst, complex<double> tc[18]
       }
     } else if (nhel == 0) {
       for (j = 0; j < 4; j++) {
-        for (i = 0; i < 4; i++)
+        for (i     = 0; i < 4; i++)
           ft[i][j] = sqs * (ep[i] * em[j] + em[i] * ep[j] + 2.0 * e0[i] * e0[j]);
       }
     } else if (nhel == -1) {
@@ -327,16 +325,14 @@ void txxxxx(double p[4], double tmass, int nhel, int nst, complex<double> tc[18]
   tc[1] = ft[5][0];
 
   for (j = 0; j < 4; j++) {
-    for (i = 0; i < 4; i++) {
-      tc[j * 4 + i + 2] = ft[j][i];
-    }
+    for (i = 0; i < 4; i++) { tc[j * 4 + i + 2] = ft[j][i]; }
   }
 }
 
 void FFV1_0(std::complex<double> F1[], std::complex<double> F2[], std::complex<double> V3[],
             std::complex<double> COUP, std::complex<double> &vertex) {
   static std::complex<double> cI = std::complex<double>(0., 1.);
-  std::complex<double> TMP0;
+  std::complex<double>        TMP0;
   TMP0 = (F1[2] * (F2[4] * (V3[2] + V3[5]) + F2[5] * (V3[3] + cI * (V3[4]))) +
           (F1[3] * (F2[4] * (V3[3] - cI * (V3[4])) + F2[5] * (V3[2] - V3[5])) +
            (F1[4] * (F2[2] * (V3[2] - V3[5]) - F2[3] * (V3[3] + cI * (V3[4]))) +
@@ -347,8 +343,8 @@ void FFV1_0(std::complex<double> F1[], std::complex<double> F2[], std::complex<d
 void FFV1_2(std::complex<double> F1[], std::complex<double> V3[], std::complex<double> COUP,
             double M2, double W2, std::complex<double> F2[]) {
   static std::complex<double> cI = std::complex<double>(0., 1.);
-  double P2[4];
-  std::complex<double> denom;
+  double                      P2[4];
+  std::complex<double>        denom;
   F2[0] = +F1[0] + V3[0];
   F2[1] = +F1[1] + V3[1];
   P2[0] = -F2[0].real();
@@ -393,8 +389,8 @@ void FFV1_2(std::complex<double> F1[], std::complex<double> V3[], std::complex<d
 void FFV1_1(std::complex<double> F2[], std::complex<double> V3[], std::complex<double> COUP,
             double M1, double W1, std::complex<double> F1[]) {
   static std::complex<double> cI = std::complex<double>(0., 1.);
-  double P1[4];
-  std::complex<double> denom;
+  double                      P1[4];
+  std::complex<double>        denom;
   F1[0] = +F2[0] + V3[0];
   F1[1] = +F2[1] + V3[1];
   P1[0] = -F1[0].real();

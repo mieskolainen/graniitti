@@ -43,7 +43,7 @@ namespace gra {
 // This is needed by construction
 MFactorized::MFactorized() {
   std::vector<std::string> supported = {"PP", "yP", "yy", "gg"};
-  ProcPtr = MSubProc(supported);
+  ProcPtr                            = MSubProc(supported);
   ConstructProcesses();
 }
 
@@ -54,9 +54,7 @@ MFactorized::MFactorized(std::string process, const std::vector<aux::OneCMD> &sy
 
   // Init final states
   M4Vec zerovec(0, 0, 0, 0);
-  for (std::size_t i = 0; i < 10; ++i) {
-    lts.pfinal.push_back(zerovec);
-  }
+  for (std::size_t i = 0; i < 10; ++i) { lts.pfinal.push_back(zerovec); }
   std::cout << "MFactorized:: [Constructor done]" << std::endl;
 }
 
@@ -93,12 +91,8 @@ void MFactorized::post_Constructor() {
   // Initialize phase space dimension
   ProcPtr.LIPSDIM = 5 + 1;  // All processes, +1 from central system mass
 
-  if (EXCITATION == 1) {
-    ProcPtr.LIPSDIM += 1;
-  }
-  if (EXCITATION == 2) {
-    ProcPtr.LIPSDIM += 2;
-  }
+  if (EXCITATION == 1) { ProcPtr.LIPSDIM += 1; }
+  if (EXCITATION == 2) { ProcPtr.LIPSDIM += 2; }
 }
 
 // Update kinematics (screening kT loop calls this)
@@ -107,7 +101,7 @@ void MFactorized::post_Constructor() {
 
 bool MFactorized::LoopKinematics(const std::vector<double> &p1p, const std::vector<double> &p2p) {
   static const M4Vec beamsum = lts.pbeam1 + lts.pbeam2;
-  const unsigned int Nf = lts.decaytree.size() + 2;  // Number of final states
+  const unsigned int Nf      = lts.decaytree.size() + 2;  // Number of final states
 
   // SET new final states pT degrees of freedom
   lts.pfinal[1].SetPxPy(p1p[0], p1p[1]);
@@ -132,22 +126,16 @@ bool MFactorized::LoopKinematics(const std::vector<double> &p1p, const std::vect
   lts.pfinal[0].SetPzE(mtX * std::sinh(yX), mtX * std::cosh(yX));
 
   // Energy overflow
-  if (lts.pfinal[0].E() > (lts.sqrt_s - (m1 + m2))) {
-    return false;
-  }
+  if (lts.pfinal[0].E() > (lts.sqrt_s - (m1 + m2))) { return false; }
 
   double p1z =
       gra::kinematics::SolvePz(m1, m2, pt1, pt2, lts.pfinal[0].Pz(), lts.pfinal[0].E(), lts.s);
   double p2z = -(lts.pfinal[0].Pz() + p1z);  // by momentum conservation
-  if (std::isnan(p1z)) {
-    return false;
-  }
+  if (std::isnan(p1z)) { return false; }
 
   // Enforce scattering direction +p -> +p, -p -> -p (VERY RARE POLYNOMIAL
   // BRANCH FLIP)
-  if (p1z < 0 || p2z > 0) {
-    return false;
-  }
+  if (p1z < 0 || p2z > 0) { return false; }
 
   // Pz and E of protons/N*
   lts.pfinal[1].SetPzE(p1z, msqrt(pow2(m1) + pow2(pt1) + pow2(p1z)));
@@ -163,9 +151,7 @@ bool MFactorized::LoopKinematics(const std::vector<double> &p1p, const std::vect
   }
   // ------------------------------------------------------------------
 
-  if (!CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2] + lts.pfinal[0]))) {
-    return false;
-  }
+  if (!CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2] + lts.pfinal[0]))) { return false; }
 
   return GetLorentzScalars(Nf);
 }
@@ -176,8 +162,8 @@ double MFactorized::EventWeight(const std::vector<double> &randvec, AuxIntData &
 
   // Kinematics and cuts
   aux.kinematics_ok = B51RandomKin(randvec);
-  aux.fidcuts_ok = FiducialCuts();
-  aux.vetocuts_ok = VetoCuts();
+  aux.fidcuts_ok    = FiducialCuts();
+  aux.vetocuts_ok   = VetoCuts();
 
   if (aux.Valid()) {
     // Matrix element squared
@@ -224,9 +210,7 @@ void MFactorized::PrintInit(bool silent) const {
     std::string proton1 = "-----------EL--------->";
     std::string proton2 = "-----------EL--------->";
 
-    if (EXCITATION == 1) {
-      proton1 = "-----------F2-xxxxxxxx>";
-    }
+    if (EXCITATION == 1) { proton1 = "-----------F2-xxxxxxxx>"; }
     if (EXCITATION == 2) {
       proton1 = "-----------F2-xxxxxxxx>";
       proton2 = "-----------F2-xxxxxxxx>";
@@ -278,11 +262,11 @@ bool MFactorized::B51RandomKin(const std::vector<double> &randvec) {
       gcuts.forward_pt_min + (gcuts.forward_pt_max - gcuts.forward_pt_min) * randvec[1];
   const double phi1 = 2.0 * gra::math::PI * randvec[2];
   const double phi2 = 2.0 * gra::math::PI * randvec[3];
-  const double yX = gcuts.Y_min + (gcuts.Y_max - gcuts.Y_min) * randvec[4];
+  const double yX   = gcuts.Y_min + (gcuts.Y_max - gcuts.Y_min) * randvec[4];
 
   // Pick daughter masses, can fail due to off-shelliness, then
   // retry
-  unsigned int trials = 0;
+  unsigned int       trials   = 0;
   const unsigned int MAXTRIAL = 1e5;
   while (true) {
     double M_sum = 0.0;
@@ -296,8 +280,8 @@ bool MFactorized::B51RandomKin(const std::vector<double> &randvec) {
 
     // Apply absolute boundary conditions first
     const double MARGIN = 1e-4;  // GeV
-    M_MIN = M_sum + MARGIN;
-    M_MAX = lts.sqrt_s - (lts.pbeam1.M() + lts.pbeam2.M());
+    M_MIN               = M_sum + MARGIN;
+    M_MAX               = lts.sqrt_s - (lts.pbeam1.M() + lts.pbeam2.M());
 
     /*
     // If a single resonance, Now tighten >>
@@ -316,9 +300,7 @@ bool MFactorized::B51RandomKin(const std::vector<double> &randvec) {
     M_MIN = std::max(M_MIN, gcuts.M_min);
     M_MAX = std::min(M_MAX, gcuts.M_max);
 
-    if (M_MIN < M_MAX) {
-      break;
-    }
+    if (M_MIN < M_MAX) { break; }
     ++trials;
     if (trials > MAXTRIAL) {
       throw std::invalid_argument(
@@ -333,12 +315,8 @@ bool MFactorized::B51RandomKin(const std::vector<double> &randvec) {
   // Forward N* system masses
   std::vector<double> mvec;
   std::vector<double> rvec;
-  if (EXCITATION == 1) {
-    rvec = {randvec[6]};
-  }
-  if (EXCITATION == 2) {
-    rvec = {randvec[6], randvec[7]};
-  }
+  if (EXCITATION == 1) { rvec = {randvec[6]}; }
+  if (EXCITATION == 2) { rvec = {randvec[6], randvec[7]}; }
   SampleForwardMasses(mvec, rvec);
 
   return B51BuildKin(pt1, pt2, phi1, phi2, yX, m2X, mvec[0], mvec[1]);
@@ -359,18 +337,14 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
   pX.SetPzE(mtX * std::sinh(yX), mtX * std::cosh(yX));
 
   // Energy overflow
-  if (pX.E() > (lts.sqrt_s - (m1 + m2))) {
-    return false;
-  }
+  if (pX.E() > (lts.sqrt_s - (m1 + m2))) { return false; }
 
   double p1z = gra::kinematics::SolvePz(m1, m2, pt1, pt2, pX.Pz(), pX.E(), lts.s);
   double p2z = -(pX.Pz() + p1z);  // by momentum conservation
 
   // Enforce scattering direction +p -> +p, -p -> -p (VERY RARE POLYNOMIAL
   // BRANCH FLIP)
-  if (p1z < 0 || p2z > 0) {
-    return false;
-  }
+  if (p1z < 0 || p2z > 0) { return false; }
 
   // Pz and E of forward protons/N*
   p1.SetPzE(p1z, msqrt(pow2(m1) + pow2(pt1) + pow2(p1z)));
@@ -395,9 +369,7 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
   // Kinematic checks
 
   // Total 4-momentum conservation
-  if (!CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2] + lts.pfinal[0]))) {
-    return false;
-  }
+  if (!CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2] + lts.pfinal[0]))) { return false; }
 
   // ==============================================================================
   // Central system decay tree first branch kinematics set up here, the
@@ -439,24 +411,18 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
   // Collect decay products
   const unsigned int offset = 3;
   for (const auto &i : indices(lts.decaytree)) {
-    lts.decaytree[i].p4 = products[i];
+    lts.decaytree[i].p4    = products[i];
     lts.pfinal[i + offset] = products[i];
   }
 
   // Treat decaytree recursively
   for (const auto &i : indices(lts.decaytree)) {
-    if (!ConstructDecayKinematics(lts.decaytree[i])) {
-      return false;
-    }
+    if (!ConstructDecayKinematics(lts.decaytree[i])) { return false; }
   }
 
   // Forward excitation
-  if (lts.excite1) {
-    ExciteNstar(lts.pfinal[1], lts.decayforward1);
-  }
-  if (lts.excite2) {
-    ExciteNstar(lts.pfinal[2], lts.decayforward2);
-  }
+  if (lts.excite1) { ExciteNstar(lts.pfinal[1], lts.decayforward1); }
+  if (lts.excite2) { ExciteNstar(lts.pfinal[2], lts.decayforward2); }
 
   // ==============================================================================
   // Check that we are above mass threshold -> not necessary, this is

@@ -28,16 +28,12 @@ inline TCanvas *AutoGridCanvas(unsigned int N) {
   unsigned int ADD = 0;
   while (true) {  // Adjust grid size
     const unsigned int val = std::sqrt(N + ADD);
-    if (val * val == (N + ADD)) {
-      break;
-    }
+    if (val * val == (N + ADD)) { break; }
     ++ADD;
   }
   // Calculate if we have a full empty row -> remove that
   unsigned int DEL = 0;
-  if (ADD * ADD - ADD == N) {
-    DEL = 1;
-  }
+  if (ADD * ADD - ADD == N) { DEL = 1; }
 
   const unsigned int COLS = std::sqrt(N + ADD);
   const unsigned int ROWS = std::sqrt(N + ADD) - DEL;
@@ -65,9 +61,9 @@ inline void SetPlotStyle() {
   const Int_t NCont = 255;
 
   double stops[NRGBs] = {0.00, 0.34, 0.61, 0.84, 1.00};
-  double red[NRGBs] = {0.00, 0.00, 0.87, 1.00, 0.51};
+  double red[NRGBs]   = {0.00, 0.00, 0.87, 1.00, 0.51};
   double green[NRGBs] = {0.00, 0.81, 1.00, 0.20, 0.00};
-  double blue[NRGBs] = {0.51, 1.00, 0.12, 0.00, 0.00};
+  double blue[NRGBs]  = {0.51, 1.00, 0.12, 0.00, 0.00};
   TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
   gStyle->SetNumberContours(NCont);
 

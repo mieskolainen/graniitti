@@ -103,7 +103,7 @@ std::complex<double> MAmpMG5_yy_ll_2to4::CalcAmp(gra::LORENTZSCALAR &lts) {
   p.push_back(&p6[0]);
 
   // Local variables and constants
-  const int ncomb = 64;
+  const int                         ncomb = 64;
   std::vector<std::complex<double>> temp(ncomb, 0.0);
   lts.hamp = temp;
 
@@ -148,17 +148,13 @@ std::complex<double> MAmpMG5_yy_ll_2to4::CalcAmp(gra::LORENTZSCALAR &lts) {
 
   // Define permutation
   int perm[nexternal];
-  for (int i = 0; i < nexternal; ++i) {
-    perm[i] = i;
-  }
+  for (int i = 0; i < nexternal; ++i) { perm[i] = i; }
 
   // const static std::vector<int> nonzero =
   // {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}; // All
   std::vector<int> nonzero;  // High energy limit / Helicity conserving
   if (nonzero.size() == 0) {
-    for (unsigned int i = 0; i < ncomb; ++i) {
-      nonzero.push_back(i);
-    }
+    for (unsigned int i = 0; i < ncomb; ++i) { nonzero.push_back(i); }
   }
 
   // Loop over helicity combinations
@@ -168,9 +164,7 @@ std::complex<double> MAmpMG5_yy_ll_2to4::CalcAmp(gra::LORENTZSCALAR &lts) {
       calculate_wavefunctions(perm, helicities[ihel]);
 
       // Sum of subamplitudes (s,t,u,...)
-      for (int k = 0; k < namplitudes; ++k) {
-        lts.hamp[ihel] += amp[k];
-      }
+      for (int k = 0; k < namplitudes; ++k) { lts.hamp[ihel] += amp[k]; }
     }
   }
 
@@ -281,11 +275,11 @@ double MAmpMG5_yy_ll_2to4::matrix_1() {
   int i, j;
   // Local variables
   // const int ngraphs = 4;
-  const int ncolor = 1;
+  const int            ncolor = 1;
   std::complex<double> ztemp;
   std::complex<double> jamp[ncolor];
   // The color matrix;
-  static const double denom[ncolor] = {1};
+  static const double denom[ncolor]      = {1};
   static const double cf[ncolor][ncolor] = {{1}};
 
   // Calculate color flows
@@ -296,7 +290,7 @@ double MAmpMG5_yy_ll_2to4::matrix_1() {
   for (i = 0; i < ncolor; i++) {
     ztemp = 0.;
     for (j = 0; j < ncolor; j++) ztemp = ztemp + cf[i][j] * jamp[j];
-    matrix = matrix + real(ztemp * conj(jamp[i])) / denom[i];
+    matrix                             = matrix + real(ztemp * conj(jamp[i])) / denom[i];
   }
 
   // Store the leading color flows for choice of color

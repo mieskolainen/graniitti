@@ -21,8 +21,8 @@ class SLHABlock {
   void set_entry(std::vector<int> indices, double value);
   double get_entry(std::vector<int> indices, double def_val = 0);
   void set_name(std::string name) { _name = name; }
-  std::string get_name() { return _name; }
-  int get_indices() { return _indices; }
+  std::string               get_name() { return _name; }
+  int                       get_indices() { return _indices; }
 
  private:
   std::string _name;

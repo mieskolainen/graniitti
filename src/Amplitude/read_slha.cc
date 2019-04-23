@@ -36,7 +36,7 @@ void SLHAReader::read_slha_file(std::string file_name) {
   if (!param_card.good()) throw "Error while opening param card";
   // std::cout << "Opened slha file " << file_name << " for reading" <<
   // std::endl;
-  char buf[200];
+  char        buf[200];
   std::string line;
   std::string block("");
 
@@ -48,8 +48,8 @@ void SLHAReader::read_slha_file(std::string file_name) {
     if (line != "" && line[0] != '#') {
       if (block != "") {
         // Look for double index blocks
-        double dindex1, dindex2;
-        double value;
+        double            dindex1, dindex2;
+        double            value;
         std::stringstream linestr2(line);
         if (linestr2 >> dindex1 >> dindex2 >> value && dindex1 == int(dindex1) and
             dindex2 == int(dindex2)) {
@@ -77,18 +77,18 @@ void SLHAReader::read_slha_file(std::string file_name) {
         // name
         while (line[0] == ' ') line = line.substr(1);
         // Now find end of block name
-        int space_pos = line.find(' ');
+        int space_pos                           = line.find(' ');
         if (space_pos != ((int)line.npos)) line = line.substr(0, space_pos);
-        block = line;
+        block                                   = line;
         continue;
       }
       // Look for decay
       if (line.find("decay ") == 0) {
-        line = line.substr(6);
+        line  = line.substr(6);
         block = "";
         std::stringstream linestr(line);
-        int pdg_code;
-        double value;
+        int               pdg_code;
+        double            value;
         if (linestr >> pdg_code >> value)
           set_block_entry("decay", pdg_code, value);
         else

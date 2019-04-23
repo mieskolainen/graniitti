@@ -19,12 +19,12 @@ namespace gra {
 namespace spherical {
 // Metadata
 struct Meta {
-  std::string NAME;      // Input name ID
-  std::string LEGEND;    // Legend string
-  std::string MODE;      // MC or DATA
-  bool FASTSIM = false;  // Fast simulation on
-  std::string FRAME;     // Lorentz frame
-  double SCALE;          // Scale/normalization value
+  std::string NAME;             // Input name ID
+  std::string LEGEND;           // Legend string
+  std::string MODE;             // MC or DATA
+  bool        FASTSIM = false;  // Fast simulation on
+  std::string FRAME;            // Lorentz frame
+  double      SCALE;            // Scale/normalization value
 
   std::vector<std::string> TITLES;  // Phase space titles
 
@@ -51,12 +51,12 @@ struct Omega {
   // Decay daughter
   // rest frame variables
   double costheta = 0.0;
-  double phi = 0.0;
+  double phi      = 0.0;
 
   // Invariant / system lab frame variables
-  double M = 0.0;
+  double M  = 0.0;
   double Pt = 0.0;
-  double Y = 0.0;
+  double Y  = 0.0;
 
   bool fiducial = false;
   bool selected = false;
@@ -99,7 +99,7 @@ std::pair<std::vector<double>, std::vector<double>> GetELM(const std::vector<Ome
                                                            const std::vector<std::size_t> &ind,
                                                            int LMAX, const std::string &mode);
 
-std::vector<double> SphericalMoments(const std::vector<Omega> &input,
+std::vector<double> SphericalMoments(const std::vector<Omega> &      input,
                                      const std::vector<std::size_t> &ind, int LMAX,
                                      const std::string &mode);
 

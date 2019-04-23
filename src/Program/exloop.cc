@@ -37,15 +37,15 @@ using namespace gra;
 
 struct MEASUREMENT {
   MEASUREMENT(std::string card_, double value_, double stat_, double syst_) {
-    card = card_;
+    card  = card_;
     value = value_;
-    stat = stat_;
-    syst = syst_;
+    stat  = stat_;
+    syst  = syst_;
   }
   std::string card;
-  double value = 0.0;
-  double stat = 0.0;
-  double syst = 0.0;
+  double      value = 0.0;
+  double      stat  = 0.0;
+  double      syst  = 0.0;
 };
 
 void experiment(bool screening);
@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
     bool screening = false;
     if (r.count("l")) {
       const std::string val = r["l"].as<std::string>();
-      screening = (val == "true");
+      screening             = (val == "true");
     }
 
     // Project
@@ -107,7 +107,7 @@ int main(int argc, char *argv[]) {
 }
 
 void experiment(bool screening) {
-  MTimer timer;
+  MTimer                   timer;
   std::vector<MEASUREMENT> input;
 
   /*
@@ -224,9 +224,7 @@ void experiment(bool screening) {
   std::vector<std::vector<double>> xs0_err = xs0;
 
   int MODEMAX = 1;
-  if (screening) {
-    MODEMAX = 2;
-  }
+  if (screening) { MODEMAX = 2; }
 
   // LOOP over ALL input
   for (auto const &p : indices(input)) {
@@ -251,8 +249,8 @@ void experiment(bool screening) {
 
         // Get total, elastic and inelastic cross section
         double xs_tot = 0.0;
-        double xs_el = 0.0;
-        double xs_in = 0.0;
+        double xs_el  = 0.0;
+        double xs_in  = 0.0;
         gen->proc->Eikonal.GetTotXS(xs_tot, xs_el, xs_in);
 
         // > Get process cross section and error

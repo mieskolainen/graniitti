@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
 
   // Input and output
   HepMC3::ReaderAscii input(inputfile);
-  LHEF::Writer writer(outputfile);
+  LHEF::Writer        writer(outputfile);
 
   // TODO: Check what this does actually?
   writer.init();
@@ -71,14 +71,14 @@ int main(int argc, char *argv[]) {
     LHEF::HEPEUP hepeup;
 
     // ** Particle properties **
-    std::vector<long> IDUP;  // PDG code
-    std::vector<int> ISTUP;  // status code (-1 in state, 1 = final state, 2
+    std::vector<long> IDUP;   // PDG code
+    std::vector<int>  ISTUP;  // status code (-1 in state, 1 = final state, 2
     // = intermediate)
     std::vector<std::pair<int, int>> MOTHUP;  // position of 1 or 2 mothers
     std::vector<std::pair<int, int>> ICOLUP;  // color charges (1 for quarks, 2 for gluons)
     std::vector<std::vector<double>> PUP;     // (px,py,pz,E,m)
-    std::vector<double> VTIMUP;               // invariant lifetime ctau
-    std::vector<double> SPINUP;               // helicity (spin) information
+    std::vector<double>              VTIMUP;  // invariant lifetime ctau
+    std::vector<double>              SPINUP;  // helicity (spin) information
 
     // Loop over all particles
     int NUP = 0;
@@ -97,11 +97,9 @@ int main(int argc, char *argv[]) {
       }
       std::pair<int, int> MOTHUP_this(0, 0);
       const int offset = 0;  // convention
-      if (mother_ids.size() == 1) {
-        MOTHUP_this.first = mother_ids.at(0) + offset;
-      }
+      if (mother_ids.size() == 1) { MOTHUP_this.first = mother_ids.at(0) + offset; }
       if (mother_ids.size() >= 2) {
-        MOTHUP_this.first = mother_ids.at(0) + offset;
+        MOTHUP_this.first  = mother_ids.at(0) + offset;
         MOTHUP_this.second = mother_ids.at(mother_ids.size() - 1) + offset;
       }
 
@@ -113,7 +111,7 @@ int main(int argc, char *argv[]) {
       ICOLUP.push_back(ICOLUP_this);
 
       // PUP
-      HepMC3::FourVector pvec = p1->momentum();
+      HepMC3::FourVector  pvec     = p1->momentum();
       std::vector<double> PUP_this = {pvec.px(), pvec.py(), pvec.pz(), pvec.e(), pvec.m()};
       PUP.push_back(PUP_this);
 
@@ -163,7 +161,7 @@ int main(int argc, char *argv[]) {
     hepeup.SPINUP = SPINUP;
 
     // Write the event out
-    writer.hepeup = hepeup;
+    writer.hepeup        = hepeup;
     writer.hepeup.heprup = &writer.heprup;
     writer.writeEvent();
     ++events;
@@ -172,7 +170,7 @@ int main(int argc, char *argv[]) {
   }
 
   if (events > 0) {
-    double input_size = GetFileSize(inputfile) / 1.0e6;
+    double input_size  = GetFileSize(inputfile) / 1.0e6;
     double output_size = GetFileSize(outputfile) / 1.0e6;
 
     printf("HepMC33:: input  (%0.1f MB, %0.5f MB/event) %s \n", input_size, input_size / events,

@@ -64,19 +64,17 @@ void GetLegendPosition(unsigned int N, double &x1, double &x2, double &y1, doubl
   y1 = 0.75 - 0.01 * N;
 
   // South-East
-  if (legendposition.compare("southeast") == 0) {
-    y1 = 0.10 - 0.01 * N;
-  }
+  if (legendposition.compare("southeast") == 0) { y1 = 0.10 - 0.01 * N; }
   y2 = y1 + 0.05 * N;  // Scale by the number of histograms
 }
 
 h1Multiplet::h1Multiplet(const std::string &name, const std::string &labeltext, int N,
                          double minval, double maxval, const std::vector<std::string> &legendtext) {
-  N_ = N;
-  name_ = name;
-  minval_ = minval;
-  maxval_ = maxval;
-  legendtext_ = legendtext;
+  N_              = N;
+  name_           = name;
+  minval_         = minval;
+  maxval_         = maxval;
+  legendtext_     = legendtext;
   legendposition_ = "northeast";
 
   // Initialize histogram vector container size
@@ -97,21 +95,15 @@ void h1Multiplet::NormalizeAll(const std::vector<double> &cross_section,
     // Takes into account weighted and unweight (weight=1) filling
     // We take into account also under/overflow here with macro: (0, Nbins+1)
     const double integral = h[i]->Integral(0, h[i]->GetNbinsX() + 1);
-    if (integral > 0) {
-      scale /= integral;
-    }
+    if (integral > 0) { scale /= integral; }
 
     // Binwidth
-    const int bin = 1;
+    const int    bin      = 1;
     const double binwidth = h[i]->GetXaxis()->GetBinWidth(bin);
-    if (binwidth > 0) {
-      scale /= binwidth;
-    }
+    if (binwidth > 0) { scale /= binwidth; }
 
     // Cross Section
-    if (cross_section[i] > 0) {
-      scale *= cross_section[i];
-    }
+    if (cross_section[i] > 0) { scale *= cross_section[i]; }
 
     // Additional scale factor
     scale *= multiplier[i];
@@ -132,7 +124,7 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
     double res[N_];
     printf("%s [%lu] :: \n", legendtext_[i].c_str(), i);
     double c2ndf = h[0]->Chi2Test(h[i], "WW P CHI2/NDF", res);
-    chi2ndf[i] = c2ndf;
+    chi2ndf[i]   = c2ndf;
 
     printf("chi2/ndf = %0.3f \n\n", c2ndf);
   }
@@ -153,9 +145,7 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
   double MAXVAL = 0.0;
   for (const auto &i : indices(h)) {
     const double max = h[i]->GetMaximum();
-    if (max > MAXVAL) {
-      MAXVAL = max;
-    }
+    if (max > MAXVAL) { MAXVAL = max; }
   }
 
   // Find minimum (non-zero) value for y-range limits
@@ -163,9 +153,7 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
   for (const auto &i : indices(h)) {
     for (int k = 0; k < h[i]->GetNbinsX(); ++k) {
       double value = h[i]->GetBinContent(k);
-      if (value < MINVAL && value > 0) {
-        MINVAL = value;
-      }
+      if (value < MINVAL && value > 0) { MINVAL = value; }
     }
   }
 
@@ -201,9 +189,7 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
   // legend->SetBorderSize(0); // No box
 
   // Add legend entries
-  for (const auto &i : indices(h)) {
-    legend->AddEntry(h[i], legendtext_[i].c_str());
-  }
+  for (const auto &i : indices(h)) { legend->AddEntry(h[i], legendtext_[i].c_str()); }
   legend->Draw();
 
   // -------------------------------------------------------------------
@@ -258,7 +244,7 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
   }
 
   // Draw horizontal line
-  const double ymax = 1.0;
+  const double           ymax = 1.0;
   std::unique_ptr<TLine> line = std::make_unique<TLine>(minval_, ymax, maxval_, ymax);
   line->SetLineColor(15);
   line->SetLineWidth(2.0);
@@ -283,17 +269,13 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
   // Save logscale pdf
   if (MINVAL > 0) {
     pad1->cd()->SetLogy();  // pad2 becomes the current pad
-    for (const auto &i : indices(h)) {
-      h[i]->GetYaxis()->SetRangeUser(MINVAL / 2, MAXVAL * 5);
-    }
+    for (const auto &i : indices(h)) { h[i]->GetYaxis()->SetRangeUser(MINVAL / 2, MAXVAL * 5); }
     fullfile = fullpath + name_ + "_logy" + ".pdf";
     c0.SaveAs(fullfile.c_str());
   }
 
   // Remove histograms
-  for (const auto &i : indices(ratios)) {
-    delete ratios[i];
-  }
+  for (const auto &i : indices(ratios)) { delete ratios[i]; }
 
   return chi2ndf;
 }
@@ -331,21 +313,15 @@ void h2Multiplet::NormalizeAll(const std::vector<double> &cross_section,
     // Takes into account weighted and unweight (weight=1) filling
     // We take into account also under/overflow here with macro: (0, Nbins+1)
     const double integral = h[i]->Integral(0, h[i]->GetNbinsX() + 1, 0, h[i]->GetNbinsY() + 1);
-    if (integral > 0) {
-      scale /= integral;
-    }
+    if (integral > 0) { scale /= integral; }
 
     // Binwidth
-    const int bin = 1;
+    const int    bin      = 1;
     const double binwidth = h[i]->GetXaxis()->GetBinWidth(bin) * h[i]->GetYaxis()->GetBinWidth(bin);
-    if (binwidth > 0) {
-      scale /= binwidth;
-    }
+    if (binwidth > 0) { scale /= binwidth; }
 
     // Cross Section
-    if (cross_section[i] > 0) {
-      scale *= cross_section[i];
-    }
+    if (cross_section[i] > 0) { scale *= cross_section[i]; }
 
     // Additional scale factor
     scale *= multiplier[i];
@@ -409,9 +385,7 @@ double h2Multiplet::SaveFig(const std::string &fullpath) const {
   c0.SaveAs(fullfile.c_str());
 
   // Delete ratio histograms from memory
-  for (const auto &i : indices(ratios)) {
-    delete ratios[i];
-  }
+  for (const auto &i : indices(ratios)) { delete ratios[i]; }
   delete tpad;
   delete l1;
   delete l2;
@@ -424,14 +398,14 @@ hProfMultiplet::hProfMultiplet(const std::string &name, const std::string &label
                                const std::vector<std::string> &legendtext) {
   name_ = name;
 
-  N_ = N;
+  N_       = N;
   minval1_ = minval1;
   maxval1_ = maxval1;
 
   minval2_ = minval2;
   maxval2_ = maxval2;
 
-  legendtext_ = legendtext;
+  legendtext_     = legendtext;
   legendposition_ = "northeast";
 
   // Initialize histogram vector container size
@@ -461,12 +435,8 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
   double MAXVAL = 0.0;
   double MINVAL = 1e32;
   for (const auto &i : indices(h)) {
-    if (h[i]->GetMaximum() > MAXVAL) {
-      MAXVAL = h[i]->GetMaximum();
-    }
-    if (h[i]->GetMinimum() < MINVAL) {
-      MINVAL = h[i]->GetMinimum();
-    }
+    if (h[i]->GetMaximum() > MAXVAL) { MAXVAL = h[i]->GetMaximum(); }
+    if (h[i]->GetMinimum() < MINVAL) { MINVAL = h[i]->GetMinimum(); }
   }
 
   // Loop over histograms
@@ -491,9 +461,7 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
   // legend->SetBorderSize(0); // No box
 
   // Add legend entries
-  for (const auto &i : indices(h)) {
-    legend->AddEntry(h[i], legendtext_[i].c_str());
-  }
+  for (const auto &i : indices(h)) { legend->AddEntry(h[i], legendtext_[i].c_str()); }
   legend->Draw();
 
   // -------------------------------------------------------------------
@@ -564,7 +532,7 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
   }
 
   // Draw horizontal line
-  const double ymax = 1.0;
+  const double           ymax = 1.0;
   std::unique_ptr<TLine> line = std::make_unique<TLine>(minval1_, ymax, maxval1_, ymax);
   line->SetLineColor(15);
   line->SetLineWidth(2.0);
@@ -594,9 +562,7 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
   }
 
   // Remove histograms
-  for (const auto &i : indices(ratios)) {
-    delete ratios[i];
-  }
+  for (const auto &i : indices(ratios)) { delete ratios[i]; }
   delete l1;
   delete l2;
 

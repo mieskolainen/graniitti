@@ -23,9 +23,7 @@ namespace MFFT {
 template <typename T>
 void fft(std::valarray<std::complex<T>> &x) {
   const std::size_t N = x.size();
-  if (N <= 1) {
-    return;
-  }  // Trivial case/recursion ends, X = x
+  if (N <= 1) { return; }  // Trivial case/recursion ends, X = x
   if ((N & (N - 1)) != 0) {
     throw std::invalid_argument("ERROR: MFFT::fft: Input x.size() = " + std::to_string(N) +
                                 " not a power of 2!");
@@ -41,8 +39,8 @@ void fft(std::valarray<std::complex<T>> &x) {
 
   for (std::size_t k = 0; k < N / 2; ++k) {
     const std::complex<T> t = std::exp(std::complex<T>(0, -2.0 * M__PI * k / N));
-    x[k] = E[k] + O[k] * t;
-    x[k + N / 2] = E[k] - O[k] * t;
+    x[k]                    = E[k] + O[k] * t;
+    x[k + N / 2]            = E[k] - O[k] * t;
   }
 }
 

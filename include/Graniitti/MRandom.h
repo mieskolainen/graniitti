@@ -60,8 +60,8 @@ class MRandom {
 
   // Distribution engines
   std::uniform_real_distribution<double> flat;
-  std::normal_distribution<double> gaussian;
-  unsigned int RNDSEED = 0;  // Random seed set
+  std::normal_distribution<double>       gaussian;
+  unsigned int                           RNDSEED = 0;  // Random seed set
 
  private:
   // Nothing

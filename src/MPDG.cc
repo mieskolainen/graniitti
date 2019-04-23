@@ -15,7 +15,7 @@ namespace gra {
 void MPDG::ReadParticleData(const std::string &filepath) {
   std::cout << "MPDG::ReadParticleData: Reading in PDG tables: ";
   std::ifstream infile(filepath);
-  std::string line;
+  std::string   line;
 
   // Clear particle data
   PDG_table.clear();
@@ -60,11 +60,11 @@ void MPDG::ReadParticleData(const std::string &filepath) {
     //                presentation of
     //                particle names.
 
-    const int L = 40;
-    char cid[L] = {0};
-    char cmass[L] = {0};
-    char cwidth[L] = {0};
-    char cname[L] = {0};
+    const int L         = 40;
+    char      cid[L]    = {0};
+    char      cmass[L]  = {0};
+    char      cwidth[L] = {0};
+    char      cname[L]  = {0};
 
     sscanf(line.c_str(), "%33c %35c %35c %21c", cid, cmass, cwidth, cname);
     // printf("%s\t%s\t%s\t%s \n", cid, cmass, cwidth, cname);
@@ -79,23 +79,21 @@ void MPDG::ReadParticleData(const std::string &filepath) {
     // -----------------------------------------------------
     // ID
     // First find out how many charges
-    std::vector<int> id;
+    std::vector<int>   id;
     std::istringstream ss(sid);
 
     while (ss >> temp_str) {
       // Convert string to int
       int value = 0;
       std::stringstream(temp_str) >> value;
-      if (value != 0) {
-        id.push_back(value);
-      }
+      if (value != 0) { id.push_back(value); }
     }
 
     // -----------------------------------------------------
     // MASS
     // Mass and errors
     std::vector<double> mass;
-    std::stringstream ss2(smass);
+    std::stringstream   ss2(smass);
 
     while (ss2 >> temp_str) {
       // Convert string to int
@@ -108,7 +106,7 @@ void MPDG::ReadParticleData(const std::string &filepath) {
     // WIDTH
     // Width and errors
     std::vector<double> width;
-    std::stringstream ss3(swidth);
+    std::stringstream   ss3(swidth);
 
     // If the particle WIDTH columns were empty
     // -> name column string will be empty by reading logic. This
@@ -176,18 +174,16 @@ void MPDG::ReadParticleData(const std::string &filepath) {
       p.name = name;
 
       p.pdg = id[k];
-      if (mass.size() > 0) {
-        p.mass = mass[0];
-      }
+      if (mass.size() > 0) { p.mass = mass[0]; }
       if (width.size() > 0) {  // Unstable particles have width
         p.width = width[0];
       }
       p.chargeX3 = chargeX3[k];
-      p.tau = PDG::hbar / p.width;  // mean lifetime in the rest frame
+      p.tau      = PDG::hbar / p.width;  // mean lifetime in the rest frame
 
-      int lastdigit = p.pdg % 10;  // Get last digit
-      p.spinX2 = (lastdigit - 1);  // Get 2J
-      p.wcut = 0;                  // Off-shell mass (width) cut
+      int lastdigit = p.pdg % 10;       // Get last digit
+      p.spinX2      = (lastdigit - 1);  // Get 2J
+      p.wcut        = 0;                // Off-shell mass (width) cut
 
       // Neutral mesons/baryons get 0 for their name
       if (std::abs(p.chargeX3) == 0 && p.pdg > 100) {
@@ -208,40 +204,40 @@ void MPDG::ReadParticleData(const std::string &filepath) {
       // SM bosons
       if (p.pdg == 21) {  // gluon
         p.spinX2 = 2;
-        p.P = -1;
-        p.C = 0;  // Not defined
+        p.P      = -1;
+        p.C      = 0;  // Not defined
       }
       if (p.pdg == 22) {  // gamma
         p.spinX2 = 2;
-        p.P = -1;
-        p.C = -1;
+        p.P      = -1;
+        p.C      = -1;
       }
       if (std::abs(p.pdg) == 24) {  // W+-
         p.spinX2 = 2;
-        p.P = 0;  // Not defined
-        p.C = 0;  // Not defined
+        p.P      = 0;  // Not defined
+        p.C      = 0;  // Not defined
       }
       if (p.pdg == 23) {  // Z
         p.spinX2 = 2;
-        p.P = 0;  // Not defined
-        p.C = 0;  // Not defined
+        p.P      = 0;  // Not defined
+        p.C      = 0;  // Not defined
       }
       if (p.pdg == 25) {  // H
         p.spinX2 = 0;
-        p.P = 1;  // Scalar SM higgs
-        p.C = 1;  // Scalar SM higgs
+        p.P      = 1;  // Scalar SM higgs
+        p.C      = 1;  // Scalar SM higgs
       }
 
       // SM fermions
       if (p.pdg >= 11 && p.pdg <= 16) {  // leptons and neutrinos
         p.spinX2 = 1;
-        p.P = 1;
-        p.C = 0;  // Not defined
+        p.P      = 1;
+        p.C      = 0;  // Not defined
       }
       if (p.pdg >= 1 && p.pdg <= 6) {  // quarks
         p.spinX2 = 1;
-        p.P = 1;
-        p.C = 0;  // Not defined
+        p.P      = 1;
+        p.C      = 0;  // Not defined
       }
 
       // -------------------------------------------------
@@ -255,15 +251,9 @@ void MPDG::ReadParticleData(const std::string &filepath) {
           unsigned int N = std::to_string(p.pdg).length();
           unsigned int m = 0;
 
-          if (N == 5) {
-            m = 0;
-          }
-          if (N == 6) {
-            m = 1;
-          }
-          if (N == 7) {
-            m = 2;
-          }
+          if (N == 5) { m = 0; }
+          if (N == 6) { m = 1; }
+          if (N == 7) { m = 2; }
 
           // [code   JPC   L]
 
@@ -366,12 +356,8 @@ void MPDG::ReadParticleData(const std::string &filepath) {
           unsigned int N = std::to_string(p.pdg).length();
           unsigned int m = 0;
 
-          if (N == 6) {
-            m = 0;
-          }
-          if (N == 7) {
-            m = 1;
-          }
+          if (N == 6) { m = 0; }
+          if (N == 7) { m = 1; }
 
           // 00qqq2
           if (N == 4 || (std::to_string(p.pdg)[m] == '0' && std::to_string(p.pdg)[m + 1] == '0')) {
@@ -408,9 +394,7 @@ void MPDG::ReadParticleData(const std::string &filepath) {
           }
 
           // Check this case, PDG seems ambiguous here
-          if (N == 5) {
-            p.setPCL(1, 0, 0);
-          }
+          if (N == 5) { p.setPCL(1, 0, 0); }
         }
       }
 
@@ -435,7 +419,7 @@ void MPDG::ReadParticleData(const std::string &filepath) {
           antip.name = name + "0~";
         }
 
-        antip.pdg = -p.pdg;
+        antip.pdg      = -p.pdg;
         antip.chargeX3 = -p.chargeX3;
 
         // Flip the parity for fermions
@@ -458,7 +442,7 @@ void MPDG::ReadParticleData(const std::string &filepath) {
 void MPDG::TokenizeProcess(const std::string &str, int depth,
                            std::vector<gra::MDecayBranch> &branches) const {
   std::string mother;
-  int aM = 0;
+  int         aM = 0;
 
   for (std::string::size_type i = 0; i < str.size(); ++i) {
     // printf("[%d,%d] \n", depth, i);
@@ -475,7 +459,7 @@ void MPDG::TokenizeProcess(const std::string &str, int depth,
         // Create decay branch
         gra::MDecayBranch branch;
 
-        branch.p = FindByPDGName(particles[k]);
+        branch.p     = FindByPDGName(particles[k]);
         branch.depth = depth;
         branches.push_back(branch);
         // **************
@@ -499,7 +483,7 @@ void MPDG::TokenizeProcess(const std::string &str, int depth,
         // Create decay branch
         gra::MDecayBranch branch;
 
-        branch.p = FindByPDGName(particles[k]);
+        branch.p     = FindByPDGName(particles[k]);
         branch.depth = depth;
         branches.push_back(branch);
         // **************
@@ -515,12 +499,8 @@ void MPDG::TokenizeProcess(const std::string &str, int depth,
       unsigned int a = 0;
       unsigned int b = 0;
       for (std::string::size_type j = i + 1; j < str.size(); ++j) {
-        if (str[j] == '{') {
-          L.push_back(j);
-        }
-        if (str[j] == '}') {
-          R.push_back(j);
-        }
+        if (str[j] == '{') { L.push_back(j); }
+        if (str[j] == '}') { R.push_back(j); }
         if ((L.size() == R.size()) && L.size() > 0) {  // Found outer closing brackets
           a = L[0];
           b = R[R.size() - 1];
@@ -529,7 +509,7 @@ void MPDG::TokenizeProcess(const std::string &str, int depth,
           std::string token = str.substr(a + 1, b - a - 1);  // pos, len
           // printf("a = %d, b = %d \n", a,b );
           TokenizeProcess(token, depth + 1, branches[branches.size() - 1].legs);  // Recursion
-          i = b + 1;
+          i  = b + 1;
           aM = b + 1;
           break;
         }
@@ -542,9 +522,7 @@ void MPDG::TokenizeProcess(const std::string &str, int depth,
 bool MPDG::IsDecay(const std::string &str) const {
   bool found = false;
   for (std::string::size_type i = 0; i < str.size(); ++i) {
-    if (str[i] == '>') {
-      found = true;
-    }
+    if (str[i] == '>') { found = true; }
   }
   return found;
 }
@@ -571,9 +549,7 @@ void MPDG::PrintPDGTable() const {
 // Find particle by PDG ID
 const gra::MParticle &MPDG::FindByPDG(int pdgcode) const {
   std::map<int, gra::MParticle>::const_iterator it = PDG_table.find(pdgcode);
-  if (it != PDG_table.end()) {
-    return it->second;
-  }
+  if (it != PDG_table.end()) { return it->second; }
 
   // Throw a fatal error, did not found the particle
   PrintPDGTable();
@@ -585,9 +561,7 @@ const gra::MParticle &MPDG::FindByPDG(int pdgcode) const {
 const gra::MParticle &MPDG::FindByPDGName(const std::string &pdgname) const {
   std::map<int, gra::MParticle>::const_iterator it = PDG_table.begin();
   while (it != PDG_table.end()) {
-    if (it->second.name.compare(pdgname) == 0) {
-      return it->second;
-    }
+    if (it->second.name.compare(pdgname) == 0) { return it->second; }
     ++it;
   }
 

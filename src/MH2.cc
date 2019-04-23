@@ -28,16 +28,16 @@ MH2::MH2(int xbins, double xmin, double xmax, int ybins, double ymin, double yma
 
 // Constructor with only number of bins
 MH2::MH2(int xbins, int ybins, std::string namestr) {
-  name = namestr;
-  XBINS = xbins;
-  YBINS = ybins;
+  name     = namestr;
+  XBINS    = xbins;
+  YBINS    = ybins;
   FILLBUFF = true;
 }
 
 // Empty constructor
 MH2::MH2() {
-  XBINS = 50;  // Default
-  YBINS = 50;
+  XBINS    = 50;  // Default
+  YBINS    = 50;
   FILLBUFF = true;
 }
 
@@ -45,18 +45,18 @@ MH2::MH2() {
 MH2::~MH2() {}
 
 void MH2::ResetBounds(int xbins, double xmin, double xmax, int ybins, double ymin, double ymax) {
-  XMIN = xmin;
-  XMAX = xmax;
+  XMIN  = xmin;
+  XMAX  = xmax;
   XBINS = xbins;
 
-  YMIN = ymin;
-  YMAX = ymax;
+  YMIN  = ymin;
+  YMAX  = ymax;
   YBINS = ybins;
 
   // Init
-  weights = MMatrix<double>(XBINS, YBINS, 0.0);
+  weights  = MMatrix<double>(XBINS, YBINS, 0.0);
   weights2 = weights;
-  counts = MMatrix<long long int>(XBINS, YBINS, 0);
+  counts   = MMatrix<long long int>(XBINS, YBINS, 0);
 }
 
 void MH2::Print() const {
@@ -69,29 +69,25 @@ void MH2::Print() const {
   std::cout << "MH2::Print: <" << name << ">" << std::endl;
 
   std::vector<std::string> ascziart = {" ", ".", ":", "-", "=", "+", "*", "#", "%", "@"};
-  const double maxw = GetMaxWeight();
+  const double             maxw     = GetMaxWeight();
 
   std::cout << "          |";  // Empty top left corner
-  for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
-    std::cout << "=";
-  }
+  for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) { std::cout << "="; }
   std::cout << "| " << std::endl;
 
   for (int j = YBINS - 1; j > -1; --j) {  // Must be int, we index down to negative
     const double binwidth = (YMAX - YMIN) / YBINS;
     printf("%9.2E |", binwidth * (j + 1) - binwidth / 2.0 + YMIN);
     for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
-      const double w = (maxw > 0) ? weights[i][j] / maxw : 0;
-      const int ind = std::round(w * 9);
+      const double w   = (maxw > 0) ? weights[i][j] / maxw : 0;
+      const int    ind = std::round(w * 9);
       std::cout << rang::fg::yellow << ascziart[ind] << rang::fg::reset;
     }
     std::cout << "|";
     std::cout << std::endl;
   }
   std::cout << "          |";  // Empty bottom left corner
-  for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
-    std::cout << "=";
-  }
+  for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) { std::cout << "="; }
   std::cout << "|" << std::endl;
 
   const double binwidth = (XMAX - XMIN) / XBINS;
@@ -99,9 +95,9 @@ void MH2::Print() const {
     std::cout << "           ";
     int empty = 0;
     for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
-      const double binvalue = binwidth * (i + 1) - binwidth / 2.0 + XMIN;
-      const std::string let = gra::aux::ToString(std::abs(binvalue), 2);
-      const std::string sgn = (binvalue >= 0.0) ? "+" : "-";
+      const double      binvalue = binwidth * (i + 1) - binwidth / 2.0 + XMIN;
+      const std::string let      = gra::aux::ToString(std::abs(binvalue), 2);
+      const std::string sgn      = (binvalue >= 0.0) ? "+" : "-";
       if (k == -1) {  // print value sign (-+)
         std::cout << sgn;
         continue;
@@ -114,9 +110,7 @@ void MH2::Print() const {
       }
     }
     std::cout << std::endl;
-    if (empty == XBINS) {
-      break;
-    }  // the end
+    if (empty == XBINS) { break; }  // the end
   }
 
   // Print statistics
@@ -130,18 +124,16 @@ void MH2::Print() const {
 }
 
 std::pair<double, double> MH2::WeightMeanAndError() const {
-  const double N = fills;  // Need to use number of total fills here, not counts in bins
-  const double val = SumWeights() / N;
+  const double N    = fills;  // Need to use number of total fills here, not counts in bins
+  const double val  = SumWeights() / N;
   const double err2 = SumWeights2() / N - gra::math::pow2(val);
-  const double err = gra::math::msqrt(err2 / N);
+  const double err  = gra::math::msqrt(err2 / N);
 
   return {val, err};
 }
 
 bool MH2::ValidBin(int xbin, int ybin) const {
-  if (xbin >= 0 && xbin < XBINS && ybin >= 0 && ybin < YBINS) {
-    return true;
-  }
+  if (xbin >= 0 && xbin < XBINS && ybin >= 0 && ybin < YBINS) { return true; }
   return false;
 }
 
@@ -159,19 +151,11 @@ void MH2::Fill(double xvalue, double yvalue, double weight) {
     const int xbin = GetIdx(xvalue, XMIN, XMAX, XBINS, LOGX);
     const int ybin = GetIdx(yvalue, YMIN, YMAX, YBINS, LOGY);
 
-    if (xbin == -1) {
-      underflow[0] += 1;
-    }
-    if (ybin == -1) {
-      underflow[1] += 1;
-    }
+    if (xbin == -1) { underflow[0] += 1; }
+    if (ybin == -1) { underflow[1] += 1; }
 
-    if (xbin == -2) {
-      overflow[0] += 1;
-    }
-    if (ybin == -2) {
-      overflow[1] += 1;
-    }
+    if (xbin == -2) { overflow[0] += 1; }
+    if (ybin == -2) { overflow[1] += 1; }
 
     if (ValidBin(xbin, ybin)) {
       weights[xbin][ybin] += weight;
@@ -183,21 +167,19 @@ void MH2::Fill(double xvalue, double yvalue, double weight) {
     buff_values.push_back({xvalue, yvalue});
     buff_weights.push_back(weight);
 
-    if (buff_values.size() > static_cast<unsigned int>(AUTOBUFFSIZE)) {
-      FlushBuffer();
-    }
+    if (buff_values.size() > static_cast<unsigned int>(AUTOBUFFSIZE)) { FlushBuffer(); }
   }
 }
 
 void MH2::Clear() {
   for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
     for (std::size_t j = 0; j < static_cast<unsigned int>(YBINS); ++j) {
-      weights[i][j] = 0;
+      weights[i][j]  = 0;
       weights2[i][j] = 0;
-      counts[i][j] = 0;
-      fills = 0;
-      underflow = {0, 0};
-      overflow = {0, 0};
+      counts[i][j]   = 0;
+      fills          = 0;
+      underflow      = {0, 0};
+      overflow       = {0, 0};
     }
   }
 }
@@ -213,49 +195,41 @@ void MH2::FlushBuffer() {
     // Loop over dimensions
     for (std::size_t dim = 0; dim < 2; ++dim) {
       // Find out mean
-      double mu = 0;
+      double mu   = 0;
       double sumW = 0;
       for (std::size_t i = 0; i < buff_values.size(); ++i) {
         mu += std::abs(buff_values[i][dim] * buff_weights[i]);
         sumW += std::abs(buff_weights[i]);
       }
-      if (sumW > 0) {
-        mu /= sumW;
-      }
+      if (sumW > 0) { mu /= sumW; }
 
       // Variance
       double var = 0;
       for (std::size_t i = 0; i < buff_values.size(); ++i) {
         var += std::abs(buff_weights[i]) * std::pow(buff_values[i][dim] - mu, 2);
       }
-      if (sumW > 0) {
-        var /= sumW;
-      }
+      if (sumW > 0) { var /= sumW; }
 
       // Find minimum
       double minval = 1e64;
       for (std::size_t i = 0; i < buff_values.size(); ++i) {
-        if (buff_values[i][dim] < minval) {
-          minval = buff_values[i][dim];
-        }
+        if (buff_values[i][dim] < minval) { minval = buff_values[i][dim]; }
       }
 
       // Set new histogram bounds
-      const double std = std::sqrt(std::abs(var));
-      double xmin = mu - 2.5 * std;
-      double xmax = mu + 2.5 * std;
+      const double std  = std::sqrt(std::abs(var));
+      double       xmin = mu - 2.5 * std;
+      double       xmax = mu + 2.5 * std;
 
       // If symmetric setup set by user
       if (AUTOSYMMETRY[dim]) {
         double val = (std::abs(xmin) + std::abs(xmax)) / 2.0;
-        xmin = -val;
-        xmax = val;
+        xmin       = -val;
+        xmax       = val;
       }
 
       // We have only positive values, such as invariant mass
-      if (minval > 0.0) {
-        xmin = std::max(0.0, xmin);
-      }
+      if (minval > 0.0) { xmin = std::max(0.0, xmin); }
 
       min[dim] = xmin;
       max[dim] = xmax;
@@ -278,9 +252,7 @@ void MH2::FlushBuffer() {
 double MH2::SumWeights() const {
   double sum = 0.0;
   for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
-    for (std::size_t j = 0; j < static_cast<unsigned int>(YBINS); ++j) {
-      sum += weights[i][j];
-    }
+    for (std::size_t j = 0; j < static_cast<unsigned int>(YBINS); ++j) { sum += weights[i][j]; }
   }
   return sum;
 }
@@ -288,9 +260,7 @@ double MH2::SumWeights() const {
 double MH2::SumWeights2() const {
   double sum = 0.0;
   for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
-    for (std::size_t j = 0; j < static_cast<unsigned int>(YBINS); ++j) {
-      sum += weights2[i][j];
-    }
+    for (std::size_t j = 0; j < static_cast<unsigned int>(YBINS); ++j) { sum += weights2[i][j]; }
   }
   return sum;
 }
@@ -298,9 +268,7 @@ double MH2::SumWeights2() const {
 long long int MH2::SumBinCounts() const {
   long long int sum = 0;
   for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
-    for (std::size_t j = 0; j < static_cast<unsigned int>(YBINS); ++j) {
-      sum += counts[i][j];
-    }
+    for (std::size_t j = 0; j < static_cast<unsigned int>(YBINS); ++j) { sum += counts[i][j]; }
   }
   return sum;
 }
@@ -309,9 +277,7 @@ double MH2::GetMaxWeight() const {
   double maxval = 0;
   for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
     for (std::size_t j = 0; j < static_cast<unsigned int>(YBINS); ++j) {
-      if (weights[i][j] > maxval) {
-        maxval = weights[i][j];
-      }
+      if (weights[i][j] > maxval) { maxval = weights[i][j]; }
     }
   }
   return maxval;
@@ -321,9 +287,7 @@ double MH2::GetMinWeight() const {
   double minval = 1e128;
   for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
     for (std::size_t j = 0; j < static_cast<unsigned int>(YBINS); ++j) {
-      if (weights[i][j] < minval) {
-        minval = weights[i][j];
-      }
+      if (weights[i][j] < minval) { minval = weights[i][j]; }
     }
   }
   return minval;
@@ -363,12 +327,8 @@ void MH2::GetBinIdx(double xvalue, double yvalue, int &xbin, int &ybin) const {
 // Underflow returns -1
 // Overflow  returns -2
 int MH2::GetIdx(double value, double minval, double maxval, int nbins, bool logbins) const {
-  if (value < minval) {
-    return -1;
-  }  // Underflow
-  if (value > maxval) {
-    return -2;
-  }  // Overflow
+  if (value < minval) { return -1; }  // Underflow
+  if (value > maxval) { return -2; }  // Overflow
   int idx = 0;
 
   // Logarithmic binning
@@ -380,7 +340,7 @@ int MH2::GetIdx(double value, double minval, double maxval, int nbins, bool logb
     // Linear binning
   } else {
     const double BINWIDTH = (maxval - minval) / nbins;
-    idx = std::floor((value - minval) / BINWIDTH);
+    idx                   = std::floor((value - minval) / BINWIDTH);
   }
   return idx;
 }
@@ -390,17 +350,13 @@ int MH2::GetIdx(double value, double minval, double maxval, int nbins, bool logb
 double MH2::ShannonEntropy() const {
   double sum = 0.0;
   for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
-    for (std::size_t j = 0; j < static_cast<unsigned int>(YBINS); ++j) {
-      sum += weights[i][j];
-    }
+    for (std::size_t j = 0; j < static_cast<unsigned int>(YBINS); ++j) { sum += weights[i][j]; }
   }
   if (sum > 0) {
     double S = 0.0;
     for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
       for (std::size_t j = 0; j < static_cast<unsigned int>(YBINS); ++j) {
-        if (weights[i][j] > 0) {
-          S += weights[i][j] / sum * std::log2(weights[i][j] / sum);
-        }
+        if (weights[i][j] > 0) { S += weights[i][j] / sum * std::log2(weights[i][j] / sum); }
       }
     }
     return -S;

@@ -88,18 +88,18 @@ MMatrix<double> GetGMixing(const std::vector<Omega> &events, const std::vector<s
     }
 
     const double costheta = events[k].costheta;
-    const double phi = events[k].phi;
+    const double phi      = events[k].phi;
 
     for (int l = 0; l <= LMAX; ++l) {
       for (int m = -l; m <= l; ++m) {
         const int index = LinearInd(l, m);
 
-        const std::complex<double> Y = gra::math::Y_complex_basis(costheta, phi, l, m);
-        const double ReY = gra::math::NReY(Y, l, m);
+        const std::complex<double> Y   = gra::math::Y_complex_basis(costheta, phi, l, m);
+        const double               ReY = gra::math::NReY(Y, l, m);
 
         for (int lprime = 0; lprime <= LMAX; ++lprime) {
           for (int mprime = -lprime; mprime <= lprime; ++mprime) {
-            const int indexprime = LinearInd(lprime, mprime);
+            const int                  indexprime = LinearInd(lprime, mprime);
             const std::complex<double> Yprime =
                 gra::math::Y_complex_basis(costheta, phi, lprime, mprime);
             const double ReYprime = gra::math::NReY(Yprime, lprime, mprime);
@@ -144,9 +144,7 @@ MMatrix<double> GetGMixing(const std::vector<Omega> &events, const std::vector<s
   std::cout << "         " << std::endl;
 
   for (int l = 0; l <= LMAX; ++l) {
-    for (int m = -l; m <= l; ++m) {
-      printf("G_%d%d  \t", l, m);
-    }
+    for (int m = -l; m <= l; ++m) { printf("G_%d%d  \t", l, m); }
   }
   std::cout << std::endl;
 
@@ -177,22 +175,18 @@ MMatrix<double> GetGMixing(const std::vector<Omega> &events, const std::vector<s
   std::cout << "       " << std::endl;
   for (std::size_t j = 0; j < E.size_row(); ++j) {
     double rowsum = 0;
-    for (std::size_t i = 0; i < E.size_col(); ++i) {
-      rowsum += E[i][j];
-    }
+    for (std::size_t i = 0; i < E.size_col(); ++i) { rowsum += E[i][j]; }
     printf("%6.3f\t", rowsum);
   }
   printf("\n\n\n\n");
 
   // Calculate matrix condition number via SVD
-  Eigen::MatrixXd A = gra::aux::Matrix2Eigen(E);
+  Eigen::MatrixXd                   A = gra::aux::Matrix2Eigen(E);
   Eigen::JacobiSVD<Eigen::MatrixXd> svd(A);
-  Eigen::MatrixXd sval = svd.singularValues();
+  Eigen::MatrixXd                   sval = svd.singularValues();
 
   std::cout << "SVD singular values of the matrix:" << std::endl;
-  for (std::size_t i = 0; i < E.size_row(); ++i) {
-    printf("%0.4f ", sval(i));
-  }
+  for (std::size_t i = 0; i < E.size_row(); ++i) { printf("%0.4f ", sval(i)); }
   std::cout << std::endl;
   const double conditionnumber = sval(0) / sval(E.size_row() - 1);
   if (conditionnumber < 10) {
@@ -226,9 +220,9 @@ std::pair<std::vector<double>, std::vector<double>> GetELM(const std::vector<Ome
   //
   // E_LM = \int E(Omega) Re Y_LM(Omega) dOmega, Omega = (costheta,phi)
 
-  int fiducial = 0;
-  int selected = 0;
-  const double V = sqrt(4.0 * PI);  // Normalization volume
+  int          fiducial = 0;
+  int          selected = 0;
+  const double V        = sqrt(4.0 * PI);  // Normalization volume
 
   for (const auto &k : ind) {
     bool fid = MC[k].fiducial;
@@ -263,7 +257,7 @@ std::pair<std::vector<double>, std::vector<double>> GetELM(const std::vector<Ome
     }
 
     const double costheta = MC[k].costheta;
-    const double phi = MC[k].phi;
+    const double phi      = MC[k].phi;
 
     for (int l = 0; l <= LMAX; ++l) {
       for (int m = -l; m <= l; ++m) {
@@ -306,7 +300,7 @@ std::pair<std::vector<double>, std::vector<double>> GetELM(const std::vector<Ome
   }
 
   // Do the normalization
-  const double N_generated = (double)ind.size();  // Generated events within this hypercell
+  const double        N_generated = (double)ind.size();  // Generated events within this hypercell
   std::vector<double> E_error(E.size(), 0.0);
 
   std::cout << "Acceptance decomposition coefficients:" << std::endl;
@@ -320,7 +314,7 @@ std::pair<std::vector<double>, std::vector<double>> GetELM(const std::vector<Ome
 
       // 1 sigma MC integration uncertainty
       const double error = msqrt((E2[index] - std::pow(E[index], 2)) / N_generated);
-      E_error[index] = error;
+      E_error[index]     = error;
       sum += E[index];
 
       printf("E_%d%d \t= %12.8f +- %12.8f   (rel.error %9.3f percent) \n", l, m, E[index], error,
@@ -336,16 +330,16 @@ std::pair<std::vector<double>, std::vector<double>> GetELM(const std::vector<Ome
 
 // Calculate expansion coefficients directly via algebraic expansion
 //
-std::vector<double> SphericalMoments(const std::vector<Omega> &input,
+std::vector<double> SphericalMoments(const std::vector<Omega> &      input,
                                      const std::vector<std::size_t> &ind, int LMAX,
                                      const std::string &mode) {
-  const double V = sqrt(4.0 * PI);  // Normalization volume
-  const unsigned int NCOEF = (LMAX + 1) * (LMAX + 1);
+  const double        V     = sqrt(4.0 * PI);  // Normalization volume
+  const unsigned int  NCOEF = (LMAX + 1) * (LMAX + 1);
   std::vector<double> t(NCOEF, 0.0);
 
   for (int l = 0; l <= LMAX; ++l) {
     for (int m = -l; m <= l; ++m) {
-      double sum = 0;
+      double             sum   = 0;
       const unsigned int index = LinearInd(l, m);
       for (const auto &k : ind) {
         // Check is this event selected by cuts
@@ -358,25 +352,19 @@ std::vector<double> SphericalMoments(const std::vector<Omega> &input,
         }
         // Geometric acceptance ("Fiducial level")
         else if (mode == "fid") {
-          if (!fidtrue) {
-            continue;
-          }
+          if (!fidtrue) { continue; }
         }
         // Geometric x Efficiency ("Detector level")
         else if (mode == "det") {
-          if (!fidtrue) {
-            continue;
-          }
-          if (!seltrue) {
-            continue;
-          }
+          if (!fidtrue) { continue; }
+          if (!seltrue) { continue; }
         } else {
           throw std::invalid_argument("spherical::SphericalMoments: Unknown mode " + mode);
         }
 
-        const double costheta = input[k].costheta;
-        const double phi = input[k].phi;
-        const std::complex<double> Y = gra::math::Y_complex_basis(costheta, phi, l, m);
+        const double               costheta = input[k].costheta;
+        const double               phi      = input[k].phi;
+        const std::complex<double> Y        = gra::math::Y_complex_basis(costheta, phi, l, m);
 
         sum += gra::math::NReY(Y, l, m);
       }
@@ -391,13 +379,13 @@ MMatrix<double> YLM(const std::vector<Omega> &events, int LMAX) {
   std::cout << "YLM:" << std::endl;
 
   const unsigned int NCOEFF = (LMAX + 1) * (LMAX + 1);
-  MMatrix<double> Y_lm(events.size(), NCOEFF, 0.0);
+  MMatrix<double>    Y_lm(events.size(), NCOEFF, 0.0);
 
   // Loop over events
   for (const auto &k : indices(events)) {
     // Get event (costheta, phi)
     const double costheta = events[k].costheta;
-    const double phi = events[k].phi;
+    const double phi      = events[k].phi;
 
     // Loop over (l,m) coefficients
     for (int l = 0; l <= LMAX; ++l) {
@@ -406,7 +394,7 @@ MMatrix<double> YLM(const std::vector<Omega> &events, int LMAX) {
 
         // Save its value
         const int index = LinearInd(l, m);
-        Y_lm[k][index] = gra::math::NReY(Y, l, m);
+        Y_lm[k][index]  = gra::math::NReY(Y, l, m);
       }
     }
   }
@@ -422,9 +410,7 @@ double HarmDotProd(const std::vector<double> &G, const std::vector<double> &x,
   for (int l = 0; l <= LMAX; ++l) {
     for (int m = -l; m <= l; ++m) {
       const int index = LinearInd(l, m);
-      if (ACTIVE[index]) {
-        sum += G[index] * x[index];
-      }
+      if (ACTIVE[index]) { sum += G[index] * x[index]; }
     }
   }
   return sum;
@@ -479,7 +465,7 @@ std::vector<std::size_t> GetIndices(const std::vector<Omega> &events, const std:
 // This is a test function, all integrals should give 1 if the normalization is
 // correct
 void TestSphericalIntegrals(int LMAX) {
-  MRandom random;
+  MRandom            random;
   const unsigned int NCOEF = (LMAX + 1) * (LMAX + 1);
   std::cout << "TestSphericalIntegrals: " << std::endl << std::endl;
 
@@ -496,7 +482,7 @@ void TestSphericalIntegrals(int LMAX) {
 
   for (std::size_t k = 0; k < N; ++k) {
     const double costheta = random.U(-1.0, 1.0);
-    const double phi = random.U(0.0, 2.0 * PI);
+    const double phi      = random.U(0.0, 2.0 * PI);
 
     for (int l = 0; l <= LMAX; ++l) {
       for (int m = -l; m <= l; ++m) {
@@ -538,9 +524,7 @@ double CalcError(double f2, double f, double N) { return sqrt((f2 - std::pow(f, 
 void PrintMatrix(FILE *fp, const std::vector<std::vector<double>> &A) {
   // Print out coefficients
   for (std::size_t i = 0; i < A.size(); ++i) {
-    for (std::size_t j = 0; j < A[i].size(); ++j) {
-      fprintf(fp, "%0.1f ", A[i][j]);
-    }
+    for (std::size_t j = 0; j < A[i].size(); ++j) { fprintf(fp, "%0.1f ", A[i][j]); }
     fprintf(fp, "\n");
   }
   fprintf(fp, "\n");
@@ -557,7 +541,7 @@ MMatrix<double> Y_real_synthesize(const std::vector<double> &c_lm, const std::ve
 
   // Cos(theta) and phi
   costheta = math::linspace<std::vector>(-1.0, 1.0, N);
-  phi = math::linspace<std::vector>(-math::PI, math::PI, N);
+  phi      = math::linspace<std::vector>(-math::PI, math::PI, N);
 
   // Do the expansion
   MMatrix<double> Z(N, N, 0.0);
@@ -565,9 +549,7 @@ MMatrix<double> Y_real_synthesize(const std::vector<double> &c_lm, const std::ve
   for (int l = 0; l <= LMAX; ++l) {
     for (int m = -l; m <= l; ++m) {
       const int index = gra::spherical::LinearInd(l, m);
-      if (!ACTIVE[index]) {
-        continue;
-      }  // Not active
+      if (!ACTIVE[index]) { continue; }  // Not active
 
       for (const std::size_t &i : indices(costheta)) {
         for (const std::size_t &j : indices(phi)) {
@@ -582,9 +564,7 @@ MMatrix<double> Y_real_synthesize(const std::vector<double> &c_lm, const std::ve
     double max = 1e-32;
     for (std::size_t i = 0; i < Z.size_row(); ++i) {
       for (std::size_t j = 0; j < Z.size_col(); ++j) {
-        if (Z[i][j] > max) {
-          max = Z[i][j];
-        }
+        if (Z[i][j] > max) { max = Z[i][j]; }
       }
     }
     Z = Z * (1.0 / max);  // Normalize elements
@@ -600,10 +580,8 @@ std::vector<double> ErrorProp(const MMatrix<double> &A, const std::vector<double
   std::vector<double> y(A.size_row(), 0.0);
 
   for (std::size_t m = 0; m < A.size_row(); ++m) {
-    for (std::size_t n = 0; n < A.size_col(); ++n) {
-      y[m] += pow2(A[m][n] * x[n]);
-    }
-    y[m] = msqrt(y[m]);
+    for (std::size_t n = 0; n < A.size_col(); ++n) { y[m] += pow2(A[m][n] * x[n]); }
+    y[m]               = msqrt(y[m]);
   }
   return y;
 }

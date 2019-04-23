@@ -119,22 +119,22 @@ class MTensorPomeron : public MDirac {
   double FM(double t) const;
 
   // Trajectory parameters
-  static constexpr double delta_P = 0.0808;
-  static constexpr double delta_O = 0.0808;
+  static constexpr double delta_P  = 0.0808;
+  static constexpr double delta_O  = 0.0808;
   static constexpr double delta_1R = -0.5475;
   static constexpr double delta_2R = -0.5475;
 
-  static constexpr double ap_P = 0.25;  // GeV^{-2}
-  static constexpr double ap_O = 0.25;  // GeV^{-2}
-  static constexpr double ap_1R = 0.9;  // GeV^{-2}
-  static constexpr double ap_2R = 0.9;  // GeV^{-2}
+  static constexpr double ap_P  = 0.25;  // GeV^{-2}
+  static constexpr double ap_O  = 0.25;  // GeV^{-2}
+  static constexpr double ap_1R = 0.9;   // GeV^{-2}
+  static constexpr double ap_2R = 0.9;   // GeV^{-2}
 
   static constexpr double eta_O = 1.0;  // +- 1
 
   // Mass scales
-  static constexpr double M_O = 1.00;         // GeV
-  static constexpr double M_1R = 1.41;        // GeV
-  static constexpr double mp = 0.938;         // GeV
+  static constexpr double M_O      = 1.00;    // GeV
+  static constexpr double M_1R     = 1.41;    // GeV
+  static constexpr double mp       = 0.938;   // GeV
   static constexpr double mu_ratio = 2.7928;  // mu_p / mu_N
 
   // Couplings

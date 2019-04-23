@@ -18,22 +18,22 @@ class MAmpMG5_gg_ggg {
   std::complex<double> CalcAmp(gra::LORENTZSCALAR &lts, double alpS);
 
  private:
-  double calls = 0;
+  double calls    = 0;
   double ratiosum = 0;
 
   // Constants for array limits
-  static const int ninitial = 2;
-  static const int nexternal = 5;
+  static const int ninitial   = 2;
+  static const int nexternal  = 5;
   static const int nprocesses = 1;
 
   // Private functions to calculate the matrix element for all subprocesses
   // Calculate wavefunctions
   void calculate_wavefunctions(const int perm[], const int hel[]);
-  static const int nwavefuncs = 33;
+  static const int     nwavefuncs = 33;
   std::complex<double> w[nwavefuncs][18];
-  static const int namplitudes = 45;
+  static const int     namplitudes = 45;
   std::complex<double> amp[namplitudes];
-  double matrix_1_gg_ggg();
+  double               matrix_1_gg_ggg();
 
   // Store the matrix element value from sigmaKin
   double matrix_element[nprocesses];

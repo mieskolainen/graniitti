@@ -28,7 +28,7 @@ namespace math {
 constexpr const std::complex<double> zi(0.0, 1.0);
 
 // Geometry
-constexpr const double PI = 3.141592653589793238462643383279502884197169399375105820974944L;
+constexpr const double PI   = 3.141592653589793238462643383279502884197169399375105820974944L;
 constexpr const double PIPI = PI * PI;
 
 // Moore-Penrose Pseudoinverse for Eigen
@@ -55,7 +55,7 @@ template <typename T>
 inline std::vector<T> vv_vMultiply(const std::vector<std::vector<T>> &A, const std::vector<T> &B) {
   const std::size_t n = A.size();
   const std::size_t m = A[0].size();
-  std::vector<T> C(n, 0.0);  // Init with zero!
+  std::vector<T>    C(n, 0.0);  // Init with zero!
 
   for (std::size_t i = 0; i < n; ++i) {
     for (std::size_t k = 0; k < m; ++k) {
@@ -68,17 +68,13 @@ inline std::vector<T> vv_vMultiply(const std::vector<std::vector<T>> &A, const s
 template <typename T>
 inline std::vector<T> valarray2vector(const std::valarray<T> &x) {
   std::vector<T> y(x.size());
-  for (std::size_t k = 0; k < x.size(); ++k) {
-    y[k] = x[k];
-  }
+  for (std::size_t k = 0; k < x.size(); ++k) { y[k] = x[k]; }
   return y;
 }
 template <typename T>
 inline std::valarray<T> vector2valarray(const std::vector<T> &x) {
   std::valarray<T> y(x.size());
-  for (std::size_t k = 0; k < x.size(); ++k) {
-    y[k] = x[k];
-  }
+  for (std::size_t k = 0; k < x.size(); ++k) { y[k] = x[k]; }
   return y;
 }
 
@@ -86,9 +82,7 @@ inline std::valarray<T> vector2valarray(const std::vector<T> &x) {
 template <typename T>
 inline std::vector<T> vabs(const std::vector<T> &x) {
   std::vector<T> y(x.size());
-  for (std::size_t k = 0; k < x.size(); ++k) {
-    y[k] = std::abs(x[k]);
-  }
+  for (std::size_t k = 0; k < x.size(); ++k) { y[k] = std::abs(x[k]); }
   return y;
 }
 
@@ -99,18 +93,14 @@ inline std::vector<T> vabs(const std::vector<T> &x) {
 template <template <typename T> class container_type, class value_type>
 inline container_type<value_type> linspace(value_type start, value_type stop, std::size_t size) {
   container_type<value_type> v(size);
-  for (std::size_t i = 0; i < size; ++i) {
-    v[i] = start + i * (stop - start) / (size - 1);
-  }
+  for (std::size_t i = 0; i < size; ++i) { v[i] = start + i * (stop - start) / (size - 1); }
   return v;
 }
 template <template <typename T> class container_type, class value_type>
 inline container_type<value_type> arange(value_type start, value_type step, value_type stop) {
-  std::size_t size = (stop - start) / step;
+  std::size_t                size = (stop - start) / step;
   container_type<value_type> v(size);
-  for (std::size_t i = 0; i < size; ++i) {
-    v[i] = start + step * i;
-  }
+  for (std::size_t i = 0; i < size; ++i) { v[i] = start + step * i; }
   return v;
 }
 
@@ -120,9 +110,7 @@ inline void CumSum(const std::vector<T> &x, std::vector<T> &sumvec) {
   const std::size_t N = x.size();
   sumvec.resize(N, 0.0);
   sumvec[0] = x[0];  // First
-  for (std::size_t i = 1; i < N; ++i) {
-    sumvec[i] = sumvec[i - 1] + x[i];
-  }
+  for (std::size_t i = 1; i < N; ++i) { sumvec[i] = sumvec[i - 1] + x[i]; }
 }
 
 // Explicit powers for faster evaluation (std::pow is slow)
@@ -169,9 +157,7 @@ inline bool CheckEMC(const M4Vec &diff) {
 // Factorial n! = n*(n-1)*(n-2)*...*1
 constexpr double factorial(int n) {
   double x = 1;
-  for (int i = 1; i <= n; ++i) {
-    x *= i;
-  }
+  for (int i = 1; i <= n; ++i) { x *= i; }
   return x;
 }
 
@@ -215,9 +201,7 @@ inline double abs2(const std::complex<double> &M) { return pow2(std::abs(M)); }
 template <typename T>
 inline double vpow2(const std::vector<T> &v) {
   double sum = 0.0;
-  for (std::size_t i = 0; i < v.size(); ++i) {
-    sum += abs2(v[i]);
-  }
+  for (std::size_t i = 0; i < v.size(); ++i) { sum += abs2(v[i]); }
   return sum;
 }
 
@@ -232,9 +216,7 @@ inline double l2norm(const std::vector<T> &v) {
 template <template <typename T> class container_type, class value_type>
 inline void PrintArray(container_type<value_type> x, std::string name) {
   std::cout << "PrintArray: " << name << std::endl;
-  for (unsigned int i = 0; i < x.size(); ++i) {
-    std::cout << x[i];
-  }
+  for (unsigned int i = 0; i < x.size(); ++i) { std::cout << x[i]; }
   std::cout << std::endl << std::endl;
 }
 
@@ -246,9 +228,7 @@ constexpr double Rad2Deg(double rad) { return (rad * 180.0) / gra::math::PI; }
 
 // Binomial Coefficient C(n, k)
 constexpr int Cbinom(int n, int k) {
-  if (k == 0 || k == n) {
-    return 1;
-  }
+  if (k == 0 || k == n) { return 1; }
 
   // Recursive function
   return Cbinom(n - 1, k - 1) + Cbinom(n - 1, k);
@@ -284,7 +264,7 @@ inline MTensor<int> EpsTensor(std::size_t N) {
   // ------------------------------------------------------------------
 
   const std::vector<std::size_t> dimensions(N, MAX);
-  MTensor<int> T(dimensions, int(0));
+  MTensor<int>                   T(dimensions, int(0));
 
   // Nested for-loop
   std::size_t index = 0;
@@ -298,9 +278,7 @@ inline MTensor<int> EpsTensor(std::size_t N) {
 
     // Carry
     while (ind[index] == MAX) {
-      if (index == N - 1) {
-        return T;
-      }
+      if (index == N - 1) { return T; }
 
       ind[index++] = 0;
       ind[index]++;
@@ -327,13 +305,11 @@ inline T CTrapIntegral(const std::vector<T> &f, double hstep) {
     throw std::invalid_argument(str);
   }
 
-  const std::size_t N = f.size() - 1;
-  T I_sum = 0.0;
+  const std::size_t N     = f.size() - 1;
+  T                 I_sum = 0.0;
 
-  for (std::size_t j = 1; j <= N - 1; ++j) {
-    I_sum += f[j];
-  }
-  T I = hstep * (f[0] + 2 * I_sum + f[N]) / 2;
+  for (std::size_t j = 1; j <= N - 1; ++j) { I_sum += f[j]; }
+  T                I = hstep * (f[0] + 2 * I_sum + f[N]) / 2;
 
   return I;
 }
@@ -351,17 +327,13 @@ inline T CSIntegral(const std::vector<T> &f, double hstep) {
     throw std::invalid_argument(str);
   }
 
-  const std::size_t N = f.size() - 1;
-  T I_even = 0.0;
-  T I_odd = 0.0;
+  const std::size_t N      = f.size() - 1;
+  T                 I_even = 0.0;
+  T                 I_odd  = 0.0;
 
-  for (std::size_t j = 1; j <= N / 2 - 1; ++j) {
-    I_even += f[2 * j];
-  }
-  for (std::size_t j = 1; j <= N / 2; ++j) {
-    I_odd += f[2 * j - 1];
-  }
-  T I = hstep * (f[0] + 2.0 * I_even + 4.0 * I_odd + f[N]) / 3.0;
+  for (std::size_t j = 1; j <= N / 2 - 1; ++j) { I_even += f[2 * j]; }
+  for (std::size_t j = 1; j <= N / 2; ++j) { I_odd += f[2 * j - 1]; }
+  T                I = hstep * (f[0] + 2.0 * I_even + 4.0 * I_odd + f[N]) / 3.0;
 
   return I;
 }
@@ -381,16 +353,12 @@ inline T CS38Integral(const std::vector<T> &f, double hstep) {
 
   const std::size_t N = (f.size() - 1) / 3;
 
-  T I_first = 0.0;
+  T I_first  = 0.0;
   T I_second = 0.0;
 
-  for (std::size_t j = 1; j <= N; ++j) {
-    I_first += (f[3 * j - 2] + f[3 * j - 1]);
-  }
-  for (std::size_t j = 1; j <= N - 1; ++j) {
-    I_second += f[3 * j];
-  }
-  T I = 3 * hstep * (f[0] + 3 * I_first + 2 * I_second + f[3 * N]) / 8;
+  for (std::size_t j = 1; j <= N; ++j) { I_first += (f[3 * j - 2] + f[3 * j - 1]); }
+  for (std::size_t j = 1; j <= N - 1; ++j) { I_second += f[3 * j]; }
+  T                I = 3 * hstep * (f[0] + 3 * I_first + 2 * I_second + f[3 * N]) / 8;
 
   return I;
 }
@@ -415,9 +383,7 @@ inline T Simpson13Integral2D(const MMatrix<T> &f, const MMatrix<double> &W, doub
 
   T I = 0.0;
   for (std::size_t i = 0; i < f.size_row(); ++i) {
-    for (std::size_t j = 0; j < f.size_col(); ++j) {
-      I += W[i][j] * f[i][j];
-    }
+    for (std::size_t j = 0; j < f.size_col(); ++j) { I += W[i][j] * f[i][j]; }
   }
   I *= (hstepM * hstepN) / 9;
 
@@ -444,9 +410,7 @@ inline T Simpson38Integral2D(const MMatrix<T> &f, const MMatrix<double> &W, doub
 
   T I = 0.0;
   for (std::size_t i = 0; i < f.size_row(); ++i) {
-    for (std::size_t j = 0; j < f.size_col(); ++j) {
-      I += W[i][j] * f[i][j];
-    }
+    for (std::size_t j = 0; j < f.size_col(); ++j) { I += W[i][j] * f[i][j]; }
   }
   I *= 9 * (hstepM * hstepN) / 64;  // 3^2, 9^2
   return I;
@@ -475,9 +439,7 @@ inline std::vector<double> Simpson13Weight(unsigned int N) {
   W[0] = 1.0;
   W[N] = 1.0;
 
-  for (std::size_t i = 1; i < N; i += 2) {
-    W[i] = 4.0;
-  }
+  for (std::size_t i = 1; i < N; i += 2) { W[i] = 4.0; }
   return W;
 }
 
@@ -494,40 +456,34 @@ inline std::vector<double> Simpson38Weight(unsigned int N) {
   W[0] = 1.0;
   W[N] = 1.0;
 
-  for (std::size_t i = 3; i < N; i += 3) {
-    W[i] = 2.0;
-  }
+  for (std::size_t i = 3; i < N; i += 3) { W[i] = 2.0; }
   return W;
 }
 
 // Create a weight matrix dim[M+1, N+1] for 2D-Simpson's 1/3 rule
 inline MMatrix<double> Simpson13Weight2D(unsigned int M, unsigned int N) {
-  MMatrix<double> W(M + 1, N + 1, 0.0);
+  MMatrix<double>           W(M + 1, N + 1, 0.0);
   const std::vector<double> U = Simpson13Weight(M);
   const std::vector<double> V = Simpson13Weight(N);
 
   // Outer (tensor) product: W = U*V^T
   // printf("\n");
   for (std::size_t i = 0; i <= M; ++i) {
-    for (std::size_t j = 0; j <= N; ++j) {
-      W[i][j] = U[i] * V[j];
-    }
+    for (std::size_t j = 0; j <= N; ++j) { W[i][j] = U[i] * V[j]; }
   }
   return W;
 }
 
 // Create a weight matrix dim[M+1, N+1] for 2D-Simpson's 3/8 rule
 inline MMatrix<double> Simpson38Weight2D(unsigned int M, unsigned int N) {
-  MMatrix<double> W(M + 1, N + 1, 0.0);
+  MMatrix<double>           W(M + 1, N + 1, 0.0);
   const std::vector<double> U = Simpson38Weight(M);
   const std::vector<double> V = Simpson38Weight(N);
 
   // Outer (tensor) product: W = U*V^T
   // printf("\n");
   for (std::size_t i = 0; i <= M; ++i) {
-    for (std::size_t j = 0; j <= N; ++j) {
-      W[i][j] = U[i] * V[j];
-    }
+    for (std::size_t j = 0; j <= N; ++j) { W[i][j] = U[i] * V[j]; }
   }
   return W;
 }
@@ -541,9 +497,7 @@ constexpr unsigned int Binary2Gray(unsigned int number) { return number ^ (numbe
 // Convert BRGC (binary reflect Gray code) to a binary number
 // Gray code is obtained as XOR (^) with all more significant bits
 constexpr unsigned int Gray2Binary(unsigned int number) {
-  for (unsigned int mask = number >> 1; mask != 0; mask = mask >> 1) {
-    number = number ^ mask;
-  }
+  for (unsigned int mask = number >> 1; mask != 0; mask = mask >> 1) { number = number ^ mask; }
   return number;
 }
 
@@ -554,12 +508,10 @@ inline int Vec2Ind(std::vector<bool> vec) {
   std::reverse(vec.begin(), vec.end());
 
   int retval = 0;
-  int i = 0;
+  int i      = 0;
 
   for (std::vector<bool>::iterator it = vec.begin(); it != vec.end(); ++it, ++i) {
-    if (*it) {
-      retval |= 1 << i;
-    }
+    if (*it) { retval |= 1 << i; }
   }
   return retval;
 }
@@ -583,9 +535,7 @@ inline std::vector<bool> Ind2Vec(unsigned int ind, unsigned int d) {
 
   // Now will the d-dimensional bit vector starting from rightmost bit
   std::vector<bool> final(d, 0);
-  for (std::size_t i = 0; i < ret.size(); ++i) {
-    final[d - 1 - i] = ret[ret.size() - 1 - i];
-  }
+  for (std::size_t i = 0; i < ret.size(); ++i) { final[d - 1 - i] = ret[ret.size() - 1 - i]; }
 
   return final;
 }
@@ -613,22 +563,18 @@ inline std::vector<unsigned int> LRsequence(unsigned int dim) {
 // Construct binary matrix in normal binary order
 inline std::vector<std::vector<int>> BinaryMatrix(unsigned int d) {
   std::vector<std::vector<int>> B;
-  unsigned int N = std::pow(2, d);
+  unsigned int                  N = std::pow(2, d);
 
   // First initialize
   std::vector<int> rvec(d, 0);
-  for (std::size_t i = 0; i < N; ++i) {
-    B.push_back(rvec);
-  }
+  for (std::size_t i = 0; i < N; ++i) { B.push_back(rvec); }
 
   // Now fill
   for (std::size_t i = 0; i < N; ++i) {
     // Get binary expansion (vector) for this i = 0...2^d-1
     std::vector<bool> binvec = Ind2Vec(i, d);
 
-    for (unsigned int j = 0; j < d; ++j) {
-      B[i][j] = binvec[j];
-    }
+    for (unsigned int j = 0; j < d; ++j) { B[i][j] = binvec[j]; }
   }
   return B;
 }
@@ -638,7 +584,7 @@ inline std::vector<std::vector<int>> BinaryMatrix(unsigned int d) {
 // >> 00000000000000000000000000000110
 inline void PrintBits(size_t const size, void const *const ptr) {
   unsigned char *b = (unsigned char *)ptr;
-  unsigned char byte;
+  unsigned char  byte;
 
   // Loop over bytes, e.g. for int32 the size is 4
   for (int i = size - 1; i >= 0; i--) {
@@ -672,23 +618,21 @@ inline double BESSJ0(double X) {
 
   double AX, FR, FS, Z, FP, FQ, XX, Y, TMP;
 
-  if (X == 0.0) {
-    return 1.0;
-  }
+  if (X == 0.0) { return 1.0; }
 
   AX = std::abs(X);
 
   if (AX < 8.0) {
-    Y = X * X;
-    FR = R1 + Y * (R2 + Y * (R3 + Y * (R4 + Y * (R5 + Y * R6))));
-    FS = S1 + Y * (S2 + Y * (S3 + Y * (S4 + Y * (S5 + Y * S6))));
+    Y   = X * X;
+    FR  = R1 + Y * (R2 + Y * (R3 + Y * (R4 + Y * (R5 + Y * R6))));
+    FS  = S1 + Y * (S2 + Y * (S3 + Y * (S4 + Y * (S5 + Y * S6))));
     TMP = FR / FS;
   } else {
-    Z = 8.0 / AX;
-    Y = Z * Z;
-    XX = AX - 0.785398164;
-    FP = P1 + Y * (P2 + Y * (P3 + Y * (P4 + Y * P5)));
-    FQ = Q1 + Y * (Q2 + Y * (Q3 + Y * (Q4 + Y * Q5)));
+    Z   = 8.0 / AX;
+    Y   = Z * Z;
+    XX  = AX - 0.785398164;
+    FP  = P1 + Y * (P2 + Y * (P3 + Y * (P4 + Y * P5)));
+    FQ  = Q1 + Y * (Q2 + Y * (Q3 + Y * (Q4 + Y * Q5)));
     TMP = std::sqrt(0.636619772 / AX) * (FP * std::cos(XX) - Z * FQ * std::sin(XX));
   }
   return TMP;
@@ -718,16 +662,16 @@ inline double BESSJ1(double X) {
   AX = std::abs(X);
 
   if (AX < 8.0) {
-    Y = X * X;
-    FR = R1 + Y * (R2 + Y * (R3 + Y * (R4 + Y * (R5 + Y * R6))));
-    FS = S1 + Y * (S2 + Y * (S3 + Y * (S4 + Y * (S5 + Y * S6))));
+    Y   = X * X;
+    FR  = R1 + Y * (R2 + Y * (R3 + Y * (R4 + Y * (R5 + Y * R6))));
+    FS  = S1 + Y * (S2 + Y * (S3 + Y * (S4 + Y * (S5 + Y * S6))));
     TMP = X * (FR / FS);
   } else {
-    Z = 8.0 / AX;
-    Y = Z * Z;
-    XX = AX - 2.35619491;
-    FP = P1 + Y * (P2 + Y * (P3 + Y * (P4 + Y * P5)));
-    FQ = Q1 + Y * (Q2 + Y * (Q3 + Y * (Q4 + Y * Q5)));
+    Z   = 8.0 / AX;
+    Y   = Z * Z;
+    XX  = AX - 2.35619491;
+    FP  = P1 + Y * (P2 + Y * (P3 + Y * (P4 + Y * P5)));
+    FQ  = Q1 + Y * (Q2 + Y * (Q3 + Y * (Q4 + Y * Q5)));
     TMP = std::sqrt(P6 / AX) * (std::cos(XX) * FP - Z * std::sin(XX) * FQ) * gra::math::sign(S6, X);
   }
   return TMP;
@@ -746,56 +690,46 @@ inline double BESSJ(int N, double X) {
   C.W.CLENSHAW, CHEBYSHEV SERIES FOR MATHEMATICAL FUNCTIONS,
   MATHEMATICAL TABLES, VOL.5, 1962.
   *************************************************************************/
-  double IACC = 40;
+  double IACC  = 40;
   double BIGNO = 1e10, BIGNI = 1e-10;
 
   double TOX, BJM, BJ, BJP, SUM, TMP;
-  int J, JSUM, M;
+  int    J, JSUM, M;
 
-  if (N == 0) {
-    return BESSJ0(X);
-  }
-  if (N == 1) {
-    return BESSJ1(X);
-  }
-  if (X == 0.0) {
-    return 0.0;
-  }
+  if (N == 0) { return BESSJ0(X); }
+  if (N == 1) { return BESSJ1(X); }
+  if (X == 0.0) { return 0.0; }
 
   TOX = 2.0 / X;
   if (X > 1.0 * N) {
     BJM = BESSJ0(X);
-    BJ = BESSJ1(X);
+    BJ  = BESSJ1(X);
     for (J = 1; J < N; ++J) {
       BJP = J * TOX * BJ - BJM;
       BJM = BJ;
-      BJ = BJP;
+      BJ  = BJP;
     }
     return BJ;
   } else {
-    M = (int)(2 * ((N + std::floor(msqrt(1.0 * (IACC * N)))) / 2));
-    TMP = 0.0;
+    M    = (int)(2 * ((N + std::floor(msqrt(1.0 * (IACC * N)))) / 2));
+    TMP  = 0.0;
     JSUM = 0;
-    SUM = 0.0;
-    BJP = 0.0;
-    BJ = 1.0;
+    SUM  = 0.0;
+    BJP  = 0.0;
+    BJ   = 1.0;
     for (J = M; J > 0; --J) {
       BJM = J * TOX * BJ - BJP;
       BJP = BJ;
-      BJ = BJM;
+      BJ  = BJM;
       if (std::abs(BJ) > BIGNO) {
-        BJ = BJ * BIGNI;
+        BJ  = BJ * BIGNI;
         BJP = BJP * BIGNI;
         TMP = TMP * BIGNI;
         SUM = SUM * BIGNI;
       }
-      if (JSUM != 0) {
-        SUM += BJ;
-      }
+      if (JSUM != 0) { SUM += BJ; }
       JSUM = 1 - JSUM;
-      if (J == N) {
-        TMP = BJP;
-      }
+      if (J == N) { TMP = BJP; }
     }
     SUM = 2.0 * SUM - BJ;
     return (TMP / SUM);
@@ -809,8 +743,8 @@ inline double BESSJ(int N, double X) {
 //
 // std::vector<int> set = {1,2,3};
 inline std::vector<std::vector<int>> Permutations(std::vector<int> &input) {
-  std::size_t N = input.size();
-  int permutations = (int)factorial(N);
+  std::size_t N            = input.size();
+  int         permutations = (int)factorial(N);
 
   // Here we save all permutations
   std::vector<std::vector<int>> outset(permutations, std::vector<int>(N));
@@ -818,12 +752,12 @@ inline std::vector<std::vector<int>> Permutations(std::vector<int> &input) {
   std::vector<int> set = input;
 
   int temp = 0;
-  int j = 0;
-  int l = 0;
+  int j    = 0;
+  int l    = 0;
 
   // Save first
   outset[0] = set;
-  int k = 1;
+  int k     = 1;
 
   while (true) {
     // Find largest j for which set[j] < set[j+1]
@@ -835,11 +769,9 @@ inline std::vector<std::vector<int>> Permutations(std::vector<int> &input) {
       break;  // No such j, we are done
     }
     for (std::size_t i = j + 1; i < N; ++i) {
-      if (set[i] > set[j]) {
-        l = i;
-      }
+      if (set[i] > set[j]) { l = i; }
     }
-    temp = set[j];
+    temp   = set[j];
     set[j] = set[l];
     set[l] = temp;
 
@@ -847,9 +779,9 @@ inline std::vector<std::vector<int>> Permutations(std::vector<int> &input) {
     unsigned int swaps = (N - j - 1) / 2;
     for (unsigned int i = 0; i < swaps; ++i) {
       if ((j + 1 + i) < N) {
-        temp = set[(j + 1) + i];
+        temp             = set[(j + 1) + i];
         set[(j + 1) + i] = set[N - 1 - i];
-        set[N - 1 - i] = temp;
+        set[N - 1 - i]   = temp;
       }
     }
     // Save permutation set
@@ -878,7 +810,7 @@ inline std::vector<std::vector<int>> GetAmpPerm(int N, int type) {
   int offset = 3;
 
   std::vector<int> set;
-  int k = offset;
+  int              k = offset;
   for (int i = 0; i < N; ++i) {
     set.push_back(k);
     ++k;
@@ -910,9 +842,7 @@ inline std::vector<std::vector<int>> GetAmpPerm(int N, int type) {
         if ((charge.at(a - offset) + charge.at(b - offset)) != 0) ok = false;
         // printf("%d%d", a, b);
       }
-      if (ok) {
-        valid_amplitudes.push_back(outset[i]);
-      }
+      if (ok) { valid_amplitudes.push_back(outset[i]); }
       //  printf(" ok = %d", ok);
       //  printf("\n");
     }
@@ -962,26 +892,22 @@ constexpr double sf_legendre(int l, int m, double x) {
   // Associated Legendre Polynomial
   double pmm = 1.0;
   if (m > 0) {
-    const double sx2 = std::sqrt((1.0 - x) * (1.0 + x));
-    double fact = 1.0;
+    const double sx2  = std::sqrt((1.0 - x) * (1.0 + x));
+    double       fact = 1.0;
     for (int i = 1; i <= m; ++i) {
       pmm *= (-fact) * sx2;
       fact += 2.0;
     }
   }
-  if (l == m) {
-    return pmm;
-  }
+  if (l == m) { return pmm; }
 
   double pmmp1 = x * (2.0 * m + 1.0) * pmm;
-  if (l == m + 1) {
-    return pmmp1;
-  }
+  if (l == m + 1) { return pmmp1; }
 
   double pll = 0.0;
   for (int ll = m + 2; ll <= l; ++ll) {
-    pll = ((2.0 * ll - 1.0) * x * pmmp1 - (ll + m - 1.0) * pmm) / (ll - m);
-    pmm = pmmp1;
+    pll   = ((2.0 * ll - 1.0) * x * pmmp1 - (ll + m - 1.0) * pmm) / (ll - m);
+    pmm   = pmmp1;
     pmmp1 = pll;
   }
   return pll;
@@ -1041,9 +967,7 @@ inline double Y_real_basis(double costheta, double phi, int l, int m) {
   // Normalization function
   auto K = [](int l, int m) -> double {
 
-    if (m == 0) {
-      return msqrt((2.0 * l + 1.0) / (4.0 * PI));
-    }  // Speed it up
+    if (m == 0) { return msqrt((2.0 * l + 1.0) / (4.0 * PI)); }  // Speed it up
     double temp =
         ((2.0 * l + 1.0) * factorial(l - m)) / static_cast<double>(4.0 * PI * factorial(l + m));
     return msqrt(temp);

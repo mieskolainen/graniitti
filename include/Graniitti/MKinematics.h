@@ -23,14 +23,14 @@ namespace gra {
 namespace kinematics {
 // Case m3 = m4
 inline double SolvePz3_A(double m3, double pt3, double pt4, double pz5, double E5, double s) {
-  const double t2 = E5 * E5;
-  const double t3 = pt3 * pt3;
-  const double t4 = pt4 * pt4;
-  const double t5 = pz5 * pz5;
-  const double t6 = m3 * m3;
-  const double t7 = std::sqrt(s);
-  const double t8 = s * t2 * 6.0;
-  const double t9 = std::pow(s, 3.0 / 2.0);
+  const double t2  = E5 * E5;
+  const double t3  = pt3 * pt3;
+  const double t4  = pt4 * pt4;
+  const double t5  = pz5 * pz5;
+  const double t6  = m3 * m3;
+  const double t7  = std::sqrt(s);
+  const double t8  = s * t2 * 6.0;
+  const double t9  = std::pow(s, 3.0 / 2.0);
   const double t10 = t2 * t2;
   const double t11 = t3 * t3;
   const double t12 = t4 * t4;
@@ -48,7 +48,7 @@ inline double SolvePz3_A(double m3, double pt3, double pt4, double pz5, double E
                      t2 * t3 * 2.0 - t2 * t4 * 2.0 - t2 * t5 * 2.0 - t3 * t4 * 2.0 - t2 * t6 * 4.0 -
                      E5 * t2 * t7 * 4.0;
   const double t23 = std::sqrt(t22);
-  const double t0 = pz5 * (-1.0 / 2.0) -
+  const double t0  = pz5 * (-1.0 / 2.0) -
                     (E5 * t23 * (1.0 / 2.0) - t7 * t23 * (1.0 / 2.0) +
                      pz5 * (t3 * (1.0 / 2.0) - t4 * (1.0 / 2.0))) /
                         (s + t2 - t5 - E5 * t7 * 2.0);
@@ -109,14 +109,14 @@ s) {
 // Case m3, m4 same or different
 inline double SolvePz3_B(double m3, double m4, double pt3, double pt4, double pz5, double E5,
                          double s) {
-  const double t2 = E5 * E5;
-  const double t3 = m3 * m3;
-  const double t4 = m4 * m4;
-  const double t5 = pt3 * pt3;
-  const double t6 = pt4 * pt4;
-  const double t7 = pz5 * pz5;
-  const double t8 = std::sqrt(s);
-  const double t9 = s * t2 * 6.0;
+  const double t2  = E5 * E5;
+  const double t3  = m3 * m3;
+  const double t4  = m4 * m4;
+  const double t5  = pt3 * pt3;
+  const double t6  = pt4 * pt4;
+  const double t7  = pz5 * pz5;
+  const double t8  = std::sqrt(s);
+  const double t9  = s * t2 * 6.0;
   const double t10 = std::pow(s, 3.0 / 2.0);
   const double t11 = t2 * t2;
   const double t12 = t3 * t3;
@@ -303,7 +303,7 @@ inline double PS2Massive(double M2, double mA2, double mB2) {
 inline double PSnMassless(double M2, int n) {
   // const double denom = tgamma(n) * tgamma(n - 1.0);
   const double denom = gra::math::factorial(n - 1) * gra::math::factorial(n - 2);
-  const double E = gra::math::msqrt(M2);
+  const double E     = gra::math::msqrt(M2);
   const double PS =
       (1.0 / (2.0 * std::pow(4.0 * gra::math::PI, 2 * n - 3))) * (std::pow(E, 2 * n - 4) / denom);
 
@@ -351,8 +351,8 @@ inline void Two2TwoLimit(double s, double E1, double E2, double E3, double E4, d
   const double A = s - (E1 + E2 + E3 + E4) + (E1 - E2) * (E3 - E4) / s;
   const double B = KL12 * KL34 / s;
   const double C = (E3 - E1) * (E4 - E2) + (E1 + E4 - E2 - E3) * (E1 * E4 - E2 * E3) / s;
-  tmin = -0.5 * (A + B);
-  tmax = C / tmin;
+  tmin           = -0.5 * (A + B);
+  tmax           = C / tmin;
 }
 
 // Standard conventions:
@@ -370,21 +370,21 @@ inline void Two2TwoLimit(double s, double E1, double E2, double E3, double E4, d
 class MCW {
  public:
   MCW() {
-    W = 0.0;
+    W  = 0.0;
     W2 = 0.0;
-    N = 0.0;
+    N  = 0.0;
   }
   MCW(double w, double w2, double n) {
-    W = w;
+    W  = w;
     W2 = w2;
-    N = n;
+    N  = n;
   }
   // + operator
   MCW operator+(const MCW &obj) {
     MCW res;
-    res.W = W + obj.W;
+    res.W  = W + obj.W;
     res.W2 = W2 + obj.W2;
-    res.N = N + obj.N;
+    res.N  = N + obj.N;
     return res;
   }
   // += operator
@@ -494,7 +494,7 @@ template <typename T2>
 inline void FlatIsotropic(double &costheta, double &sintheta, double &phi, T2 &rng) {
   costheta = rng.U(-1.0, 1.0);  // cos(theta) flat [-1,1]
   sintheta = gra::math::msqrt(1.0 - gra::math::pow2(costheta));
-  phi = rng.U(0.0, 2.0 * gra::math::PI);  // phi flat [0,2pi]
+  phi      = rng.U(0.0, 2.0 * gra::math::PI);  // phi flat [0,2pi]
 }
 
 // Isotropic decay 0 -> 1 + 2 in spherical coordinates with flat cos(theta),phi
@@ -540,9 +540,7 @@ inline MCW TwoBodyPhaseSpace(const T1 &mother, double M0, const std::vector<doub
 
   // Boost daughters to the lab frame
   const int sign = 1;
-  for (const auto &i : {0, 1}) {
-    LorentzBoost(mother, M0, p[i], sign);
-  }
+  for (const auto &i : {0, 1}) { LorentzBoost(mother, M0, p[i], sign); }
 
   // return phase space weight
   const double weight = dPhi2(M0, pnorm);
@@ -574,25 +572,21 @@ inline MCW ThreeBodyPhaseSpace(const T1 &mother, double M0, const std::vector<do
   // Phase space boundaries [min,max]
   const std::vector<double> m12bound = {m[1] + m[2], M0 - m[0]};
   double w_max = DecayMomentum(M0, m[0], m12bound[0]) * DecayMomentum(m12bound[1], m[1], m[2]);
-  if (unweight == false) {
-    w_max = 0;
-  }
+  if (unweight == false) { w_max = 0; }
 
   // Accceptance-Rejection
-  const unsigned int MAXTRIAL = 1e8;
-  std::vector<double> pnorm = {0.0, 0.0};
-  double m12 = 0;
-  MCW x;
+  const unsigned int  MAXTRIAL = 1e8;
+  std::vector<double> pnorm    = {0.0, 0.0};
+  double              m12      = 0;
+  MCW                 x;
   do {
-    m12 = rng.U(m12bound[0], m12bound[1]);  // Flat mass (in GeV, not GeV^2)
+    m12      = rng.U(m12bound[0], m12bound[1]);  // Flat mass (in GeV, not GeV^2)
     pnorm[0] = DecayMomentum(M0, m[0], m12);
     pnorm[1] = DecayMomentum(m12, m[1], m[2]);
 
     const double w = (m12 / gra::math::PI) * dPhi2(M0, pnorm[0]) * dPhi2(m12, pnorm[1]);
     x.Push(w);
-    if (x.GetN() > MAXTRIAL) {
-      return MCW(-1, 0, 0);
-    }  // Impossible kinematics
+    if (x.GetN() > MAXTRIAL) { return MCW(-1, 0, 0); }  // Impossible kinematics
   } while ((pnorm[0] * pnorm[1]) < rng.U(0.0, w_max));
 
   // pM -> p0 + p12 in the pM r.f. and p12 -> p1 + p2 in the p12 r.f.
@@ -601,19 +595,15 @@ inline MCW ThreeBodyPhaseSpace(const T1 &mother, double M0, const std::vector<do
 
   // Boost p[1] and p[2] out from the p12 rest frame to the pM rest frame
   const int sign = 1;  // Boost sign
-  for (const auto &i : {1, 2}) {
-    LorentzBoost(p12, m12, p[i], sign);
-  }
+  for (const auto &i : {1, 2}) { LorentzBoost(p12, m12, p[i], sign); }
 
   // Boost p[0], p[1] and p[2] to the lab frame
-  for (const auto &i : {0, 1, 2}) {
-    LorentzBoost(mother, M0, p[i], sign);
-  }
+  for (const auto &i : {0, 1, 2}) { LorentzBoost(mother, M0, p[i], sign); }
 
   // Phasespace weight [note m versus m^2 jacobian, taken into account]
   // [m12 volume (GeV)] x [dm_12] x [dphi2] x [dphi2]
   const double volume = (m12bound[1] - m12bound[0]);
-  x = x * volume;  // operator overloaded
+  x                   = x * volume;  // operator overloaded
 
   // Return phase space weight
   return x;
@@ -630,15 +620,15 @@ inline MCW NBodySetup(const T1 &mother, double M0, const std::vector<double> &m,
                       std::vector<double> &M_eff, std::vector<double> &pnorm, bool unweight,
                       T2 &rng) {
   // Decay multiplicity (1 -> N decay)
-  const unsigned int N = m.size();
+  const unsigned int  N = m.size();
   std::vector<double> randvec(N - 2, 0.0);
 
   // Random variables functor
   auto fillrandom = [&](double &value) -> void { value = rng.U(0, 1); };
 
   // Effective (intermediate) masses
-  M_eff[0] = m[0];    // First daughter
-  M_eff[N - 1] = M0;  // Mother
+  M_eff[0]     = m[0];  // First daughter
+  M_eff[N - 1] = M0;    // Mother
 
   // Cumulative sum of daughter masses
   std::vector<double> sumvec;
@@ -649,14 +639,12 @@ inline MCW NBodySetup(const T1 &mother, double M0, const std::vector<double> &m,
 
   // Generate effective masses functor, where sumvec[i] defines the minimum
   auto calcmass = [&]() -> void {
-    for (std::size_t i = 1; i < N - 1; ++i) {
-      M_eff[i] = sumvec[i] + randvec[i - 1] * DELTA;
-    }
+    for (std::size_t i = 1; i < N - 1; ++i) { M_eff[i] = sumvec[i] + randvec[i - 1] * DELTA; }
   };
 
   // -------------------------------------------------------------------
   // Recursively find maximum weight for Acceptance-Rejection
-  double w_max = 1.0;
+  double              w_max    = 1.0;
   std::vector<double> m_minmax = {0.0, DELTA + m[N - 1]};
   for (std::size_t i = 1; i < N; ++i) {
     m_minmax[0] += m[i - 1];
@@ -677,13 +665,11 @@ inline MCW NBodySetup(const T1 &mother, double M0, const std::vector<double> &m,
   // -------------------------------------------------------------------
   // Acceptance-Rejection
 
-  if (unweight == false) {
-    w_max = 0;
-  }
+  if (unweight == false) { w_max = 0; }
 
   const unsigned int MAXTRIAL = 1e8;
-  MCW x;
-  double w = 0.0;
+  MCW                x;
+  double             w = 0.0;
   do {
     // 1. Ordered random numbers
     std::for_each(randvec.begin(), randvec.end(), fillrandom);
@@ -699,9 +685,7 @@ inline MCW NBodySetup(const T1 &mother, double M0, const std::vector<double> &m,
     w = calcmomentum();
 
     x.Push(w);
-    if (x.GetN() > MAXTRIAL) {
-      return MCW(-1, 0, 0);
-    }  // Impossible kinematics
+    if (x.GetN() > MAXTRIAL) { return MCW(-1, 0, 0); }  // Impossible kinematics
   } while (w < rng.U(0.0, w_max));
 
   // Normalize the phase space integral
@@ -755,10 +739,8 @@ inline MCW NBodyPhaseSpace(const T1 &mother, double M0, const std::vector<double
   // Generate effective masses and decay momentum
   std::vector<double> M_eff(N, 0.0);  // Effective masses
   std::vector<double> pnorm(N, 0.0);  // Decay momentum weights
-  const MCW x = NBodySetup(mother, M0, m, M_eff, pnorm, unweight, rng);
-  if (x.GetW() < 0) {
-    return x;
-  }  // Impossible kinematics
+  const MCW           x = NBodySetup(mother, M0, m, M_eff, pnorm, unweight, rng);
+  if (x.GetW() < 0) { return x; }  // Impossible kinematics
 
   // Setup decay daughters size
   p.resize(N);
@@ -800,7 +782,7 @@ inline void Rotate(T &p, double theta, double phi) {
   const MMatrix<double> R = {{c1 * c2, -s2, s1 * c2}, {c1 * s2, c2, s1 * s2}, {-s1, 0.0, c1}};
 
   // Rotate
-  const std::vector<double> p3 = {p.Px(), p.Py(), p.Pz()};
+  const std::vector<double> p3    = {p.Px(), p.Py(), p.Pz()};
   const std::vector<double> p3new = R * p3;
 
   p = T(p3new[0], p3new[1], p3new[2], p.E());
@@ -879,10 +861,8 @@ inline void LorentFramePrepare(const std::vector<T> &pf, const T &pbeam1, const 
                                T &pb1boost, T &pb2boost, std::vector<T> &pfboost) {
   // 1. Central system 4-momentum as a sum
   T X(0, 0, 0, 0);
-  for (const auto &k : gra::aux::indices(pf)) {
-    X += pf[k];
-  }
-  const double M = X.M();
+  for (const auto &k : gra::aux::indices(pf)) { X += pf[k]; }
+  const double     M = X.M();
 
   // 2. Boost each final state to the system rest frame
   pfboost = pf;
@@ -957,14 +937,14 @@ inline void LorentzFrame(std::vector<T> &pfout, const T &pb1boost, const T &pb2b
   // Rotate all vectors
   pfout = pfboost;
   for (const auto &k : gra::aux::indices(pfout)) {
-    const std::vector<double> p3 = {pfout[k].Px(), pfout[k].Py(), pfout[k].Pz()};
+    const std::vector<double> p3    = {pfout[k].Px(), pfout[k].Py(), pfout[k].Pz()};
     const std::vector<double> p3new = R * p3;                  // Spatial part rotation Rp -> p'
     pfout[k] = T(p3new[0], p3new[1], p3new[2], pfout[k].E());  // Full 4-momentum [px; py; pz; E]
   }
 }
 
 // ---------------------------------------------------------------------------
-const bool DEBUG = false;
+const bool   DEBUG   = false;
 const double epsilon = 1e-8;
 
 // From lab to Collins-Soper frame
@@ -974,9 +954,7 @@ template <typename T>
 inline void CSframe(std::vector<T> &p) {
   // Sum to get the system 4-momentum
   T X(0, 0, 0, 0);
-  for (const auto &i : gra::aux::indices(p)) {
-    X += p[i];
-  }
+  for (const auto &i : gra::aux::indices(p)) { X += p[i]; }
 
   // ********************************************************************
   if (DEBUG) {
@@ -1006,9 +984,7 @@ inline void CSframe(std::vector<T> &p) {
 
   // Construct new central system vector
   T XNEW(0, 0, 0, 0);
-  for (const auto &i : gra::aux::indices(p)) {
-    XNEW += p[i];
-  }
+  for (const auto &i : gra::aux::indices(p)) { XNEW += p[i]; }
 
   // Lorentz boost
   for (const auto &i : gra::aux::indices(p)) {
@@ -1032,9 +1008,7 @@ inline void CSframe(std::vector<T> &p) {
   // ********************************************************************
 
   T sum;
-  for (const auto &i : gra::aux::indices(p)) {
-    sum += p[i];
-  }
+  for (const auto &i : gra::aux::indices(p)) { sum += p[i]; }
   if (std::abs(sum.Px()) > epsilon || std::abs(sum.Py()) > epsilon ||
       std::abs(sum.Pz()) > epsilon) {
     printf("CSframe:: Not a rest frame!! \n");
@@ -1051,9 +1025,7 @@ inline void GJframe(std::vector<T> &p, const T &q) {
 
   // Sum to get the system 4-momentum
   T X(0, 0, 0, 0);
-  for (const auto &i : gra::aux::indices(p)) {
-    X += p[i];
-  }
+  for (const auto &i : gra::aux::indices(p)) { X += p[i]; }
 
   // ********************************************************************
   if (DEBUG) {
@@ -1099,9 +1071,7 @@ inline void GJframe(std::vector<T> &p, const T &q) {
   // ********************************************************************
 
   T sum;
-  for (const auto &i : gra::aux::indices(p)) {
-    sum += p[i];
-  }
+  for (const auto &i : gra::aux::indices(p)) { sum += p[i]; }
   if (std::abs(sum.Px()) > epsilon || std::abs(sum.Py()) > epsilon ||
       std::abs(sum.Pz()) > epsilon) {
     printf("GJframe:: Not a rest frame!! \n");
@@ -1116,9 +1086,7 @@ template <typename T>
 inline void HEframe(std::vector<T> &p) {
   // Sum to get the system 4-momentum
   T X(0, 0, 0, 0);
-  for (const auto &i : gra::aux::indices(p)) {
-    X += p[i];
-  }
+  for (const auto &i : gra::aux::indices(p)) { X += p[i]; }
 
   // ********************************************************************
   if (DEBUG) {
@@ -1178,9 +1146,7 @@ inline void HEframe(std::vector<T> &p) {
 
   // Construct the central system 4-momentum in ROTATED FRAME
   T XNEW(0, 0, 0, 0);
-  for (const auto &i : gra::aux::indices(p)) {
-    XNEW += p[i];
-  }
+  for (const auto &i : gra::aux::indices(p)) { XNEW += p[i]; }
 
   // Boost particles to the central system rest frame
   // -> Helicity frame obtained
@@ -1205,9 +1171,7 @@ inline void HEframe(std::vector<T> &p) {
   // ********************************************************************
 
   T sum;
-  for (const auto &i : gra::aux::indices(p)) {
-    sum += p[i];
-  }
+  for (const auto &i : gra::aux::indices(p)) { sum += p[i]; }
   if (std::abs(sum.Px()) > epsilon || std::abs(sum.Py()) > epsilon ||
       std::abs(sum.Pz()) > epsilon) {
     printf("HEframe:: Not a rest frame!! \n");
@@ -1224,9 +1188,7 @@ inline void PGframe(std::vector<T> &p, const int direction, const T &p_beam_plus
                     const T &p_beam_minus) {
   // Sum to get the system 4-momentum
   T X(0, 0, 0, 0);
-  for (const auto &i : gra::aux::indices(p)) {
-    X += p[i];
-  }
+  for (const auto &i : gra::aux::indices(p)) { X += p[i]; }
 
   // ********************************************************************
   if (DEBUG) {
@@ -1304,9 +1266,7 @@ inline void PGframe(std::vector<T> &p, const int direction, const T &p_beam_plus
   }
   // ********************************************************************
   T sum;
-  for (const auto &i : gra::aux::indices(p)) {
-    sum += p[i];
-  }
+  for (const auto &i : gra::aux::indices(p)) { sum += p[i]; }
   if (std::abs(sum.Px()) > epsilon || std::abs(sum.Py()) > epsilon ||
       std::abs(sum.Pz()) > epsilon) {
     printf("PGframe:: Not a rest frame!! \n");
@@ -1321,9 +1281,7 @@ template <typename T>
 inline void SRframe(std::vector<T> &p) {
   // Sum to get the system 4-momentum
   T X(0, 0, 0, 0);
-  for (const auto &i : gra::aux::indices(p)) {
-    X += p[i];
-  }
+  for (const auto &i : gra::aux::indices(p)) { X += p[i]; }
 
   // ********************************************************************
   if (DEBUG) {
@@ -1348,9 +1306,7 @@ inline void SRframe(std::vector<T> &p) {
   }
   // ********************************************************************
   T sum;
-  for (const auto &i : gra::aux::indices(p)) {
-    sum += p[i];
-  }
+  for (const auto &i : gra::aux::indices(p)) { sum += p[i]; }
   if (std::abs(sum.Px()) > epsilon || std::abs(sum.Py()) > epsilon ||
       std::abs(sum.Pz()) > epsilon) {
     printf("SRframe:: Not a rest frame!! \n");
@@ -1363,20 +1319,20 @@ inline void SRframe(std::vector<T> &p) {
 struct MParticle {
   // These values are read from the PDG-file
   std::string name;
-  int pdg = 0;       // PDG code
-  int chargeX3 = 0;  // Q x 3
-  int spinX2 = 0;    // J x 2
-  int color = 0;     // QCD color code
+  int         pdg      = 0;  // PDG code
+  int         chargeX3 = 0;  // Q x 3
+  int         spinX2   = 0;  // J x 2
+  int         color    = 0;  // QCD color code
 
-  double mass = 0.0;
+  double mass  = 0.0;
   double width = 0.0;
-  double tau = 0.0;  // hbar / width
+  double tau   = 0.0;  // hbar / width
 
   // J^PC
-  int P = 1;           // Default even P-parity
-  int C = 0;           // Default zero C-parity (e.g. fermions do not have)
-  unsigned int L = 0;  // For Mesons/Baryons
-  bool glue = false;   // Glueball state
+  int          P    = 1;      // Default even P-parity
+  int          C    = 0;      // Default zero C-parity (e.g. fermions do not have)
+  unsigned int L    = 0;      // For Mesons/Baryons
+  bool         glue = false;  // Glueball state
 
   void setPCL(int _P, int _C, unsigned int _L) {
     P = _P;
@@ -1403,10 +1359,10 @@ struct MDecayBranch {
   // Offshell mass picked event by event
   double m_offshell = 0.0;
 
-  MParticle p;                     // PDG particle
-  M4Vec p4;                        // 4-momentum
-  std::vector<MDecayBranch> legs;  // Daughters
-  M4Vec decay_position;            // Decay 4-position
+  MParticle                 p;               // PDG particle
+  M4Vec                     p4;              // 4-momentum
+  std::vector<MDecayBranch> legs;            // Daughters
+  M4Vec                     decay_position;  // Decay 4-position
 
   // MC weight container
   gra::kinematics::MCW W;
@@ -1418,8 +1374,8 @@ struct MDecayBranch {
 struct HELMatrix {
   void InitAlphaToZero() {
     const unsigned int N = 20;
-    alpha = MMatrix<std::complex<double>>(N, N, 0.0);
-    alpha_set = MMatrix<bool>(N, N, true);
+    alpha                = MMatrix<std::complex<double>>(N, N, 0.0);
+    alpha_set            = MMatrix<bool>(N, N, true);
   }
 
   // Lorentz frame of the spin distribution
@@ -1433,7 +1389,7 @@ struct HELMatrix {
 
   // Helicity amplitude decay ls-couplings (constant)
   MMatrix<std::complex<double>> alpha;
-  MMatrix<bool> alpha_set;
+  MMatrix<bool>                 alpha_set;
 
   // Parity conservation
   bool P_conservation = true;
@@ -1503,7 +1459,7 @@ class PARAM_RES {
   int BW = 0;
 
   // Branching Ratio to a particular decay
-  double BR = 1.0;
+  double BR      = 1.0;
   double g_decay = 1.0;  // Equivalent decay coupling
 
   // --------------------------------------------------------------------
@@ -1536,15 +1492,15 @@ struct LORENTZSCALAR {
   gra::kinematics::MCWSUM DW_sum_exact;
 
   // Four momenta of initial and final states
-  M4Vec pbeam1;
-  M4Vec pbeam2;
+  M4Vec              pbeam1;
+  M4Vec              pbeam2;
   std::vector<M4Vec> pfinal;
   std::vector<M4Vec> pfinal_orig;
 
   // Basic Lorentz scalars
-  double s = 0.0;
-  double t = 0.0;
-  double u = 0.0;
+  double s      = 0.0;
+  double t      = 0.0;
+  double u      = 0.0;
   double sqrt_s = 0.0;
 
   // Sub-energies^2
@@ -1562,14 +1518,14 @@ struct LORENTZSCALAR {
 
   // Central system
   double m2 = 0.0;
-  double Y = 0.0;
+  double Y  = 0.0;
   double Pt = 0.0;
 
   // Maximum 10 particles in the final state
   // (2 protons + 8 direct central system)
-  double ss[10][10] = {{0.0}};
-  double tt_1[10] = {0.0};
-  double tt_2[10] = {0.0};
+  double ss[10][10]    = {{0.0}};
+  double tt_1[10]      = {0.0};
+  double tt_2[10]      = {0.0};
   double tt_xy[10][10] = {{0.0}};
 
   // Longitudinal momentum losses
@@ -1598,8 +1554,8 @@ struct GENCUT {
   // Continuum phase space <C>
   double rap_min = -9.0;
   double rap_max = 9.0;
-  double kt_min = 0.0;
-  double kt_max = -1.0;  // Keep at -1 for user setup trigger
+  double kt_min  = 0.0;
+  double kt_max  = -1.0;  // Keep at -1 for user setup trigger
 
   // Factorized phase space <F>
   double Y_min = -9.0;
@@ -1663,7 +1619,7 @@ struct VETODOMAIN {
 };
 
 struct VETOCUT {
-  bool active = false;
+  bool                    active = false;
   std::vector<VETODOMAIN> cuts;
 };
 

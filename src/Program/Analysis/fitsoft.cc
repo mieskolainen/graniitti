@@ -44,7 +44,7 @@ int iter = 0;
 
 // Global for the differential fit
 namespace DIFFMEAS {
-std::vector<double> sqrts;
+std::vector<double>                   sqrts;
 std::vector<std::vector<std::string>> initialstate;
 
 std::vector<std::vector<double>> x;
@@ -57,14 +57,14 @@ namespace INTEGMEAS {
 // Which datasets are active in the fit
 std::vector<bool> active = {false, false, true, true, false};
 
-std::vector<double> energy = {31, 62, 1800, 7000, 8000};
-std::vector<std::vector<std::string>> beam = {
+std::vector<double>                   energy = {31, 62, 1800, 7000, 8000};
+std::vector<std::vector<std::string>> beam   = {
     {"p+", "p-"}, {"p+", "p-"}, {"p+", "p-"}, {"p+", "p+"}, {"p+", "p+"}};
 
-std::vector<double> sigma_tot = {40.2, 43.9, 80.03, 98.3, 96.07};
+std::vector<double> sigma_tot   = {40.2, 43.9, 80.03, 98.3, 96.07};
 std::vector<double> sigma_tot_e = {0.2, 0.3, 2.24, 2.8, 0.9225};
 
-std::vector<double> sigma_el = {7.12, 7.61, 19.7, 24.3, 24.33};
+std::vector<double> sigma_el   = {7.12, 7.61, 19.7, 24.3, 24.33};
 std::vector<double> sigma_el_e = {0.34, 0.22, 0.85, 1.2, 0.392};
 }
 
@@ -114,8 +114,8 @@ std::vector<double> dsigma_el_dt(double *par, const double sqrts,
     // Construct dsigma_el/dt
     for (const auto &i : indices(values)) {
       // Get amplitude
-      const double kt2 = x[i];  // |t| (Mandelstam)
-      const std::complex<double> A = gen->proc->Eikonal.MSA.Interpolate1D(kt2);
+      const double               kt2 = x[i];  // |t| (Mandelstam)
+      const std::complex<double> A   = gen->proc->Eikonal.MSA.Interpolate1D(kt2);
 
       // dsigma/dt in units of millibarns
       values[i] = gra::math::abs2(A) /
@@ -176,10 +176,10 @@ bool ReadData(std::string inputfile, std::vector<double> &x, std::vector<double>
               std::vector<double> &err) {
   printf("fitsoft::ReadData: using HepDATA inputfile %s \n", inputfile.c_str());
 
-  double xval = 0.0;
-  double xval_low = 0.0;
+  double xval      = 0.0;
+  double xval_low  = 0.0;
   double xval_high = 0.0;
-  double yval = 0.0;
+  double yval      = 0.0;
 
   double yerr_stat_p = 0.0;
   double yerr_stat_m = 0.0;
@@ -242,12 +242,12 @@ void PushNull() {
 bool InitData() {
   printf("fitsoft::InitData: \n");
 
-  uint N = 0;
+  uint              N        = 0;
   const std::string BASEPATH = gra::aux::GetBasePath(2) + "/HEPdata/EL/";
 
   // 7 TeV DATA
   fitsoft::PushNull();
-  DIFFMEAS::sqrts[N] = 7000;
+  DIFFMEAS::sqrts[N]        = 7000;
   DIFFMEAS::initialstate[N] = {"p+", "p+"};
   if (!fitsoft::ReadData(BASEPATH + "TOTEM_7_low_t.csv", DIFFMEAS::x[N], DIFFMEAS::y[N],
                          DIFFMEAS::err[N])) {
@@ -274,7 +274,7 @@ bool InitData() {
 
   // 1.8 TeV DATA
   fitsoft::PushNull();
-  DIFFMEAS::sqrts[N] = 1800;
+  DIFFMEAS::sqrts[N]        = 1800;
   DIFFMEAS::initialstate[N] = {"p+", "p-"};
   if (!fitsoft::ReadData(BASEPATH + "ABE_1994_1800.csv", DIFFMEAS::x[N], DIFFMEAS::y[N],
                          DIFFMEAS::err[N])) {
@@ -284,7 +284,7 @@ bool InitData() {
 
   // 546 GeV DATA
   fitsoft::PushNull();
-  DIFFMEAS::sqrts[N] = 546;
+  DIFFMEAS::sqrts[N]        = 546;
   DIFFMEAS::initialstate[N] = {"p+", "p-"};
   if (!fitsoft::ReadData(BASEPATH + "FNAL_546.csv", DIFFMEAS::x[N], DIFFMEAS::y[N],
                          DIFFMEAS::err[N])) {
@@ -311,8 +311,8 @@ bool InitData() {
 // Chi^2 function
 void Chi2Func(int &npar, double *gin, double &f, double *par, int iflag) {
   printf("fitsoft::Chi2Func: [iter = %d] \n", iter);
-  double chi2 = 0;
-  int points = 0;
+  double chi2   = 0;
+  int    points = 0;
 
   // Loop over at different energies
   for (const auto &i : indices(DIFFMEAS::sqrts)) {
@@ -327,8 +327,8 @@ void Chi2Func(int &npar, double *gin, double &f, double *par, int iflag) {
   }
 
   // Integrated cross sections
-  double xs_tot = 0.0;
-  double xs_el = 0.0;
+  double xs_tot  = 0.0;
+  double xs_el   = 0.0;
   double xs_inel = 0.0;
 
   // Loop over energies
@@ -365,16 +365,16 @@ void SetSoftParam(double *par) {
 
   PARAM_SOFT::DELTA_P = par[0];
   PARAM_SOFT::ALPHA_P = par[1];
-  PARAM_SOFT::gN_P = par[2];
-  PARAM_SOFT::g3P = par[3] * par[2];  // Convention
-  PARAM_SOFT::gamma = par[4];
+  PARAM_SOFT::gN_P    = par[2];
+  PARAM_SOFT::g3P     = par[3] * par[2];  // Convention
+  PARAM_SOFT::gamma   = par[4];
 
   PARAM_SOFT::fc1 = par[5];
   PARAM_SOFT::fc2 = par[6];
   PARAM_SOFT::fc3 = par[7];
 
   // Initialization loops -> put just enough for the event by event accuracy
-  MEikonalNumerics::NumberBT = 500;
+  MEikonalNumerics::NumberBT  = 500;
   MEikonalNumerics::NumberKT2 = 500;
 }
 
@@ -393,9 +393,7 @@ int main(int argc, char *argv[]) {
   gra::aux::PrintVersion();
 
   // Initialize input data
-  if (!fitsoft::InitData()) {
-    return EXIT_FAILURE;
-  }
+  if (!fitsoft::InitData()) { return EXIT_FAILURE; }
 
   // Maximum number of parameters of the soft model
   const int NPARAM = 20;
@@ -406,7 +404,7 @@ int main(int argc, char *argv[]) {
   gMinuit->SetFCN(fitsoft::Chi2Func);
 
   double arglist[10];
-  int ierflg = 0;
+  int    ierflg = 0;
 
   // Chi^2 type cost function (for -log(likelihood) type put 0.5)
   arglist[0] = 1;
@@ -438,9 +436,7 @@ int main(int argc, char *argv[]) {
   // diffraction here)
   {
     const std::vector<int> fixed = {3, 4};
-    for (const auto &x : fixed) {
-      gMinuit->FixParameter(x);
-    }
+    for (const auto &x : fixed) { gMinuit->FixParameter(x); }
   }
   arglist[0] = 10000;  // Maximum number of iterations
   arglist[1] = 0.01;   // Cost function tolerance
@@ -458,7 +454,7 @@ int main(int argc, char *argv[]) {
 
   // Print results
   double amin, edm, errdef;
-  int nvpar, nparx, icstat;
+  int    nvpar, nparx, icstat;
   gMinuit->mnstat(amin, edm, errdef, nvpar, nparx, icstat);
   // gMinuit->mnprin(3,amin);
 

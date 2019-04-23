@@ -29,8 +29,8 @@ class MH2 {
   void Fill(double xvalue, double yvalue, double weight);
   void Clear();
   std::pair<double, double> WeightMeanAndError() const;
-  double SumWeights() const;
-  double SumWeights2() const;
+  double        SumWeights() const;
+  double        SumWeights2() const;
   long long int SumBinCounts() const;
   long long int FillCount() const { return fills; }
 
@@ -39,7 +39,7 @@ class MH2 {
   void GetBinIdx(double xvalue, double yvalue, int &xbin, int &ybin) const;
   double GetMaxWeight() const;
   double GetMinWeight() const;
-  void Print() const;
+  void   Print() const;
   double ShannonEntropy() const;
 
   // Set logarithmic binning
@@ -59,21 +59,21 @@ class MH2 {
 
     MH2 h(this->XBINS, this->XMIN, this->XMAX, this->YBINS, this->YMIN, this->YMAX, this->name);
 
-    h.fills = this->fills + rhs.fills;
+    h.fills     = this->fills + rhs.fills;
     h.underflow = {this->underflow[0] + rhs.underflow[0], this->underflow[1] + rhs.underflow[1]};
-    h.overflow = {this->overflow[0] + rhs.overflow[0], this->overflow[1] + rhs.overflow[1]};
+    h.overflow  = {this->overflow[0] + rhs.overflow[0], this->overflow[1] + rhs.overflow[1]};
 
     // DATA
-    h.weights = this->weights + rhs.weights;
+    h.weights  = this->weights + rhs.weights;
     h.weights2 = this->weights2 + rhs.weights2;
-    h.counts = this->counts + rhs.counts;
+    h.counts   = this->counts + rhs.counts;
 
     return h;
   }
 
   // AUTOBUFFSIZE for autorange buffer size
   void SetAutoBuffSize(int n) { AUTOBUFFSIZE = n; }
-  void FlushBuffer();
+  void                     FlushBuffer();
 
   // Symmetric bounds
   void SetAutoSymmetry(const std::vector<bool> &in) {
@@ -86,11 +86,11 @@ class MH2 {
   void GetBounds(int &xbins, double &xmin, double &xmax, int &ybins, double &ymin,
                  double &ymax) const {
     xbins = XBINS;
-    xmin = XMIN;
-    xmax = XMAX;
+    xmin  = XMIN;
+    xmax  = XMAX;
     ybins = YBINS;
-    ymin = YMIN;
-    ymax = YMAX;
+    ymin  = YMIN;
+    ymax  = YMAX;
   }
 
   void FuseBuffer(const MH2 &rhs) {
@@ -100,7 +100,7 @@ class MH2 {
 
   // Keep it public for buffer fusion
   std::vector<std::vector<double>> buff_values;
-  std::vector<double> buff_weights;
+  std::vector<double>              buff_weights;
 
  private:
   std::string name;  // Histogram name
@@ -108,23 +108,23 @@ class MH2 {
   // -----------------------------------------------------------
   // For autorange
 
-  bool FILLBUFF = false;
-  int AUTOBUFFSIZE = 100000;  // Default AUTOBUFFSIZE
+  bool              FILLBUFF     = false;
+  int               AUTOBUFFSIZE = 100000;  // Default AUTOBUFFSIZE
   std::vector<bool> AUTOSYMMETRY = {false, false};
   // -----------------------------------------------------------
 
   // Boundary conditions
-  double XMIN = 0.0;
-  double XMAX = 0.0;
-  int XBINS = 0;
+  double XMIN  = 0.0;
+  double XMAX  = 0.0;
+  int    XBINS = 0;
 
-  double YMIN = 0.0;
-  double YMAX = 0.0;
-  int YBINS = 0;
+  double YMIN  = 0.0;
+  double YMAX  = 0.0;
+  int    YBINS = 0;
 
   // Number of underflow and overflow counts
-  long long int fills = 0;
-  std::vector<long long int> overflow = {0, 0};
+  long long int              fills     = 0;
+  std::vector<long long int> overflow  = {0, 0};
   std::vector<long long int> underflow = {0, 0};
 
   // Logarithmic binning

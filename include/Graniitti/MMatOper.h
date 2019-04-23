@@ -22,10 +22,8 @@ namespace matoper {
 template <typename T>
 inline std::vector<T> Unit(const std::vector<T> &x) {
   double norm = 0.0;
-  for (std::size_t k = 0; k < x.size(); ++k) {
-    norm += gra::math::abs2(x[k]);
-  }
-  norm = gra::math::msqrt(norm);  // l2-norm
+  for (std::size_t k = 0; k < x.size(); ++k) { norm += gra::math::abs2(x[k]); }
+  norm               = gra::math::msqrt(norm);  // l2-norm
 
   std::vector<T> y = x;
   for (std::size_t k = 0; k < y.size(); ++k) {
@@ -37,18 +35,14 @@ inline std::vector<T> Unit(const std::vector<T> &x) {
 // Multiply vector by scalar
 template <typename T, typename T2>
 inline void ScaleVector(std::vector<T> &A, T2 scale) {
-  for (std::size_t i = 0; i < A.size(); ++i) {
-    A[i] *= scale;
-  }
+  for (std::size_t i = 0; i < A.size(); ++i) { A[i] *= scale; }
 }
 
 // Add a constant matrix: A + (full ones) * c
 template <typename T, typename T2>
 inline void AddConstMat(MMatrix<T> &A, T2 c) {
   for (std::size_t i = 0; i < A.size_row(); ++i) {
-    for (std::size_t j = 0; j < A.size_col(); ++j) {
-      A[i][j] += c;
-    }
+    for (std::size_t j = 0; j < A.size_col(); ++j) { A[i][j] += c; }
   }
 }
 
@@ -90,12 +84,10 @@ inline T VecVecMultiply(const std::vector<T> &A, const std::vector<T> &B) {
 template <typename T>
 inline std::vector<T> VecDagger(const std::vector<T> &X) {
   const unsigned int n = X.size();
-  std::vector<T> Y(n, 0.0);
+  std::vector<T>     Y(n, 0.0);
 
   // Conjugate element by element
-  for (std::size_t i = 0; i < n; ++i) {
-    Y[i] = std::conj(X[i]);
-  }
+  for (std::size_t i = 0; i < n; ++i) { Y[i] = std::conj(X[i]); }
   return Y;
 }
 
@@ -111,9 +103,7 @@ inline std::vector<T> Cross(const std::vector<T> &a, const std::vector<T> &b) {
 template <typename T>
 inline std::vector<T> Negat(const std::vector<T> &a) {
   std::vector<T> z(a.size(), 0.0);
-  for (std::size_t k = 0; k < a.size(); ++k) {
-    z[k] = -a[k];
-  }
+  for (std::size_t k = 0; k < a.size(); ++k) { z[k] = -a[k]; }
   return z;
 }
 
@@ -121,9 +111,7 @@ inline std::vector<T> Negat(const std::vector<T> &a) {
 template <typename T>
 inline std::vector<T> Minus(const std::vector<T> &a, const std::vector<T> &b) {
   std::vector<T> z(a.size(), 0.0);
-  for (std::size_t k = 0; k < a.size(); ++k) {
-    z[k] = a[k] - b[k];
-  }
+  for (std::size_t k = 0; k < a.size(); ++k) { z[k] = a[k] - b[k]; }
   return z;
 }
 
@@ -131,9 +119,7 @@ inline std::vector<T> Minus(const std::vector<T> &a, const std::vector<T> &b) {
 template <typename T>
 inline std::vector<T> Plus(const std::vector<T> &a, const std::vector<T> &b) {
   std::vector<T> z(a.size(), 0.0);
-  for (std::size_t k = 0; k < a.size(); ++k) {
-    z[k] = a[k] + b[k];
-  }
+  for (std::size_t k = 0; k < a.size(); ++k) { z[k] = a[k] + b[k]; }
   return z;
 }
 
@@ -142,12 +128,10 @@ template <typename T>
 inline MMatrix<T> OuterProd(const std::vector<T> &u, const std::vector<T> &v) {
   const unsigned int m = u.size();
   const unsigned int n = v.size();
-  MMatrix<T> out(m, n);
+  MMatrix<T>         out(m, n);
 
   for (std::size_t i = 0; i < m; ++i) {
-    for (std::size_t j = 0; j < n; ++j) {
-      out[i][j] = u[i] * v[j];
-    }
+    for (std::size_t j = 0; j < n; ++j) { out[i][j] = u[i] * v[j]; }
   }
   return out;
 }

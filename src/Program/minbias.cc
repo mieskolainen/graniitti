@@ -48,8 +48,8 @@ int main(int argc, char *argv[]) {
     }
 
     // Input energy list
-    std::string input(argv[1]);
-    double type = 0;
+    std::string         input(argv[1]);
+    double              type     = 0;
     std::vector<double> sqrtsvec = gra::aux::SplitStr(input, type);
 
     // Number of events
@@ -62,20 +62,20 @@ int main(int argc, char *argv[]) {
 
     // Loop over energies
     for (const auto &e : indices(sqrtsvec)) {
-      std::vector<double> xs0 = {0, 0};
+      std::vector<double> xs0     = {0, 0};
       std::vector<double> xs0_err = {0, 0};
 
       double xs_tot = 0.0;
-      double xs_el = 0.0;
-      double xs_in = 0.0;
+      double xs_el  = 0.0;
+      double xs_in  = 0.0;
 
       // SET cross section
       // xs0[0] = 13.0e-3; // sd
       // xs0[1] = 7.5e-3;  // dd
 
       // Beam and energy
-      const std::vector<std::string> beam = {"p+", "p+"};
-      const std::vector<double> energy = {sqrtsvec[e] / 2, sqrtsvec[e] / 2};
+      const std::vector<std::string> beam   = {"p+", "p+"};
+      const std::vector<double>      energy = {sqrtsvec[e] / 2, sqrtsvec[e] / 2};
 
       // First get total inelastic
       // First calculate screened SD and DD integrated cross section
@@ -121,7 +121,7 @@ int main(int argc, char *argv[]) {
       // Events for each process
       const int SD_EVT = std::ceil(EVENTS * xs0[0] / xs_in);
       const int DD_EVT = std::ceil(EVENTS * xs0[1] / xs_in);
-      int ND_EVT = std::ceil(EVENTS * xs_nd / xs_in);
+      int       ND_EVT = std::ceil(EVENTS * xs_nd / xs_in);
 
       // Make it sure we have exact amount of events
       const int D = EVENTS - (SD_EVT + DD_EVT + ND_EVT);
@@ -139,7 +139,7 @@ int main(int argc, char *argv[]) {
       // HepMC32
       const std::string OUTPUTNAME =
           "minbias_" + std::to_string(static_cast<int>(sqrtsvec[e]));  // Note x 2
-      const std::string outputstr = "./output/" + OUTPUTNAME + ".hepmc2";
+      const std::string                          outputstr = "./output/" + OUTPUTNAME + ".hepmc2";
       std::shared_ptr<HepMC3::WriterAsciiHepMC2> outputHepMC2 =
           std::make_shared<HepMC3::WriterAsciiHepMC2>(outputstr);
 

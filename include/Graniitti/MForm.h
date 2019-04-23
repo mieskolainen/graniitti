@@ -37,7 +37,7 @@ extern double fc1;
 extern double fc2;
 extern double fc3;
 
-void PrintParam();
+void        PrintParam();
 std::string GetHashString();
 }
 
@@ -48,11 +48,11 @@ extern double b;
 
 // Monopole wave functions and parameters
 namespace PARAM_MONOPOLE {
-extern int En;                // Bound state energy level
-extern double M0;             // Monopole mass
-extern double Gamma0;         // Monopolium width
+extern int         En;        // Bound state energy level
+extern double      M0;        // Monopole mass
+extern double      Gamma0;    // Monopolium width
 extern std::string coupling;  // Coupling scenarios
-extern int gn;                // Monopole charge n = 1,2,3,...
+extern int         gn;        // Monopole charge n = 1,2,3,...
 
 double EnergyMP(double n);
 double GammaMP(double n, double alpha_g);

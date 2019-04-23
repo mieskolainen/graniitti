@@ -31,12 +31,12 @@ using gra::aux::indices;
 using namespace gra;
 
 // Simulation variables
-int N = 0;
-double dt = 0;
-double m = 0;
-int k_slit = 0;
-double SLIT = 0;
-unsigned long NS = 0;
+int           N      = 0;
+double        dt     = 0;
+double        m      = 0;
+int           k_slit = 0;
+double        SLIT   = 0;
+unsigned long NS     = 0;
 
 // Potential
 double V(double x) {
@@ -64,7 +64,7 @@ void printvar() {
 // Main
 int main(int argc, char *argv[]) {
   // Detector observable histogram
-  const double XWIDTH = 18;
+  const double              XWIDTH = 18;
   MH1<std::complex<double>> hx(50, -XWIDTH, XWIDTH, "Path Integral MC");
 
   // Seed here
@@ -76,23 +76,23 @@ int main(int argc, char *argv[]) {
 
   if (argc != 7) {  // Default
 
-    N = 4;
-    dt = 0.8;
-    m = 1;
+    N      = 4;
+    dt     = 0.8;
+    m      = 1;
     k_slit = 2;
-    SLIT = 0.03;
-    NS = 10000000;
+    SLIT   = 0.03;
+    NS     = 10000000;
 
     printf("Example input ./pathmark %d %0.3f %0.3f %d %0.3f %lu \n", N, dt, m, k_slit, SLIT, NS);
     std::cout << std::endl;
   } else {
     // Collect input variables
-    N = atoi(argv[1]);
-    dt = atof(argv[2]);
-    m = atof(argv[3]);
+    N      = atoi(argv[1]);
+    dt     = atof(argv[2]);
+    m      = atof(argv[3]);
     k_slit = atoi(argv[4]);  // Slit position
-    SLIT = atof(argv[5]);
-    NS = atoi(argv[6]);
+    SLIT   = atof(argv[5]);
+    NS     = atoi(argv[6]);
 
     printvar();
   }
@@ -117,13 +117,11 @@ int main(int argc, char *argv[]) {
   // MC samples
   for (unsigned long i = 0; i < NS; ++i) {
     // Draw a single path configuration
-    for (int k = 1; k < N; ++k) {
-      x[k] = dis(gen);
-    }
+    for (int k = 1; k < N; ++k) { x[k] = dis(gen); }
 
     // Apply double slit boundary condition to two time steps
     // (one is not enough)
-    x[k_slit] = slit(gen);
+    x[k_slit]     = slit(gen);
     x[k_slit - 1] = slit(gen);
 
     // ** Get complex action weight **

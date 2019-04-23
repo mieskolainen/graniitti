@@ -20,8 +20,8 @@ int MRandom::PoissonRandom(double lambda) {
   // Knuth algorithm
   if (ALGO == 1) {
     const double L = std::exp(-lambda);
-    int k = 0;
-    double p = 1;
+    int          k = 0;
+    double       p = 1;
 
     do {
       ++k;
@@ -31,7 +31,7 @@ int MRandom::PoissonRandom(double lambda) {
   }
   // Inversion search algorithm
   if (ALGO == 2) {
-    int k = 0;
+    int    k = 0;
     double p = std::exp(-lambda);
     double s = p;
     double u = U(0, 1);
@@ -75,7 +75,7 @@ double MRandom::G(double mu, double sigma) {
 // Input: resonance m and Gamma
 // Return mass (GeV)
 double MRandom::RelativisticBWRandom(double m, double Gamma, double LIMIT) {
-  const double m2 = m * m;
+  const double m2    = m * m;
   const double m2max = gra::math::pow2(m + LIMIT * Gamma);
   const double m2min = gra::math::pow2(m - LIMIT * Gamma);
 
@@ -87,9 +87,7 @@ double MRandom::RelativisticBWRandom(double m, double Gamma, double LIMIT) {
         m * Gamma *
             std::tan(std::atan2(m2min - m2, m * Gamma) +
                      R * (std::atan2(m2max - m2, m * Gamma) - std::atan2(m2min - m2, m * Gamma)));
-    if (m2val > 0) {
-      break;
-    }
+    if (m2val > 0) { break; }
   }
   return gra::math::msqrt(m2val);
 }
@@ -101,7 +99,7 @@ double MRandom::RelativisticBWRandom(double m, double Gamma, double LIMIT) {
 double MRandom::CauchyRandom(double m0, double Gamma, double LIMIT) {
   double mval = 0.0;
   while (true) {
-    const double R = U(0, 1);
+    const double R     = U(0, 1);
     const double value = (Gamma * 0.5) * std::tan(gra::math::PI * (R - 0.5)) + m0;
 
     if (value > 0 && value < (m0 + LIMIT * Gamma) && value > (m0 - LIMIT * Gamma)) {
@@ -124,13 +122,9 @@ void MRandom::DirRandom(const std::vector<double> &alpha, std::vector<double> &y
   }
   // Take the sum
   double y_sum = 0.0;
-  for (std::size_t i = 0; i < K; ++i) {
-    y_sum += y[i];
-  }
+  for (std::size_t i = 0; i < K; ++i) { y_sum += y[i]; }
   // Normalize
-  for (std::size_t i = 0; i < K; ++i) {
-    y[i] /= y_sum;
-  }
+  for (std::size_t i = 0; i < K; ++i) { y[i] /= y_sum; }
 }
 
 // Negative binomial distribution with parameters avgN and k
@@ -150,11 +144,9 @@ int MRandom::NBDRandom(double avgN, double k, int maxvalue) {
   // Acceptance-Rejection
   unsigned int trials = 0;
   while (true) {
-    const int n = RANDI(rng);
+    const int    n   = RANDI(rng);
     const double val = NBDpdf(n, avgN, k);
-    if (U(0, 1) < val) {
-      return n;
-    }
+    if (U(0, 1) < val) { return n; }
     ++trials;
     if (trials > MAXTRIAL) {
       return avgN;  // Return the mean value
@@ -174,11 +166,9 @@ int MRandom::LogRandom(double p, int maxvalue) {
 
   // Acceptance-Rejection
   while (true) {
-    const int n = RANDI(rng);
+    const int    n   = RANDI(rng);
     const double val = Logpdf(n, p);
-    if (U(0, 1) < val) {
-      return n;
-    }
+    if (U(0, 1) < val) { return n; }
   }
 }
 

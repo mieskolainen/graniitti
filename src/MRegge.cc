@@ -36,13 +36,13 @@ namespace gra {
 // generalize to pairs such as pi+pi-K+K- (4-body) (easy extension)
 //
 void MRegge::InitReggeAmplitude(int PDG, const std::string &MODELPARAM) {
-  using json = nlohmann::json;
+  using json           = nlohmann::json;
   std::string fullpath = gra::aux::GetBasePath(2) + "/modeldata/" + MODELPARAM + "/GENERAL.json";
 
   // Read and parse
   try {
     std::string data = gra::aux::GetInputData(fullpath);
-    json j = json::parse(data);
+    json        j    = json::parse(data);
 
     // Setup the parameter string
     std::string str;
@@ -58,9 +58,9 @@ void MRegge::InitReggeAmplitude(int PDG, const std::string &MODELPARAM) {
 
     // Reggeon couplings
     std::vector<double> c = j[str]["c"];
-    std::vector<bool> n = j[str]["n"];
-    PARAM_REGGE::c = c;
-    PARAM_REGGE::n = n;
+    std::vector<bool>   n = j[str]["n"];
+    PARAM_REGGE::c        = c;
+    PARAM_REGGE::n        = n;
 
     // PARAM_REGGE::PrintParam();
   } catch (...) {
@@ -201,8 +201,8 @@ std::complex<double> MRegge::ME3HEL(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res
   const int J = resonance.p.spinX2 / 2.0;
 
   // --------------------------------------------------------------------------
-  unsigned int number = 0;
-  const unsigned int N = 16 * (2 * J + 1);
+  unsigned int       number = 0;
+  const unsigned int N      = 16 * (2 * J + 1);
 
   // C++11 quarantees a local static variable initialization thread safety!
   static std::vector<std::vector<double>> lambda(N, std::vector<double>(5));
@@ -281,9 +281,7 @@ std::complex<double> MRegge::ME3HEL(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res
 
   // 1/4 {|H1|^2 + |H2|^2 + ... + |HN|^2}
   double amp2 = 0.0;
-  for (std::size_t i = 0; i < lts.hamp.size(); ++i) {
-    amp2 += gra::math::abs2(lts.hamp[i]);
-  }
+  for (std::size_t i = 0; i < lts.hamp.size(); ++i) { amp2 += gra::math::abs2(lts.hamp[i]); }
   amp2 /= 4;  // Initial state average
 
   return msqrt(amp2);
@@ -349,13 +347,13 @@ std::complex<double> MRegge::gik_Vertex(double t1, double t2, double phi, int la
 
   // (we handle only Pomerons here for now, no secondary Reggeons - trivial
   // extension)
-  const int pom1_P = 1;      // Pomeron 1 parity +
+  const int pom1_P     = 1;  // Pomeron 1 parity +
   const int pom1_sigma = 1;  // Pomeron 1 signature +
-  const int pom2_P = 1;      // Pomeron 2 parity +
+  const int pom2_P     = 1;  // Pomeron 2 parity +
   const int pom2_sigma = 1;  // Pomeron 2 signature +
 
-  const int xi3val = xi3(J, P, pom1_P, pom1_sigma, pom2_P, pom2_sigma);
-  std::complex<double> sum = 0.0;
+  const int            xi3val = xi3(J, P, pom1_P, pom1_sigma, pom2_P, pom2_sigma);
+  std::complex<double> sum    = 0.0;
 
   for (int m2 = -MAX_m; m2 <= MAX_m; ++m2) {  // -\inf < m_2 < inf
 
@@ -413,11 +411,11 @@ std::complex<double> MRegge::ME4(gra::LORENTZSCALAR &lts, double sign) const {
 
   if (sign > 0) {  // positive sign amplitudes
 
-    ff = &PARAM_REGGE::Meson_FF;
+    ff   = &PARAM_REGGE::Meson_FF;
     prop = &PARAM_REGGE::Meson_prop;
   } else {  // negative sign (alternative model spin-statistics) amplitude
 
-    ff = &PARAM_REGGE::Baryon_FF;
+    ff   = &PARAM_REGGE::Baryon_FF;
     prop = &PARAM_REGGE::Baryon_prop;
   }
 
@@ -496,11 +494,11 @@ std::complex<double> MRegge::ME6(gra::LORENTZSCALAR &lts) const {
 
   if (sign > 0) {  // positive sign amplitudes
 
-    ff = &PARAM_REGGE::Meson_FF;
+    ff   = &PARAM_REGGE::Meson_FF;
     prop = &PARAM_REGGE::Meson_prop;
   } else {  // negative sign (alternative model spin-statistics) amplitude
 
-    ff = &PARAM_REGGE::Baryon_FF;
+    ff   = &PARAM_REGGE::Baryon_FF;
     prop = &PARAM_REGGE::Baryon_prop;
   }
 
@@ -586,11 +584,11 @@ std::complex<double> MRegge::ME8(gra::LORENTZSCALAR &lts) const {
 
   if (sign > 0) {  // positive sign amplitudes
 
-    ff = &PARAM_REGGE::Meson_FF;
+    ff   = &PARAM_REGGE::Meson_FF;
     prop = &PARAM_REGGE::Meson_prop;
   } else {  // negative sign (alternative model spin-statistics) amplitude
 
-    ff = &PARAM_REGGE::Baryon_FF;
+    ff   = &PARAM_REGGE::Baryon_FF;
     prop = &PARAM_REGGE::Baryon_prop;
   }
   const double FF_A =
@@ -840,16 +838,16 @@ std::vector<double> sgn;
 
 double s0 = 0.0;
 
-int offshellFF = 0;
-double b_EXP = 0.0;
-double a_OREAR = 0.0;
-double b_OREAR = 0.0;
-double b_POW = 0.0;
+int    offshellFF = 0;
+double b_EXP      = 0.0;
+double a_OREAR    = 0.0;
+double b_OREAR    = 0.0;
+double b_POW      = 0.0;
 
 bool reggeize = false;
 
 std::vector<double> c;  // coupling
-std::vector<bool> n;    // on/off
+std::vector<bool>   n;  // on/off
 
 void PrintParam() {
   std::cout << "PARAM_REGGE:: Sub-amplitude parameters:" << std::endl << std::endl;
@@ -860,18 +858,14 @@ void PrintParam() {
         i, a0[i], ap[i], sgn[i]);
   }
   printf("- offshellFF = %d \n", offshellFF);
-  if (offshellFF == 0) {
-    printf("  -- b_EXP = %0.3f [GeV^{-2}] (exponential) \n", b_EXP);
-  }
+  if (offshellFF == 0) { printf("  -- b_EXP = %0.3f [GeV^{-2}] (exponential) \n", b_EXP); }
   if (offshellFF == 1) {
     printf(
         "  -- a_OREAR = %0.3f [GeV^{-1}], b_OREAR = %0.3f "
         "[GeV^{-1}] (Orear)\n",
         a_OREAR, b_OREAR);
   }
-  if (offshellFF == 2) {
-    printf("  -- b_POW = %0.3f [GeV^{-2}] (powerlaw) \n", b_POW);
-  }
+  if (offshellFF == 2) { printf("  -- b_POW = %0.3f [GeV^{-2}] (powerlaw) \n", b_POW); }
   printf("- reggeize = %d \n", reggeize);
   printf("- s0 = %0.3f [GeV^2]", s0);
   std::cout << std::endl << std::endl;
@@ -898,7 +892,7 @@ void PrintParam() {
 // https://arxiv.org/pdf/hep-ph/0307064.pdf]
 //
 std::complex<double> JPC_CS_coupling(const gra::LORENTZSCALAR &lts,
-                                     const gra::PARAM_RES &resonance) {
+                                     const gra::PARAM_RES &    resonance) {
   const unsigned int PP = 0;  // +1 +1
   const unsigned int PM = 1;  // +1 -1
   const unsigned int LL = 2;  //  0  0
@@ -910,21 +904,21 @@ std::complex<double> JPC_CS_coupling(const gra::LORENTZSCALAR &lts,
 
   // -------------------------------------------------------------------
 
-  const int J = resonance.p.spinX2 / 2.0;
-  const int P = resonance.p.P;
+  const int    J   = resonance.p.spinX2 / 2.0;
+  const int    P   = resonance.p.P;
   const double phi = lts.pfinal[1].DeltaPhi(lts.pfinal[2]);
 
   // Dynamic structure (approx)
-  const double Q1_2 = std::abs(lts.t1);
-  const double Q2_2 = std::abs(lts.t2);
-  const double D = (Q1_2 - Q2_2) / lts.m2;
+  const double Q1_2  = std::abs(lts.t1);
+  const double Q2_2  = std::abs(lts.t2);
+  const double D     = (Q1_2 - Q2_2) / lts.m2;
   const double delta = msqrt(Q1_2) * msqrt(Q2_2) / lts.m2;
 
   // Naturality
   const double eta1 = 1;                    // Pomeron 1 naturality (parity x signature)
   const double eta2 = 1;                    // Pomeron 2 naturality (parity x signature)
   const double etaM = P * std::pow(-1, J);  // Central boson naturality
-  const double eta = eta1 * eta2 * etaM;
+  const double eta  = eta1 * eta2 * etaM;
 
   // -------------------------------------------------------------------
 
@@ -936,9 +930,9 @@ std::complex<double> JPC_CS_coupling(const gra::LORENTZSCALAR &lts,
                 xi1 * msqrt(lts.t1 * lts.t2) * A[PP] * std::cos(phi));
   };
   auto E = [&]() {
-    const double xi2 = gra::math::csgn(A[PL]) * gra::math::csgn(A[LP]);
+    const double xi2   = gra::math::csgn(A[PL]) * gra::math::csgn(A[LP]);
     const double alpha = lts.qt2 * A[PL];
-    const double beta = eta * xi2 * lts.qt1 * A[LP];
+    const double beta  = eta * xi2 * lts.qt1 * A[LP];
     return (lts.q1 * alpha - lts.q2 * beta).Pt2();
   };
   auto R = [&]() { return lts.t1 * lts.t2 * 0.5 * pow2(A[PM]); };

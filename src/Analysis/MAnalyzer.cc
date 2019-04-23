@@ -72,15 +72,15 @@ MAnalyzer::MAnalyzer() {
       std::make_unique<TH1D>("Energy y+n (GeV)", ";Energy (GeV);Events", NBINS, 0, sqrts / 2.0);
 
   // Feynman-x
-  hXF_Pions = std::make_unique<TH1D>("xF #pi", ";Feynman-x;Events", NBINS, -1.0, 1.0);
-  hXF_Gamma = std::make_unique<TH1D>("xF #gamma", ";Feynman-x;Events", NBINS, -1.0, 1.0);
+  hXF_Pions   = std::make_unique<TH1D>("xF #pi", ";Feynman-x;Events", NBINS, -1.0, 1.0);
+  hXF_Gamma   = std::make_unique<TH1D>("xF #gamma", ";Feynman-x;Events", NBINS, -1.0, 1.0);
   hXF_Neutron = std::make_unique<TH1D>("xF n", ";Feynman-x;Events", NBINS, -1.0, 1.0);
 
   // Forward systems
-  hEta_Pions = std::make_unique<TH1D>("#eta pi", ";#eta;Events", NBINS, -12, 12);
-  hEta_Gamma = std::make_unique<TH1D>("#eta y", ";#eta;Events", NBINS, -12, 12);
+  hEta_Pions   = std::make_unique<TH1D>("#eta pi", ";#eta;Events", NBINS, -12, 12);
+  hEta_Gamma   = std::make_unique<TH1D>("#eta y", ";#eta;Events", NBINS, -12, 12);
   hEta_Neutron = std::make_unique<TH1D>("#eta n", ";#eta;Events", NBINS, -12, 12);
-  hM_NSTAR = std::make_unique<TH1D>("M (GeV)", ";M (GeV);Events", NBINS, 0, 10);
+  hM_NSTAR     = std::make_unique<TH1D>("M (GeV)", ";M (GeV);Events", NBINS, 0, 10);
 
   // Legendre polynomials, DO NOT CHANGE THE Y-RANGE [-1,1]
   for (std::size_t i = 0; i < 8; ++i) {
@@ -181,13 +181,13 @@ bool MAnalyzer::FiducialCuts(HepMC3::GenEvent& ) {
 // not just pure fiducial final state information (physical).
 //
 double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multiplicity,
-                                    int finalPDG, unsigned int MAXEVENTS,
+                                    int finalPDG, unsigned int                           MAXEVENTS,
                                     std::map<std::string, std::unique_ptr<h1Multiplet>> &h1,
                                     std::map<std::string, std::unique_ptr<h2Multiplet>> &h2,
                                     std::map<std::string, std::unique_ptr<hProfMultiplet>> &hP,
                                     unsigned int SID) {
-  inputfile = input;
-  const std::string totalpath = gra::aux::GetBasePath(2) + "/output/" + input + ".hepmc3";
+  inputfile                     = input;
+  const std::string   totalpath = gra::aux::GetBasePath(2) + "/output/" + input + ".hepmc3";
   HepMC3::ReaderAscii input_file(totalpath);
 
   if (input_file.failed()) {
@@ -255,9 +255,7 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
       // Check that ancestor is a central system
       std::vector<HepMC3::ConstGenParticlePtr> results = HepMC3::applyFilter(
           *abs(HepMC3::Selector::PDG_ID) == PDG::PDG_system, HepMC3::Relatives::ANCESTORS(p1));
-      if (results.size() != 0) {
-        pip.push_back(pvec);
-      }
+      if (results.size() != 0) { pip.push_back(pvec); }
     }
     for (HepMC3::ConstGenParticlePtr p1 :
          HepMC3::applyFilter(HepMC3::Selector::PDG_ID == NEGfinalPDG, evt.particles())) {
@@ -266,9 +264,7 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
       // Check that ancestor is a central system
       std::vector<HepMC3::ConstGenParticlePtr> results = HepMC3::applyFilter(
           HepMC3::Selector::PDG_ID == PDG::PDG_system, HepMC3::Relatives::ANCESTORS(p1));
-      if (results.size() != 0) {
-        pim.push_back(pvec);
-      }
+      if (results.size() != 0) { pim.push_back(pvec); }
     }
 
     // CHECK CONDITION
@@ -283,12 +279,8 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
     // ---------------------------------------------------------------
     // CENTRAL SYSTEM plots
     M4Vec system;
-    for (const auto &x : pip) {
-      system += x;
-    }
-    for (const auto &x : pim) {
-      system += x;
-    }
+    for (const auto &x : pip) { system += x; }
+    for (const auto &x : pim) { system += x; }
 
     std::vector<HepMC3::GenParticlePtr> beam_protons = HepMC3::applyFilter(
         HepMC3::Selector::STATUS == PDG::PDG_BEAM && HepMC3::Selector::PDG_ID == PDG::PDG_p,
@@ -357,9 +349,9 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
         b = pip[1];
       }
 
-      const double M = system.M();
+      const double M  = system.M();
       const double Pt = system.Pt();
-      const double Y = system.Rap();
+      const double Y  = system.Rap();
 
       // 1D: System
       h1["h1_S_M"]->h[SID]->Fill(M, W);
@@ -379,9 +371,9 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
         // const double t2 = -(p_beam_minus - p_final_minus).M2();
 
         // Deltaphi
-        deltaphi_pp = p_final_plus.DeltaPhiAbs(p_final_minus);
-        M4Vec pp_diff = p_final_plus - p_final_minus;
-        const double pp_dpt = pp_diff.Pt();
+        deltaphi_pp          = p_final_plus.DeltaPhiAbs(p_final_minus);
+        M4Vec        pp_diff = p_final_plus - p_final_minus;
+        const double pp_dpt  = pp_diff.Pt();
 
         h1["h1_PP_dphi"]->h[SID]->Fill(deltaphi_pp, W);
         h1["h1_PP_t1"]->h[SID]->Fill(t1, W);
@@ -487,7 +479,7 @@ void MAnalyzer::FrameObservables(double W, HepMC3::GenEvent &evt, const M4Vec &p
                                  const std::vector<M4Vec> &pim) {
   // GJ-frame direction
   const unsigned int direction = 1;
-  M4Vec propagator;
+  M4Vec              propagator;
 
   // Calculate propagator (= Pomeron) 4-vector
   if (direction == 1) {
@@ -506,9 +498,7 @@ void MAnalyzer::FrameObservables(double W, HepMC3::GenEvent &evt, const M4Vec &p
 
   // Make copies
   std::vector<std::vector<M4Vec>> pions;
-  for (std::size_t i = 0; i < NFR; ++i) {
-    pions.push_back(twopions);
-  }
+  for (std::size_t i = 0; i < NFR; ++i) { pions.push_back(twopions); }
 
   // Frame transformations
   gra::kinematics::CSframe(pions[0]);
@@ -519,14 +509,12 @@ void MAnalyzer::FrameObservables(double W, HepMC3::GenEvent &evt, const M4Vec &p
   gra::kinematics::SRframe(pions[5]);
 
   // No forward protons -> set zero
-  if (p_final_plus.M() < 0.5) {
-    pions[3] = {M4Vec(0, 0, 0, 0), M4Vec(0, 0, 0, 0)};
-  }
+  if (p_final_plus.M() < 0.5) { pions[3] = {M4Vec(0, 0, 0, 0), M4Vec(0, 0, 0, 0)}; }
 
   // FILL HISTOGRAMS -->
 
   // Legendre polynomials P_l cos(theta)
-  const M4Vec system = twopions[0] + twopions[1];
+  const M4Vec        system      = twopions[0] + twopions[1];
   const unsigned int FRAMENUMBER = 5;    // Non-rotated (SR) frame
   for (std::size_t l = 0; l < 8; ++l) {  // note l+1
 
@@ -575,28 +563,22 @@ void MAnalyzer::NStarObservables(double W, HepMC3::GenEvent &evt) {
       HepMC3::applyFilter(HepMC3::Selector::PDG_ID == PDG::PDG_NSTAR, evt.particles());
 
   // Find out if we excited one or two protons
-  bool excited_plus = false;
+  bool excited_plus  = false;
   bool excited_minus = false;
   for (const HepMC3::GenParticlePtr &p1 : search_nstar) {
     M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
     hM_NSTAR->Fill(pvec.M());
 
-    if (pvec.Rap() > 0) {
-      excited_plus = true;
-    }
-    if (pvec.Rap() < 0) {
-      excited_minus = true;
-    }
+    if (pvec.Rap() > 0) { excited_plus = true; }
+    if (pvec.Rap() < 0) { excited_minus = true; }
   }
   // Excited system found
-  if (excited_plus || excited_minus) {
-    N_STAR_ON = true;
-  }
+  if (excited_plus || excited_minus) { N_STAR_ON = true; }
 
   // N* system decay products
 
   // Gammas
-  double gamma_e_plus = 0;
+  double gamma_e_plus  = 0;
   double gamma_e_minus = 0;
 
   // Gammas
@@ -612,12 +594,8 @@ void MAnalyzer::NStarObservables(double W, HepMC3::GenEvent &evt) {
       hE_Gamma->Fill(pvec.E(), W);
       hXF_Gamma->Fill(pvec.Pz() / (sqrts / 2), W);
 
-      if (excited_plus && pvec.Rap() > 0) {
-        gamma_e_plus += pvec.E();
-      }
-      if (excited_minus && pvec.Rap() < 0) {
-        gamma_e_minus += pvec.E();
-      }
+      if (excited_plus && pvec.Rap() > 0) { gamma_e_plus += pvec.E(); }
+      if (excited_minus && pvec.Rap() < 0) { gamma_e_minus += pvec.E(); }
     }
   }
 
@@ -627,11 +605,9 @@ void MAnalyzer::NStarObservables(double W, HepMC3::GenEvent &evt) {
 
     // Check that parent is the excited system
     std::vector<HepMC3::GenParticlePtr> parents = p1->parents();
-    bool found = false;
+    bool                                found   = false;
     for (const auto &k : indices(parents)) {
-      if (parents[k]->pid() == PDG::PDG_NSTAR) {
-        found = true;
-      }
+      if (parents[k]->pid() == PDG::PDG_NSTAR) { found = true; }
     }
     if (found) {
       M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
@@ -647,11 +623,9 @@ void MAnalyzer::NStarObservables(double W, HepMC3::GenEvent &evt) {
 
     // Check that parent is the excited system
     std::vector<HepMC3::GenParticlePtr> parents = p1->parents();
-    bool found = false;
+    bool                                found   = false;
     for (const auto &k : indices(parents)) {
-      if (parents[k]->pid() == PDG::PDG_NSTAR) {
-        found = true;
-      }
+      if (parents[k]->pid() == PDG::PDG_NSTAR) { found = true; }
     }
     if (found) {
       M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
@@ -662,7 +636,7 @@ void MAnalyzer::NStarObservables(double W, HepMC3::GenEvent &evt) {
   }
 
   // Neutrons
-  double neutron_e_plus = 0;
+  double neutron_e_plus  = 0;
   double neutron_e_minus = 0;
 
   for (const HepMC3::GenParticlePtr &p1 : search_neutrons) {
@@ -670,33 +644,23 @@ void MAnalyzer::NStarObservables(double W, HepMC3::GenEvent &evt) {
 
     // Check that parent is the excited system
     std::vector<HepMC3::GenParticlePtr> parents = p1->parents();
-    bool found = false;
+    bool                                found   = false;
     for (const auto &k : indices(parents)) {
-      if (parents[k]->pid() == PDG::PDG_NSTAR) {
-        found = true;
-      }
+      if (parents[k]->pid() == PDG::PDG_NSTAR) { found = true; }
     }
     if (found) {
       hEta_Neutron->Fill(pvec.Eta(), W);
       hE_Neutron->Fill(pvec.E(), W);
       hXF_Neutron->Fill(pvec.Pz() / (sqrts / 2), W);
 
-      if (excited_plus && pvec.Rap() > 0) {
-        neutron_e_plus += pvec.E();
-      }
-      if (excited_minus && pvec.Rap() < 0) {
-        neutron_e_minus += pvec.E();
-      }
+      if (excited_plus && pvec.Rap() > 0) { neutron_e_plus += pvec.E(); }
+      if (excited_minus && pvec.Rap() < 0) { neutron_e_minus += pvec.E(); }
     }
   }
 
   // Gamma+Neutron energy histogram
-  if (excited_plus) {
-    hE_GammaNeutron->Fill(gamma_e_plus + neutron_e_plus, W);
-  }
-  if (excited_minus) {
-    hE_GammaNeutron->Fill(gamma_e_minus + neutron_e_minus, W);
-  }
+  if (excited_plus) { hE_GammaNeutron->Fill(gamma_e_plus + neutron_e_plus, W); }
+  if (excited_minus) { hE_GammaNeutron->Fill(gamma_e_minus + neutron_e_minus, W); }
 }
 
 double powerlaw(double *x, double *par) {
@@ -800,14 +764,10 @@ void MAnalyzer::PlotAll(const std::string &titlestr) {
     for (std::size_t j = 0; j < NFR; ++j) {
       c2.cd(k);
       ++k;
-      if (j >= i) {
-        h2CosTheta[i][j]->Draw("COLZ");
-      }
+      if (j >= i) { h2CosTheta[i][j]->Draw("COLZ"); }
 
       // Titlestr
-      if ((i == 0) & (j == 0)) {
-        h2CosTheta[i][j]->SetTitle(titlestr.c_str());
-      }
+      if ((i == 0) & (j == 0)) { h2CosTheta[i][j]->SetTitle(titlestr.c_str()); }
     }
   }
   c2.SaveAs(Form("%s/figs/%s/h2_frame_correlations_costheta.pdf", gra::aux::GetBasePath(2).c_str(),
@@ -823,14 +783,10 @@ void MAnalyzer::PlotAll(const std::string &titlestr) {
     for (std::size_t j = 0; j < NFR; ++j) {
       c3.cd(k);
       ++k;
-      if (j >= i) {
-        h2Phi[i][j]->Draw("COLZ");
-      }
+      if (j >= i) { h2Phi[i][j]->Draw("COLZ"); }
 
       // Titlestr
-      if ((i == 0) & (j == 0)) {
-        h2Phi[i][j]->SetTitle(titlestr.c_str());
-      }
+      if ((i == 0) & (j == 0)) { h2Phi[i][j]->SetTitle(titlestr.c_str()); }
     }
   }
   c3.SaveAs(Form("%s/figs/%s/h2_frame_correlations_phi.pdf", gra::aux::GetBasePath(2).c_str(),
@@ -852,9 +808,7 @@ void MAnalyzer::PlotAll(const std::string &titlestr) {
     hCosTheta_Meson_m[i]->Draw("same");
 
     // Titlestr
-    if (i == 0) {
-      hCosTheta_Meson_p[i]->SetTitle(titlestr.c_str());
-    }
+    if (i == 0) { hCosTheta_Meson_p[i]->SetTitle(titlestr.c_str()); }
   }
   for (std::size_t i = 0; i < NFR; ++i) {
     c4.cd(k);
@@ -884,9 +838,7 @@ void MAnalyzer::PlotAll(const std::string &titlestr) {
     ++k;
     h2M_CosTheta[i]->Draw("COLZ");
     // Titlestr
-    if (i == 0) {
-      h2M_CosTheta[i]->SetTitle(titlestr.c_str());
-    }
+    if (i == 0) { h2M_CosTheta[i]->SetTitle(titlestr.c_str()); }
   }
   for (std::size_t i = 0; i < NFR; ++i) {
     c5.cd(k);
@@ -900,7 +852,7 @@ void MAnalyzer::PlotAll(const std::string &titlestr) {
   // -------------------------------------------------------------------------------------
   // Legendre polynomials in the Rest Frame (non-rotated one)
 
-  const int colors[8] = {48, 53, 98, 32, 48, 53, 98, 32};
+  const int    colors[8] = {48, 53, 98, 32, 48, 53, 98, 32};
   const double XBOUND[2] = {0.0, 4.0};
 
   // 1...8
@@ -908,7 +860,7 @@ void MAnalyzer::PlotAll(const std::string &titlestr) {
   TCanvas *c116 = new TCanvas("c116", "Legendre polynomials 5-8", 600, 400);
 
   TLegend *leg[8];
-  TLine *line[8];
+  TLine *  line[8];
   c115->Divide(2, 2, 0.001, 0.001);
   c116->Divide(2, 2, 0.001, 0.001);
 
@@ -939,9 +891,7 @@ void MAnalyzer::PlotAll(const std::string &titlestr) {
     line[l]->Draw("SAME");
 
     // Titlestr
-    if (l == 0 || l == 4) {
-      hPl[l]->SetTitle(titlestr.c_str());
-    }
+    if (l == 0 || l == 4) { hPl[l]->SetTitle(titlestr.c_str()); }
   }
   c115->SaveAs(
       Form("%s/figs/%s/hPl_1to4.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));

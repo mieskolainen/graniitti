@@ -52,12 +52,12 @@ std::string MODELPARAM;
 MSudakov *GlobalSudakovPtr;
 
 // Normal pdfs
-std::string LHAPDFSET;
+std::string  LHAPDFSET;
 LHAPDF::PDF *GlobalPdfPtr;
-int pdf_trials;
+int          pdf_trials;
 
 // Multithreading
-std::mutex g_mutex;
+std::mutex         g_mutex;
 std::exception_ptr globalExceptionPtr;
 
 // ******************************************************************
@@ -76,11 +76,11 @@ MGraniitti::MGraniitti() {
   // ******************************************************************
   // Init program globals
 
-  gra::MODELPARAM = "";
-  gra::GlobalSudakovPtr = new MSudakov();
-  gra::LHAPDFSET = "";
-  gra::GlobalPdfPtr = nullptr;
-  gra::pdf_trials = 0;
+  gra::MODELPARAM         = "";
+  gra::GlobalSudakovPtr   = new MSudakov();
+  gra::LHAPDFSET          = "";
+  gra::GlobalPdfPtr       = nullptr;
+  gra::pdf_trials         = 0;
   gra::globalExceptionPtr = nullptr;
   // ******************************************************************
 
@@ -106,9 +106,7 @@ MGraniitti::~MGraniitti() {
 
   // Destroy processes
   for (unsigned int i = 0; i < pvec.size(); ++i) {
-    if (pvec[i] != nullptr) {
-      delete pvec[i];
-    }
+    if (pvec[i] != nullptr) { delete pvec[i]; }
   }
 
   std::cout << "~MGraniitti [DONE]" << std::endl;
@@ -123,9 +121,9 @@ void MGraniitti::PrintHistograms() {
 void MGraniitti::UnifyHistogramBounds() {
   // Loop over all 1D histograms
   for (auto const &xpoint : proc->h1) {
-    int xbins = 0;
-    double xmin = 0;
-    double xmax = 0;
+    int    xbins = 0;
+    double xmin  = 0;
+    double xmax  = 0;
 
     // Fuse buffer values [start index 1]
     for (std::size_t p = 1; p < pvec.size(); ++p) {
@@ -143,13 +141,13 @@ void MGraniitti::UnifyHistogramBounds() {
   }
   // Loop over all 2D histograms
   for (auto const &xpoint : proc->h2) {
-    int xbins = 0;
-    double xmin = 0;
-    double xmax = 0;
+    int    xbins = 0;
+    double xmin  = 0;
+    double xmax  = 0;
 
-    int ybins = 0;
-    double ymin = 0;
-    double ymax = 0;
+    int    ybins = 0;
+    double ymin  = 0;
+    double ymax  = 0;
 
     // Fuse buffer values [start index 1]
     for (std::size_t p = 1; p < pvec.size(); ++p) {
@@ -277,22 +275,22 @@ void MGraniitti::InitProcessMemory(std::string process, unsigned int seed) {
   // <Q> process
   if (proc_Q.ProcessExist(process)) {
     proc_Q = MQuasiElastic(process, syntax);
-    proc = &proc_Q;
+    proc   = &proc_Q;
 
     // <F> processes
   } else if (proc_F.ProcessExist(process)) {
     proc_F = MFactorized(process, syntax);
-    proc = &proc_F;
+    proc   = &proc_F;
 
     // <C> processes
   } else if (proc_C.ProcessExist(process)) {
     proc_C = MContinuum(process, syntax);
-    proc = &proc_C;
+    proc   = &proc_C;
 
     // <P> processes
   } else if (proc_P.ProcessExist(process)) {
     proc_P = MParton(process, syntax);
-    proc = &proc_P;
+    proc   = &proc_P;
   } else {
     std::string str = "MGraniitti::InitProcessMemory: Unknown PROCESS: " + process;
     // GetProcessNumbers(); // This is done by main program
@@ -307,9 +305,7 @@ void MGraniitti::InitMultiMemory() {
   // ** Init multithreading memory by making copies of the process **
   if (pvec.size() != 0) {
     for (std::size_t i = 0; i < pvec.size(); ++i) {
-      if (pvec[i] != nullptr) {
-        delete pvec[i];
-      }
+      if (pvec[i] != nullptr) { delete pvec[i]; }
     }
   }
   pvec.resize(CORES, nullptr);
@@ -365,7 +361,7 @@ void MGraniitti::ReadInput(const std::string &inputfile, const std::string cmd_P
 void MGraniitti::ReadGeneralParam(const std::string &inputfile) {
   // Read and parse
   const std::string data = gra::aux::GetInputData(inputfile);
-  json j;
+  json              j;
   try {
     j = json::parse(data);
   } catch (...) {
@@ -412,10 +408,10 @@ void MGraniitti::ReadModelParam(const std::string &inputfile) {
     // Soft model parameters
     PARAM_SOFT::DELTA_P = j.at("PARAM_SOFT").at("DELTA_P");
     PARAM_SOFT::ALPHA_P = j.at("PARAM_SOFT").at("ALPHA_P");
-    PARAM_SOFT::gN_P = j.at("PARAM_SOFT").at("gN_P");
+    PARAM_SOFT::gN_P    = j.at("PARAM_SOFT").at("gN_P");
 
-    double triple3P = j.at("PARAM_SOFT").at("g3P");
-    PARAM_SOFT::g3P = triple3P * PARAM_SOFT::gN_P;  // Convention
+    double triple3P   = j.at("PARAM_SOFT").at("g3P");
+    PARAM_SOFT::g3P   = triple3P * PARAM_SOFT::gN_P;  // Convention
     PARAM_SOFT::gamma = j.at("PARAM_SOFT").at("gamma");
 
     PARAM_SOFT::fc1 = j.at("PARAM_SOFT").at("fc1");
@@ -427,36 +423,34 @@ void MGraniitti::ReadModelParam(const std::string &inputfile) {
 
     // Monopole production
     PARAM_MONOPOLE::coupling = j.at("PARAM_MONOPOLE").at("coupling");
-    PARAM_MONOPOLE::gn = j.at("PARAM_MONOPOLE").at("gn");
-    PARAM_MONOPOLE::En = j.at("PARAM_MONOPOLE").at("En");
-    PARAM_MONOPOLE::Gamma0 = j.at("PARAM_MONOPOLE").at("Gamma0");
+    PARAM_MONOPOLE::gn       = j.at("PARAM_MONOPOLE").at("gn");
+    PARAM_MONOPOLE::En       = j.at("PARAM_MONOPOLE").at("En");
+    PARAM_MONOPOLE::Gamma0   = j.at("PARAM_MONOPOLE").at("Gamma0");
 
     // Regge amplitude parameters
-    std::vector<double> a0 = j.at("PARAM_REGGE").at("a0");
-    std::vector<double> ap = j.at("PARAM_REGGE").at("ap");
+    std::vector<double> a0  = j.at("PARAM_REGGE").at("a0");
+    std::vector<double> ap  = j.at("PARAM_REGGE").at("ap");
     std::vector<double> sgn = j.at("PARAM_REGGE").at("sgn");
-    PARAM_REGGE::a0 = a0;
-    PARAM_REGGE::ap = ap;
-    PARAM_REGGE::sgn = sgn;
+    PARAM_REGGE::a0         = a0;
+    PARAM_REGGE::ap         = ap;
+    PARAM_REGGE::sgn        = sgn;
 
     PARAM_REGGE::s0 = j.at("PARAM_REGGE").at("s0");
 
     PARAM_REGGE::offshellFF = j.at("PARAM_REGGE").at("offshellFF");
-    PARAM_REGGE::b_EXP = j.at("PARAM_REGGE").at("b_EXP");
-    PARAM_REGGE::a_OREAR = j.at("PARAM_REGGE").at("a_OREAR");
-    PARAM_REGGE::b_OREAR = j.at("PARAM_REGGE").at("b_OREAR");
-    PARAM_REGGE::b_POW = j.at("PARAM_REGGE").at("b_POW");
-    PARAM_REGGE::reggeize = j.at("PARAM_REGGE").at("reggeize");
+    PARAM_REGGE::b_EXP      = j.at("PARAM_REGGE").at("b_EXP");
+    PARAM_REGGE::a_OREAR    = j.at("PARAM_REGGE").at("a_OREAR");
+    PARAM_REGGE::b_OREAR    = j.at("PARAM_REGGE").at("b_OREAR");
+    PARAM_REGGE::b_POW      = j.at("PARAM_REGGE").at("b_POW");
+    PARAM_REGGE::reggeize   = j.at("PARAM_REGGE").at("reggeize");
 
     // Proton (Good-Walker) resonances
     std::vector<double> rc = j.at("PARAM_NSTAR").at("rc");
-    PARAM_NSTAR::rc = rc;
+    PARAM_NSTAR::rc        = rc;
 
     // Make sure they sum to one
     const double sum_rc = std::accumulate(rc.begin(), rc.end(), 0);
-    for (std::size_t i = 0; i < PARAM_NSTAR::rc.size(); ++i) {
-      PARAM_NSTAR::rc[i] /= sum_rc;
-    }
+    for (std::size_t i = 0; i < PARAM_NSTAR::rc.size(); ++i) { PARAM_NSTAR::rc[i] /= sum_rc; }
 
     PARAM_SOFT::PrintParam();
   } catch (nlohmann::json::exception &e) {
@@ -469,7 +463,7 @@ void MGraniitti::ReadModelParam(const std::string &inputfile) {
 void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::string cmd_PROCESS) {
   // Read and parse
   const std::string data = gra::aux::GetInputData(inputfile);
-  json j;
+  json              j;
   try {
     j = json::parse(data);
   } catch (...) {
@@ -494,17 +488,17 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
   std::vector<std::size_t> markerpos = aux::FindOccurance(fullstring, "@");
 
   if (markerpos.size() != 0) {
-    syntax = aux::SplitCommands(fullstring.substr(markerpos[0]));
+    syntax     = aux::SplitCommands(fullstring.substr(markerpos[0]));
     fullstring = fullstring.substr(0, markerpos[0] - 1);
   }
   // ----------------------------------------------------------------
 
   // Now separate process and decay parts by "->"
   std::string PROCESS_PART = "";
-  std::string DECAY_PART = "";
-  std::size_t pos = 0;
-  std::size_t pos1 = fullstring.find("->");
-  std::size_t pos2 = fullstring.find("&>");  // ISOLATEd Phase-Space
+  std::string DECAY_PART   = "";
+  std::size_t pos          = 0;
+  std::size_t pos1         = fullstring.find("->");
+  std::size_t pos2         = fullstring.find("&>");  // ISOLATEd Phase-Space
 
   pos = (pos1 != std::string::npos) ? pos1 : std::string::npos;  // Try to find ->
   if (pos == std::string::npos) {
@@ -513,7 +507,7 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
 
   if (pos != std::string::npos) {
     PROCESS_PART = fullstring.substr(0, pos - 1);  // beginning to the pos-1
-    DECAY_PART = fullstring.substr(pos + 2);       // from pos+2 to the end
+    DECAY_PART   = fullstring.substr(pos + 2);     // from pos+2 to the end
   } else {
     PROCESS_PART = fullstring;  // No decay defined
   }
@@ -553,7 +547,7 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
     const std::vector<std::string> RES = j[XID]["RES"];
     for (std::size_t i = 0; i < RES.size(); ++i) {
       const std::string str = "RES_" + RES[i] + ".json";
-      RESONANCES[RES[i]] = gra::form::ReadResonance(str, proc->random);
+      RESONANCES[RES[i]]    = gra::form::ReadResonance(str, proc->random);
     }
     proc->SetResonances(RESONANCES);
 
@@ -564,25 +558,17 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
 
   // Command syntax parameters
   for (const auto &i : indices(syntax)) {
-    if (syntax[i].id == "FLATAMP") {
-      proc->SetFLATAMP(std::stoi(syntax[i].arg["_SINGLET_"]));
-    }
-    if (syntax[i].id == "FLATMASS2") {
-      proc->SetFLATMASS2(syntax[i].arg["_SINGLET_"] == "true");
-    }
-    if (syntax[i].id == "OFFSHELL") {
-      proc->SetOFFSHELL(std::stod(syntax[i].arg["_SINGLET_"]));
-    }
-    if (syntax[i].id == "FRAME") {
-      proc->SetFRAME(syntax[i].arg["_SINGLET_"]);
-    }
+    if (syntax[i].id == "FLATAMP") { proc->SetFLATAMP(std::stoi(syntax[i].arg["_SINGLET_"])); }
+    if (syntax[i].id == "FLATMASS2") { proc->SetFLATMASS2(syntax[i].arg["_SINGLET_"] == "true"); }
+    if (syntax[i].id == "OFFSHELL") { proc->SetOFFSHELL(std::stod(syntax[i].arg["_SINGLET_"])); }
+    if (syntax[i].id == "FRAME") { proc->SetFRAME(syntax[i].arg["_SINGLET_"]); }
   }
 
   // ...
 
   // Always last (we need PDG tables)
-  std::vector<std::string> beam = j[XID]["BEAM"];
-  std::vector<double> energy = j[XID]["ENERGY"];
+  std::vector<std::string> beam   = j[XID]["BEAM"];
+  std::vector<double>      energy = j[XID]["ENERGY"];
   proc->SetInitialState(beam, energy);
 
   // Now rest of the parameters
@@ -598,7 +584,7 @@ void MGraniitti::ReadIntegralParam(const std::string &inputfile) {
 
   // Read and parse
   const std::string data = gra::aux::GetInputData(inputfile);
-  json j;
+  json              j;
   try {
     j = json::parse(data);
   } catch (...) {
@@ -659,7 +645,7 @@ void MGraniitti::ReadIntegralParam(const std::string &inputfile) {
 void MGraniitti::ReadGenCuts(const std::string &inputfile) {
   // Read and parse
   const std::string data = gra::aux::GetInputData(inputfile);
-  json j;
+  json              j;
   try {
     j = json::parse(data);
   } catch (...) {
@@ -677,7 +663,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     std::vector<double> rap;
     try {
       std::vector<double> temp = j[XID]["<C>"]["Rap"];
-      rap = temp;
+      rap                      = temp;
     } catch (...) {
       throw std::invalid_argument(
           "MGraniitti::ReadGenCuts: <C> phase space class requires from user: "
@@ -691,7 +677,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     std::vector<double> kt;
     try {
       std::vector<double> temp = j[XID]["<C>"]["Kt"];
-      kt = temp;
+      kt                       = temp;
     } catch (...) {
       // Do nothing
     }
@@ -705,7 +691,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     std::vector<double> pt;
     try {
       std::vector<double> temp = j[XID]["<C>"]["Pt"];
-      pt = temp;
+      pt                       = temp;
     } catch (...) {
       // Do nothing
     }
@@ -719,7 +705,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     std::vector<double> Xi;
     try {
       std::vector<double> temp = j[XID]["<C>"]["Xi"];
-      Xi = temp;
+      Xi                       = temp;
     } catch (...) {
       // Do nothing
     }
@@ -736,7 +722,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     std::vector<double> Y;
     try {
       std::vector<double> temp = j[XID]["<F>"]["Rap"];
-      Y = temp;
+      Y                        = temp;
     } catch (...) {
       throw std::invalid_argument(
           "MGraniitti::ReadGenCuts: <F> phase space class requires from user: "
@@ -750,7 +736,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     std::vector<double> M;
     try {
       std::vector<double> temp = j[XID]["<F>"]["M"];
-      M = temp;
+      M                        = temp;
     } catch (...) {
       throw std::invalid_argument(
           "MGraniitti::ReadGenCuts: <F> phase space class requires from user: "
@@ -764,7 +750,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     std::vector<double> pt;
     try {
       std::vector<double> temp = j[XID]["<F>"]["Pt"];
-      pt = temp;
+      pt                       = temp;
     } catch (...) {
       // Do nothing
     }
@@ -778,7 +764,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     std::vector<double> Xi;
     try {
       std::vector<double> temp = j[XID]["<F>"]["Xi"];
-      Xi = temp;
+      Xi                       = temp;
     } catch (...) {
       // Do nothing
     }
@@ -794,7 +780,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     std::vector<double> Xi;
     try {
       std::vector<double> temp = j[XID]["<Q>"]["Xi"];
-      Xi = temp;
+      Xi                       = temp;
     } catch (...) {
       throw std::invalid_argument(
           "MGraniitti::ReadGenCuts: <Q> phase space class requires from user: "
@@ -812,7 +798,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
 void MGraniitti::ReadFidCuts(const std::string &inputfile) {
   // Read and parse
   const std::string data = gra::aux::GetInputData(inputfile);
-  json j;
+  json              j;
   try {
     j = json::parse(data);
   } catch (...) {
@@ -822,7 +808,7 @@ void MGraniitti::ReadFidCuts(const std::string &inputfile) {
   }
 
   // Fiducial cuts
-  gra::FIDCUT fcuts;
+  gra::FIDCUT       fcuts;
   const std::string XID = "FIDCUTS";
 
   try {
@@ -834,54 +820,54 @@ void MGraniitti::ReadFidCuts(const std::string &inputfile) {
   // Particles
   {
     std::vector<double> eta = j[XID]["PARTICLE"]["Eta"];
-    fcuts.eta_min = eta[0];
-    fcuts.eta_max = eta[1];
+    fcuts.eta_min           = eta[0];
+    fcuts.eta_max           = eta[1];
     gra::aux::AssertCut(eta, "FIDCUTS::PARTICLE::Eta", true);
 
     std::vector<double> rap = j[XID]["PARTICLE"]["Rap"];
-    fcuts.rap_min = rap[0];
-    fcuts.rap_max = rap[1];
+    fcuts.rap_min           = rap[0];
+    fcuts.rap_max           = rap[1];
     gra::aux::AssertCut(rap, "FIDCUTS::PARTICLE::Rap", true);
 
     std::vector<double> pt = j[XID]["PARTICLE"]["Pt"];
-    fcuts.pt_min = pt[0];
-    fcuts.pt_max = pt[1];
+    fcuts.pt_min           = pt[0];
+    fcuts.pt_max           = pt[1];
     gra::aux::AssertCut(pt, "FIDCUTS::PARTICLE::Pt", true);
 
     std::vector<double> Et = j[XID]["PARTICLE"]["Et"];
-    fcuts.Et_min = Et[0];
-    fcuts.Et_max = Et[1];
+    fcuts.Et_min           = Et[0];
+    fcuts.Et_max           = Et[1];
     gra::aux::AssertCut(Et, "FIDCUTS::PARTICLE::Et", true);
   }
 
   // System
   {
     std::vector<double> M = j[XID]["SYSTEM"]["M"];
-    fcuts.M_min = M[0];
-    fcuts.M_max = M[1];
+    fcuts.M_min           = M[0];
+    fcuts.M_max           = M[1];
     gra::aux::AssertCut(M, "FIDCUTS::SYSTEM::M", true);
 
     std::vector<double> Y = j[XID]["SYSTEM"]["Rap"];
-    fcuts.Y_min = Y[0];
-    fcuts.Y_max = Y[1];
+    fcuts.Y_min           = Y[0];
+    fcuts.Y_max           = Y[1];
     gra::aux::AssertCut(Y, "FIDCUTS::SYSTEM::Rap", true);
 
     std::vector<double> Pt = j[XID]["SYSTEM"]["Pt"];
-    fcuts.Pt_min = Pt[0];
-    fcuts.Pt_max = Pt[1];
+    fcuts.Pt_min           = Pt[0];
+    fcuts.Pt_max           = Pt[1];
     gra::aux::AssertCut(Pt, "FIDCUTS::SYSTEM::Pt", true);
   }
 
   // Forward
   {
     std::vector<double> t = j[XID]["FORWARD"]["t"];
-    fcuts.forward_t_min = t[0];
-    fcuts.forward_t_max = t[1];
+    fcuts.forward_t_min   = t[0];
+    fcuts.forward_t_max   = t[1];
     gra::aux::AssertCut(t, "FIDCUTS::FORWARD::t", true);
 
     std::vector<double> M = j[XID]["FORWARD"]["M"];
-    fcuts.forward_M_min = M[0];
-    fcuts.forward_M_max = M[1];
+    fcuts.forward_M_min   = M[0];
+    fcuts.forward_M_max   = M[1];
     gra::aux::AssertCut(M, "FIDCUTS::FORWARD::M", true);
   }
 
@@ -896,7 +882,7 @@ void MGraniitti::ReadFidCuts(const std::string &inputfile) {
 void MGraniitti::ReadVetoCuts(const std::string &inputfile) {
   // Read and parse
   const std::string data = gra::aux::GetInputData(inputfile);
-  json j;
+  json              j;
   try {
     j = json::parse(data);
   } catch (...) {
@@ -906,7 +892,7 @@ void MGraniitti::ReadVetoCuts(const std::string &inputfile) {
   }
 
   // Fiducial cuts
-  gra::VETOCUT veto;
+  gra::VETOCUT      veto;
   const std::string XID = "VETOCUTS";
 
   try {
@@ -919,16 +905,16 @@ void MGraniitti::ReadVetoCuts(const std::string &inputfile) {
   for (std::size_t i = 0; i < 100; ++i) {
     const std::string NUMBER = std::to_string(i);
 
-    gra::VETODOMAIN domain;
+    gra::VETODOMAIN     domain;
     std::vector<double> eta;
     std::vector<double> pt;
 
     // try to find new domain
     try {
       std::vector<double> temp1 = j[XID][NUMBER]["Eta"];
-      eta = temp1;
+      eta                       = temp1;
       std::vector<double> temp2 = j[XID][NUMBER]["Pt"];
-      pt = temp2;
+      pt                        = temp2;
     } catch (...) {
       break;  // Not found
     }
@@ -1054,9 +1040,7 @@ void MGraniitti::Initialize(const MEikonal &eikonal_in) {
 
 void MGraniitti::CallIntegrator(unsigned int N) {
   // Initialize global clock
-  if (N == 0) {
-    global_tictoc = MTimer(true);
-  }
+  if (N == 0) { global_tictoc = MTimer(true); }
 
   // Sample the phase space
   if (INTEGRATOR == "VEGAS") {
@@ -1090,20 +1074,18 @@ void MGraniitti::SampleVegas(unsigned int N) {
 
   // Pure integration mode
   if (GMODE == 0) {
-    const double MINTIME = 0.1;    // Seconds
-    unsigned int BURNIN_ITER = 3;  // BURN-IN iterations (default)!
+    const double MINTIME     = 0.1;  // Seconds
+    unsigned int BURNIN_ITER = 3;    // BURN-IN iterations (default)!
 
     // Initialize GRID
     do {
-      unsigned int init = 0;
-      int factor = 0;
+      unsigned int init   = 0;
+      int          factor = 0;
 
       do {  // Loop until stable
-        factor = Vegas(init, vparam.NCALL, BURNIN_ITER, N);
+        factor       = Vegas(init, vparam.NCALL, BURNIN_ITER, N);
         vparam.NCALL = vparam.NCALL * factor;
-        if (factor == 1) {
-          break;
-        }  // We are done
+        if (factor == 1) { break; }  // We are done
       } while (true);
 
       // Increase CALLS and re-run, if too fast
@@ -1118,7 +1100,7 @@ void MGraniitti::SampleVegas(unsigned int N) {
 
       // Now re-calculate by skipping burn-in (init = 0) iterations
       // because they detoriate the integral value by bad grid
-      init = 1;
+      init   = 1;
       factor = Vegas(init, vparam.NCALL, vparam.ITER, N);
 
       if (factor == 1) {
@@ -1131,7 +1113,7 @@ void MGraniitti::SampleVegas(unsigned int N) {
 
   // Event generation mode
   if (GMODE == 1) {
-    const unsigned int init = 2;
+    const unsigned int init    = 2;
     const unsigned int itermin = 1E9;
     Vegas(init, vparam.NCALL * 10, itermin, N);
   }
@@ -1140,7 +1122,7 @@ void MGraniitti::SampleVegas(unsigned int N) {
 // Create number of calls per thread, they need to sum to calls
 std::vector<unsigned int> MGraniitti::VEGASGetLocalCalls(unsigned int calls) {
   std::vector<unsigned int> LOCALcalls(CORES, 0.0);
-  unsigned int sum = 0;
+  unsigned int              sum = 0;
   for (int k = 0; k < CORES; ++k) {
     LOCALcalls[k] = std::floor(calls / CORES);
     sum += LOCALcalls[k];
@@ -1193,7 +1175,7 @@ int MGraniitti::Vegas(unsigned int init, unsigned int calls, unsigned int itermi
   local_tictoc = MTimer(true);
 
   MTimer stime = MTimer(true);  // For statusprint
-  atime = MTimer(true);         // For progressbar
+  atime        = MTimer(true);  // For progressbar
 
   // -------------------------------------------------------------------
   // Create number of calls per thread, their sum == calls
@@ -1209,12 +1191,12 @@ int MGraniitti::Vegas(unsigned int init, unsigned int calls, unsigned int itermi
 
     for (std::size_t j = 0; j < VD.FDIM; ++j) {
       for (std::size_t i = 0; i < vparam.BINS; ++i) {
-        VD.fmat[i][j] = 0.0;
+        VD.fmat[i][j]  = 0.0;
         VD.f2mat[i][j] = 0.0;
       }
     }
     // Init here outside parallel processing
-    VD.fsum = 0.0;
+    VD.fsum  = 0.0;
     VD.f2sum = 0.0;
 
     // --------------------------------------------------------------
@@ -1226,9 +1208,7 @@ int MGraniitti::Vegas(unsigned int init, unsigned int calls, unsigned int itermi
     }
 
     // Loop again to join the threads
-    for (auto &t : threads) {
-      t.join();
-    }
+    for (auto &t : threads) { t.join(); }
     if (gra::globalExceptionPtr) {  // Exception handling of threads
       std::rethrow_exception(gra::globalExceptionPtr);
     }
@@ -1244,9 +1224,7 @@ int MGraniitti::Vegas(unsigned int init, unsigned int calls, unsigned int itermi
 
     VD.f2sum = msqrt(VD.f2sum * calls);
     VD.f2sum = (VD.f2sum - VD.fsum) * (VD.f2sum + VD.fsum);  // - +
-    if (VD.f2sum <= 0.0) {
-      VD.f2sum = vparam.EPS;
-    }
+    if (VD.f2sum <= 0.0) { VD.f2sum = vparam.EPS; }
 
     // Local error squared estimate
     const double I2_this = VD.f2sum * 1.0 / static_cast<double>(calls);
@@ -1260,20 +1238,18 @@ int MGraniitti::Vegas(unsigned int init, unsigned int calls, unsigned int itermi
     VD.sweight += alpha;
 
     // Integral and its error estimate
-    stat.sigma = VD.sumdata / VD.sweight;
-    stat.sigma_err = msqrt(1.0 / VD.sweight);
+    stat.sigma      = VD.sumdata / VD.sweight;
+    stat.sigma_err  = msqrt(1.0 / VD.sweight);
     stat.sigma_err2 = pow2(stat.sigma_err);
 
     // Chi2
     double chi2this = (VD.sumchi2 - pow2(VD.sumdata) / VD.sweight) / (iter + 1E-5);
-    chi2this = (chi2this < 0) ? 0.0 : chi2this;
-    stat.chi2 = chi2this;
+    chi2this        = (chi2this < 0) ? 0.0 : chi2this;
+    stat.chi2       = chi2this;
     // --------------------------------------------------------------
 
     // Got enough events generated
-    if (GMODE == 1 && stat.generated >= N) {
-      goto stop;
-    }
+    if (GMODE == 1 && stat.generated >= N) { goto stop; }
 
     // Fatal error and convergence restart treatment
     if (GMODE == 0 && iter > 0) {
@@ -1348,17 +1324,13 @@ int MGraniitti::Vegas(unsigned int init, unsigned int calls, unsigned int itermi
 
     // Unify histogram boundaries after burn-in across different threads
     // (due to adaptive histogramming)
-    if (init == 0 && iter == itermin - 1) {
-      UnifyHistogramBounds();
-    }
+    if (init == 0 && iter == itermin - 1) { UnifyHistogramBounds(); }
   }  // Main grid iteration loop
 
 stop:  // We jump here once finished (GOTO point)
 
   // Final statistics
-  if (init > 0) {
-    PrintStatistics(N);
-  }
+  if (init > 0) { PrintStatistics(N); }
 
   return 1;  // Return 1 for good
 }
@@ -1404,7 +1376,7 @@ void MGraniitti::VEGASMultiThread(unsigned int N, unsigned int THREAD_ID, unsign
       // ****** Call the process under integration to get the weight *******
 
       gra::AuxIntData aux;
-      aux.vegasweight = vegasweight;
+      aux.vegasweight  = vegasweight;
       aux.burn_in_mode = (init == 0) ? true : false;
 
       const double W = pvec[THREAD_ID]->EventWeight(xpoint, aux);
@@ -1418,7 +1390,7 @@ void MGraniitti::VEGASMultiThread(unsigned int N, unsigned int THREAD_ID, unsign
       stat.Accumulate(aux);
 
       // *** Importance weighting ***
-      const double f = W * vegasweight;
+      const double f  = W * vegasweight;
       const double f2 = pow2(f);
 
       VD.fsum += f;
@@ -1437,13 +1409,9 @@ void MGraniitti::VEGASMultiThread(unsigned int N, unsigned int THREAD_ID, unsign
         if (init != 0) {
           // Maximum raw weight (for general information, not used
           // here)
-          if (W > stat.maxW) {
-            stat.maxW = W;
-          }
+          if (W > stat.maxW) { stat.maxW = W; }
           // Maximum total VEGAS importance weighted
-          if (f > stat.maxf) {
-            stat.maxf = f;
-          }
+          if (f > stat.maxf) { stat.maxf = f; }
         }
       }
       gra::g_mutex.unlock();
@@ -1453,9 +1421,7 @@ void MGraniitti::VEGASMultiThread(unsigned int N, unsigned int THREAD_ID, unsign
       // Event generation mode
       if (GMODE == 1) {
         // Enough events
-        if (stat.generated == (unsigned int)GetNumberOfEvents()) {
-          break;
-        }
+        if (stat.generated == (unsigned int)GetNumberOfEvents()) { break; }
 
         // Event trial
         SaveEvent(pvec[THREAD_ID], f, stat.maxf, aux);
@@ -1482,12 +1448,10 @@ void MGraniitti::SampleFlat(unsigned int N) {
     proc->PrintInit(HILJAA);
   }
   // Event generation mode
-  if (N > 0) {
-    GMODE = 1;
-  }
+  if (N > 0) { GMODE = 1; }
 
   // Get dimension of the phase space
-  const unsigned int dim = proc->GetdLIPSDim();
+  const unsigned int  dim = proc->GetdLIPSDim();
   std::vector<double> randvec(dim, 0.0);
 
   // Reset local timer
@@ -1506,16 +1470,14 @@ void MGraniitti::SampleFlat(unsigned int N) {
   // Event loop
   while (true) {
     // ** Generate new random numbers **
-    for (const auto &i : indices(randvec)) {
-      randvec[i] = proc->random.U(0, 1);
-    }
+    for (const auto &i : indices(randvec)) { randvec[i] = proc->random.U(0, 1); }
 
     // Generate event
     // Used for in-out control of the process
     gra::AuxIntData aux;
-    aux.vegasweight = 1.0;
+    aux.vegasweight  = 1.0;
     aux.burn_in_mode = false;
-    const double W = proc->EventWeight(randvec, aux);
+    const double W   = proc->EventWeight(randvec, aux);
 
     // Increase statistics
     stat.Accumulate(aux);
@@ -1546,9 +1508,7 @@ void MGraniitti::SampleFlat(unsigned int N) {
     if (GMODE == 1) {
       SaveEvent(proc, W, stat.maxW, aux);
       PrintStatus(stat.generated, N, local_tictoc, 10.0);
-      if (stat.generated >= N) {
-        break;
-      }
+      if (stat.generated >= N) { break; }
 
       // Progressbar
       if (atime.ElapsedSec() > 0.1) {
@@ -1569,16 +1529,14 @@ void MGraniitti::SampleNeuro(unsigned int N) {
     proc->PrintInit(HILJAA);
   }
   // Event generation mode
-  if (N > 0) {
-    GMODE = 1;
-  }
+  if (N > 0) { GMODE = 1; }
 
   // Get dimension of the phase space
   const unsigned int D = proc->GetdLIPSDim();
 
   // Reset timers
   local_tictoc = MTimer(true);
-  atime = MTimer(true);
+  atime        = MTimer(true);
 
   // Reservation (test)
   // using namespace std::placeholders; // _1, _2, ... come from here
@@ -1617,10 +1575,8 @@ void MGraniitti::SampleNeuro(unsigned int N) {
 
     // Prior p(z) distribution sampling
     VectorXdual z(u.size());
-    for (std::size_t i = 0; i < D; ++i) {
-      z[i] = proc->random.G(0, 1);
-    }
-    const double p = val(gra::neurojac::gaussprob(z, 0, 1));
+    for (std::size_t i = 0; i < D; ++i) { z[i] = proc->random.G(0, 1); }
+    const double     p = val(gra::neurojac::gaussprob(z, 0, 1));
 
     // Evaluate network map
     VectorXdual u_ = gra::neurojac::G_net(z);
@@ -1631,13 +1587,11 @@ void MGraniitti::SampleNeuro(unsigned int N) {
     // Abs Jacobian determinant and inverse prior
     const double jacweight = abs(dudz.determinant()) / p;
 
-    for (std::size_t i = 0; i < D; ++i) {
-      u[i] = val(u_[i]);
-    }
+    for (std::size_t i = 0; i < D; ++i) { u[i] = val(u_[i]); }
 
     // Evaluate event weight
-    aux.vegasweight = jacweight;
-    aux.burn_in_mode = false;
+    aux.vegasweight     = jacweight;
+    aux.burn_in_mode    = false;
     const double weight = proc->EventWeight(u, aux) * jacweight;
 
     return weight;
@@ -1647,7 +1601,7 @@ void MGraniitti::SampleNeuro(unsigned int N) {
   while (true) {
     // aux used for in-out control of the process
     gra::AuxIntData aux;
-    const double W = NeuroSample(aux);
+    const double    W = NeuroSample(aux);
 
     // Increase statistics
     stat.Accumulate(aux);
@@ -1678,9 +1632,7 @@ void MGraniitti::SampleNeuro(unsigned int N) {
     if (GMODE == 1) {
       SaveEvent(proc, W, stat.maxW, aux);
       PrintStatus(stat.generated, N, local_tictoc, 10.0);
-      if (stat.generated >= N) {
-        break;
-      }
+      if (stat.generated >= N) { break; }
 
       // Progressbar
       if (atime.ElapsedSec() > 0.1) {
@@ -1777,10 +1729,10 @@ void MGraniitti::PrintStatus(unsigned int events, unsigned int N, MTimer &tictoc
     tictoc.Reset();
     gra::aux::ClearProgress();
 
-    double peak_use = 0.0;
-    double resident_use = 0.0;
-    const double MB = 1024 * 1024;
-    const double GB = MB * 1024;
+    double       peak_use     = 0.0;
+    double       resident_use = 0.0;
+    const double MB           = 1024 * 1024;
+    const double GB           = MB * 1024;
     gra::aux::GetProcessMemory(peak_use, resident_use);
     peak_use /= MB;
     resident_use /= MB;
@@ -1794,8 +1746,8 @@ void MGraniitti::PrintStatus(unsigned int events, unsigned int N, MTimer &tictoc
           events / global_lap);
     }
     if (GMODE == 1) {
-      const double global_lap = global_tictoc.ElapsedSec() - time_t0;
-      double outputfilesize = gra::aux::GetFileSize(FULL_OUTPUT_STR) / GB;
+      const double global_lap     = global_tictoc.ElapsedSec() - time_t0;
+      double       outputfilesize = gra::aux::GetFileSize(FULL_OUTPUT_STR) / GB;
 
       printf(
           "[%0.1f MB/%0.2f GB] E: %9d, xs: %9.3E, er: %7.5f, %0.1f/%0.1f min ~ "
@@ -1827,12 +1779,8 @@ void MGraniitti::PrintStatistics(unsigned int N) {
     unsigned int N_leg = proc->lts.decaytree.size() + 2;
 
     // Special cases
-    if (proc->GetISOLATE()) {
-      N_leg = 3;
-    }  // ISOLATEd 2->3 process with <F> phase space
-    if (proc->GetdLIPSDim() == 2) {
-      N_leg = 2;
-    }  // <P> and <Q> class
+    if (proc->GetISOLATE()) { N_leg = 3; }        // ISOLATEd 2->3 process with <F> phase space
+    if (proc->GetdLIPSDim() == 2) { N_leg = 2; }  // <P> and <Q> class
 
     printf("{2->%d cross section}:             %0.3E +- %0.3E barn \n", N_leg, stat.sigma,
            stat.sigma_err);
@@ -1845,7 +1793,7 @@ void MGraniitti::PrintStatistics(unsigned int N) {
       const double PSvolume = proc->lts.DW_sum.Integral();
       // const double PSvolume_error       = proc->lts.DW_sum.IntegralError();
 
-      const double PSvolume_exact = proc->lts.DW_sum_exact.Integral();
+      const double PSvolume_exact       = proc->lts.DW_sum_exact.Integral();
       const double PSvolume_exact_error = proc->lts.DW_sum_exact.IntegralError();
 
       // Get sum of decay daughter masses
@@ -1899,9 +1847,7 @@ void MGraniitti::PrintStatistics(unsigned int N) {
     std::cout << std::endl;
     printf("<Statistics> \n");
     printf("MAX raw integrand weight:         %0.3E \n", stat.maxW);
-    if (INTEGRATOR == "VEGAS") {
-      printf("MAX weight (vegas x integrand):   %0.3E \n", stat.maxf);
-    }
+    if (INTEGRATOR == "VEGAS") { printf("MAX weight (vegas x integrand):   %0.3E \n", stat.maxf); }
 
     printf("\n");
     printf("Amplitude passing rate:           %0.3E \n", stat.amplitude_ok / stat.evaluations);

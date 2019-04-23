@@ -37,7 +37,7 @@ namespace gra {
 // This is needed by construction
 MQuasiElastic::MQuasiElastic() {
   std::vector<std::string> supported = {"X"};
-  ProcPtr = MSubProc(supported);
+  ProcPtr                            = MSubProc(supported);
   ConstructProcesses();
 }
 
@@ -48,9 +48,7 @@ MQuasiElastic::MQuasiElastic(std::string process, const std::vector<aux::OneCMD>
 
   // Init final states
   M4Vec zerovec(0, 0, 0, 0);
-  for (std::size_t i = 0; i < 10; ++i) {
-    lts.pfinal.push_back(zerovec);
-  }
+  for (std::size_t i = 0; i < 10; ++i) { lts.pfinal.push_back(zerovec); }
   // Pomeron weights
   MAXPOMW = std::vector<double>(100, 0.0);
   std::cout << "MQuasiElastic:: [Constructor done]" << std::endl;
@@ -74,18 +72,10 @@ void MQuasiElastic::ConstructProcesses() {
 // Initialize cut and process spesific postsetup
 void MQuasiElastic::post_Constructor() {
   // Set phase space dimension
-  if (ProcPtr.CHANNEL == "EL") {
-    ProcPtr.LIPSDIM = 1;
-  };
-  if (ProcPtr.CHANNEL == "SD") {
-    ProcPtr.LIPSDIM = 2;
-  };
-  if (ProcPtr.CHANNEL == "DD") {
-    ProcPtr.LIPSDIM = 3;
-  };
-  if (ProcPtr.CHANNEL == "ND") {
-    ProcPtr.LIPSDIM = 1;
-  };  // Keep it 1
+  if (ProcPtr.CHANNEL == "EL") { ProcPtr.LIPSDIM = 1; };
+  if (ProcPtr.CHANNEL == "SD") { ProcPtr.LIPSDIM = 2; };
+  if (ProcPtr.CHANNEL == "DD") { ProcPtr.LIPSDIM = 3; };
+  if (ProcPtr.CHANNEL == "ND") { ProcPtr.LIPSDIM = 1; };  // Keep it 1
 
   MEikonalNumerics::MaxLoopKT = 3.0;
 }
@@ -169,9 +159,7 @@ bool MQuasiElastic::LoopKinematics(const std::vector<double> &p1p, const std::ve
   }
   // ------------------------------------------------------------------
 
-  if (!gra::math::CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2]))) {
-    return false;
-  }
+  if (!gra::math::CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2]))) { return false; }
 
   return B3GetLorentzScalars();
 }
@@ -183,14 +171,14 @@ double MQuasiElastic::EventWeight(const std::vector<double> &randvec, AuxIntData
   if (ProcPtr.CHANNEL != "ND") {  // Diffractive
 
     aux.kinematics_ok = B3RandomKin(randvec);
-    aux.fidcuts_ok = FiducialCuts();
-    aux.vetocuts_ok = VetoCuts();
+    aux.fidcuts_ok    = FiducialCuts();
+    aux.vetocuts_ok   = VetoCuts();
 
     if (aux.Valid()) {
       // ** EVENT WEIGHT **
-      const double LIPS = B3PhaseSpaceWeight();     // Phase-space weight
+      const double LIPS   = B3PhaseSpaceWeight();   // Phase-space weight
       const double MatESQ = abs2(S3ScreenedAmp());  // Matrix element squared
-      W = LIPS * B3IntegralVolume() * MatESQ *
+      W                   = LIPS * B3IntegralVolume() * MatESQ *
           GeV2barn;  // Total weight: phase-space x |M|^2 x barn units
     }
 
@@ -204,10 +192,10 @@ double MQuasiElastic::EventWeight(const std::vector<double> &randvec, AuxIntData
   } else {  // Non-Diffractive
 
     aux.kinematics_ok = true;  // This is always the case
-    aux.fidcuts_ok = true;
-    aux.vetocuts_ok = true;
+    aux.fidcuts_ok    = true;
+    aux.vetocuts_ok   = true;
 
-    const double LIPS = B3PhaseSpaceWeight();       // Phase-space weight
+    const double LIPS   = B3PhaseSpaceWeight();     // Phase-space weight
     const double MatESQ = abs2(PolySoft(randvec));  // Matrix element squared
     W = LIPS * MatESQ * GeV2barn;  // Total weight: phase-space x |M|^2 x barn units
 
@@ -301,8 +289,8 @@ bool MQuasiElastic::EventRecord(HepMC3::GenEvent &evt) {
         evt.add_vertex(vX);
 
         // Try to fragment
-        int B_sum = 0;
-        int Q_sum = 0;
+        int    B_sum    = 0;
+        int    Q_sum    = 0;
         double Q2_scale = pomeron4vec.M2();
 
         // Beam fragments carry the initial state quantum numbers
@@ -332,31 +320,31 @@ bool MQuasiElastic::EventRecord(HepMC3::GenEvent &evt) {
       gra::aux::M4Vec2HepMC3(lts.pbeam2), beam2.pdg, PDG::PDG_BEAM);
 
   // Pomeron 4-vector and generator particle
-  M4Vec q1(lts.pbeam1 - lts.pfinal[1]);
+  M4Vec                  q1(lts.pbeam1 - lts.pfinal[1]);
   HepMC3::GenParticlePtr gen_q1 = std::make_shared<HepMC3::GenParticle>(
       gra::aux::M4Vec2HepMC3(q1), PDG::PDG_pomeron, PDG::PDG_INTERMEDIATE);
 
   // Final state protons/N*
-  int PDG_ID1 = beam1.pdg;
-  int PDG_ID2 = beam2.pdg;
+  int PDG_ID1     = beam1.pdg;
+  int PDG_ID2     = beam2.pdg;
   int PDG_status1 = PDG::PDG_STABLE;
   int PDG_status2 = PDG::PDG_STABLE;
 
   // SD
   if (ProcPtr.CHANNEL == "SD") {
     if (lts.ss[1][1] > 1.0) {  // proton 1 excited
-      PDG_ID1 = PDG::PDG_NSTAR;
+      PDG_ID1     = PDG::PDG_NSTAR;
       PDG_status1 = PDG::PDG_INTERMEDIATE;
     } else {
-      PDG_ID2 = PDG::PDG_NSTAR;
+      PDG_ID2     = PDG::PDG_NSTAR;
       PDG_status2 = PDG::PDG_INTERMEDIATE;
     }
   }
   // DD
   if (ProcPtr.CHANNEL == "DD") {
-    PDG_ID1 = PDG::PDG_NSTAR;
+    PDG_ID1     = PDG::PDG_NSTAR;
     PDG_status1 = PDG::PDG_INTERMEDIATE;
-    PDG_ID2 = PDG::PDG_NSTAR;
+    PDG_ID2     = PDG::PDG_NSTAR;
     PDG_status2 = PDG::PDG_INTERMEDIATE;
   }
 
@@ -413,9 +401,7 @@ void MQuasiElastic::PrintInit(bool silent) const {
       std::string proton1 = "-----------EL--------->";
       std::string proton2 = "-----------EL--------->";
 
-      if (ProcPtr.CHANNEL == "SD") {
-        proton1 = "-----------F2-xxxxxxxx>";
-      }
+      if (ProcPtr.CHANNEL == "SD") { proton1 = "-----------F2-xxxxxxxx>"; }
       if (ProcPtr.CHANNEL == "DD") {
         proton1 = "-----------F2-xxxxxxxx>";
         proton2 = "-----------F2-xxxxxxxx>";
@@ -462,9 +448,7 @@ void MQuasiElastic::PrintInit(bool silent) const {
           "-----------|x|--------->", "           |x|--------->", "           |x|--------->",
           "           |x|--------->", "           |x|--------->", "-----------|x|--------->"};
 
-      for (const auto &i : indices(feynmangraph)) {
-        std::cout << feynmangraph[i] << std::endl;
-      }
+      for (const auto &i : indices(feynmangraph)) { std::cout << feynmangraph[i] << std::endl; }
     }
     std::cout << std::endl;
   }
@@ -501,12 +485,12 @@ std::complex<double> MQuasiElastic::PolySoft(const std::vector<double> &randvec)
   const double XMIN = 1e-6;
   const double XMAX = 1.0;
   // const double XSTEP = 1e-5;
-  const double MMIN = 3.0;
+  const double MMIN       = 3.0;
   const double REM_M2_MIN = pow2(10.0);
-  const double DELTA = 0.10;
+  const double DELTA      = 0.10;
 
-  int outertrials = 0;
-  const int MAXTRIAL = 1e4;
+  int       outertrials = 0;
+  const int MAXTRIAL    = 1e4;
 
   // Get the random number of inelastic cut Pomerons
   unsigned int N = 0;
@@ -528,7 +512,7 @@ std::complex<double> MQuasiElastic::PolySoft(const std::vector<double> &randvec)
   etree[0].p2i = lts.pbeam2;  // @@@@@@
 
   // Dirichlet parameters
-  const double DIRALPHA = 0.85;
+  const double        DIRALPHA = 0.85;
   std::vector<double> alphavec(N, DIRALPHA);  // "Uniform case"
 
   // Random integer from [1,NBins-1]
@@ -589,10 +573,10 @@ std::complex<double> MQuasiElastic::PolySoft(const std::vector<double> &randvec)
 
       // Pick gaussian Fermi pt of Pomerons
       const double sigma = 0.4;  // GeV
-      const double pt1 = msqrt(pow2(random.G(0, sigma)) + pow2(random.G(0, sigma)));
-      const double pt2 = msqrt(pow2(random.G(0, sigma)) + pow2(random.G(0, sigma)));
-      const double phi1 = random.U(0, 2.0 * PI);
-      const double phi2 = random.U(0, 2.0 * PI);
+      const double pt1   = msqrt(pow2(random.G(0, sigma)) + pow2(random.G(0, sigma)));
+      const double pt2   = msqrt(pow2(random.G(0, sigma)) + pow2(random.G(0, sigma)));
+      const double phi1  = random.U(0, 2.0 * PI);
+      const double phi2  = random.U(0, 2.0 * PI);
 
       // Pick remnant mass^2
       double p3_m2 = p1_m2;
@@ -639,7 +623,7 @@ std::complex<double> MQuasiElastic::PolySoft(const std::vector<double> &randvec)
     }
 
     // Take forward and backward remnants energy-momentum
-    etree[N].k = etree[N - 1].p1f;
+    etree[N].k     = etree[N - 1].p1f;
     etree[N + 1].k = etree[N - 1].p2f;
 
     // Check Energy-Momentum Conservation here explicitly !!!
@@ -696,17 +680,17 @@ bool MQuasiElastic::B3RandomKin(const std::vector<double> &randvec) {
 
     // Choose random permutation
     if (random.U(0, 1) < 0.5) {
-      s3 = r;
+      s3          = r;
       lts.excite1 = true;
       lts.excite2 = false;
     } else {
-      s4 = r;
+      s4          = r;
       lts.excite1 = false;
       lts.excite2 = true;
     }
   } else if (ProcPtr.CHANNEL == "DD") {
     const double r1 = M2_f_min + (M2_f_max - M2_f_min) * randvec[1];
-    DD_M2_max = gcuts.XI_max * (pow2(mp) * lts.s) / r1;
+    DD_M2_max       = gcuts.XI_max * (pow2(mp) * lts.s) / r1;
     const double r2 = M2_f_min + (DD_M2_max - M2_f_min) * randvec[2];
 
     // Choose random permutations
@@ -745,24 +729,22 @@ bool MQuasiElastic::B3RandomKin(const std::vector<double> &randvec) {
 
 // Build kinematics for elastic, single and double diffractive 2->2 quasielastic
 bool MQuasiElastic::B3BuildKin(double s3, double s4, double t) {
-  static const double s1 = lts.pbeam1.M2();
-  static const double s2 = lts.pbeam2.M2();
-  static const M4Vec beamsum = lts.pbeam1 + lts.pbeam2;
+  static const double s1      = lts.pbeam1.M2();
+  static const double s2      = lts.pbeam2.M2();
+  static const M4Vec  beamsum = lts.pbeam1 + lts.pbeam2;
 
   // Scattering angle based on invariants
   double theta = std::acos(kinematics::CosthetaStar(lts.s, t, s1, s2, s3, s4));
 
   // Forward/backward solution flip (skip these, rare)
-  if (std::cos(theta) < 0) {
-    return false;
-  }
+  if (std::cos(theta) < 0) { return false; }
   // theta = (std::cos(theta) < 0) ? gra::math::PI - theta : theta;
 
   // Outgoing 4-momentum by Kallen (triangle) function in the center-of-momentum
   // frame
   const double pnorm = kinematics::DecayMomentum(lts.sqrt_s, msqrt(s3), msqrt(s4));
-  M4Vec p3(0, 0, pnorm, 0.5 * (lts.s + s3 - s4) / lts.sqrt_s);
-  M4Vec p4(0, 0, -pnorm, 0.5 * (lts.s + s4 - s3) / lts.sqrt_s);
+  M4Vec        p3(0, 0, pnorm, 0.5 * (lts.s + s3 - s4) / lts.sqrt_s);
+  M4Vec        p4(0, 0, -pnorm, 0.5 * (lts.s + s4 - s3) / lts.sqrt_s);
 
   // Transverse momentum by orienting with random rotation (theta,phi)
   const double phi = random.U(0.0, 2.0 * gra::math::PI);  // Flat phi
@@ -782,9 +764,7 @@ bool MQuasiElastic::B3BuildKin(double s3, double s4, double t) {
   lts.pfinal[2] = p4;
 
   // Check Energy-Momentum conservation
-  if (!gra::math::CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2]))) {
-    return false;
-  }
+  if (!gra::math::CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2]))) { return false; }
 
   return B3GetLorentzScalars();
 }

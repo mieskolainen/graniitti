@@ -19,19 +19,19 @@ class MAmpMG5_yy_ww {
 
  private:
   // Constants for array limits
-  static const int ninitial = 2;
-  static const int nexternal = 4;
+  static const int ninitial   = 2;
+  static const int nexternal  = 4;
   static const int nprocesses = 1;
 
   // Private functions to calculate the matrix element for all
   // subprocesses
   // Calculate wavefunctions
   void calculate_wavefunctions(const int perm[], const int hel[]);
-  static const int nwavefuncs = 6;
+  static const int     nwavefuncs = 6;
   std::complex<double> w[nwavefuncs][18];
-  static const int namplitudes = 3;
+  static const int     namplitudes = 3;
   std::complex<double> amp[namplitudes];
-  double matrix_1_aa_wpwm();
+  double               matrix_1_aa_wpwm();
 
   // Store the matrix element value from sigmaKin
   double matrix_element[nprocesses];

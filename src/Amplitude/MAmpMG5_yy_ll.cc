@@ -108,9 +108,7 @@ std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR &lts) {
   int perm[nexternal];
 
   // Define permutation
-  for (int i = 0; i < nexternal; ++i) {
-    perm[i] = i;
-  }
+  for (int i = 0; i < nexternal; ++i) { perm[i] = i; }
 
   // All
   // static const std::vector<int> nonzero =
@@ -127,16 +125,12 @@ std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR &lts) {
     calculate_wavefunctions(perm, helicities[ihel]);
 
     // Sum of subamplitudes (s,t,u,...)
-    for (int k = 0; k < namplitudes; ++k) {
-      lts.hamp[i] += amp[k];
-    }
+    for (int k = 0; k < namplitudes; ++k) { lts.hamp[i] += amp[k]; }
   }
 
   // Total amplitude squared over all helicity combinations individually
   double amp2 = 0.0;
-  for (std::size_t i = 0; i < lts.hamp.size(); ++i) {
-    amp2 += gra::math::abs2(lts.hamp[i]);
-  }
+  for (std::size_t i = 0; i < lts.hamp.size(); ++i) { amp2 += gra::math::abs2(lts.hamp[i]); }
   amp2 /= 4;  // spin average matrix element squared
 
   return gra::math::msqrt(amp2);  // square root, we take square later
@@ -172,11 +166,11 @@ double MAmpMG5_yy_ll::matrix_1_aa_epem() {
 
   // Local variables
   // const int ngraphs = 2;
-  const int ncolor = 1;
+  const int            ncolor = 1;
   std::complex<double> ztemp;
   std::complex<double> jamp[ncolor];
   // The color matrix;
-  static const double denom[ncolor] = {1};
+  static const double denom[ncolor]      = {1};
   static const double cf[ncolor][ncolor] = {{1}};
 
   // Calculate color flows
@@ -187,7 +181,7 @@ double MAmpMG5_yy_ll::matrix_1_aa_epem() {
   for (i = 0; i < ncolor; i++) {
     ztemp = 0.;
     for (j = 0; j < ncolor; j++) ztemp = ztemp + cf[i][j] * jamp[j];
-    matrix = matrix + real(ztemp * conj(jamp[i])) / denom[i];
+    matrix                             = matrix + real(ztemp * conj(jamp[i])) / denom[i];
   }
 
   // Store the leading color flows for choice of color

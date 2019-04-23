@@ -36,25 +36,25 @@
 namespace gra {
 // Simple MC parameters
 struct MCPARAM {
-  double PRECISION = 0.05;            // Integral relative precision
+  double       PRECISION  = 0.05;     // Integral relative precision
   unsigned int MIN_EVENTS = 1000000;  // Minimum number of events to be sampled
 };
 
 // Vegas MC default parameters
 struct VEGASPARAM {
-  unsigned int BINS = 128;  // Maximum number of bins per dimension (EVEN NUMBER!)
-  double LAMBDA = 1.5;      // Regularization parameter
+  unsigned int BINS   = 128;  // Maximum number of bins per dimension (EVEN NUMBER!)
+  double       LAMBDA = 1.5;  // Regularization parameter
 
   // Initialization
-  unsigned int NCALL = 20000;  // Number of calls per iteration
-  unsigned int ITER = 15;      // Number of iterations
-  double CHI2MAX = 10.0;       // Maximum chi2 in initialization
-  double PRECISION = 0.01;     // Maximum relative error of cross section integral
-  int DEBUG = -1;              // Debug mode
+  unsigned int NCALL     = 20000;  // Number of calls per iteration
+  unsigned int ITER      = 15;     // Number of iterations
+  double       CHI2MAX   = 10.0;   // Maximum chi2 in initialization
+  double       PRECISION = 0.01;   // Maximum relative error of cross section integral
+  int          DEBUG     = -1;     // Debug mode
 
   // User cannot set these
-  unsigned int MAXFDIM = 100;  // Maximum integral dimension
-  double EPS = 1.0e-30;        // Epsilon parameter
+  unsigned int MAXFDIM = 100;      // Maximum integral dimension
+  double       EPS     = 1.0e-30;  // Epsilon parameter
 };
 
 // Vegas MC adaptation data
@@ -83,15 +83,11 @@ struct VEGASData {
   // Initialize
   void InitGridDependent(const VEGASPARAM &param) {
     // Create grid spacing
-    for (std::size_t j = 0; j < FDIM; ++j) {
-      dxvec[j] = region[j + FDIM] - region[j];
-    }
+    for (std::size_t j = 0; j < FDIM; ++j) { dxvec[j] = region[j + FDIM] - region[j]; }
 
     // If binning parameter changed from previous call
     if (param.BINS != BINS_prev) {
-      for (std::size_t i = 0; i < std::max(param.BINS, BINS_prev); ++i) {
-        rvec[i] = 1.0;
-      }
+      for (std::size_t i = 0; i < std::max(param.BINS, BINS_prev); ++i) { rvec[i] = 1.0; }
       for (std::size_t j = 0; j < FDIM; ++j) {
         Rebin(BINS_prev / static_cast<double>(param.BINS), j, param);
       }
@@ -101,26 +97,20 @@ struct VEGASData {
 
   // VEGAS rebinning function (algorithm adapted from Numerical Recipes)
   void Rebin(double ac, unsigned int j, const VEGASPARAM &param) {
-    unsigned int k = 0;
-    double dr = 0.0;
-    double zn = 0.0;
-    double zo = 0.0;
+    unsigned int k  = 0;
+    double       dr = 0.0;
+    double       zn = 0.0;
+    double       zo = 0.0;
 
     for (std::size_t i = 0; i < param.BINS - 1; ++i) {
-      while (ac > dr) {
-        dr += rvec[(++k) - 1];
-      }
-      if (k > 1) {
-        zo = xmat[k - 2][j];
-      }
+      while (ac > dr) { dr += rvec[(++k) - 1]; }
+      if (k > 1) { zo = xmat[k - 2][j]; }
       zn = xmat[k - 1][j];
       dr -= ac;
       xcache[i] = zn - (zn - zo) * dr / rvec[k - 1];
     }
 
-    for (std::size_t i = 0; i < param.BINS - 1; ++i) {
-      xmat[i][j] = xcache[i];
-    }
+    for (std::size_t i = 0; i < param.BINS - 1; ++i) { xmat[i][j] = xcache[i]; }
 
     xmat[param.BINS - 1][j] = 1.0;
   }
@@ -132,15 +122,15 @@ struct VEGASData {
     double ac = 0;
 
     for (std::size_t j = 0; j < FDIM; ++j) {
-      zo = f2mat[0][j];
-      zn = f2mat[1][j];
+      zo          = f2mat[0][j];
+      zn          = f2mat[1][j];
       f2mat[0][j] = (zo + zn) / 2.0;
-      dcache[j] = f2mat[0][j];
+      dcache[j]   = f2mat[0][j];
 
       for (std::size_t i = 2; i < param.BINS; ++i) {
-        ac = zo + zn;
-        zo = zn;
-        zn = f2mat[i][j];
+        ac              = zo + zn;
+        zo              = zn;
+        zn              = f2mat[i][j];
         f2mat[i - 1][j] = (ac + zn) / 3.0;
         dcache[j] += f2mat[i - 1][j];
       }
@@ -152,7 +142,7 @@ struct VEGASData {
       ac = 0.0;
       for (std::size_t i = 0; i < param.BINS; ++i) {
         f2mat[i][j] = (f2mat[i][j] < param.EPS) ? param.EPS : f2mat[i][j];
-        rvec[i] = std::pow(
+        rvec[i]     = std::pow(
             (1.0 - f2mat[i][j] / dcache[j]) / (std::log(dcache[j]) - std::log(f2mat[i][j])),
             param.LAMBDA);
         ac += rvec[i];
@@ -167,13 +157,9 @@ struct VEGASData {
     region.resize(2 * FDIM, 0.0);
 
     // Lower bound [zero]
-    for (std::size_t i = 0; i < FDIM; ++i) {
-      region[i] = 0.0;
-    }
+    for (std::size_t i = 0; i < FDIM; ++i) { region[i] = 0.0; }
     // Upper bound [one]
-    for (std::size_t i = FDIM; i < 2 * FDIM; ++i) {
-      region[i] = 1.0;
-    }
+    for (std::size_t i = FDIM; i < 2 * FDIM; ++i) { region[i] = 1.0; }
   }
 
   // Clear integrated data
@@ -187,21 +173,19 @@ struct VEGASData {
   void ClearAll(const VEGASPARAM &param) {
     // Vectors [MAXFDIM]
     dcache = std::vector<double>(param.MAXFDIM, 0.0);
-    dxvec = std::vector<double>(param.MAXFDIM, 0.0);
+    dxvec  = std::vector<double>(param.MAXFDIM, 0.0);
 
     // Vectors [BINS]
-    rvec = std::vector<double>(param.BINS, 0.0);
+    rvec   = std::vector<double>(param.BINS, 0.0);
     xcache = std::vector<double>(param.BINS, 0.0);
 
     // Matrices [BINS x MAXFDIM]
-    fmat = std::vector<std::vector<double>>(param.BINS, std::vector<double>(param.MAXFDIM, 0.0));
+    fmat  = std::vector<std::vector<double>>(param.BINS, std::vector<double>(param.MAXFDIM, 0.0));
     f2mat = std::vector<std::vector<double>>(param.BINS, std::vector<double>(param.MAXFDIM, 0.0));
-    xmat = std::vector<std::vector<double>>(param.BINS, std::vector<double>(param.MAXFDIM, 0.0));
+    xmat  = std::vector<std::vector<double>>(param.BINS, std::vector<double>(param.MAXFDIM, 0.0));
 
     // Init with 1!
-    for (std::size_t j = 0; j < FDIM; ++j) {
-      xmat[0][j] = 1.0;
-    }
+    for (std::size_t j = 0; j < FDIM; ++j) { xmat[0][j] = 1.0; }
 
     // VEGAS integraldata
     sumdata = 0.0;
@@ -214,9 +198,9 @@ struct VEGASData {
 
   // VEGAS scalars
   unsigned int BINS_prev = 0;
-  unsigned int FDIM = 0;
+  unsigned int FDIM      = 0;
 
-  double fsum = 0.0;
+  double fsum  = 0.0;
   double f2sum = 0.0;
 
   double sumdata = 0.0;
@@ -263,27 +247,27 @@ class Stats {
     sigma_err = gra::math::msqrt(sigma_err2 / evaluations);
   }
 
-  double amplitude_ok = 0.0;
+  double amplitude_ok  = 0.0;
   double kinematics_ok = 0.0;
-  double fidcuts_ok = 0.0;
-  double vetocuts_ok = 0.0;
+  double fidcuts_ok    = 0.0;
+  double vetocuts_ok   = 0.0;
 
   // Keep as double to avoid overflow of range
   double evaluations = 0.0;  // Integrand evaluations
-  double trials = 0.0;       // Event generation trials
+  double trials      = 0.0;  // Event generation trials
 
-  unsigned int generated = 0.0;   // Event generation
+  unsigned int generated  = 0.0;  // Event generation
   unsigned int N_overflow = 0.0;  // Weight overflows
 
   // Cross section and its error
-  double sigma = 0.0;
-  double sigma_err = 0.0;
+  double sigma      = 0.0;
+  double sigma_err  = 0.0;
   double sigma_err2 = 0.0;
 
   // Weight statistics FLAT MC
-  double Wsum = 0.0;
+  double Wsum  = 0.0;
   double W2sum = 0.0;
-  double maxW = 0.0;
+  double maxW  = 0.0;
 
   // Weight statistics VEGAS MC
   double maxf = 0.0;
@@ -314,14 +298,14 @@ class MGraniitti {
 
   // Set external file handle
   void SetHepMC2Output(std::shared_ptr<HepMC3::WriterAsciiHepMC2> &hepmc,
-                       const std::string &OUTPUTNAME) {
-    OUTPUT = OUTPUTNAME;
-    FORMAT = "hepmc2";
+                       const std::string &                         OUTPUTNAME) {
+    OUTPUT       = OUTPUTNAME;
+    FORMAT       = "hepmc2";
     outputHepMC2 = hepmc;
   }
   void SetHepMC3Output(std::shared_ptr<HepMC3::WriterAscii> &hepmc, const std::string &OUTPUTNAME) {
-    OUTPUT = OUTPUTNAME;
-    FORMAT = "hepmc3";
+    OUTPUT       = OUTPUTNAME;
+    FORMAT       = "hepmc3";
     outputHepMC3 = hepmc;
   }
 
@@ -336,16 +320,14 @@ class MGraniitti {
       CORES = std::round(std::thread::hardware_concurrency() * 1.5);
 
       // If autodetection fails, set 1
-      if (CORES < 1) {
-        CORES = 1;
-      }
+      if (CORES < 1) { CORES = 1; }
     }
     if (CORES < 0) {
       std::string str = "MGraniitti::SetCORES: CORES < 0";
       throw std::invalid_argument(str);
     }
   }
-  int GetCores() const { return CORES; }
+  int  GetCores() const { return CORES; }
   void SetIntegrator(const std::string &integrator) { INTEGRATOR = integrator; }
   void SetWeighted(bool weighted) { WEIGHTED = weighted; }
   // Output file name
@@ -365,7 +347,7 @@ class MGraniitti {
 
   // Get cross section and error
   void GetXS(double &xs, double &xs_err) const {
-    xs = stat.sigma;
+    xs     = stat.sigma;
     xs_err = stat.sigma_err;
   }
 
@@ -405,10 +387,10 @@ class MGraniitti {
 
   std::string PROCESS = "";  // Physics process identifier
 
-  bool WEIGHTED = false;        // Unweighted or weighted event generation
-  int NEVENTS = 0;              // Number of events to be generated
-  int CORES = 0;                // Number of CPU cores (threads) in use
-  std::string INTEGRATOR = "";  // Integrator (VEGAS, FLAT, ...)
+  bool        WEIGHTED   = false;  // Unweighted or weighted event generation
+  int         NEVENTS    = 0;      // Number of events to be generated
+  int         CORES      = 0;      // Number of CPU cores (threads) in use
+  std::string INTEGRATOR = "";     // Integrator (VEGAS, FLAT, ...)
 
   // SILENT OUTPUT
   bool HILJAA = false;
@@ -431,20 +413,20 @@ class MGraniitti {
 
   // HepMC outputfile
   std::string FULL_OUTPUT_STR = "";
-  std::string OUTPUT = "";
-  std::string FORMAT = "";  // hepmc3 or hepmc2 or hepevt
+  std::string OUTPUT          = "";
+  std::string FORMAT          = "";  // hepmc3 or hepmc2 or hepevt
 
-  std::shared_ptr<HepMC3::GenRunInfo> runinfo = nullptr;
-  std::shared_ptr<HepMC3::WriterAscii> outputHepMC3 = nullptr;
+  std::shared_ptr<HepMC3::GenRunInfo>        runinfo      = nullptr;
+  std::shared_ptr<HepMC3::WriterAscii>       outputHepMC3 = nullptr;
   std::shared_ptr<HepMC3::WriterAsciiHepMC2> outputHepMC2 = nullptr;
-  std::shared_ptr<HepMC3::WriterHEPEVT> outputHEPEVT = nullptr;
+  std::shared_ptr<HepMC3::WriterHEPEVT>      outputHEPEVT = nullptr;
 
   // VEGAS creates copies here
   std::vector<MProcess *> pvec;
-  MContinuum proc_C;
-  MFactorized proc_F;
-  MQuasiElastic proc_Q;
-  MParton proc_P;
+  MContinuum              proc_C;
+  MFactorized             proc_F;
+  MQuasiElastic           proc_Q;
+  MParton                 proc_P;
 
   // Forced cross-section for HepMC3 output
   double xsforced = -1;
@@ -453,7 +435,7 @@ class MGraniitti {
   MTimer global_tictoc;
   MTimer local_tictoc;
   MTimer atime;
-  double time_t0 = 0.0;
+  double time_t0  = 0.0;
   double itertime = 0.0;
 
   // -----------------------------------------------

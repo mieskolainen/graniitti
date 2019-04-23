@@ -1,6 +1,11 @@
 ﻿---
 BasedOnStyle: Google
+AlignAfterOpenBracket: 'true'
+AlignConsecutiveAssignments: 'true'
+AlignConsecutiveDeclarations: 'true'
 AlignEscapedNewlinesLeft: 'true'
 AlignTrailingComments: 'true'
+AllowShortBlocksOnASingleLine: 'true'
+AllowShortFunctionsOnASingleLine: 'true'
 ColumnLimit: '100'
 MaxEmptyLinesToKeep: '2'

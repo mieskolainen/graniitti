@@ -24,12 +24,12 @@ void MUserHistograms::InitHistograms() {
   // Level 1
   unsigned int Nbins = 40;
 
-  h1["M"] = MH1<double>(Nbins, "System M (GeV)");
+  h1["M"]   = MH1<double>(Nbins, "System M (GeV)");
   h1["Rap"] = MH1<double>(Nbins, "System Rap");
   h1["Rap"].SetAutoSymmetry(true);
-  h1["Pt"] = MH1<double>(Nbins, 0.0, 2.5, "System Pt (GeV)");
-  h1["dPhi_pp"] = MH1<double>(Nbins, 0.0, gra::math::PI, "Forward deltaphi (rad)");
-  h1["pPt"] = MH1<double>(Nbins, 0.0, 2.0, "Forward Pt (GeV)");
+  h1["Pt"]       = MH1<double>(Nbins, 0.0, 2.5, "System Pt (GeV)");
+  h1["dPhi_pp"]  = MH1<double>(Nbins, 0.0, gra::math::PI, "Forward deltaphi (rad)");
+  h1["pPt"]      = MH1<double>(Nbins, 0.0, 2.0, "Forward Pt (GeV)");
   h2["rap1rap2"] = MH2(Nbins, Nbins, "Rapidity1 vs Rapidity2");
   h2["rap1rap2"].SetAutoSymmetry({true, true});
 
@@ -87,14 +87,10 @@ void MUserHistograms::FillHistograms(double totalweight, const gra::LORENTZSCALA
     h1["pPt"].Fill(lts.pfinal[1].Pt(), totalweight);
 
     // Cascade decay
-    if (lts.decaytree[0].legs.size() > 0) {
-      h1["m0"].Fill(lts.decaytree[0].p4.M(), totalweight);
-    }
+    if (lts.decaytree[0].legs.size() > 0) { h1["m0"].Fill(lts.decaytree[0].p4.M(), totalweight); }
 
     // Dissociated proton
-    if (lts.pfinal[1].M() > 1.0) {
-      h1["FM"].Fill(lts.pfinal[1].M(), totalweight);
-    }
+    if (lts.pfinal[1].M() > 1.0) { h1["FM"].Fill(lts.pfinal[1].M(), totalweight); }
   }
 
   // Level 2
@@ -117,9 +113,9 @@ void MUserHistograms::FillCosThetaPhi(double totalweight, const gra::LORENTZSCAL
   const int direction = 1;
 
   // ** PREPARE LORENTZ TRANSFORMATION COMMON VARIABLES **
-  M4Vec pb1boost;              // beam1 particle boosted
-  M4Vec pb2boost;              // beam2 particle boosted
-  std::vector<M4Vec> pfboost;  // central particles boosted
+  M4Vec              pb1boost;  // beam1 particle boosted
+  M4Vec              pb2boost;  // beam2 particle boosted
+  std::vector<M4Vec> pfboost;   // central particles boosted
   gra::kinematics::LorentFramePrepare(pf, lts.pbeam1, lts.pbeam2, pb1boost, pb2boost, pfboost);
 
   // ** TRANSFORM TO DIFFERENT LORENTZ FRAMES **
@@ -154,14 +150,10 @@ void MUserHistograms::FillCosThetaPhi(double totalweight, const gra::LORENTZSCAL
 // Print all histograms out
 void MUserHistograms::PrintHistograms() {
   if (HIST >= 1) {
-    for (auto const &x : h1) {
-      h1[x.first].Print();
-    }
+    for (auto const &x : h1) { h1[x.first].Print(); }
   }
   if (HIST >= 2) {
-    for (auto const &x : h2) {
-      h2[x.first].Print();
-    }
+    for (auto const &x : h2) { h2[x.first].Print(); }
   }
 }
 

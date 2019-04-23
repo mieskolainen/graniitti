@@ -117,8 +117,8 @@ class MDirac {
   std::vector<std::vector<MMatrix<std::complex<double>>>> sigma_lo;
 
   // Indices etc.
-  std::vector<std::size_t> LI = {0, 1, 2, 3};
-  std::vector<int> SPINORSTATE = {-1, 1};
+  std::vector<std::size_t> LI          = {0, 1, 2, 3};
+  std::vector<int>         SPINORSTATE = {-1, 1};
 
   // Minkowski metric tensor (+,-,-,-) in convention (t,px,py,pz)
   MMatrix<double> g = MMatrix<double>(4, 4, "minkowski");

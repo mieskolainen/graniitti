@@ -44,7 +44,7 @@ namespace gra {
 // This is needed by construction
 MParton::MParton() {
   std::vector<std::string> supported = {"yy_LUX", "yy_DZ"};
-  ProcPtr = MSubProc(supported);
+  ProcPtr                            = MSubProc(supported);
   ConstructProcesses();
 }
 
@@ -55,9 +55,7 @@ MParton::MParton(std::string process, const std::vector<aux::OneCMD> &syntax) {
 
   // Init final states
   M4Vec zerovec(0, 0, 0, 0);
-  for (std::size_t i = 0; i < 10; ++i) {
-    lts.pfinal.push_back(zerovec);
-  }
+  for (std::size_t i = 0; i < 10; ++i) { lts.pfinal.push_back(zerovec); }
   std::cout << "MParton:: [Constructor done]" << std::endl;
 }
 
@@ -112,8 +110,8 @@ double MParton::EventWeight(const std::vector<double> &randvec, AuxIntData &aux)
 
   // Kinematics and cuts
   aux.kinematics_ok = B2RandomKin(randvec);
-  aux.fidcuts_ok = FiducialCuts();
-  aux.vetocuts_ok = VetoCuts();
+  aux.fidcuts_ok    = FiducialCuts();
+  aux.vetocuts_ok   = VetoCuts();
 
   if (aux.Valid()) {
     // Matrix element squared
@@ -129,9 +127,7 @@ double MParton::EventWeight(const std::vector<double> &randvec, AuxIntData &aux)
 
     double C_space = 1.0;
     // We have some legs in the central system
-    if (lts.decaytree.size() != 0 && !ISOLATE) {
-      C_space = lts.DW.Integral();
-    }
+    if (lts.decaytree.size() != 0 && !ISOLATE) { C_space = lts.DW.Integral(); }
 
     // ** EVENT WEIGHT **
     W = C_space * (1.0 / S_factor) * MatESQ * B2IntegralVolume() * B2PhaseSpaceWeight() * GeV2barn /
@@ -192,15 +188,11 @@ void MParton::PrintInit(bool silent) const {
     // --------------------------------------------------------------
     // Amplitude setup printout
     // Monopolium
-    if (ProcPtr.CHANNEL == "monopolium(0)") {
-      PARAM_MONOPOLE::PrintParam(lts.sqrt_s);
-    }
+    if (ProcPtr.CHANNEL == "monopolium(0)") { PARAM_MONOPOLE::PrintParam(lts.sqrt_s); }
 
     // Custom resonances processes
     if (ProcPtr.CHANNEL == "RES") {
-      for (auto &x : lts.RESONANCES) {
-        x.second.PrintParam(lts.sqrt_s);
-      }
+      for (auto &x : lts.RESONANCES) { x.second.PrintParam(lts.sqrt_s); }
     }
     // --------------------------------------------------------------
 
@@ -236,7 +228,7 @@ bool MParton::B2RandomKin(const std::vector<double> &randvec) {
   double x2 = randvec[1];
 
   const unsigned int MAXTRIAL = 1e4;
-  unsigned int trials = 0;
+  unsigned int       trials   = 0;
   while (true) {
     double M_sum = 0.0;
 
@@ -248,9 +240,7 @@ bool MParton::B2RandomKin(const std::vector<double> &randvec) {
     }
     // ==============================================================
 
-    if (x1 * x2 * lts.s > pow2(M_sum)) {
-      break;
-    }  // kinematics possible
+    if (x1 * x2 * lts.s > pow2(M_sum)) { break; }  // kinematics possible
 
     ++trials;
     if (trials > MAXTRIAL) {
@@ -292,9 +282,7 @@ bool MParton::B2BuildKin(double x1, double x2) {
   // Kinematic checks
 
   // Total 4-momentum conservation
-  if (!CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2] + lts.pfinal[0]))) {
-    return false;
-  }
+  if (!CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2] + lts.pfinal[0]))) { return false; }
 
   // ==============================================================================
   // Central system decay tree first branch kinematics set up here, the
@@ -337,15 +325,13 @@ bool MParton::B2BuildKin(double x1, double x2) {
   // Collect decay products
   const unsigned int offset = 3;
   for (const auto &i : indices(lts.decaytree)) {
-    lts.decaytree[i].p4 = products[i];
+    lts.decaytree[i].p4    = products[i];
     lts.pfinal[i + offset] = products[i];
   }
 
   // Treat decaytree recursively
   for (const auto &i : indices(lts.decaytree)) {
-    if (!ConstructDecayKinematics(lts.decaytree[i])) {
-      return false;
-    }
+    if (!ConstructDecayKinematics(lts.decaytree[i])) { return false; }
   }
 
   // ==============================================================================

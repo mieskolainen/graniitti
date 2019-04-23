@@ -33,9 +33,9 @@ using gra::math::zi;
 namespace gra {
 // Initialize
 MSubProc::MSubProc(const std::string &_ISTATE, const std::string &_CHANNEL, const MPDG &_PDG) {
-  ISTATE = _ISTATE;
+  ISTATE  = _ISTATE;
   CHANNEL = _CHANNEL;
-  PDG = _PDG;
+  PDG     = _PDG;
 
   ConstructDescriptions(ISTATE);
 
@@ -49,9 +49,7 @@ MSubProc::MSubProc(const std::string &_ISTATE, const std::string &_CHANNEL, cons
 }
 
 MSubProc::MSubProc(const std::vector<std::string> &first) {
-  for (std::size_t i = 0; i < first.size(); ++i) {
-    ConstructDescriptions(first[i]);
-  }
+  for (std::size_t i = 0; i < first.size(); ++i) { ConstructDescriptions(first[i]); }
 }
 
 void MSubProc::ConstructDescriptions(const std::string &first) {
@@ -308,9 +306,7 @@ inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR &lt
 
       // Get total amplitude squared 1/4 \sum_h |A_h|^2
       double SumAmp2 = 0.0;
-      for (std::size_t i = 0; i < lts.hamp.size(); ++i) {
-        SumAmp2 += gra::math::abs2(lts.hamp[i]);
-      }
+      for (std::size_t i = 0; i < lts.hamp.size(); ++i) { SumAmp2 += gra::math::abs2(lts.hamp[i]); }
       SumAmp2 /= 4;  // Initial state helicity average
 
       A = msqrt(SumAmp2);  // We expect amplitude
@@ -407,9 +403,7 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy(gra::LORENTZSCALAR &lt
   const double flux = msqrt(gammaflux1 * gammaflux2 * phasespace);
 
   // Helicity amplitudes
-  for (const auto &i : aux::indices(lts.hamp)) {
-    lts.hamp[i] *= flux;
-  }
+  for (const auto &i : aux::indices(lts.hamp)) { lts.hamp[i] *= flux; }
 
   return A * flux;
 }
@@ -422,8 +416,8 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy_DZ(gra::LORENTZSCALAR 
   std::complex<double> A = yyffbar(lts);
 
   // Evaluate gamma pdfs
-  const double f1 = form::DZFlux(lts.x1);
-  const double f2 = form::DZFlux(lts.x2);
+  const double f1   = form::DZFlux(lts.x1);
+  const double f2   = form::DZFlux(lts.x2);
   const double amp2 = f1 * f2 * math::abs2(A) * (lts.s / lts.s_hat);
 
   return msqrt(amp2);  // We take square later
@@ -440,7 +434,7 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy_LUX(gra::LORENTZSCALAR
   retry:
     try {
       gra::GlobalPdfPtr = LHAPDF::mkPDF(pdfname, 0);
-      gra::pdf_trials = 0;  // fine
+      gra::pdf_trials   = 0;  // fine
     } catch (...) {
       ++gra::pdf_trials;
       std::string str = "MSubProc::InitLHAPDF: Problem with reading '" + pdfname + "'";

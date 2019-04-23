@@ -101,9 +101,9 @@ std::complex<double> MAmpMG5_gg_qqbar::CalcAmp(gra::LORENTZSCALAR &lts, double a
 
   // Local variables and constants
   static bool goodhel[ncomb] = {false};
-  static int ntry = 0, sum_hel = 0, ngood = 0;
-  static int igood[ncomb];
-  static int jhel;
+  static int  ntry = 0, sum_hel = 0, ngood = 0;
+  static int  igood[ncomb];
+  static int  jhel;
   // std::complex<double> * * wfs;
   double t[nprocesses];
   // Helicities for the process
@@ -116,21 +116,17 @@ std::complex<double> MAmpMG5_gg_qqbar::CalcAmp(gra::LORENTZSCALAR &lts, double a
   const int denominators[nprocesses] = {256};
 
   // Reset the matrix elements
-  for (int i = 0; i < nprocesses; i++) {
-    matrix_element[i] = 0.;
-  }
+  for (int i = 0; i < nprocesses; i++) { matrix_element[i] = 0.; }
   // Define permutation
   int perm[nexternal];
-  for (int i = 0; i < nexternal; i++) {
-    perm[i] = i;
-  }
+  for (int i = 0; i < nexternal; i++) { perm[i] = i; }
 
   if (sum_hel == 0 || ntry < 10) {
     // Calculate the matrix element for all helicities
     for (int ihel = 0; ihel < ncomb; ihel++) {
       if (goodhel[ihel] || ntry < 2) {
         calculate_wavefunctions(perm, helicities[ihel]);
-        t[0] = matrix_1_gg_uux();
+        t[0]           = matrix_1_gg_uux();
         lts.hamp[ihel] = 0.0;  // ** SET HELICITY AMPLITUDE: not enough, need
         // color structure **
 
@@ -147,22 +143,20 @@ std::complex<double> MAmpMG5_gg_qqbar::CalcAmp(gra::LORENTZSCALAR &lts, double a
         }
       }
     }
-    jhel = 0;
+    jhel    = 0;
     sum_hel = min(sum_hel, ngood);
   } else {
     // Only use the "good" helicities
     for (int j = 0; j < sum_hel; j++) {
       jhel++;
       if (jhel >= ngood) jhel = 0;
-      double hwgt = double(ngood) / double(sum_hel);
-      int ihel = igood[jhel];
+      double hwgt             = double(ngood) / double(sum_hel);
+      int    ihel             = igood[jhel];
       calculate_wavefunctions(perm, helicities[ihel]);
-      t[0] = matrix_1_gg_uux();
+      t[0]           = matrix_1_gg_uux();
       lts.hamp[ihel] = 0.0;  // ** SET HELICITY AMPLITUDE: not enough, need color structure **
 
-      for (int iproc = 0; iproc < nprocesses; iproc++) {
-        matrix_element[iproc] += t[iproc] * hwgt;
-      }
+      for (int iproc = 0; iproc < nprocesses; iproc++) { matrix_element[iproc] += t[iproc] * hwgt; }
     }
   }
 
@@ -200,11 +194,11 @@ double MAmpMG5_gg_qqbar::matrix_1_gg_uux() {
   int i, j;
   // Local variables
   // const int ngraphs = 3;
-  const int ncolor = 2;
+  const int            ncolor = 2;
   std::complex<double> ztemp;
   std::complex<double> jamp[ncolor];
   // The color matrix;
-  static const double denom[ncolor] = {3, 3};
+  static const double denom[ncolor]      = {3, 3};
   static const double cf[ncolor][ncolor] = {{16, -2}, {-2, 16}};
 
   // Calculate color flows
@@ -217,7 +211,7 @@ double MAmpMG5_gg_qqbar::matrix_1_gg_uux() {
   for (i = 0; i < ncolor; i++) {
     ztemp = 0.;
     for (j = 0; j < ncolor; j++) ztemp = ztemp + cf[i][j] * jamp[j];
-    matrix = matrix + real(ztemp * conj(jamp[i])) / denom[i];
+    matrix                             = matrix + real(ztemp * conj(jamp[i])) / denom[i];
   }
 
   // Store the leading color flows for choice of color

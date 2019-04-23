@@ -35,12 +35,12 @@ using math::pow2;
 using math::zi;
 
 namespace MSudakovNumerics {
-double q2_MIN = 0.0;
-double q2_MAX = 0.0;
-double M_MIN = 0.0;
-double M_MAX = 0.0;
-double x_MIN = 0.0;
-const double x_MAX = 1.0 - 1E-9;
+double       q2_MIN = 0.0;
+double       q2_MAX = 0.0;
+double       M_MIN  = 0.0;
+double       M_MAX  = 0.0;
+double       x_MIN  = 0.0;
+const double x_MAX  = 1.0 - 1E-9;
 
 // Numerical integral discretization [SET HERE]
 const unsigned int SudakovIntegralN = 1000;
@@ -61,10 +61,10 @@ bool DEBUG = false;
 
 void ReadParameters() {
   // Read and parse
-  using json = nlohmann::json;
+  using json                  = nlohmann::json;
   const std::string inputfile = gra::aux::GetBasePath(2) + "/modeldata/" + "NUMERICS.json";
-  const std::string data = gra::aux::GetInputData(inputfile);
-  json j;
+  const std::string data      = gra::aux::GetInputData(inputfile);
+  json              j;
 
   try {
     j = json::parse(data);
@@ -74,22 +74,22 @@ void ReadParameters() {
 
     q2_MIN = j[XID]["q2_MIN"];
     q2_MAX = j[XID]["q2_MAX"];
-    M_MIN = j[XID]["M_MIN"];
+    M_MIN  = j[XID]["M_MIN"];
     // M_MAX = j[XID]["M_MAX"]; // Post-Setup
     // x_MIN = j[XID]["x_MIN"]; // Post-Setup
     // x_MAX = j[XID]["x_MAX"]; // Set above
 
     // Logarithmic stepping true/false [assign needed for <cast>]
     std::vector<bool> xx = j[XID]["SUDA"]["log_ON"];
-    SUDA_log_ON = xx;
+    SUDA_log_ON          = xx;
     std::vector<bool> yy = j[XID]["SHUV"]["log_ON"];
-    SHUV_log_ON = yy;
+    SHUV_log_ON          = yy;
 
     // Number of node points [assign needed for <cast>]
     std::vector<unsigned int> nn = j[XID]["SUDA"]["N"];
-    SUDA_N = nn;
+    SUDA_N                       = nn;
     std::vector<unsigned int> mm = j[XID]["SHUV"]["N"];
-    SHUV_N = mm;
+    SHUV_N                       = mm;
 
     // Discretization
     // ShuvaevIntegralN  = j[XID]["ShuvaevIntegralN"];
@@ -109,9 +109,7 @@ MSudakov::MSudakov() {}
 
 // Destructor
 MSudakov::~MSudakov() {
-  if (PdfPtr != nullptr) {
-    delete PdfPtr;
-  }
+  if (PdfPtr != nullptr) { delete PdfPtr; }
 }
 
 // Init
@@ -129,9 +127,7 @@ void MSudakov::Init(double _sqrts, const std::string &PDFSET, bool init_arrays) 
   // InitLHAPDF("CT10nlo");
   InitLHAPDF(PDFSET);
 
-  if (init_arrays) {
-    InitArrays();
-  }
+  if (init_arrays) { InitArrays(); }
 }
 
 void MSudakov::InitArrays() {
@@ -147,8 +143,8 @@ void MSudakov::InitArrays() {
              MSudakovNumerics::SUDA_log_ON[1]);
     veto.InitArray();  // Initialize (call last!)
 
-    const unsigned long hash = gra::aux::djb2hash(veto.GetHashString());
-    const std::string filename = "./sudakov/SUDA_" + gra::aux::ToString(veto.sqrts, 0) + "_" +
+    const unsigned long hash     = gra::aux::djb2hash(veto.GetHashString());
+    const std::string   filename = "./sudakov/SUDA_" + gra::aux::ToString(veto.sqrts, 0) + "_" +
                                  PDFSETNAME + "_" + std::to_string(hash);
 
     // Try to read pre-calculated
@@ -176,8 +172,8 @@ void MSudakov::InitArrays() {
              MSudakovNumerics::SHUV_log_ON[1]);
     spdf.InitArray();  // Initialize (call last!)
 
-    const unsigned long hash = gra::aux::djb2hash(spdf.GetHashString());
-    const std::string filename = "./sudakov/SHUV_" + gra::aux::ToString(spdf.sqrts, 0) + "_" +
+    const unsigned long hash     = gra::aux::djb2hash(spdf.GetHashString());
+    const std::string   filename = "./sudakov/SHUV_" + gra::aux::ToString(spdf.sqrts, 0) + "_" +
                                  PDFSETNAME + "_" + std::to_string(hash);
 
     // Try to read pre-calculated
@@ -197,9 +193,7 @@ void MSudakov::InitArrays() {
   initialized = true;
   std::cout << std::endl;
 
-  if (MSudakovNumerics::DEBUG) {
-    TestPDF();
-  }
+  if (MSudakovNumerics::DEBUG) { TestPDF(); }
 }
 
 // Return gluon xg(x,Q2) from LHAPDF
@@ -244,34 +238,34 @@ void MSudakov::InitLHAPDF(const std::string &pdfname) {
 void MSudakov::TestPDF() const {
   const double MINLOGX = std::log10(MSudakovNumerics::x_MIN);
   const double MAXLOGX = std::log10(MSudakovNumerics::x_MAX);
-  const int NX = 5;  // Number of points - 1
-  const double stepX = (MAXLOGX - MINLOGX) / NX;
+  const int    NX      = 5;  // Number of points - 1
+  const double stepX   = (MAXLOGX - MINLOGX) / NX;
 
   const double MINLOGQ2 = std::log10(MSudakovNumerics::q2_MIN);
   const double MAXLOGQ2 = std::log10(MSudakovNumerics::q2_MAX);
-  const int NQ2 = 5;  // Number of points - 1
-  const double stepQ2 = (MAXLOGQ2 - MINLOGQ2) / NQ2;
+  const int    NQ2      = 5;  // Number of points - 1
+  const double stepQ2   = (MAXLOGQ2 - MINLOGQ2) / NQ2;
 
   const double MINLOGM = std::log10(MSudakovNumerics::M_MIN);
   const double MAXLOGM = std::log10(MSudakovNumerics::M_MAX);
-  const int NM = 5;  // Number of points - 1
-  const double stepM = (MAXLOGM - MINLOGM) / NM;
+  const int    NM      = 5;  // Number of points - 1
+  const double stepM   = (MAXLOGM - MINLOGM) / NM;
 
   // Test loop
   for (std::size_t i = 0; i < NM + 1; ++i) {
     const double log10M = MINLOGM + i * stepM;
-    const double M = std::pow(10, log10M);
+    const double M      = std::pow(10, log10M);
 
     printf("[M = %0.1f GeV] : alpha_s(Q = M GeV) = %0.3f \n\n", M, PdfPtr->alphasQ2(M * M));
 
     for (std::size_t j = 0; j < NX + 1; ++j) {
       const double log10x = MINLOGX + j * stepX;
-      const double x = std::pow(10, log10x);
+      const double x      = std::pow(10, log10x);
 
       printf("x = %0.5E \n", x);
       for (std::size_t k = 0; k < NQ2 + 1; ++k) {
         const double log10q2 = MINLOGQ2 + k * stepQ2;
-        const double q2 = std::pow(10, log10q2);
+        const double q2      = std::pow(10, log10q2);
 
         // Normal gluon pdf
         const double xf = xg_xQ2(x, q2);
@@ -308,7 +302,7 @@ double MSudakov::AlphaS_Q2(double q2) const {
 // [REFERENCE: https://en.wikipedia.org/wiki/Richardson_extrapolation]
 double MSudakov::diff_xg_xQ2_wrt_Q2(double x, double q2) const {
   // Do not take h less than 1E-4 with 64-bit double
-  const double h = 1E-4;
+  const double h   = 1E-4;
   const double hX2 = 2 * h;
 
   // Calculate central differences
@@ -328,13 +322,13 @@ double MSudakov::fg_xQ2M(double x, double q2, double M) const {
   // Calculate Shuvaev transformation
   // std::pair<double,double> out1 = Shuvaev_H(q2, x);
   std::pair<double, double> out1 = spdf.Interpolate2D(q2, x);
-  const double Hg = out1.first;
+  const double Hg  = out1.first;
   const double dHg = out1.second;
 
   // Calculate Sudakov veto
   // std::pair<double,double> out2 = Sudakov_T(q2, M);
   std::pair<double, double> out2 = veto.Interpolate2D(q2, M);
-  const double Tg = out2.first;
+  const double Tg  = out2.first;
   const double dTg = out2.second;
 
   // Chain rule's: d/dln(q^2) [ ... ]
@@ -376,11 +370,11 @@ double MSudakov::fg_xQ2M(double x, double q2, double M) const {
 // [REFERENCE: Harland-Lang, https://arxiv.org/abs/1306.6661]
 //
 std::pair<double, double> MSudakov::Shuvaev_H(double q2, double x) {
-  const double y_MIN = x / 4.0;
-  const double y_MAX = 1.0;
+  const double y_MIN  = x / 4.0;
+  const double y_MAX  = 1.0;
   const double y_STEP = (y_MAX - y_MIN) / MSudakovNumerics::ShuvaevIntegralN;
 
-  double Hg = 0.0;
+  double Hg  = 0.0;
   double dHg = 0.0;
 
   // Check that we are within valid domain (take into account floating points)
@@ -392,7 +386,7 @@ std::pair<double, double> MSudakov::Shuvaev_H(double q2, double x) {
     std::vector<double> fB(MSudakovNumerics::ShuvaevIntegralN + 1, 0.0);
 
     for (const auto &i : indices(fA)) {
-      const double y = y_MIN + i * y_STEP;
+      const double y        = y_MIN + i * y_STEP;
       const double argument = x / (4.0 * y);
 
       // H_g(x/2,x/2,Q^2) = 4x/\pi \int_{x/4}^1 dy
@@ -400,12 +394,12 @@ std::pair<double, double> MSudakov::Shuvaev_H(double q2, double x) {
       //
       // => take into account that LHAPDF provides xg(), not g(), gives:
       const double factor = math::msqrt(math::pow3(y) * (1 - y));
-      fA[i] = factor * xg_xQ2(argument, q2);
-      fB[i] = factor * diff_xg_xQ2_wrt_Q2(argument, q2);
+      fA[i]               = factor * xg_xQ2(argument, q2);
+      fB[i]               = factor * diff_xg_xQ2_wrt_Q2(argument, q2);
     }
     const double norm = 16.0 / math::PI;
-    Hg = norm * math::CSIntegral(fA, y_STEP);
-    dHg = norm * math::CSIntegral(fB, y_STEP);
+    Hg                = norm * math::CSIntegral(fA, y_STEP);
+    dHg               = norm * math::CSIntegral(fB, y_STEP);
   } else {
     // Fatal error
     throw std::invalid_argument("MSudakov::Shuvaev_H(q2,x): Input arguments out of domain: q2 = " +
@@ -449,15 +443,15 @@ std::pair<double, double> MSudakov::Sudakov_T(double qt2, double mu) {
   // [INNER z-integral is analytic]:
   std::vector<double> f(MSudakovNumerics::SudakovIntegralN + 1, 0.0);
   for (const auto &i : indices(f)) {
-    const double u = MIN + i * STEP;
-    const double kt2 = std::exp(u);
+    const double u     = MIN + i * STEP;
+    const double kt2   = std::exp(u);
     const double delta = DeltaScale(kt2, mu);
-    f[i] = AlphaS_Q2(kt2) * (AP_gg(delta) + AP_qg(delta, kt2));
+    f[i]               = AlphaS_Q2(kt2) * (AP_gg(delta) + AP_qg(delta, kt2));
   }
   const double integral = math::CSIntegral(f, STEP) / (2.0 * math::PI);
 
   // Final expression and its derivative
-  const double Tg = std::exp(-integral);
+  const double Tg    = std::exp(-integral);
   const double delta = DeltaScale(qt2, mu);
   const double dTg =
       Tg * AlphaS_Q2(qt2) / (2.0 * math::PI * qt2) * (AP_gg(delta) + AP_qg(delta, qt2));
@@ -506,8 +500,8 @@ double MSudakov::AP_qg(double delta, double qt2) const {
 // Return the number of quark flavors at scale q^2
 //
 double MSudakov::NumFlavor(double q2) const {
-  const double m_charm = 1.275;  // Gev, PDG-2018 (default definition)
-  const double m_bottom = 4.18;  // Gev
+  const double m_charm  = 1.275;  // Gev, PDG-2018 (default definition)
+  const double m_bottom = 4.18;   // Gev
 
   if (q2 < math::pow2(m_charm)) {
     return 3.0;
@@ -587,7 +581,7 @@ bool IArray2D::ReadArray(const std::string &filename) {
     return false;
   }
 
-  std::string line;
+  std::string  line;
   unsigned int fills = 0;
   std::cout << "IArray2D::ReadArray: ";
 
@@ -596,9 +590,9 @@ bool IArray2D::ReadArray(const std::string &filename) {
       // Read every line from the stream
       getline(file, line);
 
-      std::istringstream stream(line);
+      std::istringstream       stream(line);
       std::vector<std::string> columns;
-      std::string element;
+      std::string              element;
 
       // Get every line element (4 of them) separated by separator
       int k = 0;
@@ -627,20 +621,12 @@ bool IArray2D::ReadArray(const std::string &filename) {
 std::pair<double, double> IArray2D::Interpolate2D(double a, double b) const {
   const double EPS = 1e-5;
 
-  if (a < MIN[0]) {
-    a = MIN[0];
-  }  // Truncate before (possible) logarithm
-  if (b < MIN[1]) {
-    b = MIN[1];
-  }  // Truncate before (possible) logarithm
+  if (a < MIN[0]) { a = MIN[0]; }  // Truncate before (possible) logarithm
+  if (b < MIN[1]) { b = MIN[1]; }  // Truncate before (possible) logarithm
 
   // Logarithmic stepping or not
-  if (islog[0]) {
-    a = std::log(a);
-  }
-  if (islog[1]) {
-    b = std::log(b);
-  }
+  if (islog[0]) { a = std::log(a); }
+  if (islog[1]) { b = std::log(b); }
 
   if (a > MAX[0] * (1 + EPS) || b > MAX[1] * (1 + EPS)) {
     printf(
@@ -655,20 +641,12 @@ std::pair<double, double> IArray2D::Interpolate2D(double a, double b) const {
   int j = std::floor((b - MIN[1]) / STEP[1]);
 
   // Lower boundary protection
-  if (i < 0) {
-    i = 0;
-  }  // Int needed for this (not unsigned int)
-  if (j < 0) {
-    j = 0;
-  }
+  if (i < 0) { i = 0; }  // Int needed for this (not unsigned int)
+  if (j < 0) { j = 0; }
 
   // Upper boundary protection
-  if (i >= (int)N[0]) {
-    i = N[0] - 1;
-  }  // We got N+1 elements in F
-  if (j >= (int)N[1]) {
-    j = N[1] - 1;
-  }
+  if (i >= (int)N[0]) { i = N[0] - 1; }  // We got N+1 elements in F
+  if (j >= (int)N[1]) { j = N[1] - 1; }
 
   // Aux variables for readability
   const unsigned int X = 0;
@@ -681,8 +659,8 @@ std::pair<double, double> IArray2D::Interpolate2D(double a, double b) const {
 
   const double xstep = STEP[0];
   const double ystep = STEP[1];
-  const double xval = a;
-  const double yval = b;
+  const double xval  = a;
+  const double yval  = b;
 
   double values[2] = {0.0};
 

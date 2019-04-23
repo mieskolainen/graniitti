@@ -62,7 +62,7 @@ MRandom rrand;
 // Final state fiducial cuts
 struct FIDCUTS {
   std::vector<double> ETA = {0.0, 0.0};
-  std::vector<double> PT = {0.0, 0.0};
+  std::vector<double> PT  = {0.0, 0.0};
 };
 
 FIDCUTS fidcuts;
@@ -148,13 +148,13 @@ int main(int argc, char *argv[]) {
 
     // Fiducial cuts
     if (r.count("cuts")) {
-      const std::string str = r["cuts"].as<std::string>();
+      const std::string   str  = r["cuts"].as<std::string>();
       std::vector<double> cuts = gra::aux::SplitStr(str, double(0), ',');
       if (cuts.size() != 4) {
         throw std::invalid_argument("fitharmonic:: cuts not size 4 <ETAMIN,ETAMAX,PTMIN,PTMAX>");
       }
       fidcuts.ETA = {cuts[0], cuts[1]};
-      fidcuts.PT = {cuts[2], cuts[3]};
+      fidcuts.PT  = {cuts[2], cuts[3]};
     } else {
       throw std::invalid_argument("fitharmonic:: cuts parameter not given");
     }
@@ -162,27 +162,27 @@ int main(int argc, char *argv[]) {
     MHarmonic::HPARAM hparam;
 
     // Default discretization
-    hparam.M = {20, 0.0, 2.5};    // System mass
-    hparam.PT = {1, 0.0, 100.0};  // System pt
-    hparam.Y = {1, -10.0, 10.0};  // System rapidity
+    hparam.M  = {20, 0.0, 2.5};    // System mass
+    hparam.PT = {1, 0.0, 100.0};   // System pt
+    hparam.Y  = {1, -10.0, 10.0};  // System rapidity
 
     if (r.count("mass")) {
       const std::string Mstr = r["mass"].as<std::string>();
-      hparam.M = gra::aux::SplitStr(Mstr, double(0), ',');
+      hparam.M               = gra::aux::SplitStr(Mstr, double(0), ',');
       if (hparam.M.size() != 3) {
         throw std::invalid_argument("fitharmonic:: mass discretization not size 3 <bins,min,max>");
       }
     }
     if (r.count("pt")) {
       const std::string Pstr = r["pt"].as<std::string>();
-      hparam.PT = gra::aux::SplitStr(Pstr, double(0), ',');
+      hparam.PT              = gra::aux::SplitStr(Pstr, double(0), ',');
       if (hparam.PT.size() != 3) {
         throw std::invalid_argument("fitharmonic:: pt discretization not size 3 <bins,min,max>");
       }
     }
     if (r.count("rapidity")) {
       const std::string Ystr = r["rapidity"].as<std::string>();
-      hparam.Y = gra::aux::SplitStr(Ystr, double(0), ',');
+      hparam.Y               = gra::aux::SplitStr(Ystr, double(0), ',');
       if (hparam.Y.size() != 3) {
         throw std::invalid_argument(
             "fitharmonic:: rapidity discretization not size 3 "
@@ -193,12 +193,12 @@ int main(int argc, char *argv[]) {
     // ------------------------------------------------------------------
     // INITIALIZE HARMONIC EXPANSION PARAMETERS
 
-    hparam.LMAX = r["lmax"].as<unsigned int>();
-    hparam.REMOVEODD = r["removeodd"].as<std::string>() == "true" ? true : false;
+    hparam.LMAX            = r["lmax"].as<unsigned int>();
+    hparam.REMOVEODD       = r["removeodd"].as<std::string>() == "true" ? true : false;
     hparam.REMOVENEGATIVEM = r["removenegative"].as<std::string>() == "true" ? true : false;
-    hparam.EML = r["eml"].as<std::string>() == "true" ? true : false;
-    hparam.SVDREG = r["svdreg"].as<double>();
-    hparam.L1REG = r["l1reg"].as<double>();
+    hparam.EML             = r["eml"].as<std::string>() == "true" ? true : false;
+    hparam.SVDREG          = r["svdreg"].as<double>();
+    hparam.L1REG           = r["l1reg"].as<double>();
 
     // Check valid values
     if (hparam.LMAX < 1) {
@@ -222,9 +222,7 @@ int main(int argc, char *argv[]) {
 
     // Maximum number of events
     int MAXEVENTS = 1E9;
-    if (r.count("maximum")) {
-      MAXEVENTS = r["maximum"].as<unsigned int>();
-    }
+    if (r.count("maximum")) { MAXEVENTS = r["maximum"].as<unsigned int>(); }
 
     // Read in reference MC for detector expansion (needs to be the same FRAME
     // for all)
@@ -234,9 +232,7 @@ int main(int argc, char *argv[]) {
     // Check dimensions
     auto checkdim = [](const std::vector<std::vector<std::string>> &vec) {
       std::vector<std::size_t> dim(vec.size(), 0);
-      for (const auto &i : indices(vec)) {
-        dim[i] = vec[i].size();
-      }
+      for (const auto &i : indices(vec)) { dim[i] = vec[i].size(); }
       if ((std::equal(dim.begin() + 1, dim.end(), dim.begin()))) {
         return true;
       } else {
@@ -245,9 +241,9 @@ int main(int argc, char *argv[]) {
     };
 
     // Read in real DATA/MC
-    const std::vector<std::string> input = gra::aux::SplitStr2Str(r["input"].as<std::string>());
-    const std::vector<std::string> legend = gra::aux::SplitStr2Str(r["legend"].as<std::string>());
-    const std::vector<std::string> mode = gra::aux::SplitStr2Str(r["mode"].as<std::string>());
+    const std::vector<std::string> input   = gra::aux::SplitStr2Str(r["input"].as<std::string>());
+    const std::vector<std::string> legend  = gra::aux::SplitStr2Str(r["legend"].as<std::string>());
+    const std::vector<std::string> mode    = gra::aux::SplitStr2Str(r["mode"].as<std::string>());
     const std::vector<std::string> fastsim = gra::aux::SplitStr2Str(r["fastsim"].as<std::string>());
 
     if (!checkdim({input, legend, mode, fastsim})) {
@@ -260,9 +256,7 @@ int main(int argc, char *argv[]) {
       const std::vector<std::string> str_vals =
           gra::aux::SplitStr2Str(r["scale"].as<std::string>());
       if (str_vals.size() == input.size()) {
-        for (auto const &i : indices(str_vals)) {
-          scale[i] = std::stod(str_vals[i]);
-        }
+        for (auto const &i : indices(str_vals)) { scale[i] = std::stod(str_vals[i]); }
       } else {
         throw std::invalid_argument("analyzer::scale input list needs to be of length 0 or N");
       }
@@ -281,12 +275,12 @@ int main(int argc, char *argv[]) {
     for (const auto &i : indices(input)) {
       // Read in data
       gra::spherical::Data data;
-      data.META.NAME = input[i];
-      data.META.LEGEND = legend[i];
-      data.META.MODE = mode[i];
-      data.META.FRAME = FRAME;
+      data.META.NAME    = input[i];
+      data.META.LEGEND  = legend[i];
+      data.META.MODE    = mode[i];
+      data.META.FRAME   = FRAME;
       data.META.FASTSIM = (fastsim[i] == "true") ? true : false;
-      data.META.SCALE = scale[i];
+      data.META.SCALE   = scale[i];
 
       data.META.TITLES = titles;
       ReadIn(data.META.NAME, data.EVENTS, data.META.FRAME, MAXEVENTS, data.META.FASTSIM);
@@ -344,7 +338,7 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
   int events_read = 0;
 
   // Dummy vector
-  M4Vec pvec;
+  M4Vec            pvec;
   HepMC3::GenEvent evt(HepMC3::Units::GEV, HepMC3::Units::MM);
 
   // Allocate memory here for speed
@@ -353,9 +347,7 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
 
   // Event loop
   while (!input_file.failed()) {
-    if (events_read >= MAXEVENTS) {
-      break;
-    }
+    if (events_read >= MAXEVENTS) { break; }
 
     // Read event from input file
     input_file.read_event(evt);
@@ -466,10 +458,10 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
 
     // Event data
     evt.costheta = std::cos(rf[0].Theta());
-    evt.phi = rf[0].Phi();
-    evt.M = sys_.M();
-    evt.Pt = sys_.Pt();
-    evt.Y = sys_.Rap();
+    evt.phi      = rf[0].Phi();
+    evt.M        = sys_.M();
+    evt.Pt       = sys_.Pt();
+    evt.Y        = sys_.Rap();
     evt.fiducial = false;
     evt.selected = false;
 
@@ -510,9 +502,7 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
     events[events_read] = evt;
 
     ++events_read;
-    if (events_read % 500000 == 0) {
-      printf("Event %d \n", events_read);
-    }
+    if (events_read % 500000 == 0) { printf("Event %d \n", events_read); }
   }
 
   // Remove empty memory

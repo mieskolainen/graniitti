@@ -14,9 +14,7 @@ class MTimer {
  public:
   // Declare explicit, means here no conversion to bool allowed
   explicit MTimer(bool reset = true) {
-    if (reset) {
-      Reset();
-    }
+    if (reset) { Reset(); }
   }
   // << operator
   template <typename T, typename Traits>

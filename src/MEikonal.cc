@@ -34,22 +34,22 @@ namespace gra {
 // N.B. Compile will make significant optimizations if boundaries
 // are const variables.
 namespace MEikonalNumerics {
-constexpr double MinKT2 = 1E-6;
-constexpr double MaxKT2 = 25.0;
-unsigned int NumberKT2 = 0;
-bool logKT2 = false;
+constexpr double MinKT2    = 1E-6;
+constexpr double MaxKT2    = 25.0;
+unsigned int     NumberKT2 = 0;
+bool             logKT2    = false;
 
-constexpr double MinBT = 1E-6;
-constexpr double MaxBT = 10.0 / PDG::GeV2fm;
-unsigned int NumberBT = 0;
-bool logBT = false;
+constexpr double MinBT    = 1E-6;
+constexpr double MaxBT    = 10.0 / PDG::GeV2fm;
+unsigned int     NumberBT = 0;
+bool             logBT    = false;
 
-constexpr double FBIntegralMinKT = 1E-9;
-constexpr double FBIntegralMaxKT = 30.0;
-constexpr unsigned int FBIntegralN = 10000;
+constexpr double       FBIntegralMinKT = 1E-9;
+constexpr double       FBIntegralMaxKT = 30.0;
+constexpr unsigned int FBIntegralN     = 10000;
 
 constexpr double MinLoopKT = 1E-4;
-double MaxLoopKT = 1.75;
+double           MaxLoopKT = 1.75;
 
 std::string GetHashString() {
   std::string str =
@@ -68,8 +68,8 @@ void ReadParameters() {
   using json = nlohmann::json;
 
   const std::string inputfile = gra::aux::GetBasePath(2) + "/modeldata/" + "NUMERICS.json";
-  const std::string data = gra::aux::GetInputData(inputfile);
-  json j;
+  const std::string data      = gra::aux::GetInputData(inputfile);
+  json              j;
 
   try {
     j = json::parse(data);
@@ -79,13 +79,13 @@ void ReadParameters() {
 
     // MaxKT2  = j[XID]["MaxKT2"];
     NumberKT2 = j[XID]["NumberKT2"];
-    logKT2 = j[XID]["logKT2"];
+    logKT2    = j[XID]["logKT2"];
 
     // MaxBT   = j[XID]["MaxBT"]; MaxBT /= gra::math::GeV2fm; // Input as fermi,
     // program
     // uses GeV^{-1}
     NumberBT = j[XID]["NumberBT"];
-    logBT = j[XID]["logBT"];
+    logBT    = j[XID]["logBT"];
 
     // FBIntegralMaxKT = j[XID]["FBIntegralMaxKT"];
     // FBIntegralN     = j[XID]["FBIntegralN"];
@@ -101,12 +101,12 @@ void ReadParameters() {
 // -----------------------------------------
 
 // Screening loop (minimum values)
-unsigned int NumberLoopKT = 15;   // Number of kt steps
+unsigned int NumberLoopKT  = 15;  // Number of kt steps
 unsigned int NumberLoopPHI = 12;  // Number of phi steps
 
 // User setup (ND can be negative, to get below the default)
 void SetLoopDiscretization(int ND) {
-  NumberLoopKT = std::max(3, 3 * ND + (int)NumberLoopKT);
+  NumberLoopKT  = std::max(3, 3 * ND + (int)NumberLoopKT);
   NumberLoopPHI = std::max(3, 3 * ND + (int)NumberLoopPHI);
 }
 
@@ -119,8 +119,8 @@ MEikonal::~MEikonal() {}
 // Return total, elastic, inelastic cross sections
 void MEikonal::GetTotXS(double &tot, double &el, double &in) const {
   tot = sigma_tot;
-  el = sigma_el;
-  in = sigma_inel;
+  el  = sigma_el;
+  in  = sigma_inel;
 }
 
 // Construct density and amplitude
@@ -130,7 +130,7 @@ void MEikonal::S3Constructor(double s_in, const std::vector<gra::MParticle> &ini
   MEikonalNumerics::ReadParameters();
 
   // Mandelstam s and initial state
-  s = s_in;
+  s            = s_in;
   INITIALSTATE = initialstate_in;
 
   // --------------------------------------------------------------------------
@@ -148,8 +148,8 @@ void MEikonal::S3Constructor(double s_in, const std::vector<gra::MParticle> &ini
     const std::string hstr = std::to_string(s) + std::to_string(INITIALSTATE[0].pdg) + "_" +
                              std::to_string(INITIALSTATE[1].pdg) + PARAM_SOFT::GetHashString() +
                              MEikonalNumerics::GetHashString();
-    const unsigned long hash = gra::aux::djb2hash(hstr);
-    const std::string filename = gra::aux::GetBasePath(2) + "/eikonal/" + "MBT_" +
+    const unsigned long hash     = gra::aux::djb2hash(hstr);
+    const std::string   filename = gra::aux::GetBasePath(2) + "/eikonal/" + "MBT_" +
                                  std::to_string(INITIALSTATE[0].pdg) + "_" +
                                  std::to_string(INITIALSTATE[1].pdg) + "_" +
                                  gra::aux::ToString(msqrt(s), 0) + "_" + std::to_string(hash);
@@ -186,8 +186,8 @@ void MEikonal::S3Constructor(double s_in, const std::vector<gra::MParticle> &ini
                              std::to_string(INITIALSTATE[1].pdg) + PARAM_SOFT::GetHashString() +
                              MEikonalNumerics::GetHashString();
 
-    const unsigned long hash = gra::aux::djb2hash(hstr);
-    const std::string filename = gra::aux::GetBasePath(2) + "/eikonal/" + "MSA_" +
+    const unsigned long hash     = gra::aux::djb2hash(hstr);
+    const std::string   filename = gra::aux::GetBasePath(2) + "/eikonal/" + "MSA_" +
                                  std::to_string(INITIALSTATE[0].pdg) + "_" +
                                  std::to_string(INITIALSTATE[1].pdg) + "_" +
                                  gra::aux::ToString(msqrt(s), 0) + "_" + std::to_string(hash);
@@ -286,12 +286,12 @@ std::complex<double> MEikonal::S3Screening(double kt2) const {
   const double STEP =
       (MEikonalNumerics::MaxBT - MEikonalNumerics::MinBT) / MEikonalNumerics::FBIntegralN;
 
-  const double kt = gra::math::msqrt(kt2);
+  const double                      kt = gra::math::msqrt(kt2);
   std::vector<std::complex<double>> f(MEikonalNumerics::FBIntegralN + 1, 0.0);
 
   // Numerical integral loop over impact parameter (b_t) space
   for (const auto &i : indices(f)) {
-    const double bt = MEikonalNumerics::MinBT + i * STEP;
+    const double               bt = MEikonalNumerics::MinBT + i * STEP;
     const std::complex<double> XI = MBT.Interpolate1D(bt);
 
     // I. STANDARD EIKONAL APPROXIMATION
@@ -317,8 +317,8 @@ void MEikonal::S3CalcXS() {
   std::cout << "MEikonal::S3CalcXS:" << std::endl << std::endl;
 
   // Local discretization
-  const unsigned int N = 2 * 3000;  // even number
-  const double STEP = (MEikonalNumerics::MaxBT - MEikonalNumerics::MinBT) / N;
+  const unsigned int N    = 2 * 3000;  // even number
+  const double       STEP = (MEikonalNumerics::MaxBT - MEikonalNumerics::MinBT) / N;
 
   // Two channel eikonal eigenvalue solutions obtained via symbolic
   // calculation see e.g.
@@ -396,8 +396,8 @@ void MEikonal::S3CalcXS() {
 
   // Composite Simpson's rule, real is taken for C++ reasons in order to
   // be able to substitute into double
-  sigma_tot = 2.0 * IC * std::real(gra::math::CSIntegral(f_tot, STEP)) * PDG::GeV2barn;
-  sigma_el = IC * std::real(gra::math::CSIntegral(f_el, STEP)) * PDG::GeV2barn;
+  sigma_tot  = 2.0 * IC * std::real(gra::math::CSIntegral(f_tot, STEP)) * PDG::GeV2barn;
+  sigma_el   = IC * std::real(gra::math::CSIntegral(f_el, STEP)) * PDG::GeV2barn;
   sigma_inel = IC * std::real(gra::math::CSIntegral(f_in, STEP)) * PDG::GeV2barn;
   // sigma_inel = sigma_tot - sigma_el; // cross check
 
@@ -419,7 +419,7 @@ void MEikonal::S3CalcXS() {
   const double sigma_el_2 = IC * std::real(gra::math::CSIntegral(f_2[0], STEP)) * PDG::GeV2barn;
   const double sigma_sd_a = IC * std::real(gra::math::CSIntegral(f_2[1], STEP)) * PDG::GeV2barn;
   const double sigma_sd_b = IC * std::real(gra::math::CSIntegral(f_2[2], STEP)) * PDG::GeV2barn;
-  const double sigma_dd = IC * std::real(gra::math::CSIntegral(f_2[3], STEP)) * PDG::GeV2barn;
+  const double sigma_dd   = IC * std::real(gra::math::CSIntegral(f_2[3], STEP)) * PDG::GeV2barn;
 
   // Scale
   const double kappa = sigma_el / sigma_el_2;
@@ -442,12 +442,12 @@ void MEikonal::S3CalcXS() {
 void MEikonal::S3CalculateArray(IArray1D &arr, std::complex<double> (MEikonal::*f)(double) const) {
   std::cout << "MEikonal::S3CalculateArray:" << std::endl;
   std::vector<std::future<std::complex<double>>> futures;  // std::async return values
-  MTimer timer(true);
+  MTimer                                         timer(true);
 
   // Loop over discretized variable
   for (std::size_t i = 0; i < arr.F.size_row(); ++i) {
     const double a = arr.MIN + i * arr.STEP;
-    arr.F[i][X] = a;
+    arr.F[i][X]    = a;
 
     // Transform input to linear if log stepping, for the function
     const double var = (arr.islog) ? std::exp(a) : a;
@@ -460,9 +460,7 @@ void MEikonal::S3CalculateArray(IArray1D &arr, std::complex<double> (MEikonal::*
   printf("- Time elapsed: %0.1f sec \n\n", timer.ElapsedSec());
 
   // Retrieve std::async values
-  for (const auto &i : indices(futures)) {
-    arr.F[i][Y] = futures[i].get();
-  }
+  for (const auto &i : indices(futures)) { arr.F[i][Y] = futures[i].get(); }
 }
 
 // Write the array to a file
@@ -499,7 +497,7 @@ bool IArray1D::ReadArray(const std::string &filename) {
     std::string str = "IArray1D::ReadArray: Fatal IO-error with: " + filename;
     return false;
   }
-  std::string line;
+  std::string  line;
   unsigned int fills = 0;
   std::cout << "IArray1D::ReadArray: ";
 
@@ -507,9 +505,9 @@ bool IArray1D::ReadArray(const std::string &filename) {
     // Read every line from the stream
     getline(file, line);
 
-    std::istringstream stream(line);
+    std::istringstream  stream(line);
     std::vector<double> columns(3, 0.0);
-    std::string element;
+    std::string         element;
 
     // Get every line element (3 of them) separated by separator
     int k = 0;
@@ -536,14 +534,10 @@ bool IArray1D::ReadArray(const std::string &filename) {
 //
 std::complex<double> IArray1D::Interpolate1D(double a) const {
   const double EPS = 1e-5;
-  if (a < MIN) {
-    a = MIN;
-  }  // Truncate before (possible) logarithm
+  if (a < MIN) { a = MIN; }  // Truncate before (possible) logarithm
 
   // Logarithmic stepping or not
-  if (islog) {
-    a = std::log(a);
-  }
+  if (islog) { a = std::log(a); }
 
   if (a > MAX * (1 + EPS)) {
     printf(
@@ -556,12 +550,8 @@ std::complex<double> IArray1D::Interpolate1D(double a) const {
   int i = std::floor((a - MIN) / STEP);
 
   // Boundary protection
-  if (i < 0) {
-    i = 0;
-  }  // Int needed for this, instead of unsigned int
-  if (i >= (int)N) {
-    i = N - 1;
-  }  // We got N+1 elements in F
+  if (i < 0) { i = 0; }            // Int needed for this, instead of unsigned int
+  if (i >= (int)N) { i = N - 1; }  // We got N+1 elements in F
 
   // y = y0 + (x - x0)*[(y1 - y0)/(x1 - x0)]
   return F[i][Y] + (a - F[i][X]) * ((F[i + 1][Y] - F[i][Y]) / (F[i + 1][X] - F[i][X]));
@@ -585,7 +575,7 @@ void MEikonal::S3InitCutPomerons() {
     // Poisson probabilities P_m(bt)
     for (std::size_t m = 1; m < MCUT; ++m) {
       // Poisson ansatz
-      double P_m = std::pow(2 * XI, m) / gra::math::factorial(m) * std::exp(-2 * XI);
+      double P_m    = std::pow(2 * XI, m) / gra::math::factorial(m) * std::exp(-2 * XI);
       P_array[m][j] = P_m * bt;  // *bt from jacobian \int d^2b ...
     }
   }
@@ -602,9 +592,7 @@ void MEikonal::S3InitCutPomerons() {
 
   // Calculate zero-truncated average
   double avg = 0;
-  for (std::size_t m = 1; m < P_cut.size(); ++m) {
-    avg += m * P_cut[m];
-  }
+  for (std::size_t m = 1; m < P_cut.size(); ++m) { avg += m * P_cut[m]; }
   printf("<P_cut[m>0]> = %0.2f \n\n", avg);
 }
 

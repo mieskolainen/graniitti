@@ -49,9 +49,7 @@ struct OneCMD {
 
   void Print() {
     std::cout << "identifier: " << id << std::endl;
-    for (const auto &x : arg) {
-      std::cout << x.first << ":" << x.second << std::endl;
-    }
+    for (const auto &x : arg) { std::cout << x.first << ":" << x.second << std::endl; }
   }
 };
 
@@ -65,9 +63,7 @@ inline M4Vec HepMC2M4Vec(const HepMC3::FourVector &v) { return M4Vec(v.x(), v.y(
 // Eigen to std::vector
 inline std::vector<double> Eigen2Vector(const Eigen::VectorXd &x) {
   std::vector<double> y(x.size());
-  for (int i = 0; i < x.size(); ++i) {
-    y[i] = x[i];
-  }
+  for (int i = 0; i < x.size(); ++i) { y[i] = x[i]; }
   return y;
 }
 
@@ -75,9 +71,7 @@ inline std::vector<double> Eigen2Vector(const Eigen::VectorXd &x) {
 template <typename T>
 inline Eigen::VectorXd Vector2Eigen(const std::vector<T> &x) {
   Eigen::VectorXd y(x.size());
-  for (std::size_t i = 0; i < x.size(); ++i) {
-    y[i] = x[i];
-  }
+  for (std::size_t i = 0; i < x.size(); ++i) { y[i] = x[i]; }
   return y;
 }
 
@@ -86,9 +80,7 @@ template <typename T>
 inline Eigen::MatrixXd Matrix2Eigen(const MMatrix<T> &M) {
   Eigen::MatrixXd eM(M.size_row(), M.size_col());
   for (std::size_t i = 0; i < M.size_row(); ++i) {
-    for (std::size_t j = 0; j < M.size_col(); ++j) {
-      eM(i, j) = M[i][j];
-    }
+    for (std::size_t j = 0; j < M.size_col(); ++j) { eM(i, j) = M[i][j]; }
   }
   return eM;
 }
@@ -110,9 +102,9 @@ std::uintmax_t GetFileSize(const std::string &filename);
 void GetProcessMemory(double &peak_use, double &resident_use);
 void GetDiskUsage(const std::string &path, int64_t &size, int64_t &free, int64_t &used);
 unsigned long long TotalSystemMemory();
-std::string SystemName();
-std::string HostName();
-const std::string DateTime();
+std::string        SystemName();
+std::string        HostName();
+const std::string  DateTime();
 
 // Progress bar
 void PrintProgress(double ratio);
@@ -154,7 +146,7 @@ std::vector<std::string> Extract(const std::string &str);
 // Split string to int or double
 template <class T>
 std::vector<T> SplitStr(std::string input, T type, const char delim = ',') {
-  std::vector<T> output;
+  std::vector<T>    output;
   std::stringstream ss(input);
 
   // Get inputfiles by comma
@@ -189,7 +181,7 @@ void PrintBar(std::string str, unsigned int N = 74);
 // Create directory
 void CreateDirectory(std::string fullpath);
 
-double GetVersion();
+double      GetVersion();
 std::string GetVersionString();
 std::string GetVersionTLatex();
 std::string GetWebTLatex();
@@ -214,11 +206,9 @@ bool AssertCut(std::vector<T> cut, const std::string &name = "", bool dothrow = 
 template <typename T>
 bool AssertRatio(T value, T reference, T threshold, const std::string &name = "",
                  bool dothrow = false) {
-  bool ok = false;
+  bool    ok    = false;
   const T ratio = value / reference;
-  if (ratio < (1.0 + threshold) && ratio > (1.0 - threshold)) {
-    ok = true;
-  }
+  if (ratio < (1.0 + threshold) && ratio > (1.0 - threshold)) { ok = true; }
   if (!ok && dothrow) {
     throw std::invalid_argument("AsserRatio: Input '" + name + "' = " + std::to_string(value) +
                                 " not within reference = " + std::to_string(reference) +
@@ -235,9 +225,7 @@ bool AssertRange(T value, std::vector<T> range, const std::string &name = "",
     throw std::invalid_argument("AssertRange: Input '" + name + "' , range vector size is not 2!");
   }
   bool ok = false;
-  if (value >= range[0] && value <= range[1]) {
-    ok = true;
-  }
+  if (value >= range[0] && value <= range[1]) { ok = true; }
   if (!ok && dothrow) {
     throw std::invalid_argument("AssertRange: Input '" + name + "' = " + std::to_string(value) +
                                 " out of range [" + std::to_string(range[0]) + "," +

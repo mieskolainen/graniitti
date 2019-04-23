@@ -72,10 +72,10 @@ namespace gra {
 //
 std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR &lts) {
   // QED couplings
-  double COUPL = 16.0 * pow2(gra::math::PI * gra::form::alpha_EM(0));  // = e^4
-  const double mass = lts.decaytree[0].p4.M();  // lepton, quark (or monopole) mass
-  const double mass2 = pow2(mass);
-  const bool MONOPOLE_MODE = (lts.decaytree[0].p.pdg == PDG::PDG_monopole) ? true : false;
+  double       COUPL         = 16.0 * pow2(gra::math::PI * gra::form::alpha_EM(0));  // = e^4
+  const double mass          = lts.decaytree[0].p4.M();  // lepton, quark (or monopole) mass
+  const double mass2         = pow2(mass);
+  const bool   MONOPOLE_MODE = (lts.decaytree[0].p.pdg == PDG::PDG_monopole) ? true : false;
 
   if (PARAM_MONOPOLE::gn < 1) {
     throw std::invalid_argument("MGamma::yyffbar: Parameter Dirac n less than 1");
@@ -99,7 +99,7 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR &lts) {
 
       // Faster way
       const double beta = msqrt(1.0 - 4.0 * pow2(PARAM_MONOPOLE::M0) / lts.s_hat);
-      COUPL = pow4(g * beta);
+      COUPL             = pow4(g * beta);
     } else if (PARAM_MONOPOLE::coupling == "dirac") {
       COUPL = pow4(g);
     } else {
@@ -142,7 +142,7 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR &lts) {
   // quark pair (charge 1/3 or 2/3), apply charge and color factors
   if (std::abs(lts.decaytree[0].p.pdg) <= 6) {  // we have a quark
 
-    const double Q = lts.decaytree[0].p.chargeX3 / 3.0;
+    const double Q  = lts.decaytree[0].p.chargeX3 / 3.0;
     const double NC = 3.0;  // quarks come in three colors
 
     const double factor = msqrt(pow4(Q) * NC);  // to amplitude level
@@ -202,8 +202,8 @@ std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR &lts) const {
   }
 
   // Two coupling scenarios:
-  static const double g = 2.0 * math::PI * PARAM_MONOPOLE::gn / form::e_EM();
-  double beta = 0.0;
+  static const double g    = 2.0 * math::PI * PARAM_MONOPOLE::gn / form::e_EM();
+  double              beta = 0.0;
 
   if (PARAM_MONOPOLE::coupling == "beta-dirac") {
     beta = msqrt(1.0 - pow2(M) / lts.s_hat);
@@ -254,8 +254,8 @@ std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR &lts) const {
 std::complex<double> MGamma::yyHiggs(gra::LORENTZSCALAR &lts) const {
   lts.hamp.resize(4);
 
-  const double M = 125.18;                  // Higgs mass measured (GeV)
-  const double Gamma = 0.00415;             // Higgs total width calculated (GeV)
+  const double M        = 125.18;           // Higgs mass measured (GeV)
+  const double Gamma    = 0.00415;          // Higgs total width calculated (GeV)
   const double Gamma_yy = 2.27E-3 * Gamma;  // Higgs to gamma-gamma calculated (GeV)
 
   // Normalization
@@ -270,9 +270,7 @@ std::complex<double> MGamma::yyHiggs(gra::LORENTZSCALAR &lts) const {
 
   // Sum over helicity amplitudes squared
   double sumA2 = 0.0;
-  for (const auto &i : aux::indices(lts.hamp)) {
-    sumA2 += gra::math::abs2(lts.hamp[i]);
-  }
+  for (const auto &i : aux::indices(lts.hamp)) { sumA2 += gra::math::abs2(lts.hamp[i]); }
   sumA2 /= 4;  // Initial state polarization average
 
   return msqrt(sumA2);  // We take square later

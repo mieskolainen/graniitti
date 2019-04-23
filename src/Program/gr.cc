@@ -126,9 +126,7 @@ int main(int argc, char *argv[]) {
     // Quick custom parameters
 
     // General parameters (order is important)
-    if (r.count("n")) {
-      gen->SetNumberOfEvents(r["n"].as<unsigned int>());
-    }
+    if (r.count("n")) { gen->SetNumberOfEvents(r["n"].as<unsigned int>()); }
     if (r.count("o") && r.count("f")) {
       gen->SetOutput(r["o"].as<std::string>());
       gen->SetFormat(r["f"].as<std::string>());
@@ -143,9 +141,7 @@ int main(int argc, char *argv[]) {
       const std::string val = r["w"].as<std::string>();
       gen->SetWeighted(val == "true");
     }
-    if (r.count("c")) {
-      gen->SetCores(r["c"].as<unsigned int>());
-    }
+    if (r.count("c")) { gen->SetCores(r["c"].as<unsigned int>()); }
 
     // Process parameters (adding more might be involved due to initialization
     // in
@@ -155,18 +151,10 @@ int main(int argc, char *argv[]) {
       gen->proc->SetScreening(val == "true");
     }
 
-    if (r.count("s")) {
-      gen->proc->SetExcitation(r["s"].as<unsigned int>());
-    }
-    if (r.count("q")) {
-      gen->proc->SetLHAPDF(r["q"].as<std::string>());
-    }
-    if (r.count("h")) {
-      gen->proc->SetHistograms(r["h"].as<unsigned int>());
-    }
-    if (r.count("r")) {
-      gen->proc->random.SetSeed(r["r"].as<unsigned int>());
-    }
+    if (r.count("s")) { gen->proc->SetExcitation(r["s"].as<unsigned int>()); }
+    if (r.count("q")) { gen->proc->SetLHAPDF(r["q"].as<std::string>()); }
+    if (r.count("h")) { gen->proc->SetHistograms(r["h"].as<unsigned int>()); }
+    if (r.count("r")) { gen->proc->random.SetSeed(r["r"].as<unsigned int>()); }
 
     // -------------------------------------------------------------------
 

@@ -66,19 +66,13 @@ void MHarmonic::Init(const HPARAM &hp) {
   for (int l = 0; l <= param.LMAX; ++l) {
     for (int m = -l; m <= l; ++m) {
       const int index = gra::spherical::LinearInd(l, m);
-      ACTIVE[index] = true;
+      ACTIVE[index]   = true;
 
       // FIX ODD MOMENTS TO ZERO
-      if (param.REMOVEODD && ((l % 2) != 0)) {
-        ACTIVE[index] = false;
-      }
+      if (param.REMOVEODD && ((l % 2) != 0)) { ACTIVE[index] = false; }
       // FIX NEGATIVE M TO ZERO
-      if (param.REMOVENEGATIVEM && (m < 0)) {
-        ACTIVE[index] = false;
-      }
-      if (ACTIVE[index]) {
-        ++ACTIVENDF;
-      }
+      if (param.REMOVENEGATIVEM && (m < 0)) { ACTIVE[index] = false; }
+      if (ACTIVE[index]) { ++ACTIVENDF; }
     }
   }
 
@@ -89,10 +83,10 @@ void MHarmonic::Init(const HPARAM &hp) {
   // ------------------------------------------------------------------
 
   // Init arrays used by Minuit function
-  t_lm = std::vector<double>(NCOEF, 0.0);
+  t_lm       = std::vector<double>(NCOEF, 0.0);
   t_lm_error = std::vector<double>(NCOEF, 0.0);
-  errmat = MMatrix<double>(NCOEF, NCOEF, 0.0);
-  covmat = MMatrix<double>(NCOEF, NCOEF, 0.0);
+  errmat     = MMatrix<double>(NCOEF, NCOEF, 0.0);
+  covmat     = MMatrix<double>(NCOEF, NCOEF, 0.0);
 
   // Test functions
   gra::spherical::TestSphericalIntegrals(param.LMAX);
@@ -261,19 +255,19 @@ void MHarmonic::Plot2DExpansion(
   std::smatch sma;
   std::regex_search(TYPESTRING, sma, std::regex(R"(\{.*?\})"));  // R"()" for Raw string literals
   std::string DATAMODE = sma[0];
-  DATAMODE = DATAMODE.substr(1, DATAMODE.size() - 2);
+  DATAMODE             = DATAMODE.substr(1, DATAMODE.size() - 2);
 
   // find <string>
   std::smatch smb;
   std::regex_search(TYPESTRING, smb, std::regex(R"(\<.*?\>)"));  // R"()" for Raw string literals
   std::string SPACE = smb[0];
-  SPACE = SPACE.substr(1, SPACE.size() - 2);
+  SPACE             = SPACE.substr(1, SPACE.size() - 2);
 
   // find [string]
   std::smatch smc;
   std::regex_search(TYPESTRING, smc, std::regex(R"(\[.*?\])"));  // R"()" for Raw string literals
   std::string ALGO = smc[0];
-  ALGO = ALGO.substr(1, ALGO.size() - 2);
+  ALGO             = ALGO.substr(1, ALGO.size() - 2);
 
   // ------------------------------------------------------------------
   // f(cos(theta),phi; M) synthesis
@@ -321,9 +315,9 @@ void MHarmonic::Plot2DExpansion(
       }
 
       // Create histogram
-      const double EPS = 1e-3;
+      const double      EPS  = 1e-3;
       const std::string name = "h2_" + std::to_string(source_ind) + "_" + std::to_string(bin);
-      h2[source_ind][bin] = new TH2D(name.c_str(), "; cos #theta; #phi (rad)", N, -(1 + EPS),
+      h2[source_ind][bin]    = new TH2D(name.c_str(), "; cos #theta; #phi (rad)", N, -(1 + EPS),
                                      1 + EPS, N, -(math::PI + EPS), math::PI + EPS);
 
       for (std::size_t i = 0; i < N; ++i) {
@@ -387,9 +381,7 @@ void MHarmonic::Plot2DExpansion(
 
   // Delete all histograms
   for (std::size_t i = 0; i < h2.size(); ++i) {
-    for (std::size_t j = 0; j < h2[i].size(); ++j) {
-      delete h2[i][j];
-    }
+    for (std::size_t j = 0; j < h2[i].size(); ++j) { delete h2[i][j]; }
   }
 }
 
@@ -401,9 +393,7 @@ void GetLegendPosition2(unsigned int N, double &x1, double &x2, double &y1, doub
   y1 = 0.75 - 0.01 * N;
 
   // South-East
-  if (legendposition.compare("southeast") == 0) {
-    y1 = 0.10 - 0.01 * N;
-  }
+  if (legendposition.compare("southeast") == 0) { y1 = 0.10 - 0.01 * N; }
   y2 = y1 + 0.05 * N;  // Scale by the number of histograms
 }
 
@@ -430,25 +420,25 @@ void MHarmonic::PlotFigures(
   std::smatch sma;
   std::regex_search(TYPESTRING, sma, std::regex(R"(\{.*?\})"));  // R"()" for Raw string literals
   std::string DATAMODE = sma[0];
-  DATAMODE = DATAMODE.substr(1, DATAMODE.size() - 2);
+  DATAMODE             = DATAMODE.substr(1, DATAMODE.size() - 2);
 
   // find <string>
   std::smatch smb;
   std::regex_search(TYPESTRING, smb, std::regex(R"(\<.*?\>)"));  // R"()" for Raw string literals
   std::string SPACE = smb[0];
-  SPACE = SPACE.substr(1, SPACE.size() - 2);
+  SPACE             = SPACE.substr(1, SPACE.size() - 2);
 
   // find [string]
   std::smatch smc;
   std::regex_search(TYPESTRING, smc, std::regex(R"(\[.*?\])"));  // R"()" for Raw string literals
   std::string ALGO = smc[0];
-  ALGO = ALGO.substr(1, ALGO.size() - 2);
+  ALGO             = ALGO.substr(1, ALGO.size() - 2);
 
   // ------------------------------------------------------------------
 
   // Loop over data sources
   std::size_t BINS = 0;
-  int ind = 0;
+  int         ind  = 0;
 
   // Graphs for each data [source] x [lm-moment]
   std::vector<std::vector<TGraphErrors *>> gr(tensor.size(),
@@ -465,16 +455,14 @@ void MHarmonic::PlotFigures(
   gStyle->SetErrorX(0);
 
   std::vector<TMultiGraph *> mg(ACTIVENDF, NULL);
-  for (std::size_t k = 0; k < ACTIVENDF; ++k) {
-    mg[k] = new TMultiGraph();
-  }
+  for (std::size_t k = 0; k < ACTIVENDF; ++k) { mg[k] = new TMultiGraph(); }
 
-  std::string FRAME;
+  std::string              FRAME;
   std::vector<std::string> TITLES;
 
   for (const auto &source : tensor) {
     legendstrs[ind] = source.first.LEGEND;
-    BINS = source.second.size(OBSERVABLE);
+    BINS            = source.second.size(OBSERVABLE);
 
     // Loop over moments
     int k = 0;
@@ -485,16 +473,14 @@ void MHarmonic::PlotFigures(
       for (int m = -l; m <= l; ++m) {
         const int index = gra::spherical::LinearInd(l, m);
 
-        if (!ACTIVE[index]) {
-          continue;
-        }  // Not active
+        if (!ACTIVE[index]) { continue; }  // Not active
 
         // Set canvas position
         c1->cd(k + 1);
 
         // Loop over mass
-        double x[BINS] = {0};
-        double y[BINS] = {0};
+        double x[BINS]     = {0};
+        double y[BINS]     = {0};
         double x_err[BINS] = {0};
         double y_err[BINS] = {0};
 
@@ -508,10 +494,10 @@ void MHarmonic::PlotFigures(
 
           // CHOOSE DATAMODE
           if (ALGO == "MPP") {
-            y[bin] = source.second(cell).t_lm_MPP[index];
+            y[bin]     = source.second(cell).t_lm_MPP[index];
             y_err[bin] = source.second(cell).t_lm_MPP_error[index];
           } else if (ALGO == "EML") {
-            y[bin] = source.second(cell).t_lm_EML[index];
+            y[bin]     = source.second(cell).t_lm_EML[index];
             y_err[bin] = source.second(cell).t_lm_EML_error[index];
           } else {
             throw std::invalid_argument(
@@ -526,12 +512,8 @@ void MHarmonic::PlotFigures(
         // Normalize lm = 00 to sum to 1 -> then apply to all
         if ((l == 0 && m == 0) && SCALE < 0.0) {
           double sum = 0.0;
-          for (std::size_t bin = 0; bin < BINS; ++bin) {
-            sum += y[bin];
-          }
-          if (sum > 0) {
-            SCALE = 1.0 / sum;
-          }
+          for (std::size_t bin = 0; bin < BINS; ++bin) { sum += y[bin]; }
+          if (sum > 0) { SCALE = 1.0 / sum; }
         }
 
         // Apply scale by user
@@ -557,7 +539,7 @@ void MHarmonic::PlotFigures(
         gr[ind][k]->SetMarkerStyle(21);  // square
         gr[ind][k]->SetMarkerSize(0.3);
 
-        FRAME = source.first.FRAME;
+        FRAME  = source.first.FRAME;
         TITLES = source.first.TITLES;
 
         // Add to the multigraph
@@ -578,9 +560,7 @@ void MHarmonic::PlotFigures(
     for (int m = -l; m <= l; ++m) {
       const int index = gra::spherical::LinearInd(l, m);
 
-      if (!ACTIVE[index]) {
-        continue;
-      }  // Not active
+      if (!ACTIVE[index]) { continue; }  // Not active
 
       // Set canvas position
       c1->cd(k + 1);
@@ -631,7 +611,7 @@ void MHarmonic::PlotFigures(
         // Skip the first element (lm=00)
         const double maxval = *std::max_element(std::begin(MAXVAL) + 1, std::end(MAXVAL));
         const double minval = *std::min_element(std::begin(MINVAL) + 1, std::end(MINVAL));
-        const double bound = std::max(std::abs(minval), std::abs(maxval));
+        const double bound  = std::max(std::abs(minval), std::abs(maxval));
 
         mg[k]->GetHistogram()->SetMaximum(bound * 1.1);
         mg[k]->GetHistogram()->SetMinimum(-bound * 1.1);
@@ -667,8 +647,8 @@ void MHarmonic::PlotFigures(
         c1->cd();  // Important!
         TPad *tpad = gra::rootstyle::TransparentPad();
 
-        TLatex *l1;
-        TLatex *l2;
+        TLatex *     l1;
+        TLatex *     l2;
         const double xpos = 0.99;
         std::tie(l1, l2) = gra::rootstyle::MadeInFinland(xpos);
       }
@@ -683,7 +663,7 @@ void MHarmonic::PlotFigures(
   c1->cd(1);
 
   // Create legend
-  double x1, x2, y1, y2 = 0.0;
+  double            x1, x2, y1, y2 = 0.0;
   const std::string legendposition = "northeast";
   GetLegendPosition2(tensor.size(), x1, x2, y1, y2, legendposition);
   TLegend *legend = new TLegend(x1, y1, x2, y2);
@@ -692,9 +672,7 @@ void MHarmonic::PlotFigures(
   legend->SetTextSize(0.035);
 
   // Add legend entries
-  for (const auto &i : indices(gr)) {
-    legend->AddEntry(gr[i][0], legendstrs[i].c_str());
-  }
+  for (const auto &i : indices(gr)) { legend->AddEntry(gr[i][0], legendstrs[i].c_str()); }
 
   // Draw legend
   legend->Draw("same");
@@ -705,7 +683,7 @@ void MHarmonic::PlotFigures(
     aux::CreateDirectory("./figs");
     aux::CreateDirectory("./figs/harmonicfit");
     aux::CreateDirectory("./figs/harmonicfit/" + outputpath);
-    const std::string subpath = "OBS_" + std::to_string(OBSERVABLE) + "_" + FRAME;
+    const std::string subpath  = "OBS_" + std::to_string(OBSERVABLE) + "_" + FRAME;
     const std::string fullpath = "./figs/harmonicfit/" + outputpath + "/" + subpath;
     aux::CreateDirectory(fullpath);
     c1->Print(Form("%s/%s.pdf", fullpath.c_str(), TYPESTRING.c_str()));
@@ -753,18 +731,16 @@ void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string &out
   gStyle->SetErrorX(0);
 
   std::vector<TMultiGraph *> mg(ACTIVENDF, NULL);
-  for (std::size_t k = 0; k < ACTIVENDF; ++k) {
-    mg[k] = new TMultiGraph();
-  }
+  for (std::size_t k = 0; k < ACTIVENDF; ++k) { mg[k] = new TMultiGraph(); }
 
   std::size_t BINS = det_DET.size(OBSERVABLE);
 
   // Read data
-  std::string FRAME;
+  std::string              FRAME;
   std::vector<std::string> TITLES;
 
   for (const auto &source : det) {
-    FRAME = source.first.FRAME;
+    FRAME  = source.first.FRAME;
     TITLES = source.first.TITLES;
     break;
   }
@@ -776,16 +752,14 @@ void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string &out
       for (int m = -l; m <= l; ++m) {
         const int index = gra::spherical::LinearInd(l, m);
 
-        if (!ACTIVE[index]) {
-          continue;
-        }  // Not active
+        if (!ACTIVE[index]) { continue; }  // Not active
 
         // Set canvas position
         c1->cd(k + 1);
 
         // Loop over mass
-        double x[BINS] = {0};
-        double y[BINS] = {0};
+        double x[BINS]     = {0};
+        double y[BINS]     = {0};
         double x_err[BINS] = {0};
         double y_err[BINS] = {0};
 
@@ -799,13 +773,13 @@ void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string &out
 
           // CHOOSE DATAMODE
           if (level == 0) {
-            y[bin] = det_DET(cell).E_lm[index];
+            y[bin]     = det_DET(cell).E_lm[index];
             y_err[bin] = det_DET(cell).E_lm_error[index];
           } else if (level == 1) {
-            y[bin] = fid_DET(cell).E_lm[index];
+            y[bin]     = fid_DET(cell).E_lm[index];
             y_err[bin] = fid_DET(cell).E_lm_error[index];
           } else if (level == 2) {
-            y[bin] = fla_DET(cell).E_lm[index];
+            y[bin]     = fla_DET(cell).E_lm[index];
             y_err[bin] = fla_DET(cell).E_lm_error[index];
           }
 
@@ -842,9 +816,7 @@ void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string &out
     for (int m = -l; m <= l; ++m) {
       const int index = gra::spherical::LinearInd(l, m);
 
-      if (!ACTIVE[index]) {
-        continue;
-      }  // Not active
+      if (!ACTIVE[index]) { continue; }  // Not active
 
       // Set canvas position
       c1->cd(k + 1);
@@ -886,7 +858,7 @@ void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string &out
         // Skip the first element (lm=00)
         const double maxval = *std::max_element(std::begin(MAXVAL) + 1, std::end(MAXVAL));
         const double minval = *std::min_element(std::begin(MINVAL) + 1, std::end(MINVAL));
-        const double bound = std::max(std::abs(minval), std::abs(maxval));
+        const double bound  = std::max(std::abs(minval), std::abs(maxval));
 
         mg[k]->GetHistogram()->SetMaximum(bound * 1.1);
         mg[k]->GetHistogram()->SetMinimum(-bound * 1.1);
@@ -917,8 +889,8 @@ void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string &out
         c1->cd();  // Important!
         TPad *tpad = gra::rootstyle::TransparentPad();
 
-        TLatex *l1;
-        TLatex *l2;
+        TLatex *     l1;
+        TLatex *     l2;
         const double xpos = 0.99;
         std::tie(l1, l2) = gra::rootstyle::MadeInFinland(xpos);
       }
@@ -932,7 +904,7 @@ void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string &out
   c1->cd(1);
 
   // Create legend
-  double x1, x2, y1, y2 = 0.0;
+  double            x1, x2, y1, y2 = 0.0;
   const std::string legendposition = "southeast";
   GetLegendPosition2(3, x1, x2, y1, y2, legendposition);
   TLegend *legend = new TLegend(x1 - 0.3, y1 + 0.1, x2 - 0.3, y2 + 0.1);
@@ -955,7 +927,7 @@ void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string &out
     aux::CreateDirectory("./figs");
     aux::CreateDirectory("./figs/harmonicfit");
     aux::CreateDirectory("./figs/harmonicfit/" + outputpath);
-    const std::string subpath = "OBS_" + std::to_string(OBSERVABLE) + "_" + FRAME;
+    const std::string subpath  = "OBS_" + std::to_string(OBSERVABLE) + "_" + FRAME;
     const std::string fullpath = "./figs/harmonicfit/" + outputpath + "/" + subpath;
     aux::CreateDirectory(fullpath);
     c1->Print(Form("%s/h_Response.pdf", fullpath.c_str()));
@@ -1135,9 +1107,9 @@ void MHarmonic::HyperLoop(void (*fitfunc)(int &, double *, double &, double *, i
   grid[2].resize(hp.Y[0]);
 
   // Mass steps
-  const double M_STEP = (hp.M[2] - hp.M[1]) / hp.M[0];
+  const double M_STEP  = (hp.M[2] - hp.M[1]) / hp.M[0];
   const double PT_STEP = (hp.PT[2] - hp.PT[1]) / hp.PT[0];
-  const double Y_STEP = (hp.Y[2] - hp.Y[1]) / hp.Y[0];
+  const double Y_STEP  = (hp.Y[2] - hp.Y[1]) / hp.Y[0];
 
   for (std::size_t i = 0; i < hp.M[0]; ++i) {
     grid[0][i].min = i * M_STEP + hp.M[1];
@@ -1175,13 +1147,13 @@ void MHarmonic::HyperLoop(void (*fitfunc)(int &, double *, double &, double *, i
         std::pair<std::vector<double>, std::vector<double>> E2 =
             gra::spherical::GetELM(MC, MC_ind, param.LMAX, "det");
 
-        fla_DET({i, j, k}).E_lm = E0.first;
+        fla_DET({i, j, k}).E_lm       = E0.first;
         fla_DET({i, j, k}).E_lm_error = E0.second;
 
-        fid_DET({i, j, k}).E_lm = E1.first;
+        fid_DET({i, j, k}).E_lm       = E1.first;
         fid_DET({i, j, k}).E_lm_error = E1.second;
 
-        det_DET({i, j, k}).E_lm = E2.first;
+        det_DET({i, j, k}).E_lm       = E2.first;
         det_DET({i, j, k}).E_lm_error = E2.second;
       }
     }
@@ -1194,7 +1166,7 @@ void MHarmonic::HyperLoop(void (*fitfunc)(int &, double *, double &, double *, i
     // --------------------------------------------------------
     // Pre-Calculate once Spherical Harmonics for the MINUIT fit
     DATA_events = DATA[ind].EVENTS;
-    Y_lm = gra::spherical::YLM(DATA_events, param.LMAX);
+    Y_lm        = gra::spherical::YLM(DATA_events, param.LMAX);
     // --------------------------------------------------------
 
     double chi2 = 0.0;
@@ -1340,12 +1312,8 @@ void MHarmonic::HyperLoop(void (*fitfunc)(int &, double *, double &, double *, i
             int fiducial = 0;
             int selected = 0;
             for (const auto &l : DATA_ind) {
-              if (DATA_events[l].fiducial) {
-                ++fiducial;
-              }
-              if (DATA_events[l].fiducial && DATA_events[l].selected) {
-                ++selected;
-              }
+              if (DATA_events[l].fiducial) { ++fiducial; }
+              if (DATA_events[l].fiducial && DATA_events[l].selected) { ++selected; }
             }
             std::cout << std::endl;
 
@@ -1391,7 +1359,7 @@ void MHarmonic::HyperLoop(void (*fitfunc)(int &, double *, double &, double *, i
 
 // Print out results for the hypercell
 //
-double MHarmonic::PrintOutHyperCell(const gra::spherical::Meta &META,
+double MHarmonic::PrintOutHyperCell(const gra::spherical::Meta &    META,
                                     const std::vector<std::size_t> &cell) {
   double chi2 = 0;
 
@@ -1409,9 +1377,7 @@ double MHarmonic::PrintOutHyperCell(const gra::spherical::Meta &META,
         const double fit = det[META](cell).t_lm_EML[index];
 
         // Moment active
-        if (ACTIVE[index]) {
-          chi2 += pow2(obs - fit) / pow2(obs);
-        }
+        if (ACTIVE[index]) { chi2 += pow2(obs - fit) / pow2(obs); }
       }
     }
     std::cout << std::endl;
@@ -1499,8 +1465,8 @@ void MHarmonic::MomentFit(const gra::spherical::Meta &META, const std::vector<st
   // 0.5 for negative log likelihood
   //    gMinuit->SetErrorDef(0.5);
   double arglist[2];
-  int ierflg = 0;
-  arglist[0] = 0.5;  // 0.5 <=> We use negative log likelihood cost function
+  int    ierflg = 0;
+  arglist[0]    = 0.5;  // 0.5 <=> We use negative log likelihood cost function
   gMinuit->mnexcm("SET ERR", arglist, 1, ierflg);
 
   // double fminbest = 1e32;
@@ -1576,8 +1542,8 @@ void MHarmonic::MomentFit(const gra::spherical::Meta &META, const std::vector<st
     covmat.Print("Covariance matrix");
 
     // Print results
-    double fmin, fedm, errdef = 0.0;
-    int nvpar, nparx, istat = 0;
+    double fmin, fedm, errdef  = 0.0;
+    int    nvpar, nparx, istat = 0;
     gMinuit->mnstat(fmin, fedm, errdef, nvpar, nparx, istat);
 
     // Collect fit result
@@ -1597,8 +1563,8 @@ void MHarmonic::MomentFit(const gra::spherical::Meta &META, const std::vector<st
   // covariance(X_i, X_j)
 
   // Print out results (see MINUIT manual for these parameters)
-  double fmin, fedm, errdef = 0.0;
-  int nvpar, nparx, istat = 0;
+  double fmin, fedm, errdef  = 0.0;
+  int    nvpar, nparx, istat = 0;
   gMinuit->mnstat(fmin, fedm, errdef, nvpar, nparx, istat);
   gMinuit->mnprin(4, fmin);
 
@@ -1621,12 +1587,12 @@ void MHarmonic::logLfunc(int &npar, double *gin, double &f, double *par, int ifl
   // This is the number of events in the current phase space point at detector
   // level
   const int METHOD = 2;
-  double nhat = 0.0;
+  double    nhat   = 0.0;
 
   // Equivalent estimator 1
   if (METHOD == 1) {
     const std::vector<double> t_lm_det = det_DET(activecell).MIXlm * T;  // Matrix * Vector
-    nhat = t_lm_det[0];
+    nhat                               = t_lm_det[0];
   }
   // Equivalent estimator 2
   if (METHOD == 2) {
@@ -1636,7 +1602,7 @@ void MHarmonic::logLfunc(int &npar, double *gin, double &f, double *par, int ifl
   // For each event, calculate \sum_{LM} t_{lm}
   // Re[Y_{lm}(costheta,phi_k)], k is the event index
   std::vector<double> I0;
-  const double V = msqrt(4.0 * PI);  // Normalization volume
+  const double        V = msqrt(4.0 * PI);  // Normalization volume
 
   for (const auto &k : DATA_ind) {
     // Event is accepted
@@ -1692,16 +1658,12 @@ void MHarmonic::logLfunc(int &npar, double *gin, double &f, double *par, int ifl
   f = -logL + nhat;
 
   // High penalty, total event count estimate has gone out of physical
-  if (nhat < 0) {
-    f = 1e32;
-  }
+  if (nhat < 0) { f = 1e32; }
 
   // L1-norm regularization (Laplace prior), -> + ln(P_laplace)
-  double l1term = 0.0;
-  const unsigned int START = 1;
-  for (std::size_t i = START; i < T.size(); ++i) {
-    l1term += std::abs(T[i]);
-  }
+  double             l1term = 0.0;
+  const unsigned int START  = 1;
+  for (std::size_t i = START; i < T.size(); ++i) { l1term += std::abs(T[i]); }
   f += l1term * param.L1REG * nhat;  // nhat for scale normalization
 
   // printf("MHarmonic:: cost-functional = %0.4E, nhat = %0.1f \n", f, nhat);

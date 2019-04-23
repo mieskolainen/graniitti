@@ -43,15 +43,15 @@ enum SPINPARITY { P0, M0, P2, M2 };  // Implicit conversion to int
 
 // Durham loop integral discretization technical parameters
 namespace Durham {
-unsigned int N_qt = 0;   // Number of qt discretization intervals
+unsigned int N_qt  = 0;  // Number of qt discretization intervals
 unsigned int N_phi = 0;  // Number of phi discretization intervals
 
 double qt2_MIN = 0;  // Loop momentum qt^2 minimum (GeV^2)
 double qt2_MAX = 0;  // Loop momentum qt^2 maximum (GeV^2)
 
-std::string PDF_scale = "MIN";  // Scheme
-double alphas_scale = 4.0;      // PDF factorization scale
-double MAXCOS = 0.9;            // Meson amplitude |cos(theta*)| < MAXCOS
+std::string PDF_scale    = "MIN";  // Scheme
+double      alphas_scale = 4.0;    // PDF factorization scale
+double      MAXCOS       = 0.9;    // Meson amplitude |cos(theta*)| < MAXCOS
 
 void ReadParameters() {
   using json = nlohmann::json;
@@ -59,26 +59,26 @@ void ReadParameters() {
   const std::string inputfile =
       gra::aux::GetBasePath(2) + "/modeldata/" + gra::MODELPARAM + "/GENERAL.json";
   const std::string data = gra::aux::GetInputData(inputfile);
-  json j;
+  json              j;
 
   try {
     j = json::parse(data);
 
     // JSON block identifier
     const std::string XID = "PARAM_DURHAM_QCD";
-    N_qt = j.at(XID).at("N_qt");
-    N_phi = j.at(XID).at("N_phi");
-    qt2_MIN = j.at(XID).at("qt2_MIN");
-    qt2_MAX = j.at(XID).at("qt2_MAX");
-    PDF_scale = j.at(XID).at("PDF_scale");
-    alphas_scale = j.at(XID).at("alphas_scale");
-    MAXCOS = j.at(XID).at("MAXCOS");
+    N_qt                  = j.at(XID).at("N_qt");
+    N_phi                 = j.at(XID).at("N_phi");
+    qt2_MIN               = j.at(XID).at("qt2_MIN");
+    qt2_MAX               = j.at(XID).at("qt2_MAX");
+    PDF_scale             = j.at(XID).at("PDF_scale");
+    alphas_scale          = j.at(XID).at("alphas_scale");
+    MAXCOS                = j.at(XID).at("MAXCOS");
 
     // Now calculate rest
     qt_MIN = msqrt(Durham::qt2_MIN);
     qt_MAX = msqrt(Durham::qt2_MAX);
 
-    qt_STEP = (Durham::qt_MIN - Durham::qt_MAX) / Durham::N_qt;
+    qt_STEP  = (Durham::qt_MIN - Durham::qt_MAX) / Durham::N_qt;
     phi_STEP = (2.0 * math::PI) / Durham::N_phi;
 
     initialized = true;
@@ -90,11 +90,11 @@ void ReadParameters() {
 }
 
 // THESE ARE CALCULATED FROM ABOVE
-double qt_MIN = 0;
-double qt_MAX = 0;
-double qt_STEP = 0;
-double phi_STEP = 0;
-bool initialized = false;
+double qt_MIN      = 0;
+double qt_MAX      = 0;
+double qt_STEP     = 0;
+double phi_STEP    = 0;
+bool   initialized = false;
 }
 
 // Durham QCD / KMR model
@@ -311,7 +311,7 @@ inline void MDurham::DScaleChoise(double qt2, double q1_2, double q2_2, double &
 //               x f_g(x_1,x_1',Q_1^2,\mu_2;t_1) x
 //               f_g(x_2,x_2',Q_2^2,\mu_2;t_2)
 //
-std::complex<double> MDurham::DQtloop(gra::LORENTZSCALAR &lts,
+std::complex<double> MDurham::DQtloop(gra::LORENTZSCALAR &                           lts,
                                       std::vector<std::vector<std::complex<double>>> Amp) {
   // Forward (proton) system pt-vectors
   const std::vector<double> pt1 = {lts.pfinal[1].Px(), lts.pfinal[1].Py()};
@@ -340,7 +340,7 @@ std::complex<double> MDurham::DQtloop(gra::LORENTZSCALAR &lts,
 
   // Linearly discretized qt-loop, N+1!
   for (std::size_t i = 0; i < Durham::N_qt + 1; ++i) {
-    const double qt = Durham::qt_MIN + i * Durham::qt_STEP;
+    const double qt  = Durham::qt_MIN + i * Durham::qt_STEP;
     const double qt2 = pow2(qt);
 
     // Linearly discretized phi in [0,2pi), N+1!
@@ -368,9 +368,7 @@ std::complex<double> MDurham::DQtloop(gra::LORENTZSCALAR &lts,
       DScaleChoise(qt2, q1_2, q2_2, Q1_2_scale, Q2_2_scale);
 
       // Minimum scale cutoff
-      if (Q1_2_scale < Durham::qt2_MIN || Q2_2_scale < Durham::qt2_MIN) {
-        continue;
-      }
+      if (Q1_2_scale < Durham::qt2_MIN || Q2_2_scale < Durham::qt2_MIN) { continue; }
 
       // --------------------------------------------------------------------------
       // Get amplitude level pdfs
@@ -386,9 +384,7 @@ std::complex<double> MDurham::DQtloop(gra::LORENTZSCALAR &lts,
 
       // Loop over (outgoing) helicity combinations.
       // Amp[h] contains initial state gluon helicity combinations --,-+,+-,++
-      for (std::size_t h = 0; h < f.size(); ++h) {
-        f[h][i][j] = weight * DHelProj(Amp[h], JzP);
-      }
+      for (std::size_t h = 0; h < f.size(); ++h) { f[h][i][j] = weight * DHelProj(Amp[h], JzP); }
 
     }  // phi-loop
   }    // |q_t|-loop
@@ -434,7 +430,7 @@ std::complex<double> MDurham::DQtloop(gra::LORENTZSCALAR &lts,
 // https://arxiv.org/abs/hep-ph/0403218]
 // [REFERENCE: Pasechnik, Szczurek, Teryaev, https://arxiv.org/abs/0709.0857v1]
 //
-void MDurham::Dgg2chic0(const gra::LORENTZSCALAR &lts,
+void MDurham::Dgg2chic0(const gra::LORENTZSCALAR &                      lts,
                         std::vector<std::vector<std::complex<double>>> &Amp,
                         const std::vector<double> &qt1, const std::vector<double> &qt2) const {
   // @@ MUTEX LOCK @@
@@ -443,11 +439,11 @@ void MDurham::Dgg2chic0(const gra::LORENTZSCALAR &lts,
   gra::g_mutex.unlock();
   // @@ MUTEX LOCK @@
 
-  const double gs2 = 4.0 * PI * alpha_s;  // coupling
-  const double K_NLO = 1.68;              // NLO correction
-  const double M0 = 3.41475;              // chi_c(0+) mass (GeV)
-  const double W0 = 0.0108;               // chi_c(0+) width (GeV)
-  const double NC = 3.0;                  // #colors
+  const double gs2   = 4.0 * PI * alpha_s;  // coupling
+  const double K_NLO = 1.68;                // NLO correction
+  const double M0    = 3.41475;             // chi_c(0+) mass (GeV)
+  const double W0    = 0.0108;              // chi_c(0+) width (GeV)
+  const double NC    = 3.0;                 // #colors
 
   // Gluonic width \Gamma(\chi_c(0+) -> gg), see references
   std::complex<double> A = K_NLO * 8.0 * math::zi * gs2 / M0 * msqrt(0.075) / msqrt(PI * M0 * NC);
@@ -482,7 +478,7 @@ void MDurham::Dgg2chic0(const gra::LORENTZSCALAR &lts,
 // Note that incoming gluons (a,b) are in a color singlet state,
 // i.e., a = b or \delta^{ab} Tr [ .color algebra. ] has been applied
 //
-void MDurham::Dgg2gg(const gra::LORENTZSCALAR &lts,
+void MDurham::Dgg2gg(const gra::LORENTZSCALAR &                      lts,
                      std::vector<std::vector<std::complex<double>>> &Amp) {
   // @@ MUTEX LOCK @@
   gra::g_mutex.lock();
@@ -499,7 +495,7 @@ void MDurham::Dgg2gg(const gra::LORENTZSCALAR &lts,
   norm *= 2.0;
 
   // Helicity phase
-  const double phi = lts.decaytree[0].p4.Phi();
+  const double               phi      = lts.decaytree[0].p4.Phi();
   const std::complex<double> negphase = std::exp(-zi * phi);
   const std::complex<double> posphase = std::exp(zi * phi);
 
@@ -525,16 +521,14 @@ void MDurham::Dgg2gg(const gra::LORENTZSCALAR &lts,
     }
     Amp[h] = is;
 
-    for (std::size_t k = 0; k < 4; ++k) {
-      dualAmp[4 * k + h] = is[k];
-    }
+    for (std::size_t k = 0; k < 4; ++k) { dualAmp[4 * k + h] = is[k]; }
   }
 
   // ------------------------------------------------------------------------
   const bool DEBUG = false;
   if (DEBUG) {
     // TEST amplitude squared WITH MADGRAPH (UNDER IMPLEMENTATION)
-    double madsum = 0.0;
+    double madsum  = 0.0;
     double thissum = 0.0;
     for (unsigned int i = 0; i < 16; ++i) {
       printf("i=%2d : |mad|^2 = %0.3f , |amp|^2 = %0.3f \n", i, math::abs2(lts.hamp[i]),
@@ -593,7 +587,7 @@ double MDurham::phi_CZ(double x, double fM) const {
 //
 std::vector<double> MDurham::EvalPhi(int N, int pdg) const {
   // Meson decay constants
-  double fM = 0.0;
+  double                           fM        = 0.0;
   static const std::vector<double> supported = {111, 211, 321, 311};  // pi0, pi+, K+, K0
   if (std::find(supported.begin(), supported.end(), pdg) != supported.end()) {
     fM = PDG::fM_meson.at(pdg);
@@ -605,12 +599,12 @@ std::vector<double> MDurham::EvalPhi(int N, int pdg) const {
 
   // Mixing angle
   static const double THETA_eta = math::Deg2Rad(-15.4);
-  const double costh = std::cos(THETA_eta);
-  const double sinth = std::sin(THETA_eta);
+  const double        costh     = std::cos(THETA_eta);
+  const double        sinth     = std::sin(THETA_eta);
 
   // Evaluate
   std::vector<double> f(N + 1);
-  const double STEP = 1.0 / N;
+  const double        STEP = 1.0 / N;
   for (const auto &i : aux::indices(f)) {
     const double x = i * STEP;
     if (pdg == 221) {  // eta via mixing
@@ -626,12 +620,12 @@ std::vector<double> MDurham::EvalPhi(int N, int pdg) const {
 
 // Meson pair amplitude
 //
-void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR &lts,
+void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR &                      lts,
                         std::vector<std::vector<std::complex<double>>> &Amp) {
   // Wave function x-discretization
   // [Easy speed & accuracy improvement: Check lambda-functions below,
   // they could be pre-calculated and interpolated as a function of costheta]
-  const int Nx = 96;
+  const int    Nx    = 96;
   const double STEPx = 1.0 / Nx;
 
   // Init 2D-Simpson weight matrix (will be calculated only once, being
@@ -639,8 +633,8 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR &lts,
   const static MMatrix<double> WSimpson = math::Simpson38Weight2D(Nx, Nx);
 
   const double delta_AB = 8;  // Sum over \delta^AB [gluons in with the same color]
-  const double NC = 3;        // Three colors
-  const double CF = (pow2(NC) - 1.0) / (NC * 2.0);  // SU(3) algebra
+  const double NC       = 3;  // Three colors
+  const double CF       = (pow2(NC) - 1.0) / (NC * 2.0);  // SU(3) algebra
 
   // @@ MUTEX LOCK @@
   gra::g_mutex.lock();
@@ -648,10 +642,10 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR &lts,
   gra::g_mutex.unlock();
   // @@ MUTEX LOCK @@
 
-  const double shat = lts.s_hat;
-  const double m = lts.decaytree[0].p4.M();
-  const double beta = kinematics::Beta(pow2(m), shat);
-  const double costheta = (1.0 + 2.0 * lts.t_hat / lts.s_hat - 2.0 * pow2(m) / lts.s_hat) / beta;
+  const double shat      = lts.s_hat;
+  const double m         = lts.decaytree[0].p4.M();
+  const double beta      = kinematics::Beta(pow2(m), shat);
+  const double costheta  = (1.0 + 2.0 * lts.t_hat / lts.s_hat - 2.0 * pow2(m) / lts.s_hat) / beta;
   const double costheta2 = pow2(costheta);
 
   // ------------------------------------------------------------------
@@ -665,7 +659,7 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR &lts,
   // ------------------------------------------------------------------
 
   // Helicity phase
-  const double phi = lts.decaytree[0].p4.Phi();
+  const double               phi      = lts.decaytree[0].p4.Phi();
   const std::complex<double> posphase = std::exp(2.0 * zi * phi);
   const std::complex<double> negphase = std::exp(-2.0 * zi * phi);
 
@@ -716,7 +710,7 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR &lts,
   static const std::vector<double> wfphi1 = EvalPhi(Nx, pdg1);
 
   // -------------------------------------------------------------------
-  const double CUTOFF = 1e-15;  // To avoid singularity at x = 0, x = 1
+  const double                     CUTOFF = 1e-15;  // To avoid singularity at x = 0, x = 1
   static const std::vector<double> xval = math::linspace<std::vector>(CUTOFF, 1.0 - CUTOFF, Nx + 1);
 
   // ------------------------------------------------------------------
@@ -777,7 +771,7 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR &lts,
 // gg -> qqbar tree-level helicity amplitudes
 //
 //
-void MDurham::Dgg2qqbar(const gra::LORENTZSCALAR &lts,
+void MDurham::Dgg2qqbar(const gra::LORENTZSCALAR &                      lts,
                         std::vector<std::vector<std::complex<double>>> &Amp) {
   throw std::invalid_argument("MDurham::DurhamQCD: qqbar amplitude in the next version");
 }

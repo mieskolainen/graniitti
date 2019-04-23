@@ -48,9 +48,7 @@ class MMatrix {
   // Set matrix to identity
   void Identity() {
     for (std::size_t i = 0; i < rows; ++i) {
-      for (std::size_t j = 0; j < cols; ++j) {
-        this->operator()(i, j) = (i == j) ? 1.0 : 0.0;
-      }
+      for (std::size_t j = 0; j < cols; ++j) { this->operator()(i, j) = (i == j) ? 1.0 : 0.0; }
     }
   }
   // Set matrix to Minkowski metric
@@ -74,9 +72,7 @@ class MMatrix {
 
     std::size_t i = 0;
     for (const auto &v : list) {
-      for (std::size_t j = 0; j < cols; ++j) {
-        data[cols * i + j] = v[j];
-      }
+      for (std::size_t j = 0; j < cols; ++j) { data[cols * i + j] = v[j]; }
       ++i;
     }
   }
@@ -146,18 +142,14 @@ class MMatrix {
   // Add to the left
   MMatrix &operator+=(const MMatrix &rhs) {
     for (std::size_t i = 0; i < rows; ++i) {
-      for (std::size_t j = 0; j < cols; ++j) {
-        this->operator()(i, j) += rhs[i][j];
-      }
+      for (std::size_t j = 0; j < cols; ++j) { this->operator()(i, j) += rhs[i][j]; }
     }
     return *this;
   }
   // Subtract to the left
   MMatrix &operator-=(const MMatrix &rhs) {
     for (std::size_t i = 0; i < rows; ++i) {
-      for (std::size_t j = 0; j < cols; ++j) {
-        this->operator()(i, j) -= rhs[i][j];
-      }
+      for (std::size_t j = 0; j < cols; ++j) { this->operator()(i, j) -= rhs[i][j]; }
     }
     return *this;
   }
@@ -168,9 +160,7 @@ class MMatrix {
   MMatrix operator-() const {
     MMatrix out(rows, cols);
     for (std::size_t i = 0; i < rows; ++i) {
-      for (std::size_t j = 0; j < cols; ++j) {
-        out[i][j] = -this->operator()(i, j);
-      }
+      for (std::size_t j = 0; j < cols; ++j) { out[i][j] = -this->operator()(i, j); }
     }
     return out;
   }
@@ -183,9 +173,7 @@ class MMatrix {
     }
 
     for (std::size_t i = 0; i < rows; ++i) {
-      for (std::size_t j = 0; j < cols; ++j) {
-        out[i][j] = this->operator()(i, j) + rhs[i][j];
-      }
+      for (std::size_t j = 0; j < cols; ++j) { out[i][j] = this->operator()(i, j) + rhs[i][j]; }
     }
     return out;
   }
@@ -197,9 +185,7 @@ class MMatrix {
     }
 
     for (std::size_t i = 0; i < rows; ++i) {
-      for (std::size_t j = 0; j < cols; ++j) {
-        out[i][j] = this->operator()(i, j) - rhs[i][j];
-      }
+      for (std::size_t j = 0; j < cols; ++j) { out[i][j] = this->operator()(i, j) - rhs[i][j]; }
     }
     return out;
   }
@@ -214,9 +200,7 @@ class MMatrix {
   MMatrix operator*(const T &rhs) const {
     MMatrix out(rows, cols);
     for (std::size_t i = 0; i < rows; ++i) {
-      for (std::size_t j = 0; j < cols; ++j) {
-        out[i][j] = this->operator()(i, j) * rhs;
-      }
+      for (std::size_t j = 0; j < cols; ++j) { out[i][j] = this->operator()(i, j) * rhs; }
     }
     return out;
   }
@@ -225,9 +209,7 @@ class MMatrix {
   MMatrix operator/(const T &rhs) const {
     MMatrix out(rows, cols);
     for (std::size_t i = 0; i < rows; ++i) {
-      for (std::size_t j = 0; j < cols; ++j) {
-        out[i][j] = this->operator()(i, j) / rhs;
-      }
+      for (std::size_t j = 0; j < cols; ++j) { out[i][j] = this->operator()(i, j) / rhs; }
     }
     return out;
   }
@@ -242,9 +224,7 @@ class MMatrix {
 
     std::vector<T> out(rows, 0.0);  // Init!
     for (std::size_t i = 0; i < rows; ++i) {
-      for (std::size_t j = 0; j < cols; ++j) {
-        out[i] += this->operator()(i, j) * rhs[j];
-      }
+      for (std::size_t j = 0; j < cols; ++j) { out[i] += this->operator()(i, j) * rhs[j]; }
     }
     return out;
   }
@@ -290,9 +270,7 @@ class MMatrix {
   MMatrix Transpose() const {
     MMatrix out(cols, rows);
     for (std::size_t i = 0; i < rows; ++i) {
-      for (std::size_t j = 0; j < cols; ++j) {
-        out[j][i] = this->operator()(i, j);
-      }
+      for (std::size_t j = 0; j < cols; ++j) { out[j][i] = this->operator()(i, j); }
     }
     return out;
   }
@@ -300,9 +278,7 @@ class MMatrix {
   MMatrix ConjTranspose() const {
     MMatrix out(cols, rows);
     for (std::size_t i = 0; i < rows; ++i) {
-      for (std::size_t j = 0; j < cols; ++j) {
-        out[j][i] = std::conj(this->operator()(i, j));
-      }
+      for (std::size_t j = 0; j < cols; ++j) { out[j][i] = std::conj(this->operator()(i, j)); }
     }
     return out;
   }
@@ -311,9 +287,7 @@ class MMatrix {
   // Get diagonal vector
   std::vector<T> GetDiag() const {
     std::vector<T> d(rows);
-    for (std::size_t i = 0; i < rows; ++i) {
-      d[i] = this->operator()(i, i);
-    }
+    for (std::size_t i = 0; i < rows; ++i) { d[i] = this->operator()(i, i); }
     return d;
   }
 
@@ -321,9 +295,7 @@ class MMatrix {
   T Trace() const {
     T sum = 0.0;
     for (std::size_t i = 0; i < rows; ++i) {
-      for (std::size_t j = 0; j < cols; ++j) {
-        sum += this->operator()(i, j);
-      }
+      for (std::size_t j = 0; j < cols; ++j) { sum += this->operator()(i, j); }
     }
     return sum;
   }
@@ -333,9 +305,7 @@ class MMatrix {
     std::cout << "MMatrix::Print: " << name << std::endl;
     std::cout << std::setprecision(4);
     for (std::size_t i = 0; i < rows; ++i) {
-      for (std::size_t j = 0; j < cols; ++j) {
-        std::cout << this->operator()(i, j) << "\t";
-      }
+      for (std::size_t j = 0; j < cols; ++j) { std::cout << this->operator()(i, j) << "\t"; }
       std::cout << std::endl;
     }
   }
@@ -349,16 +319,12 @@ class MMatrix {
   void Copy(const MMatrix &a) {
     T *p = data + rows * cols;
     T *q = a.data + rows * cols;
-    while (p > data) {
-      *--p = *--q;
-    }
+    while (p > data) { *--p = *--q; }
   }
 
   // Re-Allocate
   void ReSize(std::size_t r, std::size_t c) {
-    if (data != nullptr) {
-      delete[] data;
-    }
+    if (data != nullptr) { delete[] data; }
     rows = r;
     cols = c;
     data = new T[rows * cols];
@@ -366,7 +332,7 @@ class MMatrix {
 
   std::size_t rows;
   std::size_t cols;
-  T *data;
+  T *         data;
 };
 
 }  // gra namespace ends

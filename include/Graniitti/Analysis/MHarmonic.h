@@ -33,8 +33,8 @@ class MHarmonic {
 
   // Parameters
   struct HPARAM {
-    std::vector<double> M = {0, 0, 0};
-    std::vector<double> Y = {0, 0, 0};
+    std::vector<double> M  = {0, 0, 0};
+    std::vector<double> Y  = {0, 0, 0};
     std::vector<double> PT = {0, 0, 0};
 
     int LMAX = 2;  // Maximum spherical harmonic truncation degree (non-negative
@@ -43,7 +43,7 @@ class MHarmonic {
     // states, for example)
     bool REMOVENEGATIVEM = true;  // Fix negative m to zero (due to parity
     // conservation, for example)
-    bool EML = false;       // Use Extended Maximum Likelihood fit
+    bool   EML    = false;  // Use Extended Maximum Likelihood fit
     double SVDREG = 0.001;  // SVD regularization strength in algebraic inverse (put 0
     // for no regularization)
     double L1REG = 0.001;  // L1-norm regularization in EML fit (put 0 for no
@@ -95,10 +95,10 @@ class MHarmonic {
 
   // Parameters
   HPARAM param;
-  int NCOEF;
+  int    NCOEF;
 
  private:
-  MMatrix<double> Y_lm;                            // Calculate once for speed
+  MMatrix<double>                    Y_lm;         // Calculate once for speed
   std::vector<gra::spherical::Omega> DATA_events;  // Input data
 
   // ====================================================================
@@ -107,8 +107,8 @@ class MHarmonic {
   // Currently active
   std::vector<std::size_t> DATA_ind;
   std::vector<std::size_t> activecell;  // Hypercell indices
-  std::vector<double> t_lm;             // Fitted moments
-  std::vector<double> t_lm_error;       // Their errors
+  std::vector<double>      t_lm;        // Fitted moments
+  std::vector<double>      t_lm_error;  // Their errors
 
   // Error and covariance matrices
   MMatrix<double> errmat;
@@ -118,7 +118,7 @@ class MHarmonic {
 
   // Active moments bookkeeping here
   std::vector<bool> ACTIVE;
-  unsigned int ACTIVENDF = 0;
+  unsigned int      ACTIVENDF = 0;
 
   // Detector expansion tensor data
   MTensor<gra::spherical::SH_DET> det_DET;
@@ -134,7 +134,7 @@ class MHarmonic {
   std::vector<std::vector<EDGE>> grid;
 
   // Plotting
-  const std::vector<int> colors = {46, 38, 43, 30, 25, 14, 9, 19, 29, 39, 49};
+  const std::vector<int>         colors  = {46, 38, 43, 30, 25, 14, 9, 19, 29, 39, 49};
   const std::vector<std::string> xlabels = {"M (GeV)", "P_{T} (GeV)", "Y"};
 };
 

@@ -67,17 +67,13 @@ std::string ExecCommand(const std::string &cmd) {
   std::array<char, 128> buffer;
   std::string result;
   std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
-  if (!pipe) {
-    throw std::runtime_error("aux::ExecCommand:: popen() failed!");
-  }
-  while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
-    result += buffer.data();
-  }
+  if (!pipe) { throw std::runtime_error("aux::ExecCommand:: popen() failed!"); }
+  while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) { result += buffer.data(); }
   return result;
 }
 
 std::string GetExecutablePath() {
-  char buff[2048];
+  char    buff[2048];
   ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff) - 1);
   if (len != -1) {
     buff[len] = '\0';
@@ -91,8 +87,8 @@ std::string GetExecutablePath() {
 // level 1 returns
 // ~ /home/user/graniitti/bin
 std::string GetBasePath(std::size_t level) {
-  std::string s = GetExecutablePath();
-  char sep = '/';
+  std::string s   = GetExecutablePath();
+  char        sep = '/';
 
   for (std::size_t k = 0; k < level; ++k) {
     // Search backwards from end of string
@@ -135,7 +131,7 @@ std::uintmax_t GetFileSize(const std::string &filename) {
   */
 
   struct stat stat_buf;
-  int rc = stat(filename.c_str(), &stat_buf);
+  int         rc = stat(filename.c_str(), &stat_buf);
   return rc == 0 ? stat_buf.st_size : 0;
 }
 
@@ -147,8 +143,8 @@ void GetProcessMemory(double &peak_use, double &resident_use) {
   peak_use = rusage.ru_maxrss * 1024L;
 
   // Current memory
-  long rss = 0L;
-  FILE *fp = NULL;
+  long  rss = 0L;
+  FILE *fp  = NULL;
   if ((fp = fopen("/proc/self/statm", "r")) == NULL) {
     resident_use = 0.0;
     return;
@@ -168,12 +164,12 @@ void GetDiskUsage(const std::string &path, int64_t &size, int64_t &free, int64_t
   int64_t bfree;
 
   struct statvfs buf;
-  int ret = statvfs(path.c_str(), &buf);
+  int            ret = statvfs(path.c_str(), &buf);
 
   if (!ret) {
     frsize = buf.f_frsize;  // block size
     blocks = buf.f_blocks;  // blocks
-    bfree = buf.f_bfree;    // free blocks
+    bfree  = buf.f_bfree;   // free blocks
 
     size = frsize * blocks;
     free = frsize * bfree;
@@ -183,7 +179,7 @@ void GetDiskUsage(const std::string &path, int64_t &size, int64_t &free, int64_t
 
 // Get available memory in bytes
 unsigned long long TotalSystemMemory() {
-  long pages = sysconf(_SC_PHYS_PAGES);
+  long pages     = sysconf(_SC_PHYS_PAGES);
   long page_size = sysconf(_SC_PAGE_SIZE);
   return pages * page_size;
 }
@@ -217,9 +213,9 @@ std::string HostName() {
 // http://en.cppreference.com/w/cpp/chrono/c/strftime
 // for more information about date/time format
 const std::string DateTime() {
-  time_t now = time(0);
+  time_t    now = time(0);
   struct tm tstruct;
-  char buf[80];
+  char      buf[80];
   tstruct = *localtime(&now);
 
   strftime(buf, sizeof(buf), "%Y-%m-%d %X", &tstruct);
@@ -228,14 +224,12 @@ const std::string DateTime() {
 
 // Print out progress bar visualization
 void PrintProgress(double ratio) {
-  if (ratio > 1.0) {
-    ratio = 1.0;
-  }
+  if (ratio > 1.0) { ratio = 1.0; }
 
 #define BAR "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
   const int WIDTH = 62;
-  const int pos = static_cast<int>(ratio * 100);
-  const int left = static_cast<int>(ratio * WIDTH);
+  const int pos   = static_cast<int>(ratio * 100);
+  const int left  = static_cast<int>(ratio * WIDTH);
   const int right = WIDTH - left;
 
   if (gra::aux::IS_TERMINAL) {  // if no terminal, do not print!
@@ -269,14 +263,12 @@ void ReadCSV(const std::string &inputfile, std::vector<std::vector<std::string>>
 
   // Read every line from the stream
   while (getline(file, line)) {
-    std::istringstream stream(line);
+    std::istringstream       stream(line);
     std::vector<std::string> columns;
-    std::string element;
+    std::string              element;
 
     // Every line element separated by separator
-    while (getline(stream, element, ',')) {
-      columns.push_back(element);
-    }
+    while (getline(stream, element, ',')) { columns.push_back(element); }
     output.push_back(columns);
   }
   file.close();
@@ -291,7 +283,7 @@ std::string GetInputData(const std::string &inputfile) {
   }
   // Create a JSON object from file
   std::ifstream ifs(inputfile);
-  std::string data((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
+  std::string   data((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 
   // https://json5.org/ features:
   // We use C++11 raw string literals here R"(text)"
@@ -343,8 +335,8 @@ std::string ParityToString(int value) {
 
 // Return particle charge as a string
 std::string Charge3XtoString(int q3) {
-  const std::string sign = (q3 < 0) ? "-" : " ";
-  const int absq3 = std::abs(q3);
+  const std::string sign  = (q3 < 0) ? "-" : " ";
+  const int         absq3 = std::abs(q3);
 
   if (absq3 == 6)
     return sign + "2";
@@ -387,7 +379,7 @@ std::string Spin2XtoString(int J2) {
 // Split a string to strings
 std::vector<std::string> SplitStr2Str(std::string input, const char delim) {
   std::vector<std::string> output;
-  std::stringstream ss(input);
+  std::stringstream        ss(input);
 
   // String by string
   while (ss.good()) {
@@ -400,7 +392,7 @@ std::vector<std::string> SplitStr2Str(std::string input, const char delim) {
 
 // Split string to ints
 std::vector<int> SplitStr2Int(std::string input, const char delim) {
-  std::vector<int> output;
+  std::vector<int>  output;
   std::stringstream ss(input);
 
   // Get inputfiles by comma
@@ -420,12 +412,10 @@ void TrimExtraSpace(std::string &value) {
 // Extract words from a string
 std::vector<std::string> Extract(const std::string &str) {
   std::vector<std::string> words;
-  std::stringstream ss(str);
-  std::string buff;
+  std::stringstream        ss(str);
+  std::string              buff;
 
-  while (ss >> buff) {
-    words.push_back(buff);
-  }
+  while (ss >> buff) { words.push_back(buff); }
   return words;
 }
 
@@ -436,25 +426,23 @@ bool FileExist(const std::string &name) {
 }
 
 void PrintWarning() {
-  std::cout << rang::fg::red <<
-  "██╗    ██╗ █████╗ ██████╗ ███╗   ██╗██╗███╗   ██╗ ██████╗ \n"
-  "██║    ██║██╔══██╗██╔══██╗████╗  ██║██║████╗  ██║██╔════╝ \n"
-  "██║ █╗ ██║███████║██████╔╝██╔██╗ ██║██║██╔██╗ ██║██║  ███╗\n"
-  "██║███╗██║██╔══██║██╔══██╗██║╚██╗██║██║██║╚██╗██║██║   ██║\n"
-  "╚███╔███╔╝██║  ██║██║  ██║██║ ╚████║██║██║ ╚████║╚██████╔╝\n"
-  " ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝╚═╝  ╚═══╝ ╚═════╝ \n"
-  << rang::fg::reset << std::endl;
+  std::cout << rang::fg::red << "██╗    ██╗ █████╗ ██████╗ ███╗   ██╗██╗███╗   ██╗ ██████╗ \n"
+                                "██║    ██║██╔══██╗██╔══██╗████╗  ██║██║████╗  ██║██╔════╝ \n"
+                                "██║ █╗ ██║███████║██████╔╝██╔██╗ ██║██║██╔██╗ ██║██║  ███╗\n"
+                                "██║███╗██║██╔══██║██╔══██╗██║╚██╗██║██║██║╚██╗██║██║   ██║\n"
+                                "╚███╔███╔╝██║  ██║██║  ██║██║ ╚████║██║██║ ╚████║╚██████╔╝\n"
+                                " ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝╚═╝  ╚═══╝ ╚═════╝ \n"
+            << rang::fg::reset << std::endl;
 }
 
 void PrintGameOver() {
-  std::cout <<
-  " ██████╗  █████╗ ███╗   ███╗███████╗     ██████╗ ██╗   ██╗███████╗██████╗ \n"
-  "██╔════╝ ██╔══██╗████╗ ████║██╔════╝    ██╔═══██╗██║   ██║██╔════╝██╔══██╗\n"
-  "██║  ███╗███████║██╔████╔██║█████╗      ██║   ██║██║   ██║█████╗  ██████╔╝\n"
-  "██║   ██║██╔══██║██║╚██╔╝██║██╔══╝      ██║   ██║╚██╗ ██╔╝██╔══╝  ██╔══██╗\n"
-  "╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗    ╚██████╔╝ ╚████╔╝ ███████╗██║  ██║\n"
-  " ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝     ╚═════╝   ╚═══╝  ╚══════╝╚═╝  ╚═╝\n"
-  << std::endl;
+  std::cout << " ██████╗  █████╗ ███╗   ███╗███████╗     ██████╗ ██╗   ██╗███████╗██████╗ \n"
+               "██╔════╝ ██╔══██╗████╗ ████║██╔════╝    ██╔═══██╗██║   ██║██╔════╝██╔══██╗\n"
+               "██║  ███╗███████║██╔████╔██║█████╗      ██║   ██║██║   ██║█████╗  ██████╔╝\n"
+               "██║   ██║██╔══██║██║╚██╔╝██║██╔══╝      ██║   ██║╚██╗ ██╔╝██╔══╝  ██╔══██╗\n"
+               "╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗    ╚██████╔╝ ╚████╔╝ ███████╗██║  ██║\n"
+               " ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝     ╚═════╝   ╚═══╝  ╚══════╝╚═╝  ╚═╝\n"
+            << std::endl;
 }
 
 double GetVersion() { return 0.33; }
@@ -498,49 +486,46 @@ void PrintVersion() {
 void PrintFlashScreen(rang::fg pcolor) {
   std::cout << std::endl;
   gra::aux::PrintBar("-");
-  std::cout << pcolor <<
-  ".``````````````````````     ````   ``                        ``   ```   ``\n"
-  ".```..````````````    ` ``          `                             ``    ``\n"
-  ".``..:``````````` ```.``````.`.```                                 `    ``\n"
-  ".``.`.```````   ````     ``-.```.````                               ``` ``\n"
-  "..-.`-.``    `.`   `..``---/--.......``                      `````````````\n"
-  "..:..-.`````.`   `.--oys+ohms:..-.`..```                   ```````````````\n"
-  ".-:.-...`..     .ooshydddddddh+::...``...               ``````````````````\n"
-  "..-......       `yhhdhhmhddddmdy-...-...`                   ``````````````\n"
-  "::::::.`    `    `--/ohdhdhddyo-`   `..`..                               `\n"
-  "so/-.`  `.`.-````-...++/syhdho`        `..                               `\n"
-  "``..--.:o-..--..-/-::-.-:/ohh/           `                            `` `\n"
-  "`.-::-.:yyh/`--.`s+ohso:/shhd:                                      ``  `-\n"
-  ".:/-s+o+syhs--:/-..-oydyshhhho`                                 ````` ``./\n"
-  ".-+:-+shhhys+ysyh//sshyy/:oohyo.```````` `````` ````````````...::..  `.-oh\n"
-  "-..-..:/+shhhyhhhyhysso.   ``:ys:----............------:::::++oo-  `.-:ohd\n"
-  "--+:--//:::/+oyyshhs+`   ``   .+so+++++++++++/-://+++++++++o+/-```-/yhhys+\n"
-  "`/dysyhs/:::-:o+/-.`   `...    `..::+oooooo+:-``.:+oooo+/:-.```.:/ssso/.``\n"
-  "``:oossso-.--.-.    ..`...`..`.``...`-/ossys+ssoso+ys:--..::/:/--.-//:```.\n"
-  "```````` `   `-.` `....```...:++.`./o:+-:/-:://----...--.`-::::+ys/.`.:/sy\n"
-  "```...-...`/...... ` `..`...`yo+:/o.:oshssy/.  ``  `.--.--:+sys+-` -+ossss\n"
-  "``.//-/++-sh+-.-..`-`.-.--.- :hhho/+//:/yyyhhs+::+o+/++ssssso:.`-::oyssyyy\n"
-  "`/yhoshhhh////++:.....`:yy+/...sddhs/:////:-/++ooo+oyssyoo:.`:/+oosssshddd\n"
-  "`dddyhydhdyyddhddo``.+.`+/oyoh-..+yddho/-......--:----://+osyyhho++/--::/+\n"
-  "/hddhmhmhmdmddhdds:+s+:+/-:++hhh//.-/++osssso++/-.````.-://::-.....`......\n"
-  << std::endl << std::endl;
+  std::cout << pcolor
+            << ".``````````````````````     ````   ``                        ``   ```   ``\n"
+               ".```..````````````    ` ``          `                             ``    ``\n"
+               ".``..:``````````` ```.``````.`.```                                 `    ``\n"
+               ".``.`.```````   ````     ``-.```.````                               ``` ``\n"
+               "..-.`-.``    `.`   `..``---/--.......``                      `````````````\n"
+               "..:..-.`````.`   `.--oys+ohms:..-.`..```                   ```````````````\n"
+               ".-:.-...`..     .ooshydddddddh+::...``...               ``````````````````\n"
+               "..-......       `yhhdhhmhddddmdy-...-...`                   ``````````````\n"
+               "::::::.`    `    `--/ohdhdhddyo-`   `..`..                               `\n"
+               "so/-.`  `.`.-````-...++/syhdho`        `..                               `\n"
+               "``..--.:o-..--..-/-::-.-:/ohh/           `                            `` `\n"
+               "`.-::-.:yyh/`--.`s+ohso:/shhd:                                      ``  `-\n"
+               ".:/-s+o+syhs--:/-..-oydyshhhho`                                 ````` ``./\n"
+               ".-+:-+shhhys+ysyh//sshyy/:oohyo.```````` `````` ````````````...::..  `.-oh\n"
+               "-..-..:/+shhhyhhhyhysso.   ``:ys:----............------:::::++oo-  `.-:ohd\n"
+               "--+:--//:::/+oyyshhs+`   ``   .+so+++++++++++/-://+++++++++o+/-```-/yhhys+\n"
+               "`/dysyhs/:::-:o+/-.`   `...    `..::+oooooo+:-``.:+oooo+/:-.```.:/ssso/.``\n"
+               "``:oossso-.--.-.    ..`...`..`.``...`-/ossys+ssoso+ys:--..::/:/--.-//:```.\n"
+               "```````` `   `-.` `....```...:++.`./o:+-:/-:://----...--.`-::::+ys/.`.:/sy\n"
+               "```...-...`/...... ` `..`...`yo+:/o.:oshssy/.  ``  `.--.--:+sys+-` -+ossss\n"
+               "``.//-/++-sh+-.-..`-`.-.--.- :hhho/+//:/yyyhhs+::+o+/++ssssso:.`-::oyssyyy\n"
+               "`/yhoshhhh////++:.....`:yy+/...sddhs/:////:-/++ooo+oyssyoo:.`:/+oosssshddd\n"
+               "`dddyhydhdyyddhddo``.+.`+/oyoh-..+yddho/-......--:----://+osyyhho++/--::/+\n"
+               "/hddhmhmhmdmddhdds:+s+:+/-:++hhh//.-/++osssso++/-.````.-://::-.....`......\n"
+            << std::endl
+            << std::endl;
   std::cout << rang::fg::reset;
 }
 
 // Print horizontal bar
 void PrintBar(std::string str, unsigned int N) {
-  for (std::size_t k = 0; k < N; ++k) {
-    std::cout << str;
-  }
+  for (std::size_t k = 0; k < N; ++k) { std::cout << str; }
   std::cout << std::endl;
 }
 
 // Create output directory if it does not exist
 void CreateDirectory(std::string fullpath) {
   struct stat st = {0};
-  if (stat(fullpath.c_str(), &st) == -1) {
-    mkdir(fullpath.c_str(), 0700);
-  }
+  if (stat(fullpath.c_str(), &st) == -1) { mkdir(fullpath.c_str(), 0700); }
 }
 
 // Get commandline arguments which are split by @... @... tagging syntax
@@ -557,7 +542,7 @@ std::vector<OneCMD> SplitCommands(const std::string &fullstr) {
     if (pos.size() >= 2) {
       for (std::size_t i = 0; i < pos.size(); ++i) {
         const int start = pos[i] + 1;  // +1 so we skip @
-        const int end = (i < pos.size() - 1) ? pos[i + 1] : str.size();
+        const int end   = (i < pos.size() - 1) ? pos[i + 1] : str.size();
         subcmd.push_back(str.substr(start, end - start + 1));
       }
     } else {
@@ -620,7 +605,7 @@ std::vector<OneCMD> SplitCommands(const std::string &fullstr) {
 
     // Add this command block
     OneCMD o;
-    o.id = id;
+    o.id  = id;
     o.arg = arg;
     o.Print();  // For debug
     cmd.push_back(o);
@@ -632,7 +617,7 @@ std::vector<OneCMD> SplitCommands(const std::string &fullstr) {
 std::vector<std::size_t> FindOccurance(const std::string &str, const std::string &sub) {
   // Holds all the positions that sub occurs within str
   std::vector<size_t> positions;
-  std::size_t pos = str.find(sub, 0);
+  std::size_t         pos = str.find(sub, 0);
 
   while (pos != std::string::npos) {
     positions.push_back(pos);

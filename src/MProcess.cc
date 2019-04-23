@@ -82,9 +82,7 @@ void MProcess::PrintSetup() const {
       std::cout << rang::fg::green << "  <double>" << rang::fg::reset << std::endl;
     }
   }
-  if (FLATAMP != 0) {
-    std::cout << "- Flat amplitude mode:     " << FLATAMP << std::endl;
-  }
+  if (FLATAMP != 0) { std::cout << "- Flat amplitude mode:     " << FLATAMP << std::endl; }
 
   std::cout << std::endl << std::endl;
 }
@@ -106,9 +104,7 @@ std::vector<std::string> MProcess::PrintProcesses() const {
 
 // Check if process exists
 bool MProcess::ProcessExist(std::string str) const {
-  if (Processes.find(str) != Processes.end()) {
-    return true;
-  }
+  if (Processes.find(str) != Processes.end()) { return true; }
   return false;
 }
 
@@ -135,9 +131,7 @@ std::string MProcess::GetProcessDescriptor(std::string str) const {
 
 complex<double> MProcess::S3ScreenedAmp() {
   // Eikonal Loop Screening not on
-  if (SCREENING == false) {
-    return ProcPtr.GetBareAmplitude(lts);
-  }
+  if (SCREENING == false) { return ProcPtr.GetBareAmplitude(lts); }
 
   if (ProcPtr.CHANNEL == "EL") {
     // Elastic scattering, return directly eikonalized amplitude itself
@@ -149,7 +143,7 @@ complex<double> MProcess::S3ScreenedAmp() {
   const std::vector<double> p2T = {lts.pfinal[2].Px(), lts.pfinal[2].Py()};
 
   // Save born amplitudes
-  const std::complex<double> A_0 = ProcPtr.GetBareAmplitude(lts);
+  const std::complex<double>              A_0    = ProcPtr.GetBareAmplitude(lts);
   const std::vector<std::complex<double>> hamp_0 = lts.hamp;
 
   // Save old kinematics
@@ -159,8 +153,8 @@ complex<double> MProcess::S3ScreenedAmp() {
   // Discretization steps
   const static double StepKT =
       (MEikonalNumerics::MaxLoopKT - MEikonalNumerics::MinLoopKT) / MEikonalNumerics::NumberLoopKT;
-  const double MinPhi = 0.0;
-  const double MaxPhi = 2.0 * gra::math::PI;
+  const double        MinPhi  = 0.0;
+  const double        MaxPhi  = 2.0 * gra::math::PI;
   const static double StepPhi = (MaxPhi - MinPhi) / MEikonalNumerics::NumberLoopPHI;
 
   // Init 2D-Simpson weight matrix (will be calculated only once, being
@@ -194,7 +188,7 @@ complex<double> MProcess::S3ScreenedAmp() {
     const double phi = MinPhi + i * StepPhi;
 
     for (std::size_t j = 0; j < MEikonalNumerics::NumberLoopKT + 1; ++j) {
-      const double kt = MEikonalNumerics::MinLoopKT + j * StepKT;
+      const double kt  = MEikonalNumerics::MinLoopKT + j * StepKT;
       const double kt2 = gra::math::pow2(kt);
 
       // -------------------------------------------------------------------
@@ -230,7 +224,7 @@ complex<double> MProcess::S3ScreenedAmp() {
     }  // inner-loop
   }    // outer-loop
 
-  std::complex<double> A_loop(0, 0);
+  std::complex<double>              A_loop(0, 0);
   std::vector<std::complex<double>> hamp_loop(lts.hamp.size(), 0.0);
 
   // Normalization
@@ -257,18 +251,14 @@ complex<double> MProcess::S3ScreenedAmp() {
 
       // Separate (incoherent) sum
       double A2 = 0.0;
-      for (const auto &h : indices(lts.hamp)) {
-        A2 += abs2(hamp_0[h] + hamp_loop[h]);
-      }
+      for (const auto &h : indices(lts.hamp)) { A2 += abs2(hamp_0[h] + hamp_loop[h]); }
       A2 /= 4;  // Initial state helicity average
       return msqrt(A2);
     } else {  // Durham-QCD
 
       // Coherent sum
       std::complex<double> A = 0.0;
-      for (const auto &h : indices(lts.hamp)) {
-        A += hamp_0[h] + hamp_loop[h];
-      }
+      for (const auto &h : indices(lts.hamp)) { A += hamp_0[h] + hamp_loop[h]; }
       // Helicity average already taken care of
       return A;
     }
@@ -382,7 +372,7 @@ return CSIntegral(f, ktstep) / (2.0*gra::math::PI) / Beta_j(0);
 
 // Set CMS energy and beam particle 4-vectors
 void MProcess::SetInitialState(const std::vector<std::string> &beam,
-                               const std::vector<double> &energy) {
+                               const std::vector<double> &     energy) {
   printf("MProcess::SetInitialState: beam: [%s, %s], energy = [%0.1f, %0.1f] \n", beam[0].c_str(),
          beam[1].c_str(), energy[0], energy[1]);
 
@@ -405,7 +395,7 @@ void MProcess::SetInitialState(const std::vector<std::string> &beam,
   lts.pbeam2 = M4Vec(0, 0, -msqrt(pow2(E2) - pow2(beam2.mass)), E2);  // negative z-axis
 
   // Mandelstam s
-  lts.s = (lts.pbeam1 + lts.pbeam2).M2();
+  lts.s      = (lts.pbeam1 + lts.pbeam2).M2();
   lts.sqrt_s = msqrt(lts.s);
 
   if (lts.sqrt_s < (beam1.mass + beam2.mass)) {
@@ -455,7 +445,7 @@ void MProcess::SetDecayMode(std::string str) {
 
   // ------------------------------------------------------------------
   // 0. Check if contains only spaces (or is empty)
-  std::string check = str;
+  std::string           check   = str;
   std::string::iterator end_pos = std::remove(check.begin(), check.end(), ' ');
   check.erase(end_pos, check.end());
 
@@ -474,8 +464,8 @@ void MProcess::SetDecayMode(std::string str) {
   std::vector<std::string> words = gra::aux::Extract(str);
 
   unsigned int arrows = 0;
-  unsigned int L = 0;
-  unsigned int R = 0;
+  unsigned int L      = 0;
+  unsigned int R      = 0;
   for (std::string::size_type i = 0; i < str.size(); ++i) {
     if (str[i] == '{') ++L;
     if (str[i] == '}') ++R;
@@ -535,7 +525,7 @@ void MProcess::CalculateSymmetryFactor() {
   std::vector<int> multiplicities;
 
   for (const auto &i : indices(lts.decaytree)) {
-    int n = 1;
+    int n     = 1;
     marked[i] = true;
     for (const auto &j : indices(lts.decaytree)) {
       if (i != j && lts.decaytree[i].p.pdg == lts.decaytree[j].p.pdg && marked[j] == false) {
@@ -564,9 +554,7 @@ void MProcess::SetupBranching() {
 
   // Get particle listing
   std::vector<int> refdecay;
-  for (const auto &i : indices(lts.decaytree)) {
-    refdecay.push_back(lts.decaytree[i].p.pdg);
-  }
+  for (const auto &i : indices(lts.decaytree)) { refdecay.push_back(lts.decaytree[i].p.pdg); }
 
   // Setup branching fractions for resonances
   using json = nlohmann::json;
@@ -574,7 +562,7 @@ void MProcess::SetupBranching() {
   const std::string inputfile =
       gra::aux::GetBasePath(2) + "/modeldata/" + gra::MODELPARAM + "/BRANCHING.json";
   const std::string data = gra::aux::GetInputData(inputfile);
-  json j;
+  json              j;
   try {
     j = json::parse(data);
   } catch (...) {
@@ -608,14 +596,14 @@ void MProcess::SetupBranching() {
                 << std::endl;
 
       // Try to find the decaymode
-      bool found_decay_mode = false;
-      const unsigned int MAXDECAYS = 500;
+      bool               found_decay_mode = false;
+      const unsigned int MAXDECAYS        = 500;
       for (std::size_t i = 0; i < MAXDECAYS; ++i) {
         const std::string SID = std::to_string(i);
-        std::vector<int> decay;
+        std::vector<int>  decay;
         try {
           std::vector<int> vec = j[PDG_STR][SID]["PDG"];
-          decay = vec;
+          decay                = vec;
         } catch (...) {
           continue;  // Did not found anything with this
                      // index ["i"]
@@ -623,24 +611,24 @@ void MProcess::SetupBranching() {
 
         if (std::is_permutation(refdecay.begin(), refdecay.end(), decay.begin())) {
           // Found matching decay
-          res.BR = j[PDG_STR][SID]["BR"];
+          res.BR                = j[PDG_STR][SID]["BR"];
           res.hc.P_conservation = j[PDG_STR][SID]["P_conservation"];
-          found_decay_mode = true;
+          found_decay_mode      = true;
 
           // ----------------------------------------------------------------------------
           // Construct helicity ls-coupling matrix (put default 1.0)
           // indexed directly by ls values
           MMatrix<std::complex<double>> alpha(20, 20, 1.0);
-          MMatrix<bool> alpha_set(20, 20, false);
+          MMatrix<bool>                 alpha_set(20, 20, false);
 
           // Allow 50 coupling parameter (l,s) pairs (more than
           // enough)
           for (std::size_t a = 0; a < 50; ++a) {
             try {
-              const unsigned int l = j[PDG_STR][SID]["alpha_ls"][a][0];
-              const unsigned int s = j[PDG_STR][SID]["alpha_ls"][a][1];
-              const double Re = j[PDG_STR][SID]["alpha_ls"][a][2];
-              const double Im = j[PDG_STR][SID]["alpha_ls"][a][3];
+              const unsigned int l  = j[PDG_STR][SID]["alpha_ls"][a][0];
+              const unsigned int s  = j[PDG_STR][SID]["alpha_ls"][a][1];
+              const double       Re = j[PDG_STR][SID]["alpha_ls"][a][2];
+              const double       Im = j[PDG_STR][SID]["alpha_ls"][a][3];
 
               // Set value
               alpha[l][s] = Re + zi * Im;
@@ -651,11 +639,9 @@ void MProcess::SetupBranching() {
               std::cout << "Found ls-coupling: "
                         << "[l=" << l << ",s=" << s << "] = " << alpha[l][s] << " (Re,Im)"
                         << std::endl;
-            } catch (...) {
-              continue;
-            }
+            } catch (...) { continue; }
           }
-          res.hc.alpha = alpha;
+          res.hc.alpha     = alpha;
           res.hc.alpha_set = alpha_set;
           break;
         }
@@ -670,10 +656,10 @@ void MProcess::SetupBranching() {
                          " (setting up BR = 1.0, alpha_ls == 1.0, "
                          "P_conservation = true) "
                   << rang::fg::reset << std::endl;
-        res.BR = 1.0;
+        res.BR                = 1.0;
         res.hc.P_conservation = true;
-        res.hc.alpha = MMatrix<std::complex<double>>(20, 20, 1.0);
-        res.hc.alpha_set = MMatrix<bool>(20, 20, true);
+        res.hc.alpha          = MMatrix<std::complex<double>>(20, 20, 1.0);
+        res.hc.alpha_set      = MMatrix<bool>(20, 20, true);
       }
 
       // ----------------------------------------------------------------------------
@@ -699,7 +685,7 @@ void MProcess::SetupBranching() {
         // Gamma = PS * |A_decay|^2 then with |A_decay|^2 = 1 <=> Gamma = PS
 
         const double amp2 = 1.0;
-        const double sym = 1.0;
+        const double sym  = 1.0;
 
         double PS = gra::kinematics::PDW2body(pow2(res.p.mass), pow2(lts.decaytree[0].p.mass),
                                               pow2(lts.decaytree[1].p.mass), amp2, sym);
@@ -714,9 +700,7 @@ void MProcess::SetupBranching() {
                                            pow2(lts.decaytree[0].p.mass),
                                            pow2(lts.decaytree[1].p.mass), amp2, sym);
 
-            if (PS > 1e-9) {
-              break;
-            }
+            if (PS > 1e-9) { break; }
           }
         }
 
@@ -823,9 +807,7 @@ void MProcess::GetOffShellMass(const gra::MDecayBranch &branch, double &mass) {
     // Impossible
     if (outertrials > OUTERMAXTRIAL) {
       std::string str;
-      for (const auto &i : indices(branch.legs)) {
-        str += branch.legs[i].p.name + " ";
-      }
+      for (const auto &i : indices(branch.legs)) { str += branch.legs[i].p.name + " "; }
       str = "MProcess::GetOffShellMass: Kinematically impossible decay: " + branch.p.name + " > " +
             str;
       throw std::invalid_argument(str);
@@ -842,14 +824,14 @@ int MProcess::ExciteContinuum(const M4Vec &nstar, const HepMC3::GenParticlePtr g
   if (msqrt(Q2_scale) < 0.3) {
     // return 1; // not valid
   }
-  const double QProb = 2.0 / 3.0;  // Probability for a charged particle (isospin)
-  const int OUTERTRIAL = 100;
+  const double QProb      = 2.0 / 3.0;  // Probability for a charged particle (isospin)
+  const int    OUTERTRIAL = 100;
 
   // Average multiplicity
-  const double a0 = 0.0;
-  double b0 = 2.0;
-  double avgN = a0 + b0 * (1 / QProb) * std::log(Q2_scale);
-  int outertrials = 0;
+  const double a0          = 0.0;
+  double       b0          = 2.0;
+  double       avgN        = a0 + b0 * (1 / QProb) * std::log(Q2_scale);
+  int          outertrials = 0;
 
   const double M = nstar.M();
 
@@ -876,7 +858,7 @@ int MProcess::ExciteContinuum(const M4Vec &nstar, const HepMC3::GenParticlePtr g
     // Pick particles
 
     std::vector<double> mass;
-    std::vector<int> pdgcode;
+    std::vector<int>    pdgcode;
     if (MFragment::PickParticles(M, N, B, 0, Q, mass, pdgcode, PDG, random) == 1) {
       ++outertrials;
       continue;
@@ -896,7 +878,7 @@ int MProcess::ExciteContinuum(const M4Vec &nstar, const HepMC3::GenParticlePtr g
       T *= std::pow(1 / (bt * bt), 0.10);
     }
     const double maxpt = 15.0;  // Maximum Pt per particle
-    const double W = MFragment::TubeFragment(nstar, M, mass, products, q, T, maxpt, random);
+    const double W     = MFragment::TubeFragment(nstar, M, mass, products, q, T, maxpt, random);
 
     if (W <= 0) {
       ++outertrials;
@@ -925,9 +907,7 @@ int MProcess::ExciteContinuum(const M4Vec &nstar, const HepMC3::GenParticlePtr g
           break;
         }
       }
-      if (fail) {
-        continue;
-      }
+      if (fail) { continue; }
       // Save event output
       BranchForwardSystem(products, pdgcode, isstable, gen_nstar, evt);
       break;
@@ -939,7 +919,7 @@ int MProcess::ExciteContinuum(const M4Vec &nstar, const HepMC3::GenParticlePtr g
 // This is used with continuum excitation
 //
 void MProcess::BranchForwardSystem(const std::vector<M4Vec> &p, const std::vector<int> &pdgcode,
-                                   const std::vector<bool> &isstable,
+                                   const std::vector<bool> &    isstable,
                                    const HepMC3::GenParticlePtr gen_nstar, HepMC3::GenEvent &evt) {
   // Create N* decay vertex
   HepMC3::GenVertexPtr v = std::make_shared<HepMC3::GenVertex>();
@@ -951,7 +931,7 @@ void MProcess::BranchForwardSystem(const std::vector<M4Vec> &p, const std::vecto
   // Add decay products to the decay vertex
   std::vector<HepMC3::GenParticlePtr> gen_part;
   for (const auto &i : indices(p)) {
-    int status = (isstable[i] == true) ? PDG::PDG_STABLE : PDG::PDG_DECAY;
+    int                    status = (isstable[i] == true) ? PDG::PDG_STABLE : PDG::PDG_DECAY;
     HepMC3::GenParticlePtr gen_p =
         std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(p[i]), pdgcode[i], status);
     gen_part.push_back(gen_p);
@@ -968,7 +948,7 @@ void MProcess::BranchForwardSystem(const std::vector<M4Vec> &p, const std::vecto
 
       // Decay
       std::vector<double> m = {0.0, 0.0};
-      std::vector<M4Vec> pgamma;
+      std::vector<M4Vec>  pgamma;
       gra::kinematics::TwoBodyPhaseSpace(p[i], p[i].M(), m, pgamma, random);
 
       // Gammas
@@ -1001,10 +981,10 @@ void MProcess::ExciteNstar(const M4Vec &nstar, gra::MDecayBranch &forward) {
 
   // Get corresponding masses
   std::vector<gra::MParticle> p(pdgcode.size());
-  std::vector<double> mass(pdgcode.size(), 0.0);
+  std::vector<double>         mass(pdgcode.size(), 0.0);
 
   for (const auto &i : indices(pdgcode)) {
-    p[i] = PDG.FindByPDG(pdgcode[i]);
+    p[i]    = PDG.FindByPDG(pdgcode[i]);
     mass[i] = p[i].mass;
   }
 
@@ -1012,9 +992,7 @@ void MProcess::ExciteNstar(const M4Vec &nstar, gra::MDecayBranch &forward) {
   std::vector<M4Vec> p4;
 
   // Do the 2 or 3-body isotropic decay
-  if (mass.size() == 2) {
-    gra::kinematics::TwoBodyPhaseSpace(nstar, nstar.M(), mass, p4, random);
-  }
+  if (mass.size() == 2) { gra::kinematics::TwoBodyPhaseSpace(nstar, nstar.M(), mass, p4, random); }
   if (mass.size() == 3) {
     const bool UNWEIGHT = true;
     gra::kinematics::ThreeBodyPhaseSpace(nstar, nstar.M(), mass, p4, UNWEIGHT, random);
@@ -1023,9 +1001,9 @@ void MProcess::ExciteNstar(const M4Vec &nstar, gra::MDecayBranch &forward) {
   // ------------------------------------------------------------------
 
   // Construct decaytree
-  forward = gra::MDecayBranch();  // Initialize!!
+  forward       = gra::MDecayBranch();  // Initialize!!
   forward.p.pdg = PDG::PDG_NSTAR;
-  forward.p4 = nstar;
+  forward.p4    = nstar;
 
   // Daughters
   forward.legs.resize(p.size());
@@ -1034,30 +1012,30 @@ void MProcess::ExciteNstar(const M4Vec &nstar, gra::MDecayBranch &forward) {
   for (const auto &i : indices(p)) {
     // Decay particle
     gra::MDecayBranch branch;
-    branch.p = p[i];
+    branch.p  = p[i];
     branch.p4 = p4[i];
 
     // Treat pi0 -> yy
     if (branch.p.pdg == PDG::PDG_pi0) {
       // Decay
       std::vector<double> mgamma = {0.0, 0.0};
-      std::vector<M4Vec> pgamma;
+      std::vector<M4Vec>  pgamma;
       gra::kinematics::TwoBodyPhaseSpace(branch.p4, branch.p4.M(), mgamma, pgamma, random);
 
       // Add gamma legs
       branch.legs.resize(2);
       for (std::size_t k = 0; k < 2; ++k) {
         gra::MDecayBranch gammabranch;
-        gammabranch.p = PDG.FindByPDG(22);
+        gammabranch.p  = PDG.FindByPDG(22);
         gammabranch.p4 = pgamma[k];
 
-        branch.legs[k] = gammabranch;
+        branch.legs[k]       = gammabranch;
         branch.legs[k].depth = 2;
       }
     }
 
     // Add leg
-    forward.legs[i] = branch;
+    forward.legs[i]       = branch;
     forward.legs[i].depth = 1;
   }
 }
@@ -1072,9 +1050,7 @@ bool MProcess::VetoCuts() const {
     FindVetoCuts(lts.decayforward2, ok);
 
     // Central system
-    for (const auto &i : indices(lts.decaytree)) {
-      FindVetoCuts(lts.decaytree[i], ok);
-    }
+    for (const auto &i : indices(lts.decaytree)) { FindVetoCuts(lts.decaytree[i], ok); }
   }
   return ok;
 }
@@ -1126,9 +1102,7 @@ bool MProcess::CommonCuts() const {
     }
 
     // Check fiducial cuts of the central final state particles
-    for (const auto &i : indices(lts.decaytree)) {
-      FindDecayCuts(lts.decaytree[i], ok);
-    }
+    for (const auto &i : indices(lts.decaytree)) { FindDecayCuts(lts.decaytree[i], ok); }
   }
 
   return ok;
@@ -1150,9 +1124,7 @@ void MProcess::FindDecayCuts(const gra::MDecayBranch &branch, bool &ok) const {
   }
 
   // ** RECURSION here **
-  for (const auto &i : indices(branch.legs)) {
-    FindDecayCuts(branch.legs[i], ok);
-  }
+  for (const auto &i : indices(branch.legs)) { FindDecayCuts(branch.legs[i], ok); }
 }
 
 // Recursive find out final daughters and check if they trigget veto cuts
@@ -1173,9 +1145,7 @@ void MProcess::FindVetoCuts(const gra::MDecayBranch &branch, bool &ok) const {
   }
 
   // ** RECURSION here **
-  for (const auto &i : indices(branch.legs)) {
-    FindVetoCuts(branch.legs[i], ok);
-  }
+  for (const auto &i : indices(branch.legs)) { FindVetoCuts(branch.legs[i], ok); }
 }
 
 // Recursive function to plot out the decay tree
@@ -1199,9 +1169,7 @@ void MProcess::PrintDecayTree(const gra::MDecayBranch &branch) const {
       gra::aux::Spin2XtoString(branch.p.spinX2).c_str());
 
   // ** RECURSION here **
-  for (const auto &i : indices(branch.legs)) {
-    PrintDecayTree(branch.legs[i]);
-  }
+  for (const auto &i : indices(branch.legs)) { PrintDecayTree(branch.legs[i]); }
 }
 
 // Recursive function to plot out the decay tree
@@ -1213,9 +1181,7 @@ void MProcess::PrintPhaseSpace(const gra::MDecayBranch &branch) const {
     printf("%s> \t {1->%lu LIPS}:  %0.3E +- %0.3E \n", lines.c_str(), branch.legs.size(),
            branch.W.Integral(), branch.W.IntegralError());
   }
-  for (const auto &i : indices(branch.legs)) {
-    PrintPhaseSpace(branch.legs[i]);
-  }
+  for (const auto &i : indices(branch.legs)) { PrintPhaseSpace(branch.legs[i]); }
 }
 
 // Recursive decay tree kinematics (called event by event from inhereting
@@ -1260,15 +1226,11 @@ bool MProcess::ConstructDecayKinematics(gra::MDecayBranch &branch) {
     branch.W += w;
 
     // Collect decay product 4-momenta
-    for (const auto &i : indices(branch.legs)) {
-      branch.legs[i].p4 = p[i];
-    }
+    for (const auto &i : indices(branch.legs)) { branch.legs[i].p4 = p[i]; }
 
     //  ** Now the INNER recursion **
     for (const auto &i : indices(branch.legs)) {
-      if (!ConstructDecayKinematics(branch.legs[i])) {
-        return false;
-      }
+      if (!ConstructDecayKinematics(branch.legs[i])) { return false; }
     }
   }
   return true;
@@ -1324,15 +1286,15 @@ void MProcess::SampleForwardMasses(std::vector<double> &mvec, const std::vector<
   if (EXCITATION == 1) {
     const double mforward = msqrt(M2_f_min + (M2_f_max - M2_f_min) * randvec[0]);
     if (random.U(0, 1) < 0.5) {
-      mvec[0] = mforward;
+      mvec[0]     = mforward;
       lts.excite1 = true;
     } else {
-      mvec[1] = mforward;
+      mvec[1]     = mforward;
       lts.excite2 = true;
     }
   } else if (EXCITATION == 2) {
-    mvec[0] = msqrt(M2_f_min + (M2_f_max - M2_f_min) * randvec[0]);
-    mvec[1] = msqrt(M2_f_min + (M2_f_max - M2_f_min) * randvec[1]);
+    mvec[0]     = msqrt(M2_f_min + (M2_f_max - M2_f_min) * randvec[0]);
+    mvec[1]     = msqrt(M2_f_min + (M2_f_max - M2_f_min) * randvec[1]);
     lts.excite1 = true;
     lts.excite2 = true;
   }
@@ -1405,9 +1367,7 @@ void MProcess::PrintFiducialCuts() const {
   std::cout << "Central system decay tree:" << std::endl << std::endl;
   std::cout << rang::style::reset;
   // Print out decaytree recursively
-  for (std::size_t i = 0; i < lts.decaytree.size(); ++i) {
-    PrintDecayTree(lts.decaytree[i]);
-  }
+  for (std::size_t i = 0; i < lts.decaytree.size(); ++i) { PrintDecayTree(lts.decaytree[i]); }
 
   std::cout << std::endl;
   printf(
@@ -1497,30 +1457,22 @@ bool MProcess::GetLorentzScalars(unsigned int Nf) {
   // Upper right triangle
   for (std::size_t i = 0; i <= Nf; ++i) {  // start at 0
     for (std::size_t j = 0; j <= Nf; ++j) {
-      if (i < j) {
-        lts.ss[i][j] = (lts.pfinal[i] + lts.pfinal[j]).M2();
-      }
-      if (lts.ss[i][j] < 0) {
-        return false;
-      }
+      if (i < j) { lts.ss[i][j] = (lts.pfinal[i] + lts.pfinal[j]).M2(); }
+      if (lts.ss[i][j] < 0) { return false; }
     }
   }
   // Copy the i<->j permutated to the left bottom triangle
   // (faster than calculating twice)
   for (std::size_t i = 0; i <= Nf; ++i) {  // start at 0
     for (std::size_t j = i; j <= Nf; ++j) {
-      if (i != j) {
-        lts.ss[j][i] = lts.ss[i][j];
-      }
+      if (i != j) { lts.ss[j][i] = lts.ss[i][j]; }
     }
   }
 
   // Sub invariants w.r.t central system
   lts.s1 = lts.ss[1][0];
   lts.s2 = lts.ss[2][0];
-  if (lts.s1 < 0 || lts.s2 < 0) {
-    return false;
-  }
+  if (lts.s1 < 0 || lts.s2 < 0) { return false; }
 
   // ------------------------------------------------------------------
 
@@ -1533,9 +1485,7 @@ bool MProcess::GetLorentzScalars(unsigned int Nf) {
   lts.t1 = lts.q1.M2();
   lts.t2 = lts.q2.M2();
 
-  if (lts.t1 > 0 || lts.t2 > 0) {
-    return false;
-  }
+  if (lts.t1 > 0 || lts.t2 > 0) { return false; }
 
   // For 2-body central processes
   if (lts.decaytree.size() == 2) {
@@ -1543,17 +1493,13 @@ bool MProcess::GetLorentzScalars(unsigned int Nf) {
     lts.u_hat = (lts.q1 - lts.decaytree[1].p4).M2();  // in t and u!
   }
 
-  for (std::size_t i = offset; i <= Nf; ++i) {
-    lts.tt_1[i] = (lts.q1 - lts.pfinal[i]).M2();
-  }
+  for (std::size_t i = offset; i <= Nf; ++i) { lts.tt_1[i] = (lts.q1 - lts.pfinal[i]).M2(); }
   for (std::size_t i = offset; i <= Nf; ++i) {
     for (std::size_t j = offset; j <= Nf; ++j) {
       lts.tt_xy[i][j] = (lts.q1 - lts.pfinal[i] - lts.pfinal[j]).M2();
     }
   }
-  for (std::size_t i = offset; i <= Nf; ++i) {
-    lts.tt_2[i] = (lts.q2 - lts.pfinal[i]).M2();
-  }
+  for (std::size_t i = offset; i <= Nf; ++i) { lts.tt_2[i] = (lts.q2 - lts.pfinal[i]).M2(); }
 
   // Fractional longitudinal momentum loss [0,1]
   lts.x1 = (1 - lts.pfinal[1].Pz() / lts.pbeam1.Pz());
@@ -1569,10 +1515,10 @@ bool MProcess::GetLorentzScalars(unsigned int Nf) {
   lts.qt2 = lts.q2.Pt();
 
   // Often used system variables
-  lts.m2 = lts.pfinal[0].M2();
+  lts.m2    = lts.pfinal[0].M2();
   lts.s_hat = lts.m2;
-  lts.Y = lts.pfinal[0].Rap();
-  lts.Pt = lts.pfinal[0].Pt();
+  lts.Y     = lts.pfinal[0].Rap();
+  lts.Pt    = lts.pfinal[0].Pt();
 
   // DEBUG
   /*
@@ -1622,11 +1568,11 @@ bool MProcess::CommonRecord(HepMC3::GenEvent &evt) {
   int PDG_status2 = PDG::PDG_STABLE;
 
   if (lts.excite1 == true) {
-    PDG_ID1 = PDG::PDG_NSTAR;
+    PDG_ID1     = PDG::PDG_NSTAR;
     PDG_status1 = PDG::PDG_INTERMEDIATE;
   }
   if (lts.excite2 == true) {
-    PDG_ID2 = PDG::PDG_NSTAR;
+    PDG_ID2     = PDG::PDG_NSTAR;
     PDG_status2 = PDG::PDG_INTERMEDIATE;
   }
 
@@ -1695,7 +1641,7 @@ bool MProcess::CommonRecord(HepMC3::GenEvent &evt) {
       const double tau = random.ExpRandom(1.0 / lts.decaytree[i].p.tau);
 
       // Get decay vertex coordinates in the lab
-      const double MM = 1E3;  // meters to millimeters
+      const double MM                 = 1E3;  // meters to millimeters
       lts.decaytree[i].decay_position = lts.decaytree[i].p4.PropagatePosition(tau, MM);
       // ----------------------------------------------------------
     }
@@ -1770,7 +1716,7 @@ void MProcess::SetProcess(std::string &str, const std::vector<aux::OneCMD> &synt
   // @SYNTAX Read and set new PDG input
   for (const auto &i : indices(syntax)) {
     if (syntax[i].id.find("PDG") != std::string::npos) {
-      std::size_t left = syntax[i].id.find("[");
+      std::size_t left  = syntax[i].id.find("[");
       std::size_t right = syntax[i].id.find("]");
       if (left == std::string::npos || right == std::string::npos) {
         throw std::invalid_argument("MProcess::SetProcess: invalid @PDG[]{} syntax");
@@ -1784,35 +1730,28 @@ void MProcess::SetProcess(std::string &str, const std::vector<aux::OneCMD> &synt
       try {
         MParticle p = PDG.FindByPDG(pdg);
         MParticle p_anti;
-        bool found_anti = false;
+        bool      found_anti = false;
 
         // Check if it has an anti-particle
         try {
-          p_anti = PDG.FindByPDG(-pdg);
+          p_anti     = PDG.FindByPDG(-pdg);
           found_anti = true;
-        } catch (...) {
-        }  // do nothing
+        } catch (...) {}  // do nothing
 
         // Set new properties
         for (const auto &x : syntax[i].arg) {
           if (x.first == "M") {
             p.mass = std::stod(x.second);
-            if (found_anti) {
-              p_anti.mass = p.mass;
-            }
+            if (found_anti) { p_anti.mass = p.mass; }
           }
           if (x.first == "W") {
             p.width = std::stod(x.second);
-            if (found_anti) {
-              p_anti.width = p.width;
-            }
+            if (found_anti) { p_anti.width = p.width; }
           }
         }
         // Set new modified to the PDG table
         PDG.PDG_table[pdg] = p;
-        if (found_anti) {
-          PDG.PDG_table[-pdg] = p_anti;
-        }
+        if (found_anti) { PDG.PDG_table[-pdg] = p_anti; }
 
         std::cout << rang::fg::red << "MProcess::SetProcess: New particle properties set "
                                       "with @PDG[ID]{key:val} syntax:"
@@ -1830,9 +1769,9 @@ void MProcess::SetProcess(std::string &str, const std::vector<aux::OneCMD> &synt
   str.erase(end_pos, str.end());
 
   // ID = "PP[RES]<C>"; // EXAMPLE of valid
-  std::string first = "";
-  std::string second = "";
-  bool found_first = false;
+  std::string first       = "";
+  std::string second      = "";
+  bool        found_first = false;
 
   for (const auto &i : indices(str)) {
     if (str[i] != '[' && !found_first) {
@@ -1842,12 +1781,8 @@ void MProcess::SetProcess(std::string &str, const std::vector<aux::OneCMD> &synt
       found_first = true;
       continue;
     }
-    if (found_first && str[i] != ']') {
-      second += str[i];
-    }
-    if (found_first && str[i] == ']') {
-      break;
-    }
+    if (found_first && str[i] != ']') { second += str[i]; }
+    if (found_first && str[i] == ']') { break; }
   }
   // Setup subprocess
   ProcPtr = MSubProc(first, second, PDG);

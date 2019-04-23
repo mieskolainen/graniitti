@@ -27,12 +27,12 @@ class IArray2D {
   IArray2D(){};
   ~IArray2D(){};
 
-  std::string name[2];
-  double MIN[2] = {0};
-  double MAX[2] = {0};
-  unsigned int N[2] = {0};
-  double STEP[2] = {0};
-  bool islog[2] = {false};
+  std::string  name[2];
+  double       MIN[2]   = {0};
+  double       MAX[2]   = {0};
+  unsigned int N[2]     = {0};
+  double       STEP[2]  = {0};
+  bool         islog[2] = {false};
 
   // Setup discretization
   void Set(unsigned int VAR, std::string _name, double _min, double _max, double _N,
@@ -64,7 +64,7 @@ class IArray2D {
     // Logarithm taken here!
     MIN[VAR] = islog[VAR] ? std::log(_min) : _min;
     MAX[VAR] = islog[VAR] ? std::log(_max) : _max;
-    N[VAR] = _N;
+    N[VAR]   = _N;
 
     STEP[VAR] = (MAX[VAR] - MIN[VAR]) / N[VAR];
     name[VAR] = _name;
@@ -117,13 +117,13 @@ class MSudakov {
  private:
   int init_trials = 0;
 
-  void InitArrays();
+  void   InitArrays();
   double diff_xg_xQ2_wrt_Q2(double x, double q2) const;
   double AP_gg(double delta) const;
   double AP_qg(double delta, double qt2) const;
   void CalculateArray(IArray2D &arr, std::pair<double, double> (MSudakov::*f)(double, double));
 
-  std::string PDFSETNAME;
+  std::string  PDFSETNAME;
   LHAPDF::PDF *PdfPtr = nullptr;
 
   IArray2D veto;  // Sudakov veto

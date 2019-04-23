@@ -48,7 +48,7 @@ void CNAB2(std::valarray<std::complex<double>> &u, int Lx, double dt, int Nt, in
 
   // Wavenumbers: exp(2*pi*i*kx*x/L)
   std::valarray<std::complex<double>> kx(Nx);
-  unsigned int j = 0;
+  unsigned int                        j = 0;
   for (int i = 0; i <= Nx / 2 - 1; ++i) {
     kx[j] = i;
     ++j;
@@ -82,13 +82,11 @@ void CNAB2(std::valarray<std::complex<double>> &u, int Lx, double dt, int Nt, in
 
   // Create x-vector
   std::valarray<std::complex<double>> x(Nx);
-  for (int i = 0; i < (int)x.size(); ++i) {
-    x[i] = i * Lx / static_cast<double>(Nx);
-  }
+  for (int i = 0; i < (int)x.size(); ++i) { x[i] = i * Lx / static_cast<double>(Nx); }
   gra::math::PrintArray(x, "x");
 
   // Time step variables
-  const std::complex<double> dt2 = dt / 2;
+  const std::complex<double> dt2  = dt / 2;
   const std::complex<double> dt32 = 3 * dt / 2;
 
   std::valarray<std::complex<double>> A = 1.0 + dt2 * L;
@@ -97,7 +95,7 @@ void CNAB2(std::valarray<std::complex<double>> &u, int Lx, double dt, int Nt, in
   gra::math::PrintArray(B, "B");
 
   // ------------------------------------------------------------------
-  Eigen::FFT<double> fft;
+  Eigen::FFT<double>                fft;
   std::vector<std::complex<double>> timevec;
   std::vector<std::complex<double>> freqvec;
 
@@ -109,7 +107,7 @@ void CNAB2(std::valarray<std::complex<double>> &u, int Lx, double dt, int Nt, in
   } else {
     MFFT::fft(uDOTu);
   }
-  std::valarray<std::complex<double>> Nn = G * uDOTu;
+  std::valarray<std::complex<double>> Nn  = G * uDOTu;
   std::valarray<std::complex<double>> Nn1 = Nn;
   gra::math::PrintArray(Nn, "Nn");
 
@@ -138,9 +136,7 @@ void CNAB2(std::valarray<std::complex<double>> &u, int Lx, double dt, int Nt, in
     }
 
     // Square
-    for (std::size_t k = 0; k < Nn.size(); ++k) {
-      Nn[k] = gra::math::pow2(std::real(Nn[k]));
-    }
+    for (std::size_t k = 0; k < Nn.size(); ++k) { Nn[k] = gra::math::pow2(std::real(Nn[k])); }
 
     // To spectral domain
     // FFT
@@ -154,11 +150,11 @@ void CNAB2(std::valarray<std::complex<double>> &u, int Lx, double dt, int Nt, in
 
     // Fourier space: Nn = -u u_x
     Nn = G * Nn;
-    u = B * (A * u + dt32 * Nn - dt2 * Nn1);
+    u  = B * (A * u + dt32 * Nn - dt2 * Nn1);
 
     // Non-Linear term shifted in time: N^{n-1} <- N^n
     Nn1 = Nn;
-    Nn = u;
+    Nn  = u;
 
     // Plot
     if ((n % nplot) == 0) {
@@ -174,13 +170,13 @@ void CNAB2(std::valarray<std::complex<double>> &u, int Lx, double dt, int Nt, in
       }
 
       const std::vector<std::string> asciiart = {" ", ".", ":", "-", "=", "+", "*", "#", "%", "@"};
-      double maxval = 0;
+      double                         maxval   = 0;
       for (unsigned int i = 0; i < temp2.size(); ++i) {
         maxval = gra::math::abs2(temp2[i]) > maxval ? gra::math::abs2(temp2[i]) : maxval;
       }
       std::cout << n << " ";
       for (unsigned int i = 0; i < temp2.size(); ++i) {
-        const double w = gra::math::abs2(temp2[i]) / (maxval + 1e-9);
+        const double w   = gra::math::abs2(temp2[i]) / (maxval + 1e-9);
         unsigned int ind = std::round(w * 9);
         if (ind < 0) ind = 0;
         if (ind > 9) ind = 9;
@@ -198,19 +194,13 @@ void testfft() {
       gra::math::linspace<std::valarray>((float)0.0, (float)10.0, (unsigned int)16);
 
   std::valarray<std::complex<double>> X(xxx.size());
-  for (unsigned int i = 0; i < xxx.size(); ++i) {
-    X[i] = xxx[i];
-  }
+  for (unsigned int i = 0; i < xxx.size(); ++i) { X[i] = xxx[i]; }
   MFFT::fft(X);
   std::cout << "FFT:" << std::endl;
-  for (unsigned int i = 0; i < X.size(); ++i) {
-    std::cout << X[i] << std::endl;
-  }
+  for (unsigned int i = 0; i < X.size(); ++i) { std::cout << X[i] << std::endl; }
   MFFT::ifft(X);
   std::cout << "IFFT:" << std::endl;
-  for (unsigned int i = 0; i < X.size(); ++i) {
-    std::cout << X[i] << std::endl;
-  }
+  for (unsigned int i = 0; i < X.size(); ++i) { std::cout << X[i] << std::endl; }
 }
 
 // Main
@@ -224,17 +214,15 @@ int main(int argc, char *argv[]) {
   // Test FFT
   testfft();
 
-  int Lx = std::atoi(argv[1]);
-  int Nx = std::atoi(argv[2]);
-  double dt = 1.0 / static_cast<double>(std::atoi(argv[3]));
-  int nplot = std::atoi(argv[4]);
-  int Nt = std::atoi(argv[5]);
-  bool USE_EIGEN = std::atoi(argv[6]);
+  int    Lx        = std::atoi(argv[1]);
+  int    Nx        = std::atoi(argv[2]);
+  double dt        = 1.0 / static_cast<double>(std::atoi(argv[3]));
+  int    nplot     = std::atoi(argv[4]);
+  int    Nt        = std::atoi(argv[5]);
+  bool   USE_EIGEN = std::atoi(argv[6]);
 
   std::valarray<std::complex<double>> x(Nx);
-  for (int i = 0; i < (int)x.size(); ++i) {
-    x[i] = i * Lx / static_cast<double>(Nx);
-  }
+  for (int i = 0; i < (int)x.size(); ++i) { x[i] = i * Lx / static_cast<double>(Nx); }
   std::valarray<std::complex<double>> u(Nx);
   for (int i = 0; i < (int)u.size(); ++i) {
     // Initialize with single wave

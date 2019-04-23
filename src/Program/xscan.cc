@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
     bool SCREENING = false;
     if (r.count("l")) {
       const std::string val = r["l"].as<std::string>();
-      SCREENING = (val == "true");
+      SCREENING             = (val == "true");
     }
 
     // Input energy list
@@ -92,17 +92,15 @@ int main(int argc, char *argv[]) {
     }
 
     fprintf(fout, "sqrts\t\txstot\t\txsin\t\txsel");
-    for (unsigned int k = 0; k < jsinput.size(); ++k) {
-      fprintf(fout, "\txs%d", k);
-    }
+    for (unsigned int k = 0; k < jsinput.size(); ++k) { fprintf(fout, "\txs%d", k); }
     fprintf(fout, "\n");
     fflush(fout);
 
     // LOOP over energy
     for (const auto &i : indices(energy)) {
       double xs_tot = 0;
-      double xs_el = 0;
-      double xs_in = 0;
+      double xs_el  = 0;
+      double xs_in  = 0;
 
       // LOOP over processes
       std::vector<double> xs0(jsinput.size(), 0.0);
@@ -115,8 +113,8 @@ int main(int argc, char *argv[]) {
         gen->ReadInput(jsinput[k]);
 
         // Set beam and energy
-        const std::vector<std::string> beam = {"p+", "p+"};
-        const std::vector<double> ebeam = {energy[i] / 2, energy[i] / 2};
+        const std::vector<std::string> beam  = {"p+", "p+"};
+        const std::vector<double>      ebeam = {energy[i] / 2, energy[i] / 2};
         gen->proc->SetInitialState(beam, ebeam);
 
         // SCREENING

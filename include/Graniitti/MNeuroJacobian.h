@@ -46,30 +46,26 @@ using namespace LBFGSpp;
 
 namespace gra {
 namespace neurojac {
-MRandom randx;
-unsigned int BATCHSIZE = 0;
-bool FLAT_TARGET = false;
+MRandom      randx;
+unsigned int BATCHSIZE   = 0;
+bool         FLAT_TARGET = false;
 
 // declare a pointer to member function
 MProcess *procptr;
 double (MProcess::*ptfptr)(const std::vector<double> &randvec,
-                           AuxIntData &aux) = &MProcess::EventWeight;
+                           AuxIntData &               aux) = &MProcess::EventWeight;
 
 // Function to be integrated
 double func(std::vector<double> &x) {
-  if (FLAT_TARGET) {
-    return 1.0;
-  }
+  if (FLAT_TARGET) { return 1.0; }
 
   gra::AuxIntData aux;
-  aux.vegasweight = 1.0;
+  aux.vegasweight  = 1.0;
   aux.burn_in_mode = false;
-  double y = (gra::neurojac::procptr->*gra::neurojac::ptfptr)(x, aux);
+  double y         = (gra::neurojac::procptr->*gra::neurojac::ptfptr)(x, aux);
 
   // Numerical protection
-  if (std::isnan(y) || std::isinf(y)) {
-    y = 0.0;
-  }
+  if (std::isnan(y) || std::isinf(y)) { y = 0.0; }
   return y;
 }
 
@@ -123,16 +119,12 @@ struct NetParams {
   // Return number of parameters
   int size_param() {
     int k = 0;
-    for (std::size_t l = 0; l < L.size(); ++l) {
-      k += L[l].w.rows() * L[l].w.cols();
-    }
-    for (std::size_t l = 0; l < L.size(); ++l) {
-      k += L[l].b.size();
-    }
+    for (std::size_t l = 0; l < L.size(); ++l) { k += L[l].w.rows() * L[l].w.cols(); }
+    for (std::size_t l = 0; l < L.size(); ++l) { k += L[l].b.size(); }
     return k;
   }
 
-  int D = 0;  // Integral dimension
+  int  D = 0;  // Integral dimension
   dual alpha;
 };
 
@@ -149,9 +141,7 @@ VectorXdual G_net(const VectorXdual &x) {
 
   // Network input
   VectorXdual in(x.size());
-  for (std::size_t i = 0; i < (unsigned int)x.size(); ++i) {
-    in[i] = x[i];
-  }
+  for (std::size_t i = 0; i < (unsigned int)x.size(); ++i) { in[i] = x[i]; }
 
   // Network layers
   for (std::size_t l = 0; l < par.L.size() - 1; ++l) {
@@ -167,7 +157,7 @@ VectorXdual G_net(const VectorXdual &x) {
 
   // Output layer compression to [0,1] range
   const unsigned int last = par.L.size() - 1;
-  VectorXdual out(par.L[last].w.rows());
+  VectorXdual        out(par.L[last].w.rows());
   for (std::size_t i = 0; i < (unsigned int)par.L[last].w.rows(); ++i) {
     for (std::size_t j = 0; j < (unsigned int)par.L[last].w.cols(); ++j) {
       out[i] += par.L[last].w(i, j) * in[j];
@@ -205,7 +195,7 @@ class MNeuroJacobian {
   // Random init for parameter vector
   std::vector<double> RandomInit(NetParams &par, double sigma) {
     std::vector<double> w(par.size_param());
-    unsigned int k = 0;
+    unsigned int        k = 0;
 
     // Connection matrices with random initialization
     for (std::size_t l = 0; l < par.L.size(); ++l) {
@@ -260,34 +250,26 @@ class MNeuroJacobian {
     // ==============================================================
     // Evaluate integrand function
     std::vector<double> u_(u.size());
-    for (std::size_t i = 0; i < (unsigned int)u.size(); ++i) {
-      u_[i] = val(u[i]);
-    }
-    double fG = func(u_);
+    for (std::size_t i = 0; i < (unsigned int)u.size(); ++i) { u_[i] = val(u[i]); }
+    double           fG = func(u_);
     // ==============================================================
 
     // Prior term
     double KL = 0.0;
-    if (p > 0) {
-      KL = log(p);
-    }
+    if (p > 0) { KL = log(p); }
 
     // Jacobian determinant term
-    if (absDetJ > 0) {
-      KL = KL - log(absDetJ);
-    }
+    if (absDetJ > 0) { KL = KL - log(absDetJ); }
 
     // Target function fidelity term
-    if (fG > 0) {
-      KL = KL - log(fG);
-    }
+    if (fG > 0) { KL = KL - log(fG); }
 
     return KL;
   }
 
   static dual loss(VectorXdual &Z, const NetParams &par) {
     VectorXdual z(par.D);
-    dual sumloss = 0.0;
+    dual        sumloss = 0.0;
 
     // Loop over all samples
     int k = 0;
@@ -307,9 +289,7 @@ class MNeuroJacobian {
   static double CostGrad(const std::vector<double> &w, std::vector<double> &gradv) {
     // Generate new virtual batch from noise distribution (prior)
     VectorXdual Z(BATCHSIZE * par.D);
-    for (std::size_t i = 0; i < (unsigned int)Z.size(); ++i) {
-      Z[i] = randx.G(0, 1);
-    }
+    for (std::size_t i = 0; i < (unsigned int)Z.size(); ++i) { Z[i] = randx.G(0, 1); }
 
     // Update vector to global parameters
     Vec2Par(w, par);
@@ -340,12 +320,12 @@ class MNeuroJacobian {
 
     for (std::size_t l = 0; l < par.L.size(); ++l) {
       for (std::size_t j = 0; j < (unsigned int)par.L[l].b.size(); ++j) {
-        par.L[l].b(j) = w[k] + h;
+        par.L[l].b(j)      = w[k] + h;
         const double f_pos = val(loss(Z, par));
-        par.L[l].b(j) = w[k] - h;
+        par.L[l].b(j)      = w[k] - h;
         const double f_neg = val(loss(Z, par));
 
-        gradv[k] = (f_pos - f_neg) / (2 * h);
+        gradv[k]      = (f_pos - f_neg) / (2 * h);
         par.L[l].b(j) = w[k];  // back to previous value
         ++k;
       }
@@ -392,8 +372,8 @@ class MNeuroJacobian {
   void Optimize() {
     // ------------------------------------------------------------------
     // Random init (too high sigma -> may get trapped to a bad local minima)
-    double sigma = 1e-4;
-    std::vector<double> w = RandomInit(par, sigma);
+    double              sigma = 1e-4;
+    std::vector<double> w     = RandomInit(par, sigma);
 
     // ------------------------------------------------------------------
     // By Jacobi formula: d/dt ln det A(t) = tr[A(t)^{-1} d/dt A]
@@ -405,21 +385,19 @@ class MNeuroJacobian {
 
     // Initial guess
     VectorXd x = VectorXd::Zero(n);
-    for (std::size_t i = 0; i < n; ++i) {
-      x[i] = w[i];
-    }
+    for (std::size_t i = 0; i < n; ++i) { x[i] = w[i]; }
 
     // Function object
     Neurocost fun(n);
 
     // x will be overwritten to be the best point found
     double fx;
-    int niter;
+    int    niter;
 
     FLAT_TARGET = true;
     std::cout << "Solving flat target: " << std::endl;
 
-    param.epsilon = 1e-4;
+    param.epsilon        = 1e-4;
     param.max_iterations = 10;
 
     LBFGSSolver<double> solver0(param);
@@ -428,7 +406,7 @@ class MNeuroJacobian {
     FLAT_TARGET = false;
     std::cout << "Solving real target: " << std::endl;
 
-    param.epsilon = 1e-4;
+    param.epsilon        = 1e-4;
     param.max_iterations = 20;
 
     LBFGSSolver<double> solver1(param);
@@ -453,15 +431,11 @@ class MNeuroJacobian {
       std::vector<double> w(x.size(), 0.0);
       std::vector<double> gradv(x.size(), 0.0);
 
-      for (std::size_t i = 0; i < (unsigned int)x.size(); ++i) {
-        w[i] = x[i];
-      }
+      for (std::size_t i = 0; i < (unsigned int)x.size(); ++i) { w[i] = x[i]; }
 
       fx = CostGrad(w, gradv);
 
-      for (std::size_t i = 0; i < (unsigned int)x.size(); ++i) {
-        grad[i] = gradv[i];
-      }
+      for (std::size_t i = 0; i < (unsigned int)x.size(); ++i) { grad[i] = gradv[i]; }
 
       return fx;
     }

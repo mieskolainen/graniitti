@@ -180,12 +180,8 @@ class M4Vec {
   // Azimuth angle difference between [-PI,PI]
   double DeltaPhi(const M4Vec &v) const {
     double D = Phi() - v.Phi();
-    while (D >= PI) {
-      D -= 2.0 * PI;
-    }
-    while (D < -PI) {
-      D += 2.0 * PI;
-    }
+    while (D >= PI) { D -= 2.0 * PI; }
+    while (D < -PI) { D += 2.0 * PI; }
     return D;
   }
 
@@ -278,7 +274,7 @@ class M4Vec {
   M4Vec PropagatePosition(double tau0, double scale) const {
     // Flight time in the lab frame
     const double gamma = Gamma();
-    const double tau = gamma * tau0;
+    const double tau   = gamma * tau0;
 
     // Velocity
     const double beta = Beta();

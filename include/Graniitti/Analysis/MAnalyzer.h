@@ -93,8 +93,8 @@ class MAnalyzer {
   // HepMC3 reader
   double HepMC3_OracleFill(const std::string inputfile, unsigned int multiplicity, int finalPDG,
                            unsigned int MAXEVENTS,
-                           std::map<std::string, std::unique_ptr<h1Multiplet>> &h1,
-                           std::map<std::string, std::unique_ptr<h2Multiplet>> &h2,
+                           std::map<std::string, std::unique_ptr<h1Multiplet>> &   h1,
+                           std::map<std::string, std::unique_ptr<h2Multiplet>> &   h2,
                            std::map<std::string, std::unique_ptr<hProfMultiplet>> &hP,
                            unsigned int SID);
 

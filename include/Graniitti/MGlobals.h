@@ -17,9 +17,9 @@ extern std::string MODELPARAM;
 extern MSudakov *GlobalSudakovPtr;
 
 // Normal pdfs
-extern std::string LHAPDFSET;
+extern std::string  LHAPDFSET;
 extern LHAPDF::PDF *GlobalPdfPtr;
-extern int pdf_trials;
+extern int          pdf_trials;
 
 // Multithreading lock
 extern std::mutex g_mutex;

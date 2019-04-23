@@ -48,13 +48,13 @@ const double epsilon = 1e-6;
 void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MParticle &p1,
                  const gra::MParticle &p2) {
   const double J = p.spinX2 / 2.0;
-  const int P = p.P;
+  const int    P = p.P;
 
   const double s1 = p1.spinX2 / 2.0;
-  const int P1 = p1.P;
+  const int    P1 = p1.P;
 
   const double s2 = p2.spinX2 / 2.0;
-  const int P2 = p2.P;
+  const int    P2 = p2.P;
 
   // Boson or Fermion
   const bool is_boson1 = (cint(s1)) ? true : false;
@@ -68,8 +68,8 @@ void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MPartic
                                        static_cast<unsigned int>(2 * s2 + 1), 0.0);
 
   MMatrix<bool> need_to_set(20, 20, false);
-  bool tag_set = false;
-  unsigned int nonzero = 0;
+  bool          tag_set = false;
+  unsigned int  nonzero = 0;
 
   // Construct T-matrix (2s1 + 1) x (2s2 + 1) elements
   std::cout << std::endl;
@@ -103,34 +103,26 @@ void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MPartic
 
           // Angular momentum conserved (should be, by construction
           // here)
-          if (!(std::abs(lambda) <= J)) {
-            continue;
-          }  // not conserved
+          if (!(std::abs(lambda) <= J)) { continue; }  // not conserved
 
           // If parity conserving decay
           if (hc.P_conservation) {
             // Parity of the final state (hold for both
             // bosons/fermions)
             const int P_tot = P1 * P2 * std::pow(-1, l);
-            if (P_tot != P) {
-              continue;
-            }  // not conserved
+            if (P_tot != P) { continue; }  // not conserved
           }
 
           // Bose-Symmetry for identical Boson-Pairs (symmetric
           // wavefunction)
           if (is_boson1 && is_boson2 && identical) {
-            if (!BoseSymmetry(l, s)) {
-              continue;
-            }  // not right
+            if (!BoseSymmetry(l, s)) { continue; }  // not right
           }
 
           // Fermi-Symmetry for identical Fermion-Pairs (antisymmetric
           // wavefunction)
           if (!is_boson1 && !is_boson2 && identical) {
-            if (!FermiSymmetry(l, s)) {
-              continue;
-            }  // not right
+            if (!FermiSymmetry(l, s)) { continue; }  // not right
           }
 
           // CG-coupling product is non-zero
@@ -141,7 +133,7 @@ void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MPartic
             // Has not been set, throw error next
             if (hc.alpha_set[l][s] == false) {
               need_to_set[l][s] = true;
-              tag_set = true;
+              tag_set           = true;
             }
             printf(
                 "[l=%d,s=%d] :: lambda1 = %4.1f, lambda2 = "
@@ -194,9 +186,7 @@ void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MPartic
 // for identical Boson pairs.
 bool BoseSymmetry(int l, int s) {
   const int number = l - s;
-  if (number % 2 == 0) {
-    return true;
-  }
+  if (number % 2 == 0) { return true; }
   return false;
 }
 
@@ -204,9 +194,7 @@ bool BoseSymmetry(int l, int s) {
 // for identical Fermion pairs.
 bool FermiSymmetry(int l, int s) {
   const int number = l + s;
-  if (number % 2 == 0) {
-    return true;
-  }
+  if (number % 2 == 0) { return true; }
   return false;
 }
 
@@ -224,9 +212,7 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &reso
   MMatrix<std::complex<double>> fC;
 
   // This function handles only 2-body decays
-  if (lts.decaytree.size() != 2) {
-    return resonance.g_decay;
-  }
+  if (lts.decaytree.size() != 2) { return resonance.g_decay; }
 
   // No spin, no need
   if (resonance.p.spinX2 == 0) {
@@ -302,7 +288,7 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &reso
   MMatrix<std::complex<double>> f;
   if (fB.size_row() > 0 && fC.size_row() > 0) {
     const MMatrix<std::complex<double>> prod = gra::matoper::TensorProd(fB, fC);
-    f = prod * fA;  // Matrix x Matrix product
+    f                                        = prod * fA;  // Matrix x Matrix product
   } else {
     f = fA;  // No recursion
   }
@@ -311,24 +297,24 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &reso
   // Construct the D-matrix for an event-by-event spin space density operator
   // rotation
   double theta_rotation = 0.0;
-  double phi_rotation = 0.0;
+  double phi_rotation   = 0.0;
 
   // Spin polarization density matrix defined:
 
   // In Helicity frame
   if (resonance.hc.FRAME == "HE") {
     theta_rotation = lts.pfinal[0].Theta();
-    phi_rotation = lts.pfinal[0].Phi();
+    phi_rotation   = lts.pfinal[0].Phi();
 
     // In Non-Rotated frame
   } else if (resonance.hc.FRAME == "SR") {
     theta_rotation = 0;
-    phi_rotation = 0;
+    phi_rotation   = 0;
 
     // In Collins-Soper frame
   } else if (resonance.hc.FRAME == "CS") {
     theta_rotation = lts.pfinal[0].Theta();
-    phi_rotation = -lts.pfinal[0].Phi();
+    phi_rotation   = -lts.pfinal[0].Phi();
   } else {
     // Throw exception
     std::string str =
@@ -374,7 +360,7 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &reso
 //
 std::vector<double> SpinProjections(double J) {
   std::vector<double> M(static_cast<int>(2 * J + 1), 0.0);
-  double m = -J;
+  double              m = -J;
   for (std::size_t i = 0; i < M.size(); ++i) {
     M[i] += m;
     m += 1.0;
@@ -411,7 +397,7 @@ MMatrix<std::complex<double>> fMatrix(const MMatrix<std::complex<double>> &T, do
   // Construct final state helicity configurations
 
   // For indexing T matrix
-  MMatrix<double> lambda_values(N, 2, 0.0);
+  MMatrix<double>       lambda_values(N, 2, 0.0);
   MMatrix<unsigned int> lambda_index(N, 2, 0);
 
   unsigned int i = 0;
@@ -472,9 +458,7 @@ MMatrix<std::complex<double>> DMatrix(double J, double theta_rotation, double ph
 // SU(2) Clebsch-Gordan coefficients
 double ClebschGordan(double j1, double j2, double m1, double m2, double j, double m) {
   // Selection rules
-  if (!CGrules(j1, j2, m1, m2, j, m)) {
-    return 0.0;
-  }
+  if (!CGrules(j1, j2, m1, m2, j, m)) { return 0.0; }
 
   // Use Wigner-3j symbol to evaluate, note minus on m!
   return std::pow(-1.0, m + j1 - j2) * msqrt(2 * j + 1) * W3j(j1, j2, j, m1, m2, -m);
@@ -482,25 +466,19 @@ double ClebschGordan(double j1, double j2, double m1, double m2, double j, doubl
 
 // Check if half-integer
 bool chalfint(double x) {
-  if (std::abs(2 * x - std::floor(2 * x)) < 1E-9) {
-    return true;
-  }
+  if (std::abs(2 * x - std::floor(2 * x)) < 1E-9) { return true; }
   return false;
 }
 
 // Check if integer
 bool cint(double x) {
-  if (std::abs(x - std::floor(x)) < 1E-9) {
-    return true;
-  }
+  if (std::abs(x - std::floor(x)) < 1E-9) { return true; }
   return false;
 }
 
 // Floating point equality comparison
 bool isequal(double x, double y) {
-  if (std::abs(x - y) < 1E-9) {
-    return true;
-  }
+  if (std::abs(x - y) < 1E-9) { return true; }
   return false;
 }
 
@@ -575,9 +553,7 @@ double CGrules(double j1, double j2, double m1, double m2, double j, double m) {
 
 double W3j(double j1, double j2, double j3, double m1, double m2, double m3) {
   // Check selection rules
-  if (!W3jrules(j1, j2, j3, m1, m2, m3)) {
-    return 0.0;
-  }
+  if (!W3jrules(j1, j2, j3, m1, m2, m3)) { return 0.0; }
 
   // Create coefficient structure
   const int c1 = -j2 + m1 + j3;
@@ -589,7 +565,7 @@ double W3j(double j1, double j2, double j3, double m1, double m2, double m3) {
   // Boundaries for which factorials are non-negative
   const int lower = std::max(std::max(0, -c1), -c2);
   const int upper = std::min(std::min(c3, c4), c5);
-  double fsum = 0;
+  double    fsum  = 0;
 
   // Evaluate sum term
   for (int k = lower; k <= upper; ++k) {
@@ -619,65 +595,47 @@ bool W3jrules(double j1, double j2, double j3, double m1, double m2, double m3) 
   const bool PRINT_ON = false;
 
   if (!cint(j1 + j2 + j3)) {
-    if (PRINT_ON) {
-      std::cout << "W3jSR:: j1 + j2 + j3 not integer\n";
-    }
+    if (PRINT_ON) { std::cout << "W3jSR:: j1 + j2 + j3 not integer\n"; }
 
     return false;
   }
   if (!isequal(m1 + m2 + m3, 0)) {
-    if (PRINT_ON) {
-      std::cout << "W3jSR:: m1 + m2 + m3 != 0\n";
-    }
+    if (PRINT_ON) { std::cout << "W3jSR:: m1 + m2 + m3 != 0\n"; }
 
     return false;
   }
   if (!isequal(j1 - m1, std::floor(j1 - m1))) {
-    if (PRINT_ON) {
-      std::cout << "W3jSR:: parity of 2j_1 and 2m_1 does not match\n";
-    }
+    if (PRINT_ON) { std::cout << "W3jSR:: parity of 2j_1 and 2m_1 does not match\n"; }
 
     return false;
   }
   if (!isequal(j2 - m2, std::floor(j2 - m2))) {
-    if (PRINT_ON) {
-      std::cout << "W3jSR:: parity of 2j_2 and 2m_2 does not match\n";
-    }
+    if (PRINT_ON) { std::cout << "W3jSR:: parity of 2j_2 and 2m_2 does not match\n"; }
 
     return false;
   }
   if (!isequal(j3 - m3, std::floor(j3 - m3))) {
-    if (PRINT_ON) {
-      std::cout << "W3jSR:: parity of 2j_3 and 2m_3 does not match\n";
-    }
+    if (PRINT_ON) { std::cout << "W3jSR:: parity of 2j_3 and 2m_3 does not match\n"; }
 
     return false;
   }
   if ((j1 + j2) < j3 || j3 < std::abs(j1 - j2)) {
-    if (PRINT_ON) {
-      std::cout << "W3jSR:: j over valid domain\n";
-    }
+    if (PRINT_ON) { std::cout << "W3jSR:: j over valid domain\n"; }
 
     return false;
   }
   if (std::abs(m1) > j1) {
-    if (PRINT_ON) {
-      std::cout << "W3jSR:: |m1| > j1\n";
-    }
+    if (PRINT_ON) { std::cout << "W3jSR:: |m1| > j1\n"; }
 
     return false;
   }
   if (std::abs(m2) > j2) {
-    if (PRINT_ON) {
-      std::cout << "W3jSR:: |m2| > j2\n";
-    }
+    if (PRINT_ON) { std::cout << "W3jSR:: |m2| > j2\n"; }
 
     return false;
   }
   if (std::abs(m3) > j3) {
-    if (PRINT_ON) {
-      std::cout << "W3jSR:: |m3| > j3\n";
-    }
+    if (PRINT_ON) { std::cout << "W3jSR:: |m3| > j3\n"; }
 
     return false;
   }
@@ -687,29 +645,23 @@ bool W3jrules(double j1, double j2, double j3, double m1, double m2, double m3) 
 // Calculate quantum mechanical von Neumann entropy of a density matrix
 double VonNeumannEntropy(const MMatrix<std::complex<double>> &rho) {
   const unsigned int N = rho.size_col();
-  Eigen::MatrixXcd A(N, N);
+  Eigen::MatrixXcd   A(N, N);
 
   // Collect matrix elements
   for (std::size_t i = 0; i < N; ++i) {
-    for (std::size_t j = 0; j < N; ++j) {
-      A(i, j) = rho[i][j];
-    }
+    for (std::size_t j = 0; j < N; ++j) { A(i, j) = rho[i][j]; }
   }
 
   // Solve eigenvalues
   Eigen::SelfAdjointEigenSolver<Eigen::MatrixXcd> es(A);
-  if (es.info() != Eigen::Success) {
-    return -1.0;
-  }
+  if (es.info() != Eigen::Success) { return -1.0; }
 
   // Calculate von Neumann Entropy
   double entropy = 0.0;
   for (std::size_t i = 0; i < N; ++i) {
     std::complex<double> lambda = es.eigenvalues().col(0)[i];
-    const double eigval = std::real(lambda);  // Take real part for numerics
-    if (eigval > epsilon) {
-      entropy += eigval * std::log(eigval);
-    }
+    const double         eigval = std::real(lambda);  // Take real part for numerics
+    if (eigval > epsilon) { entropy += eigval * std::log(eigval); }
   }
   entropy = -entropy;
   return entropy;
@@ -732,8 +684,8 @@ double WignerSmalld(double theta, double m, double mp, double J) {
   // k = 0,1,...,2J
   for (int k = 0; k <= 2 * J; ++k) {
     double value = 0;
-    double val1 = 0.0;
-    double val2 = 0.0;
+    double val1  = 0.0;
+    double val2  = 0.0;
 
     // Ignore terms with negative factorials
     if (J - mp - k >= 0 && J + m - k >= 0 && k + mp - m >= 0 && k >= 0) {
@@ -959,14 +911,14 @@ bool Positivity(const MMatrix<std::complex<double>> &rho, unsigned int J) {
 // TBD, write down the generalization of parity conservation constaint for any
 // spin.
 MMatrix<std::complex<double>> RandomRho(unsigned int J, bool parity, MRandom &rng) {
-  const std::complex<double> zi(0, 1);  // imag unit
+  const std::complex<double>    zi(0, 1);  // imag unit
   MMatrix<std::complex<double>> rho;
 
   // Draw random density matrices until valid found, takes a couple
   // usually
   while (true) {
     // Create random complex matrix (n x n)
-    const unsigned int n = 2 * J + 1;
+    const unsigned int            n = 2 * J + 1;
     MMatrix<std::complex<double>> r(n, n);
 
     for (std::size_t i = 0; i < n; ++i) {
@@ -980,7 +932,7 @@ MMatrix<std::complex<double>> RandomRho(unsigned int J, bool parity, MRandom &rn
 
     // Normalize the trace to 1 (real just for conversion to double)
     const double scale = 1.0 / std::real(rho.Trace());
-    rho = rho * scale;
+    rho                = rho * scale;
 
     // If parity conservation required, then symmetrize
     if (parity) {
@@ -994,9 +946,7 @@ MMatrix<std::complex<double>> RandomRho(unsigned int J, bool parity, MRandom &rn
 
         // 2. Lower triangle = hermiticity constrained
         for (std::size_t i = 0; i < n; ++i) {
-          for (std::size_t j = 0; j <= i; ++j) {
-            rho[i][j] = std::conj(rho[j][i]);
-          }
+          for (std::size_t j = 0; j <= i; ++j) { rho[i][j] = std::conj(rho[j][i]); }
         }
 
         // 3. Diagonal parity constrained
@@ -1016,9 +966,7 @@ MMatrix<std::complex<double>> RandomRho(unsigned int J, bool parity, MRandom &rn
 
         // 2. Lower triangle = hermiticity constrained
         for (std::size_t i = 0; i < n; ++i) {
-          for (std::size_t j = 0; j <= i; ++j) {
-            rho[i][j] = std::conj(rho[j][i]);
-          }
+          for (std::size_t j = 0; j <= i; ++j) { rho[i][j] = std::conj(rho[j][i]); }
         }
 
         // 3. Diagonal parity constrained
@@ -1028,7 +976,7 @@ MMatrix<std::complex<double>> RandomRho(unsigned int J, bool parity, MRandom &rn
 
       // Re-Normalize trace to 1 (real just for conversion to double)
       const double newscale = 1.0 / std::real(rho.Trace());
-      rho = rho * newscale;
+      rho                   = rho * newscale;
       ;
     }
 
@@ -1036,9 +984,7 @@ MMatrix<std::complex<double>> RandomRho(unsigned int J, bool parity, MRandom &rn
     // Check that the matrix is valid density matrix in terms of
     // positivity requirement
     try {
-      if (Positivity(rho, J)) {
-        break;
-      }
+      if (Positivity(rho, J)) { break; }
     } catch (...) {
       continue;  // not valid density matrix
     }

@@ -36,10 +36,10 @@ class MSubProc : public MDurham, public MRegge, public MGamma {
 
   std::complex<double> GetBareAmplitude(gra::LORENTZSCALAR &lts);
 
-  std::string ISTATE;   // "PP","yy","gg" etc.
-  std::string CHANNEL;  // "CON", "RES" etc.
+  std::string  ISTATE;   // "PP","yy","gg" etc.
+  std::string  CHANNEL;  // "CON", "RES" etc.
   unsigned int LIPSDIM = 0;
-  bool UW = false;
+  bool         UW      = false;
 
   // -------------------------------------------------------------------
 

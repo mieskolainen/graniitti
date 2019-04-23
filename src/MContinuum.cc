@@ -39,7 +39,7 @@ namespace gra {
 // This is needed by construction
 MContinuum::MContinuum() {
   std::vector<std::string> supported = {"PP", "yP", "yy", "gg"};
-  ProcPtr = MSubProc(supported);
+  ProcPtr                            = MSubProc(supported);
   ConstructProcesses();
 }
 
@@ -50,9 +50,7 @@ MContinuum::MContinuum(std::string process, const std::vector<aux::OneCMD> &synt
 
   // Init final states
   M4Vec zerovec(0, 0, 0, 0);
-  for (std::size_t i = 0; i < 10; ++i) {
-    lts.pfinal.push_back(zerovec);
-  }
+  for (std::size_t i = 0; i < 10; ++i) { lts.pfinal.push_back(zerovec); }
   std::cout << "MContinuum:: [Constructor done]" << std::endl;
 }
 
@@ -96,12 +94,8 @@ void MContinuum::post_Constructor() {
   // Initialize phase space dimension (3*Nf - 4)
   ProcPtr.LIPSDIM = 3 * (lts.decaytree.size() + 2) - 4;
 
-  if (EXCITATION == 1) {
-    ProcPtr.LIPSDIM += 1;
-  }
-  if (EXCITATION == 2) {
-    ProcPtr.LIPSDIM += 2;
-  }
+  if (EXCITATION == 1) { ProcPtr.LIPSDIM += 1; }
+  if (EXCITATION == 2) { ProcPtr.LIPSDIM += 2; }
 }
 
 // Update kinematics (screening kT loop calls this)
@@ -109,8 +103,8 @@ void MContinuum::post_Constructor() {
 // does not assume vanishing external momenta in the screening loop calculation
 bool MContinuum::LoopKinematics(const std::vector<double> &p1p, const std::vector<double> &p2p) {
   static const M4Vec beamsum = lts.pbeam1 + lts.pbeam2;
-  const unsigned int Kf = lts.decaytree.size();  // Number of central particles
-  const unsigned int Nf = Kf + 2;                // Number of final states
+  const unsigned int Kf      = lts.decaytree.size();  // Number of central particles
+  const unsigned int Nf      = Kf + 2;                // Number of final states
 
   // SET new proton pT degrees of freedom
   lts.pfinal[1].SetPxPy(p1p[0], p1p[1]);
@@ -122,7 +116,7 @@ bool MContinuum::LoopKinematics(const std::vector<double> &p1p, const std::vecto
 
   // Set central particles px,py,pz,e
   const unsigned int offset = 3;  // indexing
-  M4Vec sumP(0, 0, 0, 0);
+  M4Vec              sumP(0, 0, 0, 0);
   for (std::size_t i = 0; i < Kf; ++i) {
     const double y = lts.pfinal_orig[i + offset].Rap();
     const double m = lts.pfinal_orig[i + offset].M();
@@ -140,17 +134,15 @@ bool MContinuum::LoopKinematics(const std::vector<double> &p1p, const std::vecto
   // pz and E of forward protons/N*
   const double pt1 = lts.pfinal[1].Pt();
   const double pt2 = lts.pfinal[2].Pt();
-  const double m1 = lts.pfinal_orig[1].M();
-  const double m2 = lts.pfinal_orig[2].M();
+  const double m1  = lts.pfinal_orig[1].M();
+  const double m2  = lts.pfinal_orig[2].M();
 
   double p1z = gra::kinematics::SolvePz(m1, m2, pt1, pt2, sumP.Pz(), sumP.E(), lts.s);
   double p2z = -(sumP.Pz() + p1z);  // by momentum conservation
 
   // Enforce scattering direction +p -> +p, -p -> -p (VERY RARE POLYNOMIAL
   // BRANCH FLIP)
-  if (p1z < 0 || p2z > 0) {
-    return false;
-  }
+  if (p1z < 0 || p2z > 0) { return false; }
 
   lts.pfinal[1].SetPzE(p1z, msqrt(pow2(m1) + pow2(pt1) + pow2(p1z)));
   lts.pfinal[2].SetPzE(p2z, msqrt(pow2(m2) + pow2(pt2) + pow2(p2z)));
@@ -184,8 +176,8 @@ double MContinuum::EventWeight(const std::vector<double> &randvec, AuxIntData &a
 
   // Kinematics
   aux.kinematics_ok = BNRandomKin(lts.decaytree.size() + 2, randvec);
-  aux.fidcuts_ok = FiducialCuts();
-  aux.vetocuts_ok = VetoCuts();
+  aux.fidcuts_ok    = FiducialCuts();
+  aux.vetocuts_ok   = VetoCuts();
 
   if (aux.Valid()) {
     // Matrix element squared
@@ -219,9 +211,7 @@ void MContinuum::PrintInit(bool silent) const {
     std::string proton1 = "-----------EL--------->";
     std::string proton2 = "-----------EL--------->";
 
-    if (EXCITATION == 1) {
-      proton1 = "-----------F2-xxxxxxxx>";
-    }
+    if (EXCITATION == 1) { proton1 = "-----------F2-xxxxxxxx>"; }
     if (EXCITATION == 2) {
       proton1 = "-----------F2-xxxxxxxx>";
       proton2 = "-----------F2-xxxxxxxx>";
@@ -295,8 +285,8 @@ bool MContinuum::BNRandomKin(unsigned int Nf, const std::vector<double> &randvec
       gcuts.forward_pt_min + (gcuts.forward_pt_max - gcuts.forward_pt_min) * randvec[0];
   const double pt2 =
       gcuts.forward_pt_min + (gcuts.forward_pt_max - gcuts.forward_pt_min) * randvec[1];
-  const double phi1 = 2.0 * gra::math::PI * randvec[2];
-  const double phi2 = 2.0 * gra::math::PI * randvec[3];
+  const double       phi1   = 2.0 * gra::math::PI * randvec[2];
+  const double       phi2   = 2.0 * gra::math::PI * randvec[3];
   const unsigned int offset = 4;  // 4 variables above
 
   // Decay product masses
@@ -308,7 +298,7 @@ bool MContinuum::BNRandomKin(unsigned int Nf, const std::vector<double> &randvec
 
   // Intermediate kt
   std::vector<double> kt(Kf - 1, 0.0);  // Kf-1
-  size_t ind = offset;
+  size_t              ind = offset;
   for (const auto &i : indices(kt)) {
     kt[i] = gcuts.kt_min + (gcuts.kt_max - gcuts.kt_min) * randvec[ind];
     ++ind;
@@ -331,12 +321,8 @@ bool MContinuum::BNRandomKin(unsigned int Nf, const std::vector<double> &randvec
   // Forward N* system masses
   std::vector<double> mvec;
   std::vector<double> rvec;
-  if (EXCITATION == 1) {
-    rvec = {randvec[ind]};
-  }
-  if (EXCITATION == 2) {
-    rvec = {randvec[ind], randvec[ind + 1]};
-  }
+  if (EXCITATION == 1) { rvec = {randvec[ind]}; }
+  if (EXCITATION == 2) { rvec = {randvec[ind], randvec[ind + 1]}; }
   SampleForwardMasses(mvec, rvec);
 
   return BNBuildKin(Nf, pt1, pt2, phi1, phi2, kt, phi, y, mvec[0], mvec[1]);
@@ -346,7 +332,7 @@ bool MContinuum::BNRandomKin(unsigned int Nf, const std::vector<double> &randvec
 bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1, double phi2,
                             const std::vector<double> &kt, const std::vector<double> &phi,
                             const std::vector<double> &y, double m1, double m2) {
-  const unsigned int Kf = Nf - 2;  // Central system multiplicity
+  const unsigned int Kf      = Nf - 2;  // Central system multiplicity
   static const M4Vec beamsum = lts.pbeam1 + lts.pbeam2;
 
   if (lts.decaytree.size() != Kf) {
@@ -375,25 +361,21 @@ bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1
   // Set pz and E for central final states
   M4Vec sumP(0, 0, 0, 0);
   for (const auto &i : indices(p)) {
-    const double m = lts.decaytree[i].m_offshell;  // Note offshell!
+    const double m  = lts.decaytree[i].m_offshell;  // Note offshell!
     const double mt = msqrt(pow2(m) + p[i].Pt2());
     p[i].SetPzE(mt * std::sinh(y[i]), mt * std::cosh(y[i]));
     sumP += p[i];
   }
 
   // Check crude energy overflow
-  if (sumP.E() > lts.sqrt_s) {
-    return false;
-  }
+  if (sumP.E() > lts.sqrt_s) { return false; }
 
   double p1z = gra::kinematics::SolvePz(m1, m2, pt1, pt2, sumP.Pz(), sumP.E(), lts.s);
   double p2z = -(sumP.Pz() + p1z);  // by momentum conservation
 
   // Enforce scattering direction +p -> +p, -p -> -p (VERY RARE POLYNOMIAL
   // BRANCH FLIP)
-  if (p1z < 0 || p2z > 0) {
-    return false;
-  }
+  if (p1z < 0 || p2z > 0) { return false; }
 
   // pz and E of protons/N*
   p1.SetPzE(p1z, msqrt(pow2(m1) + pow2(pt1) + pow2(p1z)));
@@ -407,9 +389,7 @@ bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1
     kinematics::LorentzBoost(beamsum, lts.sqrt_s, p2, sign);
     kinematics::LorentzBoost(beamsum, lts.sqrt_s, sumP, sign);
 
-    for (const auto &i : indices(p)) {
-      kinematics::LorentzBoost(beamsum, lts.sqrt_s, p[i], sign);
-    }
+    for (const auto &i : indices(p)) { kinematics::LorentzBoost(beamsum, lts.sqrt_s, p[i], sign); }
   }
   // ------------------------------------------------------------------
 
@@ -418,10 +398,10 @@ bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1
   lts.pfinal[2] = p2;
   lts.pfinal[0] = sumP;  // Central system
 
-  double sumM = 0;
+  double             sumM   = 0;
   const unsigned int offset = 3;
   for (const auto &i : indices(p)) {
-    lts.decaytree[i].p4 = p[i];
+    lts.decaytree[i].p4    = p[i];
     lts.pfinal[i + offset] = p[i];
     sumM += p[i].M();
   }
@@ -430,9 +410,7 @@ bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1
   // Kinematic checks
 
   // Check we are above mass threshold
-  if (sumP.M() < sumM) {
-    return false;
-  }
+  if (sumP.M() < sumM) { return false; }
 
   // Total 4-momentum conservation
   if (!gra::math::CheckEMC(beamsum - (lts.pfinal[1] + lts.pfinal[2] + lts.pfinal[0]))) {
@@ -443,18 +421,12 @@ bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1
 
   // Treat decaytree recursively
   for (const auto &i : indices(lts.decaytree)) {
-    if (!ConstructDecayKinematics(lts.decaytree[i])) {
-      return false;
-    }
+    if (!ConstructDecayKinematics(lts.decaytree[i])) { return false; }
   }
 
   // Forward excitation
-  if (lts.excite1) {
-    ExciteNstar(lts.pfinal[1], lts.decayforward1);
-  }
-  if (lts.excite2) {
-    ExciteNstar(lts.pfinal[2], lts.decayforward2);
-  }
+  if (lts.excite1) { ExciteNstar(lts.pfinal[1], lts.decayforward1); }
+  if (lts.excite2) { ExciteNstar(lts.pfinal[2], lts.decayforward2); }
 
   return GetLorentzScalars(Nf);
 }
@@ -555,7 +527,7 @@ void MContinuum::BLinearSystem(std::vector<M4Vec> &p, const std::vector<M4Vec> &
   // Construct vector b
   const unsigned int Kf = p.size();  // Number of central system particles
   std::vector<M4Vec> b(Kf);
-  const M4Vec p1p2sum = p1f + p2f;
+  const M4Vec        p1p2sum = p1f + p2f;
 
   for (const auto &i : indices(b)) {
     if (i == 0) {
@@ -670,9 +642,7 @@ double MContinuum::BNPhaseSpaceWeight() const {
   // Intermediate "difference"
   // kt factors from \prod_i d^2 k_i = \prod_i dphi_i kt_i dkt_i
   double PROD = 1.0;
-  for (const auto &i : indices(pkt_)) {
-    PROD *= pkt_[i].Pt();
-  }
+  for (const auto &i : indices(pkt_)) { PROD *= pkt_[i].Pt(); }
 
   const double factor = pow4(2.0 * PI) * (1.0 / std::pow(2.0 * pow3(2.0 * PI), Nf)) *
                         lts.pfinal[1].Pt() * lts.pfinal[2].Pt() *

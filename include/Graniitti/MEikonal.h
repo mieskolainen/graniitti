@@ -22,21 +22,21 @@ namespace MEikonalNumerics {
 extern const double MinKT2;
 extern const double MaxKT2;
 extern unsigned int NumberKT2;
-extern bool logKT2;
+extern bool         logKT2;
 
 extern const double MinBT;
 extern const double MaxBT;
 extern unsigned int NumberBT;
-extern bool logBT;
+extern bool         logBT;
 
 extern const double MinLoopKT;
-extern double MaxLoopKT;
+extern double       MaxLoopKT;
 
 extern unsigned int NumberLoopKT;
 extern unsigned int NumberLoopPHI;
 
-extern const double FBIntegralMinKT;
-extern const double FBIntegralMaxKT;
+extern const double       FBIntegralMinKT;
+extern const double       FBIntegralMaxKT;
 extern const unsigned int FBIntegralN;
 
 std::string GetHashString();
@@ -51,12 +51,12 @@ class IArray1D {
   IArray1D(){};
   ~IArray1D(){};
 
-  std::string name;
-  double MIN = 0;
-  double MAX = 0;
-  unsigned int N = 0;
-  double STEP = 0;
-  bool islog = false;
+  std::string  name;
+  double       MIN   = 0;
+  double       MAX   = 0;
+  unsigned int N     = 0;
+  double       STEP  = 0;
+  bool         islog = false;
 
   // Setup discretization
   void Set(std::string _name, double _min, double _max, double _N, double _logarithmic) {
@@ -83,7 +83,7 @@ class IArray1D {
     // Logarithm taken here!
     MIN = islog ? std::log(_min) : _min;
     MAX = islog ? std::log(_max) : _max;
-    N = _N;
+    N   = _N;
 
     STEP = (MAX - MIN) / N;
     name = _name;
@@ -130,9 +130,7 @@ class MEikonal {
 
   // Initialization already done
   bool IsInitialized() const {
-    if (S3INIT == true) {
-      return true;
-    }
+    if (S3INIT == true) { return true; }
     return false;
   }
 
@@ -150,7 +148,7 @@ class MEikonal {
 
     // Numerical integral loop over impact parameter (b_t) space
     // C++11, thread_local is also static
-    thread_local std::uniform_real_distribution<double> flat(0, 1);
+    thread_local std::uniform_real_distribution<double>      flat(0, 1);
     thread_local std::uniform_int_distribution<unsigned int> randbt(0, MEikonalNumerics::NumberBT);
     thread_local std::uniform_int_distribution<unsigned int> randm(1, MCUT - 1);  // 1,2,...
 
@@ -174,7 +172,7 @@ class MEikonal {
   unsigned int S3GetRandomCuts(T &rng) {
     // Random integer from [1,NBins-1]
     // C++11, thread_local is also static
-    thread_local std::uniform_real_distribution<double> flat(0, 1);
+    thread_local std::uniform_real_distribution<double>      flat(0, 1);
     thread_local std::uniform_int_distribution<unsigned int> RANDI(1, P_cut.size() - 1);
 
     // Acceptance-Rejection
@@ -207,12 +205,12 @@ class MEikonal {
   std::vector<gra::MParticle> INITIALSTATE;
 
   // Integrated eikonal based total cross sections
-  double sigma_tot = 0.0;
-  double sigma_el = 0.0;
+  double sigma_tot  = 0.0;
+  double sigma_el   = 0.0;
   double sigma_inel = 0.0;
 
   // Cut Pomeron probabilities
-  std::vector<double> P_cut;
+  std::vector<double>              P_cut;
   std::vector<std::vector<double>> P_array;
 
   // Two-Channel eikonal based cross sections

@@ -67,23 +67,21 @@ void MFragment::GetDecayStatus(const std::vector<int> &pdgcode, std::vector<bool
 void MFragment::ExpPowRND(double q, double T, double maxpt, const std::vector<double> &mass,
                           std::vector<double> &x, MRandom &rng) {
   const unsigned int MAXTRIAL = 1e4;  // Safety break
-  const unsigned int Nbins = 1e4;
-  const double ptstep = maxpt / Nbins;
+  const unsigned int Nbins    = 1e4;
+  const double       ptstep   = maxpt / Nbins;
 
   // Calculate pt-bin values
   std::vector<double> ptval(Nbins);
-  for (std::size_t i = 0; i < Nbins; ++i) {
-    ptval[i] = i * ptstep;
-  }
+  for (std::size_t i = 0; i < Nbins; ++i) { ptval[i] = i * ptstep; }
 
   // Random integer from [0,NBins-1]
   // C++11, thread_local is also static
   thread_local std::uniform_int_distribution<int> RANDI(0, Nbins - 1);
 
   // Calculate for pion, kaon, proton masses
-  const std::vector<double> fixmass = {PDG::mpi0, PDG::mpi, PDG::mK, PDG::mp};
+  const std::vector<double>        fixmass = {PDG::mpi0, PDG::mpi, PDG::mK, PDG::mp};
   std::vector<std::vector<double>> dsdpt(fixmass.size(), std::vector<double>(Nbins, 0.0));
-  std::vector<double> maxval(fixmass.size(), 0.0);
+  std::vector<double>              maxval(fixmass.size(), 0.0);
 
   // Pre-evaluate dsigma/dpt |_y=0 (mid rapidity)
   for (const auto &k : indices(fixmass)) {
@@ -102,13 +100,13 @@ void MFragment::ExpPowRND(double q, double T, double maxpt, const std::vector<do
   x.resize(mass.size(), 0.0);
   for (const auto &p : indices(mass)) {
     // Find the best distribution
-    unsigned int best = 0;
-    double mindist = 1e32;
+    unsigned int best    = 0;
+    double       mindist = 1e32;
     for (std::size_t k = 0; k < fixmass.size(); ++k) {
       const double dist = std::abs(fixmass[k] - mass[p]);
       if (dist < mindist) {
         mindist = dist;
-        best = k;
+        best    = k;
       }
     }
 
@@ -145,13 +143,11 @@ double MFragment::TubeFragment(const M4Vec &mother, double M0, const std::vector
                                MRandom &rng) {
   // Number of re-trials in a case of failing kinematics
   const unsigned int MAXTRIAL = 30;
-  unsigned int trials = 0;
+  unsigned int       trials   = 0;
 
-  const unsigned int N = m.size();
+  const unsigned int    N = m.size();
   std::valarray<double> m2(N);
-  for (const auto &i : indices(m)) {
-    m2[i] = pow2(m[i]);
-  }
+  for (const auto &i : indices(m)) { m2[i] = pow2(m[i]); }
   // transverse momentum px, py
   std::valarray<double> px(N);
   std::valarray<double> py(N);
@@ -169,8 +165,8 @@ double MFragment::TubeFragment(const M4Vec &mother, double M0, const std::vector
     for (const auto &i : indices(pt)) {
       // Sample angle, px, py
       const double phi = rng.U(0, 2.0 * gra::math::PI);
-      px[i] = pt[i] * std::cos(phi);
-      py[i] = pt[i] * std::sin(phi);
+      px[i]            = pt[i] * std::cos(phi);
+      py[i]            = pt[i] * std::sin(phi);
 
       // Rapidity
       y[i] = rng.U(0.0, 1.0);
@@ -182,8 +178,8 @@ double MFragment::TubeFragment(const M4Vec &mother, double M0, const std::vector
     y = (y - y[0]) / (y[N - 1] - y[0]);
 
     // Set transverse momentum with zero sum
-    px = px - px.sum() / N;
-    py = py - py.sum() / N;
+    px  = px - px.sum() / N;
+    py  = py - py.sum() / N;
     pt2 = px * px + py * py;
 
     // Transverse mass for all particles
@@ -205,10 +201,10 @@ double MFragment::TubeFragment(const M4Vec &mother, double M0, const std::vector
 
     // Set longitudinal momentum and energy using 'alpha'
     // get boost factor to +- 0
-    const double Q = (mt * exp(y)).sum();
-    y = y + std::log(M0 / Q);
+    const double Q                 = (mt * exp(y)).sum();
+    y                              = y + std::log(M0 / Q);
     const std::valarray<double> pz = mt * sinh(y);
-    const std::valarray<double> E = mt * cosh(y);
+    const std::valarray<double> E  = mt * cosh(y);
 
     // ---------------------------------------------------------------
     // Set all particles 4-momenta and boost to the original frame
@@ -221,10 +217,8 @@ double MFragment::TubeFragment(const M4Vec &mother, double M0, const std::vector
 
     // Check EM-conservation
     M4Vec p_sum(0, 0, 0, 0);
-    for (const auto &n : p) {
-      p_sum += n;
-    }
-    bool valid = gra::math::CheckEMC(p_sum - mother);
+    for (const auto &n : p) { p_sum += n; }
+    bool             valid = gra::math::CheckEMC(p_sum - mother);
 
     // Check rapidity (floating points can fail after boost in forward)
     for (const auto &i : indices(p)) {
@@ -257,13 +251,13 @@ double MFragment::TubeFragment(const M4Vec &mother, double M0, const std::vector
 //
 bool MFragment::SolveAlpha(double &alpha, double M0, const std::vector<double> &m,
                            const std::valarray<double> &mt, const std::valarray<double> &y) {
-  const double STOP_EPS = 1e-8;
-  const unsigned int MAXITER = 20;
+  const double       STOP_EPS = 1e-8;
+  const unsigned int MAXITER  = 20;
 
   // Starting value
-  const int N = m.size();
-  const double C = std::log(M0 * M0);
-  alpha = C - std::log(m[0] * m[N - 1]);
+  const int    N        = m.size();
+  const double C        = std::log(M0 * M0);
+  alpha                 = C - std::log(m[0] * m[N - 1]);
   std::vector<double> E = {0, 0, 0, 0};
 
   unsigned int iter = 0;
@@ -279,12 +273,8 @@ bool MFragment::SolveAlpha(double &alpha, double M0, const std::vector<double> &
     const double DY = E[0] * E[1] * (C - std::log(E[0] * E[1])) / (E[0] * E[3] - E[1] * E[2]);
     alpha -= DY;
 
-    if (std::abs(N * DY / alpha) < STOP_EPS) {
-      return true;
-    }
-    if (std::isnan(alpha) || (++iter) > MAXITER) {
-      return false;
-    }
+    if (std::abs(N * DY / alpha) < STOP_EPS) { return true; }
+    if (std::isnan(alpha) || (++iter) > MAXITER) { return false; }
   }
 }
 
@@ -352,8 +342,8 @@ void MFragment::NstarDecayTable(double M0, std::vector<int> &pdgcode, MRandom &r
 void MFragment::GetForwardMass(double &mass1, double &mass2, bool &excite1, bool &excite2,
                                unsigned int excite, MRandom &random) {
   if (excite == 0) {  // Fully elastic
-    mass1 = PDG::mp;
-    mass2 = PDG::mp;
+    mass1   = PDG::mp;
+    mass2   = PDG::mp;
     excite1 = false;
     excite2 = false;
   } else if (excite == 1) {  // Single excitation
@@ -364,7 +354,7 @@ void MFragment::GetForwardMass(double &mass1, double &mass2, bool &excite1, bool
       excite2 = true;
     } else {
       GetSingleForwardMass(mass1, random);
-      mass2 = PDG::mp;
+      mass2   = PDG::mp;
       excite1 = true;
       excite2 = false;
     }
@@ -386,23 +376,23 @@ void MFragment::GetSingleForwardMass(double &mass, MRandom &random) {
   const int state = d(random.rng);  // Draw random
 
   // Excited proton states
-  double M0 = 0.0;
+  double M0    = 0.0;
   double width = 0.0;
 
   if (state == 0) {
-    M0 = 1.440;  // N*
+    M0    = 1.440;  // N*
     width = 0.325;
   } else if (state == 1) {
-    M0 = 1.680;  // N**
+    M0    = 1.680;  // N**
     width = 0.140;
   } else if (state == 2) {
-    M0 = 2.190;  // N***
+    M0    = 2.190;  // N***
     width = 0.450;
   }
 
   // Draw the excited state mass
   const double safe_margin = 0.01;
-  double mX = 0;
+  double       mX          = 0;
   while (true) {
     mX = random.RelativisticBWRandom(M0, width, 1e6);
     if (mX > (PDG::mp + PDG::mpi + safe_margin)) {  // && mX < lts.sqrt_s) {
@@ -423,16 +413,16 @@ int MFragment::PickParticles(double M, unsigned int N, int B, int S, int Q,
   thread_local std::uniform_int_distribution<int> RANDI3(0, 2);
 
   // Pion, Kaon, Proton ratios [MEASURED]
-  const double denom3 = (1 + 0.1 + 0.06);
+  const double              denom3 = (1 + 0.1 + 0.06);
   const std::vector<double> ratio3 = {1.0 / denom3, 0.1 / denom3, 0.06 / denom3};
 
   const std::vector<int> charged_pdg = {211, 321, 2212};  // pi+-, K+-, (anti)proton
-  const std::vector<int> charged_B = {0, 0, 1};
-  const std::vector<int> charged_S = {0, 1, 0};
+  const std::vector<int> charged_B   = {0, 0, 1};
+  const std::vector<int> charged_S   = {0, 1, 0};
 
   const std::vector<int> neutral_pdg = {111, 311, 2112};  // pi0, K0, neutron
-  const std::vector<int> neutral_B = {0, 0, 1};
-  const std::vector<int> neutral_S = {0, 1, 0};
+  const std::vector<int> neutral_B   = {0, 0, 1};
+  const std::vector<int> neutral_S   = {0, 1, 0};
 
   // -----------------------------------------------------------------
 
@@ -444,7 +434,7 @@ int MFragment::PickParticles(double M, unsigned int N, int B, int S, int Q,
   std::vector<int> Scharges(N, 0);
 
   unsigned int trials = 0;
-  const double QProb = 2.0 / 3.0;
+  const double QProb  = 2.0 / 3.0;
   const double DOUBLE = 0.9;
 
   while (true) {
@@ -464,13 +454,13 @@ int MFragment::PickParticles(double M, unsigned int N, int B, int S, int Q,
               Qcharges[i] = 1;
               Bcharges[i] = charged_B[bin];
               Scharges[i] = charged_S[bin];
-              pdgcode[i] = charged_pdg[bin];
+              pdgcode[i]  = charged_pdg[bin];
               ++i;  // Next slot
 
               Qcharges[i] = -1;
               Bcharges[i] = (-1) * charged_B[bin];
               Scharges[i] = (-1) * charged_S[bin];
-              pdgcode[i] = (-1) * charged_pdg[bin];
+              pdgcode[i]  = (-1) * charged_pdg[bin];
               ++i;
               break;
             }
@@ -483,12 +473,12 @@ int MFragment::PickParticles(double M, unsigned int N, int B, int S, int Q,
 
             if (rng.U(0, 1) < ratio3[bin]) {
               int sign = 0;
-              sign = (rng.U(0, 1) < 0.5) ? 1 : -1;
+              sign     = (rng.U(0, 1) < 0.5) ? 1 : -1;
 
               Qcharges[i] = sign;
               Bcharges[i] = sign * charged_B[bin];
               Scharges[i] = sign * charged_S[bin];
-              pdgcode[i] = sign * charged_pdg[bin];
+              pdgcode[i]  = sign * charged_pdg[bin];
               ++i;
               break;
             }
@@ -504,7 +494,7 @@ int MFragment::PickParticles(double M, unsigned int N, int B, int S, int Q,
             Qcharges[i] = 0;
             Bcharges[i] = neutral_B[bin];
             Scharges[i] = neutral_S[bin];
-            pdgcode[i] = neutral_pdg[bin];
+            pdgcode[i]  = neutral_pdg[bin];
             ++i;
             break;
           }
@@ -536,9 +526,7 @@ int MFragment::PickParticles(double M, unsigned int N, int B, int S, int Q,
       // printf("[PICK] Q_sum = %d, B_sum = %d, M_sum = %0.1f, M = %0.1f, N = %d
       // \n", Q_sum, B_sum, M_sum, M, N);
       ++trials;
-      if (trials > MAXTRIAL) {
-        return 1;
-      }
+      if (trials > MAXTRIAL) { return 1; }
     }
   }  // Out loop
 

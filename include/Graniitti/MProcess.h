@@ -34,14 +34,14 @@ namespace gra {
 // Event-by-event auxialary data for integration
 struct AuxIntData {
   // Aux weight
-  double vegasweight = 1.0;
-  bool burn_in_mode = false;
+  double vegasweight  = 1.0;
+  bool   burn_in_mode = false;
 
   // Event-by-event assertations (init all with true!)
-  bool amplitude_ok = true;
+  bool amplitude_ok  = true;
   bool kinematics_ok = true;
-  bool fidcuts_ok = true;
-  bool vetocuts_ok = true;
+  bool fidcuts_ok    = true;
+  bool vetocuts_ok   = true;
 
   // Forced acceptance of the event
   bool forced_accept = false;
@@ -76,10 +76,10 @@ class MProcess : public MUserHistograms {
   // Pure virtual functions, without definitions here
   // WITHOUT =0, undefined reference to vtable for MProcess will occur in
   // compilation
-  virtual void post_Constructor() = 0;
+  virtual void post_Constructor()           = 0;
   virtual void PrintInit(bool silent) const = 0;
 
-  virtual double operator()(const std::vector<double> &randvec, AuxIntData &aux) = 0;
+  virtual double operator()(const std::vector<double> &randvec, AuxIntData &aux)  = 0;
   virtual double EventWeight(const std::vector<double> &randvec, AuxIntData &aux) = 0;
   virtual bool EventRecord(HepMC3::GenEvent &evt) = 0;
 
@@ -95,7 +95,7 @@ class MProcess : public MUserHistograms {
 
   // ISOLATE phase space in <F> class processes
   void SetISOLATE(bool in) { ISOLATE = in; }
-  bool GetISOLATE() { return ISOLATE; }
+  bool                 GetISOLATE() { return ISOLATE; }
   void SetFLATMASS2(bool in) {
     if (in == true) {
       aux::PrintWarning();
@@ -122,9 +122,7 @@ class MProcess : public MUserHistograms {
     std::cout << rang::fg::red << "MProcess::SetFRAME: Set common Lorentz "
                                   "frame for the resonance decays : "
               << FRAME << rang::fg::reset << std::endl;
-    for (const auto &x : lts.RESONANCES) {
-      lts.RESONANCES[x.first].hc.FRAME = FRAME;
-    }
+    for (const auto &x : lts.RESONANCES) { lts.RESONANCES[x.first].hc.FRAME = FRAME; }
   }
 
   // Get initial state
@@ -138,10 +136,10 @@ class MProcess : public MUserHistograms {
 
   // Pomeron loop screening
   void SetScreening(bool value) { SCREENING = value; }
-  bool GetScreening() { return SCREENING; }
+  bool                   GetScreening() { return SCREENING; }
   // Set/Get input eikonal
   void SetEikonal(const MEikonal &in) { Eikonal = in; }
-  MEikonal GetEikonal() const { return Eikonal; }
+  MEikonal                        GetEikonal() const { return Eikonal; }
 
   // Set LHAPDF
   void SetLHAPDF(const std::string &in) { gra::LHAPDFSET = in; }
@@ -205,8 +203,8 @@ class MProcess : public MUserHistograms {
   gra::LORENTZSCALAR lts;  // Lorentz scalars and others for kinematics
 
   // Cut structures
-  gra::GENCUT gcuts;      // Generator sampling cuts (phase space boundaries)
-  gra::FIDCUT fcuts;      // Fiducial cuts (phase space boundaries)
+  gra::GENCUT  gcuts;     // Generator sampling cuts (phase space boundaries)
+  gra::FIDCUT  fcuts;     // Fiducial cuts (phase space boundaries)
   gra::VETOCUT vetocuts;  // Veto cuts
 
   void PrintDecayTree(const gra::MDecayBranch &branch) const;
@@ -267,7 +265,7 @@ class MProcess : public MUserHistograms {
                       HepMC3::GenEvent &evt, double Q2_scale, int B_sum, int Q_sum);
 
   void BranchForwardSystem(const std::vector<M4Vec> &products, const std::vector<int> &pdgcode,
-                           const std::vector<bool> &isstable,
+                           const std::vector<bool> &    isstable,
                            const HepMC3::GenParticlePtr gen_nstar, HepMC3::GenEvent &evt);
 
   // ---------------------------------------------------------
@@ -303,7 +301,7 @@ class MProcess : public MUserHistograms {
   // Initial states
   gra::MParticle beam1;
   gra::MParticle beam2;
-  double S_factor = 0.0;  // Cross section statistical 1/S symmetry factor
+  double         S_factor = 0.0;  // Cross section statistical 1/S symmetry factor
   // (for identical final states)
   // ----------------------------------------------------------------------
   // Subprocesses
@@ -315,20 +313,20 @@ class MProcess : public MUserHistograms {
   // ----------------------------------------------------------------------
   // Steering parameters
 
-  std::string PROCESS;          // Process identifier string
-  std::string CID;              // Phase space sampler identifier <F>,<C>,...
-  std::string DECAYMODE;        // Decaymode identifier string
-  bool SCREENING = false;       // Pomeron loop on/off
-  unsigned int EXCITATION = 0;  // Forward proton excitation (0 = off, 1 = single, 2 = double)
-  unsigned int USERCUTS = 0;    // User custom cuts identifier
-  unsigned int FLATAMP = 0;     // Flat matrix element mode
+  std::string  PROCESS;             // Process identifier string
+  std::string  CID;                 // Phase space sampler identifier <F>,<C>,...
+  std::string  DECAYMODE;           // Decaymode identifier string
+  bool         SCREENING  = false;  // Pomeron loop on/off
+  unsigned int EXCITATION = 0;      // Forward proton excitation (0 = off, 1 = single, 2 = double)
+  unsigned int USERCUTS   = 0;      // User custom cuts identifier
+  unsigned int FLATAMP    = 0;      // Flat matrix element mode
 
   // ----------------------------------------------------------------------
   // Phase-space control
 
-  bool ISOLATE = false;    // ISOLATE the decay phase space (<F> class)
-  bool FLATMASS2 = false;  // Flat in M^2 instead of Breit-Wigner sampling
-  double OFFSHELL = 5;     // How many full widths to sample particles in trees
+  bool   ISOLATE   = false;  // ISOLATE the decay phase space (<F> class)
+  bool   FLATMASS2 = false;  // Flat in M^2 instead of Breit-Wigner sampling
+  double OFFSHELL  = 5;      // How many full widths to sample particles in trees
   // (note that small values can create artifacts!)
 
   // Forward excitation minimum/maximum M^2 boundaries
@@ -338,7 +336,7 @@ class MProcess : public MUserHistograms {
 
   // Non-Diffractive
   std::vector<MPI> etree;
-  double bt = 0.0;
+  double           bt = 0.0;
 
   // Particle database
   MPDG PDG;

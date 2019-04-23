@@ -30,7 +30,7 @@ class MUserHistograms {
 
   // Histograms indexed by name std::string
   std::map<std::string, MH1<double>> h1;
-  std::map<std::string, MH2> h2;
+  std::map<std::string, MH2>         h2;
 
   unsigned int HIST = 0;  // Histogramming level
 };

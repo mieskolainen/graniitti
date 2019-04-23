@@ -25,8 +25,8 @@ class MH1 {
 
   long long int FillCount() const { return fills; }
   long long int SumBinCounts() const;
-  double GetMean() const;
-  double GetSquareMean() const;
+  double        GetMean() const;
+  double        GetSquareMean() const;
 
   std::pair<double, double> WeightMeanAndError() const;
 
@@ -75,14 +75,14 @@ class MH1 {
 
     MH1<T> h(this->XBINS, this->XMIN, this->XMAX, this->name);
 
-    h.fills = this->fills + rhs.fills;
+    h.fills     = this->fills + rhs.fills;
     h.underflow = this->underflow + rhs.underflow;
-    h.overflow = this->overflow + rhs.overflow;
+    h.overflow  = this->overflow + rhs.overflow;
 
     // DATA
-    h.weights = this->weights;
+    h.weights  = this->weights;
     h.weights2 = this->weights2;
-    h.counts = this->counts;
+    h.counts   = this->counts;
     for (std::size_t i = 0; i < h.weights.size(); ++i) {
       h.weights[i] += rhs.weights[i];
       h.weights2[i] += rhs.weights2[i];
@@ -99,14 +99,14 @@ class MH1 {
 
     MH1<T> h(this->XBINS, this->XMIN, this->XMAX, this->name);
 
-    h.fills = this->fills - rhs.fills;
+    h.fills     = this->fills - rhs.fills;
     h.underflow = this->underflow - rhs.underflow;
-    h.overflow = this->overflow - rhs.overflow;
+    h.overflow  = this->overflow - rhs.overflow;
 
     // DATA
-    h.weights = this->weights;
+    h.weights  = this->weights;
     h.weights2 = this->weights2;
-    h.counts = this->counts;
+    h.counts   = this->counts;
     for (std::size_t i = 0; i < h.weights.size(); ++i) {
       h.weights[i] -= rhs.weights[i];
       h.weights2[i] -= rhs.weights2[i];
@@ -123,14 +123,14 @@ class MH1 {
 
     MH1<T> h(this->XBINS, this->XMIN, this->XMAX, this->name);
 
-    h.fills = this->fills;
+    h.fills     = this->fills;
     h.underflow = this->underflow;
-    h.overflow = this->overflow;
+    h.overflow  = this->overflow;
 
     // DATA
-    h.weights = this->weights;
+    h.weights  = this->weights;
     h.weights2 = this->weights2;
-    h.counts = this->counts;
+    h.counts   = this->counts;
     for (std::size_t i = 0; i < h.weights.size(); ++i) {
       h.weights[i] *= rhs.weights[i];
       h.weights2[i] *= rhs.weights2[i];
@@ -147,25 +147,25 @@ class MH1 {
 
     MH1<T> h(this->XBINS, this->XMIN, this->XMAX, this->name);
 
-    h.fills = this->fills;
+    h.fills     = this->fills;
     h.underflow = this->underflow;
-    h.overflow = this->overflow;
+    h.overflow  = this->overflow;
 
     // DATA
-    h.weights = this->weights;
+    h.weights  = this->weights;
     h.weights2 = this->weights2;
-    h.counts = this->counts;
+    h.counts   = this->counts;
     for (std::size_t i = 0; i < h.weights.size(); ++i) {
-      h.weights[i] = (std::abs(rhs.weights[i]) > 0) ? h.weights[i] / rhs.weights[i] : 0;
+      h.weights[i]  = (std::abs(rhs.weights[i]) > 0) ? h.weights[i] / rhs.weights[i] : 0;
       h.weights2[i] = (std::abs(rhs.weights2[i]) > 0) ? h.weights2[i] / rhs.weights2[i] : 0;
-      h.counts[i] = (rhs.counts[i] > 0) ? h.counts[i] / rhs.counts[i] : 0;
+      h.counts[i]   = (rhs.counts[i] > 0) ? h.counts[i] / rhs.counts[i] : 0;
     }
     return h;
   }
 
   // AUTOBUFFSIZE for autorange buffer size
   void SetAutoBuffSize(int n) { AUTOBUFFSIZE = n; }
-  void FlushBuffer();
+  void                     FlushBuffer();
 
   // Symmetric bounds
   void SetAutoSymmetry(bool in) { AUTOSYMMETRY = in; }
@@ -173,8 +173,8 @@ class MH1 {
   // Get histogram bounds
   void GetBounds(int &xbins, double &xmin, double &xmax) const {
     xbins = XBINS;
-    xmin = XMIN;
-    xmax = XMAX;
+    xmin  = XMIN;
+    xmax  = XMAX;
   }
 
   void FuseBuffer(const MH1<T> &rhs) {
@@ -184,7 +184,7 @@ class MH1 {
 
   // Keep it public for buffer fusion
   std::vector<double> buff_values;
-  std::vector<T> buff_weights;
+  std::vector<T>      buff_weights;
 
  private:
   std::string name;  // Histogram name
@@ -192,24 +192,24 @@ class MH1 {
   // -----------------------------------------------------------
   // For autorange
 
-  bool FILLBUFF = false;
-  int AUTOBUFFSIZE = 100000;  // Default AUTOBUFFSIZE
+  bool FILLBUFF     = false;
+  int  AUTOBUFFSIZE = 100000;  // Default AUTOBUFFSIZE
   bool AUTOSYMMETRY = false;
   // -----------------------------------------------------------
 
   // Boundary conditions
-  double XMIN = 0.0;
-  double XMAX = 0.0;
-  int XBINS = 0;
+  double XMIN  = 0.0;
+  double XMAX  = 0.0;
+  int    XBINS = 0;
 
   // Number of fills, overflow and underflow counts
-  long long int fills = 0;
-  long long int overflow = 0;
+  long long int fills     = 0;
+  long long int overflow  = 0;
   long long int underflow = 0;
 
   // weights (in unweighted case weights = counts)
-  std::vector<T> weights;
-  std::vector<T> weights2;
+  std::vector<T>             weights;
+  std::vector<T>             weights2;
   std::vector<long long int> counts;  // counts
 
   // Logarithmic binning

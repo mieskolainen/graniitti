@@ -45,12 +45,12 @@ struct DATASET {
 
   std::string INPUTFILE;
   std::string DATAFILE;
-  int DATATYPE = 0;
+  int         DATATYPE = 0;
 
-  int OBSERVABLE = 0;
-  uint NBINS = 0;
-  double MMIN = 0.0;
-  double MMAX = 0.0;
+  int    OBSERVABLE = 0;
+  uint   NBINS      = 0;
+  double MMIN       = 0.0;
+  double MMAX       = 0.0;
 
   MH1<double> *h1DATA;
 };
@@ -65,8 +65,8 @@ void Chi2Func(int &npar, double *gin, double &f, double *par, int iflag);
 void SetSoftParam(std::map<std::string, gra::PARAM_RES> &RESONANCES, double *par);
 
 // Choose continuum form factor
-int offshellFF = 1;
-bool POMLOOP = false;
+int  offshellFF = 1;
+bool POMLOOP    = false;
 
 // Resonance fixlist and zerolist
 std::vector<std::string> afixlist;
@@ -84,12 +84,12 @@ void SetSoftParam(std::map<std::string, gra::PARAM_RES> &RESONANCES, double *par
   printf("fitcentral::SetSoftParam: \n\n");
 
   PARAM_REGGE::offshellFF = offshellFF;
-  int k = -1;
+  int k                   = -1;
 
   // Loop over resonances
   for (const auto &x : RESONANCES) {
-    double A = par[++k];
-    double phi = par[++k];
+    double A              = par[++k];
+    double phi            = par[++k];
     RESONANCES[x.first].g = A * std::exp(gra::math::zi * phi);
 
     printf("[%s] \t A = %0.8f \t phi = %0.6f (%0.0f deg) ", x.first.c_str(), A, phi,
@@ -143,8 +143,8 @@ void SetSoftParam(std::map<std::string, gra::PARAM_RES> &RESONANCES, double *par
 bool ReadData(DATASET &dataset) {
   printf("fitcentral::ReadData: with inputfile %s \n", dataset.DATAFILE.c_str());
 
-  FILE *fp;
-  double M = 0.0;
+  FILE * fp;
+  double M  = 0.0;
   double Px = 0.0;
   double Py = 0.0;
   double Pz = 0.0;
@@ -188,22 +188,22 @@ bool ReadData(DATASET &dataset) {
 }
 
 MEikonal eik;  // For speed, calculate only once
-int iter = 0;
+int      iter = 0;
 
 // Cost function
 void Chi2Func(int &npar, double *gin, double &f, double *par, int iflag) {
   std::cout << rang::fg::red << "fitcentral::Chi2Func: iter = " << iter << rang::fg::reset
             << std::endl;
 
-  double cost = 0;
-  double chi2 = 0;
-  int points = 0;
+  double cost   = 0;
+  double chi2   = 0;
+  int    points = 0;
 
   // Loop over different datasets
   for (const auto &k : indices(datasets)) {
-    double local_cost = 0.0;
-    double local_chi2 = 0.0;
-    int local_points = 0;
+    double local_cost   = 0.0;
+    double local_chi2   = 0.0;
+    int    local_points = 0;
 
     // Generator
     std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
@@ -370,13 +370,9 @@ int main(int argc, char *argv[]) {
     fitcentral::offshellFF = r["c"].as<int>();
 
     // Amplitude
-    if (r.count("a")) {
-      fitcentral::afixlist = gra::aux::SplitStr2Str(r["a"].as<std::string>());
-    }
+    if (r.count("a")) { fitcentral::afixlist = gra::aux::SplitStr2Str(r["a"].as<std::string>()); }
     // Phase
-    if (r.count("p")) {
-      fitcentral::pfixlist = gra::aux::SplitStr2Str(r["p"].as<std::string>());
-    }
+    if (r.count("p")) { fitcentral::pfixlist = gra::aux::SplitStr2Str(r["p"].as<std::string>()); }
     // Both
     if (r.count("x")) {
       std::vector<std::string> out1 = gra::aux::SplitStr2Str(r["x"].as<std::string>());
@@ -386,20 +382,16 @@ int main(int argc, char *argv[]) {
       fitcentral::pfixlist.insert(fitcentral::pfixlist.end(), out2.begin(), out2.end());
     }
     // Zero
-    if (r.count("z")) {
-      fitcentral::zerolist = gra::aux::SplitStr2Str(r["z"].as<std::string>());
-    }
+    if (r.count("z")) { fitcentral::zerolist = gra::aux::SplitStr2Str(r["z"].as<std::string>()); }
 
     // Fix-all resonances
     bool FIXALLRES = false;
-    if (r.count("A")) {
-      FIXALLRES = (r["A"].as<std::string>() == "true" ? true : false);
-    }
+    if (r.count("A")) { FIXALLRES = (r["A"].as<std::string>() == "true" ? true : false); }
 
     // Pomeron loop
     if (r.count("l")) {
       const std::string val = r["l"].as<std::string>();
-      fitcentral::POMLOOP = (val == "true");
+      fitcentral::POMLOOP   = (val == "true");
     }
 
     // ==================================================================
@@ -415,14 +407,14 @@ int main(int argc, char *argv[]) {
 
     if (std::find(input.begin(), input.end(), 0) != input.end()) {
       temp.INPUTFILE = BASEPATH + "/fitcard/" + "ALICE_7_pipi.json";
-      temp.DATAFILE = BASEPATH + "/HEPdata/CD/" + "pipi_7_TeV_eta_09_pt_150.csv";
-      temp.DATATYPE = 4;
+      temp.DATAFILE  = BASEPATH + "/HEPdata/CD/" + "pipi_7_TeV_eta_09_pt_150.csv";
+      temp.DATATYPE  = 4;
 
       temp.OBSERVABLE = 1;
-      temp.MMIN = 0.3;
-      temp.MMAX = 3.0;
-      temp.NBINS = 100;
-      temp.h1DATA = new MH1<double>(temp.NBINS, temp.MMIN, temp.MMAX, "ALICE 7 TeV pi+pi-");
+      temp.MMIN       = 0.3;
+      temp.MMAX       = 3.0;
+      temp.NBINS      = 100;
+      temp.h1DATA     = new MH1<double>(temp.NBINS, temp.MMIN, temp.MMAX, "ALICE 7 TeV pi+pi-");
 
       fitcentral::datasets.push_back(temp);
     }
@@ -432,14 +424,14 @@ int main(int argc, char *argv[]) {
 
     if (std::find(input.begin(), input.end(), 1) != input.end()) {
       temp.INPUTFILE = BASEPATH + "/fitcard/" + "ALICE_7_KK.json";
-      temp.DATAFILE = BASEPATH + "/HEPdata/CD/" + "KK_7_TeV.csv";
-      temp.DATATYPE = 1;
+      temp.DATAFILE  = BASEPATH + "/HEPdata/CD/" + "KK_7_TeV.csv";
+      temp.DATATYPE  = 1;
 
       temp.OBSERVABLE = 1;
-      temp.MMIN = 0.98;
+      temp.MMIN       = 0.98;
 
-      temp.MMAX = 2.5;
-      temp.NBINS = 50;
+      temp.MMAX   = 2.5;
+      temp.NBINS  = 50;
       temp.h1DATA = new MH1<double>(temp.NBINS, temp.MMIN, temp.MMAX, "ALICE 7 TeV K+K-");
 
       fitcentral::datasets.push_back(temp);
@@ -450,14 +442,14 @@ int main(int argc, char *argv[]) {
 
     if (std::find(input.begin(), input.end(), 2) != input.end()) {
       temp.INPUTFILE = BASEPATH + "/fitcard/" + "ATLAS_13_pipi.json";
-      temp.DATAFILE = BASEPATH + "/HEPdata/CD/" + "ATLAS13pipi.csv";
-      temp.DATATYPE = 1;
+      temp.DATAFILE  = BASEPATH + "/HEPdata/CD/" + "ATLAS13pipi.csv";
+      temp.DATATYPE  = 1;
 
       temp.OBSERVABLE = 1;
-      temp.MMIN = 0.3;
-      temp.MMAX = 2.4;
-      temp.NBINS = 100;
-      temp.h1DATA = new MH1<double>(temp.NBINS, temp.MMIN, temp.MMAX, "ATLAS 13 TeV pi+pi-");
+      temp.MMIN       = 0.3;
+      temp.MMAX       = 2.4;
+      temp.NBINS      = 100;
+      temp.h1DATA     = new MH1<double>(temp.NBINS, temp.MMIN, temp.MMAX, "ATLAS 13 TeV pi+pi-");
 
       fitcentral::datasets.push_back(temp);
     }
@@ -476,7 +468,7 @@ int main(int argc, char *argv[]) {
     gMinuit->SetFCN(fitcentral::Chi2Func);
 
     double arglist[10];
-    int ierflg = 0;
+    int    ierflg = 0;
 
     // Chi^2 type cost function, set 1
     // -log(likelihood), set 0.5
@@ -494,7 +486,7 @@ int main(int argc, char *argv[]) {
     // reasons we allow larger domain [-2pi, 2pi]
     // due to phase wrapping.
 
-    const double STEPSIZE_A = 0.05;  // starting scale
+    const double STEPSIZE_A   = 0.05;  // starting scale
     const double STEPSIZE_phi = 0.15;
 
     // Loop over resonances
@@ -531,12 +523,8 @@ int main(int argc, char *argv[]) {
         afix = true;
         pfix = true;
       }
-      if (afix) {
-        gMinuit->FixParameter(k - 1);
-      }
-      if (pfix) {
-        gMinuit->FixParameter(k);
-      }
+      if (afix) { gMinuit->FixParameter(k - 1); }
+      if (pfix) { gMinuit->FixParameter(k); }
     }
 
     // Continuum off-shell form factor
@@ -584,13 +572,11 @@ int main(int argc, char *argv[]) {
 
     // Print results
     double amin, edm, errdef;
-    int nvpar, nparx, icstat;
+    int    nvpar, nparx, icstat;
     gMinuit->mnstat(amin, edm, errdef, nvpar, nparx, icstat);
     // gMinuit->mnprin(3,amin);
 
-    for (const auto &i : indices(fitcentral::datasets)) {
-      delete fitcentral::datasets[i].h1DATA;
-    }
+    for (const auto &i : indices(fitcentral::datasets)) { delete fitcentral::datasets[i].h1DATA; }
   } catch (const std::invalid_argument &e) {
     gra::aux::PrintGameOver();
     std::cerr << rang::fg::red << "Exception catched: " << rang::fg::reset << e.what() << std::endl;

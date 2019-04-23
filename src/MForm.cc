@@ -40,8 +40,8 @@ double DELTA_P = 0.0;
 double ALPHA_P = 0.0;
 
 // Couplings
-double gN_P = 0.0;
-double g3P = 0.0;
+double gN_P  = 0.0;
+double g3P   = 0.0;
 double gamma = 0.0;
 
 // Proton form factor
@@ -79,11 +79,11 @@ double b = 0.0;
 
 // Monopole parameters
 namespace PARAM_MONOPOLE {
-int En = 0;                 // Bound state energy level
-double M0 = 0.0;            // Monopole mass
-double Gamma0 = 0.0;        // Monopolium width
-std::string coupling = "";  // Coupling scenarios
-int gn = 0;                 // Dirac charge 1,2,3,...
+int         En       = 0;    // Bound state energy level
+double      M0       = 0.0;  // Monopole mass
+double      Gamma0   = 0.0;  // Monopolium width
+std::string coupling = "";   // Coupling scenarios
+int         gn       = 0;    // Dirac charge 1,2,3,...
 
 bool initialized = false;
 
@@ -163,12 +163,12 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
       gra::aux::GetBasePath(2) + "/modeldata/" + gra::MODELPARAM + "/" + resparam_str;
 
   // Read and parse
-  std::string data;
+  std::string    data;
   nlohmann::json j;
 
   try {
     data = gra::aux::GetInputData(inputfile);
-    j = nlohmann::json::parse(data);
+    j    = nlohmann::json::parse(data);
   } catch (...) {
     throw std::invalid_argument("form::ReadResonance: Error parsing '" + resparam_str + "'");
   }
@@ -179,9 +179,9 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
   try {
     // Complex coupling
     std::complex<double> g(0, 0);
-    double g_A = j.at("PARAM_RES").at("g_A");
-    double g_phi = j.at("PARAM_RES").at("g_phi");
-    res.g = g_A * std::exp(std::complex<double>(0, 1) * g_phi);
+    double               g_A   = j.at("PARAM_RES").at("g_A");
+    double               g_phi = j.at("PARAM_RES").at("g_phi");
+    res.g                      = g_A * std::exp(std::complex<double>(0, 1) * g_phi);
 
     // Form factor
     res.g_FF = j.at("PARAM_RES").at("g_FF");
@@ -207,7 +207,7 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
     }
 
     const double J = j.at("PARAM_RES").at("J");
-    res.p.spinX2 = J * 2;
+    res.p.spinX2   = J * 2;
     if (res.p.spinX2 < 0) {
       std::string str = "MAux:ReadResonance:: <" + resparam_str + "> Invalid J < 0 !";
       throw std::invalid_argument(str);
@@ -223,7 +223,7 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
     // ------------------------------------------------------------------
     // Tensor Pomeron couplings vector
     std::vector<double> g_Tensor = j.at("PARAM_RES").at("g_Tensor");
-    res.g_Tensor = g_Tensor;
+    res.g_Tensor                 = g_Tensor;
 
     if (J == 0 && res.g_Tensor.size() != 2) {
       throw std::invalid_argument("MAux::ReadResonance:: <" + resparam_str +
@@ -241,10 +241,10 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
     // If we have spin
     if (res.p.spinX2 != 0) {
       // Spin dependent
-      res.hc.FRAME = j.at("PARAM_RES").at("FRAME");
+      res.hc.FRAME              = j.at("PARAM_RES").at("FRAME");
       const bool P_conservation = true;
 
-      const int n = res.p.spinX2 + 1;  // n = 2J + 1
+      const int                     n = res.p.spinX2 + 1;  // n = 2J + 1
       MMatrix<std::complex<double>> rho(n, n);
 
       // Draw random density matrices (until the number set by user)
@@ -259,7 +259,7 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
           for (std::size_t b = 0; b < rho.size_col(); ++b) {
             const double Re = j.at("PARAM_RES").at("rho_real").at(a).at(b);
             const double Im = j.at("PARAM_RES").at("rho_imag").at(a).at(b);
-            rho[a][b] = Re + zi * Im;
+            rho[a][b]       = Re + zi * Im;
           }
         }
         // Check positivity conditions
@@ -299,7 +299,7 @@ std::complex<double> ReggeEta(double alpha_t, double sigma) {
 double S3PomAlpha(double t) {
   // Additive quark model Beta_pi / Beta_p = 2/3 ->
   const double BETApi = (2.0 / 3.0) * PARAM_SOFT::gN_P;
-  const double PIC = (pow2(BETApi) * pow2(mpi)) / (32.0 * pow3(PI));
+  const double PIC    = (pow2(BETApi) * pow2(mpi)) / (32.0 * pow3(PI));
 
   // Pomeron trajectory value
   const double h = PIC * S3HPL(4.0 * pow2(mpi) / std::abs(t),
@@ -311,7 +311,7 @@ double S3PomAlpha(double t) {
 
 // Pion loop insert to the non-linear Pomeron trajectory
 double S3HPL(double tau, double t) {
-  const double m = 1.0;  // fixed scale (GeV)
+  const double m      = 1.0;  // fixed scale (GeV)
   const double sqrtau = msqrt(1 + tau);
 
   // Pion-Pomeron form factor parametrization
@@ -337,7 +337,7 @@ double S3F(double t) {
 // <apply at amplitude level>
 double S3FINEL(double t, double M2) {
   constexpr double DELTA_P = 0.0808;
-  constexpr double a = 0.5616;  // GeV^{2}
+  constexpr double a       = 0.5616;  // GeV^{2}
 
   double f = std::pow(std::abs(t) / (M2 * (std::abs(t) + a)), 0.5 * (1 + DELTA_P));
 
@@ -383,9 +383,9 @@ double F2xQ2(double xbj, double Q2) {
   }
 
   else if (F2TYPE == "CKMT") {
-    constexpr double A = 0.1502;
-    constexpr double B_u = 1.2064;
-    constexpr double B_d = 0.1798;
+    constexpr double A       = 0.1502;
+    constexpr double B_u     = 1.2064;
+    constexpr double B_d     = 0.1798;
     constexpr double alpha_R = 0.4150;
     constexpr double DELTA_0 = 0.0800;
 
@@ -394,7 +394,7 @@ double F2xQ2(double xbj, double Q2) {
     constexpr double c = 3.5489;
     constexpr double d = 1.1170;
 
-    const double n_Q2 = (3.0 / 2.0) * (1 + Q2 / (Q2 + c));
+    const double n_Q2     = (3.0 / 2.0) * (1 + Q2 / (Q2 + c));
     const double DELTA_Q2 = DELTA_0 * (1 + (2 * Q2) / (Q2 + d));
 
     const double C1 = std::pow(Q2 / (Q2 + a), 1.0 + DELTA_Q2);
@@ -546,7 +546,7 @@ double CohFlux(double xi, double t, double pt) {
   const double pt2 = pow2(pt);
   const double xi2 = pow2(xi);
   const double mp2 = pow2(mp);
-  const double Q2 = std::abs(t);
+  const double Q2  = std::abs(t);
 
   double f = alpha_EM(0) / PI * (pt2 / (pt2 + xi2 * mp2)) *
              ((1.0 - xi) * (pt2 / (pt2 + xi2 * mp2)) * F_E(Q2) + (xi2 / 4.0) * F_M(Q2));
@@ -578,7 +578,7 @@ double IncohFlux(double xi, double t, double pt, double M2) {
 
   const double pt2 = pow2(pt);
   const double xi2 = pow2(xi);
-  const double Q2 = std::abs(t);
+  const double Q2  = std::abs(t);
   const double xbj = Q2 / (Q2 + M2 - mp2);  // Bjorken-x
 
   double f =
@@ -597,7 +597,7 @@ double IncohFlux(double xi, double t, double pt, double M2) {
 // Drees-Zeppenfeld proton coherent gamma flux (collinear)
 double DZFlux(double x) {
   const double Q2min = (pow2(mp) * pow2(x)) / (1.0 - x);
-  const double A = 1.0 + 0.71 / Q2min;
+  const double A     = 1.0 + 0.71 / Q2min;
 
   double f = alpha_EM(0) / (2.0 * PI * x) * (1.0 + pow2(1.0 - x)) *
              (std::log(A) - 11.0 / 6.0 + 3.0 / A - 3.0 / (2.0 * pow2(A)) + 1.0 / (3 * pow3(A)));
@@ -675,8 +675,8 @@ std::complex<double> CBW_RW(double m2, double M0, double Gamma) {
 // with angular barrier effects type of Bleit-Weiskopf
 // mA and mB are the masses of daughters (GeV)
 std::complex<double> CBW_BF(double m2, double M0, double Gamma, int J, double mA, double mB) {
-  const double u = msqrt((m2 - pow2(mA + mB)) * (m2 - pow2(mA - mB))) / (2 * msqrt(m2));
-  const double d = msqrt((M0 * M0 - pow2(mA + mB)) * (M0 * M0 - pow2(mA - mB))) / (2 * M0);
+  const double u       = msqrt((m2 - pow2(mA + mB)) * (m2 - pow2(mA - mB))) / (2 * msqrt(m2));
+  const double d       = msqrt((M0 * M0 - pow2(mA + mB)) * (M0 * M0 - pow2(mA - mB))) / (2 * M0);
   const double Bfactor = pow(u / d, 2 * J + 1);
   return -1.0 / (m2 - M0 * M0 + zi * Gamma * M0 * M0 / msqrt(m2) * Bfactor);
 }

@@ -31,9 +31,9 @@ extern unsigned int N_phi;  // (> 10)
 extern double qt2_MIN;  // Loop momentum qt^2 minimum (GeV^2)
 extern double qt2_MAX;  // Loop momentum qt^2 maximum (GeV^2)
 
-extern std::string PDF_scale;  // PDF scale scheme
-extern double alphas_scale;    // alphas scale scheme
-extern double MAXCOS;          // Meson amplitude |cos(theta*)| < MAXCOS
+extern std::string PDF_scale;     // PDF scale scheme
+extern double      alphas_scale;  // alphas scale scheme
+extern double      MAXCOS;        // Meson amplitude |cos(theta*)| < MAXCOS
 
 // THESE MUST BE SET LAST
 extern double qt_MIN;
@@ -53,12 +53,12 @@ class MDurham {
   ~MDurham() {}
 
   std::complex<double> DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process);
-  std::complex<double> DQtloop(gra::LORENTZSCALAR &lts,
+  std::complex<double> DQtloop(gra::LORENTZSCALAR &                           lts,
                                std::vector<std::vector<std::complex<double>>> Amp);
   inline void DScaleChoise(double qt2, double q1_2, double q2_2, double &Q1_2_scale,
                            double &Q2_2_scale) const;
 
-  inline void Dgg2chic0(const gra::LORENTZSCALAR &lts,
+  inline void Dgg2chic0(const gra::LORENTZSCALAR &                      lts,
                         std::vector<std::vector<std::complex<double>>> &Amp,
                         const std::vector<double> &qt1, const std::vector<double> &qt2) const;
 
@@ -70,10 +70,10 @@ class MDurham {
 
   void Dgg2gg(const gra::LORENTZSCALAR &lts, std::vector<std::vector<std::complex<double>>> &Amp);
 
-  void Dgg2qqbar(const gra::LORENTZSCALAR &lts,
+  void Dgg2qqbar(const gra::LORENTZSCALAR &                      lts,
                  std::vector<std::vector<std::complex<double>>> &Amp);
 
-  void Dgg2MMbar(const gra::LORENTZSCALAR &lts,
+  void Dgg2MMbar(const gra::LORENTZSCALAR &                      lts,
                  std::vector<std::vector<std::complex<double>>> &Amp);
   double phi_CZ(double x, double fM) const;
   std::vector<double> EvalPhi(int N, int pdg) const;
@@ -83,8 +83,8 @@ class MDurham {
 
   // ------------------------------------------------------------------
   // MadGraph amplitudes here
-  MAmpMG5_gg_gg AmpMG5_gg_gg;
-  MAmpMG5_gg_ggg AmpMG5_gg_ggg;
+  MAmpMG5_gg_gg    AmpMG5_gg_gg;
+  MAmpMG5_gg_ggg   AmpMG5_gg_ggg;
   MAmpMG5_gg_qqbar AmpMG5_gg_qqbar;
 
  private:

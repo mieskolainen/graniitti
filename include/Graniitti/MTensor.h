@@ -22,12 +22,12 @@ class MTensor {
  public:
   MTensor() { data = nullptr; }
   MTensor(const std::vector<std::size_t> &newdim) {
-    dim = newdim;
+    dim  = newdim;
     data = new T[Prod(dim)];
     std::fill(data, data + Prod(dim), T());  // No initialization
   }
   MTensor(const std::vector<std::size_t> &newdim, T value) {
-    dim = newdim;
+    dim  = newdim;
     data = new T[Prod(dim)];
     std::fill(data, data + Prod(dim), T(value));  // Initialization
   }
@@ -37,7 +37,7 @@ class MTensor {
   }
   // Copy constructor
   MTensor(const MTensor &a) {
-    dim = a.dim;
+    dim  = a.dim;
     data = new T[Prod(dim)];
 
     // Copy all elements
@@ -79,9 +79,7 @@ class MTensor {
                                     std::to_string(dim[i]));
       }
       std::size_t product = 1;
-      for (std::size_t j = i + 1; j < ind.size(); ++j) {
-        product *= dim[j];
-      }
+      for (std::size_t j = i + 1; j < ind.size(); ++j) { product *= dim[j]; }
       sum += product * ind[i];
     }
     return sum;
@@ -90,24 +88,18 @@ class MTensor {
   void Copy(const MTensor &a) {
     T *p = data + Prod(dim);
     T *q = a.data + Prod(dim);
-    while (p > data) {
-      *--p = *--q;
-    }
+    while (p > data) { *--p = *--q; }
   }
   // Re-Allocate
   void ReSize(std::vector<std::size_t> newdim) {
-    if (data != nullptr) {
-      delete[] data;
-    }
-    dim = newdim;
+    if (data != nullptr) { delete[] data; }
+    dim  = newdim;
     data = new T[Prod(newdim)];
   }
   // Product to get array volume (memory)
   std::size_t Prod(const std::vector<std::size_t> &x) const {
     std::size_t product = 1;
-    for (std::size_t i = 0; i < x.size(); ++i) {
-      product *= x[i];
-    }
+    for (std::size_t i = 0; i < x.size(); ++i) { product *= x[i]; }
     return product;
   }
 

@@ -26,7 +26,7 @@ extern std::vector<double> sgn;
 
 extern double s0;
 
-extern int offshellFF;
+extern int    offshellFF;
 extern double b_EXP;
 extern double a_OREAR;
 extern double b_OREAR;
@@ -36,7 +36,7 @@ extern bool reggeize;
 
 // Meson/Baryon Couplings and Pomeron, Reggeon, Reggeon exchanges
 extern std::vector<double> c;  // coupling
-extern std::vector<bool> n;    // on/off
+extern std::vector<bool>   n;  // on/off
 
 void PrintParam();
 
@@ -44,7 +44,7 @@ void PrintParam();
 std::complex<double> JPCoupling(const gra::LORENTZSCALAR &lts, const gra::PARAM_RES &resonance);
 
 std::complex<double> JPC_CS_coupling(const gra::LORENTZSCALAR &lts,
-                                     const gra::PARAM_RES &resonance);
+                                     const gra::PARAM_RES &    resonance);
 
 // Amplitude_ form factors
 double Proton_FF(double tprime, double b);
