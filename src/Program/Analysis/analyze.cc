@@ -281,13 +281,13 @@ int main(int argc, char* argv[]) {
 		if(r.count("scale")) {
 			const std::vector<std::string> str_vals =
 				gra::aux::SplitStr2Str(r["scale"].as<std::string>());
-			if(str_vals.size() == 1 || str_vals.size() == inputfile.size()) {
+			if(str_vals.size() == inputfile.size()) {
 				for(auto const& i : indices(str_vals)) {
 					scale[i] = std::stod(str_vals[i]);
 				}
 			} else {
 				throw std::invalid_argument(
-					"analyzer::scale input list needs to be of length 0,1, or N");
+					"analyzer::scale input list needs to be of length 0 or N");
 			}
 		}
 
