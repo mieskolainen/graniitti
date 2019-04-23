@@ -536,5 +536,68 @@ void PrintMatrix(FILE* fp, const std::vector<std::vector<double>>& A) {
 	fprintf(fp, "\n");
 }
 
+
+// Synthesize distributions with real SH-basis
+//
+// f(theta,phi) = \sum_{l=0}\sum_{m=-l}^l c_lm x Y_R^{lm}(theta,phi)
+//
+MMatrix<double> Y_real_synthesize(const std::vector<double>& c_lm,
+  const std::vector<bool>& ACTIVE, std::size_t N, std::vector<double>& costheta, std::vector<double>& phi,
+  bool normalized) {
+
+  const int LMAX = msqrt(ACTIVE.size()) - 1;
+
+  // Cos(theta) and phi
+  costheta = math::linspace<std::vector>(-1.0, 1.0, N);
+  phi      = math::linspace<std::vector>(-math::PI, math::PI, N);
+
+  // Do the expansion
+  MMatrix<double> Z(N, N, 0.0);
+
+  for (int l = 0; l <= LMAX; ++l) {
+  for (int m = -l; m <= l; ++m) {
+
+    const int index = gra::spherical::LinearInd(l, m);    
+    if (!ACTIVE[index]) { continue; } // Not active
+
+    for (const std::size_t& i : indices(costheta)) {
+    for (const std::size_t& j : indices(phi)) {
+
+      // Add value
+      Z[i][j] += c_lm[index] * math::Y_real_basis(costheta[i], phi[j], l, m);
+    }}
+  }}
+
+  if (normalized) {
+    double max = 1e-32;
+    for (std::size_t i = 0; i < Z.size_row(); ++i) {
+      for (std::size_t j = 0; j < Z.size_col(); ++j) {
+        if (Z[i][j] > max) {max = Z[i][j]; }
+      }
+    }
+    Z = Z * (1.0/max); // Normalize elements
+  }
+
+  return Z;
+}
+
+
+// Vector taylor expanded error propagation from x via A to y
+// x contains standard deviations
+// A is the system matrix
+std::vector<double> ErrorProp(const MMatrix<double>& A, const std::vector<double>& x) {
+
+  std::vector<double> y(A.size_row(), 0.0);
+
+  for (std::size_t m = 0; m < A.size_row(); ++m) {
+    for (std::size_t n = 0; n < A.size_col(); ++n) {
+      y[m] += pow2(A[m][n] * x[n]);        
+    }
+    y[m] = msqrt(y[m]);
+  }
+  return y;
+}
+
+
 } // spherical namespace
 } // gra namespace

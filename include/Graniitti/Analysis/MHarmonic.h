@@ -73,15 +73,18 @@ public:
 	void   HyperLoop(void (*fitfunc)(int&, double*, double&, double*, int),
 					 const std::vector<gra::spherical::Omega>& MC,
 					 const std::vector<gra::spherical::Data>& DATA, const HPARAM& hp);
-	
+
 	void   MomentFit(const gra::spherical::Meta& META, const std::vector<std::size_t>& cell,
 					 void (*fitfunc)(int&, double*, double&, double*, int));
 
 	double PrintOutHyperCell(const gra::spherical::Meta& META, const std::vector<std::size_t>& cell);
 	void   logLfunc(int& npar, double* gin, double& f, double* par, int iflag) const;
-
 	bool   PrintLoop(const std::string& output) const;
 	void   PlotAll(const std::string& outputpath) const;
+
+	void   Plot2DExpansion(const std::map<gra::spherical::Meta, MTensor<gra::spherical::SH>>& tensor, unsigned int OBSERVABLE,
+                         const std::string& TYPESTRING, int barcolor,
+                         const std::string& outputpath) const;
 
 	void   PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::spherical::SH>>& tensor, unsigned int OBSERVABLE,
                        const std::string& TYPESTRING, int barcolor,

@@ -31,11 +31,11 @@ LMAX=4
 REMOVEODD=true
 REMOVENEGATIVE=true
 SVDREG=1e-5
-L1REG=0 #1e-5
+L1REG=0
 EML=false
 
 # Lorentz frames
-for FRAME in HE CS PG SR
+for FRAME in HE # CS PG SR
 do
 
 # Expand the data
@@ -48,9 +48,11 @@ do
 -f $FRAME -g $LMAX -o $REMOVEODD -v $REMOVENEGATIVE -a $SVDREG -b $L1REG -e $EML \
 -M $MBINS -P $PBINS -Y $YBINS \
 -S -1.0,-1.0,-1.0 \
--X 1000000
+-X 100000
+
+# -S -1 for normalized rates
 
 done
 
 # Implement 2D harmonic plots (M,Pt)
-# ... 
+# ...

@@ -1108,8 +1108,8 @@ inline double NReY(const std::complex<double>& Y, int l, int m) {
 inline double Y_real_basis(double costheta, double phi, int l, int m) {
 
 	// Normalization function
-	auto K = [&] (int l, int m) -> double {
-
+	auto K = [] (int l, int m) -> double {
+		
 		if (m == 0) { return msqrt((2.0*l+1.0) / (4.0*PI)); } // Speed it up
 		double temp = ((2.0*l + 1.0) * factorial(l-m)) / static_cast<double>(4.0*PI*factorial(l+m)); 
 		return msqrt(temp);

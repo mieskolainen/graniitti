@@ -365,7 +365,6 @@ public:
         }
     }
 
-
     // Size operators
     std::size_t size_row() const { return rows; }
     std::size_t size_col() const { return cols; }

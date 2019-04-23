@@ -195,47 +195,197 @@ bool MHarmonic::PrintLoop(const std::string& output) const {
 
 void MHarmonic::PlotAll(const std::string& outputpath) const {
 
-  for (const auto& OBSERVABLE : {0,1,2}) {
-  	
-  // **** EFFICIENCY DECOMPOSITION ****
-  Plot1DEfficiency(OBSERVABLE, outputpath);
+	for (const auto& OBSERVABLE : {0,1,2}) {
 
-  // **** ALGEBRAIC INVERSE MOMENTS ****
-  PlotFigures(det, OBSERVABLE, "h_{Moments}[MPP]<det>", 33, outputpath);
-  PlotFigures(fid, OBSERVABLE, "h_{Moments}[MPP]<fid>", 33, outputpath);
-  PlotFigures(fla, OBSERVABLE, "h_{Moments}[MPP]<fla>", 33, outputpath);
+		// **** EFFICIENCY DECOMPOSITION ****
+		Plot1DEfficiency(OBSERVABLE, outputpath);
 
-  // **** EXTENDED MAXIMUM LIKELIHOOD INVERSE MOMENTS ****
-  if (param.EML) {
-  PlotFigures(det, OBSERVABLE, "h_{Moments}[EML]<det>", 33, outputpath);
-  PlotFigures(fid, OBSERVABLE, "h_{Moments}[EML]<fid>", 33, outputpath);
-  PlotFigures(fla, OBSERVABLE, "h_{Moments}[EML]<fla>", 33, outputpath);
-  }
-  }
+		// **** ALGEBRAIC INVERSE MOMENTS ****
+		PlotFigures(det, OBSERVABLE, "h_{Moments}[MPP]<det>", 33, outputpath);
+		PlotFigures(fid, OBSERVABLE, "h_{Moments}[MPP]<fid>", 33, outputpath);
+		PlotFigures(fla, OBSERVABLE, "h_{Moments}[MPP]<fla>", 33, outputpath);
 
-  // 2D
-  std::vector<std::vector<int>> OBSERVABLES = {{0,1},{0,2},{1,2}}; // Different pairs
-  
-  for (const auto& OBSERVABLE2 : OBSERVABLES) {
+		// **** EXTENDED MAXIMUM LIKELIHOOD INVERSE MOMENTS ****
+		if (param.EML) {
+		PlotFigures(det, OBSERVABLE, "h_{Moments}[EML]<det>", 33, outputpath);
+		PlotFigures(fid, OBSERVABLE, "h_{Moments}[EML]<fid>", 33, outputpath);
+		PlotFigures(fla, OBSERVABLE, "h_{Moments}[EML]<fla>", 33, outputpath);
+		}
+	}
 
-  // **** EFFICIENCY DECOMPOSITION ****
-  PlotFigures2D(fla, OBSERVABLE2, "{Response}[FLAT_REFERENCE]<fla>",          17, outputpath);
-  PlotFigures2D(fid, OBSERVABLE2, "{Response}[FIDUCIAL_ACCEPTANCE]<fid>",     33, outputpath);
-  PlotFigures2D(det, OBSERVABLE2, "{Response}[ACCEPTANCE_x_EFFICIENCY]<det>", 29, outputpath);
+	// 2D
+	std::vector<std::vector<int>> OBSERVABLES = {{0,1},{0,2},{1,2}}; // Different pairs
 
-  // **** ALGEBRAIC INVERSE MOMENTS ****
-  PlotFigures2D(fla, OBSERVABLE2, "{Moments}[MPP]<fla>", 17, outputpath);
-  PlotFigures2D(fid, OBSERVABLE2, "{Moments}[MPP]<fid>", 33, outputpath);
-  PlotFigures2D(det, OBSERVABLE2, "{Moments}[MPP]<det>", 29, outputpath);
+	for (const auto& OBSERVABLE2 : OBSERVABLES) {
 
-  // **** EXTENDED MAXIMUM LIKELIHOOD INVERSE MOMENTS ****
-  if (param.EML) {
-  PlotFigures2D(fla, OBSERVABLE2, "{Moments}[EML]<fla>", 17, outputpath);
-  PlotFigures2D(fid, OBSERVABLE2, "{Moments}[EML]<fid>", 33, outputpath);
-  PlotFigures2D(det, OBSERVABLE2, "{Moments}[EML]<det>", 29, outputpath);
-  }
+		// **** EFFICIENCY DECOMPOSITION ****
+		PlotFigures2D(fla, OBSERVABLE2, "{Response}[FLAT_REFERENCE]<fla>",          17, outputpath);
+		PlotFigures2D(fid, OBSERVABLE2, "{Response}[FIDUCIAL_ACCEPTANCE]<fid>",     33, outputpath);
+		PlotFigures2D(det, OBSERVABLE2, "{Response}[ACCEPTANCE_x_EFFICIENCY]<det>", 29, outputpath);
 
-  }
+		// **** ALGEBRAIC INVERSE MOMENTS ****
+		PlotFigures2D(fla, OBSERVABLE2, "{Moments}[MPP]<fla>", 17, outputpath);
+		PlotFigures2D(fid, OBSERVABLE2, "{Moments}[MPP]<fid>", 33, outputpath);
+		PlotFigures2D(det, OBSERVABLE2, "{Moments}[MPP]<det>", 29, outputpath);
+
+		// **** EXTENDED MAXIMUM LIKELIHOOD INVERSE MOMENTS ****
+		if (param.EML) {
+		PlotFigures2D(fla, OBSERVABLE2, "{Moments}[EML]<fla>", 17, outputpath);
+		PlotFigures2D(fid, OBSERVABLE2, "{Moments}[EML]<fid>", 33, outputpath);
+		PlotFigures2D(det, OBSERVABLE2, "{Moments}[EML]<det>", 29, outputpath);
+		}
+	}
+
+	const int OBSERVABLE = 0;
+	Plot2DExpansion(fid, OBSERVABLE, "h_{Moments}[MPP]<fid>", 33, outputpath);
+	Plot2DExpansion(fla, OBSERVABLE, "h_{Moments}[MPP]<fla>", 33, outputpath);
+	if (param.EML) {
+	Plot2DExpansion(fid, OBSERVABLE, "h_{Moments}[EML]<fid>", 33, outputpath);
+	Plot2DExpansion(fla, OBSERVABLE, "h_{Moments}[EML]<fla>", 33, outputpath);
+	}
+
+}
+
+// Synthesized (costheta,phi) plots
+//
+void MHarmonic::Plot2DExpansion(const std::map<gra::spherical::Meta, MTensor<gra::spherical::SH>>& tensor, unsigned int OBSERVABLE,
+                              const std::string& TYPESTRING, int barcolor, const std::string& outputpath) const {
+
+	// ------------------------------------------------------------------
+	// Extract name strings
+
+	// find {string}
+	std::smatch sma;
+	std::regex_search(TYPESTRING, sma, std::regex(R"(\{.*?\})")); // R"()" for Raw string literals
+	std::string DATAMODE = sma[0]; DATAMODE = DATAMODE.substr(1, DATAMODE.size()-2);
+	
+	// find <string>
+	std::smatch smb;
+	std::regex_search(TYPESTRING, smb, std::regex(R"(\<.*?\>)")); // R"()" for Raw string literals
+	std::string    SPACE = smb[0]; SPACE = SPACE.substr(1, SPACE.size()-2);
+
+	// find [string]
+	std::smatch smc;
+	std::regex_search(TYPESTRING, smc, std::regex(R"(\[.*?\])")); // R"()" for Raw string literals
+	std::string     ALGO = smc[0]; ALGO = ALGO.substr(1, ALGO.size()-2);
+	
+	// ------------------------------------------------------------------
+	// f(cos(theta),phi; M) synthesis
+
+	std::size_t N = 50;
+
+	// Cos(theta) and phi
+	std::vector<double> costheta;
+	std::vector<double> phi;
+
+	std::size_t BINS = 0;
+
+	// TH2 for each
+	std::vector<std::vector<TH2D*>> h2;
+
+	// Loop over fla
+	std::size_t source_ind = 0;
+	for (const auto& source : tensor) {
+
+		//legendstrs[ind] = source.first.LEGEND;
+		BINS = source.second.size(OBSERVABLE);
+
+		// Add histograms
+		h2.push_back(std::vector<TH2D*>(BINS, NULL));
+
+		// Loop over observable
+		double x[BINS] = {0};
+
+		for (std::size_t bin = 0; bin < BINS; ++bin) {
+
+			// Get x-axis point
+			const double value = grid[OBSERVABLE][bin].center();
+
+			// Set indices {0,0,0, ..., 0}
+			std::vector<std::size_t> cell(grid.size(), 0);
+			cell[OBSERVABLE] = bin;
+
+			// Synthesize distribution
+			MMatrix<double> Z;
+
+			if      (ALGO == "MPP"){
+ 			Z = spherical::Y_real_synthesize(source.second(cell).t_lm_MPP, ACTIVE, N, costheta, phi, true);
+			}
+			else if (ALGO == "EML"){
+			Z = spherical::Y_real_synthesize(source.second(cell).t_lm_EML, ACTIVE, N, costheta, phi, true);
+			}
+
+			// Create histogram
+			const double EPS = 1e-3;
+			const std::string name = "h2_" + std::to_string(source_ind) + "_" + std::to_string(bin);
+			h2[source_ind][bin] = new TH2D(name.c_str(), "; cos #theta; #phi (rad)",
+										   N,-(1+EPS),1+EPS, N,-(math::PI+EPS),math::PI+EPS);
+
+			for (std::size_t i = 0; i < N; ++i) {
+				for (std::size_t j = 0; j < N; ++j) {
+					h2[source_ind][bin]->Fill(costheta[i], phi[j], Z[i][j]);
+				}
+			}
+		}
+
+		++source_ind;
+	} // loop over sources
+
+
+	// Loop over bins
+	for (std::size_t bin = 0; bin < BINS; ++bin) {
+
+		TCanvas* c1 = new TCanvas("c1", "c1", 200 + tensor.size()*400, 500); // horizontal, vertical
+	  	c1->Divide(tensor.size(), 1, 0.002, 0.001);
+
+		std::size_t source_ind = 0;
+		std::string FRAME;
+		for (const auto& source : tensor) {
+
+			c1->cd(source_ind+1);
+   			c1->cd(source_ind+1)->SetRightMargin(0.13);
+			//
+			FRAME = source.first.FRAME;
+			h2[source_ind][bin]->SetTitle(source.first.LEGEND.c_str());
+			//
+			h2[source_ind][bin]->GetXaxis()->CenterTitle();
+			h2[source_ind][bin]->GetZaxis()->SetRangeUser(0.1, 1.0);
+			h2[source_ind][bin]->Draw("COLZ");
+			//
+
+			// --------------------------------------------------------------
+			// Draw Lorentz FRAME string on left
+			TText* t2 = new TText(0.4, 0.85, Form("%s : [%0.2f, %0.2f] %s",
+				FRAME.c_str(), grid[OBSERVABLE][bin].min, grid[OBSERVABLE][bin].max, xlabels[OBSERVABLE].c_str()));
+			t2->SetNDC();
+			t2->SetTextAlign(22);
+			t2->SetTextColor(kBlack);
+			t2->SetTextFont(43);
+			t2->SetTextSize(18);
+			//t2->SetTextAngle(45);
+			t2->Draw("same");
+			// --------------------------------------------------------------
+
+			++source_ind;
+		}
+		//
+		aux::CreateDirectory("./figs");
+		aux::CreateDirectory("./figs/harmonicfit");
+		aux::CreateDirectory("./figs/harmonicfit/" + outputpath + "/synthesis");
+		//
+		const std::string subpath = SPACE + "_OBS_" + std::to_string(OBSERVABLE) + "_" + FRAME + "_" + ALGO;
+		const std::string fullpath = "./figs/harmonicfit/" + outputpath + "/synthesis/" + subpath;
+		aux::CreateDirectory(fullpath);
+		c1->Print(Form("%s/%04lu.pdf", fullpath.c_str(), bin));
+		//
+		delete c1;
+	}
+	
+	// Delete all histograms
+	for (std::size_t i = 0; i < h2.size(); ++i) {
+	for (std::size_t j = 0; j < h2[i].size(); ++j) {
+		delete h2[i][j];
+	}}
 }
 
 
@@ -254,7 +404,8 @@ void GetLegendPosition2(unsigned int N, double& x1, double& x2, double& y1, doub
 }
 
 
-// Print 1D-figures
+// LM-Expansion plots as a function of observables
+//
 void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::spherical::SH>>& tensor, unsigned int OBSERVABLE,
                             const std::string& TYPESTRING, int barcolor, const std::string& outputpath) const {
 	
@@ -557,7 +708,8 @@ void MHarmonic::PlotFigures(const std::map<gra::spherical::Meta, MTensor<gra::sp
 }
 
 
-// Print 1D-figures
+// LM-Efficiency figures
+//
 void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string& outputpath) const {
 
 	// ------------------------------------------------------------------
@@ -933,8 +1085,8 @@ void MHarmonic::PlotFigures2D(const std::map<gra::spherical::Meta, MTensor<gra::
   */
 }
 
-
 // Loop over system mass, pt, rapidity
+//
 void MHarmonic::HyperLoop(void (*fitfunc)(int&, double*, double&, double*, int),
 		const std::vector<gra::spherical::Omega>& MC,
 		const std::vector<gra::spherical::Data>& DATA, const HPARAM& hp) {
@@ -1065,9 +1217,10 @@ void MHarmonic::HyperLoop(void (*fitfunc)(int&, double*, double&, double*, int),
 			for (const auto& z : indices(fla[META]({i,j,k}).t_lm_MPP)) {
 				fla[META]({i,j,k}).t_lm_MPP_error[z] = msqrt(std::abs(fla[META]({i,j,k}).t_lm_MPP[z]));
 			}
-			fid[META]({i,j,k}).t_lm_MPP_error = math::vabs(fid_DET({i,j,k}).MIXlm * fla[META]({i,j,k}).t_lm_MPP_error); // Simple rotation and abs for now (should vector Taylor expand)
-			det[META]({i,j,k}).t_lm_MPP_error = math::vabs(det_DET({i,j,k}).MIXlm * fla[META]({i,j,k}).t_lm_MPP_error); // Simple rotation and abs for now (should vector Taylor expand)
 
+			// Propagate errors assuming no error on mixing matrix (infinite reference MC statistics limit)
+			fid[META]({i,j,k}).t_lm_MPP_error = spherical::ErrorProp(fid_DET({i,j,k}).MIXlm, fla[META]({i,j,k}).t_lm_MPP_error);
+			det[META]({i,j,k}).t_lm_MPP_error = spherical::ErrorProp(det_DET({i,j,k}).MIXlm, fla[META]({i,j,k}).t_lm_MPP_error);
 
 			std::cout << "Algebraic Moore-Penrose/SVD inverted (unmixed) moments in the (angular flat) reference phase space:" << std::endl;
 			gra::spherical::PrintOutMoments(fla[META]({i,j,k}).t_lm_MPP, fla[META]({i,j,k}).t_lm_MPP_error, ACTIVE, param.LMAX);
@@ -1094,8 +1247,10 @@ void MHarmonic::HyperLoop(void (*fitfunc)(int&, double*, double&, double*, int),
 
 			// Uncertanties
 			fla[META]({i,j,k}).t_lm_EML_error = t_lm_error;
-			fid[META]({i,j,k}).t_lm_EML_error = math::vabs(fid_DET({i,j,k}).MIXlm * t_lm_error); // Simple rotation and abs for now (should vector Taylor expand)
-			det[META]({i,j,k}).t_lm_EML_error = math::vabs(det_DET({i,j,k}).MIXlm * t_lm_error); // Simple rotation and abs now (should vector Taylor expand)
+
+			// Propagate errors assuming no error on mixing matrix (infinite reference MC statistics limit)
+			fid[META]({i,j,k}).t_lm_EML_error = spherical::ErrorProp(fid_DET({i,j,k}).MIXlm, t_lm_error);
+			det[META]({i,j,k}).t_lm_EML_error = spherical::ErrorProp(det_DET({i,j,k}).MIXlm, t_lm_error);
 			// ==============================================================
 
 
@@ -1156,6 +1311,7 @@ void MHarmonic::HyperLoop(void (*fitfunc)(int&, double*, double&, double*, int),
 
 
 // Print out results for the hypercell
+//
 double MHarmonic::PrintOutHyperCell(const gra::spherical::Meta& META, const std::vector<std::size_t>& cell) {
 	
 	double chi2 = 0;
@@ -1218,6 +1374,7 @@ double MHarmonic::PrintOutHyperCell(const gra::spherical::Meta& META, const std:
 
 
 // MINUIT based fit routine for the Extended Maximum Likelihood formalism
+//
 void MHarmonic::MomentFit(const gra::spherical::Meta& META, const std::vector<std::size_t>& cell,
 						  void (*fitfunc)(int&, double*, double&, double*, int)) {
 

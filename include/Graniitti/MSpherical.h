@@ -131,6 +131,12 @@ int    LinearInd(int l, int m);
 double CalcError(double f2, double f, double N);
 void   PrintMatrix(FILE* fp, const std::vector<std::vector<double>>& A);
 
+MMatrix<double> Y_real_synthesize(const std::vector<double>& c_lm,
+  								  const std::vector<bool>& ACTIVE, std::size_t N,
+  								  std::vector<double>& costheta, std::vector<double>& phi,
+  								  bool normalized = false);
+
+std::vector<double> ErrorProp(const MMatrix<double>& A, const std::vector<double>& x);
 
 } // spherical namespace
 } // gra namespace
