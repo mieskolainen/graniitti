@@ -1,7 +1,7 @@
 {
 	"name" : "GRANIITTI",
-	"version" : 0.32,
+	"version" : 0.33,
 	"type" : "beta",
-	"date" : "19/04/2019",
-	"update": "Inverse algorithms & tensor amplitudes"
+	"date" : "23/04/2019",
+	"update": "Inverse algorithms / tensor amplitudes / tune"
 }
