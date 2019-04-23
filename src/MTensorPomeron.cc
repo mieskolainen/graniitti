@@ -37,8 +37,7 @@
 	}                  \
 	}                  \
 	}                  \
-	}                  \
-	;
+	}
 
 #define FOR_EACH_5(X)                    \
 	for(const auto& u : X) {             \
@@ -51,8 +50,7 @@
 	}                  \
 	}                  \
 	}                  \
-	}                  \
-	;
+	}
 
 #define FOR_EACH_6(X)                        \
 	for(const auto& u : X) {                 \
@@ -67,8 +65,18 @@
 	}                  \
 	}                  \
 	}                  \
-	}                  \
-	;
+	}
+
+#define FOR_PP_HELICITY                    \
+	for(const auto& ha : {0, 1}) {         \
+		for(const auto& hb : {0, 1}) {     \
+			for(const auto& h1 : {0, 1}) { \
+				for(const auto& h2 : {0, 1}) {
+#define FOR_PP_HELICITY_END \
+	}                       \
+	}                       \
+	}                       \
+	}
 
 using gra::math::msqrt;
 using gra::math::pow2;
@@ -211,39 +219,33 @@ std::complex<double> MTensorPomeron::ME3(gra::LORENTZSCALAR& lts, gra::PARAM_RES
 	// ====================================================================
 
 	// Two helicity states for incoming and outgoing protons
-	for(const auto& ha : {0, 1}) {
-		for(const auto& hb : {0, 1}) {
-			for(const auto& h1 : {0, 1}) {
-				for(const auto& h2 : {0, 1}) {
-					// Apply proton leg helicity conservation / No helicity flip
-					// (high energy limit)
-					// This gives at least 4 x speed improvement
-					if(ha != h1 || hb != h2) {
-						continue;
-					}
+	FOR_PP_HELICITY;
 
-					// Full proton-Pomeron-proton spinor structure (upper and
-					// lower vertex)
-					// const Tensor2<std::complex<double>,4,4> iG_1a =
-					// iG_Ppp(p1, pa, ubar_1[h1], u_a[ha]);
-					// const Tensor2<std::complex<double>,4,4> iG_2b =
-					// iG_Ppp(p2, pb, ubar_2[h2], u_b[hb]);
-
-					// High Energy Limit proton-Pomeron-proton spinor structure
-					const Tensor2<std::complex<double>, 4, 4> iG_1a = iG_PppHE(p1, pa);
-					const Tensor2<std::complex<double>, 4, 4> iG_2b = iG_PppHE(p2, pb);
-
-					// s-channel amplitude
-					const std::complex<double> A = (-zi) * iG_1a(mu1, nu1) *
-												   iDP_1(mu1, nu1, alpha1, beta1) *
-												   CT(alpha1, beta1, alpha2, beta2) *
-												   iDP_2(alpha2, beta2, mu2, nu2) * iG_2b(mu2, nu2);
-
-					lts.hamp.push_back(A);
-				}
-			}
-		}
+	// Apply proton leg helicity conservation / No helicity flip
+	// (high energy limit)
+	// This gives at least 4 x speed improvement
+	if(ha != h1 || hb != h2) {
+		continue;
 	}
+
+	// Full proton-Pomeron-proton spinor structure (upper and
+	// lower vertex)
+	// const Tensor2<std::complex<double>,4,4> iG_1a =
+	// iG_Ppp(p1, pa, ubar_1[h1], u_a[ha]);
+	// const Tensor2<std::complex<double>,4,4> iG_2b =
+	// iG_Ppp(p2, pb, ubar_2[h2], u_b[hb]);
+
+	// High Energy Limit proton-Pomeron-proton spinor structure
+	const Tensor2<std::complex<double>, 4, 4> iG_1a = iG_PppHE(p1, pa);
+	const Tensor2<std::complex<double>, 4, 4> iG_2b = iG_PppHE(p2, pb);
+
+	// s-channel amplitude
+	const std::complex<double> A = (-zi) * iG_1a(mu1, nu1) * iDP_1(mu1, nu1, alpha1, beta1) *
+								   CT(alpha1, beta1, alpha2, beta2) *
+								   iDP_2(alpha2, beta2, mu2, nu2) * iG_2b(mu2, nu2);
+
+	lts.hamp.push_back(A);
+	FOR_PP_HELICITY_END;
 
 	// Get total amplitude squared 1/4 \sum_h |A_h|^2
 	double SumAmp2 = 0.0;
@@ -350,228 +352,217 @@ std::complex<double> MTensorPomeron::ME4(gra::LORENTZSCALAR& lts) const {
 	}
 
 	// Two helicity states for incoming and outgoing protons
-	for(const auto& ha : {0, 1}) {
-		for(const auto& hb : {0, 1}) {
-			for(const auto& h1 : {0, 1}) {
-				for(const auto& h2 : {0, 1}) {
-					// Apply proton leg helicity conservation / No helicity flip
-					// (high energy limit)
-					// This gives at least 4 x speed improvement
-					if(ha != h1 || hb != h2) {
-						continue;
-					}
+	FOR_PP_HELICITY;
+	// Apply proton leg helicity conservation / No helicity flip
+	// (high energy limit)
+	// This gives at least 4 x speed improvement
+	if(ha != h1 || hb != h2) {
+		continue;
+	}
 
-					// Full proton-Pomeron-proton spinor structure (upper and
-					// lower vertex)
-					// const Tensor2<std::complex<double>,4,4> iG_1a =
-					// iG_Ppp(p1, pa, ubar_1[h1], u_a[ha]);
-					// const Tensor2<std::complex<double>,4,4> iG_2b =
-					// iG_Ppp(p2, pb, ubar_2[h2], u_b[hb]);
+	// Full proton-Pomeron-proton spinor structure (upper and
+	// lower vertex)
+	// const Tensor2<std::complex<double>,4,4> iG_1a =
+	// iG_Ppp(p1, pa, ubar_1[h1], u_a[ha]);
+	// const Tensor2<std::complex<double>,4,4> iG_2b =
+	// iG_Ppp(p2, pb, ubar_2[h2], u_b[hb]);
 
-					// High Energy Limit proton-Pomeron-proton spinor structure
-					const Tensor2<std::complex<double>, 4, 4> iG_1a = iG_PppHE(p1, pa);
-					const Tensor2<std::complex<double>, 4, 4> iG_2b = iG_PppHE(p2, pb);
+	// High Energy Limit proton-Pomeron-proton spinor structure
+	const Tensor2<std::complex<double>, 4, 4> iG_1a = iG_PppHE(p1, pa);
+	const Tensor2<std::complex<double>, 4, 4> iG_2b = iG_PppHE(p2, pb);
 
-					// ==============================================================
-					// 2 x pseudoscalar
-					if(SPINMODE == 0) {
-						// t-channel blocks
-						const Tensor2<std::complex<double>, 4, 4> iG_ta = iG_Ppsps(pt, -p3);
-						const std::complex<double> iDMES_t = iD_MES0(pt, M_mes);
-						const Tensor2<std::complex<double>, 4, 4> iG_tb = iG_Ppsps(p4, pt);
+	// ==============================================================
+	// 2 x pseudoscalar
+	if(SPINMODE == 0) {
+		// t-channel blocks
+		const Tensor2<std::complex<double>, 4, 4> iG_ta = iG_Ppsps(pt, -p3);
+		const std::complex<double> iDMES_t = iD_MES0(pt, M_mes);
+		const Tensor2<std::complex<double>, 4, 4> iG_tb = iG_Ppsps(p4, pt);
 
-						// u-channel blocks
-						const Tensor2<std::complex<double>, 4, 4> iG_ua = iG_Ppsps(p4, pu);
-						const std::complex<double> iDMES_u = iD_MES0(pu, M_mes);
-						const Tensor2<std::complex<double>, 4, 4> iG_ub = iG_Ppsps(pu, -p3);
+		// u-channel blocks
+		const Tensor2<std::complex<double>, 4, 4> iG_ua = iG_Ppsps(p4, pu);
+		const std::complex<double> iDMES_u = iD_MES0(pu, M_mes);
+		const Tensor2<std::complex<double>, 4, 4> iG_ub = iG_Ppsps(pu, -p3);
 
-						std::complex<double> M_t;
-						std::complex<double> M_u;
-						// t-channel
-						{
-							// Upper block
-							const std::complex<double> A =
-								iG_1a(mu1, nu1) * iDP_13(mu1, nu1, alpha1, beta1) *
-								iG_ta(alpha1, beta1) * iG_tb(alpha2, beta2) *
-								iDP_24(alpha2, beta2, mu2, nu2) * iG_2b(mu2, nu2);
-							// Apply off-shell form FACTORs
-							M_t = A * iDMES_t * pow2(PARAM_REGGE::Meson_FF(pt.M2(), pow2(M_mes)));
-						}
+		std::complex<double> M_t;
+		std::complex<double> M_u;
+		// t-channel
+		{
+			// Upper block
+			const std::complex<double> A = iG_1a(mu1, nu1) * iDP_13(mu1, nu1, alpha1, beta1) *
+										   iG_ta(alpha1, beta1) * iG_tb(alpha2, beta2) *
+										   iDP_24(alpha2, beta2, mu2, nu2) * iG_2b(mu2, nu2);
+			// Apply off-shell form FACTORs
+			M_t = A * iDMES_t * pow2(PARAM_REGGE::Meson_FF(pt.M2(), pow2(M_mes)));
+		}
 
-						// u-channel
-						{
-							// Upper block
-							const std::complex<double> A =
-								iG_1a(mu1, nu1) * iDP_14(mu1, nu1, alpha1, beta1) *
-								iG_ua(alpha1, beta1) * iG_ub(alpha2, beta2) *
-								iDP_23(alpha2, beta2, mu2, nu2) * iG_2b(mu2, nu2);
-							// Apply off-shell form FACTORs
-							M_u = A * iDMES_u * pow2(PARAM_REGGE::Meson_FF(pu.M2(), pow2(M_mes)));
-						}
+		// u-channel
+		{
+			// Upper block
+			const std::complex<double> A = iG_1a(mu1, nu1) * iDP_14(mu1, nu1, alpha1, beta1) *
+										   iG_ua(alpha1, beta1) * iG_ub(alpha2, beta2) *
+										   iDP_23(alpha2, beta2, mu2, nu2) * iG_2b(mu2, nu2);
+			// Apply off-shell form FACTORs
+			M_u = A * iDMES_u * pow2(PARAM_REGGE::Meson_FF(pu.M2(), pow2(M_mes)));
+		}
 
-						// Full amplitude: iM = [ ... ]  <-> M = (-i)*[ ...
-						// ]
-						std::complex<double> M = (-zi) * (M_t + M_u);
-						lts.hamp.push_back(M);
-					}
+		// Full amplitude: iM = [ ... ]  <-> M = (-i)*[ ...
+		// ]
+		std::complex<double> M = (-zi) * (M_t + M_u);
+		lts.hamp.push_back(M);
+	}
 
-					// ==============================================================
-					// 2 x fermion
-					if(SPINMODE == 1) {
-						for(const auto& h3 : {0, 1}) {
-							for(const auto& h4 : {0, 1}) {
-								// Fermion propagator and connected
-								// parts
-								const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_t =
-									iG_PppbarP(p4, ubar_4[h4], pt, iSF_t, v_3[h3], -p3);
-								const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_u =
-									iG_PppbarP(p4, ubar_4[h4], pu, iSF_u, v_3[h3], -p3);
+	// ==============================================================
+	// 2 x fermion
+	if(SPINMODE == 1) {
+		for(const auto& h3 : {0, 1}) {
+			for(const auto& h4 : {0, 1}) {
+				// Fermion propagator and connected
+				// parts
+				const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_t =
+					iG_PppbarP(p4, ubar_4[h4], pt, iSF_t, v_3[h3], -p3);
+				const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_u =
+					iG_PppbarP(p4, ubar_4[h4], pu, iSF_u, v_3[h3], -p3);
 
-								std::complex<double> M_t;
-								std::complex<double> M_u;
-								// t-channel
-								{
-									// Upper block
-									const std::complex<double> A =
-										iG_1a(mu1, nu1) * iDP_13(mu1, nu1, alpha1, beta1) *
-										iG_t(alpha2, beta2, alpha1, beta1) *
-										iDP_24(alpha2, beta2, mu2, nu2) * iG_2b(mu2, nu2);
-									// Apply off-shell form
-									// FACTORs
-									M_t = A * pow2(PARAM_REGGE::Baryon_FF(pt.M2(), pow2(M_mes)));
-								}
+				std::complex<double> M_t;
+				std::complex<double> M_u;
+				// t-channel
+				{
+					// Upper block
+					const std::complex<double> A =
+						iG_1a(mu1, nu1) * iDP_13(mu1, nu1, alpha1, beta1) *
+						iG_t(alpha2, beta2, alpha1, beta1) * iDP_24(alpha2, beta2, mu2, nu2) *
+						iG_2b(mu2, nu2);
+					// Apply off-shell form
+					// FACTORs
+					M_t = A * pow2(PARAM_REGGE::Baryon_FF(pt.M2(), pow2(M_mes)));
+				}
 
-								// u-channel
-								{
-									// Upper block
-									const std::complex<double> A =
-										iG_1a(mu1, nu1) * iDP_14(mu1, nu1, alpha1, beta1) *
-										iG_u(alpha1, beta1, alpha2, beta2) *
-										iDP_23(alpha2, beta2, mu2, nu2) * iG_2b(mu2, nu2);
-									// Apply off-shell form
-									// FACTORs
-									M_u = A * pow2(PARAM_REGGE::Baryon_FF(pu.M2(), pow2(M_mes)));
-								}
+				// u-channel
+				{
+					// Upper block
+					const std::complex<double> A =
+						iG_1a(mu1, nu1) * iDP_14(mu1, nu1, alpha1, beta1) *
+						iG_u(alpha1, beta1, alpha2, beta2) * iDP_23(alpha2, beta2, mu2, nu2) *
+						iG_2b(mu2, nu2);
+					// Apply off-shell form
+					// FACTORs
+					M_u = A * pow2(PARAM_REGGE::Baryon_FF(pu.M2(), pow2(M_mes)));
+				}
 
-								// Full amplitude: iM = [ ... ]  <->
-								// M = (-i)*[ ... ]
-								std::complex<double> M = (-zi) * (M_t + M_u);
-								lts.hamp.push_back(M);
-							}
-						}
-					}
+				// Full amplitude: iM = [ ... ]  <->
+				// M = (-i)*[ ... ]
+				std::complex<double> M = (-zi) * (M_t + M_u);
+				lts.hamp.push_back(M);
+			}
+		}
+	}
 
-					// ==============================================================
-					// 2 x vector meson
-					if(SPINMODE == 2) {
-						// t-channel blocks
-						const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_tA = iG_Pvv(pt, -p3);
-						const Tensor2<std::complex<double>, 4, 4> iDMES_t =
-							iD_VMES(pt, M_mes, Gamma_mes);
-						const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_tB = iG_Pvv(p4, pt);
+	// ==============================================================
+	// 2 x vector meson
+	if(SPINMODE == 2) {
+		// t-channel blocks
+		const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_tA = iG_Pvv(pt, -p3);
+		const Tensor2<std::complex<double>, 4, 4> iDMES_t = iD_VMES(pt, M_mes, Gamma_mes);
+		const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_tB = iG_Pvv(p4, pt);
 
-						// u-channel blocks
-						const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_uA = iG_Pvv(p4, pu);
-						const Tensor2<std::complex<double>, 4, 4> iDMES_u =
-							iD_VMES(pu, M_mes, Gamma_mes);
-						const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_uB = iG_Pvv(pu, -p3);
+		// u-channel blocks
+		const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_uA = iG_Pvv(p4, pu);
+		const Tensor2<std::complex<double>, 4, 4> iDMES_u = iD_VMES(pu, M_mes, Gamma_mes);
+		const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_uB = iG_Pvv(pu, -p3);
 
-						FTensor::Index<'e', 4> rho3;
-						FTensor::Index<'f', 4> rho4;
+		FTensor::Index<'e', 4> rho3;
+		FTensor::Index<'f', 4> rho4;
 
-						// -------------------------------------------------------------------------
-						// TENSOR LORENTZ INDEX CONTRACTION BLOCK
-						// This is done in pieces, due to template <>
-						// argument deduction constraints
+		// -------------------------------------------------------------------------
+		// TENSOR LORENTZ INDEX CONTRACTION BLOCK
+		// This is done in pieces, due to template <>
+		// argument deduction constraints
 
-						Tensor2<std::complex<double>, 4, 4> M_t;
-						Tensor2<std::complex<double>, 4, 4> M_u;
+		Tensor2<std::complex<double>, 4, 4> M_t;
+		Tensor2<std::complex<double>, 4, 4> M_u;
 
-						// t-channel
-						{
-							// Upper block
-							Tensor2<std::complex<double>, 4, 4> A;
-							A(rho3, rho1) = iG_1a(mu1, nu1) * iDP_13(mu1, nu1, alpha1, beta1) *
-											iG_tA(rho3, rho1, alpha1, beta1);
-							// Lower block
-							Tensor2<std::complex<double>, 4, 4> B;
-							B(rho2, rho4) = iG_2b(mu2, nu2) * iDP_24(alpha2, beta2, mu2, nu2) *
-											iG_tB(rho2, rho4, alpha2, beta2);
-							// Apply off-shell form FACTORs
-							M_t(rho3, rho4) = A(rho3, rho1) * iDMES_t(rho1, rho2) * B(rho2, rho4) *
-											  pow2(PARAM_REGGE::Meson_FF(pt.M2(), pow2(M_mes)));
-						}
+		// t-channel
+		{
+			// Upper block
+			Tensor2<std::complex<double>, 4, 4> A;
+			A(rho3, rho1) = iG_1a(mu1, nu1) * iDP_13(mu1, nu1, alpha1, beta1) *
+							iG_tA(rho3, rho1, alpha1, beta1);
+			// Lower block
+			Tensor2<std::complex<double>, 4, 4> B;
+			B(rho2, rho4) = iG_2b(mu2, nu2) * iDP_24(alpha2, beta2, mu2, nu2) *
+							iG_tB(rho2, rho4, alpha2, beta2);
+			// Apply off-shell form FACTORs
+			M_t(rho3, rho4) = A(rho3, rho1) * iDMES_t(rho1, rho2) * B(rho2, rho4) *
+							  pow2(PARAM_REGGE::Meson_FF(pt.M2(), pow2(M_mes)));
+		}
 
-						// u-channel
-						{
-							// Upper block
-							Tensor2<std::complex<double>, 4, 4> A;
-							A(rho4, rho1) = iG_1a(mu1, nu1) * iDP_14(mu1, nu1, alpha1, beta1) *
-											iG_uA(rho4, rho1, alpha1, beta1);
-							// Lower block
-							Tensor2<std::complex<double>, 4, 4> B;
-							B(rho2, rho3) = iG_2b(mu2, nu2) * iDP_23(alpha2, beta2, mu2, nu2) *
-											iG_uB(rho2, rho3, alpha2, beta2);
-							// Apply off-shell form FACTORs
-							M_u(rho3, rho4) = A(rho4, rho1) * iDMES_u(rho1, rho2) * B(rho2, rho3) *
-											  pow2(PARAM_REGGE::Meson_FF(pu.M2(), pow2(M_mes)));
-						}
+		// u-channel
+		{
+			// Upper block
+			Tensor2<std::complex<double>, 4, 4> A;
+			A(rho4, rho1) = iG_1a(mu1, nu1) * iDP_14(mu1, nu1, alpha1, beta1) *
+							iG_uA(rho4, rho1, alpha1, beta1);
+			// Lower block
+			Tensor2<std::complex<double>, 4, 4> B;
+			B(rho2, rho3) = iG_2b(mu2, nu2) * iDP_23(alpha2, beta2, mu2, nu2) *
+							iG_uB(rho2, rho3, alpha2, beta2);
+			// Apply off-shell form FACTORs
+			M_u(rho3, rho4) = A(rho4, rho1) * iDMES_u(rho1, rho2) * B(rho2, rho3) *
+							  pow2(PARAM_REGGE::Meson_FF(pu.M2(), pow2(M_mes)));
+		}
 
-						// Total amplitude: iM = [ ... ]  <-> M = (-i)*[ ...
-						// ]
-						Tensor2<std::complex<double>, 4, 4> M;
-						for(const auto& mu : LI) {
-							for(const auto& nu : LI) {
-								M(mu, nu) = (-zi) * (M_t(mu, nu) + M_u(mu, nu));
-							}
-						}
+		// Total amplitude: iM = [ ... ]  <-> M = (-i)*[ ...
+		// ]
+		Tensor2<std::complex<double>, 4, 4> M;
+		for(const auto& mu : LI) {
+			for(const auto& nu : LI) {
+				M(mu, nu) = (-zi) * (M_t(mu, nu) + M_u(mu, nu));
+			}
+		}
 
-						const int OPTION = 1;
+		const int OPTION = 1;
 
-						// Polarization sum
-						if(OPTION == 1) {
-							double Amp2 = 0.0;
-							for(const auto& sigma3 : LI) {
-								for(const auto& sigma4 : LI) {
-									for(const auto& rho3 : LI) {
-										for(const auto& rho4 : LI) {
-											const std::complex<double> contract =
-												std::conj(M(sigma3, sigma4)) * M(rho3, rho4) *
-												g[sigma3][rho3] * g[sigma4][rho4];
+		// Polarization sum
+		if(OPTION == 1) {
+			double Amp2 = 0.0;
+			for(const auto& sigma3 : LI) {
+				for(const auto& sigma4 : LI) {
+					for(const auto& rho3 : LI) {
+						for(const auto& rho4 : LI) {
+							const std::complex<double> contract = std::conj(M(sigma3, sigma4)) *
+																  M(rho3, rho4) * g[sigma3][rho3] *
+																  g[sigma4][rho4];
 
-											Amp2 +=
-												std::real(contract); // real for casting to double
-										}
-									}
-								}
-							}
-
-							lts.hamp.push_back(msqrt(Amp2));
-						}
-						// --------------------------------------------------
-
-						// Explicit polarization vectors
-						if(OPTION == 2) {
-							// Loop over massive Spin-1 helicity states
-							// (-1,0,1)
-							for(const auto& h3 : {0, 1, 2}) {
-								for(const auto& h4 : {0, 1, 2}) {
-									// Contract Lorentz indices
-									// to get the helicity
-									// amplitude
-									// (ha,hb,h1,h2,h3,h4)
-									const std::complex<double> amp =
-										eps_3_conj[h3](rho3) * eps_4_conj[h4](rho4) * M(rho3, rho4);
-
-									lts.hamp.push_back(amp);
-								}
-							}
+							Amp2 += std::real(contract); // real for casting to double
 						}
 					}
 				}
 			}
+
+			lts.hamp.push_back(msqrt(Amp2));
+		}
+		// --------------------------------------------------
+
+		// Explicit polarization vectors
+		if(OPTION == 2) {
+			// Loop over massive Spin-1 helicity states
+			// (-1,0,1)
+			for(const auto& h3 : {0, 1, 2}) {
+				for(const auto& h4 : {0, 1, 2}) {
+					// Contract Lorentz indices
+					// to get the helicity
+					// amplitude
+					// (ha,hb,h1,h2,h3,h4)
+					const std::complex<double> amp =
+						eps_3_conj[h3](rho3) * eps_4_conj[h4](rho4) * M(rho3, rho4);
+
+					lts.hamp.push_back(amp);
+				}
+			}
 		}
 	}
+	FOR_PP_HELICITY_END;
 
 	// Get total amplitude squared 1/4 \sum_h |A_h|^2
 	double SumAmp2 = 0.0;
