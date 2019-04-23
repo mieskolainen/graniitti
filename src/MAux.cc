@@ -475,7 +475,7 @@ namespace aux {
 	double GetVersion() {
 		return 0.33;
 	}
-
+	
 	std::string GetVersionString() {
 		char buff[100];
 		snprintf(buff, sizeof(buff), "Version %0.2f (BETA) 230419", GetVersion());
