@@ -27,7 +27,7 @@
 // FTensor algebra
 #include "FTensor.hpp"
 
-// Loop macros
+// LOOP MACROS
 #define FOR_EACH_4(X)                \
 	for(const auto& u : X) {         \
 		for(const auto& v : X) {     \
@@ -155,15 +155,10 @@ std::complex<double> MTensorPomeron::ME3(gra::LORENTZSCALAR& lts, gra::PARAM_RES
 		// Decay coupling constant
 		iD *= resonance.g_decay;
 
-		for(auto const& a1 : LI) {
-			for(auto const& b1 : LI) {
-				for(auto const& a2 : LI) {
-					for(auto const& b2 : LI) {
-						CT(a1, b1, a2, b2) *= iD;
-					}
-				}
-			}
-		}
+		FOR_EACH_4(LI);
+		CT(u, v, k, l) *= iD;
+		FOR_EACH_4_END;
+
 	} else if(J == 0 && P == -1) {
 		// Pomeron-Pomeron-Pseudoscalar coupling
 		CT = iG_PPS_total(lts.q1, lts.q2, M0, "pseudoscalar", resonance.g_Tensor);
@@ -174,15 +169,10 @@ std::complex<double> MTensorPomeron::ME3(gra::LORENTZSCALAR& lts, gra::PARAM_RES
 		// Decay coupling constant
 		iD *= resonance.g_decay;
 
-		for(auto const& a1 : LI) {
-			for(auto const& b1 : LI) {
-				for(auto const& a2 : LI) {
-					for(auto const& b2 : LI) {
-						CT(a1, b1, a2, b2) *= iD;
-					}
-				}
-			}
-		}
+		FOR_EACH_4(LI);
+		CT(u, v, k, l) *= iD;
+		FOR_EACH_4_END;
+
 	} else if(J == 2) {
 		// Pomeron-Pomeron-Tensor coupling
 		const MTensor<std::complex<double>> iGPPf2 =
@@ -197,22 +187,15 @@ std::complex<double> MTensorPomeron::ME3(gra::LORENTZSCALAR& lts, gra::PARAM_RES
 		Tensor2<std::complex<double>, 4, 4> AUX2;
 		AUX2(mu1, nu1) = iDF2(mu1, nu1, rho1, rho2) * iGf2PIPI(rho1, rho2);
 
-		for(auto const& a1 : LI) {
-			for(auto const& b1 : LI) {
-				for(auto const& a2 : LI) {
-					for(auto const& b2 : LI) {
-						CT(a1, b1, a2, b2) = 0.0;
-
-						for(auto const& rho : LI) {
-							for(auto const& sigma : LI) {
-								CT(a1, b1, a2, b2) +=
-									iGPPf2({a1, b1, a2, b2, rho, sigma}) * AUX2(rho, sigma);
-							}
-						}
-					}
-				}
+		FOR_EACH_4(LI);
+		CT(u, v, k, l) = 0.0;
+		for(auto const& rho : LI) {
+			for(auto const& sigma : LI) {
+				CT(u, v, k, l) += iGPPf2({u, v, k, l, rho, sigma}) * AUX2(rho, sigma);
 			}
 		}
+		FOR_EACH_4_END;
+
 	} else {
 		throw std::invalid_argument("MTensorPomeron::ME3: Unknown spin-parity input");
 	}
@@ -245,6 +228,7 @@ std::complex<double> MTensorPomeron::ME3(gra::LORENTZSCALAR& lts, gra::PARAM_RES
 								   iDP_2(alpha2, beta2, mu2, nu2) * iG_2b(mu2, nu2);
 
 	lts.hamp.push_back(A);
+
 	FOR_PP_HELICITY_END;
 
 	// Get total amplitude squared 1/4 \sum_h |A_h|^2
@@ -526,19 +510,13 @@ std::complex<double> MTensorPomeron::ME4(gra::LORENTZSCALAR& lts) const {
 		// Polarization sum
 		if(OPTION == 1) {
 			double Amp2 = 0.0;
-			for(const auto& sigma3 : LI) {
-				for(const auto& sigma4 : LI) {
-					for(const auto& rho3 : LI) {
-						for(const auto& rho4 : LI) {
-							const std::complex<double> contract = std::conj(M(sigma3, sigma4)) *
-																  M(rho3, rho4) * g[sigma3][rho3] *
-																  g[sigma4][rho4];
 
-							Amp2 += std::real(contract); // real for casting to double
-						}
-					}
-				}
-			}
+			FOR_EACH_4(LI);
+
+			const std::complex<double> contract = std::conj(M(u, v)) * M(k, l) * g[u][k] * g[v][l];
+			Amp2 += std::real(contract); // real for casting to double
+
+			FOR_EACH_4_END;
 
 			lts.hamp.push_back(msqrt(Amp2));
 		}
