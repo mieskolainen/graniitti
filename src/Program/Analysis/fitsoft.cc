@@ -458,5 +458,8 @@ int main(int argc, char *argv[]) {
   gMinuit->mnstat(amin, edm, errdef, nvpar, nparx, icstat);
   // gMinuit->mnprin(3,amin);
 
+  // Done
+  std::cout << "[fitsoft:: done]" << std::endl;
+  
   return EXIT_SUCCESS;
 }

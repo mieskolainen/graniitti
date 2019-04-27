@@ -376,8 +376,14 @@ int main(int argc, char *argv[]) {
       throw std::invalid_argument("Error: Problem executing Ghostscript merge on pdfs!");
     }
 
-    // Print all separate histograms
-    for (const auto &i : indices(analysis)) { analysis[i]->PlotAll(title); }
+    // Plot all separate histograms
+    for (const auto &i : indices(analysis)) {
+      analysis[i]->PlotAll(title);
+    }
+
+    // Done
+    std::cout << "[analyze:: done]" << std::endl;
+    
   } catch (const std::invalid_argument &e) {
     gra::aux::PrintGameOver();
     std::cerr << rang::fg::red << "Exception catched: " << rang::fg::reset << e.what() << std::endl;

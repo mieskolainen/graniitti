@@ -298,6 +298,10 @@ int main(int argc, char *argv[]) {
     // Plot all
     const std::string outputpath = ref + "+" + r["input"].as<std::string>();
     ha.PlotAll(outputpath);
+
+    // Done
+    std::cout << "[fitharmonic:: done]" << std::endl;
+
   } catch (const std::invalid_argument &e) {
     gra::aux::PrintGameOver();
     std::cerr << rang::fg::red << "Exception catched: " << rang::fg::reset << e.what() << std::endl;

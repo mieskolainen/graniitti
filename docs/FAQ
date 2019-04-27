@@ -1,29 +1,61 @@
-GRANIITTI (BETA) FAQ: 18.4.2019
+GRANIITTI (BETA) FAQ: 27.4.2019
 
 mikael.mieskolainen@cern.ch
 -----------
 
-First run ./bin/gr
+INSTALLATION
+-----------
+
+git clone --depth 1 https://github.com/mieskolainen/graniitti && cd graniitti
+cd install && source autoinstall.sh && cd ..
+source ./install/setenv.sh
+make -j4 CXX=g++ 
+
+
+Above, you may use also CXX=clang-5.0. Note that you need GCC > 7 or newer.
+
+
+FIRST RUN
+-----------
+
+Run ./bin/gr
 
 
 GENERAL
 -----------
+
 
 Q:  It does not compile :(
 A:  If you use MACOSX, try to obtain the latest GCC toolchain.
     The software is being tested and developed on Ubuntu linux (+ ROOT 6).
 
 
-Q:  Which features or processes are "under construction"?
-A:  See /docs/UNDERWORK or send email.
+Q:  I use lxplus.cern.ch, what is the right environment setup?
+A:  Run this first and then compile:
+    source /cvmfs/sft.cern.ch/lcg/views/setupViews.sh LCG_latest x86_64-centos7-gcc8-opt 
 
 
-Q:  I want to know exactly what your algorithms and calculations actually do?
+Q:  I do not use lxplus, but my own computer, so what do I need for the ROOT libraries setup?
+A:  Assuming you have a working ROOT setup, then set up the following in your environment:
+
+    export ROOTSYS=/path/to/your/ROOT
+    export PATH=$ROOTSYS/bin:$PATH
+    export LD_LIBRARY_PATH=$ROOTSYS/lib:$LD_LIBRARY_PATH. 
+
+    And make sure that these paths make sense, so that you find binaries
+    under $ROOTSYS/bin, object files under $ROOTSYS/lib and header files under $ROOTSYS/include.
+
+
+Q:  I want to know exactly what your algorithms and calculations do in detail?
 A:  Very good, that is the right attitude! You find my heavily commented code
     under /src and /include folders. If you feel something is too dark, just send email --
     I am interested in what is right in terms of physics, what is wrong and in
     improving the code quality. All original calculations etc. are inline referenced
     to arXiv for more information.
+
+
+Q:  Which features or processes are "under construction"?
+A:  See /docs/UNDERWORK or send email.
 
 
 

@@ -576,7 +576,13 @@ int main(int argc, char *argv[]) {
     gMinuit->mnstat(amin, edm, errdef, nvpar, nparx, icstat);
     // gMinuit->mnprin(3,amin);
 
-    for (const auto &i : indices(fitcentral::datasets)) { delete fitcentral::datasets[i].h1DATA; }
+    for (const auto &i : indices(fitcentral::datasets)) {
+      delete fitcentral::datasets[i].h1DATA;
+    }
+
+    // Done
+    std::cout << "[fitcentral:: done]" << std::endl;
+
   } catch (const std::invalid_argument &e) {
     gra::aux::PrintGameOver();
     std::cerr << rang::fg::red << "Exception catched: " << rang::fg::reset << e.what() << std::endl;

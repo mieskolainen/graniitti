@@ -102,7 +102,7 @@ $(info Found ROOTSYS = $(ROOTSYS))
 ROOT=TRUE
 
 # Info messages
-$(info If compilation with ROOT libraries failes, try with; make OLD_ROOT=TRUE)
+$(info ** If compilation with ROOT libraries failes, try with 'make -j4 OLD_ROOT=TRUE' **)
 
 endif
 
