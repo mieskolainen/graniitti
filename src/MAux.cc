@@ -471,7 +471,7 @@ std::string GetWebTLatex() {
 
 void PrintVersion() {
   std::cout << GetVersionString() << std::endl;
-  std::cout << rang::style::bold << "Available at <github.com/mieskolainen/graniitti>"
+  std::cout << rang::style::bold << "Available at <github.com/mieskolainen/GRANIITTI>"
             << rang::style::reset << std::endl
             << std::endl;
   std::cout << "References: arXiv:1811.01730 [hep-ph]" << std::endl;
