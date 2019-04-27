@@ -104,11 +104,11 @@ endif
 # =======================================================================
 # External libraries to be linked
 
-# HEPMC3
-HEPMC3lib      = -L$(HEPMC3SYS)/lib -lHepMC3 -lHepMC3search
+# HEPMC3  (lib64 needed on some systems)
+HEPMC3lib      = -L$(HEPMC3SYS)/lib -L$(HEPMC3SYS)/lib64 -lHepMC3 -lHepMC3search
 
-# LHAPDF6
-LHAPDF6lib     = -L$(LHAPDFSYS)/lib -lLHAPDF
+# LHAPDF6 (lib64 needed on some systems)
+LHAPDF6lib     = -L$(LHAPDFSYS)/lib -L$(LHAPDFSYS)/lib64 -lLHAPDF
 
 # PyTorch
 # Note -Wl,-rpath-link= handles the recursive dependency (for linker)
@@ -172,7 +172,8 @@ INCLUDES += -I$(LHAPDFSYS)/include
 CXX        = g++
 
 CXXVER     = -std=c++17
-CXXVER_OLD = -std=c++14
+CXXVER_OLD = -std=c++17
+#CXXVER_OLD = -std=c++14 # Use this if you have old ROOT installation
 
 OPTIM      = -O2 -DNDEBUG -ftree-vectorize -fno-signed-zeros
 CXXFLAGS   = -Wall -fPIC -pipe $(OPTIM)
