@@ -1,7 +1,7 @@
 {
 	"name" : "GRANIITTI",
-	"version" : 0.33,
+	"version" : 0.34,
 	"type" : "beta",
-	"date" : "23/04/2019",
-	"update": "Inverse algorithms / tensor amplitudes / tune"
+	"date" : "27/04/2019",
+	"update": "Compatibility with lxplus.cern.ch"
 }
