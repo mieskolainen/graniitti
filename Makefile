@@ -14,6 +14,7 @@
 # To compile with clang:      make CXX=clang
 #     -|-         unit tests: make TEST=TRUE
 #
+# To compile with old ROOT:   make OLD_ROOT=TRUE
 # -----------------------------------------------------------------------
 # 
 # EXTERNAL LIBRARIES SETUP:
@@ -173,7 +174,11 @@ CXX        = g++
 
 CXXVER     = -std=c++17
 CXXVER_OLD = -std=c++17
-#CXXVER_OLD = -std=c++14 # Use this if you have old ROOT installation
+
+# Use this for old ROOT installations
+ifeq ($(OLD_ROOT),TRUE)
+CXXVER_OLD = -std=c++14
+endif
 
 OPTIM      = -O2 -DNDEBUG -ftree-vectorize -fno-signed-zeros
 CXXFLAGS   = -Wall -fPIC -pipe $(OPTIM)
