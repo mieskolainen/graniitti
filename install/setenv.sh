@@ -10,13 +10,13 @@
 INSTALLPATH=$HOME/local
 # ***
 
-# lib64 needed on some systems
+# lib64 needed on some systems, keep these as first in PATH for priority
 export HEPMC3SYS=${INSTALLPATH}/HEPMC3
 export PATH=${HEPMC3SYS}/bin:${PATH}
 export LD_LIBRARY_PATH=${HEPMC3SYS}/lib:${LD_LIBRARY_PATH}
 export LD_LIBRARY_PATH=${HEPMC3SYS}/lib64:${LD_LIBRARY_PATH}
 
-# lib64 needed on some systems
+# lib64 needed on some systems, keep these as first in PATH for priority
 export LHAPDFSYS=${INSTALLPATH}/LHAPDF
 export PATH=${LHAPDFSYS}/bin:${PATH}
 export LD_LIBRARY_PATH=${LHAPDFSYS}/lib:${LD_LIBRARY_PATH}
