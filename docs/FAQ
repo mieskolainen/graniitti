@@ -21,22 +21,23 @@ FIRST RUN
 Run ./bin/gr
 
 
-GENERAL
+INSTALLATION
 -----------
 
 
 Q:  It does not compile :(
-A:  If you use MACOSX, try to obtain the latest GCC toolchain.
+A:  If you use MacOSX, try to obtain the latest GCC toolchain.
     The software is being tested and developed on Ubuntu linux (+ ROOT 6).
 
 
 Q:  I use lxplus.cern.ch, what is the right environment setup?
-A:  Try this before compiling:
+A:  Try this before compiling anything:
     source /cvmfs/sft.cern.ch/lcg/views/setupViews.sh LCG_latest x86_64-centos7-gcc8-opt 
 
 
-Q:  I use my own computer, what do I need for the ROOT libraries setup?
-A:  Assuming you have a working ROOT installed, then set up the following in your environment:
+Q:  I use a custom environment, what do I need for the ROOT libraries setup?
+A:  Assuming you have a working ROOT installed e.g. from <root.cern.ch>,
+    then set up the following in your environment:
     
     export ROOTSYS=/path/to/your/ROOT
     export PATH=$ROOTSYS/bin:$PATH
@@ -46,20 +47,8 @@ A:  Assuming you have a working ROOT installed, then set up the following in you
     under $ROOTSYS/bin, object files under $ROOTSYS/lib and header files under $ROOTSYS/include.
 
 
-Q:  Turning off ROOT dependent compilation?
-A:  Use 'unset ROOTSYS' on your environment or 'export ROOTSYS='
-
-
-Q:  I want to know exactly what your algorithms and calculations do in detail?
-A:  Very good, that is the right attitude! You find my heavily commented code
-    under /src and /include folders. If you feel something is too dark, just send email --
-    I am interested in what is right in terms of physics, what is wrong and in
-    improving the code quality. All original calculations etc. are inline referenced
-    to arXiv for more information.
-
-
-Q:  Which features or processes are "under construction"?
-A:  See /docs/UNDERWORK or send email.
+Q:  How to turn off ROOT dependent compilation?
+A:  Compile with 'make -j4 ROOTSYS=' or run 'unset ROOTSYS' for removing the shell variable.
 
 
 
@@ -108,6 +97,18 @@ Q:  Integrated cross section seems very high?
 A:  Turn on the screening integral (event-by-event Pomeron loop). The effect can be
     very high, depending on the process - less for gamma-gamma processes.
     Also, take care of the branching ratios and phase space volumes (see below).
+
+
+Q:  I want to know more details about the algorithms and calculations.
+A:  Very good, that is the right attitude! You find my heavily commented code
+    under /src and /include folders. If you feel something is too dark, just send email --
+    I am interested in what is right in terms of physics, what is wrong and in
+    improving the code quality. All original calculations etc. are inline referenced
+    to arXiv for more information.
+
+
+Q:  Which features or processes are "under construction"?
+A:  See /docs/UNDERWORK or send email.
 
 
 
