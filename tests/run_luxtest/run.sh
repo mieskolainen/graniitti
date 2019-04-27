@@ -6,7 +6,7 @@
 # Run with: source ./tests/run_xxx/run.sh
 
 # Generate
-./bin/gr -i ./tests/luxtest/LUX.json -w true -n 50000
+./bin/gr -i ./tests/run_luxtest/LUX.json -w true -n 50000
 
 # Scale factor 3 x for three lepton flavors (we generate a sample only for one flavor)
 SCALE=3
