@@ -482,53 +482,51 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
   pad2->cd();  // pad2 becomes the current pad
 
   // *** Ratio histograms ***
-  std::vector<TH1D *> ratios;
+  std::vector<TProfile*>  hxP(h.size(), NULL);
+  std::vector<TH1D*>       hx(h.size(), NULL);
 
   for (const auto &i : indices(h)) {
-    TProfile *hxP = (TProfile *)h[i]->Clone(Form("ratio_%lu", i));
+    hxP[i] = (TProfile *)h[i]->Clone(Form("ratio_%lu", i));
 
     // --------------------------------------------------------------
     // To get proper errors, we need to use TH1 instead of TProfile
-    TH1D *hx = hxP->ProjectionX();
-    TH1D *h0 = h[0]->ProjectionX();
+    hx[i] = hxP[i]->ProjectionX();
 
     // Set same colors as above
-    hx->SetLineColor(color[i]);
-    hx->SetMarkerColor(color[i]);
-    hx->SetMarkerStyle(20);
-    hx->SetMarkerSize(0.5);
+    hx[i]->SetLineColor(color[i]);
+    hx[i]->SetMarkerColor(color[i]);
+    hx[i]->SetMarkerStyle(20);
+    hx[i]->SetMarkerSize(0.5);
 
     // --------------------------------------------------------------
 
-    // Get ratio
-    hx->Divide(h0);
+    // Get ratio to 0-th histogram
+    hx[i]->Divide(hx[0]);
 
-    hx->SetMinimum(0.0);  // y-range
-    hx->SetMaximum(2.0);  //
-    hx->SetStats(0);      // no statistics box
-    hx->Draw("same");     // ratio plot
+    hx[i]->SetMinimum(0.0);  // y-range
+    hx[i]->SetMaximum(2.0);  //
+    hx[i]->SetStats(0);      // no statistics box
+    hx[i]->Draw("same");     // ratio plot
 
     // Ratio plot (h3) settings
-    hx->SetTitle("");  // remove title
+    hx[i]->SetTitle("");  // remove title
 
     // Y axis ratio plot settings
-    hx->GetYaxis()->SetTitle("Ratio");
-    hx->GetYaxis()->CenterTitle();
-    hx->GetYaxis()->SetNdivisions(505);
-    hx->GetYaxis()->SetTitleSize(20);
-    hx->GetYaxis()->SetTitleFont(43);
-    hx->GetYaxis()->SetTitleOffset(1.55);
-    hx->GetYaxis()->SetLabelFont(43);  // in pixel (precision 3)
-    hx->GetYaxis()->SetLabelSize(15);
+    hx[i]->GetYaxis()->SetTitle("Ratio");
+    hx[i]->GetYaxis()->CenterTitle();
+    hx[i]->GetYaxis()->SetNdivisions(505);
+    hx[i]->GetYaxis()->SetTitleSize(20);
+    hx[i]->GetYaxis()->SetTitleFont(43);
+    hx[i]->GetYaxis()->SetTitleOffset(1.55);
+    hx[i]->GetYaxis()->SetLabelFont(43);  // in pixel (precision 3)
+    hx[i]->GetYaxis()->SetLabelSize(15);
 
     // X axis ratio plot settings
-    hx->GetXaxis()->SetTitleSize(20);
-    hx->GetXaxis()->SetTitleFont(43);
-    hx->GetXaxis()->SetTitleOffset(4.);
-    hx->GetXaxis()->SetLabelFont(43);  // in pixel (precision 3)
-    hx->GetXaxis()->SetLabelSize(15);
-
-    ratios.push_back(hx);
+    hx[i]->GetXaxis()->SetTitleSize(20);
+    hx[i]->GetXaxis()->SetTitleFont(43);
+    hx[i]->GetXaxis()->SetTitleOffset(4.);
+    hx[i]->GetXaxis()->SetLabelFont(43);  // in pixel (precision 3)
+    hx[i]->GetXaxis()->SetLabelSize(15);
   }
 
   // Draw horizontal line
@@ -562,7 +560,10 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
   }
 
   // Remove histograms
-  for (const auto &i : indices(ratios)) { delete ratios[i]; }
+  for (const auto &i : indices(hx)) {
+    delete hxP[i];
+    delete hx[i];
+  }
   delete l1;
   delete l2;
 

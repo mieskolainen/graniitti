@@ -73,11 +73,11 @@ int main(int argc, char *argv[]) {
   double dummy      = 0;
   double P1_gen[3]  = {0.0};
   double P2_gen[3]  = {0.0};
-  double P1_rec[3]  = {0.0};
-  double P2_rec[3]  = {0.0};
-  int    PDG1       = 0;
-  int    PDG2       = 0;
-  int    REC        = 0;
+//  double P1_rec[3]  = {0.0};
+//  double P2_rec[3]  = {0.0};
+//  int    PDG1       = 0;
+//  int    PDG2       = 0;
+//  int    REC        = 0;
   double PID_weight = 0;
 
   const int DATATYPE = 9;  // # number of variables
@@ -124,8 +124,8 @@ int main(int argc, char *argv[]) {
 
     hM.Fill(system.M());
 
-    // Event weight
-    double weight = 1.0;
+    // Event weight (NOT USED CURRENTLY)
+//    double weight = 1.0;
 
     // ******************************************************************
     // Create HepMC3 event
