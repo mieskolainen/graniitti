@@ -46,6 +46,10 @@
 # USE [TABS] for intendation while modifying this file!
 # -----------------------------------------------------------------------
 
+# Info messages
+$(info If compilation with ROOT libraries failes, try with; make OLD_ROOT=TRUE)
+
+
 # =======================================================================
 # Detect compiler version if using by default g++
 
