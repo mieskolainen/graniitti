@@ -12,15 +12,15 @@ INSTALLPATH=$HOME/local
 
 # lib64 needed on some systems
 export HEPMC3SYS=${INSTALLPATH}/HEPMC3
-export PATH=${PATH}:${HEPMC3SYS}/bin
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HEPMC3SYS}/lib
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HEPMC3SYS}/lib64
+export PATH=${HEPMC3SYS}/bin:${PATH}
+export LD_LIBRARY_PATH=${HEPMC3SYS}/lib:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=${HEPMC3SYS}/lib64:${LD_LIBRARY_PATH}
 
 # lib64 needed on some systems
 export LHAPDFSYS=${INSTALLPATH}/LHAPDF
-export PATH=${PATH}:${LHAPDFSYS}/bin
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${LHAPDFSYS}/lib
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${LHAPDFSYS}/lib64
+export PATH=${LHAPDFSYS}/bin:${PATH}
+export LD_LIBRARY_PATH=${LHAPDFSYS}/lib:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=${LHAPDFSYS}/lib64:${LD_LIBRARY_PATH}
 
 echo 'New environment variables:'
 echo ''
