@@ -41,7 +41,7 @@ A:  Assuming you have a working ROOT installed e.g. from <root.cern.ch>,
     
     export ROOTSYS=/path/to/your/ROOT
     export PATH=$ROOTSYS/bin:$PATH
-    export LD_LIBRARY_PATH=$ROOTSYS/lib:$LD_LIBRARY_PATH. 
+    export LD_LIBRARY_PATH=$ROOTSYS/lib:$LD_LIBRARY_PATH
 
     And make sure that these paths make sense, so that you find binaries
     under $ROOTSYS/bin, object files under $ROOTSYS/lib and header files under $ROOTSYS/include.
