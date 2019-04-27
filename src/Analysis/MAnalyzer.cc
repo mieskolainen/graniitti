@@ -56,35 +56,37 @@ using gra::math::msqrt;
 using gra::aux::indices;
 
 namespace gra {
-// Constructor
-MAnalyzer::MAnalyzer() {
+
+// Constructor with unique ID string for ROOT bookkeeping reasons
+MAnalyzer::MAnalyzer(const std::string& ID) {
+
   // Initialize histograms
   const int NBINS = 150;
 
   // Energy
   hE_Pions =
-      std::make_unique<TH1D>("Energy #pi (GeV)", ";Energy (GeV);Events", NBINS, 0, sqrts / 2.0);
+      std::make_unique<TH1D>(Form("%s_%s", "Energy #pi (GeV)",   ID.c_str()), ";Energy (GeV);Events", NBINS, 0, sqrts / 2.0);
   hE_Gamma =
-      std::make_unique<TH1D>("Energy #gamma (GeV)", ";Energy (GeV);Events", NBINS, 0, sqrts / 2.0);
+      std::make_unique<TH1D>(Form("%s_%s", "Energy #gamma (GeV)",ID.c_str()), ";Energy (GeV);Events", NBINS, 0, sqrts / 2.0);
   hE_Neutron =
-      std::make_unique<TH1D>("Energy n (GeV)", ";Energy (GeV);Events", NBINS, 0, sqrts / 2.0);
+      std::make_unique<TH1D>(Form("%s_%s", "Energy n (GeV)",     ID.c_str()), ";Energy (GeV);Events", NBINS, 0, sqrts / 2.0);
   hE_GammaNeutron =
-      std::make_unique<TH1D>("Energy y+n (GeV)", ";Energy (GeV);Events", NBINS, 0, sqrts / 2.0);
+      std::make_unique<TH1D>(Form("%s_%s", "Energy y+n (GeV)",   ID.c_str()), ";Energy (GeV);Events", NBINS, 0, sqrts / 2.0);
 
   // Feynman-x
-  hXF_Pions   = std::make_unique<TH1D>("xF #pi", ";Feynman-x;Events", NBINS, -1.0, 1.0);
-  hXF_Gamma   = std::make_unique<TH1D>("xF #gamma", ";Feynman-x;Events", NBINS, -1.0, 1.0);
-  hXF_Neutron = std::make_unique<TH1D>("xF n", ";Feynman-x;Events", NBINS, -1.0, 1.0);
+  hXF_Pions   = std::make_unique<TH1D>(Form("%s_%s", "xF #pi",   ID.c_str()), ";Feynman-x;Events", NBINS, -1.0, 1.0);
+  hXF_Gamma   = std::make_unique<TH1D>(Form("%s_%s", "xF #gamma",ID.c_str()), ";Feynman-x;Events", NBINS, -1.0, 1.0);
+  hXF_Neutron = std::make_unique<TH1D>(Form("%s_%s", "xF n",     ID.c_str()), ";Feynman-x;Events", NBINS, -1.0, 1.0);
 
   // Forward systems
-  hEta_Pions   = std::make_unique<TH1D>("#eta pi", ";#eta;Events", NBINS, -12, 12);
-  hEta_Gamma   = std::make_unique<TH1D>("#eta y", ";#eta;Events", NBINS, -12, 12);
-  hEta_Neutron = std::make_unique<TH1D>("#eta n", ";#eta;Events", NBINS, -12, 12);
-  hM_NSTAR     = std::make_unique<TH1D>("M (GeV)", ";M (GeV);Events", NBINS, 0, 10);
+  hEta_Pions   = std::make_unique<TH1D>(Form("%s_%s", "#eta pi", ID.c_str()), ";#eta;Events", NBINS, -12, 12);
+  hEta_Gamma   = std::make_unique<TH1D>(Form("%s_%s", "#eta y",  ID.c_str()), ";#eta;Events", NBINS, -12, 12);
+  hEta_Neutron = std::make_unique<TH1D>(Form("%s_%s", "#eta n",  ID.c_str()), ";#eta;Events", NBINS, -12, 12);
+  hM_NSTAR     = std::make_unique<TH1D>(Form("%s_%s", "M (GeV)", ID.c_str()), ";M (GeV);Events", NBINS, 0, 10);
 
   // Legendre polynomials, DO NOT CHANGE THE Y-RANGE [-1,1]
   for (std::size_t i = 0; i < 8; ++i) {
-    hPl[i] = std::make_unique<TProfile>(Form("hPl%lu", i + 1), "", 100, 0.0, 4.0, -1, 1);
+    hPl[i] = std::make_unique<TProfile>(Form("hPl%lu_%s", i + 1, ID.c_str()), "", 100, 0.0, 4.0, -1, 1);
     hPl[i]->Sumw2();  // Error saving on
     hPl[i]->SetXTitle(Form("System M (GeV)"));
     hPl[i]->SetYTitle(Form("Legendre #LTP_{l}(cos #theta)#GT | r.f."));
@@ -94,8 +96,8 @@ MAnalyzer::MAnalyzer() {
   for (std::size_t i = 0; i < NFR; ++i) {
     for (std::size_t j = 0; j < NFR; ++j) {
       h2CosTheta[i][j] =
-          std::make_unique<TH2D>(Form("%s^{+} cos(theta) %s vs %s", pstr.c_str(),
-                                      frame_labels[i].Data(), frame_labels[j].Data()),
+          std::make_unique<TH2D>(Form("%s^{+} cos(theta) %s vs %s_%s", pstr.c_str(),
+                                      frame_labels[i].Data(), frame_labels[j].Data(), ID.c_str()),
                                  Form(";%s^{+} cos(#theta) %s;%s^{+} cos(#theta) %s", pstr.c_str(),
                                       frame_labels[i].Data(), pstr.c_str(), frame_labels[j].Data()),
                                  NBINS, -1, 1, NBINS, -1, 1);
@@ -106,8 +108,8 @@ MAnalyzer::MAnalyzer() {
   for (std::size_t i = 0; i < NFR; ++i) {
     for (std::size_t j = 0; j < NFR; ++j) {
       h2Phi[i][j] = std::make_unique<TH2D>(
-          Form("%s^{+} #phi %s vs %s", pstr.c_str(), frame_labels[i].Data(),
-               frame_labels[j].Data()),
+          Form("%s^{+} #phi %s vs %s_%s", pstr.c_str(), frame_labels[i].Data(),
+               frame_labels[j].Data(), ID.c_str()),
           Form(";%s^{+} #phi %s (rad);%s^{+} #phi %s (rad)", pstr.c_str(), frame_labels[i].Data(),
                pstr.c_str(), frame_labels[j].Data()),
           NBINS, -gra::math::PI, gra::math::PI, NBINS, -gra::math::PI, gra::math::PI);
@@ -117,21 +119,21 @@ MAnalyzer::MAnalyzer() {
   // 1D costheta
   for (std::size_t i = 0; i < NFR; ++i) {
     hCosTheta_Meson_p[i] = std::make_unique<TH1D>(
-        Form("%s^{+} cos(#theta) %s", pstr.c_str(), frame_labels[i].Data()),
+        Form("%s^{+} cos(#theta) %s_%s", pstr.c_str(), frame_labels[i].Data(), ID.c_str()),
         Form(";%s^{+} cos(#theta) %s; Events", pstr.c_str(), frame_labels[i].Data()), NBINS, -1, 1);
     hCosTheta_Meson_m[i] = std::make_unique<TH1D>(
-        Form("%s^{-} cos(#theta) %s", pstr.c_str(), frame_labels[i].Data()),
+        Form("%s^{-} cos(#theta) %s_%s", pstr.c_str(), frame_labels[i].Data(), ID.c_str()),
         Form(";%s^{+} cos(#theta) %s; Events", pstr.c_str(), frame_labels[i].Data()), NBINS, -1, 1);
   }
 
   // 1D phi
   for (std::size_t i = 0; i < NFR; ++i) {
     hPhi_Meson_p[i] = std::make_unique<TH1D>(
-        Form("%s^{+} #phi %s", pstr.c_str(), frame_labels[i].Data()),
+        Form("%s^{+} #phi %s_%s", pstr.c_str(), frame_labels[i].Data(), ID.c_str()),
         Form(";%s^{+} #phi %s; Events", pstr.c_str(), frame_labels[i].Data()), NBINS,
         -gra::math::PI, gra::math::PI);
     hPhi_Meson_m[i] = std::make_unique<TH1D>(
-        Form("%s^{-} #phi %s", pstr.c_str(), frame_labels[i].Data()),
+        Form("%s^{-} #phi %s_%s", pstr.c_str(), frame_labels[i].Data(), ID.c_str()),
         Form(";%s^{+} #phi %s; Events", pstr.c_str(), frame_labels[i].Data()), NBINS,
         -gra::math::PI, gra::math::PI);
   }
@@ -139,7 +141,7 @@ MAnalyzer::MAnalyzer() {
   // 2D (costheta, phi)
   for (std::size_t i = 0; i < NFR; ++i) {
     h2CosTheta_Phi[i] =
-        std::make_unique<TH2D>(Form("cos(#theta) vs #phi %s", frame_labels[i].Data()),
+        std::make_unique<TH2D>(Form("cos(#theta) vs #phi %s_%s", frame_labels[i].Data(), ID.c_str()),
                                Form(" ;%s^{+} cos(#theta) %s;%s^{+} #phi %s (rad)", pstr.c_str(),
                                     frame_labels[i].Data(), pstr.c_str(), frame_labels[i].Data()),
                                NBINS / 2, -1, 1, NBINS / 2, -gra::math::PI, gra::math::PI);
@@ -148,7 +150,7 @@ MAnalyzer::MAnalyzer() {
   // 2D (M, costheta)
   for (std::size_t i = 0; i < NFR; ++i) {
     h2M_CosTheta[i] = std::make_unique<TH2D>(
-        Form("M vs cos(#theta) %s", frame_labels[i].Data()),
+        Form("M vs cos(#theta) %s_%s", frame_labels[i].Data(), ID.c_str()),
         Form(" ;M (GeV);%s^{+} cos(#theta) %s", pstr.c_str(), frame_labels[i].Data()), NBINS / 2,
         0.0, 2.5, NBINS / 2, -1, 1);
   }
@@ -156,7 +158,7 @@ MAnalyzer::MAnalyzer() {
   // 2D (M, phi)
   for (std::size_t i = 0; i < NFR; ++i) {
     h2M_Phi[i] = std::make_unique<TH2D>(
-        Form("M vs #phi %s", frame_labels[i].Data()),
+        Form("M vs #phi %s_%s", frame_labels[i].Data(), ID.c_str()),
         Form(" ;M (GeV);%s^{+} #phi %s (rad)", pstr.c_str(), frame_labels[i].Data()), NBINS / 2,
         0.0, 2.5, NBINS / 2, -gra::math::PI, gra::math::PI);
   }

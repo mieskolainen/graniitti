@@ -187,5 +187,9 @@ int main(int argc, char *argv[]) {
 
   std::cout << "Conversion done for " << events << " events" << std::endl;
 
+
+  // Done
+  std::cout << "[data2hepmc3:: done]" << std::endl;
+
   return EXIT_SUCCESS;
 }

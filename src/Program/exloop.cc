@@ -103,6 +103,10 @@ int main(int argc, char *argv[]) {
   }
 
   // autoloop();
+
+  // Done
+  std::cout << "[exloop:: done]" << std::endl;
+
   return EXIT_SUCCESS;
 }
 

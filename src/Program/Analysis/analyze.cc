@@ -243,13 +243,13 @@ int main(int argc, char *argv[]) {
                                        "Central final state multiplicity <input1,input2,...>",
                                        cxxopts::value<std::string>())(
         "l,labels", "plot legend string       <input1,input2,...>", cxxopts::value<std::string>())(
-        "t,title", "plot title string        <input>            ", cxxopts::value<std::string>())(
-        "u,units", "cross section unit       <barn|mb|ub|nb|pb|fb>", cxxopts::value<std::string>())(
-        "M,mass", "plot mass limit", cxxopts::value<double>())("Y,rapidity", "plot rapidity limit",
+        "t,title",  "plot title string        <input>            ", cxxopts::value<std::string>())(
+        "u,units",  "cross section unit       <barn|mb|ub|nb|pb|fb>", cxxopts::value<std::string>())(
+        "M,mass",   "plot mass limit", cxxopts::value<double>())("Y,rapidity", "plot rapidity limit",
                                                                cxxopts::value<double>())(
         "P,momentum", "plot momentum limit", cxxopts::value<double>())(
-        "X,maximum", "maximum number of events", cxxopts::value<int>())(
-        "S,scale", "scale histograms", cxxopts::value<std::string>())("H,help", "Help");
+        "X,maximum",  "maximum number of events", cxxopts::value<int>())(
+        "S,scale",    "scale histograms", cxxopts::value<std::string>())("H,help", "Help");
 
     auto r = options.parse(argc, argv);
 
@@ -340,11 +340,11 @@ int main(int argc, char *argv[]) {
     // Analyze them
     printf("Analyze:: \n");
     std::vector<double> cross_section(inputfile.size(), 0.0);
-    for (const auto &SID : indices(inputfile)) {
-      analysis.push_back(new MAnalyzer());
-      cross_section[SID] =
-          analysis[SID]->HepMC3_OracleFill(inputfile[SID], (uint)multiplicity[SID],
-                                           finalstatePDG[SID], (uint)MAXEVENTS, h1, h2, hP, SID);
+    for (const auto &i : indices(inputfile)) {
+      analysis.push_back(new MAnalyzer("ID" + std::to_string(i)));
+      cross_section[i] =
+          analysis[i]->HepMC3_OracleFill(inputfile[i], (uint)multiplicity[i],
+                                           finalstatePDG[i], (uint)MAXEVENTS, h1, h2, hP, i);
     }
     // Name
     std::string fullpath = gra::aux::GetBasePath(2) + "/figs/";
@@ -379,11 +379,12 @@ int main(int argc, char *argv[]) {
     // Plot all separate histograms
     for (const auto &i : indices(analysis)) {
       analysis[i]->PlotAll(title);
+      delete analysis[i]; // free memory
     }
 
     // Done
     std::cout << "[analyze:: done]" << std::endl;
-    
+
   } catch (const std::invalid_argument &e) {
     gra::aux::PrintGameOver();
     std::cerr << rang::fg::red << "Exception catched: " << rang::fg::reset << e.what() << std::endl;

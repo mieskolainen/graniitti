@@ -189,5 +189,8 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   }
 
+  // Done
+  std::cout << "[gr:: done]" << std::endl;
+  
   return EXIT_SUCCESS;
 }

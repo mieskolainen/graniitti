@@ -176,5 +176,8 @@ int main(int argc, char *argv[]) {
   printf("scan:: Finished in %0.1f sec \n", timer.ElapsedSec());
   printf("scan:: Output created to scan{.csv,.tex} \n\n");
 
+  // Done
+  std::cout << "[xscan:: done]" << std::endl;
+
   return EXIT_SUCCESS;
 }

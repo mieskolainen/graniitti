@@ -180,5 +180,8 @@ int main(int argc, char *argv[]) {
     printf("Total %d events converted from HepMC33 to LHE \n", events);
   }
 
+  // Done
+  std::cout << "[hepmc3tolhe:: done]" << std::endl;
+
   return EXIT_SUCCESS;
 }
