@@ -31,19 +31,23 @@ A:  If you use MACOSX, try to obtain the latest GCC toolchain.
 
 
 Q:  I use lxplus.cern.ch, what is the right environment setup?
-A:  Run this first and then compile:
+A:  Try this before compiling:
     source /cvmfs/sft.cern.ch/lcg/views/setupViews.sh LCG_latest x86_64-centos7-gcc8-opt 
 
 
-Q:  I do not use lxplus, but my own computer, so what do I need for the ROOT libraries setup?
-A:  Assuming you have a working ROOT setup, then set up the following in your environment:
-
+Q:  I use my own computer, what do I need for the ROOT libraries setup?
+A:  Assuming you have a working ROOT installed, then set up the following in your environment:
+    
     export ROOTSYS=/path/to/your/ROOT
     export PATH=$ROOTSYS/bin:$PATH
     export LD_LIBRARY_PATH=$ROOTSYS/lib:$LD_LIBRARY_PATH. 
 
     And make sure that these paths make sense, so that you find binaries
     under $ROOTSYS/bin, object files under $ROOTSYS/lib and header files under $ROOTSYS/include.
+
+
+Q:  Turning off ROOT dependent compilation?
+A:  Use 'unset ROOTSYS' on your environment or 'export ROOTSYS='
 
 
 Q:  I want to know exactly what your algorithms and calculations do in detail?

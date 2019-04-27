@@ -82,13 +82,13 @@ endif
 
 
 ifeq ($(HEPMC3SYS),)
-$(error Please set HEPMC3SYS environment variable and paths [perhaps; source ./install/setenv.sh])
+$(error Please set HEPMC3SYS environment variable and paths [perhaps 'source ./install/setenv.sh'])
 else
 $(info Found HEPMC3SYS = $(HEPMC3SYS))
 endif
 
 ifeq ($(LHAPDFSYS),)
-$(error Please set LHAPDFSYS environment variable and paths [perhaps source ./install/setenv.sh])
+$(error Please set LHAPDFSYS environment variable and paths [perhaps 'source ./install/setenv.sh'])
 else
 $(info Found LHAPDFSYS = $(LHAPDFSYS))
 endif
