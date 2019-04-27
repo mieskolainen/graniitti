@@ -137,14 +137,21 @@ STANDARDlib    = -lstdc++ -lm -pthread -lrt
 #GSLlib         = -lgsl -lgslcblas
 
 
-LDLIBS  = $(STANDARDlib)
-LDLIBS += $(HEPMC3lib)
+# External libraries (THESE TWO FIRST for priority!!)
+LDLIBS  = $(HEPMC3lib)
 LDLIBS += $(LHAPDF6lib)
-LDLIBS += $(PYTORCHlib)
+
+# The rest
+LDLIBS += $(STANDARDlib)
+#LDLIBS += $(PYTORCHlib)
 
 
 # =======================================================================
 # Header files
+
+# External libraries (THESE TWO FIRST for priority!!)
+INCLUDES += -I$(HEPMC3SYS)/include
+INCLUDES += -I$(LHAPDFSYS)/include
 
 # C++
 INCLUDES += -I/usr/include
@@ -166,10 +173,6 @@ INCLUDES += -Ilibs/Eigen/unsupported/
 # PyTorch
 #INCLUDES += -Ilibs/libtorch/include/
 #INCLUDES += -Ilibs/libtorch/include/torch/csrc/api/include
-
-# External libraries
-INCLUDES += -I$(HEPMC3SYS)/include
-INCLUDES += -I$(LHAPDFSYS)/include
 
 
 # =======================================================================
