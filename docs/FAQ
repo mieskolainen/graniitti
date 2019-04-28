@@ -3,7 +3,7 @@ GRANIITTI (BETA) FAQ: 27.4.2019
 mikael.mieskolainen@cern.ch
 -----------
 
-INSTALLATION
+START
 -----------
 
 git clone --depth 1 https://github.com/mieskolainen/graniitti && cd graniitti
@@ -54,6 +54,10 @@ A:  Compile with 'make -j4 ROOTSYS=' or run 'unset ROOTSYS' for removing the she
 
 BASIC OPERATION
 -----------
+
+Q:  I get "error while loading shared libraries: libHepMC3.so.1: cannot open shared object file"
+A:  Always remember the environment setup: source ./install/setenv.sh
+
 
 Q:  Where are the examples of .json steering cards?
 A:  Under /tests/processes folder. Make a copy to /input and modify.
