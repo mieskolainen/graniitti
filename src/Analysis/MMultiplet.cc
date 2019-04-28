@@ -347,7 +347,7 @@ double h2Multiplet::SaveFig(const std::string &fullpath) const {
     h[i]->SetStats(0);
     h[i]->Draw("COLZ");
     h[i]->GetYaxis()->SetTitleOffset(1.3);
-    h[i]->GetZaxis()->SetRangeUser(0.0, ZMAX);
+    //h[i]->GetZaxis()->SetRangeUser(0.0, ZMAX);
     h[i]->SetTitle(legendtext_[i].c_str());
   }
 
@@ -361,7 +361,7 @@ double h2Multiplet::SaveFig(const std::string &fullpath) const {
 
     hR->Divide(h[0]);  // Divide by 0-th histogram
     hR->GetYaxis()->SetTitleOffset(1.3);
-    hR->SetStats(0);  // No statistics on upper plot
+    hR->SetStats(0);   // No statistics on upper plot
     hR->Draw("COLZ");
     hR->GetZaxis()->SetRangeUser(0.0, 2.0);
     hR->SetTitle(Form("Ratio: %s / %s", legendtext_[i].c_str(), legendtext_[0].c_str()));

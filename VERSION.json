@@ -1,7 +1,7 @@
 {
 	"name" : "GRANIITTI",
-	"version" : 0.34,
+	"version" : 0.35,
 	"type" : "beta",
-	"date" : "27/04/2019",
-	"update": "Compatibility with lxplus.cern.ch"
+	"date" : "28/04/2019",
+	"update": "Algorithm updates"
 }

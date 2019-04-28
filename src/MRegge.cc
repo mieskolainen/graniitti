@@ -1004,10 +1004,10 @@ std::complex<double> JPC_CS_coupling(const gra::LORENTZSCALAR &lts,
 //
 // Remember that Pomeron loop makes its own,
 // in certain kinematic domain very significant contribution to
-// the transverse distributions.
+// the transverse distributions -- take into account in parameter tuning.
 //
 //
-// Check also:
+// See also:
 // [REFERENCE: https://arxiv.org/pdf/1406.7010.pdf]
 //
 std::complex<double> JPCoupling(const gra::LORENTZSCALAR &lts, const gra::PARAM_RES &resonance) {
@@ -1016,8 +1016,7 @@ std::complex<double> JPCoupling(const gra::LORENTZSCALAR &lts, const gra::PARAM_
   // Forward proton pair deltaphi
   const double dphi = lts.pfinal[1].DeltaPhiAbs(lts.pfinal[2]);
 
-  //  ^  WA102 data (not fully sin(phi) symmetric after MC, phase space limits
-  //  the reason?)
+  //  ^  WA102 data (not fully sin(phi) symmetric after MC, due to kinematics, presumably)
   //  |   .---.
   //  |  .     .
   //  | .       .
@@ -1052,14 +1051,14 @@ std::complex<double> JPCoupling(const gra::LORENTZSCALAR &lts, const gra::PARAM_
     return 1.0;
   }
 
-  const double alpha =
-      1.0 / 3.0;  // Controls the steepness (0 = maximal steepness, 1 = almost flat)
+  // Steepness
+  const double alpha = 0.0;
 
   double A = 0.0;
-  if (!resonance.p.glue) {  // "normal state"
+  if (!resonance.p.glue) {  // "normal state ansatz"
     A = msqrt(alpha * pow2(msqrt(std::abs(lts.t1)) - msqrt(std::abs(lts.t2))) +
               msqrt(lts.t1 * lts.t2) * pow2(std::sin(dphi / 2.0)));
-  } else {  // "glue state"
+  } else {  // "glue state ansatz"
     A = msqrt(alpha * pow2(msqrt(std::abs(lts.t1)) - msqrt(std::abs(lts.t2))) +
               msqrt(lts.t1 * lts.t2) * pow2(std::cos(dphi / 2.0)));
   }
