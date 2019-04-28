@@ -376,7 +376,7 @@ double h2Multiplet::SaveFig(const std::string &fullpath) const {
 
   TLatex *l1;
   TLatex *l2;
-  std::tie(l1, l2) = gra::rootstyle::MadeInFinland();
+  std::tie(l1, l2) = gra::rootstyle::MadeInFinland(0.96);
   // -------------------------------------------------------------------
 
   // Create output directory if it does not exist
@@ -484,9 +484,9 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
   pad2->cd();  // pad2 becomes the current pad
 
   // *** Ratio histograms ***
-  std::vector<TProfile*>  hxP(h.size(), NULL);
-  std::vector<TH1D*>       hR(h.size(), NULL);
-  TH1D* hx0;
+  std::vector<TProfile *> hxP(h.size(), NULL);
+  std::vector<TH1D *>     hR(h.size(), NULL);
+  TH1D *                  hx0;
 
   for (const auto &i : indices(h)) {
     hxP[i] = (TProfile *)h[i]->Clone(Form("ratio_%lu", i));
@@ -494,11 +494,11 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
     // --------------------------------------------------------------
     // To get proper errors, we need to use TH1 instead of TProfile
     hR[i] = hxP[i]->ProjectionX();
-    
-    if (i == 0) { // this is needed
+
+    if (i == 0) {  // this is needed
       hx0 = hxP[i]->ProjectionX();
     }
-    
+
     // Set same colors as above
     hR[i]->SetLineColor(color[i]);
     hR[i]->SetMarkerColor(color[i]);
@@ -509,7 +509,7 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
 
     // Get ratio to 0-th histogram
     hR[i]->Divide(hx0);
-    
+
     hR[i]->SetMinimum(0.0);  // y-range
     hR[i]->SetMaximum(2.0);  //
     hR[i]->SetStats(0);      // no statistics box
@@ -571,6 +571,7 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
     delete hxP[i];
     delete hR[i];
   }
+  delete hx0;
   delete l1;
   delete l2;
 

@@ -162,11 +162,12 @@ int main(int argc, char *argv[]) {
     MHarmonic::HPARAM hparam;
 
     // Discretization
-    auto tripletfunc = [&] (const std::string& str) {
-      const std::string   vecstr = r[str].as<std::string>();
-      const std::vector<double> vec = gra::aux::SplitStr(vecstr, double(0), ',');
+    auto tripletfunc = [&](const std::string &str) {
+      const std::string         vecstr = r[str].as<std::string>();
+      const std::vector<double> vec    = gra::aux::SplitStr(vecstr, double(0), ',');
       if (vec.size() != 3) {
-        throw std::invalid_argument("analyze:: " + str + " discretization not size 3 <bins,min,max>");
+        throw std::invalid_argument("analyze:: " + str +
+                                    " discretization not size 3 <bins,min,max>");
       }
       return vec;
     };

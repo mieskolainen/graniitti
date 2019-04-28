@@ -460,6 +460,6 @@ int main(int argc, char *argv[]) {
 
   // Done
   std::cout << "[fitsoft:: done]" << std::endl;
-  
+
   return EXIT_SUCCESS;
 }

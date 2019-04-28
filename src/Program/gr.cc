@@ -191,6 +191,6 @@ int main(int argc, char *argv[]) {
 
   // Done
   std::cout << "[gr:: done]" << std::endl;
-  
+
   return EXIT_SUCCESS;
 }

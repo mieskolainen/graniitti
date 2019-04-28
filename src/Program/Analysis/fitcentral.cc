@@ -349,12 +349,12 @@ int main(int argc, char *argv[]) {
         "x,fix", "Fix resonance amplitude and phase              <f0_980,f2_1270,...>",
         cxxopts::value<std::string>())(
         "z,zero", "Fix resonances to zero                         <f2_1525,...>",
-        cxxopts::value<std::string>())(
-        "A,allfixed", "Fix all resonance parameters               <true|false>",
-        cxxopts::value<std::string>())("l,POMLOOP", "Screening Pomeron loop",
-                                       cxxopts::value<std::string>())("H,help", "Help");
+        cxxopts::value<std::string>())("A,allfixed",
+                                       "Fix all resonance parameters               <true|false>",
+                                       cxxopts::value<std::string>())(
+        "l,POMLOOP", "Screening Pomeron loop", cxxopts::value<std::string>())("H,help", "Help");
     auto r = options.parse(argc, argv);
-    
+
     if (r.count("help") || NARGC == 0) {
       std::cout << options.help({""}) << std::endl;
       std::cout << rang::style::bold << "Example:" << rang::style::reset << std::endl;
@@ -386,10 +386,8 @@ int main(int argc, char *argv[]) {
 
     // Fix-all resonances
     bool FIXALLRES = false;
-    if (r.count("A")) {
-      FIXALLRES = (r["A"].as<std::string>() == "true" ? true : false);
-    }
-    
+    if (r.count("A")) { FIXALLRES = (r["A"].as<std::string>() == "true" ? true : false); }
+
     // Pomeron loop
     if (r.count("l")) {
       const std::string val = r["l"].as<std::string>();
@@ -578,9 +576,7 @@ int main(int argc, char *argv[]) {
     gMinuit->mnstat(amin, edm, errdef, nvpar, nparx, icstat);
     // gMinuit->mnprin(3,amin);
 
-    for (const auto &i : indices(fitcentral::datasets)) {
-      delete fitcentral::datasets[i].h1DATA;
-    }
+    for (const auto &i : indices(fitcentral::datasets)) { delete fitcentral::datasets[i].h1DATA; }
 
     // Done
     std::cout << "[fitcentral:: done]" << std::endl;

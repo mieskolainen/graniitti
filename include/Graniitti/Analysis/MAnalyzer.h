@@ -46,9 +46,9 @@ namespace gra {
 class MAnalyzer {
  public:
   // Constructor, destructor
-   MAnalyzer(const std::string& ID);
+  MAnalyzer(const std::string &ID);
   ~MAnalyzer();
-  
+
   // Default particle name string
   std::string pstr = "daughter";
 

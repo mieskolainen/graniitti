@@ -52,9 +52,8 @@ void Init1DHistogram(std::map<std::string, std::unique_ptr<h1Multiplet>> &h,
                      const std::vector<std::string> &legendtext, std::vector<int> multiplicity,
                      const std::string &title, const std::string &units, const h1Bound &bM,
                      const h1Bound &bP, const h1Bound &bY) {
-  
-  std::string name = "null";
-  const std::string U = (units != "events") ? "#sigma" : "N";
+  std::string       name = "null";
+  const std::string U    = (units != "events") ? "#sigma" : "N";
 
   // Central system observables
   name    = "h1_S_M";
@@ -64,8 +63,8 @@ void Init1DHistogram(std::map<std::string, std::unique_ptr<h1Multiplet>> &h,
 
   name    = "h1_S_Pt";
   h[name] = std::make_unique<h1Multiplet>(
-      name, title + ";System P_{T} (GeV);d" + U + "/dP_{T}  (" + units + "/GeV)", bP.N, bP.min, bP.max,
-      legendtext);
+      name, title + ";System P_{T} (GeV);d" + U + "/dP_{T}  (" + units + "/GeV)", bP.N, bP.min,
+      bP.max, legendtext);
 
   name    = "h1_S_Y";
   h[name] = std::make_unique<h1Multiplet>(name, title + ";System Y;d" + U + "/dY  (" + units + ")",
@@ -88,8 +87,8 @@ void Init1DHistogram(std::map<std::string, std::unique_ptr<h1Multiplet>> &h,
     h[name] =
         std::make_unique<h1Multiplet>(name, title +
                                                 ";Central final state acoplanarity #rho = 1 - "
-                                                "|#delta#phi|/#pi;d" + U + "/d#rho  (" +
-                                                units + "/rad)",
+                                                "|#delta#phi|/#pi;d" +
+                                                U + "/d#rho  (" + units + "/rad)",
                                       100, 0.0, 1.0, legendtext);
 
     name    = "h1_2B_diffrap";
@@ -117,8 +116,8 @@ void Init1DHistogram(std::map<std::string, std::unique_ptr<h1Multiplet>> &h,
   name    = "h1_PP_dpt";
   h[name] = std::make_unique<h1Multiplet>(name, title +
                                                     ";Proton pair |#delta#bar{p}_{T}| "
-                                                    "(GeV);d" + U + "/|#delta#bar{p}_{T}|  (" +
-                                                    units + "/GeV)",
+                                                    "(GeV);d" +
+                                                    U + "/|#delta#bar{p}_{T}|  (" + units + "/GeV)",
                                           bP.N, bP.min, bP.max, legendtext);
 }
 
@@ -127,27 +126,27 @@ void Init2DHistogram(std::map<std::string, std::unique_ptr<h2Multiplet>> &h,
                      const std::vector<std::string> &legendtext, std::vector<int> multiplicity,
                      const std::string &title, const std::string &units, const h1Bound &bM,
                      const h1Bound &bP, const h1Bound &bY) {
-  
-  std::string name = "null";
-  const std::string U = (units != "events") ? "#sigma" : "N";
+  std::string       name = "null";
+  const std::string U    = (units != "events") ? "#sigma" : "N";
 
   // Central system observables
-  name    = "h2_S_M_Pt";
-  h[name] = std::make_unique<h2Multiplet>(name, "d" + U + "^2/dMdP_{T}  (" + units + "/GeV/GeV) | " +
-                                                    title + ";System M (GeV); System P_{T} (GeV)",
+  name = "h2_S_M_Pt";
+  h[name] =
+      std::make_unique<h2Multiplet>(name, "d" + U + "^2/dMdP_{T}  (" + units + "/GeV/GeV) | " +
+                                              title + ";System M (GeV); System P_{T} (GeV)",
+                                    bM.N, bM.min, bM.max, bP.N, bP.min, bP.max, legendtext);
+
+  name    = "h2_S_M_sqrt1";
+  h[name] = std::make_unique<h2Multiplet>(name, "d" + U + "^2/dMd#sqrt{-t_{1}}  (" + units +
+                                                    "/GeV/GeV) | " + title +
+                                                    ";System M (GeV); #sqrt{t_{1}} (GeV)",
                                           bM.N, bM.min, bM.max, bP.N, bP.min, bP.max, legendtext);
 
-  name = "h2_S_M_sqrt1";
-  h[name] =
-      std::make_unique<h2Multiplet>(name, "d" + U + "^2/dMd#sqrt{-t_{1}}  (" + units + "/GeV/GeV) | " +
-                                              title + ";System M (GeV); #sqrt{t_{1}} (GeV)",
-                                    bM.N, bM.min, bM.max, bP.N, bP.min, bP.max, legendtext);
-
-  name = "h2_S_M_pt";
-  h[name] =
-      std::make_unique<h2Multiplet>(name, "d" + U + "^2/dMdp_{T}  (" + units + "/GeV/GeV) | " + title +
-                                              ";System M (GeV); Central final state p_{T} (GeV)",
-                                    bM.N, bM.min, bM.max, bP.N, bP.min, bP.max, legendtext);
+  name    = "h2_S_M_pt";
+  h[name] = std::make_unique<h2Multiplet>(
+      name, "d" + U + "^2/dMdp_{T}  (" + units + "/GeV/GeV) | " + title +
+                ";System M (GeV); Central final state p_{T} (GeV)",
+      bM.N, bM.min, bM.max, bP.N, bP.min, bP.max, legendtext);
 
   name    = "h2_S_M_dphipp";
   h[name] = std::make_unique<h2Multiplet>(
@@ -239,27 +238,38 @@ int main(int argc, char *argv[]) {
 
   try {
     cxxopts::Options options(argv[0], "");
-    options.add_options()(
-        "i,input",      "input HepMC3 file                <input1,input2,...> (without .hepmc3)", cxxopts::value<std::string>())(
-        "g,pdg",        "central final state PDG          <input1,input2,...>",          cxxopts::value<std::string>())(
-        "n,number",     "central final state multiplicity <input1,input2,...>",          cxxopts::value<std::string>())(
-        "l,labels",     "plot legend string               <input1,input2,...>",          cxxopts::value<std::string>())(
-        "t,title",      "plot title string                <input>            ",          cxxopts::value<std::string>())(
-        "u,units",      "plot unit                        <barn|mb|ub|nb|pb|fb>",        cxxopts::value<std::string>())(
-        "M,mass",       "plot mass binning                <bins,min,max>",               cxxopts::value<std::string>())(
-        "Y,rapidity",   "plot rapidity binning            <bins,min,max>",               cxxopts::value<std::string>())(
-        "P,momentum",   "plot momentum binning            <bins,min,max>",               cxxopts::value<std::string>())(
-        "L,luminosity", "integrated luminosity (opt.)     <inverse barn>",               cxxopts::value<double>())(
-        "X,maximum",    "max number of events to process (opt.)  <value>",               cxxopts::value<int>())(
-        "S,scale",      "scale plots                      <scale1,scale2,...>",          cxxopts::value<std::string>())("H,help", "Help");
-        
+    options.add_options()("i,input",
+                          "input HepMC3 file                <input1,input2,...> (without .hepmc3)",
+                          cxxopts::value<std::string>())(
+        "g,pdg", "central final state PDG          <input1,input2,...>",
+        cxxopts::value<std::string>())("n,number",
+                                       "central final state multiplicity <input1,input2,...>",
+                                       cxxopts::value<std::string>())(
+        "l,labels", "plot legend string               <input1,input2,...>",
+        cxxopts::value<std::string>())("t,title",
+                                       "plot title string                <input>            ",
+                                       cxxopts::value<std::string>())(
+        "u,units", "plot unit                        <barn|mb|ub|nb|pb|fb>",
+        cxxopts::value<std::string>())("M,mass", "plot mass binning                <bins,min,max>",
+                                       cxxopts::value<std::string>())(
+        "Y,rapidity", "plot rapidity binning            <bins,min,max>",
+        cxxopts::value<std::string>())("P,momentum",
+                                       "plot momentum binning            <bins,min,max>",
+                                       cxxopts::value<std::string>())(
+        "L,luminosity", "integrated luminosity (opt.)     <inverse barn>",
+        cxxopts::value<double>())("X,maximum", "max number of events to process (opt.)  <value>",
+                                  cxxopts::value<int>())(
+        "S,scale", "scale plots                      <scale1,scale2,...>",
+        cxxopts::value<std::string>())("H,help", "Help");
+
     auto r = options.parse(argc, argv);
-    
+
     if (r.count("help") || NARGC == 0) {
       std::cout << options.help({""}) << std::endl;
       std::cout << rang::style::bold << "Example:" << rang::style::reset << std::endl;
-      std::cout << "  " << argv[0] << " -i ALICE_2pi,ALICE_2K -g 211,321 -n 2,2 -l "
-                                      "'#pi+#pi-','K+K-' -M 100,0.0,3.0 -Y 100,-1.5,1.5 -P 100,0.0,2.0 -u ub"
+      std::cout << "  " << argv[0]
+                << " -i ALICE_2pi,ALICE_2K -g 211,321 -n 2,2 -l "
+                   "'#pi+#pi-','K+K-' -M 100,0.0,3.0 -Y 100,-1.5,1.5 -P 100,0.0,2.0 -u ub"
                 << std::endl
                 << std::endl;
       return EXIT_FAILURE;
@@ -306,7 +316,7 @@ int main(int argc, char *argv[]) {
       units = "events";
     }
 
-    if        (units == "events") {
+    if (units == "events") {
       multiplier = 1.0;
     } else if (units == "barn") {
       multiplier = 1.0;
@@ -335,14 +345,15 @@ int main(int argc, char *argv[]) {
     // ---------------------------------------------------------------------
     // Create histogram and add pointer to the map
 
-    auto tripletfunc = [&] (const std::string& str) {
+    auto tripletfunc = [&](const std::string &str) {
 
-      const std::string   vecstr = r[str].as<std::string>();
-      const std::vector<double> vec = gra::aux::SplitStr(vecstr, double(0), ',');
+      const std::string         vecstr = r[str].as<std::string>();
+      const std::vector<double> vec    = gra::aux::SplitStr(vecstr, double(0), ',');
       if (vec.size() != 3) {
-        throw std::invalid_argument("analyze:: " + str + " discretization not size 3 <bins,min,max>");
+        throw std::invalid_argument("analyze:: " + str +
+                                    " discretization not size 3 <bins,min,max>");
       }
-      return h1Bound(vec[0],vec[1],vec[2]);
+      return h1Bound(vec[0], vec[1], vec[2]);
     };
 
     h1Bound bM = tripletfunc("M");
@@ -358,9 +369,8 @@ int main(int argc, char *argv[]) {
     std::vector<double> cross_section(inputfile.size(), 0.0);
     for (const auto &i : indices(inputfile)) {
       analysis.push_back(new MAnalyzer("ID" + std::to_string(i)));
-      cross_section[i] =
-          analysis[i]->HepMC3_OracleFill(inputfile[i], (uint)multiplicity[i],
-                                           finalstatePDG[i], (uint)MAXEVENTS, h1, h2, hP, i);
+      cross_section[i] = analysis[i]->HepMC3_OracleFill(
+          inputfile[i], (uint)multiplicity[i], finalstatePDG[i], (uint)MAXEVENTS, h1, h2, hP, i);
     }
     // Name
     std::string fullpath = gra::aux::GetBasePath(2) + "/figs/";
@@ -395,7 +405,7 @@ int main(int argc, char *argv[]) {
     // Plot all separate histograms
     for (const auto &i : indices(analysis)) {
       analysis[i]->PlotAll(title);
-      delete analysis[i]; // free memory
+      delete analysis[i];  // free memory
     }
 
     // Done

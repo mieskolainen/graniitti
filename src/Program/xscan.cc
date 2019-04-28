@@ -46,9 +46,9 @@ int main(int argc, char *argv[]) {
   try {
     cxxopts::Options options(argv[0], "");
 
-    options.add_options("")(
-        "i,input",   "Input cards            <card1.json,card2.json,...>",cxxopts::value<std::string>())(
-        "e,energy",  "CMS energies           <energy0,energy1,...>", cxxopts::value<std::string>())(
+    options.add_options("")("i,input", "Input cards            <card1.json,card2.json,...>",
+                            cxxopts::value<std::string>())(
+        "e,energy", "CMS energies           <energy0,energy1,...>", cxxopts::value<std::string>())(
         "l,pomloop", "Pomeron loop screening <true|false>", cxxopts::value<std::string>())("H,help",
                                                                                            "Help");
 
