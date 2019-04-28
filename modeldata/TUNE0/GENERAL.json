@@ -63,7 +63,7 @@
       "b_EXP" :   0.944,            // GeV^-2
       "a_OREAR" : 0.638,            // GeV^-1
       "b_OREAR" : 1.886,            // GeV^-1
-      "b_POW" :   0.620,            // GeV^2
+      "b_POW" :   0.500,            // GeV^2
       
       // Regge-trajectory parameters (pomeron, f2, a2)
       "a0"  : [1.088, 0.55, 0.55],  // Intercept (alpha_0 = 1 + DELTA)
