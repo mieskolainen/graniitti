@@ -99,7 +99,7 @@ int main(int argc, char *argv[]) {
                                        "Input sample                              "
                                        "<filename1,filename2,...> without .hepmc3",
                                        cxxopts::value<std::string>())(
-        "t,titles", "Phase space titles (3 of them)            <titleA,titleB,titleC>",
+        "t,titles", "Phase space titles (3 of them)            <detector,fiducial,flat>",
         cxxopts::value<std::string>())(
         "l,legend", "Legend text                               <title1,title2,...>",
         cxxopts::value<std::string>())(
@@ -141,7 +141,7 @@ int main(int argc, char *argv[]) {
 
     if (r.count("help") || NARGC == 0) {
       std::cout << options.help({""}) << std::endl;
-      std::cout << "Example:" << std::endl;
+      std::cout << rang::style::bold << "Example:" << rang::style::reset << std::endl;
       std::cout << "  " << argv[0] << " -r SH_2pi_REF -i SH_2pi ..." << std::endl << std::endl;
       return EXIT_FAILURE;
     }

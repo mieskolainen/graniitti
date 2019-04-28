@@ -235,27 +235,24 @@ int main(int argc, char *argv[]) {
 
   try {
     cxxopts::Options options(argv[0], "");
-    options.add_options()("i,input",
-                          "input HepMC3 file        <input1,input2,...> (without .hepmc3)",
-                          cxxopts::value<std::string>())(
-        "g,pdg", "Central final state PDG          <input1,input2,...>",
-        cxxopts::value<std::string>())("n,number",
-                                       "Central final state multiplicity <input1,input2,...>",
-                                       cxxopts::value<std::string>())(
-        "l,labels", "plot legend string       <input1,input2,...>", cxxopts::value<std::string>())(
-        "t,title",  "plot title string        <input>            ", cxxopts::value<std::string>())(
-        "u,units",  "cross section unit       <barn|mb|ub|nb|pb|fb>", cxxopts::value<std::string>())(
-        "M,mass",   "plot mass limit", cxxopts::value<double>())("Y,rapidity", "plot rapidity limit",
-                                                               cxxopts::value<double>())(
-        "P,momentum", "plot momentum limit", cxxopts::value<double>())(
-        "X,maximum",  "maximum number of events", cxxopts::value<int>())(
-        "S,scale",    "scale histograms", cxxopts::value<std::string>())("H,help", "Help");
+    options.add_options()(
+        "i,input",    "input HepMC3 file                <input1,input2,...> (without .hepmc3)", cxxopts::value<std::string>())(
+        "g,pdg",      "Central final state PDG          <input1,input2,...>",   cxxopts::value<std::string>())(
+        "n,number",   "Central final state multiplicity <input1,input2,...>",   cxxopts::value<std::string>())(
+        "l,labels",   "plot legend string               <input1,input2,...>",   cxxopts::value<std::string>())(
+        "t,title",    "plot title string                <input>            ",   cxxopts::value<std::string>())(
+        "u,units",    "cross section unit               <barn|mb|ub|nb|pb|fb>", cxxopts::value<std::string>())(
+        "M,mass",     "plot mass limit                  <value>",               cxxopts::value<double>())(
+        "Y,rapidity", "plot rapidity limit              <value>",               cxxopts::value<double>())(
+        "P,momentum", "plot momentum limit              <value>",               cxxopts::value<double>())(
+        "X,maximum",  "maximum number of events         <value>",               cxxopts::value<int>())(
+        "S,scale",    "scale plots                      <scale1,scale2,...>",   cxxopts::value<std::string>())("H,help", "Help");
 
     auto r = options.parse(argc, argv);
-
+    
     if (r.count("help") || NARGC == 0) {
       std::cout << options.help({""}) << std::endl;
-      std::cout << "Example:" << std::endl;
+      std::cout << rang::style::bold << "Example:" << rang::style::reset << std::endl;
       std::cout << "  " << argv[0] << " -i ALICE_2pi,ALICE_2K -g 211,321 -n 2,2 -l "
                                       "'#pi+#pi-','K+K-' -M 3.0 -Y 1.5 -P 2.0 -u ub"
                 << std::endl

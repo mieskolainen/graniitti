@@ -350,14 +350,14 @@ int main(int argc, char *argv[]) {
         cxxopts::value<std::string>())(
         "z,zero", "Fix resonances to zero                         <f2_1525,...>",
         cxxopts::value<std::string>())(
-        "Y,allfixed", "Fix all resonances to their input values       <true|false>",
+        "A,allfixed", "Fix all resonance parameters               <true|false>",
         cxxopts::value<std::string>())("l,POMLOOP", "Screening Pomeron loop",
                                        cxxopts::value<std::string>())("H,help", "Help");
     auto r = options.parse(argc, argv);
-
+    
     if (r.count("help") || NARGC == 0) {
       std::cout << options.help({""}) << std::endl;
-      std::cout << "Example:" << std::endl;
+      std::cout << rang::style::bold << "Example:" << rang::style::reset << std::endl;
       std::cout << "  " << argv[0] << " -i 0,1 -c 2 -x 'rho_770,continuum' " << std::endl
                 << std::endl;
       return EXIT_FAILURE;
@@ -386,8 +386,10 @@ int main(int argc, char *argv[]) {
 
     // Fix-all resonances
     bool FIXALLRES = false;
-    if (r.count("A")) { FIXALLRES = (r["A"].as<std::string>() == "true" ? true : false); }
-
+    if (r.count("A")) {
+      FIXALLRES = (r["A"].as<std::string>() == "true" ? true : false);
+    }
+    
     // Pomeron loop
     if (r.count("l")) {
       const std::string val = r["l"].as<std::string>();
