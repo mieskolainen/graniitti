@@ -46,9 +46,10 @@ int main(int argc, char *argv[]) {
   try {
     cxxopts::Options options(argv[0], "");
 
-    options.add_options("")("i,input", "Input cards A,B,C,...", cxxopts::value<std::string>())(
-        "e,energy", "CMS energies A,B,C,...", cxxopts::value<std::string>())(
-        "l,pomloop", "Pomeron loop screening (true/false)", cxxopts::value<std::string>())("H,help",
+    options.add_options("")(
+        "i,input",   "Input cards            <card1.json,card2.json,...>",cxxopts::value<std::string>())(
+        "e,energy",  "CMS energies           <energy0,energy1,...>", cxxopts::value<std::string>())(
+        "l,pomloop", "Pomeron loop screening <true|false>", cxxopts::value<std::string>())("H,help",
                                                                                            "Help");
 
     auto r = options.parse(argc, argv);
@@ -56,8 +57,8 @@ int main(int argc, char *argv[]) {
     if (r.count("help") || NARGC == 0) {
       gen->GetProcessNumbers();
       std::cout << options.help({""}) << std::endl;
-      std::cout << "Example:" << std::endl;
-      std::cout << "  " << argv[0] << " -i inputcard.json -e 500,2760,7000,13000,100000 -l false"
+      std::cout << rang::style::bold << "Example:" << rang::style::reset << std::endl;
+      std::cout << "  " << argv[0] << " -i ./input/test.json -e 500,2760,7000,13000,100000 -l false"
                 << std::endl
                 << std::endl;
 

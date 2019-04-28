@@ -1551,17 +1551,18 @@ struct LORENTZSCALAR {
 
 // Generator cut (default parameters set here)
 struct GENCUT {
+  
   // Continuum phase space <C>
   double rap_min = -9.0;
-  double rap_max = 9.0;
-  double kt_min  = 0.0;
+  double rap_max =  9.0;
+  double kt_min  =  0.0;
   double kt_max  = -1.0;  // Keep at -1 for user setup trigger
 
   // Factorized phase space <F>
   double Y_min = -9.0;
-  double Y_max = 9.0;
-  double M_min = 0.0;
-  double M_max = 0.0;
+  double Y_max =  9.0;
+  double M_min =  0.0;
+  double M_max =  0.0;
 
   // Both <C> and <F> class forward legs
   double forward_pt_min = -1.0;  // Keep at -1 for user setup trigger
@@ -1571,7 +1572,7 @@ struct GENCUT {
 
   // Quasi-Elastic phase space <Q> or forward excitation
   double XI_min = 0.0;
-  double XI_max = 1e-6;
+  double XI_max = 1.0;
 };
 
 // Fiducial cuts (default parameters set here)
