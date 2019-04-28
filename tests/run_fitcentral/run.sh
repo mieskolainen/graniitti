@@ -8,9 +8,9 @@
 # Run with: source ./tests/run_xxx/run.sh
 
 make -j4 && ./bin/fitcentral \
--i 0 \ # input
--c 1 \ # continuum form
--a f0_500,rho_770,f0_980,phi_1020,f0_1500,f2_1525,f0_1710 \  # fix amplitude 
--p f0_500,rho_770,f0_980,phi_1020,f0_1500,f2_1525,f0_1710    # fix phase
+-i 0 \
+-c 1 \
+-a f0_500,rho_770,f0_980,phi_1020,f0_1500,f2_1525,f0_1710 \
+-p f0_500,rho_770,f0_980,phi_1020,f0_1500,f2_1525,f0_1710
 
 # add 'continuum' to fix continuum parameters
