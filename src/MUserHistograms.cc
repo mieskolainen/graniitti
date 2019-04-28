@@ -24,10 +24,10 @@ void MUserHistograms::InitHistograms() {
   // Level 1
   unsigned int Nbins = 40;
 
-  h1["M"]   = MH1<double>(Nbins, "System M (GeV)");
-  h1["Rap"] = MH1<double>(Nbins, "System Rap");
+  h1["M"]   = MH1<double>(Nbins, "Central System M (GeV)");
+  h1["Rap"] = MH1<double>(Nbins, "Central System Rap");
   h1["Rap"].SetAutoSymmetry(true);
-  h1["Pt"]       = MH1<double>(Nbins, 0.0, 2.5, "System Pt (GeV)");
+  h1["Pt"]       = MH1<double>(Nbins, 0.0, 2.5, "Central System Pt (GeV)");
   h1["dPhi_pp"]  = MH1<double>(Nbins, 0.0, gra::math::PI, "Forward deltaphi (rad)");
   h1["pPt"]      = MH1<double>(Nbins, 0.0, 2.0, "Forward Pt (GeV)");
   h2["rap1rap2"] = MH2(Nbins, Nbins, "Rapidity1 vs Rapidity2");
