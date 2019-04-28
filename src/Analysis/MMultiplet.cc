@@ -354,19 +354,19 @@ double h2Multiplet::SaveFig(const std::string &fullpath) const {
   // Ratio histograms on BOTTOM ROW
   std::vector<TH2D *> ratios;
   for (const auto &i : indices(h)) {
-    c0.cd(i + 1 + h.size());  // choose position
+    c0.cd(i + 1 + h.size()); // Choose position
     c0.cd(i + 1 + h.size())->SetRightMargin(0.13);
 
     TH2D *hR = (TH2D *)h[i]->Clone(Form("h2R_%lu", i));
 
-    hR->Divide(h[0]);  // Divide by 0-th histogram
+    hR->Divide(h[0]);        // Divide by 0-th histogram
     hR->GetYaxis()->SetTitleOffset(1.3);
-    hR->SetStats(0);   // No statistics on upper plot
+    hR->SetStats(0);         // No statistics on upper plot
     hR->Draw("COLZ");
     hR->GetZaxis()->SetRangeUser(0.0, 2.0);
     hR->SetTitle(Form("Ratio: %s / %s", legendtext_[i].c_str(), legendtext_[0].c_str()));
 
-    ratios.push_back(hR);  // Save pointer
+    ratios.push_back(hR);    // Save pointer
   }
 
   // -------------------------------------------------------------------
@@ -376,7 +376,7 @@ double h2Multiplet::SaveFig(const std::string &fullpath) const {
 
   TLatex *l1;
   TLatex *l2;
-  std::tie(l1, l2) = gra::rootstyle::MadeInFinland(0.96);
+  std::tie(l1, l2) = gra::rootstyle::MadeInFinland(0.99);
   // -------------------------------------------------------------------
 
   // Create output directory if it does not exist
@@ -494,7 +494,7 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
     // --------------------------------------------------------------
     // To get proper errors, we need to use TH1 instead of TProfile
     hR[i] = hxP[i]->ProjectionX();
-
+    
     if (i == 0) {  // this is needed
       hx0 = hxP[i]->ProjectionX();
     }

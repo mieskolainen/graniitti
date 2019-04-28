@@ -11,6 +11,9 @@
 #include <tuple>
 #include <vector>
 
+// Own
+#include "Graniitti/MMath.h"
+
 // ROOT
 #include "TCanvas.h"
 #include "TColor.h"
@@ -54,21 +57,122 @@ inline TCanvas *AutoGridCanvas(unsigned int N) {
   return c1;
 }
 
+// CubeHelix colormap generator
+//
+// N     = number of discrete steps
+// start = start color (1 = red ... 2 = green ... 3 = red)
+// R     = number of helix rotations
+// hue   = hue, with 0 gives black&white
+// gamma = intensity correction
+// 
+// Default CubeHelix(256, 0.5, -1.5, 1.2, 1.0);
+// 
+// [REFERENCE: D.A. Green, https://arxiv.org/abs/1108.5083]
+// https://www.mrao.cam.ac.uk/~dag/CUBEHELIX
+//
+std::vector<std::vector<double>> CubeHelix(int N, double start, double R, double hue, double gamma) {
+
+  auto limitfunc = [] (std::vector<double>& x) {
+    for (std::size_t i = 0; i < x.size(); ++i) {
+      if (x[i] < 0.0) { x[i] = 0.0; }
+      if (x[i] > 1.0) { x[i] = 1.0; }
+    }
+  };
+
+  // Color matrix
+  const std::vector<std::vector<double>> A = {{-0.14861,  1.78277},
+                                              {-0.29227, -0.90649},
+                                              { 1.97294,  0}};
+  const double PI = 3.14159265359;
+
+  // Steps, Red, Green, Blue
+  std::vector<std::vector<double>> M(4, std::vector<double>(N, 0.0));
+
+  // Lightning
+  const double maxlight = 1.0;
+  const double minlight = 0.0;
+  const double lightstep = (maxlight - minlight) / N;
+
+  for (int i = 1; i <= N; ++i) {
+
+    // Rotation angle and shift
+    double alpha = (i - 1.0)/(N - 1.0);
+    const double phi = 2.0*PI*(start/3.0 + 1.0 + R*alpha);
+
+    // Apply gamma-correction
+    alpha = std::pow(alpha, gamma);
+    const double a = hue*alpha*(1.0 - alpha)/2.0;
+
+    // Affine Map
+    const std::vector<double> x = {a*std::cos(phi), a*std::sin(phi)};
+    std::vector<double> y = {A[0][0]*x[0] + A[0][1]*x[1] + alpha,
+                             A[1][0]*x[0] + A[1][1]*x[1] + alpha,
+                             A[2][0]*x[0] + A[2][1]*x[1] + alpha};
+    limitfunc(y); // Limit values to [0,1]
+
+    // Save values
+    M[0][i-1] = minlight + lightstep * (i-1);
+    for (std::size_t j = 0; j < 3; ++j) { M[j+1][i-1] = y[j]; }
+  }
+  
+  return M;
+}
+
+
 // Set "nice" 2D-plot style
 inline void SetPlotStyle() {
-  // Set Smooth color gradients
-  const Int_t NRGBs = 5;
-  const Int_t NCont = 255;
+
+  // Set smooth color gradients
+  const int NCont = 256;
+
+  const std::string style = "default";
+
+  if      (style == "default") {
+  const int NRGBs = 5;
 
   double stops[NRGBs] = {0.00, 0.34, 0.61, 0.84, 1.00};
   double red[NRGBs]   = {0.00, 0.00, 0.87, 1.00, 0.51};
   double green[NRGBs] = {0.00, 0.81, 1.00, 0.20, 0.00};
   double blue[NRGBs]  = {0.51, 1.00, 0.12, 0.00, 0.00};
   TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+
+  gStyle->SetPalette(53);          // kDarkBodyRadiator
+
+  }
+  else if (style == "gray") {
+  const int NRGBs = 5;
+
+  double stops[NRGBs] = {0.00, 0.34, 0.61, 0.84, 1.00};
+  double red[NRGBs]   = {1.00, 0.84, 0.61, 0.34, 0.00};
+  double green[NRGBs] = {1.00, 0.84, 0.61, 0.34, 0.00};
+  double blue[NRGBs]  = {1.00, 0.84, 0.61, 0.34, 0.00};
+  TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+  }
+  else if (style == "cubehelix") {
+
+  const int NRGBs = 256;
+  const std::vector<std::vector<double>> M = CubeHelix(NRGBs, 0.5, -1.5, 1.2, 1.0);
+
+  double stops[NRGBs];
+  double red[NRGBs];
+  double green[NRGBs];
+  double blue[NRGBs];
+
+  for (std::size_t i = 0; i < NRGBs; ++i) {
+    stops[i] = M[0][i];
+    red[i]   = M[1][i];
+    green[i] = M[2][i];
+    blue[i]  = M[3][i];
+  }
+  TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+  }
+
   gStyle->SetNumberContours(NCont);
 
-  // Black-Red palette
-  gStyle->SetPalette(53);            // 53/56 for inverted
+  // See https://root.cern.ch/doc/master/classTColor.html
+  //gStyle->SetPalette(62);          // kLightTemperature
+  //gStyle->SetPalette(105);         // kThermometer
+  //gStyle->SetPalette(57);          // kBird
   gStyle->SetTitleOffset(1.6, "x");  // title offset from axis
   gStyle->SetTitleOffset(1.0, "y");  //
   gStyle->SetTitleSize(0.03, "x");   // title size
