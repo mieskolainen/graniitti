@@ -127,7 +127,7 @@ int main(int argc, char *argv[]) {
 
             ("M,mass", "System mass binning                       <bins,min,max>",
              cxxopts::value<std::string>())(
-                "P,pt", "System pt binning                         <bins,min,max>",
+                "P,momentum", "System momentum (pt) binning                         <bins,min,max>",
                 cxxopts::value<std::string>())(
                 "Y,rapidity", "System rapidity binning                   <bins,min,max>",
                 cxxopts::value<std::string>())
@@ -161,34 +161,19 @@ int main(int argc, char *argv[]) {
 
     MHarmonic::HPARAM hparam;
 
-    // Default discretization
-    hparam.M  = {20, 0.0, 2.5};    // System mass
-    hparam.PT = {1, 0.0, 100.0};   // System pt
-    hparam.Y  = {1, -10.0, 10.0};  // System rapidity
+    // Discretization
+    auto tripletfunc = [&] (const std::string& str) {
+      const std::string   vecstr = r[str].as<std::string>();
+      const std::vector<double> vec = gra::aux::SplitStr(vecstr, double(0), ',');
+      if (vec.size() != 3) {
+        throw std::invalid_argument("analyze:: " + str + " discretization not size 3 <bins,min,max>");
+      }
+      return vec;
+    };
 
-    if (r.count("mass")) {
-      const std::string Mstr = r["mass"].as<std::string>();
-      hparam.M               = gra::aux::SplitStr(Mstr, double(0), ',');
-      if (hparam.M.size() != 3) {
-        throw std::invalid_argument("fitharmonic:: mass discretization not size 3 <bins,min,max>");
-      }
-    }
-    if (r.count("pt")) {
-      const std::string Pstr = r["pt"].as<std::string>();
-      hparam.PT              = gra::aux::SplitStr(Pstr, double(0), ',');
-      if (hparam.PT.size() != 3) {
-        throw std::invalid_argument("fitharmonic:: pt discretization not size 3 <bins,min,max>");
-      }
-    }
-    if (r.count("rapidity")) {
-      const std::string Ystr = r["rapidity"].as<std::string>();
-      hparam.Y               = gra::aux::SplitStr(Ystr, double(0), ',');
-      if (hparam.Y.size() != 3) {
-        throw std::invalid_argument(
-            "fitharmonic:: rapidity discretization not size 3 "
-            "<bins,min,max>");
-      }
-    }
+    hparam.M  = tripletfunc("M");
+    hparam.PT = tripletfunc("P");
+    hparam.Y  = tripletfunc("Y");
 
     // ------------------------------------------------------------------
     // INITIALIZE HARMONIC EXPANSION PARAMETERS
