@@ -1,5 +1,7 @@
 #!/bin/sh
 #
+# Run with: source ./install/nightlybuild.sh
+
 echo '* GRANIITTI automated nightly build script *'
 
 # ------------------------------------------------
@@ -14,8 +16,8 @@ BUILD_DATE=`date`
 echo $BUILD_DATE
 # ------------------------------------------------
 
-# Fetch latest version, try to compile
-#git pull origin master && source ./install/setenv.sh && make superclean && make -j4
+# Fetch latest version, compile
+git pull origin master && source ./install/setenv.sh && make superclean && make -j4
 
 # Test if compilation went fine
 FILE=./bin/gr
