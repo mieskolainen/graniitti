@@ -1,9 +1,9 @@
-{
+-e {
  "name": "GRANIITTI",
  "version": "0.35",
  "type": "beta",
  "date": "28/04/2019",
  "update": "Algorithm updates",
  "build-success": true,
- "build-date": "la 4.5.2019 17.37.27 +0300"
+ "build-date": "la 4.5.2019 17.39.01 +0300"
 }
