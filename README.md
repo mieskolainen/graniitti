@@ -7,7 +7,7 @@ https://arxiv.org/abs/1811.01730
 
 ## Algorithmic Engine and Monte Carlo Event Generator for High Energy Diffraction
 
-See VERSION.json for the version information and build status.
+See VERSION.json for the version information and build passing status
 
 ### Installation and introduction at:
 ## www.mv.helsinki.fi/home/mmieskol
