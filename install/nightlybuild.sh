@@ -44,4 +44,4 @@ git commit -m "nightly build"
 git push origin master
 
 # Change back to https
-git remote set-url origin https://git@github.com/mieskolainen/GRANIITTI.git
+git remote set-url origin https://github.com/mieskolainen/GRANIITTI.git
