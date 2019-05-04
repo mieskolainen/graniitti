@@ -20,7 +20,8 @@ echo $BUILD_DATE
 git pull origin master
 chmod +x ./install/setenv.sh
 ./install/setenv.sh
-make superclean && make -j4
+make superclean
+make -j4
 
 # Test if compilation went fine
 FILE=./bin/gr
