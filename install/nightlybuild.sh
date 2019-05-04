@@ -18,7 +18,6 @@ echo $BUILD_DATE
 
 # Fetch latest version, compile
 git pull origin master
-chmod +x ./install/setenv.sh
 source ./install/setenv.sh
 make superclean
 make -j4
