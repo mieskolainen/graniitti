@@ -408,9 +408,6 @@ int main(int argc, char *argv[]) {
       delete analysis[i];  // free memory
     }
 
-    // Done
-    std::cout << "[analyze:: done]" << std::endl;
-
   } catch (const std::invalid_argument &e) {
     gra::aux::PrintGameOver();
     std::cerr << rang::fg::red << "Exception catched: " << rang::fg::reset << e.what() << std::endl;
@@ -432,5 +429,8 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   }
 
+  // Done
+  std::cout << "[analyze:: done]" << std::endl;
+  
   return EXIT_SUCCESS;
 }

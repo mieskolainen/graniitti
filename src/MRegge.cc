@@ -55,10 +55,10 @@ void MRegge::InitReggeAmplitude(int PDG, const std::string &MODELPARAM) {
     } else {  // The rest will use PARAM_X setup
       str = "PARAM_X";
     }
-
+    
     // Reggeon couplings
-    std::vector<double> c = j[str]["c"];
-    std::vector<bool>   n = j[str]["n"];
+    std::vector<double> c = j.at(str).at("c");
+    std::vector<bool>   n = j.at(str).at("n");
     PARAM_REGGE::c        = c;
     PARAM_REGGE::n        = n;
 

@@ -22,7 +22,7 @@
 #include <thread>
 #include <vector>
 
-// HepMC33
+// HepMC3
 #include "HepMC3/WriterAscii.h"
 #include "HepMC3/WriterAsciiHepMC2.h"
 
@@ -30,6 +30,9 @@
 #include "Graniitti/MAux.h"
 #include "Graniitti/MGraniitti.h"
 #include "Graniitti/MTimer.h"
+
+// Libraries
+#include "json.hpp"
 
 using gra::aux::indices;
 using namespace gra;
@@ -180,6 +183,11 @@ int main(int argc, char *argv[]) {
   } catch (const std::ios_base::failure &e) {
     gra::aux::PrintGameOver();
     std::cerr << rang::fg::red << "Exception catched: std::ios_base::failure: " << rang::fg::reset
+              << e.what() << std::endl;
+    return EXIT_FAILURE;
+  } catch (const nlohmann::json::exception &e) {
+    gra::aux::PrintGameOver();
+    std::cerr << rang::fg::red << "Exception catched: JSON input: " << rang::fg::reset
               << e.what() << std::endl;
     return EXIT_FAILURE;
   } catch (...) {

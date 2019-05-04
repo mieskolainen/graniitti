@@ -30,6 +30,7 @@
 #include "TString.h"
 
 // Libraries
+#include "json.hpp"
 #include "rang.hpp"
 
 using gra::aux::indices;

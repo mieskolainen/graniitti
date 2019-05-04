@@ -166,6 +166,8 @@ int main(int argc, char *argv[]) {
 
     // Print histograms
     gen->PrintHistograms();
+    
+  // Exception handling
   } catch (const std::invalid_argument &e) {
     gen->GetProcessNumbers();
     gra::aux::PrintGameOver();
@@ -181,6 +183,11 @@ int main(int argc, char *argv[]) {
     std::cerr << rang::fg::red << "Exception catched: Commandline options: " << rang::fg::reset
               << e.what() << std::endl;
     return EXIT_FAILURE;
+  } catch (const nlohmann::json::exception &e) {
+    gra::aux::PrintGameOver();
+    std::cerr << rang::fg::red << "Exception catched: JSON input: " << rang::fg::reset
+              << e.what() << std::endl;
+    return EXIT_FAILURE;
   } catch (...) {
     gen->GetProcessNumbers();
     gra::aux::PrintGameOver();
@@ -188,9 +195,9 @@ int main(int argc, char *argv[]) {
               << rang::fg::reset << std::endl;
     return EXIT_FAILURE;
   }
-
+  
   // Done
   std::cout << "[gr:: done]" << std::endl;
-
+  
   return EXIT_SUCCESS;
 }

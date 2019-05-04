@@ -31,6 +31,7 @@
 #include "TString.h"
 
 // Libraries
+#include "json.hpp"
 #include "cxxopts.hpp"
 #include "rang.hpp"
 
@@ -593,6 +594,11 @@ int main(int argc, char *argv[]) {
   } catch (const cxxopts::OptionException &e) {
     gra::aux::PrintGameOver();
     std::cerr << rang::fg::red << "Exception catched: Commandline options: " << rang::fg::reset
+              << e.what() << std::endl;
+    return EXIT_FAILURE;
+  } catch (const nlohmann::json::exception &e) {
+    gra::aux::PrintGameOver();
+    std::cerr << rang::fg::red << "Exception catched: JSON input: " << rang::fg::reset
               << e.what() << std::endl;
     return EXIT_FAILURE;
   } catch (...) {

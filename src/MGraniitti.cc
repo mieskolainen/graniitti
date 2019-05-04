@@ -374,15 +374,15 @@ void MGraniitti::ReadGeneralParam(const std::string &inputfile) {
   const std::string XID = "GENERALPARAM";
 
   // Setup parameters (order is important)
-  SetNumberOfEvents(j[XID]["NEVENTS"]);
-  SetOutput(j[XID]["OUTPUT"]);
-  SetFormat(j[XID]["FORMAT"]);
-  SetWeighted(j[XID]["WEIGHTED"]);
-  SetIntegrator(j[XID]["INTEGRATOR"]);
-  SetCores(j[XID]["CORES"]);
+  SetNumberOfEvents(j.at(XID).at("NEVENTS"));
+  SetOutput(j.at(XID).at("OUTPUT"));
+  SetFormat(j.at(XID).at("FORMAT"));
+  SetWeighted(j.at(XID).at("WEIGHTED"));
+  SetIntegrator(j.at(XID).at("INTEGRATOR"));
+  SetCores(j.at(XID).at("CORES"));
 
   // Model parameter file
-  ReadModelParam(j[XID]["MODELPARAM"]);
+  ReadModelParam(j.at(XID).at("MODELPARAM"));
 }
 
 // Soft model parameter initialization
@@ -478,7 +478,7 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
 
   std::string fullstring;
   if (cmd_PROCESS == "null") {
-    fullstring = j[XID]["PROCESS"];
+    fullstring = j.at(XID).at("PROCESS");
   } else {  // commandline override
     fullstring = cmd_PROCESS;
   }
@@ -516,15 +516,15 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
   gra::aux::TrimExtraSpace(PROCESS_PART);
   gra::aux::TrimExtraSpace(DECAY_PART);
 
-  InitProcessMemory(PROCESS_PART, j[XID]["RNDSEED"]);
+  InitProcessMemory(PROCESS_PART, j.at(XID).at("RNDSEED"));
 
   // ----------------------------------------------------------------
   // SETUP process: process memory needs to be initialized before!
 
-  proc->SetLHAPDF(j[XID]["LHAPDF"]);
-  proc->SetScreening(j[XID]["POMLOOP"]);
-  proc->SetExcitation(j[XID]["NSTARS"]);
-  proc->SetHistograms(j[XID]["HIST"]);
+  proc->SetLHAPDF(j.at(XID).at("LHAPDF"));
+  proc->SetScreening(j.at(XID).at("POMLOOP"));
+  proc->SetExcitation(j.at(XID).at("NSTARS"));
+  proc->SetHistograms(j.at(XID).at("HIST"));
 
   if (pos2 != std::string::npos) {
     if (PROCESS_PART.find("<F>") == std::string::npos &&
@@ -544,7 +544,7 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
   // Read free resonance parameters (only if needed)
   std::map<std::string, gra::PARAM_RES> RESONANCES;
   if (PROCESS_PART.find("RES") != std::string::npos) {
-    const std::vector<std::string> RES = j[XID]["RES"];
+    const std::vector<std::string> RES = j.at(XID).at("RES");
     for (std::size_t i = 0; i < RES.size(); ++i) {
       const std::string str = "RES_" + RES[i] + ".json";
       RESONANCES[RES[i]]    = gra::form::ReadResonance(str, proc->random);
@@ -567,8 +567,8 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
   // ...
 
   // Always last (we need PDG tables)
-  std::vector<std::string> beam   = j[XID]["BEAM"];
-  std::vector<double>      energy = j[XID]["ENERGY"];
+  std::vector<std::string> beam   = j.at(XID).at("BEAM");
+  std::vector<double>      energy = j.at(XID).at("ENERGY");
   proc->SetInitialState(beam, energy);
 
   // Now rest of the parameters
@@ -595,20 +595,20 @@ void MGraniitti::ReadIntegralParam(const std::string &inputfile) {
   const std::string XID = "INTEGRALPARAM";
 
   // Numerical loop integration
-  const int ND = j[XID]["POMLOOP"]["ND"];
+  const int ND = j.at(XID).at("POMLOOP").at("ND");
   AssertRange(ND, {-10, 10}, "POMLOOP::ND", true);
   MEikonalNumerics::SetLoopDiscretization(ND);
 
   // FLAT (naive) MC parameters
   MCPARAM mpam;
-  mpam.PRECISION = j[XID]["FLAT"]["PRECISION"];
+  mpam.PRECISION  = j.at(XID).at("FLAT").at("PRECISION");
   AssertRange(mpam.PRECISION, {0.0, 1.0}, "FLAT::PRECISION", true);
-  mpam.MIN_EVENTS = j[XID]["FLAT"]["MIN_EVENTS"];
+  mpam.MIN_EVENTS = j.at(XID).at("FLAT").at("MIN_EVENTS");
   AssertRange(mpam.MIN_EVENTS, {10, (unsigned int)1e9}, "FLAT::MIN_EVENTS", true);
   SetMCParam(mpam);
 
   try {
-    j[XID]["VEGAS"]["BINS"];
+    j.at(XID).at("VEGAS").at("BINS");
   } catch (...) {
     std::cout << "MGraniitti::ReadIntegralParam: Did not found VEGAS parameter block "
                  "from json input, using default"
@@ -618,24 +618,24 @@ void MGraniitti::ReadIntegralParam(const std::string &inputfile) {
 
   // VEGAS parameters
   VEGASPARAM vpam;
-  vpam.BINS = j[XID]["VEGAS"]["BINS"];
+  vpam.BINS = j.at(XID).at("VEGAS").at("BINS");
   AssertRange(vpam.BINS, {0, (unsigned int)1e9}, "VEGAS::BINS", true);
   if ((vpam.BINS % 2) != 0) {
     throw std::invalid_argument("VEGAS::BINS = " + std::to_string(vpam.BINS) +
                                 " should be even number");
   }
 
-  vpam.LAMBDA = j[XID]["VEGAS"]["LAMBDA"];
+  vpam.LAMBDA = j.at(XID).at("VEGAS").at("LAMBDA");
   AssertRange(vpam.LAMBDA, {1.0, 10.0}, "VEGAS::LAMBDA", true);
-  vpam.NCALL = j[XID]["VEGAS"]["NCALL"];
+  vpam.NCALL = j.at(XID).at("VEGAS").at("NCALL");
   AssertRange(vpam.NCALL, {50, (unsigned int)1e9}, "VEGAS::NCALL", true);
-  vpam.ITER = j[XID]["VEGAS"]["ITER"];
+  vpam.ITER = j.at(XID).at("VEGAS").at("ITER");
   AssertRange(vpam.ITER, {1, (unsigned int)1e9}, "VEGAS::ITER", true);
-  vpam.CHI2MAX = j[XID]["VEGAS"]["CHI2MAX"];
+  vpam.CHI2MAX = j.at(XID).at("VEGAS").at("CHI2MAX");
   AssertRange(vpam.CHI2MAX, {0.0, 1e3}, "VEGAS::CHI2MAX", true);
-  vpam.PRECISION = j[XID]["VEGAS"]["PRECISION"];
+  vpam.PRECISION = j.at(XID).at("VEGAS").at("PRECISION");
   AssertRange(vpam.PRECISION, {0.0, 1.0}, "VEGAS::PRECISION", true);
-  vpam.DEBUG = j[XID]["VEGAS"]["DEBUG"];
+  vpam.DEBUG = j.at(XID).at("VEGAS").at("DEBUG");
   AssertSet(vpam.DEBUG, {-1, 0, 1}, "VEGAS::DEBUG", true);
 
   SetVegasParam(vpam);
@@ -662,7 +662,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     // Daughter rapidity
     std::vector<double> rap;
     try {
-      std::vector<double> temp = j[XID]["<C>"]["Rap"];
+      std::vector<double> temp = j.at(XID).at("<C>").at("Rap");
       rap                      = temp;
     } catch (...) {
       throw std::invalid_argument(
@@ -676,7 +676,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     // This is optional, intermediate kt
     std::vector<double> kt;
     try {
-      std::vector<double> temp = j[XID]["<C>"]["Kt"];
+      std::vector<double> temp = j.at(XID).at("<C>").at("Kt");
       kt                       = temp;
     } catch (...) {
       // Do nothing
@@ -690,7 +690,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     // This is optional, forward leg pt
     std::vector<double> pt;
     try {
-      std::vector<double> temp = j[XID]["<C>"]["Pt"];
+      std::vector<double> temp = j.at(XID).at("<C>").at("Pt");
       pt                       = temp;
     } catch (...) {
       // Do nothing
@@ -704,7 +704,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     // This is optional, forward leg excitation
     std::vector<double> Xi;
     try {
-      std::vector<double> temp = j[XID]["<C>"]["Xi"];
+      std::vector<double> temp = j.at(XID).at("<C>").at("Xi");
       Xi                       = temp;
     } catch (...) {
       // Do nothing
@@ -721,7 +721,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     // System rapidity
     std::vector<double> Y;
     try {
-      std::vector<double> temp = j[XID]["<F>"]["Rap"];
+      std::vector<double> temp = j.at(XID).at("<F>").at("Rap");
       Y                        = temp;
     } catch (...) {
       throw std::invalid_argument(
@@ -735,7 +735,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     // System mass
     std::vector<double> M;
     try {
-      std::vector<double> temp = j[XID]["<F>"]["M"];
+      std::vector<double> temp = j.at(XID).at("<F>").at("M");
       M                        = temp;
     } catch (...) {
       throw std::invalid_argument(
@@ -749,7 +749,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     // This is optional, forward leg pt
     std::vector<double> pt;
     try {
-      std::vector<double> temp = j[XID]["<F>"]["Pt"];
+      std::vector<double> temp = j.at(XID).at("<F>").at("Pt");
       pt                       = temp;
     } catch (...) {
       // Do nothing
@@ -763,7 +763,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     // This is optional, forward leg excitation
     std::vector<double> Xi;
     try {
-      std::vector<double> temp = j[XID]["<F>"]["Xi"];
+      std::vector<double> temp = j.at(XID).at("<F>").at("Xi");
       Xi                       = temp;
     } catch (...) {
       // Do nothing
@@ -779,7 +779,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
   if (PROCESS.find("<Q>") != std::string::npos) {
     std::vector<double> Xi;
     try {
-      std::vector<double> temp = j[XID]["<Q>"]["Xi"];
+      std::vector<double> temp = j.at(XID).at("<Q>").at("Xi");
       Xi                       = temp;
     } catch (...) {
       throw std::invalid_argument(
@@ -812,29 +812,29 @@ void MGraniitti::ReadFidCuts(const std::string &inputfile) {
   const std::string XID = "FIDCUTS";
 
   try {
-    fcuts.active = j[XID]["active"];
+    fcuts.active = j.at(XID).at("active");
   } catch (...) {
     return;  // Did not find cut block at all
   }
 
   // Particles
   {
-    std::vector<double> eta = j[XID]["PARTICLE"]["Eta"];
+    std::vector<double> eta = j.at(XID).at("PARTICLE").at("Eta");
     fcuts.eta_min           = eta[0];
     fcuts.eta_max           = eta[1];
     gra::aux::AssertCut(eta, "FIDCUTS::PARTICLE::Eta", true);
 
-    std::vector<double> rap = j[XID]["PARTICLE"]["Rap"];
+    std::vector<double> rap = j.at(XID).at("PARTICLE").at("Rap");
     fcuts.rap_min           = rap[0];
     fcuts.rap_max           = rap[1];
     gra::aux::AssertCut(rap, "FIDCUTS::PARTICLE::Rap", true);
 
-    std::vector<double> pt = j[XID]["PARTICLE"]["Pt"];
+    std::vector<double> pt = j.at(XID).at("PARTICLE").at("Pt");
     fcuts.pt_min           = pt[0];
     fcuts.pt_max           = pt[1];
     gra::aux::AssertCut(pt, "FIDCUTS::PARTICLE::Pt", true);
 
-    std::vector<double> Et = j[XID]["PARTICLE"]["Et"];
+    std::vector<double> Et = j.at(XID).at("PARTICLE").at("Et");
     fcuts.Et_min           = Et[0];
     fcuts.Et_max           = Et[1];
     gra::aux::AssertCut(Et, "FIDCUTS::PARTICLE::Et", true);
@@ -842,17 +842,17 @@ void MGraniitti::ReadFidCuts(const std::string &inputfile) {
 
   // System
   {
-    std::vector<double> M = j[XID]["SYSTEM"]["M"];
+    std::vector<double> M = j.at(XID).at("SYSTEM").at("M");
     fcuts.M_min           = M[0];
     fcuts.M_max           = M[1];
     gra::aux::AssertCut(M, "FIDCUTS::SYSTEM::M", true);
 
-    std::vector<double> Y = j[XID]["SYSTEM"]["Rap"];
+    std::vector<double> Y = j.at(XID).at("SYSTEM").at("Rap");
     fcuts.Y_min           = Y[0];
     fcuts.Y_max           = Y[1];
     gra::aux::AssertCut(Y, "FIDCUTS::SYSTEM::Rap", true);
 
-    std::vector<double> Pt = j[XID]["SYSTEM"]["Pt"];
+    std::vector<double> Pt = j.at(XID).at("SYSTEM").at("Pt");
     fcuts.Pt_min           = Pt[0];
     fcuts.Pt_max           = Pt[1];
     gra::aux::AssertCut(Pt, "FIDCUTS::SYSTEM::Pt", true);
@@ -860,12 +860,12 @@ void MGraniitti::ReadFidCuts(const std::string &inputfile) {
 
   // Forward
   {
-    std::vector<double> t = j[XID]["FORWARD"]["t"];
+    std::vector<double> t = j.at(XID).at("FORWARD").at("t");
     fcuts.forward_t_min   = t[0];
     fcuts.forward_t_max   = t[1];
     gra::aux::AssertCut(t, "FIDCUTS::FORWARD::t", true);
 
-    std::vector<double> M = j[XID]["FORWARD"]["M"];
+    std::vector<double> M = j.at(XID).at("FORWARD").at("M");
     fcuts.forward_M_min   = M[0];
     fcuts.forward_M_max   = M[1];
     gra::aux::AssertCut(M, "FIDCUTS::FORWARD::M", true);
@@ -875,7 +875,7 @@ void MGraniitti::ReadFidCuts(const std::string &inputfile) {
   proc->SetFidCuts(fcuts);
 
   // Set user cuts
-  proc->SetUserCuts(j[XID]["USERCUTS"]);
+  proc->SetUserCuts(j.at(XID).at("USERCUTS"));
 }
 
 // Fiducial cuts
@@ -896,7 +896,7 @@ void MGraniitti::ReadVetoCuts(const std::string &inputfile) {
   const std::string XID = "VETOCUTS";
 
   try {
-    veto.active = j[XID]["active"];
+    veto.active = j.at(XID).at("active");
   } catch (...) {
     return;  // Did not find cut block at all
   }
@@ -911,9 +911,9 @@ void MGraniitti::ReadVetoCuts(const std::string &inputfile) {
 
     // try to find new domain
     try {
-      std::vector<double> temp1 = j[XID][NUMBER]["Eta"];
+      std::vector<double> temp1 = j.at(XID).at(NUMBER).at("Eta");
       eta                       = temp1;
-      std::vector<double> temp2 = j[XID][NUMBER]["Pt"];
+      std::vector<double> temp2 = j.at(XID).at(NUMBER).at("Pt");
       pt                        = temp2;
     } catch (...) {
       break;  // Not found
@@ -1001,7 +1001,7 @@ void MGraniitti::InitEikonalOnly() {
 void MGraniitti::Initialize() {
   // ** ALWAYS HERE ONLY AS LAST! **
   proc->post_Constructor();
-
+  
   // Print out basic information
   std::cout << std::endl;
   std::cout << rang::style::bold << "General setup:" << rang::style::reset << std::endl
