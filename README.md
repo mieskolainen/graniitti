@@ -6,7 +6,7 @@ https://arxiv.org/abs/1811.01730
 
 ## Algorithmic Engine and Monte Carlo Event Generator for High Energy Diffraction
 
-![alt text](https://raw.githubusercontent.com/mieskolainen/GRANIITTI/master/install/build-status.svg)
+![build-status](https://raw.githubusercontent.com/mieskolainen/GRANIITTI/master/install/build-status.svg?sanitize=true)
 
 
 ### Installation and introduction at:
