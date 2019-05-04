@@ -17,7 +17,10 @@ echo $BUILD_DATE
 # ------------------------------------------------
 
 # Fetch latest version, compile
-git pull origin master && source ./install/setenv.sh && make superclean && make -j4
+git pull origin master
+chmod +x ./install/setenv.sh
+./install/setenv.sh
+make superclean && make -j4
 
 # Test if compilation went fine
 FILE=./bin/gr
