@@ -25,15 +25,15 @@ FILE=./bin/gr
 if test -f "$FILE"; then
   echo "Build successful"
   BUILD_SUCCESS="true"
-  cp ./install/passing.svg ./install/build-status.svg
+  cp ./install/img/passing.svg ./install/img/build-status.svg
 else
   echo "Build not successful"
   BUILD_SUCCESS="false"
-  cp ./install/failing.svg ./install/build-status.svg
+  cp ./install/img/failing.svg ./install/img/build-status.svg
 fi
 
 # Output message
-MSG="{\n  \"name\": \"$NAME\",\n \"version\": \"$VERSION\",\n \"type\": \"$TYPE\",\n \"date\": \"$DATE\",\n \"update\": \"$UPDATE\",\n \"build_success\": $BUILD_SUCCESS,\n \"build_date\": \"$BUILD_DATE\"\n}"
+MSG="{\n  \"name\": \"$NAME\",\n \"version\": \"$VERSION\",\n \"type\": \"$TYPE\",\n \"date\": \"$DATE\",\n \"update\": \"$UPDATE\",\n \"build-success\": $BUILD_SUCCESS,\n \"build-date\": \"$BUILD_DATE\"\n}"
 
 echo -e $MSG > VERSION.json
 
