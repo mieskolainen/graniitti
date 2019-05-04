@@ -1,7 +1,7 @@
 // GRANIITTI - Monte Carlo event generator for high energy diffraction
 // https://github.com/mieskolainen/graniitti
 //
-// <HepMC33 to LHE (.xml) format converter>
+// <HepMC3 to LHE (.xml) format converter>
 //
 // (c) 2017-2019 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
@@ -33,8 +33,6 @@ long GetFileSize(const std::string &filename) {
 
   return fs;
 }
-
-using namespace HepMC3;
 
 // For LHE event format see:
 // [REFERENCE: http://home.thep.lu.se/~torbjorn/talks/fnal04lha.pdf]
@@ -89,12 +87,14 @@ int main(int argc, char *argv[]) {
       // ISTUP
       ISTUP.push_back(p1->status());
 
-      // Find mother ids
+      // Find mother (PARENTS) ids
       std::vector<int> mother_ids;
-      for (HepMC3::ConstGenParticlePtr k : Relatives::ANCESTORS(p1)) {
-        // HepMC3::Print::line(k);
+      for (HepMC3::ConstGenParticlePtr k : HepMC3::Relatives::PARENTS(p1)) {
+        //HepMC3::Print::line(k);
         mother_ids.push_back(k->id());
       }
+      //std::cout << "mother_ids.size() = " << mother_ids.size() << std::endl;
+
       std::pair<int, int> MOTHUP_this(0, 0);
       const int offset = 0;  // convention
       if (mother_ids.size() == 1) { MOTHUP_this.first = mother_ids.at(0) + offset; }
@@ -128,19 +128,27 @@ int main(int argc, char *argv[]) {
 
     // ** Global Event Properties **
 
+    // ------------------------------------------------------------------
+    // *** Get event weight (always in barn units) ***
+    double W = 1.0;
+    if (ev.weights().size() != 0) {  // check do we have weights saved
+      W = ev.weights()[0];           // take the first one
+    }
+    // ------------------------------------------------------------------
+
     // Number of particle entries
     hepeup.NUP = NUP;
     // Subprocess code (as given in LPRUP)
     hepeup.IDPRUP = 0;
     // Event weight
-    hepeup.XWGTUP = 1.0;
+    hepeup.XWGTUP = W;
     // PDF weights for incoming partons
     hepeup.XPDWUP = std::pair<double, double>(1.0, 1.0);
     // PDF evaluation scale of the event (GeV)
     hepeup.SCALUP = 0;
-    // QED coupling of the event
+    // QED coupling (\alpha_em) of the event
     hepeup.AQEDUP = 0;
-    // QCD coupling of the event
+    // QCD coupling (\alpha_s) of the event
     hepeup.AQCDUP = 0;
 
     // ** Particles **
@@ -173,11 +181,11 @@ int main(int argc, char *argv[]) {
     double input_size  = GetFileSize(inputfile) / 1.0e6;
     double output_size = GetFileSize(outputfile) / 1.0e6;
 
-    printf("HepMC33:: input  (%0.1f MB, %0.5f MB/event) %s \n", input_size, input_size / events,
+    printf("HepMC3: input  (%0.1f MB, %0.5f MB/event) %s \n", input_size, input_size / events,
            inputfile.c_str());
-    printf("LHEF::   output (%0.1f MB, %0.5f MB/event) %s \n", output_size, output_size / events,
+    printf("LHEF:   output (%0.1f MB, %0.5f MB/event) %s \n", output_size, output_size / events,
            outputfile.c_str());
-    printf("Total %d events converted from HepMC33 to LHE \n", events);
+    printf("Total %d events converted from HepMC3 to LHE \n", events);
   }
 
   // Done
