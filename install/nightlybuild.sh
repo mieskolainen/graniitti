@@ -17,7 +17,7 @@ echo $BUILD_DATE
 # ------------------------------------------------
 
 # Fetch latest version, compile
-git pull origin master && source ./install/setenv.sh && make superclean && make -j4
+#git pull origin master && source ./install/setenv.sh && make superclean && make -j4
 
 # Test if compilation went fine
 FILE=./bin/gr
@@ -37,8 +37,11 @@ MSG="{\n  \"name\": \"$NAME\",\n \"version\": \"$VERSION\",\n \"type\": \"$TYPE\
 
 echo -e $MSG > VERSION.json
 
-# Push
+# Push via SSH
+git remote set-url origin git+ssh://git@github.com/mieskolainen/GRANIITTI.git
 git add -A
 git commit -m "nightly build"
 git push origin master
 
+# Change back to https
+git remote set-url origin https://git@github.com/mieskolainen/GRANIITTI.git
