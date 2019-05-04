@@ -4,6 +4,6 @@
  "type": "beta",
  "date": "28/04/2019",
  "update": "Algorithm updates",
- "build-passing": true,
- "build-date": "la 4.5.2019 17.49.31 +0300"
+ "build_passing": true,
+ "build_date": "la 4.5.2019 17.49.31 +0300"
 }
