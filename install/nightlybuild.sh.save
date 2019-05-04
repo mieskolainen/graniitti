@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+echo '* GRANIITTI automated nightly build script *'date=`date +%a-%d-%m-%Y-%s`
+date=date `+%H:%M:%S   %d/%m/%y`
+echo $date
+
+# Fetch latest version, try to compile
+git pull origin master && source ./install/setenv.sh && make superclean && make -j4
+
+# Test if compilation went fine
+FILE=./bin/gr
+if test -f "$FILE"; then
+  echo "Build succesful"
+  echo "{success: true, date: \"$date\"}" > NBUILD.json
+else
+  echo "Build not succesful"
+  echo "{success: false, date: \"$date\"}" > NBUILD.json
+fi
