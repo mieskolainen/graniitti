@@ -70,7 +70,7 @@ inline TCanvas *AutoGridCanvas(unsigned int N) {
 // [REFERENCE: D.A. Green, https://arxiv.org/abs/1108.5083]
 // https://www.mrao.cam.ac.uk/~dag/CUBEHELIX
 //
-std::vector<std::vector<double>> CubeHelix(int N, double start, double R, double hue, double gamma) {
+inline std::vector<std::vector<double>> CubeHelix(int N, double start, double R, double hue, double gamma) {
 
   auto limitfunc = [] (std::vector<double>& x) {
     for (std::size_t i = 0; i < x.size(); ++i) {
