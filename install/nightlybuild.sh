@@ -37,3 +37,8 @@ MSG="{\n  \"name\": \"$NAME\",\n \"version\": \"$VERSION\",\n \"type\": \"$TYPE\
 
 echo -e $MSG > VERSION.json
 
+# Push
+git add -A
+git commit -m "nightly build"
+git push origin master
+
