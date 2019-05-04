@@ -1,4 +1,4 @@
-# GRANIITTI [beta dev-branch / see VERSION.json]
+# GRANIITTI
 https://arxiv.org/abs/1811.01730
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -7,7 +7,7 @@ https://arxiv.org/abs/1811.01730
 
 ## Algorithmic Engine and Monte Carlo Event Generator for High Energy Diffraction
 
-
+See VERSION.json for the version information and build status.
 
 ### Installation and introduction at:
 ## www.mv.helsinki.fi/home/mmieskol
