@@ -178,7 +178,7 @@ int main(int argc, char *argv[]) {
               << rang::fg::reset << std::endl;
     return EXIT_FAILURE;
   }
-
+  
   printf("\n");
   printf("scan:: Finished in %0.1f sec \n", timer.ElapsedSec());
   printf("scan:: Output created to scan{.csv,.tex} \n\n");

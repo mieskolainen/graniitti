@@ -131,6 +131,11 @@ std::vector<double> dsigma_el_dt(double *par, const double sqrts,
     std::cerr << rang::fg::red << "Exception catched: std::ios_base::failure: " << rang::fg::reset
               << e.what() << std::endl;
     exit(0);
+  } catch (const nlohmann::json::exception &e) {
+    gra::aux::PrintGameOver();
+    std::cerr << rang::fg::red << "Exception catched: JSON input: " << rang::fg::reset
+              << e.what() << std::endl;
+    exit(0);
   } catch (...) {
     gra::aux::PrintGameOver();
     std::cerr << rang::fg::red << "Exception catched: Unspecified (...) (Probably JSON input)"
@@ -165,12 +170,18 @@ void SigmaXS(double *par, double &xs_tot, double &xs_el, double &xs_inel, const 
     gra::aux::PrintGameOver();
     std::cerr << "Exception catched: " << e.what() << std::endl;
     exit(0);
+  } catch (const nlohmann::json::exception &e) {
+    gra::aux::PrintGameOver();
+    std::cerr << rang::fg::red << "Exception catched: JSON input: " << rang::fg::reset
+              << e.what() << std::endl;
+    exit(0);
   } catch (const std::ios_base::failure &e) {
     gra::aux::PrintGameOver();
     std::cerr << "Exception catched: Caught std::ios_base::failure: " << e.what() << std::endl;
     exit(0);
   }
 }
+
 
 // Read differential input
 bool ReadData(std::string inputfile, std::vector<double> &x, std::vector<double> &y,

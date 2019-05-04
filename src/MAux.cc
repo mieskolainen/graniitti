@@ -425,6 +425,19 @@ bool FileExist(const std::string &name) {
   return (stat(name.c_str(), &buffer) == 0);
 }
 
+void PrintNotice() {
+
+std::cout << rang::fg::red << 
+"███╗   ██╗ ██████╗ ████████╗██╗ ██████╗███████╗\n"
+"████╗  ██║██╔═══██╗╚══██╔══╝██║██╔════╝██╔════╝\n"
+"██╔██╗ ██║██║   ██║   ██║   ██║██║     █████╗  \n"
+"██║╚██╗██║██║   ██║   ██║   ██║██║     ██╔══╝  \n"
+"██║ ╚████║╚██████╔╝   ██║   ██║╚██████╗███████╗\n"
+"╚═╝  ╚═══╝ ╚═════╝    ╚═╝   ╚═╝ ╚═════╝╚══════╝\n"
+<< rang::fg::reset << std::endl;
+
+}
+
 void PrintWarning() {
   std::cout << rang::fg::red << "██╗    ██╗ █████╗ ██████╗ ███╗   ██╗██╗███╗   ██╗ ██████╗ \n"
                                 "██║    ██║██╔══██╗██╔══██╗████╗  ██║██║████╗  ██║██╔════╝ \n"
@@ -445,11 +458,11 @@ void PrintGameOver() {
             << std::endl;
 }
 
-double GetVersion() { return 0.35; }
+double GetVersion() { return 0.36; }
 
 std::string GetVersionString() {
   char buff[100];
-  snprintf(buff, sizeof(buff), "Version %0.2f (BETA) 280419", GetVersion());
+  snprintf(buff, sizeof(buff), "Version %0.2f (BETA) 040519", GetVersion());
   std::string str = buff;
   return str;
 }

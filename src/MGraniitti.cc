@@ -1867,11 +1867,12 @@ void MGraniitti::PrintStatistics(unsigned int N) {
 
     gra::aux::PrintBar("=");
     if (WEIGHTED) {
-      std::cout << rang::fg::green << "Weighted event generation:" << std::endl
+      gra::aux::PrintNotice();
+      std::cout << rang::fg::red   << "You did WEIGHTED event generation:" << std::endl
                 << std::endl
                 << std::endl;
     } else {
-      std::cout << rang::fg::red << "Unweighted event generation:" << std::endl
+      std::cout << rang::fg::green << "You did UNWEIGHTED (acceptance-rejection) event generation:" << std::endl
                 << std::endl
                 << std::endl;
     }

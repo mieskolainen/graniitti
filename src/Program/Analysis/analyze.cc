@@ -40,8 +40,10 @@
 #include "Graniitti/MMath.h"
 
 // Libraries
+#include "json.hpp"
 #include "cxxopts.hpp"
 #include "rang.hpp"
+
 
 using gra::aux::indices;
 
@@ -422,6 +424,11 @@ int main(int argc, char *argv[]) {
     std::cerr << rang::fg::red << "Exception catched: Commandline options: " << rang::fg::reset
               << e.what() << std::endl;
     return EXIT_FAILURE;
+  } catch (const nlohmann::json::exception &e) {
+    gra::aux::PrintGameOver();
+    std::cerr << rang::fg::red << "Exception catched: JSON input: " << rang::fg::reset
+              << e.what() << std::endl;
+    return EXIT_FAILURE;
   } catch (...) {
     gra::aux::PrintGameOver();
     std::cerr << rang::fg::red << "Exception catched: Unspecified (...) (Probably input)"
@@ -431,6 +438,6 @@ int main(int argc, char *argv[]) {
 
   // Done
   std::cout << "[analyze:: done]" << std::endl;
-  
+
   return EXIT_SUCCESS;
 }

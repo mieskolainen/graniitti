@@ -7,10 +7,10 @@ echo '* GRANIITTI automated nightly build script *'
 # ------------------------------------------------
 # Set the manually here
 NAME="GRANIITTI"
-VERSION="0.35"
+VERSION="0.36"
 TYPE="beta"
-DATE="28/04/2019"
-UPDATE="Algorithm updates"
+DATE="04/05/2019"
+UPDATE="Improved error treatment"
 
 BUILD_DATE=`date`
 echo $BUILD_DATE

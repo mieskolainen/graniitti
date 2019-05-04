@@ -170,6 +170,8 @@ std::vector<T> SplitStr(std::string input, T type, const char delim = ',') {
 // Check if file exists
 bool FileExist(const std::string &name);
 
+
+void PrintNotice();
 void PrintWarning();
 void PrintGameOver();
 void PrintFlashScreen(rang::fg pcolor);
