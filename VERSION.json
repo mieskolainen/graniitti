@@ -1,9 +1,9 @@
 {
- name: "GRANIITTI",
- version: "0.35",
- type: "beta",
- date: "28/04/2019",
- update: "Algorithm updates",
- build_success: false,
- build_date: "la 4.5.2019 15.58.27 +0300"
+ "name": "GRANIITTI",
+ "version": "0.35",
+ "type": "beta",
+ "date": "28/04/2019",
+ "update": "Algorithm updates",
+ "build_success": false,
+ "build_date": "la 4.5.2019 16.01.39 +0300"
 }
