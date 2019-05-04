@@ -12,7 +12,7 @@ TYPE="beta"
 DATE="04/05/2019"
 UPDATE="Improved error treatment"
 
-BUILD_DATE=`date -u -R`
+BUILD_DATE=`date -R`
 echo $BUILD_DATE
 # ------------------------------------------------
 
