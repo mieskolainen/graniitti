@@ -59,7 +59,7 @@ A:  Try this before compiling anything:
 
 Q:  I use a standalone system, for example Ubuntu linux, what do I need for the ROOT libraries setup?
 A:  Assuming you have compiled ROOT or use pre-compiled binaries downloaded from <root.cern.ch>,
-    which are extracted for example to $HOME/local/root, then setup 3 lines in your environment:
+    which are extracted for example to $HOME/local/root, then setup these 3 lines in your environment:
     
     export ROOTSYS=$HOME/local/root
     export PATH=$ROOTSYS/bin:$PATH
