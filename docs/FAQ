@@ -18,9 +18,29 @@ Above, you may use also CXX=clang-5.0. Note that you need GCC > 7 or newer.
 FIRST RUN
 -----------
 
-Run ./bin/gr
+Run ./bin/gr and read the output
 
-You find all compiled programs under /bin
+
+PROGRAMS
+-----------
+
+1. Simulation
+
+./bin/gr            Main simulation program
+./bin/xscan         Process cross section energy dependence scanner
+./bin/exloop        Loop over pre-coded LHC/Tevatron fiducial measurements versus simulation
+./bin/minbias       Minimum bias processes (SD,DD,ND) simulation
+./bin/hepmc3tolhe   Convert .hepmc3 to .lhe event output format
+
+2. Analysis
+
+./bin/analyze       Fast histogramming and plotting of fiducial observables in central production
+./bin/fitharmonic   Spherical harmonic inverse expansion and analysis
+./bin/fitcentral    Fit tool for soft central production parameters
+./bin/fitsoft       Fit tool for eikonal Pomeron model parameters
+./bin/data2hepmc3   Push events from external sources to .hepmc3 format for quick analysis
+
++ some test programs
 
 
 INSTALLATION
