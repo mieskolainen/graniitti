@@ -184,7 +184,7 @@ A:  Sure, if you have ROOT installed, which is needed for plotting and
     including the efficiency and acceptance inversion. See examples under /tests/harmonicrun.
     Please do note that this is an ill-posed inverse problem, like unfolding. You need to
     inspect the condition number of moment mixing matrices which is automatically calculated,
-    take care of regularization, have very large MC statistics for the detector expansion and so on.
+    take care of (possible) regularization, have very large MC statistics for the detector expansion and so on.
 
 
 
