@@ -19,7 +19,7 @@ echo $BUILD_DATE
 # Fetch latest version, compile
 git pull origin master
 source ./install/setenv.sh
-make superclean
+#make superclean
 make -j4
 
 # Test if compilation went fine
@@ -38,7 +38,7 @@ fi
 # Output message
 MSG="{\n  \"name\": \"$NAME\",\n \"version\": \"$VERSION\",\n \"type\": \"$TYPE\",\n \"date\": \"$DATE\",\n \"update\": \"$UPDATE\",\n \"build_passing\": $BUILD_PASSING,\n \"build_date\": \"$BUILD_DATE\"\n}"
 
-echo -e $MSG > VERSION.json
+echo $MSG > VERSION.json
 
 # Push via SSH
 git remote set-url origin git+ssh://git@github.com/mieskolainen/GRANIITTI.git

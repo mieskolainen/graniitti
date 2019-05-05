@@ -1,9 +1,1 @@
--e {
- "name": "GRANIITTI",
- "version": "0.36",
- "type": "beta",
- "date": "04/05/2019",
- "update": "Improved error treatment",
- "build_passing": true,
- "build_date": "Sun, 05 May 2019 06:00:01 +0300"
-}
+{\n "name": "GRANIITTI",\n "version": "0.36",\n "type": "beta",\n "date": "04/05/2019",\n "update": "Improved error treatment",\n "build_passing": true,\n "build_date": "Sun, 05 May 2019 12:35:58 +0300"\n}
