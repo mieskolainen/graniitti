@@ -166,7 +166,7 @@ A:  Different ways to organize the phase space sampling.
     identical results. However, the (other) one can be faster
     or numerically more stable with difficult amplitudes. In general,
     we recommend '<C>' for continuum / continuum+resonance processes
-    and '<F>' for isolated resonances and high final state leg continuum processes.
+    and '<F>' for isolated resonances and high final state leg count continuum processes.
 
 
 Q:  What are '->' versus '&>' operators?
