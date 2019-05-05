@@ -29,7 +29,7 @@ PROGRAMS
 ./bin/gr            Main simulation program
 ./bin/xscan         Process cross section energy dependence scanner
 ./bin/exloop        Loop over pre-coded LHC/Tevatron fiducial measurements versus simulation
-./bin/minbias       Minimum bias processes (SD,DD,ND) simulation
+./bin/minbias       Minimum bias processes (SD,DD,ND) combined simulation
 ./bin/hepmc3tolhe   Convert .hepmc3 to .lhe event output format
 
 2. Analysis
