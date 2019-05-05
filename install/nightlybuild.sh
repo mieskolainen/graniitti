@@ -10,7 +10,7 @@ NAME="GRANIITTI"
 VERSION="0.36"
 TYPE="beta"
 DATE="04/05/2019"
-UPDATE="Improved error treatment"
+UPDATE="Improved input treatment"
 
 BUILD_DATE=`date -R`
 echo $BUILD_DATE
@@ -19,7 +19,7 @@ echo $BUILD_DATE
 # Fetch latest version, compile
 git pull origin master
 source ./install/setenv.sh
-#make superclean
+make superclean
 make -j4
 
 # Test if compilation went fine

@@ -3,7 +3,7 @@
  "version": "0.36",
  "type": "beta",
  "date": "04/05/2019",
- "update": "Improved error treatment",
+ "update": "Improved input treatment",
  "build_passing": true,
- "build_date": "Sun, 05 May 2019 12:38:59 +0300"
+ "build_date": "Sun, 05 May 2019 12:39:49 +0300"
 }
