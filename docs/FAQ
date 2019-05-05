@@ -169,6 +169,14 @@ A:  Different ways to organize the phase space sampling.
     and '<F>' for isolated resonances and high final state leg count continuum processes.
 
 
+Q:  I get different integrals with '<C>' and '<F>' algorithms.
+A:  Your cuts are not equivalent. Please note that '<C>' class applies the
+    generation cuts to the (direct not daughter) final states and '<F>' applies generation
+    cuts to the central system, instead. However, if you then apply also fiducial cuts,
+    and make sure that the generation phase space is larger in both cases than the fiducial one,
+    you will obtain equivalent numbers with '<C>' and '<F>'.
+
+
 Q:  What are '->' versus '&>' operators?
 A:  The '->' uses full 2->N phase space volume in the cross section
     integration. The &> operator (with '<F>' phase space) decouples
