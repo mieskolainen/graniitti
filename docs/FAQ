@@ -1,4 +1,4 @@
-GRANIITTI (BETA) FAQ: 27.4.2019
+GRANIITTI (BETA) FAQ: 05.05.2019
 
 mikael.mieskolainen@cern.ch
 -----------
@@ -35,21 +35,25 @@ A:  Try this before compiling anything:
     source /cvmfs/sft.cern.ch/lcg/views/setupViews.sh LCG_latest x86_64-centos7-gcc8-opt 
 
 
-Q:  I use a custom environment, what do I need for the ROOT libraries setup?
-A:  Assuming you have a working ROOT installed e.g. from <root.cern.ch>,
-    then set up the following in your environment:
+Q:  I use a standalone system, for example Ubuntu linux, what do I need for the ROOT libraries setup?
+A:  Assuming you have compiled ROOT or use pre-compiled binaries downloaded from <root.cern.ch>,
+    which are extracted for example to $HOME/local/root, then setup 3 lines in your environment:
     
-    export ROOTSYS=/path/to/your/ROOT
+    export ROOTSYS=$HOME/local/root
     export PATH=$ROOTSYS/bin:$PATH
     export LD_LIBRARY_PATH=$ROOTSYS/lib:$LD_LIBRARY_PATH
 
-    And make sure that these paths make sense, so that you find binaries
-    under $ROOTSYS/bin, object files under $ROOTSYS/lib and header files under $ROOTSYS/include.
+    And make sure that these paths make sense, so that you find binaries/objects/headers
+    under $ROOTSYS/bin, $ROOTSYS/lib, $ROOTSYS/include.
+
+
+Q:  Compilation with ROOT failes due to unknown reason.
+A:  Your ROOT library is probably not compiled with -std=c++17 switch, so try again with 'make -j4 ROOT_STD14=TRUE'
 
 
 Q:  How to turn off ROOT dependent compilation?
 A:  Compile with 'make -j4 ROOTSYS=' or run 'unset ROOTSYS' for removing the shell variable.
-
+    The simulation part of GRANIITTI is not dependent on ROOT but the analysis tools are.
 
 
 BASIC OPERATION

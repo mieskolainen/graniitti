@@ -11,10 +11,11 @@
 #        make clean (objects)
 #        make superclean (objects + binaries)
 #
-# To compile with clang:      make CXX=clang
-#     -|-         unit tests: make TEST=TRUE
+# To compile with clang:                   make CXX=clang
+#     -|-         unit tests:              make TEST=TRUE
 #
-# To compile with old ROOT:   make OLD_ROOT=TRUE
+# To compile with ROOT using -std=c++14:   make ROOT_STD14=TRUE
+#
 # -----------------------------------------------------------------------
 # 
 # EXTERNAL LIBRARIES SETUP:
@@ -102,7 +103,7 @@ $(info Found ROOTSYS = $(ROOTSYS))
 ROOT=TRUE
 
 # Info messages
-$(info ** If compilation with ROOT libraries failes, try with 'make -j4 OLD_ROOT=TRUE' **)
+$(info ** If compilation with ROOT libraries failes, try with 'make -j4 ROOT_STD14=TRUE' **)
 
 endif
 
@@ -183,8 +184,8 @@ CXX        = g++
 CXXVER     = -std=c++17
 CXXVER_OLD = -std=c++17
 
-# Use this for old ROOT installations
-ifeq ($(OLD_ROOT),TRUE)
+# Use this for alternative ROOT installations
+ifeq ($(ROOT_STD14),TRUE)
 CXXVER_OLD = -std=c++14
 endif
 

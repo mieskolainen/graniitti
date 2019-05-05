@@ -20,7 +20,7 @@ echo $BUILD_DATE
 git pull origin master
 source ./install/setenv.sh
 make superclean
-make -j4
+make -j4 ROOT_STD14=TRUE
 
 # Test if compilation went fine
 FILE=./bin/gr
