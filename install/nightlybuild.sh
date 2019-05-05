@@ -38,7 +38,7 @@ fi
 # Output message
 MSG="{\n  \"name\": \"$NAME\",\n \"version\": \"$VERSION\",\n \"type\": \"$TYPE\",\n \"date\": \"$DATE\",\n \"update\": \"$UPDATE\",\n \"build_passing\": $BUILD_PASSING,\n \"build_date\": \"$BUILD_DATE\"\n}"
 
-print $MSG > VERSION.json
+printf $MSG > VERSION.json
 
 # Push via SSH
 git remote set-url origin git+ssh://git@github.com/mieskolainen/GRANIITTI.git
