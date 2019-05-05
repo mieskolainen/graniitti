@@ -60,7 +60,7 @@ BASIC OPERATION
 -----------
 
 Q:  I get "error while loading shared libraries: libHepMC3.so.1: cannot open shared object file"
-A:  Always remember the environment setup: source ./install/setenv.sh
+A:  Always remember the environment setup: 'source ./install/setenv.sh'
 
 
 Q:  Where are the examples of .json steering cards?
