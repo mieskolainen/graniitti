@@ -46,7 +46,6 @@ PROGRAMS
 INSTALLATION
 -----------
 
-
 Q:  It does not compile :(
 A:  If you use MacOSX, try to obtain the latest GCC toolchain.
     The software is being tested and developed on Ubuntu linux (+ ROOT 6).
