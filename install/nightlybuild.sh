@@ -36,7 +36,7 @@ else
 fi
 
 # Output message
-MSG="{\n  \"name\": \"$NAME\",\n \"version\": \"$VERSION\",\n \"type\": \"$TYPE\",\n \"date\": \"$DATE\",\n \"update\": \"$UPDATE\",\n \"build_passing\": $BUILD_PASSING,\n \"build_date\": \"$BUILD_DATE\"\n}"
+MSG="{\n \"name\": \"$NAME\",\n \"version\": \"$VERSION\",\n \"type\": \"$TYPE\",\n \"date\": \"$DATE\",\n \"update\": \"$UPDATE\",\n \"build_passing\": $BUILD_PASSING,\n \"build_date\": \"$BUILD_DATE\"\n}"
 
 printf "$MSG" > VERSION.json
 
