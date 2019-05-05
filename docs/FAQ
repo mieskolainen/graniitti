@@ -195,8 +195,8 @@ ANALYSIS
 
 Q:  How to do fast plotting of the fiducial observables of a given MC sample
     and stack different MC samples in the same plot?
-A:  If you have ROOT installed, just try some examples under /tests/.
-    GRANIITTI includes a very large collection of automated publication quality plots
+A:  With ROOT installed, just try some examples under /tests/.
+    The program ./bin/analyzer calculates a large collection of automated publication quality plots
     for arbitrary central production processes. We recommend also one to use RIVET via HepMC2.
 
 
