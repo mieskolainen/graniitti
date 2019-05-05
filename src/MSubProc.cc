@@ -122,7 +122,7 @@ void MSubProc::ConstructDescriptions(const std::string &first) {
                                                         "(J=0)          [EPA] x [EPA]  "
                                                         "       @@ UNDER TESTING @@"));
     channels.insert(std::pair<std::string, std::string>(
-        "CON", "Gamma-Gamma to l+l-, w+w-, monopoles     [EPA] x [EPA]"));
+        "CON", "Gamma-Gamma to l+l-, W+W-, monopoles     [EPA] x [EPA]"));
     channels.insert(std::pair<std::string, std::string>("QED",
                                                         "Gamma-Gamma qq -> q l+ l- q   "
                                                         "           [FULL QED]         "
@@ -140,14 +140,14 @@ void MSubProc::ConstructDescriptions(const std::string &first) {
   } else if (first == "yy_DZ") {
     std::map<std::string, std::string> channels;
     channels.insert(std::pair<std::string, std::string>(
-        "CON", "Collinear yy to l+l, w+w- or monopoles   [DZ] x [DZ]"));
+        "CON", "Collinear yy to l+l, W+W- or monopolepair   [DZ] x [DZ]"));
     descriptions.insert(
         std::pair<std::string, std::map<std::string, std::string>>("yy_DZ", channels));
   } else if (first == "yy_LUX") {
     std::map<std::string, std::string> channels;
     channels.insert(std::pair<std::string, std::string>("CON",
-                                                        "Collinear yy to l+l, w+w- or "
-                                                        "monopoles   [LUX] x [LUX]     "
+                                                        "Collinear yy to l+l, W+W- or "
+                                                        "monopolepair   [LUX] x [LUX]     "
                                                         "    @@ UNDER TESTING @@"));
     descriptions.insert(
         std::pair<std::string, std::map<std::string, std::string>>("yy_LUX", channels));

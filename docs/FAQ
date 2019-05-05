@@ -32,7 +32,7 @@ A:  If you use MacOSX, try to obtain the latest GCC toolchain.
 
 Q:  I use lxplus.cern.ch, what is the right environment setup?
 A:  Try this before compiling anything:
-    source /cvmfs/sft.cern.ch/lcg/views/setupViews.sh LCG_latest x86_64-centos7-gcc8-opt 
+    source /cvmfs/sft.cern.ch/lcg/views/setupViews.sh LCG_latest x86_64-centos7-gcc8-opt
 
 
 Q:  I use a standalone system, for example Ubuntu linux, what do I need for the ROOT libraries setup?
@@ -47,11 +47,12 @@ A:  Assuming you have compiled ROOT or use pre-compiled binaries downloaded from
     under $ROOTSYS/bin, $ROOTSYS/lib, $ROOTSYS/include.
 
 
-Q:  Compilation with ROOT failes due to unknown reason.
-A:  Your ROOT library is probably not compiled with -std=c++17 switch, so try again with 'make -j4 ROOT_STD14=TRUE'
+Q:  Compilation with ROOT failes due to reason such as "‘handlePrefetch’ was not declared in this scope".
+A:  Your ROOT library is probably not compiled with -std=c++17 switch,
+    so try again with 'make -j4 ROOT_STD14=TRUE'.
 
 
-Q:  How to turn off ROOT dependent compilation?
+Q:  How to turn off ROOT dependent compilation completely?
 A:  Compile with 'make -j4 ROOTSYS=' or run 'unset ROOTSYS' for removing the shell variable.
     The simulation part of GRANIITTI is not dependent on ROOT but the analysis tools are.
 
