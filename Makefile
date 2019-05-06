@@ -318,7 +318,7 @@ endif
 
 PROGRAM_TEST   = 
 ifeq ($(TEST),TRUE)
-EXE_TEST_NAMES = testbench0 testbench1
+EXE_TEST_NAMES = testbench0 testbench1 testbench2
 PROGRAM_TEST   = $(EXE_TEST_NAMES:%=$(BIN_DIR)/%)
 endif
 

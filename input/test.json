@@ -50,7 +50,7 @@
     // VEGAS integrator
     "VEGAS" : {
 
-      "PRECISION" : 0.01,     // Integral relative precision target
+      "PRECISION" : 0.05,     // Integral relative precision target
       "NCALL"     : 5000,     // Number of function calls per initialization iteration (5000 or more)
       "ITER"      : 10,       // Number of initialization iteration (10 or more)
 
@@ -78,11 +78,11 @@
       "Xi"  : [0, 2e-7]     // Invariant scale M^2/s (forward excitation)
     },
     "<F>" : {
-      "Rap" : [-0.9, 0.9], // Rapidity boundaries of the system (<F> class)
-      "M"   : [0, 7.0]
+      "Rap" : [-2.5, 2.5],  // Rapidity boundaries of the system (<F> class)
+      "M"   : [0, 2.5]
     },
     "<Q>" : {
-      "Xi"  : [0, 0.05]    // Invariant scale M^2/s (forward excitation)
+      "Xi"  : [0, 0.05]     // Invariant scale M^2/s (forward excitation)
     }
   },
 
@@ -97,10 +97,10 @@
      // Central system final states
     "PARTICLE" : {
 
-      "Eta"  : [-0.9, 0.9],     // Pseudorapidity
-      "Rap"  : [-10.0, 10.0],   // Rapidity
+      "Eta"  : [-0.9, 0.9],      // Pseudorapidity
+      "Rap"  : [-10.0, 10.0],    // Rapidity
       "Pt"   : [0.15, 100000.0], // Transverse momentum
-      "Et"   : [0.0, 100000.0]  // Transverse energy
+      "Et"   : [0.0, 100000.0]   // Transverse energy
     },
 
     // Central system

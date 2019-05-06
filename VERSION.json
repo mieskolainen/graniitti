@@ -2,8 +2,8 @@
  "name": "GRANIITTI",
  "version": "0.36",
  "type": "beta",
- "date": "04/05/2019",
- "update": "Improved input treatment",
+ "date": "06/05/2019",
+ "update": "Spinor & polarization unit testing",
  "build_passing": true,
- "build_date": "Mon, 06 May 2019 06:00:01 +0300"
+ "build_date": "Mon, 06 May 2019 15:57:50 +0300"
 }

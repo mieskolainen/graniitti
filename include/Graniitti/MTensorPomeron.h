@@ -33,13 +33,7 @@ class MTensorPomeron : public MDirac {
   // Amplitudes
   std::complex<double> ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const;
   std::complex<double> ME4(gra::LORENTZSCALAR &lts) const;
-
-  // Spin/spinor state collectors
-  std::array<std::vector<std::complex<double>>, 2> SpinorStates(const M4Vec &p,
-                                                                std::string type) const;
-  std::array<FTensor::Tensor1<std::complex<double>, 4>, 3> Spin1States(const M4Vec &p,
-                                                                       std::string type) const;
-
+  
   // Scalar, Pseudoscalar, Tensor coupling structures
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_PPS_1(double g_PPS) const;
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_PPS_2(const M4Vec &q1, const M4Vec &q2,

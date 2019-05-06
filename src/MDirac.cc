@@ -37,8 +37,11 @@ using gra::math::zi;
 
 namespace gra {
 MDirac::MDirac() {
-  // Default
   InitGammaMatrices("DIRAC");
+}
+
+MDirac::MDirac(const std::string& basis) {
+  InitGammaMatrices(basis);
 }
 
 void MDirac::InitGammaMatrices(const std::string &basis) {
@@ -125,6 +128,13 @@ void MDirac::InitGammaMatrices(const std::string &basis) {
   }
 }
 
+// Chirality projectors, valid for all gamma representations
+// Right handed
+MMatrix<std::complex<double>> MDirac::PR() const { return (I4 + gamma_up[4]) * 0.5; }
+// Left handed
+MMatrix<std::complex<double>> MDirac::PL() const { return (I4 - gamma_up[4]) * 0.5; }
+
+
 // Two component Weyl (chiral) spinor
 //
 std::vector<std::complex<double>> MDirac::XiSpinor(const M4Vec &p, int helicity) const {
@@ -138,6 +148,7 @@ std::vector<std::complex<double>> MDirac::XiSpinor(const M4Vec &p, int helicity)
   throw std::invalid_argument("MDirac::XiSpinor: helicity is not -1 or 1");
 }
 
+// ----------------------------------------------------------------------
 // Helicity eigenstate spinors for particles
 //
 // <@@ DEFINED IN CHIRAL GAMMA MATRIX REPRESENTATION @@>
@@ -186,13 +197,9 @@ std::vector<std::complex<double>> MDirac::vHelChiral(const M4Vec &p, int helicit
 
   throw std::invalid_argument("MDirac::vHelChiral: helicity is not -1 or 1");
 }
+// -----------------------------------------------------------------------
 
-// Chirality projectors, valid for all gamma representations
-// Right handed
-MMatrix<std::complex<double>> MDirac::PR() const { return (I4 + gamma_up[4]) * 0.5; }
-// Left handed
-MMatrix<std::complex<double>> MDirac::PL() const { return (I4 - gamma_up[4]) * 0.5; }
-
+// -----------------------------------------------------------------------
 // Helicity eigenstate spinors
 //
 // <@@ DEFINED IN DIRAC GAMMA MATRIX REPRESENTATION @@>
@@ -248,7 +255,10 @@ std::vector<std::complex<double>> MDirac::vHelDirac(const M4Vec &p, int helicity
   const std::vector<std::complex<double>> v = uHelDirac(p, helicity);
   return {v[2], v[3], v[0], v[1]};
 }
+// -----------------------------------------------------------------------
 
+
+// -----------------------------------------------------------------------
 // Dirac-Spinor "spin eigenstate" fermions: (\gamma^\mu p_\mu - m)u = 0
 //
 // <@@ DEFINED IN DIRAC GAMMA MATRIX REPRESENTATION @@>
@@ -284,6 +294,7 @@ std::vector<std::complex<double>> MDirac::vDirac(const M4Vec &p, int spin) const
   const std::vector<std::complex<double>> v = uDirac(p, spin);
   return {v[2], v[3], v[0], v[1]};
 }
+// -----------------------------------------------------------------------
 
 // Return Hermitician angular momentum operators J_i = 1/2 \sigma_i, i = 1,2,3
 MMatrix<std::complex<double>> MDirac::J_operator(unsigned int i) const {
@@ -292,55 +303,6 @@ MMatrix<std::complex<double>> MDirac::J_operator(unsigned int i) const {
   if (i == 3) { return sigma_z * 0.5; }
 
   throw std::invalid_argument("MDirac::J_operator: i is invalid (not 1,2,3)");
-}
-
-// Polarization vector eps^{(m)\mu}(k) for massless spin-1 with helicity m =
-// -1,1
-//
-// Spatial dependence only on the direction.
-//
-// [REFERENCE: http://scipp.ucsc.edu/~haber/ph218/polsum.pdf]
-//
-// [t,x,y,z] order convention!
-//
-Tensor1<std::complex<double>, 4> MDirac::EpsSpin1(const M4Vec &k, int m) const {
-  const double theta = k.Theta();
-  const double phi   = k.Phi();
-
-  // const std::vector<double> e1 = {1.0, 0.0, 0.0};
-  // const std::vector<double> e2 = {0.0, 1.0, 0.0};
-
-  // First define in \vec{z}-direction, then rotate spatial part such that
-  // \vec{k} = R \vec{z}
-
-  // Normalization
-  const double N = 1.0 / std::sqrt(2.0);
-
-  // \eps^{\mu,-1}
-  if (m == -1) {
-    // e = {0.0,  (e1[0] + zi*e2[0]) / msqrt(2.0),  (e1[1] + zi*e2[1]) /
-    // msqrt(2.0),
-    // 0.0};
-    Tensor1<std::complex<double>, 4> e;
-    e(0) = 0.0;
-    e(1) = (std::cos(theta) * std::cos(phi) + zi * std::sin(phi)) * N;
-    e(2) = (std::cos(theta) * std::sin(phi) - zi * cos(phi)) * N;
-    e(3) = -std::sin(theta) * N;
-    return e;
-  }
-  // \eps^{\mu,+1}
-  if (m == 1) {
-    // e = {0.0, -(e1[0] - zi*e2[0]) / msqrt(2.0), -(e1[1] - zi*e2[1]) /
-    // msqrt(2.0),
-    // 0.0};
-    Tensor1<std::complex<double>, 4> e;
-    e(0) = 0.0;
-    e(1) = -(std::cos(theta) * std::cos(phi) + zi * std::sin(phi)) * N;
-    e(2) = -(std::cos(theta) * std::sin(phi) - zi * cos(phi)) * N;
-    e(3) = std::sin(theta) * N;
-    return e;
-  }
-  throw std::invalid_argument("MDirac::EpsSpin1: helicity m should be -1 or 1");
 }
 
 // Transformation bilinears:
@@ -432,6 +394,43 @@ MMatrix<std::complex<double>> MDirac::iD_F(const M4Vec &q, double m) const {
   return M;
 }
 
+// Polarization vector eps^{(m)\mu}(k) for massless spin-1 with helicity m = -1,1
+// 
+// Spatial dependence only on the direction.
+// 
+// [REFERENCE: http://scipp.ucsc.edu/~haber/ph218/polsum.pdf]
+// [t,x,y,z] order convention!
+// 
+Tensor1<std::complex<double>, 4> MDirac::EpsSpin1(const M4Vec &k, int m) const {
+  const double theta = k.Theta();
+  const double phi   = k.Phi();
+
+  // const std::vector<double> e1 = {1.0, 0.0, 0.0};
+  // const std::vector<double> e2 = {0.0, 1.0, 0.0};
+
+  // First define in \vec{z}-direction, then rotate spatial part such that
+  // \vec{k} = R \vec{z}
+
+  // Normalization
+  const double N = 1.0 / std::sqrt(2.0);
+  
+  Tensor1<std::complex<double>, 4> e;
+
+  // plus minus to minus plus
+  const double neg = - static_cast<double>(m);
+  const double pos =   static_cast<double>(m);
+  
+  if (m == 1 || m == -1) {
+    e(0) = 0.0;
+    e(1) = (neg * std::cos(theta) * std::cos(phi) + zi * std::sin(phi)) * N;
+    e(2) = (neg * std::cos(theta) * std::sin(phi) - zi * std::cos(phi)) * N;
+    e(3) =  pos * std::sin(theta) * N;
+    return e;
+  }
+
+  throw std::invalid_argument("MDirac::EpsSpin1: helicity m should be -1 or 1");
+}
+
 // Polarization vector eps^{(m)\mu}(k) for massive spin-1 with helicity m =
 // -1,0,1
 //
@@ -439,6 +438,10 @@ MMatrix<std::complex<double>> MDirac::iD_F(const M4Vec &q, double m) const {
 // m = 0   state depends also on magnitude
 //
 // [t,x,y,z] order convention!
+//
+// Should obey sum:
+// \sum_{\lambda = -1,0,1} \eps_\mu(k, \lambda) \eps_\nu(k, \lambda)*
+// = -g_{\mu\nu} + k_\mu k_\nu / m^2 
 //
 Tensor1<std::complex<double>, 4> MDirac::EpsMassiveSpin1(const M4Vec &k, int m) const {
   // \eps^{(0),-+1} (massless case applies here too)
@@ -468,7 +471,7 @@ Tensor1<std::complex<double>, 4> MDirac::EpsMassiveSpin1(const M4Vec &k, int m) 
 //
 // [t,x,y,z] convention!
 //
-// Should obey: (eps_{\mu\nu}^{(m)}(k))^* eps^{(n)\mu\nu}(k) ) = \delta_{mn}
+// Should obey sum: (eps_{\mu\nu}^{(m)}(k))^* eps^{(n)\mu\nu}(k) ) = \delta_{mn}
 //
 Tensor2<std::complex<double>, 4, 4> MDirac::EpsMassiveSpin2(const M4Vec &k, int m) const {
   if (!(m == -2 || m == -1 || m == 0 || m == 1 || m == 2)) {
@@ -528,10 +531,13 @@ MMatrix<std::complex<double>> MDirac::FSlash(const M4Vec &a) const {
 // \bar{u}_s'(p) \gamma^0 v_s(-p) = 0
 // \bar{v}_s'(p) \gamma^0 u_s(-p) = 0
 //
-bool MDirac::SpinorHELimit(const M4Vec &pi, const M4Vec &pf) const {
-  std::cout << "MDirac::SpinorHELimit:" << std::endl;
+double MDirac::TestSpinorHELimit(const M4Vec &pi, const M4Vec &pf) const {
+
+  std::cout << "MDirac::TestSpinorHELimit:" << std::endl;
 
   const M4Vec psum = pi + pf;
+
+  double ratiosum = 0.0;
 
   // Helicities
   for (const auto &hi : {1, 2}) {
@@ -554,6 +560,7 @@ bool MDirac::SpinorHELimit(const M4Vec &pi, const M4Vec &pf) const {
           const double               rhs = (psum % mu) * (psum % nu) * Delta(hi, hf);
 
           const double absratio = std::abs(std::real(lhs)) / std::abs(rhs);
+          ratiosum += absratio;
 
           if (absratio < 0.9 || absratio > 1.1) {
             std::cout << rang::fg::red;
@@ -571,27 +578,9 @@ bool MDirac::SpinorHELimit(const M4Vec &pi, const M4Vec &pf) const {
       }
     }
   }
+
   std::cout << std::endl << std::endl;
-  return true;
-}
-
-// Test gamma matrix anticommutation relation {\gamma^\mu, \gamma^nu} = 2
-// g^{\mu\nu} I_4
-bool MDirac::GammaAntiCommutation() const {
-  for (const auto &mu : LI) {
-    for (const auto &nu : LI) {
-      const MMatrix<std::complex<double>> AC_lo =
-          gamma_lo[mu] * gamma_lo[nu] + gamma_lo[nu] * gamma_lo[mu];
-      std::cout << "gamma_lo:: mu:" << mu << " nu: " << nu << std::endl;
-      AC_lo.Print();
-
-      const MMatrix<std::complex<double>> AC_up =
-          gamma_up[mu] * gamma_up[nu] + gamma_up[nu] * gamma_up[mu];
-      std::cout << "gamma_up:: mu:" << mu << " nu: " << nu << std::endl;
-      AC_up.Print();
-    }
-  }
-  return true;
+  return ratiosum;
 }
 
 // ----------------------------------------------------------------------
@@ -605,27 +594,112 @@ std::complex<double> MDirac::sProd(const M4Vec &p1, const M4Vec &p2, int helicit
 // Helicity u-spinor via massless gauge vector
 //
 std::vector<std::complex<double>> MDirac::uGauge(const M4Vec &p, int helicity) const {
-  const M4Vec l(100, 0, 0, 100);
+  const M4Vec l(100, 0, 0, 100); // arbitrary "gauge vector"
+  if      (BASIS == "D") { // Dirac
   return ((FSlash(p) + I4 * p.M()) / msqrt(2.0 * (p * l))) * uHelDirac(l, -helicity);
+  }
+  else if (BASIS == "C") { // Chiral
+  return ((FSlash(p) + I4 * p.M()) / msqrt(2.0 * (p * l))) * uHelChiral(l, -helicity);
+  }
+  throw std::invalid_argument("MDirac::uGauge: Unknown BASIS = " + BASIS);
 }
 
 // Helicity u-spinor via massless gauge vector
 //
 std::vector<std::complex<double>> MDirac::vGauge(const M4Vec &p, int helicity) const {
-  const M4Vec l(100, 0, 0, 100);
+  const M4Vec l(100, 0, 0, 100); // arbitrary "gauge vector"
+  if      (BASIS == "D") { // Dirac
   return (-(FSlash(p) - I4 * p.M()) / msqrt(2.0 * (p * l))) * vHelDirac(l, -helicity);
+  }
+  else if (BASIS == "C") { // Chiral
+  return (-(FSlash(p) - I4 * p.M()) / msqrt(2.0 * (p * l))) * vHelChiral(l, -helicity);
+  }
+  throw std::invalid_argument("MDirac::vGauge: Unknown BASIS = " + BASIS);
+}
+
+// Construct spin-1/2 helicity spinors (-1,1) [indexing with 0,1]
+std::array<std::vector<std::complex<double>>, 2> MDirac::SpinorStates(
+    const M4Vec &p, std::string type) const {
+  std::array<std::vector<std::complex<double>>, 2> spinor;
+
+  if      (BASIS == "D") { // Dirac
+    for (const auto &m : {0, 1}) {
+      if (type == "u") {    spinor[m] = MDirac::uHelDirac(p, SPINORSTATE[m]); }
+      if (type == "ubar") { spinor[m] = Bar(MDirac::uHelDirac(p, SPINORSTATE[m])); }
+
+      if (type == "v") {    spinor[m] = MDirac::vHelDirac(p, SPINORSTATE[m]); }
+      if (type == "vbar") { spinor[m] = Bar(MDirac::vHelDirac(p, SPINORSTATE[m])); }
+    }
+  }
+  else if (BASIS == "C") { // Chiral
+    for (const auto &m : {0, 1}) {
+      if (type == "u") {    spinor[m] = MDirac::uHelChiral(p, SPINORSTATE[m]); }
+      if (type == "ubar") { spinor[m] = Bar(MDirac::uHelChiral(p, SPINORSTATE[m])); }
+
+      if (type == "v") {    spinor[m] = MDirac::vHelChiral(p, SPINORSTATE[m]); }
+      if (type == "vbar") { spinor[m] = Bar(MDirac::vHelChiral(p, SPINORSTATE[m])); }
+    }
+  }
+  else {
+    throw std::invalid_argument("MDirac::SpinorStates: Unknown basis " + BASIS);
+  }
+
+  return spinor;
+}
+
+// Construct Massive Spin-1 polarization vectors (m = -1,0,1) [indexing with
+// 0,1,2]
+std::array<Tensor1<std::complex<double>, 4>, 3> MDirac::Spin1States(
+    const M4Vec &p, std::string type) const {
+  std::array<Tensor1<std::complex<double>, 4>, 3> eps;
+  const int lambda[3] = {-1, 0, 1};
+
+  for (const auto &m : {0, 1, 2}) {  // loop over helicities
+    eps[m] = MDirac::EpsMassiveSpin1(p, lambda[m]);
+
+    if (type == "conj") {  // Take complex conjugate per element
+      for (const auto &mu : LI) { eps[m](mu) = std::conj(eps[m](mu)); }
+    }
+  }
+  return eps;
 }
 
 // ----------------------------------------------------------------------
 // Test functions
 
+// Test gamma matrix anticommutation relation:
+// {\gamma^\mu, \gamma^nu} = 2g^{\mu\nu} I_4
+// 
+double MDirac::TestGammaAntiCommutation() const {
+
+  double diffsum = 0.0;
+
+  for (const auto &mu : LI) {
+    for (const auto &nu : LI) {
+      const MMatrix<std::complex<double>> AC_lo =
+          gamma_lo[mu] * gamma_lo[nu] + gamma_lo[nu] * gamma_lo[mu];
+      std::cout << "gamma_lo:: mu:" << mu << " nu: " << nu << std::endl;
+      AC_lo.Print();
+
+      const MMatrix<std::complex<double>> AC_up =
+          gamma_up[mu] * gamma_up[nu] + gamma_up[nu] * gamma_up[mu];
+      std::cout << "gamma_up:: mu:" << mu << " nu: " << nu << std::endl;
+      AC_up.Print();
+
+      diffsum += (AC_lo - AC_up).FrobNorm();
+    }
+  }
+  return diffsum;
+}
+
 // Test \slash{p}\slash{p} = p^2 I_4
-double MDirac::FSlashFSlash(const M4Vec &p) const {
+//
+double MDirac::TestFSlashFSlash(const M4Vec &p) const {
   const MMatrix<std::complex<double>> A = FSlash(p) * FSlash(p);
   const MMatrix<std::complex<double>> B = I4 * p.M2();
 
   const double norm = (A - B).FrobNorm();
-  std::cout << "FSlashFSlash:: Frobenius norm |A-B|_F: " << norm << std::endl;
+  std::cout << "MDirac::TestFSlashFSlash:: Frobenius norm |A-B|_F: " << norm << std::endl;
   return norm;
 }
 
@@ -661,30 +735,50 @@ double MDirac::FSlashFSlash(const M4Vec &p) const {
 // uHel      | OK      |  -
 // vHel      | OK      |  -
 //
+// mode == "helicity" (default), "gauge", "spin"
 //
-bool MDirac::DiracSpinorComplete(const M4Vec &p, const std::string &type,
-                                 const std::string &basis) const {
-  std::cout << "DiracSpinorComplete:: Type: " << type << std::endl;
+double MDirac::TestSpinorComplete(const M4Vec &p, const std::string &type, const std::string& mode) const {
+  std::cout << "MDirac::TestSpinorComplete: Type: " << type << std::endl;
   // InitGammaMatrices(basis);
   MMatrix<std::complex<double>> lhs(4, 4, 0.0);  // Init with zero!
   const double                  SIGN = ((type == "u") ? 1.0 : -1.0);
 
   for (const auto &lambda : SPINORSTATE) {
     std::vector<std::complex<double>> spinor;
-    if (type == "u") {
-      // spinor = uDirac(p,lambda);
-      // spinor = uHelDirac(p,lambda);
 
-      spinor = uHelChiral(p, lambda);
-      // spinor = uGauge(p,lambda);
+    if        (type == "u") {
+      if (BASIS == "D") {
+        spinor = uHelDirac(p,lambda);
+
+        if (mode == "spin"){
+          spinor = uDirac(p,lambda);
+        }
+      }
+      if (BASIS == "C") {
+        spinor = uHelChiral(p, lambda);        
+      }
+      if (mode == "gauge") {
+      spinor = uGauge(p,lambda);
+      }
+
     } else if (type == "v") {
-      // spinor = vDirac(p,lambda);
-      // spinor = vHelDirac(p,lambda);
+      if (BASIS == "D") {
+        spinor = vHelDirac(p,lambda);
 
-      spinor = vHelChiral(p, lambda);
-      // spinor = vGauge(p,lambda);
+        if (mode == "spin") {
+        spinor = vDirac(p,lambda);
+        }
+      }
+      if (BASIS == "C") {
+        spinor = vHelChiral(p, lambda);
+      }
+
+      if (mode == "gauge") {
+      spinor = vGauge(p,lambda);
+      }
+
     } else {
-      throw std::invalid_argument("DiracSpinorComplete: Unknown type (set u or v)");
+      throw std::invalid_argument("MDirac::TestDiracSpinorComplete: Unknown type (set u or v)");
     }
     // Adjoint
     const std::vector<std::complex<double>> spinorbar = Bar(spinor);
@@ -727,15 +821,19 @@ bool MDirac::DiracSpinorComplete(const M4Vec &p, const std::string &type,
   }
   std::cout << std::endl;
 
-  return true;
+  return frobnorm;
 }
+
 
 // Check massive spin1-polarization sum (completeness relation)
 //
-// \sum_{\lambda = -1,0.,1} eps^\mu_\lambda eps^{*\mu}_\lambda = -g^{\mu\nu} +
-// k^\mu k^\nu / M^2
+// \sum_{\lambda = -1,0.,1} eps^\mu(k,\lambda) eps^{\nu*}(k,\lambda)
+// = -g^{\mu\nu} + k^\mu k^\nu / M^2
 //
-bool MDirac::MassiveSpin1Complete(const M4Vec &k) const {
+double MDirac::TestMassiveSpin1Complete(const M4Vec &k) const {
+
+  double absdiffsum = 0.0;
+
   for (const auto &mu : LI) {
     for (const auto &nu : LI) {
       // Massive spin-1 helicities
@@ -744,12 +842,17 @@ bool MDirac::MassiveSpin1Complete(const M4Vec &k) const {
         const Tensor1<std::complex<double>, 4> eps = EpsMassiveSpin1(k, lambda);
         sum += eps(mu) * std::conj(eps(nu));
       }
+      const double lhs = std::real(sum);
+
       // Right hand side
       const double rhs = -g[mu][nu] + k[mu] * k[nu] / k.M2();
-      printf("CheckEps1Complete:: lhs = %0.2E, rhs = %0.2E \n", std::real(sum), rhs);
+      printf("MDirac::TestMassiveSpin1Complete: lhs = %0.2E, rhs = %0.2E \n", lhs, rhs);
+
+      absdiffsum += std::abs(lhs - rhs);
     }
   }
-  return true;
+  return absdiffsum;
 }
+
 
 }  // gra namespace ends

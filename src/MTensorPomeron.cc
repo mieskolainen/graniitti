@@ -2,10 +2,8 @@
 //
 // See:
 // [REFERENCE: Ewerz, Maniatis, Nachtmann, https://arxiv.org/pdf/1309.3478.pdf]
-// [REFERENCE: Lebiedowicz, Nachtmann, Szczurek,
-// https://arxiv.org/pdf/1801.03902.pdf]
-// [REFERENCE: Lebiedowicz, Nachtmann, Szczurek,
-// https://arxiv.org/pdf/1901.11490.pdf]
+// [REFERENCE: Lebiedowicz, Nachtmann, Szczurek, https://arxiv.org/pdf/1801.03902.pdf]
+// [REFERENCE: Lebiedowicz, Nachtmann, Szczurek, https://arxiv.org/pdf/1901.11490.pdf]
 //
 // (c) 2017-2019 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
@@ -118,6 +116,7 @@ std::complex<double> MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES
 
   // ------------------------------------------------------------------
 
+  // Resonance parameters
   const double M0    = resonance.p.mass;
   const double Gamma = resonance.p.width;
   const int    J     = resonance.p.spinX2 / 2.0;
@@ -143,11 +142,11 @@ std::complex<double> MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES
   // ====================================================================
   // Construct Central Vertex
 
-  Tensor4<std::complex<double>, 4, 4, 4, 4> CT;
+  Tensor4<std::complex<double>, 4, 4, 4, 4> CX;
 
   if (J == 0 && P == 1) {
     // Pomeron-Pomeron-Scalar coupling
-    CT = iG_PPS_total(lts.q1, lts.q2, M0, "scalar", resonance.g_Tensor);
+    CX = iG_PPS_total(lts.q1, lts.q2, M0, "scalar", resonance.g_Tensor);
 
     // Scalar BW-propagator
     std::complex<double> iD = iD_MES(lts.pfinal[0], M0, Gamma);
@@ -156,12 +155,12 @@ std::complex<double> MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES
     iD *= resonance.g_decay;
 
     FOR_EACH_4(LI);
-    CT(u, v, k, l) *= iD;
+    CX(u, v, k, l) *= iD;
     FOR_EACH_4_END;
 
   } else if (J == 0 && P == -1) {
     // Pomeron-Pomeron-Pseudoscalar coupling
-    CT = iG_PPS_total(lts.q1, lts.q2, M0, "pseudoscalar", resonance.g_Tensor);
+    CX = iG_PPS_total(lts.q1, lts.q2, M0, "pseudoscalar", resonance.g_Tensor);
 
     // Scalar BW-propagator
     std::complex<double> iD = iD_MES(lts.pfinal[0], M0, Gamma);
@@ -170,7 +169,7 @@ std::complex<double> MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES
     iD *= resonance.g_decay;
 
     FOR_EACH_4(LI);
-    CT(u, v, k, l) *= iD;
+    CX(u, v, k, l) *= iD;
     FOR_EACH_4_END;
 
   } else if (J == 2) {
@@ -188,10 +187,10 @@ std::complex<double> MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES
     AUX2(mu1, nu1) = iDF2(mu1, nu1, rho1, rho2) * iGf2PIPI(rho1, rho2);
 
     FOR_EACH_4(LI);
-    CT(u, v, k, l) = 0.0;
+    CX(u, v, k, l) = 0.0;
     for (auto const &rho : LI) {
       for (auto const &sigma : LI) {
-        CT(u, v, k, l) += iGPPf2({u, v, k, l, rho, sigma}) * AUX2(rho, sigma);
+        CX(u, v, k, l) += iGPPf2({u, v, k, l, rho, sigma}) * AUX2(rho, sigma);
       }
     }
     FOR_EACH_4_END;
@@ -222,7 +221,7 @@ std::complex<double> MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES
 
   // s-channel amplitude
   const std::complex<double> A = (-zi) * iG_1a(mu1, nu1) * iDP_1(mu1, nu1, alpha1, beta1) *
-                                 CT(alpha1, beta1, alpha2, beta2) * iDP_2(alpha2, beta2, mu2, nu2) *
+                                 CX(alpha1, beta1, alpha2, beta2) * iDP_2(alpha2, beta2, mu2, nu2) *
                                  iG_2b(mu2, nu2);
 
   lts.hamp.push_back(A);
@@ -319,17 +318,17 @@ std::complex<double> MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
   FTensor::Index<'l', 4> nu2;
 
   // DEDUCE mode
-  unsigned int SPINMODE = 0;
-  if (lts.decaytree[0].p.spinX2 == 0 && lts.decaytree[1].p.spinX2 == 0) {
-    SPINMODE = 0;
+  std::string SPINMODE;
+  if        (lts.decaytree[0].p.spinX2 == 0 && lts.decaytree[1].p.spinX2 == 0) {
+    SPINMODE = "scalar_pair";
   } else if (lts.decaytree[0].p.spinX2 == 1 && lts.decaytree[1].p.spinX2 == 1) {
-    SPINMODE = 1;
+    SPINMODE = "fermion_pair";
   } else if (lts.decaytree[0].p.spinX2 == 2 && lts.decaytree[1].p.spinX2 == 2) {
-    SPINMODE = 2;
+    SPINMODE = "vector_pair";
   } else {
     throw std::invalid_argument(
         "MTensorPomeron::ME4: Invalid daughter spin "
-        "(J=0,1/2,1 pairs supported)");
+        "(J = 0,1/2,1 pairs supported)");
   }
 
   // Two helicity states for incoming and outgoing protons
@@ -352,7 +351,8 @@ std::complex<double> MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
 
   // ==============================================================
   // 2 x pseudoscalar
-  if (SPINMODE == 0) {
+  if (SPINMODE == "scalar_pair") {
+
     // t-channel blocks
     const Tensor2<std::complex<double>, 4, 4> iG_ta = iG_Ppsps(pt, -p3);
     const std::complex<double> iDMES_t = iD_MES0(pt, M_mes);
@@ -371,7 +371,7 @@ std::complex<double> MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
       const std::complex<double> A = iG_1a(mu1, nu1) * iDP_13(mu1, nu1, alpha1, beta1) *
                                      iG_ta(alpha1, beta1) * iG_tb(alpha2, beta2) *
                                      iDP_24(alpha2, beta2, mu2, nu2) * iG_2b(mu2, nu2);
-      // Apply off-shell form FACTORs
+      // Apply off-shell form factors (two of them)
       M_t = A * iDMES_t * pow2(PARAM_REGGE::Meson_FF(pt.M2(), pow2(M_mes)));
     }
 
@@ -381,7 +381,7 @@ std::complex<double> MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
       const std::complex<double> A = iG_1a(mu1, nu1) * iDP_14(mu1, nu1, alpha1, beta1) *
                                      iG_ua(alpha1, beta1) * iG_ub(alpha2, beta2) *
                                      iDP_23(alpha2, beta2, mu2, nu2) * iG_2b(mu2, nu2);
-      // Apply off-shell form FACTORs
+      // Apply off-shell form factors (two of them)
       M_u = A * iDMES_u * pow2(PARAM_REGGE::Meson_FF(pu.M2(), pow2(M_mes)));
     }
 
@@ -393,7 +393,8 @@ std::complex<double> MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
 
   // ==============================================================
   // 2 x fermion
-  if (SPINMODE == 1) {
+  if (SPINMODE == "fermion_pair") {
+
     for (const auto &h3 : {0, 1}) {
       for (const auto &h4 : {0, 1}) {
         // Fermion propagator and connected
@@ -412,7 +413,7 @@ std::complex<double> MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
                                          iG_t(alpha2, beta2, alpha1, beta1) *
                                          iDP_24(alpha2, beta2, mu2, nu2) * iG_2b(mu2, nu2);
           // Apply off-shell form
-          // FACTORs
+          // factors (two of them)
           M_t = A * pow2(PARAM_REGGE::Baryon_FF(pt.M2(), pow2(M_mes)));
         }
 
@@ -423,7 +424,7 @@ std::complex<double> MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
                                          iG_u(alpha1, beta1, alpha2, beta2) *
                                          iDP_23(alpha2, beta2, mu2, nu2) * iG_2b(mu2, nu2);
           // Apply off-shell form
-          // FACTORs
+          // factors (two of them)
           M_u = A * pow2(PARAM_REGGE::Baryon_FF(pu.M2(), pow2(M_mes)));
         }
 
@@ -437,7 +438,8 @@ std::complex<double> MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
 
   // ==============================================================
   // 2 x vector meson
-  if (SPINMODE == 2) {
+  if (SPINMODE == "vector_pair") {
+
     // t-channel blocks
     const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_tA = iG_Pvv(pt, -p3);
     const Tensor2<std::complex<double>, 4, 4> iDMES_t = iD_VMES(pt, M_mes, Gamma_mes);
@@ -469,7 +471,7 @@ std::complex<double> MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
       Tensor2<std::complex<double>, 4, 4> B;
       B(rho2, rho4) =
           iG_2b(mu2, nu2) * iDP_24(alpha2, beta2, mu2, nu2) * iG_tB(rho2, rho4, alpha2, beta2);
-      // Apply off-shell form FACTORs
+      // Apply off-shell form factors (two of them)
       M_t(rho3, rho4) = A(rho3, rho1) * iDMES_t(rho1, rho2) * B(rho2, rho4) *
                         pow2(PARAM_REGGE::Meson_FF(pt.M2(), pow2(M_mes)));
     }
@@ -484,7 +486,7 @@ std::complex<double> MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
       Tensor2<std::complex<double>, 4, 4> B;
       B(rho2, rho3) =
           iG_2b(mu2, nu2) * iDP_23(alpha2, beta2, mu2, nu2) * iG_uB(rho2, rho3, alpha2, beta2);
-      // Apply off-shell form FACTORs
+      // Apply off-shell form factors (two of them)
       M_u(rho3, rho4) = A(rho4, rho1) * iDMES_u(rho1, rho2) * B(rho2, rho3) *
                         pow2(PARAM_REGGE::Meson_FF(pu.M2(), pow2(M_mes)));
     }
@@ -512,7 +514,7 @@ std::complex<double> MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
       lts.hamp.push_back(msqrt(Amp2));
     }
     // --------------------------------------------------
-
+    
     // Explicit polarization vectors
     if (OPTION == 2) {
       // Loop over massive Spin-1 helicity states
@@ -535,43 +537,15 @@ std::complex<double> MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
 
   // Get total amplitude squared 1/4 \sum_h |A_h|^2
   double SumAmp2 = 0.0;
-  for (std::size_t i = 0; i < lts.hamp.size(); ++i) { SumAmp2 += gra::math::abs2(lts.hamp[i]); }
+  for (std::size_t i = 0; i < lts.hamp.size(); ++i) {
+    SumAmp2 += math::abs2(lts.hamp[i]);
+  }
   SumAmp2 /= 4;  // Initial state helicity average
 
   return msqrt(SumAmp2);  // We expect amplitude
 }
 
-// Construct spin-1/2 helicity spinors (-1,1) [indexing with 0,1]
-std::array<std::vector<std::complex<double>>, 2> MTensorPomeron::SpinorStates(
-    const M4Vec &p, std::string type) const {
-  std::array<std::vector<std::complex<double>>, 2> spinor;
 
-  for (const auto &m : {0, 1}) {
-    if (type == "u") { spinor[m] = MDirac::uHelDirac(p, SPINORSTATE[m]); }
-    if (type == "ubar") { spinor[m] = Bar(MDirac::uHelDirac(p, SPINORSTATE[m])); }
-
-    if (type == "v") { spinor[m] = MDirac::vHelDirac(p, SPINORSTATE[m]); }
-    if (type == "vbar") { spinor[m] = Bar(MDirac::vHelDirac(p, SPINORSTATE[m])); }
-  }
-  return spinor;
-}
-
-// Construct Massive Spin-1 polarization vectors (m = -1,0,1) [indexing with
-// 0,1,2]
-std::array<Tensor1<std::complex<double>, 4>, 3> MTensorPomeron::Spin1States(
-    const M4Vec &p, std::string type) const {
-  std::array<Tensor1<std::complex<double>, 4>, 3> eps;
-  const int lambda[3] = {-1, 0, 1};
-
-  for (const auto &m : {0, 1, 2}) {  // loop over helicities
-    eps[m] = MDirac::EpsMassiveSpin1(p, lambda[m]);
-
-    if (type == "conj") {  // Take complex conjugate per element
-      for (const auto &mu : LI) { eps[m](mu) = std::conj(eps[m](mu)); }
-    }
-  }
-  return eps;
-}
 
 // -------------------------------------------------------------------------
 // Vertex functions
@@ -1322,7 +1296,7 @@ double MTensorPomeron::alpha_1R(double t) const { return 1.0 + delta_1R + ap_1R 
 double MTensorPomeron::alpha_2R(double t) const { return 1.0 + delta_2R + ap_2R * t; }
 
 // ----------------------------------------------------------------------
-// Form FACTORs
+// Form factors
 
 // Proton electromagnetic Dirac form FACTOR (electric)
 double MTensorPomeron::F1(double t) const {

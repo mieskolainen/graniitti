@@ -9,8 +9,8 @@ echo '* GRANIITTI automated nightly build script *'
 NAME="GRANIITTI"
 VERSION="0.36"
 TYPE="beta"
-DATE="04/05/2019"
-UPDATE="Improved input treatment"
+DATE="06/05/2019"
+UPDATE="Spinor & polarization unit testing"
 
 BUILD_DATE=`date -R`
 echo $BUILD_DATE
