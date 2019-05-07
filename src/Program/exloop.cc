@@ -15,7 +15,6 @@
 #include <iomanip>
 #include <iostream>
 #include <memory>
-#include <memory>
 #include <mutex>
 #include <random>
 #include <stdexcept>
