@@ -254,6 +254,17 @@ class MMatrix {
 
   // ------------------------------------------------------------------
 
+  // Sum all elements
+  T Sum() const {
+    T sum(0.0);
+    for (std::size_t i = 0; i < rows; ++i) {
+      for (std::size_t j = 0; j < cols; ++j) {
+        sum += this->operator()(i, j);
+      }
+    }
+    return sum;
+  }
+
   // Frobenius norm
   double FrobNorm() const {
     double sum = 0.0;
