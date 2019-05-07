@@ -385,12 +385,12 @@ class MGraniitti {
 
   void Generate();
 
-  std::string PROCESS = "";  // Physics process identifier
-
-  bool        WEIGHTED   = false;  // Unweighted or weighted event generation
-  int         NEVENTS    = 0;      // Number of events to be generated
-  int         CORES      = 0;      // Number of CPU cores (threads) in use
-  std::string INTEGRATOR = "";     // Integrator (VEGAS, FLAT, ...)
+  std::string PROCESS = "null";     // Physics process identifier
+  
+  bool        WEIGHTED   = false;   // Unweighted or weighted event generation
+  int         NEVENTS    = 0;       // Number of events to be generated
+  int         CORES      = 0;       // Number of CPU cores (threads) in use
+  std::string INTEGRATOR = "null";  // Integrator (VEGAS, FLAT, ...)
 
   // SILENT OUTPUT
   bool HILJAA = false;
@@ -409,12 +409,12 @@ class MGraniitti {
   bool hist_fusion_done = false;
 
   // Input string
-  std::string FULL_INPUT_STR = "";
+  std::string FULL_INPUT_STR  = "null";
 
   // HepMC outputfile
-  std::string FULL_OUTPUT_STR = "";
-  std::string OUTPUT          = "";
-  std::string FORMAT          = "";  // hepmc3 or hepmc2 or hepevt
+  std::string FULL_OUTPUT_STR = "null";
+  std::string OUTPUT          = "null";
+  std::string FORMAT          = "null";  // hepmc3 or hepmc2 or hepevt
 
   std::shared_ptr<HepMC3::GenRunInfo>        runinfo      = nullptr;
   std::shared_ptr<HepMC3::WriterAscii>       outputHepMC3 = nullptr;

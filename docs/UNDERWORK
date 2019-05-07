@@ -1,11 +1,7 @@
-GRANIITTI (BETA) FAQ: 15.4.2019
+GRANIITTI (BETA) FAQ: 07.05.2019
 
 mikael.mieskolainen@cern.ch
 -----------
-
-Algorithms under construction
-
-- Fully automated spherical harmonics inverse expansion nearly fully implemented
 
 Processes under construction/validation:
 
@@ -15,8 +11,9 @@ Processes under construction/validation:
 - "sliding regge helicity amplitudes" under implementation
 - perturbative meson pair (higher mass) continuum under construction
 - vetocuts are not activated
-- exhaustive unit testing of kinematics and dynamics, and consistency tests under implementation
 
-- a known problem with creating & destroying MGraniitti() instances in a loop with LHAPDF access.
-  If the PDFset is different -> faulty results. No effect for single ./gr instance.
-  Something to do with LHAPDF library memory model & its use here.
+
+Known problems:
+- Looping processes in sequencies with different LHAPDF sets causes crash (in ./bin/exloop) 
+  -> single instances of ./bin/gr not affected, ./bin/xscan perhaps. Something to do with LHAPDF memory access.
+

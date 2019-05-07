@@ -15,35 +15,83 @@
 #include "Graniitti/MForm.h"
 #include "Graniitti/MMath.h"
 #include "Graniitti/MMatrix.h"
+#include "Graniitti/MPDG.h"
+
 
 namespace gra {
+
 // Numerical integration parameters
-namespace MEikonalNumerics {
-extern const double MinKT2;
-extern const double MaxKT2;
-extern unsigned int NumberKT2;
-extern bool         logKT2;
+struct MEikonalNumerics {
 
-extern const double MinBT;
-extern const double MaxBT;
-extern unsigned int NumberBT;
-extern bool         logBT;
+  static constexpr double    MinKT2 = 1E-6;
+  static constexpr double    MaxKT2 = 25.0;
+  unsigned int NumberKT2 = 0;
+  bool         logKT2    = false;
 
-extern const double MinLoopKT;
-extern double       MaxLoopKT;
+  static constexpr double    MinBT  = 1E-6;
+  static constexpr double    MaxBT  = 10.0 / PDG::GeV2fm;
+  unsigned int NumberBT  = 0;
+  bool         logBT     = false;
 
-extern unsigned int NumberLoopKT;
-extern unsigned int NumberLoopPHI;
+  static constexpr double       FBIntegralMinKT = 1E-9;
+  static constexpr double       FBIntegralMaxKT = 30.0;
+  static constexpr unsigned int FBIntegralN     = 10000;
+  static constexpr double       MinLoopKT       = 1E-4;
 
-extern const double       FBIntegralMinKT;
-extern const double       FBIntegralMaxKT;
-extern const unsigned int FBIntegralN;
+  double          MaxLoopKT  = 1.75;
 
-std::string GetHashString();
+  unsigned int NumberLoopKT  = 15;  // Number of kt steps  (default minimum)
+  unsigned int NumberLoopPHI = 12;  // Number of phi steps (default minimum)
 
-void SetLoopDiscretization(int ND);
-void ReadParameters();
-}
+  // User setup (ND can be negative, to get below the default)
+  void SetLoopDiscretization(int ND) {
+    NumberLoopKT  = std::max(3, 3 * ND + (int)NumberLoopKT);
+    NumberLoopPHI = std::max(3, 3 * ND + (int)NumberLoopPHI);
+  }
+
+  // Unique hash
+  std::string GetHashString() {
+    std::string str =
+        std::to_string(MinKT2) + std::to_string(MaxKT2) +
+        std::to_string(NumberKT2) + std::to_string(logKT2) +
+        std::to_string(MinBT) + std::to_string(MaxBT) +
+        std::to_string(NumberBT) + std::to_string(logBT) +
+        std::to_string(FBIntegralMinKT) +
+        std::to_string(FBIntegralMaxKT) +
+        std::to_string(FBIntegralN);
+    return str;
+  }
+
+  // Read parameters from file
+  void ReadParameters() {
+
+    // Read and parse
+    using json = nlohmann::json;
+
+    const std::string inputfile = gra::aux::GetBasePath(2) + "/modeldata/" + "NUMERICS.json";
+    const std::string data      = gra::aux::GetInputData(inputfile);
+    json              j;
+
+    try {
+      j = json::parse(data);
+
+      // JSON block identifier
+      const std::string XID = "NUMERICS_EIKONAL";
+
+      NumberKT2 = j.at(XID).at("NumberKT2");
+      logKT2    = j.at(XID).at("logKT2");
+      NumberBT  = j.at(XID).at("NumberBT");
+      logBT     = j.at(XID).at("logBT");
+
+    } catch (...) {
+      std::string str = "ReadParameters: Error parsing " + inputfile +
+                        " (Check for extra/missing commas)";
+      throw std::invalid_argument(str);
+    }
+  }
+
+};
+
 
 // Interpolation container
 class IArray1D {
@@ -143,13 +191,12 @@ class MEikonal {
   // Get random number of cut Pomerons
   template <typename T>
   void S3GetRandomCutsBt(unsigned int &m, double &bt, T &rng) {
-    const double STEP =
-        (MEikonalNumerics::MaxBT - MEikonalNumerics::MinBT) / MEikonalNumerics::NumberBT;
+    const double STEP = (Numerics.MaxBT - Numerics.MinBT) / Numerics.NumberBT;
 
     // Numerical integral loop over impact parameter (b_t) space
     // C++11, thread_local is also static
     thread_local std::uniform_real_distribution<double>      flat(0, 1);
-    thread_local std::uniform_int_distribution<unsigned int> randbt(0, MEikonalNumerics::NumberBT);
+    thread_local std::uniform_int_distribution<unsigned int> randbt(0, Numerics.NumberBT);
     thread_local std::uniform_int_distribution<unsigned int> randm(1, MCUT - 1);  // 1,2,...
 
     // Acceptance-Rejection
@@ -164,7 +211,7 @@ class MEikonal {
         break;
       }
     }
-    bt = MEikonalNumerics::MinBT + n * STEP;
+    bt = Numerics.MinBT + n * STEP;
   }
 
   // Get random number of cut Pomerons
@@ -174,7 +221,7 @@ class MEikonal {
     // C++11, thread_local is also static
     thread_local std::uniform_real_distribution<double>      flat(0, 1);
     thread_local std::uniform_int_distribution<unsigned int> RANDI(1, P_cut.size() - 1);
-
+    
     // Acceptance-Rejection
     while (true) {
       const unsigned int m = RANDI(rng);
@@ -188,6 +235,9 @@ class MEikonal {
   IArray1D MBT;
   IArray1D MSA;
 
+  // Parameters
+  MEikonalNumerics Numerics;
+  
  private:
   static const unsigned int MCUT = 25;  // Maximum number of cut Pomerons
 

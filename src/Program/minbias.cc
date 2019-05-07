@@ -27,9 +27,9 @@
 #include "HepMC3/WriterAsciiHepMC2.h"
 
 // Own
-#include "Graniitti/MAux.h"
 #include "Graniitti/MGraniitti.h"
 #include "Graniitti/MTimer.h"
+#include "Graniitti/MAux.h"
 
 // Libraries
 #include "json.hpp"
@@ -39,6 +39,7 @@ using namespace gra;
 
 // Main
 int main(int argc, char *argv[]) {
+
   MTimer timer(true);
 
   try {
@@ -52,8 +53,7 @@ int main(int argc, char *argv[]) {
 
     // Input energy list
     std::string         input(argv[1]);
-    double              type     = 0;
-    std::vector<double> sqrtsvec = gra::aux::SplitStr(input, type);
+    std::vector<double> sqrtsvec = gra::aux::SplitStr(input, double(0.0));
 
     // Number of events
     int EVENTS = std::atoi(argv[2]);
@@ -63,59 +63,45 @@ int main(int argc, char *argv[]) {
     std::vector<std::string> json_in = {"./tests/run_minbias/sd.json", "./tests/run_minbias/dd.json",
                                         "./tests/run_minbias/nd.json"};
 
+    const std::vector<std::string> beam = {"p+", "p+"};
+
     // Loop over energies
     for (const auto &e : indices(sqrtsvec)) {
+
       std::vector<double> xs0     = {0, 0};
       std::vector<double> xs0_err = {0, 0};
 
       double xs_tot = 0.0;
       double xs_el  = 0.0;
       double xs_in  = 0.0;
-
-      // SET cross section
-      // xs0[0] = 13.0e-3; // sd
-      // xs0[1] = 7.5e-3;  // dd
-
+      
       // Beam and energy
-      const std::vector<std::string> beam   = {"p+", "p+"};
-      const std::vector<double>      energy = {sqrtsvec[e] / 2, sqrtsvec[e] / 2};
+      const std::vector<double> energy = {sqrtsvec[e] / 2, sqrtsvec[e] / 2};
 
-      // First get total inelastic
-      // First calculate screened SD and DD integrated cross section
-      {
-        gra::MGraniitti g;
+      // Then calculate screened SD and DD integrated cross section
+      for (const auto& p : indices(json_in)) {
 
-        // Read process input from file and initialize only Eikonals
-        g.ReadInput(json_in[0]);
-
-        // Set beam and energy
-        g.proc->SetInitialState(beam, energy);
-
-        // Get total, elastic and inelastic cross section
-        g.InitEikonalOnly();
-        g.proc->Eikonal.GetTotXS(xs_tot, xs_el, xs_in);
-      }
-
-      // First calculate screened SD and DD integrated cross section
-      for (unsigned int i = 0; i < 2; ++i) {
-        gra::MGraniitti g;
+        gra::MGraniitti* g = new MGraniitti();
 
         // Read process input from file
-        g.ReadInput(json_in[i]);
-        g.SetNumberOfEvents(0);
+        g->ReadInput(json_in[p]);
+        //g->SetNumberOfEvents(0);
 
-        g.proc->SetInitialState(beam, energy);
-        g.proc->SetScreening(true);
+        g->proc->SetInitialState(beam, energy);
+        g->proc->SetScreening(true);
 
         // ** ALWAYS LAST **
-        // gen.proc->post_Constructor("MODELPARAM.json");
-        g.Initialize();
+        g->Initialize();
 
-        // > Get total, elastic and inelastic cross section
-        g.proc->Eikonal.GetTotXS(xs_tot, xs_el, xs_in);
+        // Get process cross sections
+        g->GetXS(xs0[p], xs0_err[p]);
 
-        // Get process
-        g.GetXS(xs0[i], xs0_err[i]);
+        // Total inelastic
+        if (p == 0) {
+          g->proc->Eikonal.GetTotXS(xs_tot, xs_el, xs_in);
+        }
+
+        delete g;
       }
 
       // Non-diffractive = Total_inelastic - (screened_SD + screened_DD);
@@ -161,7 +147,6 @@ int main(int argc, char *argv[]) {
         g->SetHepMC2Output(outputHepMC2, OUTPUTNAME);
 
         // g->proc->SetScreening(false);
-        // g->proc->post_Constructor("MODELPARAM.json");
 
         // ** Always Last! **
         g->Initialize();
@@ -171,10 +156,15 @@ int main(int argc, char *argv[]) {
 
         // Generate events
         g->Generate();
-      }
 
+        delete g;
+      }
+      
       // Finalize
       outputHepMC2->close();
+
+      std::cout << "CMS-energy: " << sqrtsvec[e] << " GeV : Generated in total " << EVENTS << " minimum bias events" << std::endl << std::endl;
+
     }
   } catch (const std::invalid_argument &e) {
     gra::aux::PrintGameOver();

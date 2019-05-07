@@ -77,7 +77,7 @@ void MQuasiElastic::post_Constructor() {
   if (ProcPtr.CHANNEL == "DD") { ProcPtr.LIPSDIM = 3; };
   if (ProcPtr.CHANNEL == "ND") { ProcPtr.LIPSDIM = 1; };  // Keep it 1
 
-  MEikonalNumerics::MaxLoopKT = 3.0;
+  Eikonal.Numerics.MaxLoopKT = 3.0;
 }
 
 // Fiducial user cuts
@@ -178,8 +178,9 @@ double MQuasiElastic::EventWeight(const std::vector<double> &randvec, AuxIntData
       // ** EVENT WEIGHT **
       const double LIPS   = B3PhaseSpaceWeight();   // Phase-space weight
       const double MatESQ = abs2(S3ScreenedAmp());  // Matrix element squared
-      W                   = LIPS * B3IntegralVolume() * MatESQ *
-          GeV2barn;  // Total weight: phase-space x |M|^2 x barn units
+
+      // Total weight: phase-space x |M|^2 x barn units
+      W                   = LIPS * B3IntegralVolume() * MatESQ * GeV2barn;
     }
 
     aux.amplitude_ok = CheckInfNan(W);
@@ -197,7 +198,9 @@ double MQuasiElastic::EventWeight(const std::vector<double> &randvec, AuxIntData
 
     const double LIPS   = B3PhaseSpaceWeight();     // Phase-space weight
     const double MatESQ = abs2(PolySoft(randvec));  // Matrix element squared
-    W = LIPS * MatESQ * GeV2barn;  // Total weight: phase-space x |M|^2 x barn units
+
+    //W = LIPS * MatESQ * GeV2barn;  // Total weight: phase-space x |M|^2 x barn units
+    W = LIPS * MatESQ;  // Total weight:
 
     aux.amplitude_ok = CheckInfNan(W);
 
@@ -396,7 +399,8 @@ bool MQuasiElastic::EventRecord(HepMC3::GenEvent &evt) {
 void MQuasiElastic::PrintInit(bool silent) const {
   if (!silent) {
     PrintSetup();
-
+    
+    // Diffractive processes
     if (ProcPtr.CHANNEL != "ND") {
       std::string proton1 = "-----------EL--------->";
       std::string proton2 = "-----------EL--------->";
@@ -430,7 +434,7 @@ void MQuasiElastic::PrintInit(bool silent) const {
       if (ProcPtr.CHANNEL != "EL") {
         printf("- xi  [min, max]   = [%0.3E, %0.3E] (xi == M^2/s) \n", gcuts.XI_min, gcuts.XI_max);
       }
-      printf("- |t| [max]        = %0.3f GeV^2 \n", pow2(MEikonalNumerics::MaxLoopKT));
+      printf("- |t| [max]        = %0.3f GeV^2 \n", pow2(Eikonal.Numerics.MaxLoopKT));
       std::cout << std::endl;
 
       // Fiducial cuts
@@ -443,12 +447,22 @@ void MQuasiElastic::PrintInit(bool silent) const {
       } else {
         std::cout << "- Not active" << std::endl;
       }
-    } else {
-      std::vector<std::string> feynmangraph = {
-          "-----------|x|--------->", "           |x|--------->", "           |x|--------->",
-          "           |x|--------->", "           |x|--------->", "-----------|x|--------->"};
 
-      for (const auto &i : indices(feynmangraph)) { std::cout << feynmangraph[i] << std::endl; }
+    // Non-Diffractive
+    } else {
+
+      for (std::size_t i = 0; i < 7; ++i) { 
+        if (i > 0 && i < 6) {
+          if (SCREENING) {
+            std::cout << rang::fg::red << "     **    " << rang::style::reset;
+          } else {
+            std::cout << rang::fg::red << "           " << rang::style::reset;
+          }
+        } else {
+          std::cout << "-----------";
+        }
+        std::cout << "|x|--------->" << std::endl;
+      }
     }
     std::cout << std::endl;
   }
@@ -715,7 +729,7 @@ bool MQuasiElastic::B3RandomKin(const std::vector<double> &randvec) {
   gra::kinematics::Two2TwoLimit(lts.s, s1, s2, s3, s4, t_min, t_max);
 
   // Then limit the "diffraction cone" due to screening loop limit
-  t_min = std::min(std::max(-pow2(MEikonalNumerics::MaxLoopKT), t_min), t_max);
+  t_min = std::min(std::max(-pow2(Eikonal.Numerics.MaxLoopKT), t_min), t_max);
   // t_min = -6.0;
 
   // Finally sample the Mandelstam t within valid range

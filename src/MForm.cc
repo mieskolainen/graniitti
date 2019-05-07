@@ -79,11 +79,11 @@ double b = 0.0;
 
 // Monopole parameters
 namespace PARAM_MONOPOLE {
-int         En       = 0;    // Bound state energy level
-double      M0       = 0.0;  // Monopole mass
-double      Gamma0   = 0.0;  // Monopolium width
-std::string coupling = "";   // Coupling scenarios
-int         gn       = 0;    // Dirac charge 1,2,3,...
+int         En       = 0;      // Bound state energy level
+double      M0       = 0.0;    // Monopole mass
+double      Gamma0   = 0.0;    // Monopolium width
+std::string coupling = "null"; // Coupling scenarios
+int         gn       = 0;      // Dirac charge 1,2,3,...
 
 bool initialized = false;
 

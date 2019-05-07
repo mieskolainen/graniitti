@@ -386,11 +386,12 @@ void SetSoftParam(double *par) {
   PARAM_SOFT::fc3 = par[7];
 
   // Initialization loops -> put just enough for the event by event accuracy
-  MEikonalNumerics::NumberBT  = 500;
-  MEikonalNumerics::NumberKT2 = 500;
+  //MEikonalNumerics::NumberBT  = 500;
+  //MEikonalNumerics::NumberKT2 = 500;
 }
 
 }  // Namespace fitsoft ends
+
 
 // ===============================================================
 // Note that MINUIT uses Fortran indexing, i.e. parameter 0 in C++

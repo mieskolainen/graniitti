@@ -130,7 +130,7 @@ class MProcess : public MUserHistograms {
     std::vector<gra::MParticle> beams = {beam1, beam2};
     return beams;
   }
-
+  
   // Phase space dimension
   unsigned int GetdLIPSDim() { return ProcPtr.LIPSDIM; }
 
@@ -141,9 +141,9 @@ class MProcess : public MUserHistograms {
   void SetEikonal(const MEikonal &in) { Eikonal = in; }
   MEikonal                        GetEikonal() const { return Eikonal; }
 
-  // Set LHAPDF
-  void SetLHAPDF(const std::string &in) { gra::LHAPDFSET = in; }
-
+  // Set LHAPDFSET name
+  void SetLHAPDF(const std::string &in) { lts.LHAPDFSET = in; }
+  
   // Set cuts
   void SetGenCuts(const gra::GENCUT &in) { gcuts = in; }
   void SetFidCuts(const gra::FIDCUT &in) { fcuts = in; }

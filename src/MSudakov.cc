@@ -25,84 +25,14 @@
 #include "LHAPDF/LHAPDF.h"
 
 // Libraries
-#include "json.hpp"
 #include "rang.hpp"
 
 namespace gra {
+
 using aux::indices;
 using math::msqrt;
 using math::pow2;
 using math::zi;
-
-namespace MSudakovNumerics {
-double       q2_MIN = 0.0;
-double       q2_MAX = 0.0;
-double       M_MIN  = 0.0;
-double       M_MAX  = 0.0;
-double       x_MIN  = 0.0;
-const double x_MAX  = 1.0 - 1E-9;
-
-// Numerical integral discretization [SET HERE]
-const unsigned int SudakovIntegralN = 1000;
-const unsigned int ShuvaevIntegralN = 400;
-
-// Logarithmic stepping true/false
-std::vector<bool> SUDA_log_ON;
-std::vector<bool> SHUV_log_ON;
-
-// Number of discrete intervals
-std::vector<unsigned int> SUDA_N;
-std::vector<unsigned int> SHUV_N;
-
-// CMS energy
-double sqrts = 0.0;
-
-bool DEBUG = false;
-
-void ReadParameters() {
-  // Read and parse
-  using json                  = nlohmann::json;
-  const std::string inputfile = gra::aux::GetBasePath(2) + "/modeldata/" + "NUMERICS.json";
-  const std::string data      = gra::aux::GetInputData(inputfile);
-  json              j;
-
-  try {
-    j = json::parse(data);
-
-    // JSON block identifier
-    const std::string XID = "NUMERICS_SUDAKOV";
-
-    q2_MIN = j[XID]["q2_MIN"];
-    q2_MAX = j[XID]["q2_MAX"];
-    M_MIN  = j[XID]["M_MIN"];
-    // M_MAX = j[XID]["M_MAX"]; // Post-Setup
-    // x_MIN = j[XID]["x_MIN"]; // Post-Setup
-    // x_MAX = j[XID]["x_MAX"]; // Set above
-
-    // Logarithmic stepping true/false [assign needed for <cast>]
-    std::vector<bool> xx = j[XID]["SUDA"]["log_ON"];
-    SUDA_log_ON          = xx;
-    std::vector<bool> yy = j[XID]["SHUV"]["log_ON"];
-    SHUV_log_ON          = yy;
-
-    // Number of node points [assign needed for <cast>]
-    std::vector<unsigned int> nn = j[XID]["SUDA"]["N"];
-    SUDA_N                       = nn;
-    std::vector<unsigned int> mm = j[XID]["SHUV"]["N"];
-    SHUV_N                       = mm;
-
-    // Discretization
-    // ShuvaevIntegralN  = j[XID]["ShuvaevIntegralN"];
-    // SudakovIntegralN = j[XID]["SudakovIntegralN"];
-
-    DEBUG = j[XID]["DEBUG"];
-  } catch (...) {
-    std::string str = "MSudakovNumerics::ReadParameters: Error parsing " + inputfile +
-                      " (Check for extra/missing commas)";
-    throw std::invalid_argument(str);
-  }
-}
-}
 
 // Constructor
 MSudakov::MSudakov() {}
@@ -115,14 +45,14 @@ MSudakov::~MSudakov() {
 // Init
 void MSudakov::Init(double _sqrts, const std::string &PDFSET, bool init_arrays) {
   // First this
-  MSudakovNumerics::ReadParameters();
+  Numerics.ReadParameters();
 
   // Setup energy dependent boundaries
-  MSudakovNumerics::sqrts = _sqrts;
-  MSudakovNumerics::M_MAX = _sqrts;
+  Numerics.sqrts = _sqrts;
+  Numerics.M_MAX = _sqrts;
 
   // Collinear case: M^2 = x_1x_2s, let x_1 = 1.0 gives minimum x_2 = M^2/s
-  MSudakovNumerics::x_MIN = math::pow2(MSudakovNumerics::M_MIN / MSudakovNumerics::sqrts);
+  Numerics.x_MIN = math::pow2(Numerics.M_MIN / Numerics.sqrts);
 
   // InitLHAPDF("CT10nlo");
   InitLHAPDF(PDFSET);
@@ -136,11 +66,11 @@ void MSudakov::InitArrays() {
     std::cout << "Initializing <Sudakov> array:" << std::endl;
 
     // q2,M
-    veto.sqrts = MSudakovNumerics::sqrts;  // FIRST THIS
-    veto.Set(0, "q2", MSudakovNumerics::q2_MIN, MSudakovNumerics::q2_MAX,
-             MSudakovNumerics::SUDA_N[0], MSudakovNumerics::SUDA_log_ON[0]);
-    veto.Set(1, "M", MSudakovNumerics::M_MIN, MSudakovNumerics::M_MAX, MSudakovNumerics::SUDA_N[1],
-             MSudakovNumerics::SUDA_log_ON[1]);
+    veto.sqrts = Numerics.sqrts;  // FIRST THIS
+    veto.Set(0, "q2", Numerics.q2_MIN, Numerics.q2_MAX,
+             Numerics.SUDA_N[0], Numerics.SUDA_log_ON[0]);
+    veto.Set(1, "M", Numerics.M_MIN, Numerics.M_MAX, Numerics.SUDA_N[1],
+             Numerics.SUDA_log_ON[1]);
     veto.InitArray();  // Initialize (call last!)
 
     const unsigned long hash     = gra::aux::djb2hash(veto.GetHashString());
@@ -165,11 +95,11 @@ void MSudakov::InitArrays() {
     std::cout << "Initializing <Shuvaev> array:" << std::endl;
 
     // q2,x
-    spdf.sqrts = MSudakovNumerics::sqrts;  // FIRST THIS
-    spdf.Set(0, "q2", MSudakovNumerics::q2_MIN, MSudakovNumerics::q2_MAX,
-             MSudakovNumerics::SHUV_N[0], MSudakovNumerics::SHUV_log_ON[0]);
-    spdf.Set(1, "x", MSudakovNumerics::x_MIN, MSudakovNumerics::x_MAX, MSudakovNumerics::SHUV_N[1],
-             MSudakovNumerics::SHUV_log_ON[1]);
+    spdf.sqrts = Numerics.sqrts;  // FIRST THIS
+    spdf.Set(0, "q2", Numerics.q2_MIN, Numerics.q2_MAX,
+             Numerics.SHUV_N[0], Numerics.SHUV_log_ON[0]);
+    spdf.Set(1, "x", Numerics.x_MIN, Numerics.x_MAX, Numerics.SHUV_N[1],
+             Numerics.SHUV_log_ON[1]);
     spdf.InitArray();  // Initialize (call last!)
 
     const unsigned long hash     = gra::aux::djb2hash(spdf.GetHashString());
@@ -193,7 +123,7 @@ void MSudakov::InitArrays() {
   initialized = true;
   std::cout << std::endl;
 
-  if (MSudakovNumerics::DEBUG) { TestPDF(); }
+  if (Numerics.DEBUG) { TestPDF(); }
 }
 
 // Return gluon xg(x,Q2) from LHAPDF
@@ -236,18 +166,18 @@ void MSudakov::InitLHAPDF(const std::string &pdfname) {
 
 // PDF test routine
 void MSudakov::TestPDF() const {
-  const double MINLOGX = std::log10(MSudakovNumerics::x_MIN);
-  const double MAXLOGX = std::log10(MSudakovNumerics::x_MAX);
+  const double MINLOGX = std::log10(Numerics.x_MIN);
+  const double MAXLOGX = std::log10(Numerics.x_MAX);
   const int    NX      = 5;  // Number of points - 1
   const double stepX   = (MAXLOGX - MINLOGX) / NX;
 
-  const double MINLOGQ2 = std::log10(MSudakovNumerics::q2_MIN);
-  const double MAXLOGQ2 = std::log10(MSudakovNumerics::q2_MAX);
+  const double MINLOGQ2 = std::log10(Numerics.q2_MIN);
+  const double MAXLOGQ2 = std::log10(Numerics.q2_MAX);
   const int    NQ2      = 5;  // Number of points - 1
   const double stepQ2   = (MAXLOGQ2 - MINLOGQ2) / NQ2;
 
-  const double MINLOGM = std::log10(MSudakovNumerics::M_MIN);
-  const double MAXLOGM = std::log10(MSudakovNumerics::M_MAX);
+  const double MINLOGM = std::log10(Numerics.M_MIN);
+  const double MAXLOGM = std::log10(Numerics.M_MAX);
   const int    NM      = 5;  // Number of points - 1
   const double stepM   = (MAXLOGM - MINLOGM) / NM;
 
@@ -372,18 +302,18 @@ double MSudakov::fg_xQ2M(double x, double q2, double M) const {
 std::pair<double, double> MSudakov::Shuvaev_H(double q2, double x) {
   const double y_MIN  = x / 4.0;
   const double y_MAX  = 1.0;
-  const double y_STEP = (y_MAX - y_MIN) / MSudakovNumerics::ShuvaevIntegralN;
+  const double y_STEP = (y_MAX - y_MIN) / Numerics.ShuvaevIntegralN;
 
   double Hg  = 0.0;
   double dHg = 0.0;
 
   // Check that we are within valid domain (take into account floating points)
   const double EPS = 1e-5;
-  if (x >= MSudakovNumerics::x_MIN * (1 - EPS) && x <= MSudakovNumerics::x_MAX * (1 + EPS) &&
-      q2 >= MSudakovNumerics::q2_MIN * (1 - EPS) && q2 <= MSudakovNumerics::q2_MAX * (1 + EPS)) {
+  if (x >= Numerics.x_MIN * (1 - EPS) && x <= Numerics.x_MAX * (1 + EPS) &&
+      q2 >= Numerics.q2_MIN * (1 - EPS) && q2 <= Numerics.q2_MAX * (1 + EPS)) {
     // N+1!
-    std::vector<double> fA(MSudakovNumerics::ShuvaevIntegralN + 1, 0.0);
-    std::vector<double> fB(MSudakovNumerics::ShuvaevIntegralN + 1, 0.0);
+    std::vector<double> fA(Numerics.ShuvaevIntegralN + 1, 0.0);
+    std::vector<double> fB(Numerics.ShuvaevIntegralN + 1, 0.0);
 
     for (const auto &i : indices(fA)) {
       const double y        = y_MIN + i * y_STEP;
@@ -433,7 +363,7 @@ std::pair<double, double> MSudakov::Sudakov_T(double qt2, double mu) {
   const double MIN = std::log(qt2);
 
   // Discretization
-  const double STEP = (MAX - MIN) / MSudakovNumerics::SudakovIntegralN;
+  const double STEP = (MAX - MIN) / Numerics.SudakovIntegralN;
 
   // [OUTER kt^2-integral]:
   // Change of a variable: u := ln(kt^2) [du = (du/dkt2) dkt2]
@@ -441,7 +371,7 @@ std::pair<double, double> MSudakov::Sudakov_T(double qt2, double mu) {
   // much improved.
   //
   // [INNER z-integral is analytic]:
-  std::vector<double> f(MSudakovNumerics::SudakovIntegralN + 1, 0.0);
+  std::vector<double> f(Numerics.SudakovIntegralN + 1, 0.0);
   for (const auto &i : indices(f)) {
     const double u     = MIN + i * STEP;
     const double kt2   = std::exp(u);

@@ -18,6 +18,7 @@
 #include "Graniitti/MMatOper.h"
 #include "Graniitti/MMath.h"
 #include "Graniitti/MMatrix.h"
+#include "Graniitti/MSudakov.h"
 
 namespace gra {
 namespace kinematics {
@@ -1451,7 +1452,7 @@ class PARAM_RES {
 
   // (Complex) production coupling constant
   std::complex<double> g = 0.0;
-
+  
   // Form factor
   bool g_FF = false;
 
@@ -1470,6 +1471,29 @@ class PARAM_RES {
 
 // Lorentz scalars and other common kinematic variables
 struct LORENTZSCALAR {
+
+  LORENTZSCALAR() {}
+  ~LORENTZSCALAR() {
+    if (GlobalSudakovPtr != nullptr) {
+      delete GlobalSudakovPtr;
+    }
+    if (GlobalPdfPtr != nullptr) {
+      delete GlobalPdfPtr;
+    }
+  }
+  
+  // --------------------------------------------------------------------
+  // PDF access
+  // Sudakov/pdf routines
+  MSudakov* GlobalSudakovPtr = nullptr;
+
+  // Normal pdfs
+  std::string  LHAPDFSET = "null";
+  LHAPDF::PDF* GlobalPdfPtr = nullptr;
+  int pdf_trials = 0;
+  // --------------------------------------------------------------------
+
+
   // Resonances read from JSON input
   std::map<std::string, PARAM_RES> RESONANCES;
 

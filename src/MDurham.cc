@@ -12,7 +12,6 @@
 #include "Graniitti/MAux.h"
 #include "Graniitti/MDurham.h"
 #include "Graniitti/MForm.h"
-#include "Graniitti/MGlobals.h"
 #include "Graniitti/MKinematics.h"
 #include "Graniitti/MPDG.h"
 #include "Graniitti/MSudakov.h"
@@ -41,61 +40,6 @@ static const std::vector<int> fs2 = {MM, MP, PM, PP};
 // Central system J^P = 0^+, 0^-, +2^+, -2^+
 enum SPINPARITY { P0, M0, P2, M2 };  // Implicit conversion to int
 
-// Durham loop integral discretization technical parameters
-namespace Durham {
-unsigned int N_qt  = 0;  // Number of qt discretization intervals
-unsigned int N_phi = 0;  // Number of phi discretization intervals
-
-double qt2_MIN = 0;  // Loop momentum qt^2 minimum (GeV^2)
-double qt2_MAX = 0;  // Loop momentum qt^2 maximum (GeV^2)
-
-std::string PDF_scale    = "MIN";  // Scheme
-double      alphas_scale = 4.0;    // PDF factorization scale
-double      MAXCOS       = 0.9;    // Meson amplitude |cos(theta*)| < MAXCOS
-
-void ReadParameters() {
-  using json = nlohmann::json;
-
-  const std::string inputfile =
-      gra::aux::GetBasePath(2) + "/modeldata/" + gra::MODELPARAM + "/GENERAL.json";
-  const std::string data = gra::aux::GetInputData(inputfile);
-  json              j;
-
-  try {
-    j = json::parse(data);
-
-    // JSON block identifier
-    const std::string XID = "PARAM_DURHAM_QCD";
-    N_qt                  = j.at(XID).at("N_qt");
-    N_phi                 = j.at(XID).at("N_phi");
-    qt2_MIN               = j.at(XID).at("qt2_MIN");
-    qt2_MAX               = j.at(XID).at("qt2_MAX");
-    PDF_scale             = j.at(XID).at("PDF_scale");
-    alphas_scale          = j.at(XID).at("alphas_scale");
-    MAXCOS                = j.at(XID).at("MAXCOS");
-
-    // Now calculate rest
-    qt_MIN = msqrt(Durham::qt2_MIN);
-    qt_MAX = msqrt(Durham::qt2_MAX);
-
-    qt_STEP  = (Durham::qt_MIN - Durham::qt_MAX) / Durham::N_qt;
-    phi_STEP = (2.0 * math::PI) / Durham::N_phi;
-
-    initialized = true;
-  } catch (...) {
-    std::string str =
-        "Durham::ReadParameters: Error parsing " + inputfile + " (Check for extra/missing commas)";
-    throw std::invalid_argument(str);
-  }
-}
-
-// THESE ARE CALCULATED FROM ABOVE
-double qt_MIN      = 0;
-double qt_MAX      = 0;
-double qt_STEP     = 0;
-double phi_STEP    = 0;
-bool   initialized = false;
-}
 
 // Durham QCD / KMR model
 //
@@ -109,19 +53,26 @@ bool   initialized = false;
 //
 std::complex<double> MDurham::DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process) {
   // First run, init parameters
-  // @@ MULTITHREADING LOCK @@
+  // @@ MULTITHREADING LOCK NEEDED FOR THE INITIALIZATION @@
   gra::g_mutex.lock();
-  if (gra::GlobalSudakovPtr->initialized == false) {
+
+  // Not created yet
+  if (lts.GlobalSudakovPtr == nullptr) {
+    lts.GlobalSudakovPtr   = new MSudakov();
+  }
+
+  // Not initialized yet
+  if (lts.GlobalSudakovPtr->initialized == false) {
     try {
-      gra::GlobalSudakovPtr->Init(lts.sqrt_s, gra::LHAPDFSET, true);
+      lts.GlobalSudakovPtr->Init(lts.sqrt_s, lts.LHAPDFSET, true);
     } catch (...) {
       gra::g_mutex.unlock();  // need to release here, otherwise get infinite lock
       throw;
     }
   }
-  if (!Durham::initialized) {
+  if (!Param.initialized) {
     try {
-      Durham::ReadParameters();
+      Param.ReadParameters();
     } catch (...) {
       gra::g_mutex.unlock();  // need to release here, otherwise get infinite lock
       throw;
@@ -135,9 +86,7 @@ std::complex<double> MDurham::DurhamQCD(gra::LORENTZSCALAR &lts, const std::stri
                                                        std::vector<std::complex<double>>(4, 0.0));
 
     // Madgraph
-    gra::g_mutex.lock();
-    const double alpha_s = gra::GlobalSudakovPtr->AlphaS_Q2(lts.s_hat);
-    gra::g_mutex.unlock();
+    const double alpha_s = lts.GlobalSudakovPtr->AlphaS_Q2(lts.s_hat);
     AmpMG5_gg_gg.CalcAmp(lts, alpha_s);
 
     // Amplitude evaluated outside the Qt-loop (approximation)
@@ -151,9 +100,7 @@ std::complex<double> MDurham::DurhamQCD(gra::LORENTZSCALAR &lts, const std::stri
                                                        std::vector<std::complex<double>>(4, 0.0));
 
     // Madgraph
-    gra::g_mutex.lock();
-    const double alpha_s = gra::GlobalSudakovPtr->AlphaS_Q2(lts.s_hat);
-    gra::g_mutex.unlock();
+    const double alpha_s = lts.GlobalSudakovPtr->AlphaS_Q2(lts.s_hat);
     AmpMG5_gg_qqbar.CalcAmp(lts, alpha_s);
 
     // Amplitude evaluated outside the Qt-loop (approximation)
@@ -278,19 +225,19 @@ const static int helicities[ncomb][nexternal] =
 // Alternative (semi-ad-hoc) scenarios for the scale choise
 inline void MDurham::DScaleChoise(double qt2, double q1_2, double q2_2, double &Q1_2_scale,
                                   double &Q2_2_scale) const {
-  if (Durham::PDF_scale == "MIN") {
+  if        (Param.PDF_scale == "MIN") {
     Q1_2_scale = std::min(qt2, q1_2);
     Q2_2_scale = std::min(qt2, q2_2);
-  } else if (Durham::PDF_scale == "MAX") {
+  } else if (Param.PDF_scale == "MAX") {
     Q1_2_scale = std::max(qt2, q1_2);
     Q2_2_scale = std::max(qt2, q2_2);
-  } else if (Durham::PDF_scale == "IN") {
+  } else if (Param.PDF_scale == "IN") {
     Q1_2_scale = q1_2;
     Q2_2_scale = q2_2;
-  } else if (Durham::PDF_scale == "EX") {
+  } else if (Param.PDF_scale == "EX") {
     Q1_2_scale = qt2;
     Q2_2_scale = qt2;
-  } else if (Durham::PDF_scale == "AVG") {
+  } else if (Param.PDF_scale == "AVG") {
     Q1_2_scale = (qt2 + q1_2) / 2.0;
     Q2_2_scale = (qt2 + q2_2) / 2.0;
   } else {
@@ -319,16 +266,16 @@ std::complex<double> MDurham::DQtloop(gra::LORENTZSCALAR &                      
 
   // *************************************************************************
   // ** Process scale (GeV) / Sudakov suppression kt^2 integral upper bound **
-  const double MU = msqrt(lts.s_hat / Durham::alphas_scale);
+  const double MU = msqrt(lts.s_hat / Param.alphas_scale);
   // *************************************************************************
 
   // Init 2D-Simpson weight matrix (will be calculated only once, being
   // static), C++11 handles multithreaded static initialization
-  const static MMatrix<double> WSimpson = math::Simpson38Weight2D(Durham::N_qt, Durham::N_phi);
+  const static MMatrix<double> WSimpson = math::Simpson38Weight2D(Param.N_qt, Param.N_phi);
 
   // NOTE N + 1, init with zero!
   std::vector<MMatrix<std::complex<double>>> f(
-      Amp.size(), MMatrix<std::complex<double>>(Durham::N_qt + 1, Durham::N_phi + 1, 0.0));
+      Amp.size(), MMatrix<std::complex<double>>(Param.N_qt + 1, Param.N_phi + 1, 0.0));
 
   // Spin-Parity
   std::vector<std::complex<double>> JzP(4, 0.0);
@@ -339,13 +286,13 @@ std::complex<double> MDurham::DQtloop(gra::LORENTZSCALAR &                      
   //
 
   // Linearly discretized qt-loop, N+1!
-  for (std::size_t i = 0; i < Durham::N_qt + 1; ++i) {
-    const double qt  = Durham::qt_MIN + i * Durham::qt_STEP;
+  for (std::size_t i = 0; i < Param.N_qt + 1; ++i) {
+    const double qt  = Param.qt_MIN + i * Param.qt_STEP;
     const double qt2 = pow2(qt);
 
     // Linearly discretized phi in [0,2pi), N+1!
-    for (std::size_t j = 0; j < Durham::N_phi + 1; ++j) {
-      const double qphi = j * Durham::phi_STEP;
+    for (std::size_t j = 0; j < Param.N_phi + 1; ++j) {
+      const double qphi = j * Param.phi_STEP;
 
       // --------------------------------------------------------------------------
       // Loop vector
@@ -368,12 +315,12 @@ std::complex<double> MDurham::DQtloop(gra::LORENTZSCALAR &                      
       DScaleChoise(qt2, q1_2, q2_2, Q1_2_scale, Q2_2_scale);
 
       // Minimum scale cutoff
-      if (Q1_2_scale < Durham::qt2_MIN || Q2_2_scale < Durham::qt2_MIN) { continue; }
+      if (Q1_2_scale < Param.qt2_MIN || Q2_2_scale < Param.qt2_MIN) { continue; }
 
       // --------------------------------------------------------------------------
       // Get amplitude level pdfs
-      const double fg_1 = gra::GlobalSudakovPtr->fg_xQ2M(lts.x1, Q1_2_scale, MU);
-      const double fg_2 = gra::GlobalSudakovPtr->fg_xQ2M(lts.x2, Q2_2_scale, MU);
+      const double fg_1 = lts.GlobalSudakovPtr->fg_xQ2M(lts.x1, Q1_2_scale, MU);
+      const double fg_2 = lts.GlobalSudakovPtr->fg_xQ2M(lts.x2, Q2_2_scale, MU);
 
       // Amplitude weight:
       // * \pi^2 : see original KMR papers
@@ -392,7 +339,7 @@ std::complex<double> MDurham::DQtloop(gra::LORENTZSCALAR &                      
   // Evaluate the total numerical integral for each helicity amplitude
   std::vector<std::complex<double>> sum(f.size(), 0.0);
   for (std::size_t h = 0; h < f.size(); ++h) {
-    sum[h] = math::Simpson38Integral2D(f[h], WSimpson, Durham::qt_STEP, Durham::phi_STEP);
+    sum[h] = math::Simpson38Integral2D(f[h], WSimpson, Param.qt_STEP, Param.phi_STEP);
   }
 
   // *****Make sure it is of right size!*****
@@ -433,11 +380,8 @@ std::complex<double> MDurham::DQtloop(gra::LORENTZSCALAR &                      
 void MDurham::Dgg2chic0(const gra::LORENTZSCALAR &                      lts,
                         std::vector<std::vector<std::complex<double>>> &Amp,
                         const std::vector<double> &qt1, const std::vector<double> &qt2) const {
-  // @@ MUTEX LOCK @@
-  gra::g_mutex.lock();
-  const double alpha_s = gra::GlobalSudakovPtr->AlphaS_Q2(lts.s_hat / Durham::alphas_scale);
-  gra::g_mutex.unlock();
-  // @@ MUTEX LOCK @@
+
+  const double alpha_s = lts.GlobalSudakovPtr->AlphaS_Q2(lts.s_hat / Param.alphas_scale);
 
   const double gs2   = 4.0 * PI * alpha_s;  // coupling
   const double K_NLO = 1.68;                // NLO correction
@@ -480,11 +424,8 @@ void MDurham::Dgg2chic0(const gra::LORENTZSCALAR &                      lts,
 //
 void MDurham::Dgg2gg(const gra::LORENTZSCALAR &                      lts,
                      std::vector<std::vector<std::complex<double>>> &Amp) {
-  // @@ MUTEX LOCK @@
-  gra::g_mutex.lock();
-  const double alpha_s = gra::GlobalSudakovPtr->AlphaS_Q2(lts.s_hat / Durham::alphas_scale);
-  gra::g_mutex.unlock();
-  // @@ MUTEX LOCK @@
+
+  const double alpha_s = lts.GlobalSudakovPtr->AlphaS_Q2(lts.s_hat / Param.alphas_scale);
 
   // Vertex factor coupling, gs^2 = 4 pi alpha_s
   double norm = 4.0 * PI * alpha_s;
@@ -636,11 +577,7 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR &                      lts,
   const double NC       = 3;  // Three colors
   const double CF       = (pow2(NC) - 1.0) / (NC * 2.0);  // SU(3) algebra
 
-  // @@ MUTEX LOCK @@
-  gra::g_mutex.lock();
-  const double alpha_s = gra::GlobalSudakovPtr->AlphaS_Q2(lts.s_hat / Durham::alphas_scale);
-  gra::g_mutex.unlock();
-  // @@ MUTEX LOCK @@
+  const double alpha_s = lts.GlobalSudakovPtr->AlphaS_Q2(lts.s_hat / Param.alphas_scale);
 
   const double shat      = lts.s_hat;
   const double m         = lts.decaytree[0].p4.M();
@@ -652,7 +589,7 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR &                      lts,
   // ** Hard angular cut-off **
   // some sub-amplitudes are singular when |costheta| -> 1
 
-  if (std::abs(costheta) > Durham::MAXCOS) {
+  if (std::abs(costheta) > Param.MAXCOS) {
     Amp[0] = std::vector<std::complex<double>>(4, 0.0);  // Return zero
     return;
   }

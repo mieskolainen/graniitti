@@ -6,20 +6,19 @@
 #ifndef MGLOBALS_H
 #define MGLOBALS_H
 
+// Own
+#include "Graniitti/MSudakov.h"
+
+// LHAPDF
+#include "LHAPDF/LHAPDF.h"
+
+
 namespace gra {
 // ======================================================================
 // These variables are initialized by MGraniitti.cc
 
 // Model tune
 extern std::string MODELPARAM;
-
-// Sudakov/pdf routines
-extern MSudakov *GlobalSudakovPtr;
-
-// Normal pdfs
-extern std::string  LHAPDFSET;
-extern LHAPDF::PDF *GlobalPdfPtr;
-extern int          pdf_trials;
 
 // Multithreading lock
 extern std::mutex g_mutex;

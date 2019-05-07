@@ -30,90 +30,8 @@ using gra::math::pow2;
 using gra::math::zi;
 
 namespace gra {
-// Eikonal screening numerical integration parameters
-// N.B. Compile will make significant optimizations if boundaries
-// are const variables.
-namespace MEikonalNumerics {
-constexpr double MinKT2    = 1E-6;
-constexpr double MaxKT2    = 25.0;
-unsigned int     NumberKT2 = 0;
-bool             logKT2    = false;
-
-constexpr double MinBT    = 1E-6;
-constexpr double MaxBT    = 10.0 / PDG::GeV2fm;
-unsigned int     NumberBT = 0;
-bool             logBT    = false;
-
-constexpr double       FBIntegralMinKT = 1E-9;
-constexpr double       FBIntegralMaxKT = 30.0;
-constexpr unsigned int FBIntegralN     = 10000;
-
-constexpr double MinLoopKT = 1E-4;
-double           MaxLoopKT = 1.75;
-
-std::string GetHashString() {
-  std::string str =
-      std::to_string(MEikonalNumerics::MinKT2) + std::to_string(MEikonalNumerics::MaxKT2) +
-      std::to_string(MEikonalNumerics::NumberKT2) + std::to_string(MEikonalNumerics::logKT2) +
-      std::to_string(MEikonalNumerics::MinBT) + std::to_string(MEikonalNumerics::MaxBT) +
-      std::to_string(MEikonalNumerics::NumberBT) + std::to_string(MEikonalNumerics::logBT) +
-      std::to_string(MEikonalNumerics::FBIntegralMinKT) +
-      std::to_string(MEikonalNumerics::FBIntegralMaxKT) +
-      std::to_string(MEikonalNumerics::FBIntegralN);
-  return str;
-}
-
-void ReadParameters() {
-  // Read and parse
-  using json = nlohmann::json;
-
-  const std::string inputfile = gra::aux::GetBasePath(2) + "/modeldata/" + "NUMERICS.json";
-  const std::string data      = gra::aux::GetInputData(inputfile);
-  json              j;
-
-  try {
-    j = json::parse(data);
-
-    // JSON block identifier
-    const std::string XID = "NUMERICS_EIKONAL";
-
-    // MaxKT2  = j[XID]["MaxKT2"];
-    NumberKT2 = j[XID]["NumberKT2"];
-    logKT2    = j[XID]["logKT2"];
-
-    // MaxBT   = j[XID]["MaxBT"]; MaxBT /= gra::math::GeV2fm; // Input as fermi,
-    // program
-    // uses GeV^{-1}
-    NumberBT = j[XID]["NumberBT"];
-    logBT    = j[XID]["logBT"];
-
-    // FBIntegralMaxKT = j[XID]["FBIntegralMaxKT"];
-    // FBIntegralN     = j[XID]["FBIntegralN"];
-
-    // MaxLoopKT = j[XID]["MaxLoopKT"];
-  } catch (...) {
-    std::string str = "MEikonalNumerics::ReadParameters: Error parsing " + inputfile +
-                      " (Check for extra/missing commas)";
-    throw std::invalid_argument(str);
-  }
-}
-
-// -----------------------------------------
-
-// Screening loop (minimum values)
-unsigned int NumberLoopKT  = 15;  // Number of kt steps
-unsigned int NumberLoopPHI = 12;  // Number of phi steps
-
-// User setup (ND can be negative, to get below the default)
-void SetLoopDiscretization(int ND) {
-  NumberLoopKT  = std::max(3, 3 * ND + (int)NumberLoopKT);
-  NumberLoopPHI = std::max(3, 3 * ND + (int)NumberLoopPHI);
-}
-
-}  // Namespace MEikonal ends
 
 MEikonal::MEikonal() {}
-
 MEikonal::~MEikonal() {}
 
 // Return total, elastic, inelastic cross sections
@@ -123,11 +41,15 @@ void MEikonal::GetTotXS(double &tot, double &el, double &in) const {
   in  = sigma_inel;
 }
 
+
 // Construct density and amplitude
 void MEikonal::S3Constructor(double s_in, const std::vector<gra::MParticle> &initialstate_in,
                              bool onlyeikonal) {
+
+  std::cout << "MEikonal::S3Constructor:" << std::endl;
+
   // This first
-  MEikonalNumerics::ReadParameters();
+  Numerics.ReadParameters();
 
   // Mandelstam s and initial state
   s            = s_in;
@@ -141,13 +63,12 @@ void MEikonal::S3Constructor(double s_in, const std::vector<gra::MParticle> &ini
   {
     std::cout << "Initializing <eikonal density> array:" << std::endl;
     MBT.sqrts = msqrt(s);  // FIRST THIS
-    MBT.Set("bt", MEikonalNumerics::MinBT, MEikonalNumerics::MaxBT, MEikonalNumerics::NumberBT,
-            MEikonalNumerics::logBT);
+    MBT.Set("bt", Numerics.MinBT, Numerics.MaxBT, Numerics.NumberBT, Numerics.logBT);
     MBT.InitArray();  // Initialize (call last!)
 
     const std::string hstr = std::to_string(s) + std::to_string(INITIALSTATE[0].pdg) + "_" +
                              std::to_string(INITIALSTATE[1].pdg) + PARAM_SOFT::GetHashString() +
-                             MEikonalNumerics::GetHashString();
+                             Numerics.GetHashString();
     const unsigned long hash     = gra::aux::djb2hash(hstr);
     const std::string   filename = gra::aux::GetBasePath(2) + "/eikonal/" + "MBT_" +
                                  std::to_string(INITIALSTATE[0].pdg) + "_" +
@@ -178,13 +99,13 @@ void MEikonal::S3Constructor(double s_in, const std::vector<gra::MParticle> &ini
     std::cout << "Initializing <eikonal amplitude> array:" << std::endl;
 
     MSA.sqrts = msqrt(s);  // FIRST THIS
-    MSA.Set("kt2", MEikonalNumerics::MinKT2, MEikonalNumerics::MaxKT2, MEikonalNumerics::NumberKT2,
-            MEikonalNumerics::logKT2);
+    MSA.Set("kt2", Numerics.MinKT2, Numerics.MaxKT2, Numerics.NumberKT2,
+            Numerics.logKT2);
     MSA.InitArray();  // Initialize (call last!)
 
     const std::string hstr = std::to_string(s) + std::to_string(INITIALSTATE[0].pdg) +
                              std::to_string(INITIALSTATE[1].pdg) + PARAM_SOFT::GetHashString() +
-                             MEikonalNumerics::GetHashString();
+                             Numerics.GetHashString();
 
     const unsigned long hash     = gra::aux::djb2hash(hstr);
     const std::string   filename = gra::aux::GetBasePath(2) + "/eikonal/" + "MSA_" +
@@ -223,11 +144,11 @@ void MEikonal::S3Constructor(double s_in, const std::vector<gra::MParticle> &ini
 // [REFERENCE: Ewerz, Maniatis, Nachtmann, https://arxiv.org/abs/1309.3478]
 std::complex<double> MEikonal::S3Density(double bt) const {
   // Discretization of kt
-  const double kt_STEP = (MEikonalNumerics::FBIntegralMaxKT - MEikonalNumerics::FBIntegralMinKT) /
-                         MEikonalNumerics::FBIntegralN;
+  const double kt_STEP = (Numerics.FBIntegralMaxKT - Numerics.FBIntegralMinKT) /
+                         Numerics.FBIntegralN;
 
   // N + 1!
-  std::vector<std::complex<double>> f(MEikonalNumerics::FBIntegralN + 1, 0.0);
+  std::vector<std::complex<double>> f(Numerics.FBIntegralN + 1, 0.0);
 
   // Initial state configuration [NOT IMPLEMENTED = SAME FOR pp and ppbar]
   // pp
@@ -241,7 +162,7 @@ std::complex<double> MEikonal::S3Density(double bt) const {
 
   // Loop over
   for (const auto &i : indices(f)) {
-    const double kt = MEikonalNumerics::FBIntegralMinKT + i * kt_STEP;
+    const double kt = Numerics.FBIntegralMinKT + i * kt_STEP;
 
     // negative, with Mandelstam t ~= -kt^2
     const double t = -gra::math::pow2(kt);
@@ -284,14 +205,14 @@ std::complex<double> MEikonal::S3Density(double bt) const {
 std::complex<double> MEikonal::S3Screening(double kt2) const {
   // Local discretization
   const double STEP =
-      (MEikonalNumerics::MaxBT - MEikonalNumerics::MinBT) / MEikonalNumerics::FBIntegralN;
+      (Numerics.MaxBT - Numerics.MinBT) / Numerics.FBIntegralN;
 
   const double                      kt = gra::math::msqrt(kt2);
-  std::vector<std::complex<double>> f(MEikonalNumerics::FBIntegralN + 1, 0.0);
+  std::vector<std::complex<double>> f(Numerics.FBIntegralN + 1, 0.0);
 
   // Numerical integral loop over impact parameter (b_t) space
   for (const auto &i : indices(f)) {
-    const double               bt = MEikonalNumerics::MinBT + i * STEP;
+    const double               bt = Numerics.MinBT + i * STEP;
     const std::complex<double> XI = MBT.Interpolate1D(bt);
 
     // I. STANDARD EIKONAL APPROXIMATION
@@ -318,7 +239,7 @@ void MEikonal::S3CalcXS() {
 
   // Local discretization
   const unsigned int N    = 2 * 3000;  // even number
-  const double       STEP = (MEikonalNumerics::MaxBT - MEikonalNumerics::MinBT) / N;
+  const double       STEP = (Numerics.MaxBT - Numerics.MinBT) / N;
 
   // Two channel eikonal eigenvalue solutions obtained via symbolic
   // calculation see e.g.
@@ -349,7 +270,7 @@ void MEikonal::S3CalcXS() {
 
   // Numerical integral loop over impact parameter (b_t) space
   for (const auto &i : indices(f_tot)) {
-    const double bt = MEikonalNumerics::MinBT + i * STEP;
+    const double bt = Numerics.MinBT + i * STEP;
 
     // Calculate density
     const std::complex<double> XI = MBT.Interpolate1D(bt);
@@ -564,12 +485,12 @@ void MEikonal::S3InitCutPomerons() {
 
   // Numerical integral loop over impact parameter (b_t) space
   const double STEP =
-      (MEikonalNumerics::MaxBT - MEikonalNumerics::MinBT) / MEikonalNumerics::NumberBT;
+      (Numerics.MaxBT - Numerics.MinBT) / Numerics.NumberBT;
   P_array = std::vector<std::vector<double>>(
-      MCUT, std::vector<double>(MEikonalNumerics::NumberBT + 1, 0.0));
+      MCUT, std::vector<double>(Numerics.NumberBT + 1, 0.0));
 
-  for (std::size_t j = 0; j < MEikonalNumerics::NumberBT + 1; ++j) {
-    const double bt = MEikonalNumerics::MinBT + j * STEP;
+  for (std::size_t j = 0; j < Numerics.NumberBT + 1; ++j) {
+    const double bt = Numerics.MinBT + j * STEP;
     const double XI = std::imag(MBT.Interpolate1D(bt));
 
     // Poisson probabilities P_m(bt)
@@ -584,7 +505,7 @@ void MEikonal::S3InitCutPomerons() {
   P_cut.resize(MCUT, 0.0);
   for (std::size_t m = 0; m < MCUT; ++m) {
     P_cut[m] = gra::math::CSIntegral(P_array[m], STEP) /
-               (MEikonalNumerics::MaxBT - MEikonalNumerics::MinBT);
+               (Numerics.MaxBT - Numerics.MinBT);
     printf("P_cut[m=%2lu] = %0.5f \n", m, P_cut[m]);
   }
   std::cout << "--------------------------" << std::endl;

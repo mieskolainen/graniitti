@@ -426,21 +426,24 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy_DZ(gra::LORENTZSCALAR 
 // Gamma-Gamma LUX-pdf (use at \mu > 10 GeV)
 // *** UNDER TESTING ***
 inline std::complex<double> MSubProc::GetBareAmplitude_yy_LUX(gra::LORENTZSCALAR &lts) {
-  // @@ MULTITHREADING LOCK @@
+  
+  // @@ MULTITHREADING LOCK NEEDED FOR INITIALIZATION @@
   gra::g_mutex.lock();
-  if (gra::GlobalPdfPtr == nullptr) {
-    std::string pdfname = gra::LHAPDFSET;
+
+  // Not created yet
+  if (lts.GlobalPdfPtr == nullptr) {
+    std::string pdfname = lts.LHAPDFSET;
 
   retry:
     try {
-      gra::GlobalPdfPtr = LHAPDF::mkPDF(pdfname, 0);
-      gra::pdf_trials   = 0;  // fine
+      lts.GlobalPdfPtr = LHAPDF::mkPDF(pdfname, 0);
+      lts.pdf_trials   = 0;  // fine
     } catch (...) {
-      ++gra::pdf_trials;
+      ++lts.pdf_trials;
       std::string str = "MSubProc::InitLHAPDF: Problem with reading '" + pdfname + "'";
       aux::AutoDownloadLHAPDF(pdfname);  // Try autodownload
       gra::g_mutex.unlock();             // Remember before throw, otherwise deadlock
-      if (gra::pdf_trials >= 2) {        // too many failures
+      if (lts.pdf_trials >= 2) {        // too many failures
         throw std::invalid_argument(str);
       } else {
         goto retry;
@@ -462,9 +465,6 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy_LUX(gra::LORENTZSCALAR
     throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown CHANNEL = " + CHANNEL);
   }
 
-  // @@ MULTITHREADING LOCK @@
-  gra::g_mutex.lock();
-
   // pdf factorization scale
   const double Q2 = lts.s_hat / 4.0;
 
@@ -473,13 +473,11 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy_LUX(gra::LORENTZSCALAR
   double f2 = 0.0;
   try {
     // Divide x out
-    f1 = gra::GlobalPdfPtr->xfxQ2(PDG::PDG_gamma, lts.x1, Q2) / lts.x1;
-    f2 = gra::GlobalPdfPtr->xfxQ2(PDG::PDG_gamma, lts.x2, Q2) / lts.x2;
+    f1 = lts.GlobalPdfPtr->xfxQ2(PDG::PDG_gamma, lts.x1, Q2) / lts.x1;
+    f2 = lts.GlobalPdfPtr->xfxQ2(PDG::PDG_gamma, lts.x2, Q2) / lts.x2;
   } catch (...) {
-    gra::g_mutex.unlock();  // remember before throw, otherwise deadlock
     throw std::invalid_argument("MSubProc:yy_LUX: Failed evaluating LHAPDF");
   }
-  gra::g_mutex.unlock();
 
   const double tot = f1 * f2 * math::abs2(A) * (lts.s / lts.s_hat);
   return msqrt(tot);

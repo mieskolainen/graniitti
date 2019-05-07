@@ -42,19 +42,12 @@
 #include "rang.hpp"
 
 namespace gra {
+
 // ******************************************************************
 // GLOBALS from MGlobals.h: initialized by MGraniitti()
 
 // Model tune
 std::string MODELPARAM;
-
-// Sudakov/pdf routines
-MSudakov *GlobalSudakovPtr;
-
-// Normal pdfs
-std::string  LHAPDFSET;
-LHAPDF::PDF *GlobalPdfPtr;
-int          pdf_trials;
 
 // Multithreading
 std::mutex         g_mutex;
@@ -71,16 +64,14 @@ using gra::math::pow3;
 using gra::math::zi;
 using gra::math::PI;
 
+
 // Constructor
 MGraniitti::MGraniitti() {
+
   // ******************************************************************
   // Init program globals
 
-  gra::MODELPARAM         = "";
-  gra::GlobalSudakovPtr   = new MSudakov();
-  gra::LHAPDFSET          = "";
-  gra::GlobalPdfPtr       = nullptr;
-  gra::pdf_trials         = 0;
+  gra::MODELPARAM         = "null";
   gra::globalExceptionPtr = nullptr;
   // ******************************************************************
 
@@ -90,22 +81,9 @@ MGraniitti::MGraniitti() {
 
 // Destructor
 MGraniitti::~MGraniitti() {
-  // ******************************************************************
-  // Destroy & reset program globals
-  if (gra::GlobalSudakovPtr != nullptr) {
-    // std::cout << "Destructing GlobalSudakovPtr" << std::endl;
-    delete gra::GlobalSudakovPtr;
-    gra::GlobalSudakovPtr = nullptr;
-  }
-  if (gra::GlobalPdfPtr != nullptr) {
-    // std::cout << "Destructing GlobalPdfPtr" << std::endl;
-    delete gra::GlobalPdfPtr;
-    gra::GlobalPdfPtr = nullptr;
-  }
-  // ******************************************************************
 
   // Destroy processes
-  for (unsigned int i = 0; i < pvec.size(); ++i) {
+  for (std::size_t i = 0; i < pvec.size(); ++i) {
     if (pvec[i] != nullptr) { delete pvec[i]; }
   }
 
@@ -597,7 +575,7 @@ void MGraniitti::ReadIntegralParam(const std::string &inputfile) {
   // Numerical loop integration
   const int ND = j.at(XID).at("POMLOOP").at("ND");
   AssertRange(ND, {-10, 10}, "POMLOOP::ND", true);
-  MEikonalNumerics::SetLoopDiscretization(ND);
+  proc->Eikonal.Numerics.SetLoopDiscretization(ND);
 
   // FLAT (naive) MC parameters
   MCPARAM mpam;

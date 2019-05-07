@@ -152,23 +152,23 @@ complex<double> MProcess::S3ScreenedAmp() {
   // @@ C++11 handles multithreaded static initialization @@
   // Discretization steps
   const static double StepKT =
-      (MEikonalNumerics::MaxLoopKT - MEikonalNumerics::MinLoopKT) / MEikonalNumerics::NumberLoopKT;
+      (Eikonal.Numerics.MaxLoopKT - Eikonal.Numerics.MinLoopKT) / Eikonal.Numerics.NumberLoopKT;
   const double        MinPhi  = 0.0;
   const double        MaxPhi  = 2.0 * gra::math::PI;
-  const static double StepPhi = (MaxPhi - MinPhi) / MEikonalNumerics::NumberLoopPHI;
+  const static double StepPhi = (MaxPhi - MinPhi) / Eikonal.Numerics.NumberLoopPHI;
 
   // Init 2D-Simpson weight matrix (will be calculated only once, being
   // static)
   const static MMatrix<double> WSimpson =
-      gra::math::Simpson38Weight2D(MEikonalNumerics::NumberLoopPHI, MEikonalNumerics::NumberLoopKT);
+      gra::math::Simpson38Weight2D(Eikonal.Numerics.NumberLoopPHI, Eikonal.Numerics.NumberLoopKT);
 
   // NOTE N + 1, init with zero!
-  MMatrix<std::complex<double>> f(MEikonalNumerics::NumberLoopPHI + 1,
-                                  MEikonalNumerics::NumberLoopKT + 1, 0.0);
+  MMatrix<std::complex<double>> f(Eikonal.Numerics.NumberLoopPHI + 1,
+                                  Eikonal.Numerics.NumberLoopKT + 1, 0.0);
 
   std::vector<MMatrix<std::complex<double>>> f_hamp(
-      lts.hamp.size(), MMatrix<std::complex<double>>(MEikonalNumerics::NumberLoopPHI + 1,
-                                                     MEikonalNumerics::NumberLoopKT + 1, 0.0));
+      lts.hamp.size(), MMatrix<std::complex<double>>(Eikonal.Numerics.NumberLoopPHI + 1,
+                                                     Eikonal.Numerics.NumberLoopKT + 1, 0.0));
 
   // 2D-integral
   //
@@ -184,11 +184,11 @@ complex<double> MProcess::S3ScreenedAmp() {
   //        *6
   //
 
-  for (std::size_t i = 0; i < MEikonalNumerics::NumberLoopPHI + 1; ++i) {
+  for (std::size_t i = 0; i < Eikonal.Numerics.NumberLoopPHI + 1; ++i) {
     const double phi = MinPhi + i * StepPhi;
 
-    for (std::size_t j = 0; j < MEikonalNumerics::NumberLoopKT + 1; ++j) {
-      const double kt  = MEikonalNumerics::MinLoopKT + j * StepKT;
+    for (std::size_t j = 0; j < Eikonal.Numerics.NumberLoopKT + 1; ++j) {
+      const double kt  = Eikonal.Numerics.MinLoopKT + j * StepKT;
       const double kt2 = gra::math::pow2(kt);
 
       // -------------------------------------------------------------------
@@ -272,8 +272,8 @@ complex<double> MProcess::S3ScreenedAmp() {
 std::complex<double> MProcess::S3screeningSD(double kt2) {
 
   // Local discretization
-  const int N = 2 * MEikonalNumerics::IntegralN; // even number
-  const double step = (MEikonalNumerics::MaxBT-1)/(double) N;
+  const int N = 2 * Eikonal.Numerics.IntegralN; // even number
+  const double step = (Eikonal.Numerics.MaxBT-1)/(double) N;
 
   std::vector<std::complex<double>> f(N, 0.0);
 

@@ -189,11 +189,11 @@ void experiment(bool screening) {
   input.push_back(MEASUREMENT("gg2chic0.json", 0, 0, 0));
 
   // ...
-  input.push_back(MEASUREMENT("gg2gg.json", 0, 0, 0));
+  input.push_back(MEASUREMENT("gg2gg.json",    0, 0, 0));
 
   // ...
-  // input.push_back(MEASUREMENT("gg2MMbar.json",     0, 0, 0));
-
+  //input.push_back(MEASUREMENT("gg2MMbar.json", 0, 0, 0));
+  
   // ...
   input.push_back(MEASUREMENT("yy2Higgs.json", 0, 0, 0));
 
@@ -237,46 +237,35 @@ void experiment(bool screening) {
   if (screening) { MODEMAX = 2; }
 
   // LOOP over ALL input
-  for (auto const &p : indices(input)) {
+  for (const auto &p : indices(input)) {
+
     // Screening off/on
     for (int mode = 0; mode < MODEMAX; ++mode) {
+
       MGraniitti *gen = new MGraniitti();
 
-      try {
-        // Silent output
-        gen->HILJAA = false;
+      // Silent output
+      gen->HILJAA = false;
 
-        // Read process input from file
-        gen->ReadInput(BASEPATH + input[p].card);
+      // Read process input from file
+      gen->ReadInput(BASEPATH + input[p].card);
 
-        // Set spesific parameters
-        gen->proc->SetScreening(mode);
-        gen->proc->SetExcitation(false);
-        gen->proc->SetHistograms(0);
+      // Set spesific parameters
+      gen->proc->SetScreening(mode);
+      gen->proc->SetExcitation(false);
+      gen->proc->SetHistograms(0);
 
-        // Initialize (always last!)
-        gen->Initialize();
+      // Initialize (always last!)
+      gen->Initialize();
 
-        // Get total, elastic and inelastic cross section
-        double xs_tot = 0.0;
-        double xs_el  = 0.0;
-        double xs_in  = 0.0;
-        gen->proc->Eikonal.GetTotXS(xs_tot, xs_el, xs_in);
+      // Get total, elastic and inelastic cross section
+      double xs_tot = 0.0;
+      double xs_el  = 0.0;
+      double xs_in  = 0.0;
+      gen->proc->Eikonal.GetTotXS(xs_tot, xs_el, xs_in);
 
-        // > Get process cross section and error
-        gen->GetXS(xs0[p][mode], xs0_err[p][mode]);
-      } catch (const std::invalid_argument &err) {
-        std::cerr << "PROCESS:: " << input[p].card << " : Exception catched: " << err.what()
-                  << std::endl;
-        exit(0);
-      } catch (const std::ios_base::failure &err) {
-        std::cerr << "PROCESS:: " << input[p].card << " : Exception catched: " << err.what()
-                  << std::endl;
-        exit(0);
-      } catch (...) {
-        std::cerr << "Exception (...) catched!" << std::endl;
-        exit(0);
-      }
+      // > Get process cross section and error
+      gen->GetXS(xs0[p][mode], xs0_err[p][mode]);
 
       delete gen;
 

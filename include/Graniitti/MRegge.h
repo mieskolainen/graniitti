@@ -15,7 +15,9 @@
 #include "Graniitti/M4Vec.h"
 #include "Graniitti/MKinematics.h"
 
+
 namespace gra {
+
 // Regge amplitude parameters
 namespace PARAM_REGGE {
 extern bool initialized;
@@ -63,7 +65,7 @@ class MRegge {
  public:
   MRegge() {}
   ~MRegge() {}
-
+  
   void InitReggeAmplitude(int PDG, const std::string &MODELPARAM);
 
   // Regge amplitudes

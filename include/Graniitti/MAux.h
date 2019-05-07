@@ -21,7 +21,6 @@
 // Own
 #include "Graniitti/M4Vec.h"
 #include "Graniitti/MMatrix.h"
-#include "Graniitti/MSudakov.h"
 
 // LHAPDF
 #include "LHAPDF/LHAPDF.h"
