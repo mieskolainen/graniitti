@@ -43,7 +43,7 @@
 
     // Loop integration
     "POMLOOP" : {
-      "ND" : 10              // Loop integral discretization  
+      "ND" : 1              // Loop integral discretization  
     },
     
     // VEGAS integrator
@@ -51,7 +51,7 @@
 
       "BINS" : 128,          // Maximum number of bins per dimension (NOTE: EVEN NUMBER)
       "LAMBDA" : 1.5,         // Regularization parameter
-      "NCALL" : 1000,      // Number of function calls per initialization iteration (5000 or more)
+      "NCALL" : 5000,      // Number of function calls per initialization iteration (5000 or more)
       "ITER"  : 10,         // Number of initialization iteration (10 or more)
       "CHI2MAX" : 10.0,     // Maximum Chi^2 in initialization
       "PRECISION"  : 0.01,  // Integral relative precision target
@@ -89,7 +89,7 @@
 
   "FIDCUTS" : {
 
-    "active" : false,
+    "active" : true,
     
      // Central system final states
     "PARTICLE" : {
@@ -111,7 +111,7 @@
     // Forward system
     "FORWARD" : {
       "M"    : [0.0, 100000.0], // Mass
-      "t"    : [0.0, 100000.0], // Forward protons/N* Mandelstam t (absolute value) (GeV^2)
+      "t"    : [0.0, 6.0], // Forward protons/N* Mandelstam t (absolute value) (GeV^2)
     },
     
     // Custom user cuts (default false, otherwise identifier ID)

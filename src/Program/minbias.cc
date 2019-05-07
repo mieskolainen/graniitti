@@ -1,7 +1,7 @@
 // GRANIITTI - Monte Carlo event generator for high energy diffraction
 // https://github.com/mieskolainen/graniitti
 //
-// <KISS minimum bias processes combined>
+// <minimum bias processes combined>
 //
 // (c) 2017-2019 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
@@ -60,8 +60,8 @@ int main(int argc, char *argv[]) {
 
     std::cout << "EVENTS: " << EVENTS << std::endl;
 
-    std::vector<std::string> json_in = {"./tests/minbias/sd.json", "./tests/minbias/dd.json",
-                                        "./tests/minbias/nd.json"};
+    std::vector<std::string> json_in = {"./tests/run_minbias/sd.json", "./tests/run_minbias/dd.json",
+                                        "./tests/run_minbias/nd.json"};
 
     // Loop over energies
     for (const auto &e : indices(sqrtsvec)) {

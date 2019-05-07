@@ -19,7 +19,7 @@
     "WEIGHTED" : false,       // Weighted events (default false)
     "MODELPARAM" : "TUNE0"    // General model tune
   },
-
+  
   // ----------------------------------------------------------------------
   // Process setup
   
@@ -43,7 +43,7 @@
 
     // Loop integration
     "POMLOOP" : {
-      "ND" : 10              // Loop integral discretization  
+      "ND" : 1              // Loop integral discretization  
     },
     
     // VEGAS integrator

@@ -1,0 +1,8 @@
+Elastic scattering / Eikonal pomeron analysis (plots with MATLAB)
+
+1. First simulate:
+   source ./tests/run_elastic/run.sh
+
+2. Then run:
+   matlab analyze_impact.m
+   matlab analyze_momentum.m
