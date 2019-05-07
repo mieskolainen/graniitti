@@ -114,7 +114,7 @@ int main(int argc, char *argv[]) {
       const std::string val = r["l"].as<std::string>();
       screening             = (val == "true");
     }
-
+    
     // Project
     experiment(screening);
   } catch (const std::invalid_argument &e) {

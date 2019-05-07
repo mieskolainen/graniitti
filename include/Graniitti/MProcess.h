@@ -142,7 +142,10 @@ class MProcess : public MUserHistograms {
   MEikonal                        GetEikonal() const { return Eikonal; }
 
   // Set LHAPDFSET name
-  void SetLHAPDF(const std::string &in) { lts.LHAPDFSET = in; }
+  void SetLHAPDF(const std::string &in) { 
+    std::cout << "MProcess::SetLHAPDF: " << in << std::endl;
+    lts.LHAPDFSET = in;
+  }
   
   // Set cuts
   void SetGenCuts(const gra::GENCUT &in) { gcuts = in; }
