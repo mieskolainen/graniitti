@@ -23,8 +23,6 @@
 #include <vector>
 
 // Own
-#include "Graniitti/M4Vec.h"
-#include "Graniitti/MAux.h"
 #include "Graniitti/MGraniitti.h"
 #include "Graniitti/MTimer.h"
 
@@ -35,6 +33,9 @@
 
 using gra::aux::indices;
 using namespace gra;
+
+
+const std::string BASEPATH = "./tests/processes/";
 
 struct MEASUREMENT {
   MEASUREMENT(std::string card_, double value_, double stat_, double syst_) {
@@ -50,6 +51,41 @@ struct MEASUREMENT {
 };
 
 void experiment(bool screening);
+
+
+void run(const std::string& process, bool SCREENING,
+         double& xs0,
+         double& xs0_err) {
+
+  MGraniitti *gen = new MGraniitti();
+
+  // Silent output
+  gen->HILJAA = false;
+
+  // Read process input from file
+  gen->ReadInput(BASEPATH + process);
+
+  // Set spesific parameters
+  gen->proc->SetScreening(SCREENING);
+  gen->proc->SetExcitation(false);
+  gen->proc->SetHistograms(0);
+
+  // Initialize (always last!)
+  gen->Initialize();
+
+  /*
+  // Get total, elastic and inelastic cross section
+  double xs_tot = 0.0;
+  double xs_el  = 0.0;
+  double xs_in  = 0.0;
+  gen->proc->Eikonal.GetTotXS(xs_tot, xs_el, xs_in);
+  */
+
+  // > Get process cross section and error
+  gen->GetXS(xs0, xs0_err);
+
+  delete gen;
+}
 
 // Main
 int main(int argc, char *argv[]) {
@@ -136,8 +172,6 @@ void experiment(bool screening) {
     0.3e-12));
   */
 
-  const std::string BASEPATH = "./tests/processes/";
-
   // https://arxiv.org/pdf/hep-ex/0611040.pdf
   input.push_back(MEASUREMENT("CDF07_ee.json", 1.6e-12, 0.5e-12, 0.3e-12));
 
@@ -192,7 +226,7 @@ void experiment(bool screening) {
   input.push_back(MEASUREMENT("gg2gg.json",    0, 0, 0));
 
   // ...
-  //input.push_back(MEASUREMENT("gg2MMbar.json", 0, 0, 0));
+  input.push_back(MEASUREMENT("gg2MMbar.json", 0, 0, 0));
   
   // ...
   input.push_back(MEASUREMENT("yy2Higgs.json", 0, 0, 0));
@@ -242,32 +276,8 @@ void experiment(bool screening) {
     // Screening off/on
     for (int mode = 0; mode < MODEMAX; ++mode) {
 
-      MGraniitti *gen = new MGraniitti();
-
-      // Silent output
-      gen->HILJAA = false;
-
-      // Read process input from file
-      gen->ReadInput(BASEPATH + input[p].card);
-
-      // Set spesific parameters
-      gen->proc->SetScreening(mode);
-      gen->proc->SetExcitation(false);
-      gen->proc->SetHistograms(0);
-
-      // Initialize (always last!)
-      gen->Initialize();
-
-      // Get total, elastic and inelastic cross section
-      double xs_tot = 0.0;
-      double xs_el  = 0.0;
-      double xs_in  = 0.0;
-      gen->proc->Eikonal.GetTotXS(xs_tot, xs_el, xs_in);
-
-      // > Get process cross section and error
-      gen->GetXS(xs0[p][mode], xs0_err[p][mode]);
-
-      delete gen;
+      // Generate process
+      run(input[p].card, mode, xs0[p][mode], xs0_err[p][mode]);
 
     }  // Screening on/off
   }    // Process loop
