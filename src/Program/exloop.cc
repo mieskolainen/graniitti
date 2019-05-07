@@ -56,21 +56,21 @@ void run(const std::string& process, bool SCREENING,
          double& xs0,
          double& xs0_err) {
 
-  MGraniitti *gen = new MGraniitti();
+  MGraniitti gen;
 
   // Silent output
-  gen->HILJAA = false;
+  gen.HILJAA = false;
 
   // Read process input from file
-  gen->ReadInput(BASEPATH + process);
+  gen.ReadInput(BASEPATH + process);
 
   // Set spesific parameters
-  gen->proc->SetScreening(SCREENING);
-  gen->proc->SetExcitation(false);
-  gen->proc->SetHistograms(0);
+  gen.proc->SetScreening(SCREENING);
+  gen.proc->SetExcitation(false);
+  gen.proc->SetHistograms(0);
 
   // Initialize (always last!)
-  gen->Initialize();
+  gen.Initialize();
 
   /*
   // Get total, elastic and inelastic cross section
@@ -81,10 +81,10 @@ void run(const std::string& process, bool SCREENING,
   */
 
   // > Get process cross section and error
-  gen->GetXS(xs0, xs0_err);
+  gen.GetXS(xs0, xs0_err);
 
-  delete gen;
 }
+
 
 // Main
 int main(int argc, char *argv[]) {
