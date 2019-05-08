@@ -557,7 +557,7 @@ void MHarmonic::PlotFigures(
 
   // Draw multigraph
   unsigned int k = 0;
-  
+
   // Aux variables
   std::shared_ptr<TPad> tpad;
   std::shared_ptr<TLatex> l1;
@@ -1399,7 +1399,7 @@ double MHarmonic::PrintOutHyperCell(const gra::spherical::Meta &    META,
 
     const double sum_fla = fla[META](cell).t_lm_EML[gra::spherical::LinearInd(0, 0)];
     printf(
-        "EML: Estimate of events in this hyperbin in the  phase space = "
+        "EML: Estimate of events in this hyperbin in the flat phase space = "
         "%0.1f +- %0.1f "
         "\n",
         sum_fla, msqrt(sum_fla)); // Poisson error
@@ -1425,7 +1425,7 @@ double MHarmonic::PrintOutHyperCell(const gra::spherical::Meta &    META,
   // Algebraic inverse
   const double sum_fla = fla[META](cell).t_lm_MPP[gra::spherical::LinearInd(0, 0)];
   printf(
-      "MPP: Estimate of events in this hyperbin in the  phase space = %0.1f "
+      "MPP: Estimate of events in this hyperbin in the flat phase space = %0.1f "
       "+- %0.1f \n",
       sum_fla, msqrt(sum_fla)); // Poisson error
 
