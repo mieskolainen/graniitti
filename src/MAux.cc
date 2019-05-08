@@ -458,11 +458,11 @@ void PrintGameOver() {
             << std::endl;
 }
 
-double GetVersion() { return 0.38; }
+double GetVersion() { return 0.39; }
 
 std::string GetVersionString() {
   char buff[100];
-  snprintf(buff, sizeof(buff), "Version %0.2f (BETA) 080519", GetVersion());
+  snprintf(buff, sizeof(buff), "Version %0.2f (BETA) 090519", GetVersion());
   std::string str = buff;
   return str;
 }
