@@ -150,7 +150,7 @@ A:  Very good, that is the right attitude! You find my heavily commented code
 Q:  Gamma-Gamma processes give non-physical output at very low system invariant masses?
 A:  If you tried to generate e.g. gamma-gamma -> lepton pair at low system masses, you see that
     the on-shell gamma based matrix elements (MadGraph 2->2) cannot handle the full 2->N
-    kinematics which calculates the off-shell photon kinematics, where as the matrix element
+    kinematics which generates the off-shell photon kinematics, where as the matrix element
     assumes incoming q^2 = 0 photons. This is not a problem for larger system masses.
     As an ultimate solution, full 2->N QED + formf. based matrix elements could be encoded in
     future. You may try also the collinear kinematics mode.
