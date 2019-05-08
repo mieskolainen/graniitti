@@ -62,24 +62,13 @@ std::complex<double> MAmpMG5_gg_gg::CalcAmp(gra::LORENTZSCALAR &lts, double alpS
   mME                              = masses;
 
   // *** Set particle 4-momentum: [E,px,py,pz] convention here! ***
-  double p1[] = {lts.q1.E(), lts.q1.Px(), lts.q1.Py(), lts.q1.Pz()};
-  double p2[] = {lts.q2.E(), lts.q2.Px(), lts.q2.Py(), lts.q2.Pz()};
+  // force E = p (on-shell)
+  double p1[] = {lts.q1.P3mod(), lts.q1.Px(), lts.q1.Py(), lts.q1.Pz()};
+  double p2[] = {lts.q2.P3mod(), lts.q2.Px(), lts.q2.Py(), lts.q2.Pz()};
   double p3[] = {lts.decaytree[0].p4.E(), lts.decaytree[0].p4.Px(), lts.decaytree[0].p4.Py(),
                  lts.decaytree[0].p4.Pz()};
   double p4[] = {lts.decaytree[1].p4.E(), lts.decaytree[1].p4.Px(), lts.decaytree[1].p4.Py(),
                  lts.decaytree[1].p4.Pz()};
-
-  /*
-  // TEST INPUT
-     double p1[] = {7.500000e+02,  0.000000e+00,  0.000000e+00,
-  7.500000e+02};
-     double p2[] = {7.500000e+02,  0.000000e+00,  0.000000e+00,
-  -7.500000e+02};
-     double p3[] = {7.500000e+02,  1.663864e+02,  6.672462e+02,
-  -2.993294e+02};
-     double p4[] = {7.500000e+02, -1.663864e+02, -6.672462e+02,
-  2.993294e+02};
-  */
 
   p.clear();
   p.push_back(&p1[0]);

@@ -65,32 +65,6 @@ std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR &lts) {
   double p4[] = {lts.decaytree[1].p4.E(), lts.decaytree[1].p4.Px(), lts.decaytree[1].p4.Py(),
                  lts.decaytree[1].p4.Pz()};
 
-  /*
-    printf("\n");
-    printf("Initial: E = %0.7E, PX = %0.7E, PY = %0.7E, PZ = %0.7E \n",
-          lts.q1.Norm() + lts.q2.Norm(), lts.q1.Px() + lts.q2.Px(),
-    lts.q1.Py() + lts.q2.Py(), lts.q1.Pz() + lts.q2.Pz());
-
-    printf("Final:   E = %0.7E, PX = %0.7E, PY = %0.7E, PZ = %0.7E (M =
-    %0.5E) \n",
-          lts.decaytree[0].p4.E()  + lts.decaytree[1].p4.E(),
-          lts.decaytree[0].p4.Px() + lts.decaytree[1].p4.Px(),
-          lts.decaytree[0].p4.Py() + lts.decaytree[1].p4.Py(),
-          lts.decaytree[0].p4.Pz() + lts.decaytree[1].p4.Pz(),
-    std::sqrt(lts.m2));
-  */
-  /*
-  // TEST INPUT
-     double p1[] = {7.500000e+02,  0.000000e+00,  0.000000e+00,
-  7.500000e+02};
-     double p2[] = {7.500000e+02,  0.000000e+00,  0.000000e+00,
-  -7.500000e+02};
-     double p3[] = {7.500000e+02,  1.663864e+02,  6.672462e+02,
-  -2.993294e+02};
-     double p4[] = {7.500000e+02, -1.663864e+02, -6.672462e+02,
-  2.993294e+02};
-  */
-
   p.clear();
   p.push_back(&p1[0]);
   p.push_back(&p2[0]);
@@ -133,6 +107,14 @@ std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR &lts) {
   double amp2 = 0.0;
   for (std::size_t i = 0; i < lts.hamp.size(); ++i) { amp2 += gra::math::abs2(lts.hamp[i]); }
   amp2 /= 4;  // spin average matrix element squared
+  
+  // --------------------------------------------------------------------
+  // Amplitude cutoff due to on-shell / of-shell approximation (needed with e+e-)
+  if (gra::math::msqrt(lts.m2) < 0.25) {
+    amp2 = 0.0;
+    lts.hamp = std::vector<std::complex<double>>(nonzero.size(), 0.0);
+  }
+  // --------------------------------------------------------------------
 
   return gra::math::msqrt(amp2);  // square root, we take square later
 }

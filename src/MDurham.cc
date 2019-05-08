@@ -52,6 +52,8 @@ enum SPINPARITY { P0, M0, P2, M2 };  // Implicit conversion to int
 // [REFERENCE: Harland-Lang, Khoze, Ryskin, https://arxiv.org/abs/1409.4785]
 //
 std::complex<double> MDurham::DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process) {
+
+
   // First run, init parameters
   // @@ MULTITHREADING LOCK NEEDED FOR THE INITIALIZATION @@
   gra::g_mutex.lock();
@@ -344,7 +346,7 @@ std::complex<double> MDurham::DQtloop(gra::LORENTZSCALAR &                      
 
   // *****Make sure it is of right size!*****
   lts.hamp.resize(f.size());
-
+  
   // Final outcome as a coherent sum over helicity combinations
   // That is, sum at amplitude level in contrast to the usual \sum_{h \in
   // helicity set}
@@ -367,6 +369,15 @@ std::complex<double> MDurham::DQtloop(gra::LORENTZSCALAR &                      
     // For the total complex amplitude (for no eikonal screening applied)
     A += lts.hamp[h];
   }
+
+  // --------------------------------------------------------------------
+  // Amplitude cutoff (hard perturbative limit)
+  if (gra::math::msqrt(lts.m2) < 2.0) {
+    A = 0.0;
+    lts.hamp = std::vector<std::complex<double>>(f.size(), 0.0);
+  }
+  // --------------------------------------------------------------------
+  
   return A;
 }
 
