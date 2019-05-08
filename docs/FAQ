@@ -136,7 +136,7 @@ A:  Turn on the screening integral (event-by-event Pomeron loop). The effect can
 Q:  Do forward protons have unlimited kinematic generation cuts by default?
 A:  No. Their transverse momentum is limited to few GeV to improve CPU efficiency.
     You see all the cuts in the terminal ascii output.
-    You can change this by adding/modifying the GENCUTS field "Pt".
+    You can change this by adding/modifying a field "Pt" under "GENGUTS".
 
 
 Q:  I want to know more details about the algorithms and calculations.
