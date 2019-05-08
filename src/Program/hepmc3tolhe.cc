@@ -10,7 +10,7 @@
 #include <fstream>
 #include <iomanip>
 
-// HepMC33
+// HepMC3
 #include "HepMC3/FourVector.h"
 #include "HepMC3/GenEvent.h"
 #include "HepMC3/GenParticle.h"
@@ -39,7 +39,7 @@ long GetFileSize(const std::string &filename) {
 //
 int main(int argc, char *argv[]) {
   if (argc != 2) {
-    std::cerr << "<< HepMC3 to LHEF converter>>" << std::endl;
+    std::cerr << "<< HepMC3 to LHEF converter >>" << std::endl;
     std::cerr << "Example: ./hepmc3tolhe filename.hepmc3" << std::endl;
     return EXIT_FAILURE;
   }

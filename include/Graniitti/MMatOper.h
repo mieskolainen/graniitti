@@ -18,6 +18,35 @@
 
 namespace gra {
 namespace matoper {
+
+// diag(x) * A * diag(y) product
+template <typename T>
+inline gra::MMatrix<T> diagAdiag(const std::vector<T>& x, const MMatrix<T>& A, const std::vector<T>& y) {
+
+  // Over [i,j] of A
+  const std::size_t n = A.size_row();
+  const std::size_t m = A.size_col();
+  
+  MMatrix<T> C(n, m);
+  for (std::size_t i = 0; i < n; ++i) {
+    for (std::size_t j = 0; j < m; ++j) {
+        C[i][j] = x[i] * A[i][j] * y[j];
+    }
+  }
+  return C;
+}
+
+// Return diagonal matrix constructed from a vector
+template <typename T>
+inline gra::MMatrix<T> Diag(const std::vector<T>& x) {
+
+  gra::MMatrix<T> A(x.size(), x.size(), 0.0);
+  for (std::size_t i = 0; i < x.size(); ++i) {
+    A[i][i] = x[i];
+  }
+  return A;
+}
+
 // Return L2-unit vector (|x| = 1)
 template <typename T>
 inline std::vector<T> Unit(const std::vector<T> &x) {

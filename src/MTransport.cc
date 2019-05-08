@@ -23,7 +23,6 @@ namespace gra {
 namespace opt {
 
   // Sinkhorn-Knopp non-linear but convex optimization algorithm
-  // for Optimal Transport problems
   // 
   // Input:
   // 
@@ -35,44 +34,84 @@ namespace opt {
   // 
   // Output:
   // 
-  // Optimal Transport Matrix gamma                         (n x m)
-  // Distance                                               (scalar)
+  // Optimal Transport Matrix Pi                            (n x m)
+  // Distance measure                                       (scalar)
   // 
-	double SinkHorn(MMatrix<double>& gamma, const MMatrix<double>& C,
+	double SinkHorn(MMatrix<double>& Pi, const MMatrix<double>& C,
 									std::vector<double>& p, std::vector<double>& q, double lambda, unsigned int iter) {
 		
+		std::cout << "SinkHorn optimization:" << std::endl;
+
+		// ============================================================
+		// Test the normalization
+		auto fsum = [] (const std::vector<double>& x) {
+			double value = 0.0;
+			for (std::size_t i = 0; i < x.size(); ++i) { value += x[i]; }
+			return value;
+		};
+
+		const double EPS = 1e-5;
+		if (std::abs(fsum(p) - 1) > EPS) { 
+			const std::string str = "SinkHorn:: Input p elements sum != 1";
+			throw std::invalid_argument(str);
+		}
+		if (std::abs(fsum(q) - 1) > EPS) {
+			const std::string str = "SinkHorn:: Input q elements sum != 1";
+			throw std::invalid_argument(str);
+		}
+		// ============================================================
+
 		const std::size_t n = C.size_row();
 		const std::size_t m = C.size_col();
 		
-		// Calculate entropy regularized distance matrix
+		// Gibbs Kernel: Entropy regularized distance matrix
 		MMatrix<double> K(n,m,0.0);
-		for (std::size_t i = 0; i < n; ++i) {
-			for (std::size_t j = 0; j < m; ++j) {
+		for (std::size_t i = 0; i < K.size_row(); ++i) {
+			for (std::size_t j = 0; j < K.size_col(); ++j) {
 				K[i][j] = std::exp(- C[i][j] / lambda);
 			}
 		}
 		
 		// Transposed version
-		MMatrix<double> KT = K; KT.Transpose();
-		
-		// Sinkhorn iterations
+		MMatrix<double> KT = K.Transpose();
+
+		// Initialization
 		std::vector<double> u(n, 1.0/n);
 		std::vector<double> v(m, 1.0/m);
-		
+
+		// || Pi * 1 - p || or || Pi^T 1 - q ||
+		std::vector<double> ones_u(n, 1.0);
+		std::vector<double> ones_v(n, 1.0);
+
+		auto resnorm = [&] (const MMatrix<double>& Pi) {
+			double value = 0.0;
+			const std::vector<double> lhs = Pi * ones_u;
+			for (std::size_t i = 0; i < ones_u.size(); ++i) {
+				value += math::pow2(lhs[i] - p[i]);
+			}
+			return math::msqrt(value);
+		};
+
+		// Sinkhorn iterations
+		double cost = 0.0;
+
 		for (unsigned int k = 0; k < iter; ++k) {
-			
+
 			const std::vector<double> Kv  = K  * v;
 			for (std::size_t i = 0; i < n; ++i) { u[i] = p[i] /  Kv[i]; } // Possible division by zero!
 			
 			const std::vector<double> KTu = KT * u;
 			for (std::size_t i = 0; i < m; ++i) { v[i] = q[i] / KTu[i]; } // Possible division by zero!
+
+			// Transport coupling matrix
+			Pi = matoper::diagAdiag(u, K, v);
+
+			// Transport cost
+			cost = resnorm(Pi);
+
+			if ((k+1) % 10 == 0)
+			printf("iter = %3d / %3d : cost = %0.5E, log(cost) = %0.1f \n", k+1, iter, cost, std::log(cost));
 		}
-		
-		// Transport coupling matrix
-		gamma = matoper::OuterProd(v,u);
-		
-		// Transport cost
-		const double cost = gamma.Sum();
 		
 		return cost;
 	}
