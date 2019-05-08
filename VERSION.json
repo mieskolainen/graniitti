@@ -1,9 +1,9 @@
 {
  "name": "GRANIITTI",
- "version": "0.37",
+ "version": "0.38",
  "type": "beta",
- "date": "07/05/2019",
- "update": "Numerous fixes & spinor/vector tests",
- "build_passing": true,
- "build_date": "Wed, 08 May 2019 06:00:02 +0300"
+ "date": "08/05/2019",
+ "update": "spinor/vector/global tests",
+ "build_passing": false,
+ "build_date": "Wed, 08 May 2019 16:09:03 +0300"
 }
