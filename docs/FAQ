@@ -145,6 +145,11 @@ Q:  Which features or processes are "under construction"?
 A:  See /docs/UNDERWORK or send email.
 
 
+Q:  Do forward protons have unlimited kinematic generation cuts by default?
+A:  No. Their transverse momentum is limited to few GeV to improve CPU efficiency.
+    You see the cuts in the ascii terminal output.
+    You can change this by adding/modifying the GENCUTS field "Pt".
+
 
 MONTE CARLO TECHNIQUES
 -----------
