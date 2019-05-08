@@ -4,6 +4,6 @@
  "type": "beta",
  "date": "08/05/2019",
  "update": "spinor/vector/global tests",
- "build_passing": false,
- "build_date": "Wed, 08 May 2019 16:09:03 +0300"
+ "build_passing": true,
+ "build_date": "Wed, 08 May 2019 16:11:37 +0300"
 }
