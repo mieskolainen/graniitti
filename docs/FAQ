@@ -74,7 +74,7 @@ A:  Assuming you have compiled ROOT or use pre-compiled binaries downloaded from
 
 Q:  Compilation with ROOT failes due to reason such as "‘handlePrefetch’ was not declared in this scope".
 A:  Your ROOT library is probably not compiled with -std=c++17 switch,
-    so try again with 'make -j4 ROOT_STD14=TRUE'.
+    so try again with 'make -j4 ROOT14=TRUE'.
 
 
 Q:  How to turn off ROOT dependent compilation completely?

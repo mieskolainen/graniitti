@@ -14,7 +14,7 @@
 # To compile with clang:                   make CXX=clang
 #     -|-         unit tests:              make TEST=TRUE
 #
-# To compile with ROOT using -std=c++14:   make ROOT_STD14=TRUE
+# To compile with ROOT using -std=c++14:   make ROOT14=TRUE
 #
 # -----------------------------------------------------------------------
 # 
@@ -104,7 +104,7 @@ ROOT=TRUE
 
 # Info messages
 $(info ************************************************************************************)
-$(info ** If compilation with ROOT libraries failes, try with 'make -j4 ROOT_STD14=TRUE' **)
+$(info **   If compilation with ROOT libraries failes, try with 'make -j4 ROOT14=TRUE'   **)
 $(info ************************************************************************************)
 endif
 
@@ -186,7 +186,7 @@ CXXVER     = -std=c++17
 CXXVER_OLD = -std=c++17
 
 # Use this for alternative ROOT installations
-ifeq ($(ROOT_STD14),TRUE)
+ifeq ($(ROOT14),TRUE)
 CXXVER_OLD = -std=c++14
 endif
 

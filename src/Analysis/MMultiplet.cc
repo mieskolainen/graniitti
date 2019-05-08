@@ -25,36 +25,6 @@
 using gra::aux::indices;
 
 namespace gra {
-// Returns a new colormap
-std::vector<int> CreateColorMap(int COLORSCHEME = 1) {
-  std::vector<std::vector<double>> colormap(150);
-
-  if (COLORSCHEME == 1) {
-    // "Modern colormap"
-    std::vector<std::vector<double>> cm = {{0, 0.4470, 0.7410},      {0.8500, 0.3250, 0.0980},
-                                           {0.9290, 0.6940, 0.1250}, {0.4940, 0.1840, 0.5560},
-                                           {0.4660, 0.6740, 0.1880}, {0.3010, 0.7450, 0.9330},
-                                           {0.6350, 0.0780, 0.1840}};
-    colormap = cm;
-  }
-
-  if (COLORSCHEME == 2) {
-    // "Classic colormap"
-    std::vector<std::vector<double>> cm = {{0, 0, 0.9},       {0, 0.5, 0},     {0.9, 0, 0},
-                                           {0, 0.75, 0.75},   {0.75, 0, 0.75}, {0.75, 0.75, 0},
-                                           {0.25, 0.25, 0.25}};
-    colormap = cm;
-  }
-
-  std::vector<int> colors(colormap.size(), 0);
-  for (const auto &i : indices(colors)) {
-    // colors.at(i)  = TColor::GetFreeColorIndex();
-    colors.at(i) = 9000 + i;  // some big number not used
-    TColor *color =
-        new TColor(colors.at(i), colormap.at(i).at(0), colormap.at(i).at(1), colormap.at(i).at(2));
-  }
-  return colors;
-}
 
 void GetLegendPosition(unsigned int N, double &x1, double &x2, double &y1, double &y2,
                        const std::string &legendposition) {
@@ -113,7 +83,11 @@ void h1Multiplet::NormalizeAll(const std::vector<double> &cross_section,
 }
 
 std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
-  std::vector<int> color = CreateColorMap();
+  
+  // New colorscheme
+  std::vector<int> color;
+  std::vector<std::shared_ptr<TColor>> rootcolor;
+  rootstyle::CreateColorMap(color, rootcolor);
 
   // ----------------------------------------------------
   // Apply the chi2 test and retrieve the residuals
@@ -133,7 +107,7 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
   TCanvas c0("c", "c", 750, 800);
 
   // Upper plot will be in pad1
-  std::unique_ptr<TPad> pad1 = std::make_unique<TPad>("pad1", "pad1", 0, 0.3, 1, 1.0);
+  std::shared_ptr<TPad> pad1 = std::make_unique<TPad>("pad1", "pad1", 0, 0.3, 1, 1.0);
 
   pad1->SetBottomMargin(0.015);  // Upper and lower plot are joined
   // pad1->SetGridx();          // Vertical grid
@@ -184,7 +158,7 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
 
   double x1, x2, y1, y2 = 0.0;
   GetLegendPosition(h.size(), x1, x2, y1, y2, legendposition_);
-  std::unique_ptr<TLegend> legend = std::make_unique<TLegend>(x1, y1, x2, y2);
+  std::shared_ptr<TLegend> legend = std::make_unique<TLegend>(x1, y1, x2, y2);
   legend->SetFillColor(0);  // White background
   // legend->SetBorderSize(0); // No box
 
@@ -194,14 +168,14 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
 
   // -------------------------------------------------------------------
   // Create labels
-  TLatex *l1;
-  TLatex *l2;
-  std::tie(l1, l2) = gra::rootstyle::MadeInFinland();
+  std::shared_ptr<TLatex> l1;
+  std::shared_ptr<TLatex> l2;
+  gra::rootstyle::MadeInFinland(l1, l2);
 
   // -------------------------------------------------------------------
   // Ratio plots
   c0.cd();
-  std::unique_ptr<TPad> pad2 = std::make_unique<TPad>("pad2", "pad2", 0, 0.05, 1, 0.3);
+  std::shared_ptr<TPad> pad2 = std::make_unique<TPad>("pad2", "pad2", 0, 0.05, 1, 0.3);
   pad2->SetTopMargin(0.025);
   pad2->SetBottomMargin(0.25);
   pad2->SetGridx();  // vertical grid
@@ -245,7 +219,7 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
 
   // Draw horizontal line
   const double           ymax = 1.0;
-  std::unique_ptr<TLine> line = std::make_unique<TLine>(minval_, ymax, maxval_, ymax);
+  std::shared_ptr<TLine> line = std::make_unique<TLine>(minval_, ymax, maxval_, ymax);
   line->SetLineColor(15);
   line->SetLineWidth(2.0);
   line->Draw();
@@ -276,8 +250,6 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
 
   // Remove histograms
   for (const auto &i : indices(ratios)) { delete ratios[i]; }
-  delete l1;
-  delete l2;
 
   return chi2ndf;
 }
@@ -337,7 +309,7 @@ double h2Multiplet::SaveFig(const std::string &fullpath) const {
   c0.Divide(h.size(), 2, 0.01, 0.02);               // [columns] x [rows]
 
   // Normalize by the first histogram
-  const double ZMAX = h[0]->GetMaximum();
+  //const double ZMAX = h[0]->GetMaximum();
 
   // Histograms on TOP ROW
   for (const auto &i : indices(h)) {
@@ -372,11 +344,12 @@ double h2Multiplet::SaveFig(const std::string &fullpath) const {
   // -------------------------------------------------------------------
   // Create labels
   c0.cd();  // Important!
-  TPad *tpad = gra::rootstyle::TransparentPad();
+  std::shared_ptr<TPad> tpad;
+  gra::rootstyle::TransparentPad(tpad);
 
-  TLatex *l1;
-  TLatex *l2;
-  std::tie(l1, l2) = gra::rootstyle::MadeInFinland(0.99);
+  std::shared_ptr<TLatex> l1;
+  std::shared_ptr<TLatex> l2;
+  gra::rootstyle::MadeInFinland(l1, l2, 0.99);
   // -------------------------------------------------------------------
 
   // Create output directory if it does not exist
@@ -388,9 +361,6 @@ double h2Multiplet::SaveFig(const std::string &fullpath) const {
 
   // Delete ratio histograms from memory
   for (const auto &i : indices(ratios)) { delete ratios[i]; }
-  delete tpad;
-  delete l1;
-  delete l2;
 
   return 0.0;
 }
@@ -421,12 +391,16 @@ hProfMultiplet::hProfMultiplet(const std::string &name, const std::string &label
 }
 
 double hProfMultiplet::SaveFig(const std::string &fullpath) const {
-  std::vector<int> color = CreateColorMap();
+  
+  // New colorscheme
+  std::vector<int> color;
+  std::vector<std::shared_ptr<TColor>> rootcolor;
+  rootstyle::CreateColorMap(color, rootcolor);
 
   TCanvas c0("c", "c", 750, 800);
 
   // Upper plot will be in pad1
-  std::unique_ptr<TPad> pad1 = std::make_unique<TPad>("pad1", "pad1", 0, 0.3, 1, 1.0);
+  std::shared_ptr<TPad> pad1 = std::make_unique<TPad>("pad1", "pad1", 0, 0.3, 1, 1.0);
   pad1->SetBottomMargin(0.015);  // Upper and lower plot are joined
   // pad1->SetGridx();           // Vertical grid
   pad1->Draw();       // Draw the upper pad: pad1
@@ -457,7 +431,7 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
   // North-East
   double x1, x2, y1, y2 = 0.0;
   GetLegendPosition(h.size(), x1, x2, y1, y2, legendposition_);
-  std::unique_ptr<TLegend> legend = std::make_unique<TLegend>(x1, y1, x2, y2);
+  std::shared_ptr<TLegend> legend = std::make_unique<TLegend>(x1, y1, x2, y2);
 
   legend->SetFillColor(0);  // White background
   // legend->SetBorderSize(0); // No box
@@ -468,15 +442,15 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
 
   // -------------------------------------------------------------------
   // GRANIITTI text
-  TLatex *l1;
-  TLatex *l2;
-  std::tie(l1, l2) = gra::rootstyle::MadeInFinland();
+  std::shared_ptr<TLatex> l1;
+  std::shared_ptr<TLatex> l2;
+  gra::rootstyle::MadeInFinland(l1, l2);
   // -------------------------------------------------------------------
 
   // -------------------------------------------------------------------
   // Ratio plots
   c0.cd();
-  std::unique_ptr<TPad> pad2 = std::make_unique<TPad>("pad2", "pad2", 0, 0.05, 1, 0.3);
+  std::shared_ptr<TPad> pad2 = std::make_unique<TPad>("pad2", "pad2", 0, 0.05, 1, 0.3);
   pad2->SetTopMargin(0.025);
   pad2->SetBottomMargin(0.25);
   pad2->SetGridx();  // vertical grid
@@ -538,7 +512,7 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
 
   // Draw horizontal line
   const double           ymax = 1.0;
-  std::unique_ptr<TLine> line = std::make_unique<TLine>(minval1_, ymax, maxval1_, ymax);
+  std::shared_ptr<TLine> line = std::make_unique<TLine>(minval1_, ymax, maxval1_, ymax);
   line->SetLineColor(15);
   line->SetLineWidth(2.0);
   line->Draw();
@@ -571,9 +545,6 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
     delete hxP[i];
     delete hR[i];
   }
-  delete hx0;
-  delete l1;
-  delete l2;
 
   return 0.0;
 }

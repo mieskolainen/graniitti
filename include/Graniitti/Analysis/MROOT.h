@@ -22,12 +22,49 @@
 #include "TROOT.h"
 #include "TStyle.h"
 
+// Own
+#include "Graniitti/MAux.h"
+
 namespace gra {
 namespace rootstyle {
-// Create grid canvas with N subpads
-inline TCanvas *AutoGridCanvas(unsigned int N) {
-  TCanvas *c1;
 
+// Returns a new colormap
+inline void CreateColorMap(std::vector<int>& color, std::vector<std::shared_ptr<TColor>>& rootcolor, int COLORSCHEME = 1) {
+  std::vector<std::vector<double>> colormap(150);
+
+  if (COLORSCHEME == 1) {
+    // "Modern colormap"
+    std::vector<std::vector<double>> cm = {{0, 0.4470, 0.7410},      {0.8500, 0.3250, 0.0980},
+                                           {0.9290, 0.6940, 0.1250}, {0.4940, 0.1840, 0.5560},
+                                           {0.4660, 0.6740, 0.1880}, {0.3010, 0.7450, 0.9330},
+                                           {0.6350, 0.0780, 0.1840}};
+    colormap = cm;
+  }
+
+  if (COLORSCHEME == 2) {
+    // "Classic colormap"
+    std::vector<std::vector<double>> cm = {{0, 0, 0.9},       {0, 0.5, 0},     {0.9, 0, 0},
+                                           {0, 0.75, 0.75},   {0.75, 0, 0.75}, {0.75, 0.75, 0},
+                                           {0.25, 0.25, 0.25}};
+    colormap = cm;
+  }
+
+  color     = std::vector<int>(colormap.size(), 0);
+  rootcolor = std::vector<std::shared_ptr<TColor>> (color.size(), nullptr);
+
+  for (const auto &i : aux::indices(color)) {
+    // colors.at(i)  = TColor::GetFreeColorIndex();
+    color[i] = 9000 + i;  // some big number not used
+
+    // ROOT style, we need to create some hidden memory part
+    rootcolor[i] = std::make_shared<TColor>(color[i], colormap[i][0], colormap[i][1], colormap[i][2]);
+  }
+}
+
+
+// Create grid canvas with N subpads
+inline void AutoGridCanvas(std::shared_ptr<TCanvas>& c1, unsigned int N) {
+  
   unsigned int ADD = 0;
   while (true) {  // Adjust grid size
     const unsigned int val = std::sqrt(N + ADD);
@@ -43,18 +80,16 @@ inline TCanvas *AutoGridCanvas(unsigned int N) {
 
   // Adjust aspect ratio
   if (ROWS == COLS) {
-    c1 = new TCanvas("c1", "c1", 700, 600);  // horizontal, vertical
+    c1 = std::make_shared<TCanvas>("c1", "c1", 700, 600);  // horizontal, vertical
   }
   if (ROWS != COLS) {
-    c1 = new TCanvas("c1", "c1", 700, 450);  // horizontal, vertical
+    c1 = std::make_shared<TCanvas>("c1", "c1", 700, 450);  // horizontal, vertical
   }
 
   c1->Divide(COLS, ROWS, 0.002, 0.001);
 
   // This is needed
   gStyle->SetPadLeftMargin(0.15);
-
-  return c1;
 }
 
 // CubeHelix colormap generator
@@ -204,27 +239,24 @@ inline void SetROOTStyle() {
 }
 
 // Before calling this, call mother TCanvas cd->()
-inline TPad *TransparentPad() {
-  TPad *newpad = new TPad("newpad", "a transparent pad", 0, 0, 1, 1);
-  newpad->SetFillStyle(4000);
-  newpad->Draw();
-  newpad->cd();
-  return newpad;
+inline void TransparentPad(std::shared_ptr<TPad>& pad) {
+  pad = std::make_shared<TPad>("newpad", "a transparent pad", 0, 0, 1, 1);
+  pad->SetFillStyle(4000);
+  pad->Draw();
+  pad->cd();
 }
 
 // Create GRANIITTI Text
-inline std::tuple<TLatex *, TLatex *> MadeInFinland(double xpos = 0.93) {
-  TLatex *l1 = new TLatex(xpos, 0.03, gra::aux::GetVersionTLatex().c_str());
+inline void MadeInFinland(std::shared_ptr<TLatex>& l1, std::shared_ptr<TLatex>& l2, double xpos = 0.93) {
+  l1 = std::make_shared<TLatex>(xpos, 0.03, gra::aux::GetVersionTLatex().c_str());
   l1->SetNDC();  // Normalized coordinates
   l1->SetTextAngle(90);
   l1->Draw();
 
-  TLatex *l2 = new TLatex(xpos, 0.68, gra::aux::GetWebTLatex().c_str());
+  l2 = std::make_shared<TLatex>(xpos, 0.68, gra::aux::GetWebTLatex().c_str());
   l2->SetNDC();  // Normalized coordinates
   l2->SetTextAngle(90);
   l2->Draw();
-
-  return std::make_tuple(l1, l2);
 }
 
 }  // rootstyle namespace ends

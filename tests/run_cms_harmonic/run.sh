@@ -11,8 +11,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
 # Generate
-./bin/gr -i ./tests/run_cms_harmonic/SH_2pi_J0_CMS.json -n 1000000
-./bin/gr -i ./tests/run_cms_harmonic/SH_2pi_CMS.json    -n 1000000
+./bin/gr -i ./tests/run_cms_harmonic/SH_2pi_J0_CMS.json -n 100000
+./bin/gr -i ./tests/run_cms_harmonic/SH_2pi_CMS.json    -n 100000
 
 fi
 

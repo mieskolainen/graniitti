@@ -28,7 +28,7 @@ using namespace gra;
 int main(int argc, char *argv[]) {
   // Save the number of input arguments
   const int NARGC = argc - 1;
-
+  
   // Create generator object first
   std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
 
