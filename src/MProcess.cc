@@ -373,8 +373,6 @@ return CSIntegral(f, ktstep) / (2.0*gra::math::PI) / Beta_j(0);
 // Set CMS energy and beam particle 4-vectors
 void MProcess::SetInitialState(const std::vector<std::string> &beam,
                                const std::vector<double> &     energy) {
-  printf("MProcess::SetInitialState: beam: [%s, %s], energy = [%0.1f, %0.1f] \n", beam[0].c_str(),
-         beam[1].c_str(), energy[0], energy[1]);
 
   if (beam.size() != 2) {
     throw std::invalid_argument("MProcess::SetInitialState: Input BEAM vector not dim 2!");
@@ -391,7 +389,18 @@ void MProcess::SetInitialState(const std::vector<std::string> &beam,
   const double E1 = std::max(energy[0], 1.001 * beam1.mass);
   const double E2 = std::max(energy[1], 1.001 * beam2.mass);
 
-  lts.pbeam1 = M4Vec(0, 0, msqrt(pow2(E1) - pow2(beam1.mass)), E1);   // positive z-axis
+  SetBeamEnergies(E1,E2);
+}
+
+// Beam needs to be set before this!
+void MProcess::SetBeamEnergies(double E1, double E2) {
+
+  if (beam1.pdg == 0 || beam1.pdg == 0) {
+    throw std::invalid_argument("MProcess::SetBeamEnergies: Beam PDG particles not set yet!");
+  }
+
+  // Beam 4-momentum (px,py,pz,E)
+  lts.pbeam1 = M4Vec(0, 0,  msqrt(pow2(E1) - pow2(beam1.mass)), E1);  // positive z-axis
   lts.pbeam2 = M4Vec(0, 0, -msqrt(pow2(E2) - pow2(beam2.mass)), E2);  // negative z-axis
 
   // Mandelstam s
@@ -399,11 +408,15 @@ void MProcess::SetInitialState(const std::vector<std::string> &beam,
   lts.sqrt_s = msqrt(lts.s);
 
   if (lts.sqrt_s < (beam1.mass + beam2.mass)) {
-    std::string str = "MProcess::SetInitialState: Error with input CMS energy: " +
+    std::string str = "MProcess::SetBeamEnergies: Error with input CMS energy: " +
                       std::to_string(lts.sqrt_s) + " GeV < initial state masses!";
     throw std::invalid_argument(str);
   }
+
+  printf("MProcess::SetBeamEnergies: beam: [%s, %s], energy = [%0.1f, %0.1f] \n",
+         beam2.name.c_str(), beam2.name.c_str(), E1, E2);
 }
+
 
 // Return "flat/special" matrix element squared |A|^2
 // for evaluating the phase space and other special purposes

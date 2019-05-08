@@ -93,6 +93,9 @@ class MProcess : public MUserHistograms {
   // Set initial state
   void SetInitialState(const std::vector<std::string> &beam, const std::vector<double> &energy);
 
+  // Set beam energies
+  void SetBeamEnergies(double E1, double E2);
+
   // ISOLATE phase space in <F> class processes
   void SetISOLATE(bool in) { ISOLATE = in; }
   bool                 GetISOLATE() { return ISOLATE; }

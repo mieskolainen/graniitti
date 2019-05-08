@@ -5,7 +5,7 @@
 close all; clear;
 
 % Run this first
-setup();
+setup;
 
 fig0 = figure;
 

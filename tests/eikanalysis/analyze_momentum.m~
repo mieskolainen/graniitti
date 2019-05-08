@@ -200,7 +200,7 @@ for k = 1:2
     end
     
     xlabel('$-t$ (GeV$^2$)','interpreter','latex'); axis square;
-    ylabel('$B(t) \equiv \frac{d}{dt}\ln(d\sigma/dt)$ (GeV$^{-2}$)','interpreter','latex');
+    ylabel('$B \equiv \frac{d}{dt}\ln(d\sigma/dt)$','interpreter','latex');
 
     % PRINT OUT
     filename = sprintf('./figs/t_space_bslope_%d.pdf', k);
@@ -211,7 +211,7 @@ end
 %axis([1e-2 4 -10 10]); axis square;
 
 
-%% B(t = fixed)
+%% B(t = 0)
 
 fig0 = figure;
 
@@ -227,7 +227,7 @@ for k = 1:length(tvals)
     for i = 1:length(sqrts)
        B_t0(i) = partial{i}(bin);
     end
-    plot(sqrts, B_t0, 's-'); hold on;
+    plot(sqrts, B_t0, '-'); hold on;
     legs{end+1} = sprintf('$|t| = %0.2f$ GeV$^2$', Xt{1}(bin, x_ind));
 end
 l = legend(legs);
@@ -322,7 +322,6 @@ l = legend(legends); set(l,'interpreter','latex'); legend('boxoff');
 
 axis([1e-2 4 -15 15]);
 
-
 %% Re{A_el(s,t)}/Im{A_el(s,t)} (ZOOMED)
 
 fig0 = figure;
@@ -365,7 +364,7 @@ for k = 1:length(tvals)
     for i = 1:length(sqrts)
         rho(i) = Xt{i}(bin, Re_ind) / Xt{i}(bin,Im_ind);
     end
-    plot(sqrts, rho, 's-'); hold on;
+    plot(sqrts, rho); hold on;
     legs{end+1} = sprintf('$|t| = %0.2f$ GeV$^2$', Xt{1}(bin, x_ind));
 end
 l = legend(legs); legend('boxoff');

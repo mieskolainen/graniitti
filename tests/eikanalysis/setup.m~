@@ -6,17 +6,12 @@ Re_ind = 2;
 Im_ind = 3;
 
 % CMS-Energies
-%{
-sqrts  = [62 546 1800 7000 13000 60000];
-factor = [20000 400 20 1 1/20 1/1000]; % Visualization
-%}
-
-%
+%sqrts  = [62 546 1800 7000 13000 60000];
 sqrts  = [546 1800 7000 13000 60000];
-factor = [400 20 1 1/20 1/1000]; % Visualization
-%}
-
 s      = sqrts.^2;
+
+% Visualization factors
+%factor = [400 20 1 1/20 1/1000];
 
 % Units
 GeV2fm = 0.1973;

@@ -188,7 +188,7 @@ std::complex<double> MEikonal::S3Density(double bt) const {
 
     // Value
     f[i] = A * gra::math::BESSJ0(bt * kt) * kt;
-    // f[i] = A * std::cyl_bessel_j(0, bt * kt) * kt; // c++17
+    //f[i] = A * std::cyl_bessel_j(0, bt * kt) * kt; // c++17, slow
   }
   // Fourier-Bessel transformation denominator
   const double TD = 2.0 * gra::math::PI;
@@ -219,7 +219,7 @@ std::complex<double> MEikonal::S3Screening(double kt2) const {
     const std::complex<double> A = gra::math::zi * (1.0 - std::exp(gra::math::zi * XI / 2.0));
 
     f[i] = A * gra::math::BESSJ0(bt * kt) * bt;
-    // f[i] = A * std::cyl_bessel_j(0, bt * kt) * bt; // c++17
+    // f[i] = A * std::cyl_bessel_j(0, bt * kt) * bt; // c++17, slow
   }
   const double C = 2.0 * gra::math::PI;  // phi-integral
 
