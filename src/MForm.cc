@@ -178,7 +178,6 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
 
   try {
     // Complex coupling
-    std::complex<double> g(0, 0);
     double               g_A   = j.at("PARAM_RES").at("g_A");
     double               g_phi = j.at("PARAM_RES").at("g_phi");
     res.g                      = g_A * std::exp(std::complex<double>(0, 1) * g_phi);

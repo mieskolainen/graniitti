@@ -33,22 +33,23 @@ MAmpMG5_yy_ll_2to4::MAmpMG5_yy_ll_2to4() {
 
   // Instantiate the model class and set parameters that stay fixed
   // during run
-  pars = Parameters_sm::getInstance();
+  pars = Parameters_sm();
   SLHAReader slha(param_card_name);
-  pars->setIndependentParameters(slha);
-  pars->setIndependentCouplings();
+  pars.setIndependentParameters(slha);
+  pars.setIndependentCouplings();
 
-  // pars->printIndependentParameters();
-  // pars->printIndependentCouplings();
+  // pars.printIndependentParameters();
+  // pars.printIndependentCouplings();
 
   // Set external particle masses for this matrix element
-  mME.push_back(pars->ZERO);
-  mME.push_back(pars->ZERO);
-  mME.push_back(pars->ZERO);
-  mME.push_back(pars->ZERO);
-  mME.push_back(pars->ZERO);
-  mME.push_back(pars->ZERO);
-  jamp2[0] = new double[2];
+  mME.push_back(pars.ZERO);
+  mME.push_back(pars.ZERO);
+  mME.push_back(pars.ZERO);
+  mME.push_back(pars.ZERO);
+  mME.push_back(pars.ZERO);
+  mME.push_back(pars.ZERO);
+
+  jamp2 = std::vector<std::vector<double>>(nprocesses, std::vector<double>(2));
 }
 
 MAmpMG5_yy_ll_2to4::~MAmpMG5_yy_ll_2to4() {}
@@ -68,13 +69,13 @@ MAmpMG5_yy_ll_2to4::~MAmpMG5_yy_ll_2to4() {}
 // Get amplitude
 std::complex<double> MAmpMG5_yy_ll_2to4::CalcAmp(gra::LORENTZSCALAR &lts) {
   // Set the parameters which change event by event
-  // pars->setDependentParameters();
-  // pars->setDependentCouplings();
+  // pars.setDependentParameters();
+  // pars.setDependentCouplings();
   // static bool firsttime = true;
   // if (firsttime)
   //{
-  //  pars->printDependentParameters();
-  //  pars->printDependentCouplings();
+  //  pars.printDependentParameters();
+  //  pars.printDependentCouplings();
   //  firsttime = false;
   //}
 
@@ -254,14 +255,14 @@ void MAmpMG5_yy_ll_2to4::calculate_wavefunctions(const int perm[], const int hel
   ixxxxx(p[perm[3]], mME[3], hel[3], -1, w[3]);
   ixxxxx(p[perm[4]], mME[4], hel[4], -1, w[4]);
   oxxxxx(p[perm[5]], mME[5], hel[5], +1, w[5]);
-  FFV1P0_3(w[2], w[0], GC_3, pars->ZERO, pars->ZERO, w[6]);
-  FFV1P0_3(w[3], w[1], GC_3, pars->ZERO, pars->ZERO, w[7]);
-  FFV1_2(w[4], w[6], GC_3, pars->ZERO, pars->ZERO, w[8]);
-  FFV1_1(w[5], w[6], GC_3, pars->ZERO, pars->ZERO, w[9]);
-  FFV1P0_3(w[3], w[0], GC_3, pars->ZERO, pars->ZERO, w[10]);
-  FFV1P0_3(w[2], w[1], GC_3, pars->ZERO, pars->ZERO, w[11]);
-  FFV1_2(w[4], w[10], GC_3, pars->ZERO, pars->ZERO, w[12]);
-  FFV1_1(w[5], w[10], GC_3, pars->ZERO, pars->ZERO, w[13]);
+  FFV1P0_3(w[2], w[0], GC_3, pars.ZERO, pars.ZERO, w[6]);
+  FFV1P0_3(w[3], w[1], GC_3, pars.ZERO, pars.ZERO, w[7]);
+  FFV1_2(w[4], w[6], GC_3, pars.ZERO, pars.ZERO, w[8]);
+  FFV1_1(w[5], w[6], GC_3, pars.ZERO, pars.ZERO, w[9]);
+  FFV1P0_3(w[3], w[0], GC_3, pars.ZERO, pars.ZERO, w[10]);
+  FFV1P0_3(w[2], w[1], GC_3, pars.ZERO, pars.ZERO, w[11]);
+  FFV1_2(w[4], w[10], GC_3, pars.ZERO, pars.ZERO, w[12]);
+  FFV1_1(w[5], w[10], GC_3, pars.ZERO, pars.ZERO, w[13]);
 
   // Calculate all amplitudes
   // Amplitude(s) for diagram number 0

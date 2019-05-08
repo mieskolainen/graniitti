@@ -55,7 +55,7 @@ std::complex<double> MDurham::DurhamQCD(gra::LORENTZSCALAR &lts, const std::stri
   // First run, init parameters
   // @@ MULTITHREADING LOCK NEEDED FOR THE INITIALIZATION @@
   gra::g_mutex.lock();
-
+  
   // Not created yet
   if (lts.GlobalSudakovPtr == nullptr) {
     lts.GlobalSudakovPtr   = new MSudakov();
@@ -645,11 +645,11 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR &                      lts,
   // Evaluate only once the meson wave functions
   static const std::vector<double> wfphi0 = EvalPhi(Nx, pdg0);
   static const std::vector<double> wfphi1 = EvalPhi(Nx, pdg1);
-
+  
   // -------------------------------------------------------------------
   const double                     CUTOFF = 1e-15;  // To avoid singularity at x = 0, x = 1
-  static const std::vector<double> xval = math::linspace<std::vector>(CUTOFF, 1.0 - CUTOFF, Nx + 1);
-
+  static const std::vector<double> xval = math::linspace(CUTOFF, 1.0 - CUTOFF, Nx + 1);
+  
   // ------------------------------------------------------------------
   // Integral over meson wave functions:
   // M\int_0^1 dx dy \phi_M(x) \phi_\bar{M}(y) T_{\lambda\lambda'}

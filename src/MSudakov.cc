@@ -39,7 +39,7 @@ MSudakov::MSudakov() {}
 
 // Destructor
 MSudakov::~MSudakov() {
-  if (PdfPtr != nullptr) { delete PdfPtr; }
+  delete PdfPtr;
 }
 
 // Init

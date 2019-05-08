@@ -26,20 +26,21 @@ MAmpMG5_yy_ll::MAmpMG5_yy_ll() {
 
   // Instantiate the model class and set parameters that stay fixed
   // during run
-  pars = Parameters_sm::getInstance();
+  pars = Parameters_sm();
   SLHAReader slha(param_card_name);
-  pars->setIndependentParameters(slha);
-  pars->setIndependentCouplings();
+  pars.setIndependentParameters(slha);
+  pars.setIndependentCouplings();
 
-  // pars->printIndependentParameters();
-  // pars->printIndependentCouplings();
+  // pars.printIndependentParameters();
+  // pars.printIndependentCouplings();
 
   // Set external particle masses for this matrix element
-  mME.push_back(pars->ZERO);
-  mME.push_back(pars->ZERO);
-  mME.push_back(pars->ZERO);
-  mME.push_back(pars->ZERO);
-  jamp2[0] = new double[1];
+  mME.push_back(pars.ZERO);
+  mME.push_back(pars.ZERO);
+  mME.push_back(pars.ZERO);
+  mME.push_back(pars.ZERO);
+
+  jamp2 = std::vector<std::vector<double>>(nprocesses, std::vector<double>(1));
 }
 
 MAmpMG5_yy_ll::~MAmpMG5_yy_ll() {}
@@ -141,7 +142,7 @@ std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR &lts) {
 
 // MadGraph wavefunctions
 void MAmpMG5_yy_ll::calculate_wavefunctions(const int perm[], const int hel[]) {
-  // *** MODIFIED: Constant QED coupling, instead of pars->GC_3 ***
+  // *** MODIFIED: Constant QED coupling, instead of pars.GC_3 ***
   const std::complex<double> GC_3(0, -gra::form::e_EM());
 
   // Calculate all wavefunctions
@@ -149,8 +150,8 @@ void MAmpMG5_yy_ll::calculate_wavefunctions(const int perm[], const int hel[]) {
   MG5_sm_yy_ll::vxxxxx(p[perm[1]], mME[1], hel[1], -1, w[1]);
   MG5_sm_yy_ll::oxxxxx(p[perm[2]], mME[2], hel[2], +1, w[2]);
   MG5_sm_yy_ll::ixxxxx(p[perm[3]], mME[3], hel[3], -1, w[3]);
-  MG5_sm_yy_ll::FFV1_1(w[2], w[0], GC_3, pars->ZERO, pars->ZERO, w[4]);
-  MG5_sm_yy_ll::FFV1_2(w[3], w[0], GC_3, pars->ZERO, pars->ZERO, w[5]);
+  MG5_sm_yy_ll::FFV1_1(w[2], w[0], GC_3, pars.ZERO, pars.ZERO, w[4]);
+  MG5_sm_yy_ll::FFV1_2(w[3], w[0], GC_3, pars.ZERO, pars.ZERO, w[5]);
 
   // Calculate all amplitudes
   // Amplitude(s) for diagram number 0

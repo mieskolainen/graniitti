@@ -26,23 +26,26 @@ MAmpMG5_yy_ww::MAmpMG5_yy_ww() {
 
   // Instantiate the model class and set parameters that stay fixed
   // during run
-  pars = Parameters_sm::getInstance();
+  pars = Parameters_sm();
   SLHAReader slha(param_card_name);
-  pars->setIndependentParameters(slha);
-  pars->setIndependentCouplings();
+  pars.setIndependentParameters(slha);
+  pars.setIndependentCouplings();
 
-  // pars->printIndependentParameters();
-  // pars->printIndependentCouplings();
+  // pars.printIndependentParameters();
+  // pars.printIndependentCouplings();
 
   // Set external particle masses for this matrix element
-  mME.push_back(pars->ZERO);
-  mME.push_back(pars->ZERO);
-  mME.push_back(pars->ZERO);
-  mME.push_back(pars->ZERO);
-  jamp2[0] = new double[1];
+  mME.push_back(pars.ZERO);
+  mME.push_back(pars.ZERO);
+  mME.push_back(pars.ZERO);
+  mME.push_back(pars.ZERO);
+
+  jamp2 = std::vector<std::vector<double>>(nprocesses, std::vector<double>(1));
 }
 
-MAmpMG5_yy_ww::~MAmpMG5_yy_ww() {}
+MAmpMG5_yy_ww::~MAmpMG5_yy_ww() {
+}
+
 
 // Get amplitude
 std::complex<double> MAmpMG5_yy_ww::CalcAmp(gra::LORENTZSCALAR &lts) {
@@ -139,14 +142,14 @@ void MAmpMG5_yy_ww::calculate_wavefunctions(const int perm[], const int hel[]) {
   MG5_sm_yy_ww::vxxxxx(p[perm[1]], mME[1], hel[1], -1, w[1]);
   MG5_sm_yy_ww::vxxxxx(p[perm[2]], mME[2], hel[2], +1, w[2]);
   MG5_sm_yy_ww::vxxxxx(p[perm[3]], mME[3], hel[3], +1, w[3]);
-  MG5_sm_yy_ww::VVV1_2(w[0], w[2], pars->GC_4, pars->mdl_MW, pars->mdl_WW, w[4]);
-  MG5_sm_yy_ww::VVV1_3(w[0], w[3], pars->GC_4, pars->mdl_MW, pars->mdl_WW, w[5]);
+  MG5_sm_yy_ww::VVV1_2(w[0], w[2], pars.GC_4, pars.mdl_MW, pars.mdl_WW, w[4]);
+  MG5_sm_yy_ww::VVV1_3(w[0], w[3], pars.GC_4, pars.mdl_MW, pars.mdl_WW, w[5]);
 
   // Calculate all amplitudes
   // Amplitude(s) for diagram number 0
-  MG5_sm_yy_ww::VVVV2_0(w[0], w[1], w[3], w[2], pars->GC_5, amp[0]);
-  MG5_sm_yy_ww::VVV1_0(w[1], w[3], w[4], pars->GC_4, amp[1]);
-  MG5_sm_yy_ww::VVV1_0(w[1], w[5], w[2], pars->GC_4, amp[2]);
+  MG5_sm_yy_ww::VVVV2_0(w[0], w[1], w[3], w[2], pars.GC_5, amp[0]);
+  MG5_sm_yy_ww::VVV1_0(w[1], w[3], w[4], pars.GC_4, amp[1]);
+  MG5_sm_yy_ww::VVV1_0(w[1], w[5], w[2], pars.GC_4, amp[2]);
 }
 
 // THIS IS NOT USED

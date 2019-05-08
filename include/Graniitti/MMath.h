@@ -90,6 +90,13 @@ inline std::vector<T> vabs(const std::vector<T> &x) {
 // use like:
 // std::valarray<double> a = linspace<std::valarray>(0.0, 10.0, 16);
 //
+template <typename T>
+inline std::vector<T> linspace(T start, T stop, std::size_t size) {
+  std::vector<T> v(size);
+  for (std::size_t i = 0; i < size; ++i) { v[i] = start + i * (stop - start) / (size - 1); }
+  return v;
+}
+
 template <template <typename T> class container_type, class value_type>
 inline container_type<value_type> linspace(value_type start, value_type stop, std::size_t size) {
   container_type<value_type> v(size);

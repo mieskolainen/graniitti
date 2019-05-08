@@ -30,19 +30,20 @@ MAmpMG5_gg_qqbar::MAmpMG5_gg_qqbar() {
 
   // Instantiate the model class and set parameters that stay fixed
   // during run
-  pars = Parameters_sm::getInstance();
+  pars = Parameters_sm();
   SLHAReader slha(param_card_name);
-  pars->setIndependentParameters(slha);
-  pars->setIndependentCouplings();
-  // pars->printIndependentParameters();
-  // pars->printIndependentCouplings();
+  pars.setIndependentParameters(slha);
+  pars.setIndependentCouplings();
+  // pars.printIndependentParameters();
+  // pars.printIndependentCouplings();
 
   // Set external particle masses for this matrix element
-  mME.push_back(pars->ZERO);
-  mME.push_back(pars->ZERO);
-  mME.push_back(pars->ZERO);
-  mME.push_back(pars->ZERO);
-  jamp2[0] = new double[2];
+  mME.push_back(pars.ZERO);
+  mME.push_back(pars.ZERO);
+  mME.push_back(pars.ZERO);
+  mME.push_back(pars.ZERO);
+
+  jamp2 = std::vector<std::vector<double>>(nprocesses, std::vector<double>(2));
 }
 
 MAmpMG5_gg_qqbar::~MAmpMG5_gg_qqbar() {}
@@ -50,8 +51,8 @@ MAmpMG5_gg_qqbar::~MAmpMG5_gg_qqbar() {}
 // Get amplitude
 std::complex<double> MAmpMG5_gg_qqbar::CalcAmp(gra::LORENTZSCALAR &lts, double alpS) {
   // *** Set the parameters which change event by event ***
-  pars->setDependentParameters(alpS);  // alphaS
-  pars->setDependentCouplings();
+  pars.setDependentParameters(alpS);  // alphaS
+  pars.setDependentCouplings();
   // ******************************************************
 
   const double mgluon = 0;
@@ -180,15 +181,15 @@ void MAmpMG5_gg_qqbar::calculate_wavefunctions(const int perm[], const int hel[]
   MG5_sm_gg_qqbar::vxxxxx(p[perm[1]], mME[1], hel[1], -1, w[1]);
   MG5_sm_gg_qqbar::oxxxxx(p[perm[2]], mME[2], hel[2], +1, w[2]);
   MG5_sm_gg_qqbar::ixxxxx(p[perm[3]], mME[3], hel[3], -1, w[3]);
-  MG5_sm_gg_qqbar::VVV1P0_1(w[0], w[1], pars->GC_10, pars->ZERO, pars->ZERO, w[4]);
-  MG5_sm_gg_qqbar::FFV1_1(w[2], w[0], pars->GC_11, pars->ZERO, pars->ZERO, w[5]);
-  MG5_sm_gg_qqbar::FFV1_2(w[3], w[0], pars->GC_11, pars->ZERO, pars->ZERO, w[6]);
+  MG5_sm_gg_qqbar::VVV1P0_1(w[0], w[1], pars.GC_10, pars.ZERO, pars.ZERO, w[4]);
+  MG5_sm_gg_qqbar::FFV1_1(w[2], w[0], pars.GC_11, pars.ZERO, pars.ZERO, w[5]);
+  MG5_sm_gg_qqbar::FFV1_2(w[3], w[0], pars.GC_11, pars.ZERO, pars.ZERO, w[6]);
 
   // Calculate all amplitudes
   // Amplitude(s) for diagram number 0
-  MG5_sm_gg_qqbar::FFV1_0(w[3], w[2], w[4], pars->GC_11, amp[0]);
-  MG5_sm_gg_qqbar::FFV1_0(w[3], w[5], w[1], pars->GC_11, amp[1]);
-  MG5_sm_gg_qqbar::FFV1_0(w[6], w[2], w[1], pars->GC_11, amp[2]);
+  MG5_sm_gg_qqbar::FFV1_0(w[3], w[2], w[4], pars.GC_11, amp[0]);
+  MG5_sm_gg_qqbar::FFV1_0(w[3], w[5], w[1], pars.GC_11, amp[1]);
+  MG5_sm_gg_qqbar::FFV1_0(w[6], w[2], w[1], pars.GC_11, amp[2]);
 }
 double MAmpMG5_gg_qqbar::matrix_1_gg_uux() {
   int i, j;

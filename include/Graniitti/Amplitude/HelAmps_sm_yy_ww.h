@@ -13,8 +13,6 @@
 #include <cmath>
 #include <complex>
 
-#include "Graniitti/Amplitude/Parameters_sm.h"
-
 using namespace std;
 
 namespace MG5_sm_yy_ww {

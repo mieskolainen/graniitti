@@ -30,19 +30,20 @@ MAmpMG5_gg_gg::MAmpMG5_gg_gg() {
 
   // Instantiate the model class and set parameters that stay fixed
   // during run
-  pars = Parameters_sm::getInstance();
+  pars = Parameters_sm();
   SLHAReader slha(param_card_name);
-  pars->setIndependentParameters(slha);
-  pars->setIndependentCouplings();
-  // pars->printIndependentParameters();
-  // pars->printIndependentCouplings();
+  pars.setIndependentParameters(slha);
+  pars.setIndependentCouplings();
+  // pars.printIndependentParameters();
+  // pars.printIndependentCouplings();
 
   // Set external particle masses for this matrix element
-  mME.push_back(pars->ZERO);
-  mME.push_back(pars->ZERO);
-  mME.push_back(pars->ZERO);
-  mME.push_back(pars->ZERO);
-  jamp2[0] = new double[6];
+  mME.push_back(pars.ZERO);
+  mME.push_back(pars.ZERO);
+  mME.push_back(pars.ZERO);
+  mME.push_back(pars.ZERO);
+
+  jamp2 = std::vector<std::vector<double>>(nprocesses, std::vector<double>(6));
 }
 
 MAmpMG5_gg_gg::~MAmpMG5_gg_gg() {}
@@ -50,8 +51,8 @@ MAmpMG5_gg_gg::~MAmpMG5_gg_gg() {}
 // Get amplitude
 std::complex<double> MAmpMG5_gg_gg::CalcAmp(gra::LORENTZSCALAR &lts, double alpS) {
   // *** Set the parameters which change event by event ***
-  pars->setDependentParameters(alpS);  // alphaS
-  pars->setDependentCouplings();
+  pars.setDependentParameters(alpS);  // alphaS
+  pars.setDependentCouplings();
   // ******************************************************
 
   const double mgluon = 0;
@@ -171,7 +172,7 @@ std::complex<double> MAmpMG5_gg_gg::CalcAmp(gra::LORENTZSCALAR &lts, double alpS
 
 // Calculate feynman diagrams amp[i] for the spesific helicity permutation
 void MAmpMG5_gg_gg::calculate_wavefunctions(const int perm[], const int hel[]) {
-  // std::cout << "GC_10 = " << pars->GC_10 << " GC_12 = " << pars->GC_12
+  // std::cout << "GC_10 = " << pars.GC_10 << " GC_12 = " << pars.GC_12
   // << std::endl;
 
   // Calculate all wavefunctions
@@ -179,18 +180,18 @@ void MAmpMG5_gg_gg::calculate_wavefunctions(const int perm[], const int hel[]) {
   MG5_sm_gg_gg::vxxxxx(p[perm[1]], mME[1], hel[1], -1, w[1]);
   MG5_sm_gg_gg::vxxxxx(p[perm[2]], mME[2], hel[2], +1, w[2]);
   MG5_sm_gg_gg::vxxxxx(p[perm[3]], mME[3], hel[3], +1, w[3]);
-  MG5_sm_gg_gg::VVV1P0_1(w[0], w[1], pars->GC_10, pars->ZERO, pars->ZERO, w[4]);
-  MG5_sm_gg_gg::VVV1P0_1(w[0], w[2], pars->GC_10, pars->ZERO, pars->ZERO, w[5]);
-  MG5_sm_gg_gg::VVV1P0_1(w[0], w[3], pars->GC_10, pars->ZERO, pars->ZERO, w[6]);
+  MG5_sm_gg_gg::VVV1P0_1(w[0], w[1], pars.GC_10, pars.ZERO, pars.ZERO, w[4]);
+  MG5_sm_gg_gg::VVV1P0_1(w[0], w[2], pars.GC_10, pars.ZERO, pars.ZERO, w[5]);
+  MG5_sm_gg_gg::VVV1P0_1(w[0], w[3], pars.GC_10, pars.ZERO, pars.ZERO, w[6]);
 
   // Calculate all amplitudes
   // Amplitude(s) for diagram number 0
-  MG5_sm_gg_gg::VVVV1_0(w[0], w[1], w[2], w[3], pars->GC_12, amp[0]);
-  MG5_sm_gg_gg::VVVV3_0(w[0], w[1], w[2], w[3], pars->GC_12, amp[1]);
-  MG5_sm_gg_gg::VVVV4_0(w[0], w[1], w[2], w[3], pars->GC_12, amp[2]);
-  MG5_sm_gg_gg::VVV1_0(w[2], w[3], w[4], pars->GC_10, amp[3]);
-  MG5_sm_gg_gg::VVV1_0(w[1], w[3], w[5], pars->GC_10, amp[4]);
-  MG5_sm_gg_gg::VVV1_0(w[1], w[2], w[6], pars->GC_10, amp[5]);
+  MG5_sm_gg_gg::VVVV1_0(w[0], w[1], w[2], w[3], pars.GC_12, amp[0]);
+  MG5_sm_gg_gg::VVVV3_0(w[0], w[1], w[2], w[3], pars.GC_12, amp[1]);
+  MG5_sm_gg_gg::VVVV4_0(w[0], w[1], w[2], w[3], pars.GC_12, amp[2]);
+  MG5_sm_gg_gg::VVV1_0(w[2], w[3], w[4], pars.GC_10, amp[3]);
+  MG5_sm_gg_gg::VVV1_0(w[1], w[3], w[5], pars.GC_10, amp[4]);
+  MG5_sm_gg_gg::VVV1_0(w[1], w[2], w[6], pars.GC_10, amp[5]);
 }
 
 /*
@@ -240,12 +241,9 @@ double MAmpMG5_gg_gg::matrix_1_gg_gg() {
   }
 
   // Store the leading color flows for choice of color
-  /*
-  double jamp2sum = 0.0;
   for (i = 0; i < ncolor; i++) {
                   jamp2[0][i] = real(jamp[i] * conj(jamp[i]));
   }
-  */
 
   return matrix;
 }

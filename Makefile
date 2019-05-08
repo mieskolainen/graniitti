@@ -190,7 +190,7 @@ ifeq ($(ROOT_STD14),TRUE)
 CXXVER_OLD = -std=c++14
 endif
 
-OPTIM      = -O2 -DNDEBUG -ftree-vectorize -fno-signed-zeros
+OPTIM      = -O3 -DNDEBUG -ftree-vectorize -fno-signed-zeros
 CXXFLAGS   = -Wall -fPIC -pipe $(OPTIM)
 
 

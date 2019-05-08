@@ -84,7 +84,7 @@ MGraniitti::~MGraniitti() {
 
   // Destroy processes
   for (std::size_t i = 0; i < pvec.size(); ++i) {
-    if (pvec[i] != nullptr) { delete pvec[i]; }
+    delete pvec[i];
   }
 
   std::cout << "~MGraniitti [DONE]" << std::endl;
@@ -281,14 +281,12 @@ void MGraniitti::InitProcessMemory(std::string process, unsigned int seed) {
 
 void MGraniitti::InitMultiMemory() {
   // ** Init multithreading memory by making copies of the process **
-  if (pvec.size() != 0) {
-    for (std::size_t i = 0; i < pvec.size(); ++i) {
-      if (pvec[i] != nullptr) { delete pvec[i]; }
-    }
+  for (std::size_t i = 0; i < pvec.size(); ++i) {
+    delete pvec[i];
   }
   pvec.resize(CORES, nullptr);
 
-  // Copy process objects for each thread
+  // Create new process objects for each thread
   for (int i = 0; i < CORES; ++i) {
     if (proc_Q.ProcessExist(PROCESS)) {
       pvec[i] = new MQuasiElastic(proc_Q);

@@ -540,8 +540,8 @@ MMatrix<double> Y_real_synthesize(const std::vector<double> &c_lm, const std::ve
   const int LMAX = msqrt(ACTIVE.size()) - 1;
 
   // Cos(theta) and phi
-  costheta = math::linspace<std::vector>(-1.0, 1.0, N);
-  phi      = math::linspace<std::vector>(-math::PI, math::PI, N);
+  costheta = math::linspace(-1.0, 1.0, N);
+  phi      = math::linspace(-math::PI, math::PI, N);
 
   // Do the expansion
   MMatrix<double> Z(N, N, 0.0);

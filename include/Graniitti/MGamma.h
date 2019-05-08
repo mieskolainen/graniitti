@@ -27,7 +27,7 @@ class MGamma {
  public:
   MGamma() {}
   ~MGamma() {}
-
+  
   // yy->resonance X
   std::complex<double> yyX(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const;
 

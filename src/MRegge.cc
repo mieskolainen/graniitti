@@ -477,7 +477,6 @@ std::complex<double> MRegge::ME4(gra::LORENTZSCALAR &lts, double sign) const {
 //
 //
 std::complex<double> MRegge::ME6(gra::LORENTZSCALAR &lts) const {
-  const std::complex<double> nullc(0, 0);
 
   // Amplitude_
   std::complex<double> M(0, 0);

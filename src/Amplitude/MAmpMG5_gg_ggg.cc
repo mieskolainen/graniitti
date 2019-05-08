@@ -30,20 +30,21 @@ MAmpMG5_gg_ggg::MAmpMG5_gg_ggg() {
 
   // Instantiate the model class and set parameters that stay fixed
   // during run
-  pars = Parameters_sm::getInstance();
+  pars = Parameters_sm();
   SLHAReader slha(param_card_name);
-  pars->setIndependentParameters(slha);
-  pars->setIndependentCouplings();
-  // pars->printIndependentParameters();
-  // pars->printIndependentCouplings();
+  pars.setIndependentParameters(slha);
+  pars.setIndependentCouplings();
+  // pars.printIndependentParameters();
+  // pars.printIndependentCouplings();
 
   // Set external particle masses for this matrix element
-  mME.push_back(pars->ZERO);
-  mME.push_back(pars->ZERO);
-  mME.push_back(pars->ZERO);
-  mME.push_back(pars->ZERO);
-  mME.push_back(pars->ZERO);
-  jamp2[0] = new double[24];
+  mME.push_back(pars.ZERO);
+  mME.push_back(pars.ZERO);
+  mME.push_back(pars.ZERO);
+  mME.push_back(pars.ZERO);
+  mME.push_back(pars.ZERO);
+
+  jamp2 = std::vector<std::vector<double>>(nprocesses, std::vector<double>(24));
 }
 
 MAmpMG5_gg_ggg::~MAmpMG5_gg_ggg() {}
@@ -51,8 +52,8 @@ MAmpMG5_gg_ggg::~MAmpMG5_gg_ggg() {}
 // Get amplitude
 std::complex<double> MAmpMG5_gg_ggg::CalcAmp(gra::LORENTZSCALAR &lts, double alpS) {
   // *** Set the parameters which change event by event ***
-  pars->setDependentParameters(alpS);  // alphaS
-  pars->setDependentCouplings();
+  pars.setDependentParameters(alpS);  // alphaS
+  pars.setDependentCouplings();
   // ******************************************************
 
   const double mgluon = 0;
@@ -188,82 +189,82 @@ void MAmpMG5_gg_ggg::calculate_wavefunctions(const int perm[], const int hel[]) 
   MG5_sm_gg_ggg::vxxxxx(p[perm[2]], mME[2], hel[2], +1, w[2]);
   MG5_sm_gg_ggg::vxxxxx(p[perm[3]], mME[3], hel[3], +1, w[3]);
   MG5_sm_gg_ggg::vxxxxx(p[perm[4]], mME[4], hel[4], +1, w[4]);
-  MG5_sm_gg_ggg::VVV1P0_1(w[0], w[1], pars->GC_10, pars->ZERO, pars->ZERO, w[5]);
-  MG5_sm_gg_ggg::VVV1P0_1(w[2], w[3], pars->GC_10, pars->ZERO, pars->ZERO, w[6]);
-  MG5_sm_gg_ggg::VVV1P0_1(w[2], w[4], pars->GC_10, pars->ZERO, pars->ZERO, w[7]);
-  MG5_sm_gg_ggg::VVV1P0_1(w[3], w[4], pars->GC_10, pars->ZERO, pars->ZERO, w[8]);
-  MG5_sm_gg_ggg::VVV1P0_1(w[0], w[2], pars->GC_10, pars->ZERO, pars->ZERO, w[9]);
-  MG5_sm_gg_ggg::VVV1P0_1(w[1], w[3], pars->GC_10, pars->ZERO, pars->ZERO, w[10]);
-  MG5_sm_gg_ggg::VVV1P0_1(w[1], w[4], pars->GC_10, pars->ZERO, pars->ZERO, w[11]);
-  MG5_sm_gg_ggg::VVV1P0_1(w[0], w[3], pars->GC_10, pars->ZERO, pars->ZERO, w[12]);
-  MG5_sm_gg_ggg::VVV1P0_1(w[1], w[2], pars->GC_10, pars->ZERO, pars->ZERO, w[13]);
-  MG5_sm_gg_ggg::VVV1P0_1(w[0], w[4], pars->GC_10, pars->ZERO, pars->ZERO, w[14]);
-  MG5_sm_gg_ggg::VVVV1P0_1(w[0], w[1], w[2], pars->GC_12, pars->ZERO, pars->ZERO, w[15]);
-  MG5_sm_gg_ggg::VVVV3P0_1(w[0], w[1], w[2], pars->GC_12, pars->ZERO, pars->ZERO, w[16]);
-  MG5_sm_gg_ggg::VVVV4P0_1(w[0], w[1], w[2], pars->GC_12, pars->ZERO, pars->ZERO, w[17]);
-  MG5_sm_gg_ggg::VVVV1P0_1(w[0], w[1], w[3], pars->GC_12, pars->ZERO, pars->ZERO, w[18]);
-  MG5_sm_gg_ggg::VVVV3P0_1(w[0], w[1], w[3], pars->GC_12, pars->ZERO, pars->ZERO, w[19]);
-  MG5_sm_gg_ggg::VVVV4P0_1(w[0], w[1], w[3], pars->GC_12, pars->ZERO, pars->ZERO, w[20]);
-  MG5_sm_gg_ggg::VVVV1P0_1(w[0], w[1], w[4], pars->GC_12, pars->ZERO, pars->ZERO, w[21]);
-  MG5_sm_gg_ggg::VVVV3P0_1(w[0], w[1], w[4], pars->GC_12, pars->ZERO, pars->ZERO, w[22]);
-  MG5_sm_gg_ggg::VVVV4P0_1(w[0], w[1], w[4], pars->GC_12, pars->ZERO, pars->ZERO, w[23]);
-  MG5_sm_gg_ggg::VVVV1P0_1(w[0], w[2], w[3], pars->GC_12, pars->ZERO, pars->ZERO, w[24]);
-  MG5_sm_gg_ggg::VVVV3P0_1(w[0], w[2], w[3], pars->GC_12, pars->ZERO, pars->ZERO, w[25]);
-  MG5_sm_gg_ggg::VVVV4P0_1(w[0], w[2], w[3], pars->GC_12, pars->ZERO, pars->ZERO, w[26]);
-  MG5_sm_gg_ggg::VVVV1P0_1(w[0], w[2], w[4], pars->GC_12, pars->ZERO, pars->ZERO, w[27]);
-  MG5_sm_gg_ggg::VVVV3P0_1(w[0], w[2], w[4], pars->GC_12, pars->ZERO, pars->ZERO, w[28]);
-  MG5_sm_gg_ggg::VVVV4P0_1(w[0], w[2], w[4], pars->GC_12, pars->ZERO, pars->ZERO, w[29]);
-  MG5_sm_gg_ggg::VVVV1P0_1(w[0], w[3], w[4], pars->GC_12, pars->ZERO, pars->ZERO, w[30]);
-  MG5_sm_gg_ggg::VVVV3P0_1(w[0], w[3], w[4], pars->GC_12, pars->ZERO, pars->ZERO, w[31]);
-  MG5_sm_gg_ggg::VVVV4P0_1(w[0], w[3], w[4], pars->GC_12, pars->ZERO, pars->ZERO, w[32]);
+  MG5_sm_gg_ggg::VVV1P0_1(w[0], w[1], pars.GC_10, pars.ZERO, pars.ZERO, w[5]);
+  MG5_sm_gg_ggg::VVV1P0_1(w[2], w[3], pars.GC_10, pars.ZERO, pars.ZERO, w[6]);
+  MG5_sm_gg_ggg::VVV1P0_1(w[2], w[4], pars.GC_10, pars.ZERO, pars.ZERO, w[7]);
+  MG5_sm_gg_ggg::VVV1P0_1(w[3], w[4], pars.GC_10, pars.ZERO, pars.ZERO, w[8]);
+  MG5_sm_gg_ggg::VVV1P0_1(w[0], w[2], pars.GC_10, pars.ZERO, pars.ZERO, w[9]);
+  MG5_sm_gg_ggg::VVV1P0_1(w[1], w[3], pars.GC_10, pars.ZERO, pars.ZERO, w[10]);
+  MG5_sm_gg_ggg::VVV1P0_1(w[1], w[4], pars.GC_10, pars.ZERO, pars.ZERO, w[11]);
+  MG5_sm_gg_ggg::VVV1P0_1(w[0], w[3], pars.GC_10, pars.ZERO, pars.ZERO, w[12]);
+  MG5_sm_gg_ggg::VVV1P0_1(w[1], w[2], pars.GC_10, pars.ZERO, pars.ZERO, w[13]);
+  MG5_sm_gg_ggg::VVV1P0_1(w[0], w[4], pars.GC_10, pars.ZERO, pars.ZERO, w[14]);
+  MG5_sm_gg_ggg::VVVV1P0_1(w[0], w[1], w[2], pars.GC_12, pars.ZERO, pars.ZERO, w[15]);
+  MG5_sm_gg_ggg::VVVV3P0_1(w[0], w[1], w[2], pars.GC_12, pars.ZERO, pars.ZERO, w[16]);
+  MG5_sm_gg_ggg::VVVV4P0_1(w[0], w[1], w[2], pars.GC_12, pars.ZERO, pars.ZERO, w[17]);
+  MG5_sm_gg_ggg::VVVV1P0_1(w[0], w[1], w[3], pars.GC_12, pars.ZERO, pars.ZERO, w[18]);
+  MG5_sm_gg_ggg::VVVV3P0_1(w[0], w[1], w[3], pars.GC_12, pars.ZERO, pars.ZERO, w[19]);
+  MG5_sm_gg_ggg::VVVV4P0_1(w[0], w[1], w[3], pars.GC_12, pars.ZERO, pars.ZERO, w[20]);
+  MG5_sm_gg_ggg::VVVV1P0_1(w[0], w[1], w[4], pars.GC_12, pars.ZERO, pars.ZERO, w[21]);
+  MG5_sm_gg_ggg::VVVV3P0_1(w[0], w[1], w[4], pars.GC_12, pars.ZERO, pars.ZERO, w[22]);
+  MG5_sm_gg_ggg::VVVV4P0_1(w[0], w[1], w[4], pars.GC_12, pars.ZERO, pars.ZERO, w[23]);
+  MG5_sm_gg_ggg::VVVV1P0_1(w[0], w[2], w[3], pars.GC_12, pars.ZERO, pars.ZERO, w[24]);
+  MG5_sm_gg_ggg::VVVV3P0_1(w[0], w[2], w[3], pars.GC_12, pars.ZERO, pars.ZERO, w[25]);
+  MG5_sm_gg_ggg::VVVV4P0_1(w[0], w[2], w[3], pars.GC_12, pars.ZERO, pars.ZERO, w[26]);
+  MG5_sm_gg_ggg::VVVV1P0_1(w[0], w[2], w[4], pars.GC_12, pars.ZERO, pars.ZERO, w[27]);
+  MG5_sm_gg_ggg::VVVV3P0_1(w[0], w[2], w[4], pars.GC_12, pars.ZERO, pars.ZERO, w[28]);
+  MG5_sm_gg_ggg::VVVV4P0_1(w[0], w[2], w[4], pars.GC_12, pars.ZERO, pars.ZERO, w[29]);
+  MG5_sm_gg_ggg::VVVV1P0_1(w[0], w[3], w[4], pars.GC_12, pars.ZERO, pars.ZERO, w[30]);
+  MG5_sm_gg_ggg::VVVV3P0_1(w[0], w[3], w[4], pars.GC_12, pars.ZERO, pars.ZERO, w[31]);
+  MG5_sm_gg_ggg::VVVV4P0_1(w[0], w[3], w[4], pars.GC_12, pars.ZERO, pars.ZERO, w[32]);
 
   // Calculate all amplitudes
   // Amplitude(s) for diagram number 0
-  MG5_sm_gg_ggg::VVV1_0(w[5], w[6], w[4], pars->GC_10, amp[0]);
-  MG5_sm_gg_ggg::VVV1_0(w[5], w[7], w[3], pars->GC_10, amp[1]);
-  MG5_sm_gg_ggg::VVV1_0(w[5], w[2], w[8], pars->GC_10, amp[2]);
-  MG5_sm_gg_ggg::VVVV1_0(w[2], w[3], w[4], w[5], pars->GC_12, amp[3]);
-  MG5_sm_gg_ggg::VVVV3_0(w[2], w[3], w[4], w[5], pars->GC_12, amp[4]);
-  MG5_sm_gg_ggg::VVVV4_0(w[2], w[3], w[4], w[5], pars->GC_12, amp[5]);
-  MG5_sm_gg_ggg::VVV1_0(w[9], w[10], w[4], pars->GC_10, amp[6]);
-  MG5_sm_gg_ggg::VVV1_0(w[9], w[11], w[3], pars->GC_10, amp[7]);
-  MG5_sm_gg_ggg::VVV1_0(w[9], w[1], w[8], pars->GC_10, amp[8]);
-  MG5_sm_gg_ggg::VVVV1_0(w[1], w[3], w[4], w[9], pars->GC_12, amp[9]);
-  MG5_sm_gg_ggg::VVVV3_0(w[1], w[3], w[4], w[9], pars->GC_12, amp[10]);
-  MG5_sm_gg_ggg::VVVV4_0(w[1], w[3], w[4], w[9], pars->GC_12, amp[11]);
-  MG5_sm_gg_ggg::VVV1_0(w[12], w[13], w[4], pars->GC_10, amp[12]);
-  MG5_sm_gg_ggg::VVV1_0(w[12], w[11], w[2], pars->GC_10, amp[13]);
-  MG5_sm_gg_ggg::VVV1_0(w[12], w[1], w[7], pars->GC_10, amp[14]);
-  MG5_sm_gg_ggg::VVVV1_0(w[1], w[2], w[4], w[12], pars->GC_12, amp[15]);
-  MG5_sm_gg_ggg::VVVV3_0(w[1], w[2], w[4], w[12], pars->GC_12, amp[16]);
-  MG5_sm_gg_ggg::VVVV4_0(w[1], w[2], w[4], w[12], pars->GC_12, amp[17]);
-  MG5_sm_gg_ggg::VVV1_0(w[14], w[13], w[3], pars->GC_10, amp[18]);
-  MG5_sm_gg_ggg::VVV1_0(w[14], w[10], w[2], pars->GC_10, amp[19]);
-  MG5_sm_gg_ggg::VVV1_0(w[14], w[1], w[6], pars->GC_10, amp[20]);
-  MG5_sm_gg_ggg::VVVV1_0(w[1], w[2], w[3], w[14], pars->GC_12, amp[21]);
-  MG5_sm_gg_ggg::VVVV3_0(w[1], w[2], w[3], w[14], pars->GC_12, amp[22]);
-  MG5_sm_gg_ggg::VVVV4_0(w[1], w[2], w[3], w[14], pars->GC_12, amp[23]);
-  MG5_sm_gg_ggg::VVV1_0(w[0], w[13], w[8], pars->GC_10, amp[24]);
-  MG5_sm_gg_ggg::VVV1_0(w[0], w[10], w[7], pars->GC_10, amp[25]);
-  MG5_sm_gg_ggg::VVV1_0(w[0], w[11], w[6], pars->GC_10, amp[26]);
-  MG5_sm_gg_ggg::VVV1_0(w[3], w[4], w[15], pars->GC_10, amp[27]);
-  MG5_sm_gg_ggg::VVV1_0(w[3], w[4], w[16], pars->GC_10, amp[28]);
-  MG5_sm_gg_ggg::VVV1_0(w[3], w[4], w[17], pars->GC_10, amp[29]);
-  MG5_sm_gg_ggg::VVV1_0(w[2], w[4], w[18], pars->GC_10, amp[30]);
-  MG5_sm_gg_ggg::VVV1_0(w[2], w[4], w[19], pars->GC_10, amp[31]);
-  MG5_sm_gg_ggg::VVV1_0(w[2], w[4], w[20], pars->GC_10, amp[32]);
-  MG5_sm_gg_ggg::VVV1_0(w[2], w[3], w[21], pars->GC_10, amp[33]);
-  MG5_sm_gg_ggg::VVV1_0(w[2], w[3], w[22], pars->GC_10, amp[34]);
-  MG5_sm_gg_ggg::VVV1_0(w[2], w[3], w[23], pars->GC_10, amp[35]);
-  MG5_sm_gg_ggg::VVV1_0(w[1], w[4], w[24], pars->GC_10, amp[36]);
-  MG5_sm_gg_ggg::VVV1_0(w[1], w[4], w[25], pars->GC_10, amp[37]);
-  MG5_sm_gg_ggg::VVV1_0(w[1], w[4], w[26], pars->GC_10, amp[38]);
-  MG5_sm_gg_ggg::VVV1_0(w[1], w[3], w[27], pars->GC_10, amp[39]);
-  MG5_sm_gg_ggg::VVV1_0(w[1], w[3], w[28], pars->GC_10, amp[40]);
-  MG5_sm_gg_ggg::VVV1_0(w[1], w[3], w[29], pars->GC_10, amp[41]);
-  MG5_sm_gg_ggg::VVV1_0(w[1], w[2], w[30], pars->GC_10, amp[42]);
-  MG5_sm_gg_ggg::VVV1_0(w[1], w[2], w[31], pars->GC_10, amp[43]);
-  MG5_sm_gg_ggg::VVV1_0(w[1], w[2], w[32], pars->GC_10, amp[44]);
+  MG5_sm_gg_ggg::VVV1_0(w[5], w[6], w[4], pars.GC_10, amp[0]);
+  MG5_sm_gg_ggg::VVV1_0(w[5], w[7], w[3], pars.GC_10, amp[1]);
+  MG5_sm_gg_ggg::VVV1_0(w[5], w[2], w[8], pars.GC_10, amp[2]);
+  MG5_sm_gg_ggg::VVVV1_0(w[2], w[3], w[4], w[5], pars.GC_12, amp[3]);
+  MG5_sm_gg_ggg::VVVV3_0(w[2], w[3], w[4], w[5], pars.GC_12, amp[4]);
+  MG5_sm_gg_ggg::VVVV4_0(w[2], w[3], w[4], w[5], pars.GC_12, amp[5]);
+  MG5_sm_gg_ggg::VVV1_0(w[9], w[10], w[4], pars.GC_10, amp[6]);
+  MG5_sm_gg_ggg::VVV1_0(w[9], w[11], w[3], pars.GC_10, amp[7]);
+  MG5_sm_gg_ggg::VVV1_0(w[9], w[1], w[8], pars.GC_10, amp[8]);
+  MG5_sm_gg_ggg::VVVV1_0(w[1], w[3], w[4], w[9], pars.GC_12, amp[9]);
+  MG5_sm_gg_ggg::VVVV3_0(w[1], w[3], w[4], w[9], pars.GC_12, amp[10]);
+  MG5_sm_gg_ggg::VVVV4_0(w[1], w[3], w[4], w[9], pars.GC_12, amp[11]);
+  MG5_sm_gg_ggg::VVV1_0(w[12], w[13], w[4], pars.GC_10, amp[12]);
+  MG5_sm_gg_ggg::VVV1_0(w[12], w[11], w[2], pars.GC_10, amp[13]);
+  MG5_sm_gg_ggg::VVV1_0(w[12], w[1], w[7], pars.GC_10, amp[14]);
+  MG5_sm_gg_ggg::VVVV1_0(w[1], w[2], w[4], w[12], pars.GC_12, amp[15]);
+  MG5_sm_gg_ggg::VVVV3_0(w[1], w[2], w[4], w[12], pars.GC_12, amp[16]);
+  MG5_sm_gg_ggg::VVVV4_0(w[1], w[2], w[4], w[12], pars.GC_12, amp[17]);
+  MG5_sm_gg_ggg::VVV1_0(w[14], w[13], w[3], pars.GC_10, amp[18]);
+  MG5_sm_gg_ggg::VVV1_0(w[14], w[10], w[2], pars.GC_10, amp[19]);
+  MG5_sm_gg_ggg::VVV1_0(w[14], w[1], w[6], pars.GC_10, amp[20]);
+  MG5_sm_gg_ggg::VVVV1_0(w[1], w[2], w[3], w[14], pars.GC_12, amp[21]);
+  MG5_sm_gg_ggg::VVVV3_0(w[1], w[2], w[3], w[14], pars.GC_12, amp[22]);
+  MG5_sm_gg_ggg::VVVV4_0(w[1], w[2], w[3], w[14], pars.GC_12, amp[23]);
+  MG5_sm_gg_ggg::VVV1_0(w[0], w[13], w[8], pars.GC_10, amp[24]);
+  MG5_sm_gg_ggg::VVV1_0(w[0], w[10], w[7], pars.GC_10, amp[25]);
+  MG5_sm_gg_ggg::VVV1_0(w[0], w[11], w[6], pars.GC_10, amp[26]);
+  MG5_sm_gg_ggg::VVV1_0(w[3], w[4], w[15], pars.GC_10, amp[27]);
+  MG5_sm_gg_ggg::VVV1_0(w[3], w[4], w[16], pars.GC_10, amp[28]);
+  MG5_sm_gg_ggg::VVV1_0(w[3], w[4], w[17], pars.GC_10, amp[29]);
+  MG5_sm_gg_ggg::VVV1_0(w[2], w[4], w[18], pars.GC_10, amp[30]);
+  MG5_sm_gg_ggg::VVV1_0(w[2], w[4], w[19], pars.GC_10, amp[31]);
+  MG5_sm_gg_ggg::VVV1_0(w[2], w[4], w[20], pars.GC_10, amp[32]);
+  MG5_sm_gg_ggg::VVV1_0(w[2], w[3], w[21], pars.GC_10, amp[33]);
+  MG5_sm_gg_ggg::VVV1_0(w[2], w[3], w[22], pars.GC_10, amp[34]);
+  MG5_sm_gg_ggg::VVV1_0(w[2], w[3], w[23], pars.GC_10, amp[35]);
+  MG5_sm_gg_ggg::VVV1_0(w[1], w[4], w[24], pars.GC_10, amp[36]);
+  MG5_sm_gg_ggg::VVV1_0(w[1], w[4], w[25], pars.GC_10, amp[37]);
+  MG5_sm_gg_ggg::VVV1_0(w[1], w[4], w[26], pars.GC_10, amp[38]);
+  MG5_sm_gg_ggg::VVV1_0(w[1], w[3], w[27], pars.GC_10, amp[39]);
+  MG5_sm_gg_ggg::VVV1_0(w[1], w[3], w[28], pars.GC_10, amp[40]);
+  MG5_sm_gg_ggg::VVV1_0(w[1], w[3], w[29], pars.GC_10, amp[41]);
+  MG5_sm_gg_ggg::VVV1_0(w[1], w[2], w[30], pars.GC_10, amp[42]);
+  MG5_sm_gg_ggg::VVV1_0(w[1], w[2], w[31], pars.GC_10, amp[43]);
+  MG5_sm_gg_ggg::VVV1_0(w[1], w[2], w[32], pars.GC_10, amp[44]);
 }
 
 /*

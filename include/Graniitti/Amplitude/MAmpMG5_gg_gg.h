@@ -39,11 +39,11 @@ class MAmpMG5_gg_gg {
   double matrix_element[nprocesses];
 
   // Color flows, used when selecting color
-  double *jamp2[nprocesses];
+  std::vector<std::vector<double>> jamp2;
 
-  // Pointer to the model parameters
-  Parameters_sm *pars;
-
+  // Model parameters
+  Parameters_sm pars;
+  
   // vector with external particle masses
   vector<double> mME;
 

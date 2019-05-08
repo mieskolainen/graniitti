@@ -1470,16 +1470,14 @@ class PARAM_RES {
 };
 
 // Lorentz scalars and other common kinematic variables
-struct LORENTZSCALAR {
+class LORENTZSCALAR {
+
+public:
 
   LORENTZSCALAR() {}
   ~LORENTZSCALAR() {
-    if (GlobalSudakovPtr != nullptr) {
       delete GlobalSudakovPtr;
-    }
-    if (GlobalPdfPtr != nullptr) {
       delete GlobalPdfPtr;
-    }
   }
   
   // --------------------------------------------------------------------

@@ -293,7 +293,6 @@ void MHarmonic::Plot2DExpansion(
     h2.push_back(std::vector<TH2D *>(BINS, NULL));
 
     // Loop over observable
-    double x[BINS] = {0};
 
     for (std::size_t bin = 0; bin < BINS; ++bin) {
       // Get x-axis point
@@ -479,10 +478,10 @@ void MHarmonic::PlotFigures(
         c1->cd(k + 1);
 
         // Loop over mass
-        double x[BINS]     = {0};
-        double y[BINS]     = {0};
-        double x_err[BINS] = {0};
-        double y_err[BINS] = {0};
+        double x[BINS];
+        double y[BINS];
+        double x_err[BINS];
+        double y_err[BINS];
 
         for (std::size_t bin = 0; bin < BINS; ++bin) {
           // Get x-axis point
@@ -758,10 +757,10 @@ void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string &out
         c1->cd(k + 1);
 
         // Loop over mass
-        double x[BINS]     = {0};
-        double y[BINS]     = {0};
-        double x_err[BINS] = {0};
-        double y_err[BINS] = {0};
+        double x[BINS];
+        double y[BINS];
+        double x_err[BINS];
+        double y_err[BINS];
 
         for (std::size_t bin = 0; bin < BINS; ++bin) {
           // Get x-axis point

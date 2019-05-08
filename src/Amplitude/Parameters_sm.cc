@@ -11,15 +11,6 @@
 // Own
 #include "Graniitti/Amplitude/Parameters_sm.h"
 
-// Initialize static instance
-Parameters_sm *Parameters_sm::instance = 0;
-
-// Function to get static instance - only one instance per program
-Parameters_sm *Parameters_sm::getInstance() {
-  if (instance == 0) instance = new Parameters_sm();
-
-  return instance;
-}
 
 void Parameters_sm::setIndependentParameters(SLHAReader &slha) {
   // Define "zero"
