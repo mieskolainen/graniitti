@@ -503,7 +503,7 @@ void CheckUpdate() {
         std::cout << std::endl;
         PrintBar("-", 80);
         std::cout << rang::style::bold << "This version " <<
-                     version << " (" << date << ") up-to-date with <github.com/mieskolainen/GRANIITTI>" << rang::style::reset << std::endl;
+                     version << " (" << date << ") is up to date with online" << rang::style::reset << std::endl;
         PrintBar("-", 80);
         std::cout << std::endl;
       }
