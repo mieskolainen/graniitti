@@ -860,82 +860,98 @@ inline void RotateZ(T &p, double angle) {
 }
 
 
-// Transform off-shell to on-shell kinematics a + b -> c + d
-// with 4-momentum conservation
-//
+// Transform off-shell to on-shell kinematics p1 + p2 -> {p} ...
+// with 4-momentum conservation by the closest iterative algebraic approximation
+// 
 // where
-// a + b are massless originally off-shell -> changed to on-shell
-// c + d massive/massless final states
+// p1, p2 are massless originally off-shell -> changed to on-shell
+// {p} massive/massless final states
 //
-inline void OffShell2OnShell(M4Vec& p1, M4Vec& p2, M4Vec& p3, M4Vec& p4) {
+inline void OffShell2OnShell(M4Vec& p1, M4Vec& p2, std::vector<M4Vec>& p) {
   
-  const double E1_old = p1.E();
-  const double E2_old = p2.E();
+  const int N = p.size();  
+  const int MAXITER = 15;
+  const double STOPEPS = 1e-10;
+
+  auto psumfunc = [&] () {
+    M4Vec sum(0,0,0,0);
+    for (const auto& i : aux::indices(p)) { sum += p[i]; }
+    return sum;
+  };
+
+  auto Esumfunc = [&] () {
+    double sum = 0.0;
+    for (const auto& i : aux::indices(p)) { sum += p[i].E(); }
+    return sum;
+  };
 
   // Set massless particles to on-shell (px,py,pz,E)
   p1.Set(p1.Px(), p1.Py(), p1.Pz(), p1.P3mod());
   p2.Set(p2.Px(), p2.Py(), p2.Pz(), p2.P3mod());
 
+  // Get sum
+  const M4Vec q = p1 + p2;
+  
   // Normalize \vec{q} to unit length
-  const std::vector<double> bvec = gra::matoper::Unit((p1 + p2).P3());
+  const std::vector<double> qvec = gra::matoper::Unit(q.P3());
 
-  // dE = (E1' + E2') - (E1 + E2)
-  double dE = (p1.E() + p2.E()) - (E1_old + E2_old);
+  // Final state masses
+  std::vector<double> m(p.size());
+  for (const auto& i : aux::indices(p)) { m[i] = p[i].M(); }
 
-  // Take masses
-  const double m3 = p3.M();
-  const double m4 = p4.M();  
-
-  const int MAXITER = 15;
   int iter = 0;
+  
+  //for (const auto& i : aux::indices(p)) { p[i].Print(); }
+  //std::cout << "iter =" << iter << "  " << (q - psumfunc()).M2() << std::endl;
   
   while (true) {
 
     // --------------------------------------------------
     // 3-Momentum scaling and energy subtraction step
-    
-    const double E3 = p3.E() - dE * 0.5;
-    const double E4 = p4.E() - dE * 0.5;
 
-    const double a3 = gra::math::msqrt(gra::math::pow2(E3) - gra::math::pow2(m3)) / p3.P3mod();
-    const double a4 = gra::math::msqrt(gra::math::pow2(E4) - gra::math::pow2(m4)) / p4.P3mod();
+    // New energy difference
+    const double dE = Esumfunc() - q.E();
 
-    p3.Set(a3*p3.Px(), a3*p3.Py(), a3*p3.Pz(), E3);
-    p4.Set(a4*p4.Px(), a4*p4.Py(), a4*p4.Pz(), E4);
-
-    // --------------------------------------------------
-    // 3-Momentum rotation step
-
-    // Add and normalize to unit length
-    const std::vector<double> avec = gra::matoper::Unit((p3 + p4).P3());
-
-    // Find optimal rotation
-    const gra::MMatrix<double> R = gra::kinematics::RotOnetoOne(avec, bvec);
-
-    // Rotate components
-    p3.SetP3( R * p3.P3());
-    p4.SetP3( R * p4.P3());
+    for (const auto& i : aux::indices(p)) {
+      const double E = p[i].E() - dE / N; // Scaling distributed by 1/N
+      const double a = gra::math::msqrt(E*E - m[i]*m[i]) / p[i].P3mod();  
+      p[i].Set(a*p[i].Px(), a*p[i].Py(), a*p[i].Pz(), E);
+    }
 
     // --------------------------------------------------
     // 3-Momentum subtraction step
 
-    std::vector<double> D3 = ((p1 + p2) - (p3 + p4)).P3();
-    gra::matoper::ScaleVector(D3, 0.5);
+    // New 3-momentum difference
+    std::vector<double> D3 = (psumfunc() - q).P3();
+    gra::matoper::ScaleVector(D3, 1.0/N); // Scaling distributed by 1/N
 
-    p3.SetP3( gra::matoper::Plus(p3.P3(), D3));
-    p4.SetP3( gra::matoper::Plus(p4.P3(), D3));    
+    for (const auto& i : aux::indices(p)) {
+      p[i].SetP3(gra::matoper::Minus(p[i].P3(), D3));
+      p[i].SetE(gra::math::msqrt(p[i].P3mod2() + m[i]*m[i]));
+    }
 
-    p3.SetE(gra::math::msqrt(p3.P3mod2() + m3*m3));
-    p4.SetE(gra::math::msqrt(p4.P3mod2() + m4*m4));  
+    // --------------------------------------------------
+    // 3-Momentum rotation step
 
-    // New energy difference
-    dE = (p3.E() + p4.E()) - (p1.E() + p2.E());
+    // Add and normalize to unit length, find rotation
+    const std::vector<double> avec = gra::matoper::Unit(psumfunc().P3());
+    const gra::MMatrix<double> R = gra::kinematics::RotOnetoOne(avec, qvec);
+
+    // Rotate
+    for (const auto& i : aux::indices(p)) { p[i].SetP3( R * p[i].P3()); }
+
+    // --------------------------------------------------
 
     ++iter;
-    //std::cout << "iter =" << iter << "  " << ((p1 + p2) - (p3 + p4)).M2() << std::endl;
-    if (iter > MAXITER) { break; }
+    const double IVM = std::abs( (q - (psumfunc())).M2() );
+    if (iter > MAXITER || IVM < STOPEPS ) { break; }
+
+    //std::cout << "iter =" << iter << "  " << IVM << std::endl;
   }
 
+  //for (const auto& i : aux::indices(p)) { p[i].Print(); }
+  //std::cout << " --------------------------------------------------- " << std::endl;
+  
 }
 
 

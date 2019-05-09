@@ -63,16 +63,20 @@ std::complex<double> MAmpMG5_gg_ggg::CalcAmp(gra::LORENTZSCALAR &lts, double alp
   mME                              = masses;
 
   // *** Set particle 4-momentum: [E,px,py,pz] convention here! ***
-  // force E = p (on-shell)
-  double p1[] = {lts.q1.P3mod(), lts.q1.Px(), lts.q1.Py(), lts.q1.Pz()};
-  double p2[] = {lts.q2.P3mod(), lts.q2.Px(), lts.q2.Py(), lts.q2.Pz()};
-  double p3[] = {lts.decaytree[0].p4.E(), lts.decaytree[0].p4.Px(), lts.decaytree[0].p4.Py(),
-                 lts.decaytree[0].p4.Pz()};
-  double p4[] = {lts.decaytree[1].p4.E(), lts.decaytree[1].p4.Px(), lts.decaytree[1].p4.Py(),
-                 lts.decaytree[1].p4.Pz()};
-  double p5[] = {lts.decaytree[2].p4.E(), lts.decaytree[2].p4.Px(), lts.decaytree[2].p4.Py(),
-                 lts.decaytree[2].p4.Pz()};
-
+  gra::M4Vec p1_ = lts.q1;
+  gra::M4Vec p2_ = lts.q2;
+  std::vector<gra::M4Vec> pf = {lts.decaytree[0].p4, lts.decaytree[1].p4, lts.decaytree[2].p4};
+  
+  // Do kinematic transform
+  gra::kinematics::OffShell2OnShell(p1_, p2_, pf);
+  
+  // Set components
+  double p1[] = {p1_.E(), p1_.Px(), p1_.Py(), p1_.Pz()};
+  double p2[] = {p2_.E(), p2_.Px(), p2_.Py(), p2_.Pz()};
+  double p3[] = {pf[0].E(), pf[0].Px(), pf[0].Py(), pf[0].Pz()};
+  double p4[] = {pf[1].E(), pf[1].Px(), pf[1].Py(), pf[1].Pz()};
+  double p5[] = {pf[2].E(), pf[2].Px(), pf[2].Py(), pf[2].Pz()};
+  
   p.clear();
   p.push_back(&p1[0]);
   p.push_back(&p2[0]);
