@@ -863,7 +863,9 @@ inline void RotateZ(T &p, double angle) {
 // Transform off-shell to on-shell kinematics a + b -> c + d
 // with 4-momentum conservation
 //
-// where a and b are massless originally off-shell, c + d massive/massless
+// where
+// a + b are massless originally off-shell -> changed to on-shell
+// c + d massive/massless final states
 //
 inline void OffShell2OnShell(M4Vec& p1, M4Vec& p2, M4Vec& p3, M4Vec& p4) {
   
