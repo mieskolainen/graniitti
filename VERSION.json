@@ -1,9 +1,9 @@
 {
  "name": "GRANIITTI",
- "version": "0.39",
+ "version": "0.40",
  "type": "beta",
  "date": "09/05/2019",
  "update": "off-shell to on-shell transformations",
  "build_passing": true,
- "build_date": "Thu, 09 May 2019 19:21:26 +0300"
+ "build_date": "Thu, 09 May 2019 19:25:06 +0300"
 }

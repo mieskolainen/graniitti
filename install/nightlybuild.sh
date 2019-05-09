@@ -7,7 +7,7 @@ echo '* GRANIITTI automated nightly build script *'
 # ------------------------------------------------
 # Set the manually here
 NAME="GRANIITTI"
-VERSION="0.39"
+VERSION="0.40"
 TYPE="beta"
 DATE="09/05/2019"
 UPDATE="off-shell to on-shell transformations"
