@@ -496,7 +496,7 @@ void CheckUpdate() {
     } else {
       std::cout << std::endl;
       PrintBar("-", 80);
-      std::cout << rang::style::bold << rang::fg::green << "Version " <<
+      std::cout << rang::style::bold << rang::fg::green << "This version " <<
                    version << " (" << date << ") up-to-date with <github.com/mieskolainen/GRANIITTI>" << rang::fg::reset << rang::style::reset << std::endl;
       PrintBar("-", 80);
       std::cout << std::endl;
