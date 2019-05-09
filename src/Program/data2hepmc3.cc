@@ -38,6 +38,8 @@ int main(int argc, char *argv[]) {
   if (argc != 2) {
     std::cerr << "<Data to HepMC3 container>" << std::endl;
     std::cerr << "Example: ./data2hepmc3 datafile.csv" << std::endl;
+    aux::CheckUpdate();
+
     return EXIT_FAILURE;
   }
 
@@ -184,12 +186,10 @@ int main(int argc, char *argv[]) {
   fclose(fp);
 
   hM.Print();
-
   std::cout << "Conversion done for " << events << " events" << std::endl;
 
-
-  // Done
-  std::cout << "[data2hepmc3:: done]" << std::endl;
+  std::cout << "[data2hepmc3: done]" << std::endl;
+  aux::CheckUpdate();
 
   return EXIT_SUCCESS;
 }

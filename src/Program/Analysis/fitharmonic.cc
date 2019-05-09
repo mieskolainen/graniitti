@@ -139,6 +139,8 @@ int main(int argc, char *argv[]) {
       std::cout << options.help({""}) << std::endl;
       std::cout << rang::style::bold << "Example:" << rang::style::reset << std::endl;
       std::cout << "  " << argv[0] << " -r SH_2pi_REF -i SH_2pi ..." << std::endl << std::endl;
+    
+      aux::CheckUpdate();
       return EXIT_FAILURE;
     }
 
@@ -281,9 +283,6 @@ int main(int argc, char *argv[]) {
     const std::string outputpath = ref + "+" + r["input"].as<std::string>();
     ha.PlotAll(outputpath);
 
-    // Done
-    std::cout << "[fitharmonic:: done]" << std::endl;
-
   } catch (const std::invalid_argument &e) {
     gra::aux::PrintGameOver();
     std::cerr << rang::fg::red << "Exception catched: " << rang::fg::reset << e.what() << std::endl;
@@ -309,6 +308,9 @@ int main(int argc, char *argv[]) {
               << rang::fg::reset << std::endl;
     return EXIT_FAILURE;
   }
+  
+  std::cout << "[fitharmonic:: done]" << std::endl;
+  aux::CheckUpdate();
 
   return EXIT_SUCCESS;
 }

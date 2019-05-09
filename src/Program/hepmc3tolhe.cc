@@ -22,6 +22,11 @@
 #include "HepMC3/Selector.h"
 #include "HepMC3/WriterAscii.h"
 
+
+// Own
+#include "Graniitti/MAux.h"
+
+
 // Return filesize for statistics
 long GetFileSize(const std::string &filename) {
   std::ifstream file(filename.c_str(), std::ifstream::in | std::ifstream::binary);
@@ -39,8 +44,11 @@ long GetFileSize(const std::string &filename) {
 //
 int main(int argc, char *argv[]) {
   if (argc != 2) {
-    std::cerr << "<< HepMC3 to LHEF converter >>" << std::endl;
-    std::cerr << "Example: ./hepmc3tolhe filename.hepmc3" << std::endl;
+    std::cout << std::endl;
+    std::cout << "[HepMC3 to LHEF converter]" << std::endl << std::endl;
+    std::cout << "Example: ./hepmc3tolhe filename.hepmc3" << std::endl;
+
+    gra::aux::CheckUpdate();
     return EXIT_FAILURE;
   }
 
@@ -187,9 +195,9 @@ int main(int argc, char *argv[]) {
            outputfile.c_str());
     printf("Total %d events converted from HepMC3 to LHE \n", events);
   }
-
-  // Done
-  std::cout << "[hepmc3tolhe:: done]" << std::endl;
+  
+  std::cout << "[hepmc3tolhe: done]" << std::endl;
+  gra::aux::CheckUpdate();
 
   return EXIT_SUCCESS;
 }

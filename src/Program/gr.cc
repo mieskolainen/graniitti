@@ -112,6 +112,8 @@ int main(int argc, char *argv[]) {
       std::cout << "  " << argv[0] << " -i ./input/test.json -p \"yy[C]<F> -> W+ W-\"" << std::endl
                 << std::endl;
 
+      aux::CheckUpdate();
+
       return EXIT_FAILURE;
     }
 
@@ -201,8 +203,8 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   }
   
-  // Done
-  std::cout << "[gr:: done]" << std::endl;
-  
+  std::cout << "[gr: done]" << std::endl;
+  aux::CheckUpdate();
+
   return EXIT_SUCCESS;
 }

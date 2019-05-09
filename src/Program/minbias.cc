@@ -48,6 +48,9 @@ int main(int argc, char *argv[]) {
       // of events
       std::stringstream ss;
       ss << "Usage: ./minbias <ENERGY_0,ENERGY_1,...,ENERGY_K> <EVENTS>";
+
+      aux::CheckUpdate();
+
       throw std::invalid_argument(ss.str());
     }
 
@@ -185,9 +188,9 @@ int main(int argc, char *argv[]) {
               << rang::fg::reset << std::endl;
     return EXIT_FAILURE;
   }
-
-  // Done
-  std::cout << "[minbias:: done]" << std::endl;
+  
+  std::cout << "[minbias: done]" << std::endl;
+  aux::CheckUpdate();
 
   return EXIT_SUCCESS;
 }

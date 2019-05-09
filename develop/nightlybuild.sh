@@ -7,9 +7,9 @@ echo '* GRANIITTI automated nightly build script *'
 # ------------------------------------------------
 # Set the manually here
 NAME="GRANIITTI"
-VERSION="0.40"
+VERSION=0.40
 TYPE="beta"
-DATE="09/05/2019"
+DATE="09.05.2019"
 UPDATE="off-shell to on-shell transformations"
 
 BUILD_DATE=`date -R`
@@ -36,7 +36,7 @@ else
 fi
 
 # Output message
-MSG="{\n \"name\": \"$NAME\",\n \"version\": \"$VERSION\",\n \"type\": \"$TYPE\",\n \"date\": \"$DATE\",\n \"update\": \"$UPDATE\",\n \"build_passing\": $BUILD_PASSING,\n \"build_date\": \"$BUILD_DATE\"\n}\n"
+MSG="{\n \"name\": \"$NAME\",\n \"version\": $VERSION,\n \"type\": \"$TYPE\",\n \"date\": \"$DATE\",\n \"update\": \"$UPDATE\",\n \"build_passing\": $BUILD_PASSING,\n \"build_date\": \"$BUILD_DATE\"\n}\n"
 
 printf "$MSG" > VERSION.json
 

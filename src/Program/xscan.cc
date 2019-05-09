@@ -62,6 +62,7 @@ int main(int argc, char *argv[]) {
       std::cout << "  " << argv[0] << " -i ./input/test.json -e 500,2760,7000,13000,100000 -l false"
                 << std::endl
                 << std::endl;
+      aux::CheckUpdate();
 
       return EXIT_FAILURE;
     }
@@ -185,9 +186,9 @@ int main(int argc, char *argv[]) {
   printf("\n");
   printf("scan:: Finished in %0.1f sec \n", timer.ElapsedSec());
   printf("scan:: Output created to scan{.csv,.tex} \n\n");
-
-  // Done
-  std::cout << "[xscan:: done]" << std::endl;
+  
+  std::cout << "[xscan: done]" << std::endl;
+  aux::CheckUpdate();
 
   return EXIT_SUCCESS;
 }

@@ -150,9 +150,8 @@ int main(int argc, char *argv[]) {
 
   printvar();
   std::cout << std::endl;
-
-  // Done
-  std::cout << "[pathmark:: done]" << std::endl;
+  
+  std::cout << "[pathmark: done]" << std::endl;
 
   return EXIT_SUCCESS;
 }

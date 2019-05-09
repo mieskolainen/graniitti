@@ -236,9 +236,8 @@ int main(int argc, char *argv[]) {
 
   // Solve the equation
   CNAB2(u, Lx, dt, Nt, nplot, USE_EIGEN);
-
-  // Done
-  std::cout << "[pdebench:: done]" << std::endl;
+  
+  std::cout << "[pdebench: done]" << std::endl;
 
   return EXIT_SUCCESS;
 }

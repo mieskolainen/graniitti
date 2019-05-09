@@ -182,6 +182,7 @@ void PrintBar(std::string str, unsigned int N = 74);
 // Create directory
 void CreateDirectory(std::string fullpath);
 
+void        CheckUpdate();
 double      GetVersion();
 std::string GetVersionString();
 std::string GetVersionTLatex();

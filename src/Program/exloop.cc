@@ -107,6 +107,8 @@ int main(int argc, char *argv[]) {
       std::cout << options.help({""}) << std::endl;
       std::cout << rang::style::bold << "Example:" << rang::style::reset << std::endl;
       std::cout << "  " << argv[0] << " -l false" << std::endl << std::endl;
+      aux::CheckUpdate();
+
       return EXIT_FAILURE;
     }
 
@@ -145,9 +147,9 @@ int main(int argc, char *argv[]) {
   }
 
   // autoloop();
-
-  // Done
-  std::cout << "[exloop:: done]" << std::endl;
+  
+  std::cout << "[exloop: done]" << std::endl;
+  aux::CheckUpdate();
 
   return EXIT_SUCCESS;
 }

@@ -581,9 +581,6 @@ int main(int argc, char *argv[]) {
 
     for (const auto &i : indices(fitcentral::datasets)) { delete fitcentral::datasets[i].h1DATA; }
 
-    // Done
-    std::cout << "[fitcentral:: done]" << std::endl;
-
   } catch (const std::invalid_argument &e) {
     gra::aux::PrintGameOver();
     std::cerr << rang::fg::red << "Exception catched: " << rang::fg::reset << e.what() << std::endl;
@@ -610,5 +607,8 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   }
 
+  std::cout << "[fitcentral: done]" << std::endl;
+  aux::CheckUpdate();
+  
   return EXIT_SUCCESS;
 }

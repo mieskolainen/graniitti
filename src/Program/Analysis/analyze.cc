@@ -275,6 +275,8 @@ int main(int argc, char *argv[]) {
                    "'#pi+#pi-','K+K-' -M 100,0.0,3.0 -Y 100,-1.5,1.5 -P 100,0.0,2.0 -u ub"
                 << std::endl
                 << std::endl;
+
+      aux::CheckUpdate();
       return EXIT_FAILURE;
     }
 
@@ -435,9 +437,9 @@ int main(int argc, char *argv[]) {
               << rang::fg::reset << std::endl;
     return EXIT_FAILURE;
   }
-
-  // Done
-  std::cout << "[analyze:: done]" << std::endl;
+  
+  std::cout << "[analyze: done]" << std::endl;
+  aux::CheckUpdate();
 
   return EXIT_SUCCESS;
 }
