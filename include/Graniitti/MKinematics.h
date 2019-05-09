@@ -861,7 +861,8 @@ inline void RotateZ(T &p, double angle) {
 
 
 // Transform off-shell to on-shell kinematics p1 + p2 -> {p} ...
-// with 4-momentum conservation by the closest iterative algebraic approximation
+// with optimization criteria being exact momentum conservation
+// after the initial states have been put on-shell.
 // 
 // where
 // p1, p2 are massless originally off-shell -> changed to on-shell
