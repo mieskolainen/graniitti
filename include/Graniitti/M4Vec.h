@@ -89,6 +89,13 @@ class M4Vec {
     k[E_] = e;
   }
 
+  void SetP3(const std::vector<double>& vec) {
+    if (vec.size() != 3) { throw std::invalid_argument("M4Vec::SetP3: input should be 3-vector"); }
+    k[X_] = vec[0];
+    k[Y_] = vec[1];
+    k[Z_] = vec[2];
+  } 
+
   // Apply metric tensor: eta_{\mu\nu} k^\nu = k_\mu
   void Flip3() {
     k[X_] = -k[X_];
@@ -106,6 +113,9 @@ class M4Vec {
   double Y() const { return k[Y_]; }
   double Z() const { return k[Z_]; }
   double T() const { return k[E_]; }
+
+  // Return 3-vector
+  std::vector<double> P3() const { return {k[X_], k[Y_], k[Z_]}; }
 
   // ALGEBRA methods
 
@@ -264,8 +274,8 @@ class M4Vec {
   }
 
   void Print(const std::string name = "") const {
-    std::cout << "M4Vec::" << name << " Px / X: " << Px() << ", Py / Y: " << Py()
-              << ", Pz / Z: " << Pz() << ", E / T: " << E() << ", M / dS: " << M() << std::endl;
+    std::cout << "M4Vec::" << name << " Px | X: " << Px() << ", Py | Y: " << Py()
+              << ", Pz | Z: " << Pz() << ", E | T: " << E() << ", M | dS: " << M() << std::endl;
   }
 
   // Particle 4-position starting starting propagation from (0,0,0,0)

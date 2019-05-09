@@ -20,6 +20,8 @@
 #include "Graniitti/MForm.h"
 #include "Graniitti/MKinematics.h"
 #include "Graniitti/MMath.h"
+#include "Graniitti/MRandom.h"
+#include "Graniitti/M4Vec.h"
 
 MAmpMG5_yy_ll::MAmpMG5_yy_ll() {
   std::string param_card_name = gra::aux::GetBasePath(2) + "/MG5cards/" + "yy_ll_param_card.dat";
@@ -45,6 +47,7 @@ MAmpMG5_yy_ll::MAmpMG5_yy_ll() {
 
 MAmpMG5_yy_ll::~MAmpMG5_yy_ll() {}
 
+
 // Get amplitude
 std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR &lts) {
   // Photon masses
@@ -57,19 +60,26 @@ std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR &lts) {
   mME = masses;
 
   // *** Set particle 4-momentum: [E,px,py,pz] convention here! ***
-  // force E = p (gamma on-shell)
-  double p1[] = {lts.q1.P3mod(), lts.q1.Px(), lts.q1.Py(), lts.q1.Pz()};
-  double p2[] = {lts.q2.P3mod(), lts.q2.Px(), lts.q2.Py(), lts.q2.Pz()};
-  double p3[] = {lts.decaytree[0].p4.E(), lts.decaytree[0].p4.Px(), lts.decaytree[0].p4.Py(),
-                 lts.decaytree[0].p4.Pz()};
-  double p4[] = {lts.decaytree[1].p4.E(), lts.decaytree[1].p4.Px(), lts.decaytree[1].p4.Py(),
-                 lts.decaytree[1].p4.Pz()};
+  gra::M4Vec p1_ = lts.q1;
+  gra::M4Vec p2_ = lts.q2;
+  gra::M4Vec p3_ = lts.decaytree[0].p4;
+  gra::M4Vec p4_ = lts.decaytree[1].p4;  
+  
+  // Do kinematic transform
+  gra::kinematics::OffShell2OnShell(p1_,p2_,p3_,p4_);
+
+  // Set components
+  double p1[] = {p1_.E(), p1_.Px(), p1_.Py(), p1_.Pz()};
+  double p2[] = {p2_.E(), p2_.Px(), p2_.Py(), p2_.Pz()};
+  double p3[] = {p3_.E(), p3_.Px(), p3_.Py(), p3_.Pz()};
+  double p4[] = {p4_.E(), p4_.Px(), p4_.Py(), p4_.Pz()};
 
   p.clear();
   p.push_back(&p1[0]);
   p.push_back(&p2[0]);
   p.push_back(&p3[0]);
   p.push_back(&p4[0]);
+  // --------------------------------------------------------------------
 
   static const int ncomb = 16;
 
@@ -108,14 +118,6 @@ std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR &lts) {
   for (std::size_t i = 0; i < lts.hamp.size(); ++i) { amp2 += gra::math::abs2(lts.hamp[i]); }
   amp2 /= 4;  // spin average matrix element squared
   
-  // --------------------------------------------------------------------
-  // Amplitude cutoff due to on-shell / of-shell approximation (needed with e+e-)
-  if (gra::math::msqrt(lts.m2) < 0.25) {
-    amp2 = 0.0;
-    lts.hamp = std::vector<std::complex<double>>(nonzero.size(), 0.0);
-  }
-  // --------------------------------------------------------------------
-
   return gra::math::msqrt(amp2);  // square root, we take square later
 }
 

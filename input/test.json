@@ -79,7 +79,7 @@
     },
     "<F>" : {
       "Rap" : [-2.5, 2.5],  // Rapidity boundaries of the system (<F> class)
-      "M"   : [0, 2.5]
+      "M"   : [0.2, 2.5]
     },
     "<Q>" : {
       "Xi"  : [0, 0.05]     // Invariant scale M^2/s (forward excitation)

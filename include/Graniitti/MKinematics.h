@@ -22,6 +22,8 @@
 
 namespace gra {
 namespace kinematics {
+
+
 // Case m3 = m4
 inline double SolvePz3_A(double m3, double pt3, double pt4, double pz5, double E5, double s) {
   const double t2  = E5 * E5;
@@ -771,6 +773,32 @@ inline MCW NBodyPhaseSpace(const T1 &mother, double M0, const std::vector<double
 
 // SO(3) Rotations
 
+// Rotation matrix from 3-vector a to 3-vector b (both need to be unit vectors with ||x|| = 1)
+//
+inline MMatrix<double> RotOnetoOne(const std::vector<double>& a, const std::vector<double>& b) {
+
+  if (a.size() != 3 || b.size() != 3) {
+    throw std::invalid_argument("kinematics::RotOnetoOne: Input should be 3-vectors");
+  }
+  // Dot product
+  const double c = matoper::VecVecMultiply(a,b);
+
+  // Cross product
+  const std::vector<double> v = matoper::Cross(a,b);
+
+  // Skew symmetric cross product matrix
+  const MMatrix<double> Vx = {{ 0,    -v[2],  v[1]},
+                              { v[2],     0, -v[0]},
+                              {-v[1],  v[0],    0}};
+  // Identity 
+  const MMatrix<double> I(3,3,"eye");
+
+  // Rotation matrix, with singularity at c = -1 (a and b back-to-back)
+  const MMatrix<double> R = I + Vx + (Vx*Vx) * (1.0/(1.0 + c));
+
+  return R;
+}
+
 // Rotate 4-vector spatial part by (theta,phi)
 template <typename T>
 inline void Rotate(T &p, double theta, double phi) {
@@ -830,6 +858,83 @@ inline void RotateZ(T &p, double angle) {
 
   p = T(px, py, pz, p.E());
 }
+
+
+// Transform off-shell to on-shell kinematics a + b -> c + d
+//
+// where a and b are massless originally off-shell, c + d massive/massless
+//
+inline void OffShell2OnShell(M4Vec& p1, M4Vec& p2, M4Vec& p3, M4Vec& p4) {
+  
+  const double E1_old = p1.E();
+  const double E2_old = p2.E();
+
+  // Set massless particles to on-shell (px,py,pz,E)
+  p1.Set(p1.Px(), p1.Py(), p1.Pz(), p1.P3mod());
+  p2.Set(p2.Px(), p2.Py(), p2.Pz(), p2.P3mod());
+
+  // Normalize \vec{q} to unit length
+  const std::vector<double> bvec = gra::matoper::Unit((p1 + p2).P3());
+
+  // dE = (E1' + E2') - (E1 + E2)
+  double dE = (p1.E() + p2.E()) - (E1_old + E2_old);
+
+  // Take masses
+  const double m3 = p3.M();
+  const double m4 = p4.M();  
+
+  const int MAXITER = 15;
+  int iter = 0;
+  
+  while (true) {
+
+    // --------------------------------------------------
+    // 3-Momentum scaling and energy subtraction step
+    
+    const double E3 = p3.E() - dE * 0.5;
+    const double E4 = p4.E() - dE * 0.5;
+
+    const double a3 = gra::math::msqrt(gra::math::pow2(E3) - gra::math::pow2(m3)) / p3.P3mod();
+    const double a4 = gra::math::msqrt(gra::math::pow2(E4) - gra::math::pow2(m4)) / p4.P3mod();
+
+    p3.Set(a3*p3.Px(), a3*p3.Py(), a3*p3.Pz(), E3);
+    p4.Set(a4*p4.Px(), a4*p4.Py(), a4*p4.Pz(), E4);
+
+    // --------------------------------------------------
+    // 3-Momentum rotation step
+
+    // Add and normalize to unit length
+    const std::vector<double> avec = gra::matoper::Unit((p3 + p4).P3());
+
+    // Find optimal rotation
+    const gra::MMatrix<double> R = gra::kinematics::RotOnetoOne(avec, bvec);
+
+    // Rotate components
+    p3.SetP3( R * p3.P3());
+    p4.SetP3( R * p4.P3());
+
+    // --------------------------------------------------
+    // 3-Momentum subtraction step
+
+    std::vector<double> D3 = ((p1 + p2) - (p3 + p4)).P3();
+    gra::matoper::ScaleVector(D3, 0.5);
+
+    p3.SetP3( gra::matoper::Plus(p3.P3(), D3));
+    p4.SetP3( gra::matoper::Plus(p4.P3(), D3));    
+
+    p3.SetE(gra::math::msqrt(p3.P3mod2() + m3*m3));
+    p4.SetE(gra::math::msqrt(p4.P3mod2() + m4*m4));  
+
+    // New energy difference
+    dE = (p3.E() + p4.E()) - (p1.E() + p2.E());
+
+    ++iter;
+    //std::cout << "iter =" << iter << "  " << ((p1 + p2) - (p3 + p4)).M2() << std::endl;
+    if (iter > MAXITER) { break; }
+  }
+
+}
+
 
 // A unified Lorentz Transform function to 'frametype' give below:
 //
@@ -1644,6 +1749,8 @@ struct VETOCUT {
   bool                    active = false;
   std::vector<VETODOMAIN> cuts;
 };
+
+
 
 }  // gra namespace
 
