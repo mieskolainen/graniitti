@@ -489,11 +489,11 @@ void CheckUpdate() {
       const double version = j.at("version");
       const std::string date = j.at("date");
 
-      if (aux::GetVersion() < version) {
+      if (aux::GetVersion() <= version) {
         std::cout << std::endl;
         PrintBar("-", 80);
-        std::cout << rang::style::bold << rang::fg::green << "New <github.com/mieskolainen/GRANIITTI> version " <<
-                     version << " (" << date << ") available" << rang::fg::reset << rang::style::reset << std::endl;
+        std::cout << rang::style::bold << rang::fg::green << "New version " <<
+                     version << " (" << date << ") available at <github.com/mieskolainen/GRANIITTI>" << rang::fg::reset << rang::style::reset << std::endl;
         std::cout << std::endl;
         std::cout << "To update, copy-and-run: " << std::endl;
         std::cout << "git pull origin master && source ./install/setenv.sh && make superclean && make -j4" << std::endl;
