@@ -489,7 +489,7 @@ void CheckUpdate() {
       const double version = j.at("version");
       const std::string date = j.at("date");
 
-      if (aux::GetVersion() <= version) {
+      if (aux::GetVersion() < version) {
         std::cout << std::endl;
         PrintBar("-", 80);
         std::cout << rang::style::bold << rang::fg::green << "New version " <<
