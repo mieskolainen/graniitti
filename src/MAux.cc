@@ -462,7 +462,8 @@ void PrintGameOver() {
 void CheckUpdate() {
 
   const std::string tmpfile = "/tmp/GRANIITTI_VERSION.json";
-  const std::string cmd =  "curl -s -o " + tmpfile + " https://raw.githubusercontent.com/mieskolainen/GRANIITTI/master/VERSION.json";
+  const std::string cmd =  "curl -s -o " + tmpfile + 
+      " https://raw.githubusercontent.com/mieskolainen/GRANIITTI/master/VERSION.json";
 
   // Execute curl
   const int ret = system(cmd.c_str());
@@ -474,33 +475,42 @@ void CheckUpdate() {
     nlohmann::json j;
 
     try {
-      data = gra::aux::GetInputData("VERSION.json");
+      data = gra::aux::GetInputData(tmpfile);
       j    = nlohmann::json::parse(data);
     } catch (...) {
-      throw std::invalid_argument("json: error parsing " + tmpfile);
+        std::cout << std::endl;
+        PrintBar("-", 80);
+        std::cout << "Check your internet access -- could not update version information" << std::endl;
+        PrintBar("-", 80);
+        std::cout << std::endl;
     }
 
-    const double version = j.at("version");
-    const std::string date = j.at("date");
+    try {
+      const double version = j.at("version");
+      const std::string date = j.at("date");
 
-    if (aux::GetVersion() < version) {
-      std::cout << std::endl;
-      PrintBar("-", 80);
-      std::cout << rang::style::bold << rang::fg::red << "New <github.com/mieskolainen/GRANIITTI> version " <<
-                   version << " (" << date << ") available" << rang::fg::reset << rang::style::reset << std::endl;
-      std::cout << std::endl;
-      std::cout << "To update, copy-and-run: " << std::endl;
-      std::cout << "git pull origin master && source ./install/setenv.sh && make superclean && make -j4" << std::endl;
-      PrintBar("-", 80);
-      std::cout << std::endl;
-    } else {
-      std::cout << std::endl;
-      PrintBar("-", 80);
-      std::cout << rang::style::bold << rang::fg::green << "This version " <<
-                   version << " (" << date << ") up-to-date with <github.com/mieskolainen/GRANIITTI>" << rang::fg::reset << rang::style::reset << std::endl;
-      PrintBar("-", 80);
-      std::cout << std::endl;
+      if (aux::GetVersion() < version) {
+        std::cout << std::endl;
+        PrintBar("-", 80);
+        std::cout << rang::style::bold << rang::fg::green << "New <github.com/mieskolainen/GRANIITTI> version " <<
+                     version << " (" << date << ") available" << rang::fg::reset << rang::style::reset << std::endl;
+        std::cout << std::endl;
+        std::cout << "To update, copy-and-run: " << std::endl;
+        std::cout << "git pull origin master && source ./install/setenv.sh && make superclean && make -j4" << std::endl;
+        PrintBar("-", 80);
+        std::cout << std::endl;
+      } else {
+        std::cout << std::endl;
+        PrintBar("-", 80);
+        std::cout << rang::style::bold << "This version " <<
+                     version << " (" << date << ") up-to-date with <github.com/mieskolainen/GRANIITTI>" << rang::style::reset << std::endl;
+        PrintBar("-", 80);
+        std::cout << std::endl;
+      }
+    } catch (...) {
+      // do nothing
     }
+
   }
 }
 
@@ -508,7 +518,7 @@ double GetVersion() { return 0.40; }
 
 std::string GetVersionString() {
   char buff[100];
-  snprintf(buff, sizeof(buff), "Version %0.2f (BETA) 090519", GetVersion());
+  snprintf(buff, sizeof(buff), "Version %0.2f (beta) 09.05.2019", GetVersion());
   std::string str = buff;
   return str;
 }
@@ -530,7 +540,7 @@ std::string GetWebTLatex() {
 
 void PrintVersion() {
   std::cout << GetVersionString() << std::endl;
-  std::cout << rang::style::bold << "Available at <github.com/mieskolainen/GRANIITTI>"
+  std::cout << rang::style::bold << "<github.com/mieskolainen/GRANIITTI>"
             << rang::style::reset << std::endl
             << std::endl;
   std::cout << "References: arXiv:1811.01730 [hep-ph]" << std::endl;
