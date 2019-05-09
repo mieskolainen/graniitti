@@ -4,9 +4,6 @@
 #
 # Run with: source ./tests/run_xxx/run.sh
 
-
-make -j4
-
 ./bin/minbias 900   10000
 ./bin/minbias 7000  10000
 ./bin/minbias 13000 10000

@@ -7,7 +7,7 @@
 #
 # Run with: source ./tests/run_xxx/run.sh
 
-make -j4 && ./bin/fitcentral \
+./bin/fitcentral \
 -i 0 \
 -c 2 \
 -a f0_500,rho_770,f0_980,phi_1020,f0_1500,f0_1710 \

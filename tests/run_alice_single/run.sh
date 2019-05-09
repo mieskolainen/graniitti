@@ -17,12 +17,12 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
 # Generate
-make -j4 && ./bin/gr -i ./tests/processes/ALICE7_2pi.json -n 100000 -l $POMLOOP -w true
+./bin/gr -i ./tests/processes/ALICE7_2pi.json -n 100000 -l $POMLOOP -w true
 
 fi
 
 # Analyze
-make -j4 && ./bin/analyze \
+./bin/analyze \
 -i ALICE7_2pi,ALICE7_2pi.csv \
 -g 211,211 \
 -n 2,2 \

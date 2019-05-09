@@ -115,7 +115,7 @@ class hProfMultiplet {
   void MultiFill(const std::vector<std::vector<double>> &x, const std::vector<double> &weight) {
     for (const auto &i : gra::aux::indices(h)) { h[i]->Fill(x[i][0], x[i][1], weight[i]); }
   }
-
+  
   // Plot and save histogram Multiplet
   double SaveFig(const std::string &fullpath) const;
 

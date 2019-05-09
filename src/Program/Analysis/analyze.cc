@@ -1,6 +1,8 @@
 // GRANIITTI - Monte Carlo event generator for high energy diffraction
 // https://github.com/mieskolainen/graniitti
 //
+// <Fiducial Observables Analyzer>
+//
 // (c) 2017-2019 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
@@ -46,7 +48,6 @@
 
 
 using gra::aux::indices;
-
 using namespace gra;
 
 // Initialize 1D-histograms
@@ -280,7 +281,7 @@ int main(int argc, char *argv[]) {
     // Create Analysis Objects for each data input
     // NOTE HERE THAT THESE MUST BE POINTER TYPE; OTHERWISE WE RUN OUT OF
     // MEMORY
-    std::vector<MAnalyzer *> analysis;
+    std::vector<std::unique_ptr<MAnalyzer>> analysis;
 
     // Input list
     std::vector<std::string> inputfile     = gra::aux::SplitStr2Str(r["input"].as<std::string>());
@@ -370,7 +371,7 @@ int main(int argc, char *argv[]) {
     printf("Analyze:: \n");
     std::vector<double> cross_section(inputfile.size(), 0.0);
     for (const auto &i : indices(inputfile)) {
-      analysis.push_back(new MAnalyzer("ID" + std::to_string(i)));
+      analysis.push_back(std::make_unique<MAnalyzer>("ID" + std::to_string(i)));
       cross_section[i] = analysis[i]->HepMC3_OracleFill(
           inputfile[i], (uint)multiplicity[i], finalstatePDG[i], (uint)MAXEVENTS, h1, h2, hP, i);
     }
@@ -407,7 +408,6 @@ int main(int argc, char *argv[]) {
     // Plot all separate histograms
     for (const auto &i : indices(analysis)) {
       analysis[i]->PlotAll(title);
-      delete analysis[i];  // free memory
     }
 
   } catch (const std::invalid_argument &e) {

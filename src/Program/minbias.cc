@@ -81,27 +81,26 @@ int main(int argc, char *argv[]) {
       // Then calculate screened SD and DD integrated cross section
       for (const auto& p : indices(json_in)) {
 
-        gra::MGraniitti* g = new MGraniitti();
+        // Create generator object first
+        std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
 
         // Read process input from file
-        g->ReadInput(json_in[p]);
-        //g->SetNumberOfEvents(0);
+        gen->ReadInput(json_in[p]);
+        //gen->SetNumberOfEvents(0);
 
-        g->proc->SetInitialState(beam, energy);
-        g->proc->SetScreening(true);
+        gen->proc->SetInitialState(beam, energy);
+        gen->proc->SetScreening(true);
 
         // ** ALWAYS LAST **
-        g->Initialize();
+        gen->Initialize();
 
         // Get process cross sections
-        g->GetXS(xs0[p], xs0_err[p]);
+        gen->GetXS(xs0[p], xs0_err[p]);
 
         // Total inelastic
         if (p == 0) {
-          g->proc->Eikonal.GetTotXS(xs_tot, xs_el, xs_in);
+          gen->proc->Eikonal.GetTotXS(xs_tot, xs_el, xs_in);
         }
-
-        delete g;
       }
 
       // Non-diffractive = Total_inelastic - (screened_SD + screened_DD);
@@ -134,30 +133,30 @@ int main(int argc, char *argv[]) {
 
       // Loop over processes
       for (std::size_t i = 0; i < NEVT.size(); ++i) {
-        MGraniitti *g = new MGraniitti();
+        
+        // Create generator object first
+        std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
 
         // Read the process input from a file
-        g->ReadInput(json_in[i]);
-        g->SetNumberOfEvents(NEVT[i]);
+        gen->ReadInput(json_in[i]);
+        gen->SetNumberOfEvents(NEVT[i]);
 
         // Set beam and energy (same as above)
-        g->proc->SetInitialState(beam, energy);
+        gen->proc->SetInitialState(beam, energy);
 
         // External HepMC2 output
-        g->SetHepMC2Output(outputHepMC2, OUTPUTNAME);
+        gen->SetHepMC2Output(outputHepMC2, OUTPUTNAME);
 
         // g->proc->SetScreening(false);
 
         // ** Always Last! **
-        g->Initialize();
+        gen->Initialize();
 
         // Force the cross section (total inelastic)
-        g->ForceXS(xs_in);
+        gen->ForceXS(xs_in);
 
         // Generate events
-        g->Generate();
-
-        delete g;
+        gen->Generate();
       }
       
       // Finalize

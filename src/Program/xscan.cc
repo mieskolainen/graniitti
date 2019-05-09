@@ -41,9 +41,6 @@ int main(int argc, char *argv[]) {
   // Save the number of input arguments
   const int NARGC = argc - 1;
 
-  // Create generator object first
-  std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
-
   try {
     cxxopts::Options options(argv[0], "");
 
@@ -56,7 +53,10 @@ int main(int argc, char *argv[]) {
     auto r = options.parse(argc, argv);
 
     if (r.count("help") || NARGC == 0) {
+      
+      std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
       gen->GetProcessNumbers();
+
       std::cout << options.help({""}) << std::endl;
       std::cout << rang::style::bold << "Example:" << rang::style::reset << std::endl;
       std::cout << "  " << argv[0] << " -i ./input/test.json -e 500,2760,7000,13000,100000 -l false"
@@ -108,8 +108,9 @@ int main(int argc, char *argv[]) {
       std::vector<double> xs0(jsinput.size(), 0.0);
       std::vector<double> xs0_err(jsinput.size(), 0.0);
       for (const auto &k : indices(jsinput)) {
-        // Create generator object
-        MGraniitti *gen = new MGraniitti;
+
+        // Create generator object first
+        std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
 
         // Read process input from file
         gen->ReadInput(jsinput[k]);
@@ -131,8 +132,6 @@ int main(int argc, char *argv[]) {
 
         // > Get process cross section and error
         gen->GetXS(xs0[k], xs0_err[k]);
-
-        delete gen;
       }
 
       // Write out
@@ -152,7 +151,9 @@ int main(int argc, char *argv[]) {
     fclose(fout);
     fclose(fout_latex);
   } catch (const std::invalid_argument &e) {
+    std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
     gen->GetProcessNumbers();
+
     gra::aux::PrintGameOver();
     std::cerr << rang::fg::red << "Exception catched: " << rang::fg::reset << e.what() << std::endl;
     return EXIT_FAILURE;
@@ -172,7 +173,9 @@ int main(int argc, char *argv[]) {
               << e.what() << std::endl;
     return EXIT_FAILURE;
   } catch (...) {
+    std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
     gen->GetProcessNumbers();
+      
     gra::aux::PrintGameOver();
     std::cerr << rang::fg::red << "Exception catched: Unspecified (...) (Probably JSON input)"
               << rang::fg::reset << std::endl;

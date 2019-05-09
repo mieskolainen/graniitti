@@ -6,7 +6,6 @@
 
 make -j4 TEST=TRUE
 
-
 # single process and plotting
 yes | source ./tests/run_cdf_single/run.sh
 yes | source ./tests/run_alice_single/run.sh

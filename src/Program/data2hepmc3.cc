@@ -1,7 +1,7 @@
 // GRANIITTI - Monte Carlo event generator for high energy diffraction
 // https://github.com/mieskolainen/graniitti
 //
-// <HepMC33 to LHE (.xml) format converter>
+// <HepMC3 to LHE (.xml) format converter>
 //
 // (c) 2017-2019 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.

@@ -183,38 +183,36 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
   pad2->cd();  // pad2 becomes the current pad
 
   // *** Ratio histograms ***
-  std::vector<TH1D *> ratios;
+  std::vector<TH1D *> hR(h.size(), nullptr);
 
   for (const auto &i : indices(h)) {
-    TH1D *hR = (TH1D *)h[i]->Clone(Form("ratio_%lu", i));
-    hR->Divide(h[0]);
+    hR[i] = (TH1D *)h[i]->Clone(Form("ratio_%lu", i));
+    hR[i]->Divide(h[0]);
 
-    hR->SetMinimum(0.0);  // y-axis range
-    hR->SetMaximum(2.0);  //
-    hR->SetStats(0);      // statistics box off
-    hR->Draw("same");     // ratio plot
+    hR[i]->SetMinimum(0.0);  // y-axis range
+    hR[i]->SetMaximum(2.0);  //
+    hR[i]->SetStats(0);      // statistics box off
+    hR[i]->Draw("same");     // ratio plot
 
     // Ratio plot (h3) settings
-    hR->SetTitle("");  // Remove the ratio title
+    hR[i]->SetTitle("");  // Remove the ratio title
 
     // Y axis ratio plot settings
-    hR->GetYaxis()->SetTitle("Ratio");
-    hR->GetYaxis()->CenterTitle();
-    hR->GetYaxis()->SetNdivisions(505);
-    hR->GetYaxis()->SetTitleSize(22);
-    hR->GetYaxis()->SetTitleFont(43);
-    hR->GetYaxis()->SetTitleOffset(1.55);
-    hR->GetYaxis()->SetLabelFont(45);  // Absolute font size in pixel (precision 3)
-    hR->GetYaxis()->SetLabelSize(15);
+    hR[i]->GetYaxis()->SetTitle("Ratio");
+    hR[i]->GetYaxis()->CenterTitle();
+    hR[i]->GetYaxis()->SetNdivisions(505);
+    hR[i]->GetYaxis()->SetTitleSize(22);
+    hR[i]->GetYaxis()->SetTitleFont(43);
+    hR[i]->GetYaxis()->SetTitleOffset(1.55);
+    hR[i]->GetYaxis()->SetLabelFont(45);  // Absolute font size in pixel (precision 3)
+    hR[i]->GetYaxis()->SetLabelSize(15);
 
     // X axis ratio plot settings
-    hR->GetXaxis()->SetTitleSize(22);
-    hR->GetXaxis()->SetTitleFont(43);
-    hR->GetXaxis()->SetTitleOffset(4.);
-    hR->GetXaxis()->SetLabelFont(45);  // Absolute font size in pixel (precision 3)
-    hR->GetXaxis()->SetLabelSize(18);
-
-    ratios.push_back(hR);
+    hR[i]->GetXaxis()->SetTitleSize(22);
+    hR[i]->GetXaxis()->SetTitleFont(43);
+    hR[i]->GetXaxis()->SetTitleOffset(4.);
+    hR[i]->GetXaxis()->SetLabelFont(45);  // Absolute font size in pixel (precision 3)
+    hR[i]->GetXaxis()->SetLabelSize(18);
   }
 
   // Draw horizontal line
@@ -249,7 +247,7 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
   }
 
   // Remove histograms
-  for (const auto &i : indices(ratios)) { delete ratios[i]; }
+  for (const auto &i : indices(hR)) { delete hR[i]; }
 
   return chi2ndf;
 }
@@ -324,21 +322,20 @@ double h2Multiplet::SaveFig(const std::string &fullpath) const {
   }
 
   // Ratio histograms on BOTTOM ROW
-  std::vector<TH2D *> ratios;
+  std::vector<TH2D *> hR(h.size(), nullptr);
+
   for (const auto &i : indices(h)) {
     c0.cd(i + 1 + h.size()); // Choose position
     c0.cd(i + 1 + h.size())->SetRightMargin(0.13);
 
-    TH2D *hR = (TH2D *)h[i]->Clone(Form("h2R_%lu", i));
+    hR[i] = (TH2D *)h[i]->Clone(Form("h2R_%lu", i));
 
-    hR->Divide(h[0]);        // Divide by 0-th histogram
-    hR->GetYaxis()->SetTitleOffset(1.3);
-    hR->SetStats(0);         // No statistics on upper plot
-    hR->Draw("COLZ");
-    hR->GetZaxis()->SetRangeUser(0.0, 2.0);
-    hR->SetTitle(Form("Ratio: %s / %s", legendtext_[i].c_str(), legendtext_[0].c_str()));
-
-    ratios.push_back(hR);    // Save pointer
+    hR[i]->Divide(h[0]);        // Divide by 0-th histogram
+    hR[i]->GetYaxis()->SetTitleOffset(1.3);
+    hR[i]->SetStats(0);         // No statistics on upper plot
+    hR[i]->Draw("COLZ");
+    hR[i]->GetZaxis()->SetRangeUser(0.0, 2.0);
+    hR[i]->SetTitle(Form("Ratio: %s / %s", legendtext_[i].c_str(), legendtext_[0].c_str()));
   }
 
   // -------------------------------------------------------------------
@@ -360,7 +357,7 @@ double h2Multiplet::SaveFig(const std::string &fullpath) const {
   c0.SaveAs(fullfile.c_str());
 
   // Delete ratio histograms from memory
-  for (const auto &i : indices(ratios)) { delete ratios[i]; }
+  for (const auto &i : indices(hR)) { delete hR[i]; }
 
   return 0.0;
 }
@@ -458,9 +455,9 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
   pad2->cd();  // pad2 becomes the current pad
 
   // *** Ratio histograms ***
-  std::vector<TProfile *> hxP(h.size(), NULL);
-  std::vector<TH1D *>     hR(h.size(), NULL);
-  TH1D *                  hx0;
+  std::vector<TProfile *> hxP(h.size(), nullptr);
+  std::vector<TH1D *>     hR(h.size(),  nullptr);
+  TH1D* hx0 = nullptr;
 
   for (const auto &i : indices(h)) {
     hxP[i] = (TProfile *)h[i]->Clone(Form("ratio_%lu", i));
@@ -469,8 +466,8 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
     // To get proper errors, we need to use TH1 instead of TProfile
     hR[i] = hxP[i]->ProjectionX();
     
-    if (i == 0) {  // this is needed
-      hx0 = hxP[i]->ProjectionX();
+    if (i == 0) {  // this is needed as the denominator
+    hx0 = (TH1D* )hxP[i]->Clone("denominator");
     }
 
     // Set same colors as above
@@ -545,7 +542,8 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
     delete hxP[i];
     delete hR[i];
   }
-
+  delete hx0;
+  
   return 0.0;
 }
 

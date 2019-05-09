@@ -171,8 +171,17 @@ inline void SetPlotStyle() {
   double blue[NRGBs]  = {0.51, 1.00, 0.12, 0.00, 0.00};
   TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
 
-  gStyle->SetPalette(53);          // kDarkBodyRadiator
+  // See https://root.cern.ch/doc/master/classTColor.html
+  //gStyle->SetPalette(53);     // kDarkBodyRadiator
+  //gStyle->SetPalette(51);       // kDeepSea
+  //gStyle->SetPalette(87);     // kLightTemperature
+  //gStyle->SetPalette(105);    // kThermometer
+  //gStyle->SetPalette(71);     // kBlueGreenYellow
+  //gStyle->SetPalette(57);     // kBird
+  //gStyle->SetPalette(75);       // kCherry
+  gStyle->SetPalette(112);      // kViridis
 
+  //TColor::InvertPalette();      // Palette inversion
   }
   else if (style == "gray") {
   const int NRGBs = 5;
@@ -204,10 +213,6 @@ inline void SetPlotStyle() {
 
   gStyle->SetNumberContours(NCont);
 
-  // See https://root.cern.ch/doc/master/classTColor.html
-  //gStyle->SetPalette(62);          // kLightTemperature
-  //gStyle->SetPalette(105);         // kThermometer
-  //gStyle->SetPalette(57);          // kBird
   gStyle->SetTitleOffset(1.6, "x");  // title offset from axis
   gStyle->SetTitleOffset(1.0, "y");  //
   gStyle->SetTitleSize(0.03, "x");   // title size
