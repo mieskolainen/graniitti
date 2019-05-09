@@ -3,7 +3,7 @@
  "version": "0.39",
  "type": "beta",
  "date": "09/05/2019",
- "update": "spinor/vector/global tests",
+ "update": "off-shell to on-shell transformations",
  "build_passing": true,
- "build_date": "Thu, 09 May 2019 13:27:38 +0300"
+ "build_date": "Thu, 09 May 2019 19:21:26 +0300"
 }

@@ -10,7 +10,7 @@ NAME="GRANIITTI"
 VERSION="0.39"
 TYPE="beta"
 DATE="09/05/2019"
-UPDATE="spinor/vector/global tests"
+UPDATE="off-shell to on-shell transformations"
 
 BUILD_DATE=`date -R`
 echo $BUILD_DATE

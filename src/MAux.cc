@@ -458,7 +458,7 @@ void PrintGameOver() {
             << std::endl;
 }
 
-double GetVersion() { return 0.39; }
+double GetVersion() { return 0.40; }
 
 std::string GetVersionString() {
   char buff[100];
