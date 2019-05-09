@@ -873,18 +873,30 @@ inline void OffShell2OnShell(M4Vec& p1, M4Vec& p2, std::vector<M4Vec>& p) {
   const int N = p.size();  
   const int MAXITER = 15;
   const double STOPEPS = 1e-10;
-
+  
+  // 4-momentum sum
   auto psumfunc = [&] () {
     M4Vec sum(0,0,0,0);
     for (const auto& i : aux::indices(p)) { sum += p[i]; }
     return sum;
   };
 
+  // Energy sum
   auto Esumfunc = [&] () {
     double sum = 0.0;
     for (const auto& i : aux::indices(p)) { sum += p[i].E(); }
     return sum;
   };
+  
+/*
+  // Fractions
+  auto Efrac = [&] () {
+    const double Esum = Esumfunc();
+    std::vector<double> f(p.size());
+    for (const auto& i : aux::indices(p)) { f[i] = p[i].E() / Esum; }
+    return f;
+  };
+*/
 
   // Set massless particles to on-shell (px,py,pz,E)
   p1.Set(p1.Px(), p1.Py(), p1.Pz(), p1.P3mod());
@@ -913,9 +925,14 @@ inline void OffShell2OnShell(M4Vec& p1, M4Vec& p2, std::vector<M4Vec>& p) {
     // New energy difference
     const double dE = Esumfunc() - q.E();
 
+    // Current energy fractions
+    //std::vector<double> f = Efrac();
+
     for (const auto& i : aux::indices(p)) {
-      const double E = p[i].E() - dE / N; // Scaling distributed by 1/N
-      const double a = gra::math::msqrt(E*E - m[i]*m[i]) / p[i].P3mod();  
+      const double E = p[i].E() - dE / N; // Scaling distributed by simple 1/N
+      //const double E = p[i].E() - dE * f[i]; // Scaling distributed by fractions
+
+      const double a = gra::math::msqrt(E*E - m[i]*m[i]) / p[i].P3mod();
       p[i].Set(a*p[i].Px(), a*p[i].Py(), a*p[i].Pz(), E);
     }
 
@@ -923,14 +940,20 @@ inline void OffShell2OnShell(M4Vec& p1, M4Vec& p2, std::vector<M4Vec>& p) {
     // 3-Momentum subtraction step
 
     // New 3-momentum difference
-    std::vector<double> D3 = (psumfunc() - q).P3();
-    gra::matoper::ScaleVector(D3, 1.0/N); // Scaling distributed by 1/N
+    const std::vector<double> D3 = (psumfunc() - q).P3();
+
+    // Current energy fractions
+    //f = Efrac();
 
     for (const auto& i : aux::indices(p)) {
-      p[i].SetP3(gra::matoper::Minus(p[i].P3(), D3));
+      std::vector<double> D3_this = D3;
+      gra::matoper::ScaleVector(D3_this, 1.0/N); // Scaling distributed by simple 1/N
+      //gra::matoper::ScaleVector(D3_this, f[i]); // Scaling distributed by fractions
+
+      p[i].SetP3(gra::matoper::Minus(p[i].P3(), D3_this));
       p[i].SetE(gra::math::msqrt(p[i].P3mod2() + m[i]*m[i]));
     }
-
+    
     // --------------------------------------------------
     // 3-Momentum rotation step
 
