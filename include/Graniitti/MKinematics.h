@@ -860,13 +860,37 @@ inline void RotateZ(T &p, double angle) {
 }
 
 
-// Transform off-shell to on-shell kinematics p1 + p2 -> {p} ...
-// with optimization criteria being exact momentum conservation
-// after the initial states have been put on-shell.
+// Find the closest 4-vector on lightcone
 // 
-// where
-// p1, p2 are massless originally off-shell -> changed to on-shell
-// {p} massive/massless final states
+// Solution by Lagrange multipliers \Nabla f = \lambda \Nabla g
+//
+// eq(1) = 2*(px-px0) == -2*lambda*px
+// eq(2) = 2*(py-py0) == -2*lambda*py
+// eq(3) = 2*(pz-pz0) == -2*lambda*pz
+// eq(4) = 2*(E-E0)   ==  2*lambda*E
+// eq(5) = E^2        == (px^2 + py^2 + pz^2)
+// 
+// S = solve(eq, [E,px,py,pz,lambda])
+//
+inline M4Vec LagrangeLightCone(const M4Vec& p0) {
+
+  // Spacelike (q^2 < 0) or timelike (q^2 > 0) input
+  const double sign   = p0.M2() <= 0 ? 1.0 : -1.0;
+
+  const double p3mod2 = p0.P3mod2();
+  const double p3mod  = math::msqrt(p3mod2);
+
+  const double E      = p0.E()/2 + sign * p3mod/2;
+  const double alpha  = (p3mod2 + sign * p0.E()*p3mod) / (2*p3mod2);
+
+  return M4Vec(alpha*p0.Px(), alpha*p0.Py(), alpha*p0.Pz(), E);
+}
+
+
+// Kinematic transform in process: p1 + p2 -> {p}, where
+//
+// p1, p2 are massless spacelike q^2 < 0 transformed to lightlike q^2 = 0
+// {p} massive/massless final states with q^2 = m^2
 //
 inline void OffShell2OnShell(M4Vec& p1, M4Vec& p2, std::vector<M4Vec>& p) {
   
@@ -898,9 +922,12 @@ inline void OffShell2OnShell(M4Vec& p1, M4Vec& p2, std::vector<M4Vec>& p) {
   };
 */
 
-  // Set massless particles to on-shell (px,py,pz,E)
-  p1.Set(p1.Px(), p1.Py(), p1.Pz(), p1.P3mod());
-  p2.Set(p2.Px(), p2.Py(), p2.Pz(), p2.P3mod());
+  // -------------------------------------------------------------------------
+  // Set initial state spacelike (q^2 < 0) particles to lightcone by
+  // conserving 3-momentum and thus increasing energy
+  p1.SetE(p1.P3mod());
+  p2.SetE(p2.P3mod());
+  // -------------------------------------------------------------------------
 
   // Get sum
   const M4Vec q = p1 + p2;
@@ -956,14 +983,14 @@ inline void OffShell2OnShell(M4Vec& p1, M4Vec& p2, std::vector<M4Vec>& p) {
     
     // --------------------------------------------------
     // 3-Momentum rotation step
-
+    /*
     // Add and normalize to unit length, find rotation
     const std::vector<double> avec = gra::matoper::Unit(psumfunc().P3());
     const gra::MMatrix<double> R = gra::kinematics::RotOnetoOne(avec, qvec);
 
     // Rotate
     for (const auto& i : aux::indices(p)) { p[i].SetP3( R * p[i].P3()); }
-
+    */
     // --------------------------------------------------
 
     ++iter;
@@ -972,10 +999,9 @@ inline void OffShell2OnShell(M4Vec& p1, M4Vec& p2, std::vector<M4Vec>& p) {
 
     //std::cout << "iter =" << iter << "  " << IVM << std::endl;
   }
-
+  
   //for (const auto& i : aux::indices(p)) { p[i].Print(); }
   //std::cout << " --------------------------------------------------- " << std::endl;
-  
 }
 
 

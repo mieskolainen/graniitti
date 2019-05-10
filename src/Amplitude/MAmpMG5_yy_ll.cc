@@ -71,7 +71,7 @@ std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR &lts) {
   double p2[] = {p2_.E(), p2_.Px(), p2_.Py(), p2_.Pz()};
   double p3[] = {pf[0].E(), pf[0].Px(), pf[0].Py(), pf[0].Pz()};
   double p4[] = {pf[1].E(), pf[1].Px(), pf[1].Py(), pf[1].Pz()};
-
+  
   p.clear();
   p.push_back(&p1[0]);
   p.push_back(&p2[0]);
@@ -110,7 +110,7 @@ std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR &lts) {
     // Sum of subamplitudes (s,t,u,...)
     for (int k = 0; k < namplitudes; ++k) { lts.hamp[i] += amp[k]; }
   }
-
+  
   // Total amplitude squared over all helicity combinations individually
   double amp2 = 0.0;
   for (std::size_t i = 0; i < lts.hamp.size(); ++i) { amp2 += gra::math::abs2(lts.hamp[i]); }

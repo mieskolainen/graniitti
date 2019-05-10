@@ -1519,7 +1519,7 @@ bool MProcess::GetLorentzScalars(unsigned int Nf) {
   // Fractional longitudinal momentum loss [0,1]
   lts.x1 = (1 - lts.pfinal[1].Pz() / lts.pbeam1.Pz());
   lts.x2 = (1 - lts.pfinal[2].Pz() / lts.pbeam2.Pz());
-
+  
   // Bjorken-x [0,1] (this Lorentz invariant expression
   // gives 1 always for elastic central production forward leg)
   lts.xbj1 = lts.t1 / (2 * (lts.pbeam1 * lts.q1));

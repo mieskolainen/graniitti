@@ -74,7 +74,7 @@
   "GENCUTS" : {
 
     "<C>" : {
-      "Rap" : [-0.9, 0.9],  // Rapidity boundaries of the final states (<C> class)
+      "Rap" : [-2.5, 2.5],  // Rapidity boundaries of the final states (<C> class)
       "Xi"  : [0, 2e-7]     // Invariant scale M^2/s (forward excitation)
     },
     "<F>" : {
@@ -99,7 +99,7 @@
 
       "Eta"  : [-2.5, 2.5],      // Pseudorapidity
       "Rap"  : [-10.0, 10.0],    // Rapidity
-      "Pt"   : [0.15, 100000.0], // Transverse momentum
+      "Pt"   : [0.0, 100000.0], // Transverse momentum
       "Et"   : [0.0, 100000.0]   // Transverse energy
     },
 
