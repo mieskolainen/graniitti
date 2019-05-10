@@ -147,27 +147,15 @@ int main(int argc, char *argv[]) {
     return value;
   };
 
-  // Minkowski
-  auto minkowski = [] (const std::vector<double>& x, const std::vector<double>& y) {
-
-    double value = 0.0;
-    for (std::size_t i = 0; i < x.size(); i += 4) { // jump in 4
-      // e^2 - pvec^2 (+,---)
-      value += gra::math::pow2(x[i] - y[i]) - (gra::math::pow2(x[i+1] - y[i+1]) + gra::math::pow2(x[i+2] - y[i+2]) + gra::math::pow2(x[i+3] - y[i+3])); 
-    }
-    return value;
-  };
-
   // Distance matrix
   gra::MMatrix<double> C(S1.size(), S2.size());
 
   for (std::size_t i = 0; i < C.size_row(); ++i) {
     for (std::size_t j = 0; j < C.size_col(); ++j) {
-      //C[i][j] = minkowski(S1[i], S2[j]);
       C[i][j] = l2metric(S1[i], S2[j]); 
     }
   }
-
+  
   // Transport matrix
   gra::MMatrix<double> gamma;
 
