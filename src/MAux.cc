@@ -84,8 +84,12 @@ std::string GetExecutablePath() {
 
 // level 0 returns same as GetExecutablePath:
 // ~ /home/user/graniitti/bin/gr
+//
 // level 1 returns
 // ~ /home/user/graniitti/bin
+//
+// etc..
+//
 std::string GetBasePath(std::size_t level) {
   std::string s   = GetExecutablePath();
   char        sep = '/';
@@ -518,13 +522,40 @@ void CheckUpdate() {
       // do nothing
     }
   }
+
+  // Create this version JSON
+  CreateVersionJSON();
 }
 
-double GetVersion() { return 0.40; }
+void CreateVersionJSON() {
+
+  // Get program path and output this VERSION.json
+  const std::string output = GetBasePath(2) + "/VERSION.json";
+  const std::string MSG = "{\n \"name\": \"%s\",\n \"version\": %0.2f,\n \"type\": \"%s\",\n \"date\": \"%s\",\n \"update\": \"%s\"\n}\n";
+
+  FILE* file = fopen(output.c_str(), "w");
+  fprintf(file, MSG.c_str(),
+          "GRANIITTI",
+          GetVersion(),
+          GetVersionType().c_str(),
+          GetVersionDate().c_str(),
+          GetVersionUpdate().c_str());
+  fclose(file);
+}
+
+// -------------------------------------------------------
+// FIXED HERE manually
+
+double      GetVersion() {       return 0.41; }
+std::string GetVersionType() {   return "beta"; }
+std::string GetVersionDate() {   return "10.05.2019"; }
+std::string GetVersionUpdate() { return "online version autocheck"; }
+
+// -------------------------------------------------------
 
 std::string GetVersionString() {
   char buff[100];
-  snprintf(buff, sizeof(buff), "Version %0.2f (beta) 09.05.2019", GetVersion());
+  snprintf(buff, sizeof(buff), "Version %0.2f (%s) %s", GetVersion(), GetVersionType().c_str(), GetVersionDate().c_str());
   std::string str = buff;
   return str;
 }

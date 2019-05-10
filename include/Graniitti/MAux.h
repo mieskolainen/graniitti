@@ -182,8 +182,14 @@ void PrintBar(std::string str, unsigned int N = 74);
 // Create directory
 void CreateDirectory(std::string fullpath);
 
+// Version information
 void        CheckUpdate();
+void  CreateVersionJSON();
+
 double      GetVersion();
+std::string GetVersionType();
+std::string GetVersionDate();
+std::string GetVersionUpdate();
 std::string GetVersionString();
 std::string GetVersionTLatex();
 std::string GetWebTLatex();
