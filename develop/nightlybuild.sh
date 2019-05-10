@@ -31,7 +31,7 @@ BUILD_DATE=`date -R`
 echo $BUILD_DATE
 
 # Output message
-MSG="{\n \"name\": "GRANIITTI",\n \"build_passing\": $BUILD_PASSING,\n \"build_date\": \"$BUILD_DATE\"\n}\n"
+MSG="{\n \"name\": \"GRANIITTI\",\n \"build_passing\": $BUILD_PASSING,\n \"build_date\": \"$BUILD_DATE\"\n}\n"
 printf "$MSG" > ./develop/BUILD.json
 
 # Push via SSH
