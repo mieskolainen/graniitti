@@ -507,10 +507,16 @@ void CheckUpdate() {
         PrintBar("-", 80);
         std::cout << std::endl;
       }
+
+      // Remove tmp file
+      const std::string rmcmd = "rm " + tmpfile;
+      if (system(rmcmd.c_str()) != 1) {
+        // success
+      }
+
     } catch (...) {
       // do nothing
     }
-
   }
 }
 
