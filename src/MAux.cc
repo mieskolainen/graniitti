@@ -463,8 +463,8 @@ void CheckUpdate() {
 
   const std::string tmpfile = "/tmp/GRANIITTI_VERSION_" + std::to_string(time(0)) + ".json";
   const std::string cmd =  "curl -s -o " + tmpfile + 
-      " https://raw.githubusercontent.com/mieskolainen/graniitti/master/VERSION.json";
-
+      " https://raw.githubusercontent.com/mieskolainen/GRANIITTI/master/VERSION.json";
+  
   // Execute curl
   const int ret = system(cmd.c_str());
 
@@ -493,7 +493,7 @@ void CheckUpdate() {
         std::cout << std::endl;
         PrintBar("-", 80);
         std::cout << rang::style::bold << rang::fg::green << "New version " <<
-                     version << " (" << date << ") available at <github.com/mieskolainen/graniitti>" << rang::fg::reset << rang::style::reset << std::endl;
+                     version << " (" << date << ") available at <github.com/mieskolainen/GRANIITTI>" << rang::fg::reset << rang::style::reset << std::endl;
         std::cout << std::endl;
         std::cout << "To update, copy-and-run: " << std::endl;
         std::cout << "git pull origin master && source ./install/setenv.sh && make superclean && make -j4" << std::endl;
@@ -546,7 +546,7 @@ std::string GetWebTLatex() {
 
 void PrintVersion() {
   std::cout << GetVersionString() << std::endl;
-  std::cout << rang::style::bold << "<github.com/mieskolainen/graniitti>"
+  std::cout << rang::style::bold << "<github.com/mieskolainen/GRANIITTI>"
             << rang::style::reset << std::endl
             << std::endl;
   std::cout << "References: arXiv:1811.01730 [hep-ph]" << std::endl;
