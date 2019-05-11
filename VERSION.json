@@ -1,7 +1,7 @@
 {
  "name": "GRANIITTI",
- "version": 0.43,
+ "version": 0.44,
  "type": "beta",
  "date": "12.05.2019",
- "update": "floating point optimizations"
+ "update": "floating point & bugfixes"
 }
