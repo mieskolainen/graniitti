@@ -141,7 +141,7 @@ A:  No. Their transverse momentum is limited to few GeV to improve CPU efficienc
 
 Q:  Can I simulate processes as low in transverse momentum and mass as possible?
 A:  Yes, the processes are numerically constructed to be floating point and
-    kinematically safe. Naturally, perturbative QCD processes have certain cutoff scales.
+    kinematically safe. Naturally, perturbative QCD processes have certain cutoff scales applied.
     If you spot some new problems in some corners of phase space, which may happen
     e.g. due to unfortunate floating point loss of precision, send email.
 
