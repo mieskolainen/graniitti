@@ -516,7 +516,7 @@ void CheckUpdate() {
         std::cout << std::endl;
         PrintBar("-", 80);
         std::cout << rang::style::bold << "This version " <<
-                     GetVersion() << " (" << GetVersionDate() << ") is up to date with online" << rang::style::reset << std::endl;
+                     GetVersion() << " (" << GetVersionDate() << ") is up to date with online version" << rang::style::reset << std::endl;
         PrintBar("-", 80);
         std::cout << std::endl;
       } else { // This version is newer than oline
