@@ -115,7 +115,7 @@ double MParton::EventWeight(const std::vector<double> &randvec, AuxIntData &aux)
 
   if (aux.Valid()) {
     // Matrix element squared
-    const double MatESQ = (FLATAMP == 0) ? abs2(S3ScreenedAmp()) : GetFlatAmp2(lts);
+    const double MatESQ = (FLATAMP == 0) ? S3ScreenedAmp2() : GetFlatAmp2(lts);
 
     // Calculate central system Phase Space volume
     double exact = 0.0;
@@ -200,23 +200,7 @@ void MParton::PrintInit(bool silent) const {
     std::cout << rang::style::bold << "Generation cuts:" << rang::style::reset << std::endl
               << std::endl;
 
-    std::cout << "- None" << std::endl;
-    /*
-    printf("- System rapidity (Rap) [min, max] = [%0.2f, %0.2f]     \t(user) \n"
-                       "- System mass (M)       [min, max] = [%0.2f, %0.2f] GeV \t(user)
-    \n"
-               "- Forward leg (Pt)      [min, max] = [%0.2f, %0.2f] GeV
-    \t(fixed/user) \n",
-            gcuts.Y_min, gcuts.Y_max,
-            gcuts.M_min, gcuts.M_max,
-            gcuts.forward_pt_min, gcuts.forward_pt_max);
-
-    if (EXCITATION != 0) {
-    printf("- Forward leg (Xi)      [min, max] = [%0.2E, %0.2E]
-    \t(fixed/user) \n",
-    gcuts.XI_min, gcuts.XI_max);
-    }
-    */
+    std::cout << "- None (full x1,x2 range in use)" << std::endl;
 
     PrintFiducialCuts();
   }
@@ -250,7 +234,7 @@ bool MParton::B2RandomKin(const std::vector<double> &randvec) {
   return B2BuildKin(x1, x2);
 }
 
-// Build kinematics for 2->2 skeleton
+// Build kinematics for 2 -> 1 x 1 -> N collinear
 bool MParton::B2BuildKin(double x1, double x2) {
   static const M4Vec beamsum = lts.pbeam1 + lts.pbeam2;
 
@@ -272,7 +256,7 @@ bool MParton::B2BuildKin(double x1, double x2) {
   M4Vec p1 = lts.pbeam1 - q1;  // Remnant
   M4Vec p2 = lts.pbeam2 - q2;  // Remnant
   M4Vec pX = q1 + q2;          // System
-
+  
   // Save
   lts.pfinal[1] = p1;
   lts.pfinal[2] = p2;

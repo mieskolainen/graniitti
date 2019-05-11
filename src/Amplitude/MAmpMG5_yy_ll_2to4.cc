@@ -66,8 +66,8 @@ MAmpMG5_yy_ll_2to4::~MAmpMG5_yy_ll_2to4() {}
 //          |
 // 1 u -----------> u  3
 
-// Get amplitude
-std::complex<double> MAmpMG5_yy_ll_2to4::CalcAmp(gra::LORENTZSCALAR &lts) {
+// Get amplitude squared
+double MAmpMG5_yy_ll_2to4::CalcAmp2(gra::LORENTZSCALAR &lts) {
   // Set the parameters which change event by event
   // pars.setDependentParameters();
   // pars.setDependentCouplings();
@@ -179,7 +179,7 @@ std::complex<double> MAmpMG5_yy_ll_2to4::CalcAmp(gra::LORENTZSCALAR &lts) {
 
   // printf("\n");
 
-  return gra::math::msqrt(amp2);  // square root, we take square later
+  return amp2;  // amplitude squared
 
   /*
   if (sum_hel == 0 || ntry < 10) {

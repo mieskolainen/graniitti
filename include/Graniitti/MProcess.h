@@ -230,8 +230,8 @@ class MProcess : public MUserHistograms {
   virtual bool FiducialCuts() const = 0;
 
   // Eikonal screening loop
-  std::complex<double> S3ScreenedAmp();
-
+  double S3ScreenedAmp2();
+  
   // First print
   void PrintSetup() const;
 

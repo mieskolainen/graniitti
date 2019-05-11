@@ -47,8 +47,8 @@ MAmpMG5_yy_ll::MAmpMG5_yy_ll() {
 
 MAmpMG5_yy_ll::~MAmpMG5_yy_ll() {}
 
-// Get amplitude
-std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR &lts) {
+// Get amplitude squared
+double MAmpMG5_yy_ll::CalcAmp2(gra::LORENTZSCALAR &lts) {
   // Photon masses
   const double mgamma1 = 0;  // use on-shell
   const double mgamma2 = 0;
@@ -64,7 +64,7 @@ std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR &lts) {
   std::vector<gra::M4Vec> pf = {lts.decaytree[0].p4, lts.decaytree[1].p4};
   
   // Do kinematic transform
-  gra::kinematics::OffShell2OnShell(p1_, p2_, pf);
+  gra::kinematics::OffShell2LightCone(p1_, p2_, pf);
 
   // Set components
   double p1[] = {p1_.E(), p1_.Px(), p1_.Py(), p1_.Pz()};
@@ -116,7 +116,7 @@ std::complex<double> MAmpMG5_yy_ll::CalcAmp(gra::LORENTZSCALAR &lts) {
   for (std::size_t i = 0; i < lts.hamp.size(); ++i) { amp2 += gra::math::abs2(lts.hamp[i]); }
   amp2 /= 4;  // spin average matrix element squared
   
-  return gra::math::msqrt(amp2);  // square root, we take square later
+  return amp2;  // amplitude squared
 }
 
 // ------------------------------------------------------------------------------------------------

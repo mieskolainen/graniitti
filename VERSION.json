@@ -1,7 +1,7 @@
 {
  "name": "GRANIITTI",
- "version": 0.42,
+ "version": 0.43,
  "type": "beta",
- "date": "11.05.2019",
- "update": "gamma-gamma flops problem fix"
+ "date": "12.05.2019",
+ "update": "floating point optimizations"
 }

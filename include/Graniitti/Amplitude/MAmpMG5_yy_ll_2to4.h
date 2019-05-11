@@ -15,7 +15,7 @@ class MAmpMG5_yy_ll_2to4 {
  public:
   MAmpMG5_yy_ll_2to4();
   ~MAmpMG5_yy_ll_2to4();
-  std::complex<double> CalcAmp(gra::LORENTZSCALAR &lts);
+  double CalcAmp2(gra::LORENTZSCALAR &lts);
 
  private:
   // Constants for array limits

@@ -1059,7 +1059,7 @@ void MGraniitti::SampleVegas(unsigned int N) {
       int          factor = 0;
 
       do {  // Loop until stable
-        factor       = Vegas(init, vparam.NCALL, BURNIN_ITER, N);
+        factor       = VEGAS(init, vparam.NCALL, BURNIN_ITER, N);
         vparam.NCALL = vparam.NCALL * factor;
         if (factor == 1) { break; }  // We are done
       } while (true);
@@ -1071,13 +1071,13 @@ void MGraniitti::SampleVegas(unsigned int N) {
         // Max, because this is only minimum condition
         vparam.NCALL =
             std::max((unsigned int)vparam.NCALL, (unsigned int)(MINTIME / time_per_iter));
-        Vegas(init, vparam.NCALL, BURNIN_ITER, N);
+        VEGAS(init, vparam.NCALL, BURNIN_ITER, N);
       }
 
       // Now re-calculate by skipping burn-in (init = 0) iterations
       // because they detoriate the integral value by bad grid
       init   = 1;
-      factor = Vegas(init, vparam.NCALL, vparam.ITER, N);
+      factor = VEGAS(init, vparam.NCALL, vparam.ITER, N);
 
       if (factor == 1) {
         break;
@@ -1091,24 +1091,12 @@ void MGraniitti::SampleVegas(unsigned int N) {
   if (GMODE == 1) {
     const unsigned int init    = 2;
     const unsigned int itermin = 1E9;
-    Vegas(init, vparam.NCALL * 10, itermin, N);
+    VEGAS(init, vparam.NCALL * 10, itermin, N);
   }
 }
 
-// Create number of calls per thread, they need to sum to calls
-std::vector<unsigned int> MGraniitti::VEGASGetLocalCalls(unsigned int calls) {
-  std::vector<unsigned int> LOCALcalls(CORES, 0.0);
-  unsigned int              sum = 0;
-  for (int k = 0; k < CORES; ++k) {
-    LOCALcalls[k] = std::floor(calls / CORES);
-    sum += LOCALcalls[k];
-  }
-  // Add remainder to the thread number[0]
-  LOCALcalls[0] += calls - sum;
-  return LOCALcalls;
-}
 
-// Multithreaded VEGAS integrator code
+// Multithreaded VEGAS integrator
 // [close to optimal importance sampling iff
 //  integrand factorizes dimension by dimension]
 //
@@ -1116,7 +1104,7 @@ std::vector<unsigned int> MGraniitti::VEGASGetLocalCalls(unsigned int calls) {
 // [REFERENCE: Lepage, G.P. Journal of Computational Physics, 1978]
 // https://en.wikipedia.org/wiki/VEGAS_algorithm
 
-int MGraniitti::Vegas(unsigned int init, unsigned int calls, unsigned int itermin, unsigned int N) {
+int MGraniitti::VEGAS(unsigned int init, unsigned int calls, unsigned int itermin, unsigned int N) {
   // First the initialization
   VD.Init(init, vparam);
 
@@ -1155,7 +1143,7 @@ int MGraniitti::Vegas(unsigned int init, unsigned int calls, unsigned int itermi
 
   // -------------------------------------------------------------------
   // Create number of calls per thread, their sum == calls
-  std::vector<unsigned int> LOCALcalls = VEGASGetLocalCalls(calls);
+  std::vector<unsigned int> LOCALcalls = VD.GetLocalCalls(calls, CORES);
 
   MTimer gridtic;
 

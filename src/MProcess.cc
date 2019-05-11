@@ -129,22 +129,34 @@ std::string MProcess::GetProcessDescriptor(std::string str) const {
 //       *        *
 // ======xxxxxxxxx======>
 
-complex<double> MProcess::S3ScreenedAmp() {
-  // Eikonal Loop Screening not on
-  if (SCREENING == false) { return ProcPtr.GetBareAmplitude(lts); }
+double MProcess::S3ScreenedAmp2() {
 
-  if (ProcPtr.CHANNEL == "EL") {
-    // Elastic scattering, return directly eikonalized amplitude itself
-    return Eikonal.MSA.Interpolate1D(-lts.t);
+  // Eikonal Loop Screening not on
+  if (SCREENING == false) {
+    return ProcPtr.GetBareAmplitude2(lts);
   }
+
+  // Elastic scattering, return directly eikonalized amplitude squared itself
+  if (ProcPtr.CHANNEL == "EL") {
+    return abs2(Eikonal.MSA.Interpolate1D(-lts.t));
+  }
+
+  // --------------------------------------------------------------------
+  // First evaluate bare amplitudes to lts.hamp
+  ProcPtr.GetBareAmplitude2(lts);
+  
+  if (lts.hamp.size() == 0) {
+    const std::string str = "MProcess::S3ScreenedAmp2: Amplitude does not support screening, lts.hamp.size == 0";
+    throw std::invalid_argument(str);
+  }
+
+  // Save born amplitudes
+  const std::vector<std::complex<double>> hamp_0 = lts.hamp;
+  // --------------------------------------------------------------------
 
   // Proton pt vectors
   const std::vector<double> p1T = {lts.pfinal[1].Px(), lts.pfinal[1].Py()};
   const std::vector<double> p2T = {lts.pfinal[2].Px(), lts.pfinal[2].Py()};
-
-  // Save born amplitudes
-  const std::complex<double>              A_0    = ProcPtr.GetBareAmplitude(lts);
-  const std::vector<std::complex<double>> hamp_0 = lts.hamp;
 
   // Save old kinematics
   lts.pfinal_orig = lts.pfinal;
@@ -163,9 +175,6 @@ complex<double> MProcess::S3ScreenedAmp() {
       gra::math::Simpson38Weight2D(Eikonal.Numerics.NumberLoopPHI, Eikonal.Numerics.NumberLoopKT);
 
   // NOTE N + 1, init with zero!
-  MMatrix<std::complex<double>> f(Eikonal.Numerics.NumberLoopPHI + 1,
-                                  Eikonal.Numerics.NumberLoopKT + 1, 0.0);
-
   std::vector<MMatrix<std::complex<double>>> f_hamp(
       lts.hamp.size(), MMatrix<std::complex<double>>(Eikonal.Numerics.NumberLoopPHI + 1,
                                                      Eikonal.Numerics.NumberLoopKT + 1, 0.0));
@@ -209,34 +218,25 @@ complex<double> MProcess::S3ScreenedAmp() {
         continue;  // not valid kinematically
       }
 
-      // 3. Get new amplitude
-      const std::complex<double> A = ProcPtr.GetBareAmplitude(lts);
+      // 3. Get new amplitudes to lts.hamp
+      ProcPtr.GetBareAmplitude2(lts);
       // -------------------------------------------------------------------
 
-      if (lts.hamp.size() > 1) {  // Helicity amps
-        for (const auto &h : indices(lts.hamp)) {
-          f_hamp[h][i][j] = A_eik * lts.hamp[h] * kt;  // note x kt (jacobian)
-        }
-      } else {
-        f[i][j] = A_eik * A * kt;
-      }  // note x kt (jacobian)
-
+      // Loop over all helicity amplitudes
+      for (const auto &h : indices(lts.hamp)) {
+        f_hamp[h][i][j] = A_eik * lts.hamp[h] * kt;  // note x kt (jacobian)
+      }
     }  // inner-loop
   }    // outer-loop
-
-  std::complex<double>              A_loop(0, 0);
-  std::vector<std::complex<double>> hamp_loop(lts.hamp.size(), 0.0);
 
   // Normalization
   const std::complex<double> norm = zi / (8.0 * gra::math::PIPI * lts.s);
 
-  // If the process has helicity amplitudes
-  if (lts.hamp.size() > 1) {
-    for (const auto &h : indices(lts.hamp)) {
-      hamp_loop[h] = norm * gra::math::Simpson38Integral2D(f_hamp[h], WSimpson, StepPhi, StepKT);
-    }
-  } else {
-    A_loop = norm * gra::math::Simpson38Integral2D(f, WSimpson, StepPhi, StepKT);
+  // Loop over amplitudes
+  std::vector<std::complex<double>> hamp_loop(lts.hamp.size(), 0.0);
+
+  for (const auto &h : indices(lts.hamp)) {
+    hamp_loop[h] = norm * gra::math::Simpson38Integral2D(f_hamp[h], WSimpson, StepPhi, StepKT);
   }
 
   // Update back to tree level kinematics
@@ -245,27 +245,29 @@ complex<double> MProcess::S3ScreenedAmp() {
   // ------------------------------------------------------------
   // Final amplitude (squared)
 
-  // Helicity amplitude process
-  if (lts.hamp.size() > 1) {
-    if (ProcPtr.ISTATE != "gg") {  // Not Durham-QCD
+  // Not Durham-QCD
+  if (ProcPtr.ISTATE != "gg") {
 
-      // Separate (incoherent) sum
-      double A2 = 0.0;
-      for (const auto &h : indices(lts.hamp)) { A2 += abs2(hamp_0[h] + hamp_loop[h]); }
-      A2 /= 4;  // Initial state helicity average
-      return msqrt(A2);
-    } else {  // Durham-QCD
-
-      // Coherent sum
-      std::complex<double> A = 0.0;
-      for (const auto &h : indices(lts.hamp)) { A += hamp_0[h] + hamp_loop[h]; }
-      // Helicity average already taken care of
-      return A;
+    // Separate (incoherent) sum
+    double amp2 = 0.0;
+    for (const auto &h : indices(lts.hamp)) { amp2 += abs2(hamp_0[h] + hamp_loop[h]); }
+    
+    // Initial state helicity average, if we have all helicity amplitudes
+    if (lts.hamp.size() != 1) {
+      amp2 /= 4;
     }
-  }
+    return amp2;
 
-  // All the other amplitude processes
-  return A_0 + A_loop;
+  // Durham-QCD
+  } else {
+
+    // Coherent sum
+    std::complex<double> A = 0.0;
+    for (const auto &h : indices(lts.hamp)) { A += hamp_0[h] + hamp_loop[h]; }
+    // Helicity average already taken care of
+
+    return abs2(A);
+  }
 }
 
 /*

@@ -25,12 +25,16 @@
 // Libraries
 #include "rang.hpp"
 
-using gra::math::msqrt;
-using gra::math::pow2;
-using gra::math::pow4;
-using gra::math::zi;
-
 namespace gra {
+
+
+using math::abs2;
+using math::msqrt;
+using math::pow2;
+using math::pow4;
+using math::zi;
+
+
 // Initialize
 MSubProc::MSubProc(const std::string &_ISTATE, const std::string &_CHANNEL, const MPDG &_PDG) {
   ISTATE  = _ISTATE;
@@ -177,7 +181,7 @@ void MSubProc::SetTechnicalBoundaries(gra::GENCUT &gcuts, unsigned int EXCITATIO
     
     // Here, we cannot put too high if we use on-shell matrix (e.g. in EPA)
     // because t ~ -pt^2
-    else if (EXCITATION == 1) {  // Single
+    else if   (EXCITATION == 1) {  // Single
       gcuts.forward_pt_max = 3.0;
     } else if (EXCITATION == 2) {  // Double
       gcuts.forward_pt_max = 3.0;
@@ -185,41 +189,41 @@ void MSubProc::SetTechnicalBoundaries(gra::GENCUT &gcuts, unsigned int EXCITATIO
   }
 }
 
-std::complex<double> MSubProc::GetBareAmplitude(gra::LORENTZSCALAR &lts) {
+double MSubProc::GetBareAmplitude2(gra::LORENTZSCALAR &lts) {
   if (ISTATE == "X") {
-    return GetBareAmplitude_X(lts);
+    return GetBareAmplitude2_X(lts);
   } else if (ISTATE == "PP") {
-    return GetBareAmplitude_PP(lts);
+    return GetBareAmplitude2_PP(lts);
   } else if (ISTATE == "yP") {
-    return GetBareAmplitude_yP(lts);
+    return GetBareAmplitude2_yP(lts);
   } else if (ISTATE == "yy") {
-    return GetBareAmplitude_yy(lts);
+    return GetBareAmplitude2_yy(lts);
   } else if (ISTATE == "gg") {
-    return GetBareAmplitude_gg(lts);
+    return GetBareAmplitude2_gg(lts);
   } else if (ISTATE == "yy_DZ") {
-    return GetBareAmplitude_yy_DZ(lts);
+    return GetBareAmplitude2_yy_DZ(lts);
   } else if (ISTATE == "yy_LUX") {
-    return GetBareAmplitude_yy_LUX(lts);
+    return GetBareAmplitude2_yy_LUX(lts);
   } else {
-    throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown ISTATE '" + ISTATE + '"');
+    throw std::invalid_argument("MSubProc::GetBareAmplitude2: Unknown ISTATE '" + ISTATE + '"');
   }
 }
 
 // Inclusive processes
-inline std::complex<double> MSubProc::GetBareAmplitude_X(gra::LORENTZSCALAR &lts) {
+inline double MSubProc::GetBareAmplitude2_X(gra::LORENTZSCALAR &lts) {
   std::complex<double> A(0, 0);
   if (CHANNEL == "EL" || CHANNEL == "SD" || CHANNEL == "DD") {
     A = ME2(lts, LIPSDIM);
   } else if (CHANNEL == "ND") {
     A = 1.0;
   } else {
-    throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown CHANNEL = " + CHANNEL);
+    throw std::invalid_argument("MSubProc::GetBareAmplitude2: Unknown CHANNEL = " + CHANNEL);
   }
-  return A;
+  return abs2(A); // amplitude squared
 }
 
 // Pomeron-Pomeron
-inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR &lts) {
+inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
   // ------------------------------------------------------------------
   // First run, init parameters
   gra::g_mutex.lock();
@@ -234,6 +238,7 @@ inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR &lt
   std::complex<double> A(0, 0);
 
   if (CHANNEL == "RES") {
+
     // Coherent sum of Resonances (loop over)
     for (auto &x : lts.RESONANCES) {
       const int J = static_cast<int>(x.second.p.spinX2 / 2.0);
@@ -247,8 +252,15 @@ inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR &lt
         A += ME3(lts, x.second);
       }
     }
+
+    // ------------------------------------------------------------------
+    // For screening loop
+    lts.hamp = {A};
+    // ------------------------------------------------------------------
+
   } else if (CHANNEL == "RESHEL") {
     A = ME3HEL(lts, lts.RESONANCES.begin()->second);
+
   } else if (CHANNEL == "RESTENSOR") {
     if (lts.decaytree.size() == 2) {
       static MTensorPomeron TensorPomeron;
@@ -258,8 +270,8 @@ inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR &lt
             "MSubProc: RESTENSOR process does not currently support J = 1 "
             "resonances");
       }
-
       A = TensorPomeron.ME3(lts, lts.RESONANCES.begin()->second);
+
     } else {
       throw std::invalid_argument(
           "MSubProc: Only 2-body + sequential final states for [RESTENSOR] "
@@ -269,6 +281,7 @@ inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR &lt
     if (lts.decaytree.size() == 2) {
       static MTensorPomeron TensorPomeron;
       A = TensorPomeron.ME4(lts);
+
     } else {
       throw std::invalid_argument(
           "MSubProc: Only 2-body + sequential final states for [CONTENSOR] "
@@ -301,15 +314,18 @@ inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR &lt
                        std::plus<std::complex<double>>());
       }
 
-      // Total sum
+      // ------------------------------------------------------------------
+      // For screening loop
       lts.hamp = tempsum;
+      // ------------------------------------------------------------------
 
       // Get total amplitude squared 1/4 \sum_h |A_h|^2
-      double SumAmp2 = 0.0;
-      for (std::size_t i = 0; i < lts.hamp.size(); ++i) { SumAmp2 += gra::math::abs2(lts.hamp[i]); }
-      SumAmp2 /= 4;  // Initial state helicity average
+      double amp2 = 0.0;
+      for (const auto& i : aux::indices(lts.hamp)) { amp2 += gra::math::abs2(lts.hamp[i]); }
+      amp2 /= 4;  // Initial state helicity average
 
-      A = msqrt(SumAmp2);  // We expect amplitude
+      return amp2;
+
     } else {
       throw std::invalid_argument(
           "MSubProc: Only 2-body + sequential final states for [RES+CONTENSOR] "
@@ -350,44 +366,51 @@ inline std::complex<double> MSubProc::GetBareAmplitude_PP(gra::LORENTZSCALAR &lt
         A += ME3(lts, x.second);
       }
     }
+
+    // ------------------------------------------------------------------
+    // For screening loop
+    lts.hamp = {A};
+    // ------------------------------------------------------------------
+
   } else {
-    throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown CHANNEL = " + CHANNEL);
+    throw std::invalid_argument("MSubProc::GetBareAmplitude2: Unknown CHANNEL = " + CHANNEL);
   }
-  return A;
+
+  return abs2(A); // amplitude squared
 }
 
 // Gamma-Pomeron
-inline std::complex<double> MSubProc::GetBareAmplitude_yP(gra::LORENTZSCALAR &lts) {
-  std::complex<double> A(0, 0);
+inline double MSubProc::GetBareAmplitude2_yP(gra::LORENTZSCALAR &lts) {
+  std::complex<double> A(0,0);
 
   if (CHANNEL == "RES") {
     A = PhotoME3(lts, lts.RESONANCES.begin()->second);
   } else {
-    throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown CHANNEL = " + CHANNEL);
+    throw std::invalid_argument("MSubProc::GetBareAmplitude2: Unknown CHANNEL = " + CHANNEL);
   }
-  return A;
+  return abs2(A); // amplitude squared
 }
 
 // Gamma-Gamma
-inline std::complex<double> MSubProc::GetBareAmplitude_yy(gra::LORENTZSCALAR &lts) {
-  std::complex<double> A(0, 0);
+inline double MSubProc::GetBareAmplitude2_yy(gra::LORENTZSCALAR &lts) {
+  double amp2 = 0.0;
 
   if (CHANNEL == "RES") {
-    A = yyX(lts, lts.RESONANCES.begin()->second);
+    amp2 = yyX(lts, lts.RESONANCES.begin()->second);
   } else if (CHANNEL == "Higgs") {
-    A = yyHiggs(lts);
+    amp2 = yyHiggs(lts);
   } else if (CHANNEL == "monopolium(0)") {
-    A = yyMP(lts);
+    amp2 = yyMP(lts);
   } else if (CHANNEL == "CON") {
     if (std::abs(lts.decaytree[0].p.pdg) == 24 && std::abs(lts.decaytree[1].p.pdg) == 24) {  // W+W-
-      A = AmpMG5_yy_ww.CalcAmp(lts);
+      amp2 = AmpMG5_yy_ww.CalcAmp2(lts);
     } else {  // ffbar
-      A = yyffbar(lts);
+      amp2 = yyffbar(lts);
     }
   } else if (CHANNEL == "QED") {
-    A = AmpMG5_yy_ll_2to4.CalcAmp(lts);
+    amp2 = AmpMG5_yy_ll_2to4.CalcAmp2(lts);
   } else {
-    throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown CHANNEL = " + CHANNEL);
+    throw std::invalid_argument("MSubProc::GetBareAmplitude2: Unknown CHANNEL = " + CHANNEL);
   }
   
   // Apply non-collinear EPA fluxes
@@ -400,35 +423,40 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy(gra::LORENTZSCALAR &lt
 
   // const double phasespace = lts.s / lts.s_hat;    // This causes numerical problems at low shat
   const double phasespace = 1.0 / (lts.x1 * lts.x2);
-  
+
   // To "amplitude level"
-  const double flux = msqrt(gammaflux1 * gammaflux2 * phasespace);
+  const double fluxes = gammaflux1 * gammaflux2 * phasespace;
 
-  // Helicity amplitudes
-  for (const auto &i : aux::indices(lts.hamp)) { lts.hamp[i] *= flux; }
+  // Total
+  const double tot = amp2 * fluxes;
 
-  return A * flux;
+  // --------------------------------------------------------------------
+  // Apply fluxes to helicity amplitudes
+  const double sqrt_fluxes = msqrt(fluxes); // to "amplitude level"
+  for (const auto &i : aux::indices(lts.hamp)) { lts.hamp[i] *= sqrt_fluxes; }
+  // --------------------------------------------------------------------
+
+  return tot;
 }
 
 // Gamma-Gamma collinear Drees-Zeppenfeld (coherent flux)
-inline std::complex<double> MSubProc::GetBareAmplitude_yy_DZ(gra::LORENTZSCALAR &lts) {
-  // throw std::invalid_argument("yy_DZ::Not active in this version");
+inline double MSubProc::GetBareAmplitude2_yy_DZ(gra::LORENTZSCALAR &lts) {
 
-  // Amplitude
-  std::complex<double> A = yyffbar(lts);
+  // Amplitude squared
+  double amp2 = yyffbar(lts);
 
   // Evaluate gamma pdfs
   const double f1   = form::DZFlux(lts.x1);
   const double f2   = form::DZFlux(lts.x2);
   const double phasespace = 1.0 / (lts.x1 * lts.x2);
-  const double amp2 = f1 * f2 * math::abs2(A) * phasespace;
+  const double tot = f1 * f2 * amp2 * phasespace;
 
-  return msqrt(amp2);  // We take square later
+  return tot;
 }
 
 // Gamma-Gamma LUX-pdf (use at \mu > 10 GeV)
 // *** UNDER TESTING ***
-inline std::complex<double> MSubProc::GetBareAmplitude_yy_LUX(gra::LORENTZSCALAR &lts) {
+inline double MSubProc::GetBareAmplitude2_yy_LUX(gra::LORENTZSCALAR &lts) {
   
   // @@ MULTITHREADING LOCK NEEDED FOR INITIALIZATION @@
   gra::g_mutex.lock();
@@ -456,16 +484,16 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy_LUX(gra::LORENTZSCALAR
   gra::g_mutex.unlock();
   // @@ MULTITHREADING UNLOCK @@
 
-  // Amplitude
-  std::complex<double> A(0, 0);
+  // Amplitude squared
+  double amp2 = 0.0;
   if (CHANNEL == "CON") {
     if (std::abs(lts.decaytree[0].p.pdg) == 24 && std::abs(lts.decaytree[1].p.pdg) == 24) {  // W+W-
-      A = AmpMG5_yy_ww.CalcAmp(lts);
+      amp2 = AmpMG5_yy_ww.CalcAmp2(lts);
     } else {  // ffbar
-      A = yyffbar(lts);
+      amp2 = yyffbar(lts);
     }
   } else {
-    throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown CHANNEL = " + CHANNEL);
+    throw std::invalid_argument("MSubProc::GetBareAmplitude2: Unknown CHANNEL = " + CHANNEL);
   }
 
   // pdf factorization scale
@@ -483,16 +511,15 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy_LUX(gra::LORENTZSCALAR
   }
 
   const double phasespace = 1.0 / (lts.x1 * lts.x2);
-  const double tot = f1 * f2 * math::abs2(A) * phasespace;
+  const double tot = f1 * f2 * amp2 * phasespace;
 
-  // To "amplitude level"
-  return msqrt(tot);
+  return tot; // amplitude squared
 }
 
 
 // Durham gg
-inline std::complex<double> MSubProc::GetBareAmplitude_gg(gra::LORENTZSCALAR &lts) {
-  std::complex<double> A(0, 0);
+inline double MSubProc::GetBareAmplitude2_gg(gra::LORENTZSCALAR &lts) {
+  std::complex<double> A(0,0);
 
   if (CHANNEL == "chic(0)") {
     A = DurhamQCD(lts, CHANNEL);
@@ -503,9 +530,9 @@ inline std::complex<double> MSubProc::GetBareAmplitude_gg(gra::LORENTZSCALAR &lt
       A = DurhamQCD(lts, "MMbar");
     }
   } else {
-    throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown CHANNEL = " + CHANNEL);
+    throw std::invalid_argument("MSubProc::GetBareAmplitude2: Unknown CHANNEL = " + CHANNEL);
   }
-  return A;
+  return abs2(A); // amplitude squared
 }
 
 }  // gra namespace ends

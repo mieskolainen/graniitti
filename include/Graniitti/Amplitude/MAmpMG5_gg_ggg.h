@@ -15,7 +15,7 @@ class MAmpMG5_gg_ggg {
  public:
   MAmpMG5_gg_ggg();
   ~MAmpMG5_gg_ggg();
-  std::complex<double> CalcAmp(gra::LORENTZSCALAR &lts, double alpS);
+  double CalcAmp2(gra::LORENTZSCALAR &lts, double alpS);
 
  private:
   double calls    = 0;

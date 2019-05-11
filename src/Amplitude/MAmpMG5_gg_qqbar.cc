@@ -48,8 +48,8 @@ MAmpMG5_gg_qqbar::MAmpMG5_gg_qqbar() {
 
 MAmpMG5_gg_qqbar::~MAmpMG5_gg_qqbar() {}
 
-// Get amplitude
-std::complex<double> MAmpMG5_gg_qqbar::CalcAmp(gra::LORENTZSCALAR &lts, double alpS) {
+// Get amplitude squared
+double MAmpMG5_gg_qqbar::CalcAmp2(gra::LORENTZSCALAR &lts, double alpS) {
   // *** Set the parameters which change event by event ***
   pars.setDependentParameters(alpS);  // alphaS
   pars.setDependentCouplings();
@@ -68,7 +68,7 @@ std::complex<double> MAmpMG5_gg_qqbar::CalcAmp(gra::LORENTZSCALAR &lts, double a
   std::vector<gra::M4Vec> pf = {lts.decaytree[0].p4, lts.decaytree[1].p4};
   
   // Do kinematic transform
-  gra::kinematics::OffShell2OnShell(p1_, p2_, pf);
+  gra::kinematics::OffShell2LightCone(p1_, p2_, pf);
   
   // Set components
   double p1[] = {p1_.E(), p1_.Px(), p1_.Py(), p1_.Pz()};
@@ -158,7 +158,7 @@ std::complex<double> MAmpMG5_gg_qqbar::CalcAmp(gra::LORENTZSCALAR &lts, double a
 
   for (int i = 0; i < nprocesses; i++) matrix_element[i] /= denominators[i];
 
-  return std::sqrt(matrix_element[0]);  // square root, we take square later
+  return matrix_element[0];  // amplitude squared
 }
 
 // ------------------------------------------------------------------------------------------------

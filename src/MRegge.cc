@@ -137,6 +137,8 @@ std::complex<double> MRegge::ME2(gra::LORENTZSCALAR &lts, int mode) const {
   const double alpha_t_i = S3PomAlpha(lts.t);
   const double alpha_t_j = alpha_t_i;
 
+  std::complex<double> A(0,0);
+
   if (mode == 1) {  // Elastic
 
     return 1.0;            // Elastic purely by the screening loop
@@ -145,7 +147,7 @@ std::complex<double> MRegge::ME2(gra::LORENTZSCALAR &lts, int mode) const {
     // Which proton is excited
     const double MX_2 = (lts.ss[1][1] > 1.0) ? lts.ss[1][1] : lts.ss[2][2];
 
-    const double A = pow3(PARAM_SOFT::gN_P)  // Proton-Pomeron coupling ^ 3
+    const double amp2 = pow3(PARAM_SOFT::gN_P)  // Proton-Pomeron coupling ^ 3
                      * pow2(S3F(lts.t))      // Proton form factor ^ 2
                      * PARAM_SOFT::g3P       // Triple-Pomeron coupling
 
@@ -154,15 +156,16 @@ std::complex<double> MRegge::ME2(gra::LORENTZSCALAR &lts, int mode) const {
 
                      * std::pow(MX_2 / s0, alpha_0);  // DISCONTINUITY PART
 
-    // sqrt, we had the expression at cross section level
-    return gra::form::ReggeEta(alpha_t_i, 1) * msqrt(A);
+    // recover amplitude, we had the expression at cross section level
+    A = gra::form::ReggeEta(alpha_t_i, 1) * msqrt(amp2);
+
   } else if (mode == 3) {  // DD triple Pomeron, note NO proton form
     // factors (both proton dissociated)
 
     const double MX_2 = lts.ss[1][1];
     const double MY_2 = lts.ss[2][2];
 
-    const double A = pow2(PARAM_SOFT::gN_P)   // Proton-Pomeron ^ 2
+    const double amp2 = pow2(PARAM_SOFT::gN_P)   // Proton-Pomeron ^ 2
                      * pow2(PARAM_SOFT::g3P)  // Triple-Pomeron coupling ^ 2
 
                      * std::pow((lts.s * s0) / (MX_2 * MY_2),
@@ -171,11 +174,18 @@ std::complex<double> MRegge::ME2(gra::LORENTZSCALAR &lts, int mode) const {
                      * std::pow(MX_2 / s0, alpha_0)   // DISCONTINUITY PART
                      * std::pow(MY_2 / s0, alpha_0);  // DISCONTINUITY PART
 
-    // sqrt, we had the expression at cross section level
-    return gra::form::ReggeEta(alpha_t_i, 1) * msqrt(A);
+    // recover amplitude, we had the expression at cross section level
+    A = gra::form::ReggeEta(alpha_t_i, 1) * msqrt(amp2);
   } else {
     throw std::invalid_argument("MRegge::ME2: Unknown mode parameter: " + std::to_string(mode));
   }
+
+  // --------------------------------------------------------------------
+  // For screening loop
+  lts.hamp = {A};
+  // --------------------------------------------------------------------
+
+  return A;
 }
 
 // ============================================================================
@@ -284,7 +294,7 @@ std::complex<double> MRegge::ME3HEL(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res
   for (std::size_t i = 0; i < lts.hamp.size(); ++i) { amp2 += gra::math::abs2(lts.hamp[i]); }
   amp2 /= 4;  // Initial state average
 
-  return msqrt(amp2);
+  return msqrt(amp2); // we expect amplitude
 }
 
 // This function is used for parity conservation check:
@@ -427,19 +437,24 @@ std::complex<double> MRegge::ME4(gra::LORENTZSCALAR &lts, double sign) const {
   // Particle-Particle-Pomeron coupling
   const double gpp_P = PARAM_REGGE::c[0] / PARAM_SOFT::gN_P;
 
-  const std::complex<double> M_t = PropOnly(lts.ss[1][3], lts.t1) * PARAM_SOFT::gN_P * FF_A *
+  const std::complex<double> A_t = PropOnly(lts.ss[1][3], lts.t1) * PARAM_SOFT::gN_P * FF_A *
                                    (*ff)(lts.t_hat, M2_) * gpp_P * prop(lts.t_hat, M2_) *
                                    (*ff)(lts.t_hat, M2_) * gpp_P * PropOnly(lts.ss[2][4], lts.t2) *
                                    PARAM_SOFT::gN_P * FF_B;
 
   // sign applied here
-  const std::complex<double> M_u = sign * PropOnly(lts.ss[1][4], lts.t1) * PARAM_SOFT::gN_P * FF_A *
+  const std::complex<double> A_u = sign * PropOnly(lts.ss[1][4], lts.t1) * PARAM_SOFT::gN_P * FF_A *
                                    (*ff)(lts.u_hat, M2_) * gpp_P * prop(lts.u_hat, M2_) *
                                    (*ff)(lts.u_hat, M2_) * gpp_P * PropOnly(lts.ss[2][3], lts.t2) *
                                    PARAM_SOFT::gN_P * FF_B;
 
   // Total amplitude
-  const std::complex<double> A = M_t + M_u;
+  const std::complex<double> A = A_t + A_u;
+
+  // --------------------------------------------------------------------
+  // For screening loop
+  lts.hamp = {A};
+  // --------------------------------------------------------------------
 
   return A;
 }
@@ -479,7 +494,7 @@ std::complex<double> MRegge::ME4(gra::LORENTZSCALAR &lts, double sign) const {
 std::complex<double> MRegge::ME6(gra::LORENTZSCALAR &lts) const {
 
   // Amplitude_
-  std::complex<double> M(0, 0);
+  std::complex<double> A(0, 0);
 
   // Offshell propagator masses^2 [for mixed states, such as pi+ pi- K+ K-]
   const double M2_A = pow2(lts.decaytree[0].p.mass);
@@ -533,10 +548,15 @@ std::complex<double> MRegge::ME6(gra::LORENTZSCALAR &lts) const {
         (*ff)(tt_bc, M2_B) * gpp_P * prop(tt_cd, M2_B) * (*ff)(tt_cd, M2_B) * gpp_P *
         PropOnly(lts.ss[2][d], lts.t2) * PARAM_SOFT::gN_P * FF_B;
 
-    M += subamp;
+    A += subamp;
   }
 
-  return M;
+  // --------------------------------------------------------------------
+  // For screening loop
+  lts.hamp = {A};
+  // --------------------------------------------------------------------
+
+  return A;
 }
 
 // ============================================================================
@@ -567,7 +587,7 @@ std::complex<double> MRegge::ME8(gra::LORENTZSCALAR &lts) const {
   const std::complex<double> nullc(0, 0);
 
   // Amplitude
-  std::complex<double> M(0, 0);
+  std::complex<double> A(0, 0);
 
   // Offshell propagator masses^2 [for mixed states, such as pi+ pi- K+ K- pi+
   // pi-]
@@ -628,10 +648,15 @@ std::complex<double> MRegge::ME8(gra::LORENTZSCALAR &lts) const {
         PropOnly(lts.ss[d][e], tt_de) * (*ff)(tt_de, M2_C) * gpp_P * prop(tt_ef, M2_C) *
         (*ff)(tt_ef, M2_C) * gpp_P * PropOnly(lts.ss[2][f], lts.t2) * PARAM_SOFT::gN_P * FF_B;
 
-    M += subamp;
+    A += subamp;
   }
 
-  return M;
+  // --------------------------------------------------------------------
+  // For screening loop
+  lts.hamp = {A};
+  // --------------------------------------------------------------------
+
+  return A;
 }
 
 // ----------------------------------------------------------------------------
@@ -687,7 +712,15 @@ std::complex<double> MRegge::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resona
   // const double V = msqrt(lts.s / lts.s1 / lts.s2);
   const double V = msqrt(1.0 / lts.m2);
 
-  return A_prod * A_decay * V;
+  // Full amplitude
+  const std::complex<double> A = A_prod * A_decay * V;
+
+  // --------------------------------------------------------------------
+  // For screening loop
+  lts.hamp = {A};
+  // --------------------------------------------------------------------
+
+  return A;
 }
 
 // ============================================================================
@@ -739,8 +772,17 @@ std::complex<double> MRegge::PhotoME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &r
   // Spin and decay part
   const std::complex<double> A_decay = gra::spin::SpinAmp(lts, resonance);
 
-  return A_prod * A_decay;
+  // Full amplitude
+  const std::complex<double> A = A_prod * A_decay;
+
+  // --------------------------------------------------------------------
+  // For screening loop
+  lts.hamp = {A};
+  // --------------------------------------------------------------------
+
+  return A;
 }
+
 
 // ============================================================================
 // Pomeron propagator x coupling to proton in photoproduction

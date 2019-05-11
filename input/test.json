@@ -79,7 +79,7 @@
     },
     "<F>" : {
       "Rap" : [-2.5, 2.5],  // Rapidity boundaries of the system (<F> class)
-      "M"   : [0.0, 5.0]
+      "M"   : [0.0, 130.0]
     },
     "<Q>" : {
       "Xi"  : [0, 0.05]     // Invariant scale M^2/s (forward excitation)
@@ -89,7 +89,7 @@
   // ----------------------------------------------------------------------
   // Central system fiducial cuts
   // All central system particles need to fullfill the conditions
-
+  
   "FIDCUTS" : {
 
     "active" : true,
@@ -97,9 +97,9 @@
      // Central system final states
     "PARTICLE" : {
 
-      "Eta"  : [-2.5, 2.5],      // Pseudorapidity
+      "Eta"  : [-2.4, 2.4],      // Pseudorapidity
       "Rap"  : [-10.0, 10.0],    // Rapidity
-      "Pt"   : [0.15, 1000.0],   // Transverse momentum
+      "Pt"   : [0.0, 1000.0],    // Transverse momentum
       "Et"   : [0.0, 100000.0]   // Transverse energy
     },
 

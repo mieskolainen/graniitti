@@ -18,6 +18,7 @@
 #include "Graniitti/MRegge.h"
 #include "Graniitti/MSpin.h"
 
+using gra::math::abs2;
 using gra::math::msqrt;
 using gra::math::pow2;
 using gra::math::pow3;
@@ -70,7 +71,7 @@ namespace gra {
 // [REFERENCE: Dougall, Wick, https://arxiv.org/abs/0706.1042]
 // [REFERENCE: Rels, Sauter, https://arxiv.org/abs/1707.04170v1]
 //
-std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR &lts) {
+double MGamma::yyffbar(gra::LORENTZSCALAR &lts) {
   // QED couplings
   double       COUPL         = 16.0 * pow2(gra::math::PI * gra::form::alpha_EM(0));  // = e^4
   const double mass          = lts.decaytree[0].p4.M();  // lepton, quark (or monopole) mass
@@ -81,8 +82,8 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR &lts) {
     throw std::invalid_argument("MGamma::yyffbar: Parameter Dirac n less than 1");
   }
 
-  // Amplitude
-  std::complex<double> A = 0.0;
+  // Amplitude squared
+  double amp2 = 0.0;
 
   // Monopole-Antimonopole coupling
   if (MONOPOLE_MODE) {
@@ -109,7 +110,7 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR &lts) {
 
     // QED tree level amplitude squared |M|^2, spin averaged and
     // summed
-    const double amp2 =
+    amp2 =
         2.0 * COUPL *
         ((lts.u_hat - mass2) / (lts.t_hat - mass2) + (lts.t_hat - mass2) / (lts.u_hat - mass2) +
          1.0 -
@@ -118,7 +119,7 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR &lts) {
     /*
       // FeynCalc result, less simplified, but exactly same result
       as above
-            double amp2_ = 2 * COUPL  *
+      amp2 = 2 * COUPL  *
                       ( pow4(mass)*(3*pow2(lts.t_hat) +
       14*lts.t_hat*lts.u_hat + 3*pow2(lts.u_hat))
                             -mass2*(pow3(lts.t_hat) +
@@ -131,11 +132,10 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR &lts) {
 
     // printf("%0.15f %0.15f \n", amp2, amp2_);
 
-    A = msqrt(amp2);
   } else {  // MADGRAPH/HELAS, all helicity amplitudes individually -> for
     // the screening loop
 
-    A = AmpMG5_yy_ll.CalcAmp(lts);
+    return AmpMG5_yy_ll.CalcAmp2(lts);
   }
 
   // ------------------------------------------------------------------
@@ -144,17 +144,24 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR &lts) {
 
     const double Q  = lts.decaytree[0].p.chargeX3 / 3.0;
     const double NC = 3.0;  // quarks come in three colors
+    const double factor = pow4(Q) * NC;
+    const double sqrt_factor = msqrt(factor);  // sqrt to "amplitude level"
 
-    const double factor = msqrt(pow4(Q) * NC);  // to amplitude level
-    A *= factor;
+    // amplitude squared
+    amp2 *= factor;
 
-    for (const auto &i : aux::indices(lts.hamp)) {  // helicity amplitudes
-      lts.hamp[i] *= factor;
+    // helicity amplitudes
+    for (const auto &i : aux::indices(lts.hamp)) {
+      lts.hamp[i] *= sqrt_factor;
     }
   }
-  // ------------------------------------------------------------------
+  
+  // --------------------------------------------------------------------
+  // For screening loop (approximation)
+  lts.hamp = {msqrt(amp2)};
+  // --------------------------------------------------------------------
 
-  return A;
+  return amp2;
 }
 
 // --------------------------------------------------------------------------------------------
@@ -182,7 +189,7 @@ std::complex<double> MGamma::yyffbar(gra::LORENTZSCALAR &lts) {
 // alpha_em = e^2 / (4*PI) ~ 1/137
 // *************************************************************
 //
-std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR &lts) const {
+double MGamma::yyMP(gra::LORENTZSCALAR &lts) const {
   gra::g_mutex.lock();  // @@@
   PARAM_MONOPOLE::PrintParam(lts.sqrt_s);
   gra::g_mutex.unlock();  // @@@
@@ -228,9 +235,14 @@ std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR &lts) const {
   double norm = 2.0 * math::PI * M * M;
 
   // Sub process
-  double sigma_hat = norm * (Gamma_E * Gamma_M) / (pow2(lts.s_hat - M * M) + pow2(M * Gamma_M));
+  double amp2 = norm * (Gamma_E * Gamma_M) / (pow2(lts.s_hat - M * M) + pow2(M * Gamma_M));
 
-  return msqrt(sigma_hat);
+  // --------------------------------------------------------------------
+  // For screening loop (approximation)
+  lts.hamp = {msqrt(amp2)};
+  // --------------------------------------------------------------------
+
+  return amp2;
 }
 
 // --------------------------------------------------------------------------------------------
@@ -251,7 +263,7 @@ std::complex<double> MGamma::yyMP(const gra::LORENTZSCALAR &lts) const {
 // [REFERENCE: Enterria, Lansberg,
 // https://www.slac.stanford.edu/pubs/slacpubs/13750/slac-pub-13786.pdf]
 //
-std::complex<double> MGamma::yyHiggs(gra::LORENTZSCALAR &lts) const {
+double MGamma::yyHiggs(gra::LORENTZSCALAR &lts) const {
   lts.hamp.resize(4);
 
   const double M        = 125.18;           // Higgs mass measured (GeV)
@@ -269,11 +281,11 @@ std::complex<double> MGamma::yyHiggs(gra::LORENTZSCALAR &lts) const {
   lts.hamp[3] = lts.hamp[0];                                                                   // ++
 
   // Sum over helicity amplitudes squared
-  double sumA2 = 0.0;
-  for (const auto &i : aux::indices(lts.hamp)) { sumA2 += gra::math::abs2(lts.hamp[i]); }
-  sumA2 /= 4;  // Initial state polarization average
+  double amp2 = 0.0;
+  for (const auto &i : aux::indices(lts.hamp)) { amp2 += gra::math::abs2(lts.hamp[i]); }
+  amp2 /= 4;  // Initial state polarization average
 
-  return msqrt(sumA2);  // We take square later
+  return amp2;
 }
 
 // ============================================================================
@@ -292,7 +304,7 @@ std::complex<double> MGamma::yyHiggs(gra::LORENTZSCALAR &lts) const {
 // [REFERENCE: Uhlemann, Kauer, Narrow-width approximation accuracy,
 // https://arxiv.org/pdf/0807.4112.pdf]
 //
-std::complex<double> MGamma::yyX(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const {
+double MGamma::yyX(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const {
   // Factor of 2 x from (identical) initial state boson statistics
   std::complex<double> A_prod =
       2.0 * gra::form::CBW(lts, resonance) * resonance.g *
@@ -302,7 +314,15 @@ std::complex<double> MGamma::yyX(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &
   // Spin and decay part
   const std::complex<double> A_decay = gra::spin::SpinAmp(lts, resonance);
 
-  return A_prod * A_decay;
+  // Total
+  const std::complex<double> A = A_prod * A_decay;
+
+  // --------------------------------------------------------------------
+  // For screening loop
+  lts.hamp = {A};
+  // --------------------------------------------------------------------
+
+  return abs2(A);
 }
 
 }  // gra namespace

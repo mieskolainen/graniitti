@@ -34,7 +34,7 @@ class MSubProc : public MDurham, public MRegge, public MGamma {
   MSubProc() {}
   ~MSubProc() {}
 
-  std::complex<double> GetBareAmplitude(gra::LORENTZSCALAR &lts);
+  double GetBareAmplitude2(gra::LORENTZSCALAR &lts);
 
   std::string  ISTATE;   // "PP","yy","gg" etc.
   std::string  CHANNEL;  // "CON", "RES" etc.
@@ -46,13 +46,13 @@ class MSubProc : public MDurham, public MRegge, public MGamma {
   // Available channels and their descriptions
   std::map<std::string, std::map<std::string, std::string>> descriptions;
 
-  std::complex<double> GetBareAmplitude_X(gra::LORENTZSCALAR &lts);
-  std::complex<double> GetBareAmplitude_PP(gra::LORENTZSCALAR &lts);
-  std::complex<double> GetBareAmplitude_yP(gra::LORENTZSCALAR &lts);
-  std::complex<double> GetBareAmplitude_yy(gra::LORENTZSCALAR &lts);
-  std::complex<double> GetBareAmplitude_gg(gra::LORENTZSCALAR &lts);
-  std::complex<double> GetBareAmplitude_yy_DZ(gra::LORENTZSCALAR &lts);
-  std::complex<double> GetBareAmplitude_yy_LUX(gra::LORENTZSCALAR &lts);
+  double GetBareAmplitude2_X(gra::LORENTZSCALAR &lts);
+  double GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts);
+  double GetBareAmplitude2_yP(gra::LORENTZSCALAR &lts);
+  double GetBareAmplitude2_yy(gra::LORENTZSCALAR &lts);
+  double GetBareAmplitude2_gg(gra::LORENTZSCALAR &lts);
+  double GetBareAmplitude2_yy_DZ(gra::LORENTZSCALAR &lts);
+  double GetBareAmplitude2_yy_LUX(gra::LORENTZSCALAR &lts);
   
   // Particle database
   MPDG PDG;

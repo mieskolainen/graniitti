@@ -15,7 +15,7 @@ class MAmpMG5_yy_ww {
  public:
   MAmpMG5_yy_ww();
   ~MAmpMG5_yy_ww();
-  std::complex<double> CalcAmp(gra::LORENTZSCALAR &lts);
+  double CalcAmp2(gra::LORENTZSCALAR &lts);
 
  private:
   // Constants for array limits

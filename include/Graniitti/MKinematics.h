@@ -889,10 +889,10 @@ inline M4Vec LagrangeLightCone(const M4Vec& p0) {
 
 // Kinematic transform in process: p1 + p2 -> {p}, where
 //
-// p1, p2 are massless spacelike q^2 < 0 transformed to lightlike q^2 = 0
+// p1, p2 are massless spacelike q^2 < 0 => transformed to lightlike q^2 = 0
 // {p} massive/massless final states with q^2 = m^2
 //
-inline void OffShell2OnShell(M4Vec& p1, M4Vec& p2, std::vector<M4Vec>& p) {
+inline void OffShell2LightCone(M4Vec& p1, M4Vec& p2, std::vector<M4Vec>& p) {
   
   const int N = p.size();  
   const int MAXITER = 15;

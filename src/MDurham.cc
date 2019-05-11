@@ -89,7 +89,7 @@ std::complex<double> MDurham::DurhamQCD(gra::LORENTZSCALAR &lts, const std::stri
 
     // Madgraph
     const double alpha_s = lts.GlobalSudakovPtr->AlphaS_Q2(lts.s_hat);
-    AmpMG5_gg_gg.CalcAmp(lts, alpha_s);
+    AmpMG5_gg_gg.CalcAmp2(lts, alpha_s);
 
     // Amplitude evaluated outside the Qt-loop (approximation)
     Dgg2gg(lts, Amp);
@@ -103,7 +103,7 @@ std::complex<double> MDurham::DurhamQCD(gra::LORENTZSCALAR &lts, const std::stri
 
     // Madgraph
     const double alpha_s = lts.GlobalSudakovPtr->AlphaS_Q2(lts.s_hat);
-    AmpMG5_gg_qqbar.CalcAmp(lts, alpha_s);
+    AmpMG5_gg_qqbar.CalcAmp2(lts, alpha_s);
 
     // Amplitude evaluated outside the Qt-loop (approximation)
     Dgg2qqbar(lts, Amp);
