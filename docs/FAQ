@@ -139,6 +139,13 @@ A:  No. Their transverse momentum is limited to few GeV to improve CPU efficienc
     You can change this by adding/modifying a field "Pt" under "GENGUTS".
 
 
+Q:  Can I simulate processes as low in transverse momentum and mass as possible?
+A:  Yes, the processes are numerically constructed to be floating point and
+    kinematically safe. Naturally, perturbative QCD processes have certain cutoff scales.
+    If you spot some new problems in some corners of phase space, which may happen
+    e.g. due to unfortunate floating point loss of precision, send email.
+
+
 Q:  I want to know more details about the algorithms and calculations.
 A:  Very good, that is the right attitude! You find my heavily commented code
     under /src and /include folders. If you feel something is too dark, just send email --
@@ -235,6 +242,7 @@ Q:  Can I add some arbitrary new process / amplitude?
 A:  Yes you can, the kinematics is constructed to be fully generic and obey standard
     QFT normalization rules. What you need is some knowledge of C++ and then you need
     to study a little bit how the existing amplitudes are implemented in the machinery.
+    Basically, you can add them under MSubProc 'umbrella' class.
 
 
 Q:  Are the soft central production parameters independent of the screening loop?

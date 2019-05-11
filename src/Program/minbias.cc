@@ -165,7 +165,19 @@ int main(int argc, char *argv[]) {
       // Finalize
       outputHepMC2->close();
 
-      std::cout << "CMS-energy: " << sqrtsvec[e] << " GeV : Generated in total " << EVENTS << " minimum bias events" << std::endl << std::endl;
+      aux::PrintBar("=");
+      std::cout << "CMS-energy: " << sqrtsvec[e] << " GeV" << std::endl;
+      std::cout << std::endl;
+      std::cout << "Screened Cross Sections within space phase applied:" << std::endl << std::endl;
+
+      printf(" Single Diffractive (forward+backward): %0.3f mb\n", xs0[0]*1e3);
+      printf(" Double Diffractive:                    %0.3f mb\n", xs0[1]*1e3);
+      printf(" Non-Diffractive:                       %0.3f mb\n",  xs_nd*1e3);
+      printf(" Total inelastic:                       %0.3f mb\n",  xs_in*1e3);
+      
+      std::cout << std::endl;
+      std::cout << "Generated in total " << EVENTS << " minimum bias events according to xs above" << std::endl << std::endl;
+      aux::PrintBar("=");
 
     }
   } catch (const std::invalid_argument &e) {
