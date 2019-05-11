@@ -298,8 +298,7 @@ void MH1<T>::ResetBounds(int xbins, double xmin, double xmax) {
   weights2 = null;
   counts   = std::vector<long long int>(XBINS, 0);
 
-  Clear();  // Call also this
-
+  Clear();  // Call also this!
   FILLBUFF = false;  // No autorange, explicit bounds provided
 }
 

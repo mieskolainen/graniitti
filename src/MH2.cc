@@ -57,6 +57,9 @@ void MH2::ResetBounds(int xbins, double xmin, double xmax, int ybins, double ymi
   weights  = MMatrix<double>(XBINS, YBINS, 0.0);
   weights2 = weights;
   counts   = MMatrix<long long int>(XBINS, YBINS, 0);
+
+  Clear();  // Call also this!
+  FILLBUFF = false;  // No autorange, explicit bounds provided
 }
 
 void MH2::Print() const {
@@ -177,12 +180,13 @@ void MH2::Clear() {
       weights[i][j]  = 0;
       weights2[i][j] = 0;
       counts[i][j]   = 0;
-      fills          = 0;
-      underflow      = {0, 0};
-      overflow       = {0, 0};
     }
   }
+  fills          = 0;
+  underflow      = {0, 0};
+  overflow       = {0, 0};
 }
+
 
 // Automatic histogram range algorithm
 void MH2::FlushBuffer() {
