@@ -54,7 +54,7 @@ struct VEGASPARAM {
 
   // User cannot set these
   unsigned int MAXFDIM = 100;      // Maximum integral dimension
-  double       EPS     = 1.0e-30;  // Epsilon parameter
+  double       EPS     = 1.0e-50;  // Epsilon parameter
 };
 
 // Vegas MC adaptation data
@@ -137,14 +137,16 @@ struct VEGASData {
       f2mat[param.BINS - 1][j] = (zo + zn) / 2.0;
       dcache[j] += f2mat[param.BINS - 1][j];
     }
-
+    
     for (std::size_t j = 0; j < FDIM; ++j) {
       ac = 0.0;
       for (std::size_t i = 0; i < param.BINS; ++i) {
         f2mat[i][j] = (f2mat[i][j] < param.EPS) ? param.EPS : f2mat[i][j];
         rvec[i]     = std::pow(
-            (1.0 - f2mat[i][j] / dcache[j]) / (std::log(dcache[j]) - std::log(f2mat[i][j])),
+            (1.0 - f2mat[i][j] / dcache[j]) / (std::log(dcache[j]) - std::log(f2mat[i][j]) + param.EPS),
             param.LAMBDA);
+        // Floating point protection
+        if (std::isnan(rvec[i]) || std::isinf(rvec[i])) {rvec[i] = param.EPS; } 
         ac += rvec[i];
       }
       Rebin(ac / param.BINS, j, param);

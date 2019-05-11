@@ -19,10 +19,8 @@
 #include <time.h>
 #include <unistd.h>
 
-// LHAPDF
+// Libraries
 #include "LHAPDF/LHAPDF.h"
-
-// HepMC3
 #include "HepMC3/FourVector.h"
 
 // Own
@@ -37,6 +35,17 @@
 
 namespace gra {
 namespace aux {
+
+// -------------------------------------------------------
+// FIXED HERE manually
+
+double      GetVersion() {       return 0.42; }
+std::string GetVersionType() {   return "beta"; }
+std::string GetVersionDate() {   return "11.05.2019"; }
+std::string GetVersionUpdate() { return "gamma-gamma flops problem fix"; }
+
+// -------------------------------------------------------
+
 // Check do we have terminal output (=true), or output to file (=false)
 static const bool IS_TERMINAL = isatty(fileno(stdout)) != 0;
 
@@ -490,24 +499,32 @@ void CheckUpdate() {
     }
 
     try {
-      const double version = j.at("version");
-      const std::string date = j.at("date");
+      const double online_version   = j.at("version");
+      const std::string online_date = j.at("date");
 
-      if (aux::GetVersion() < version) {
+      if (GetVersion() < online_version) { // Older version than online
         std::cout << std::endl;
         PrintBar("-", 80);
         std::cout << rang::style::bold << rang::fg::green << "New version " <<
-                     version << " (" << date << ") available at <github.com/mieskolainen/GRANIITTI>" << rang::fg::reset << rang::style::reset << std::endl;
+                     online_version << " (" << online_date << ") available at <github.com/mieskolainen/GRANIITTI>" << rang::fg::reset << rang::style::reset << std::endl;
         std::cout << std::endl;
         std::cout << "To update, copy-and-run: " << std::endl;
         std::cout << "git pull origin master && source ./install/setenv.sh && make superclean && make -j4" << std::endl;
         PrintBar("-", 80);
         std::cout << std::endl;
-      } else {
+      } else if ( std::abs(GetVersion() - online_version) < 1e-6 ) { // Same as online
         std::cout << std::endl;
         PrintBar("-", 80);
         std::cout << rang::style::bold << "This version " <<
-                     version << " (" << date << ") is up to date with online" << rang::style::reset << std::endl;
+                     GetVersion() << " (" << GetVersionDate() << ") is up to date with online" << rang::style::reset << std::endl;
+        PrintBar("-", 80);
+        std::cout << std::endl;
+      } else { // This version is newer than oline
+        std::cout << std::endl;
+        PrintBar("-", 80);
+        std::cout << rang::style::bold << rang::fg::green << "This version " <<
+                     GetVersion() << " (" << GetVersionDate() << ") is newer than online version " <<
+                     online_version << " (" << online_date << ")" << rang::style::reset << std::endl;
         PrintBar("-", 80);
         std::cout << std::endl;
       }
@@ -543,15 +560,6 @@ void CreateVersionJSON() {
   fclose(file);
 }
 
-// -------------------------------------------------------
-// FIXED HERE manually
-
-double      GetVersion() {       return 0.41; }
-std::string GetVersionType() {   return "beta"; }
-std::string GetVersionDate() {   return "10.05.2019"; }
-std::string GetVersionUpdate() { return "online version autocheck"; }
-
-// -------------------------------------------------------
 
 std::string GetVersionString() {
   char buff[100];

@@ -139,12 +139,6 @@ A:  No. Their transverse momentum is limited to few GeV to improve CPU efficienc
     You can change this by adding/modifying a field "Pt" under "GENGUTS".
 
 
-Q:  Output seems numerically (floating point) unstable.
-A:  This may happen currently with gamma-gamma processes with very low pt final states,
-    much below what has been the lower limit at Tevatron / LHC in lepton pair papers.
-    In practise, you see this clearly from the histograms with noisy or asymmetric output.
-
-
 Q:  I want to know more details about the algorithms and calculations.
 A:  Very good, that is the right attitude! You find my heavily commented code
     under /src and /include folders. If you feel something is too dark, just send email --

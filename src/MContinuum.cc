@@ -645,10 +645,13 @@ double MContinuum::BNPhaseSpaceWeight() const {
   for (const auto &i : indices(pkt_)) { PROD *= pkt_[i].Pt(); }
 
   const double factor = pow4(2.0 * PI) * (1.0 / std::pow(2.0 * pow3(2.0 * PI), Nf)) *
-                        lts.pfinal[1].Pt() * lts.pfinal[2].Pt() *
-                        (1.0 / (2.0 * lts.pfinal[1].E())) * (1.0 / (2.0 * lts.pfinal[2].E())) *
+                        (1.0 / (2.0 * lts.pfinal[1].E())) *
+                        (1.0 / (2.0 * lts.pfinal[2].E())) *
                         PROD * (1.0 / std::pow(2, Nf - 4));
-  return J * factor;
+  
+  const double factor2 = lts.pfinal[1].Pt() * lts.pfinal[2].Pt();
+
+  return J * factor * factor2;
 }
 
 }  // gra namespace ends

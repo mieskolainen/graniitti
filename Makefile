@@ -103,9 +103,13 @@ $(info Found ROOTSYS = $(ROOTSYS))
 ROOT=TRUE
 
 # Info messages
+$(info )
 $(info ************************************************************************************)
-$(info **   If compilation with ROOT libraries failes, try with 'make -j4 ROOT14=TRUE'   **)
+$(info **                                                                                **)
+$(info **   If compilation with ROOT libraries failes, try with: make -j4 ROOT14=TRUE    **)
+$(info **                                                                                **)
 $(info ************************************************************************************)
+$(info )
 endif
 
 

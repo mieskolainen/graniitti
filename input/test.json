@@ -99,22 +99,22 @@
 
       "Eta"  : [-2.5, 2.5],      // Pseudorapidity
       "Rap"  : [-10.0, 10.0],    // Rapidity
-      "Pt"   : [0.0, 100000.0], // Transverse momentum
+      "Pt"   : [0.15, 1000.0],   // Transverse momentum
       "Et"   : [0.0, 100000.0]   // Transverse energy
     },
 
     // Central system
     "SYSTEM" : {
 
-      "M"    : [0.0, 100000.0], // Mass
-      "Rap"  : [-10.0, 10.0],   // Rapidity
-      "Pt"   : [0.0, 100000.0]  // Transverse momentum
+      "M"    : [0.0, 100000.0],  // Mass
+      "Rap"  : [-10.0, 10.0],    // Rapidity
+      "Pt"   : [0.0, 100000.0]   // Transverse momentum
     },
 
     // Forward system
     "FORWARD" : {
-      "M"    : [0.0, 100000.0], // Mass
-      "t"    : [0.0, 100000.0], // Forward protons/N* Mandelstam t (absolute value) (GeV^2)
+      "M"    : [0.0, 100000.0],  // Mass
+      "t"    : [0.0, 100000.0],  // Forward protons/N* Mandelstam t (absolute value) (GeV^2)
     },
 
     // Custom user cuts (default false, otherwise identifier ID)

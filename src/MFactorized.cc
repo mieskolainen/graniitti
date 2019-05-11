@@ -256,10 +256,9 @@ void MFactorized::PrintInit(bool silent) const {
 
 // 5+1-dimensional phase space vector initialization
 bool MFactorized::B51RandomKin(const std::vector<double> &randvec) {
-  const double pt1 =
-      gcuts.forward_pt_min + (gcuts.forward_pt_max - gcuts.forward_pt_min) * randvec[0];
-  const double pt2 =
-      gcuts.forward_pt_min + (gcuts.forward_pt_max - gcuts.forward_pt_min) * randvec[1];
+  
+  const double pt1  = gcuts.forward_pt_min + (gcuts.forward_pt_max - gcuts.forward_pt_min) * randvec[0];
+  const double pt2  = gcuts.forward_pt_min + (gcuts.forward_pt_max - gcuts.forward_pt_min) * randvec[1];
   const double phi1 = 2.0 * gra::math::PI * randvec[2];
   const double phi2 = 2.0 * gra::math::PI * randvec[3];
   const double yX   = gcuts.Y_min + (gcuts.Y_max - gcuts.Y_min) * randvec[4];
@@ -470,10 +469,14 @@ double MFactorized::B51PhaseSpaceWeight() const {
   const double J =
       1.0 / std::abs(lts.pfinal[1].Pz() / lts.pfinal[1].E() -
                      lts.pfinal[2].Pz() / lts.pfinal[2].E());  // Jacobian, close to 0.5
-  const double factor = (1.0 / 2.0) * (1.0 / pow5(2.0 * gra::math::PI)) * lts.pfinal[1].Pt() *
-                        lts.pfinal[2].Pt() * (1.0 / (2.0 * lts.pfinal[1].E())) *
+
+  const double factor = (1.0 / 2.0) * (1.0 / pow5(2.0 * gra::math::PI)) *
+                        (1.0 / (2.0 * lts.pfinal[1].E())) *
                         (1.0 / (2.0 * lts.pfinal[2].E()));
-  return J * factor;
+  
+  const double factor2 = lts.pfinal[1].Pt() * lts.pfinal[2].Pt();
+
+  return J * factor * factor2;
 }
 
 // For high mass limit kinematics, see e.g. [arxiv.org/pdf/hep-ph/9903279.pdf]

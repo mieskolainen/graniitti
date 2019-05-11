@@ -53,10 +53,13 @@ class MRandom {
   // For generators, check: https://nullprogram.com/blog/2017/09/21/
 
   // 64-bit Mersenne Twister by Matsumoto and Nishimura, fast, basic
-  std::mt19937_64 rng;
+  // For some (possible) sources problems, see:
+  // [REFERENCE: Harase, https://arxiv.org/abs/1708.06018]
+  //std::mt19937_64 rng;
 
-  // 48-bit RANLUX (slow)
-  // std::ranlux48 rng;
+  // 48-bit RANLUX (a bit slower)
+  // [REFERENCE: Luscher, https://arxiv.org/abs/hep-lat/9309020]
+  std::ranlux48 rng;
 
   // Distribution engines
   std::uniform_real_distribution<double> flat;

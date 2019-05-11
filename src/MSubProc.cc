@@ -389,7 +389,7 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy(gra::LORENTZSCALAR &lt
   } else {
     throw std::invalid_argument("MSubProc::GetBareAmplitude: Unknown CHANNEL = " + CHANNEL);
   }
-
+  
   // Apply non-collinear EPA fluxes
   const double gammaflux1 = lts.excite1
                                 ? gra::form::IncohFlux(lts.x1, lts.t1, lts.qt1, lts.pfinal[1].M2())
@@ -397,8 +397,10 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy(gra::LORENTZSCALAR &lt
   const double gammaflux2 = lts.excite2
                                 ? gra::form::IncohFlux(lts.x2, lts.t2, lts.qt2, lts.pfinal[2].M2())
                                 : form::CohFlux(lts.x2, lts.t2, lts.qt2);
-  const double phasespace = lts.s / lts.s_hat;  // Moller flux replacement
 
+  // const double phasespace = lts.s / lts.s_hat;    // This causes numerical problems at low shat
+  const double phasespace = 1.0 / (lts.x1 * lts.x2);
+  
   // To "amplitude level"
   const double flux = msqrt(gammaflux1 * gammaflux2 * phasespace);
 
@@ -418,7 +420,8 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy_DZ(gra::LORENTZSCALAR 
   // Evaluate gamma pdfs
   const double f1   = form::DZFlux(lts.x1);
   const double f2   = form::DZFlux(lts.x2);
-  const double amp2 = f1 * f2 * math::abs2(A) * (lts.s / lts.s_hat);
+  const double phasespace = 1.0 / (lts.x1 * lts.x2);
+  const double amp2 = f1 * f2 * math::abs2(A) * phasespace;
 
   return msqrt(amp2);  // We take square later
 }
@@ -479,9 +482,13 @@ inline std::complex<double> MSubProc::GetBareAmplitude_yy_LUX(gra::LORENTZSCALAR
     throw std::invalid_argument("MSubProc:yy_LUX: Failed evaluating LHAPDF");
   }
 
-  const double tot = f1 * f2 * math::abs2(A) * (lts.s / lts.s_hat);
+  const double phasespace = 1.0 / (lts.x1 * lts.x2);
+  const double tot = f1 * f2 * math::abs2(A) * phasespace;
+
+  // To "amplitude level"
   return msqrt(tot);
 }
+
 
 // Durham gg
 inline std::complex<double> MSubProc::GetBareAmplitude_gg(gra::LORENTZSCALAR &lts) {
