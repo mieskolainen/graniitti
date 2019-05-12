@@ -208,6 +208,16 @@ A:  Weighted events have a positive definite weight associated with them, this c
     and generating them is based on acceptance-rejection sampling.
 
 
+Q:  After unweighted event generation, I get maximum weight overflows warning. What is this?
+A:  Your pre-event generation phase will sample the phase space to find out an
+    estimate for the maximum integrand weight needed for the acceptance-rejection
+    in unweigted event generation. If you get maximum weight overflows, it simply means
+    that the event generation phase has found larger integrand values. This is not good,
+    even if in practise it may not be extremely serious. To find better maximum weight,
+    you should adjust VEGAS parameters, for example: 10 x more samples per iteration,
+    10 x smaller relative error target.
+
+
 Q:  How many CPU multithreading threads can GRANIITTI handle?
 A:  As many as your system can. You can try out which number gives the best performance.
 
