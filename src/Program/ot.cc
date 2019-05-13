@@ -48,25 +48,35 @@ void ReadEvents(const std::string& inputfile, std::vector<std::vector<double>>& 
     input.read_event(ev);
     if (input.failed()) break;
 
-    // Event vector
+    // Event feature vector
     std::vector<double> x;
 
     // Loop over all particles
+    HepMC3::FourVector system(0,0,0,0);
+
     for (HepMC3::ConstGenParticlePtr p1 : ev.particles()) {
 
       // Check is final state and pion
+
+
       if (p1->status() == gra::PDG::PDG_STABLE && std::abs(p1->pdg_id()) < 1000) {
-        
+
         // Take 4-momentum
         HepMC3::FourVector pvec = p1->momentum();
 
+        system = system + pvec;
+        /*
         //x.push_back(pvec.e());
         x.push_back(pvec.px());
         x.push_back(pvec.py());
         x.push_back(pvec.pz());
+        */
       }
     }
+    // Add features
+    x.push_back(system.m());
 
+    // Add event
     S.push_back(x);
     ++events;
 
@@ -137,7 +147,7 @@ int main(int argc, char *argv[]) {
 
   // ------------------------------------------------------------
 
-  // l2-metric || x - y ||^2
+  // l2-metric squared || x - y ||^2
   auto l2metric = [] (const std::vector<double>& x, const std::vector<double>& y) {
 
     double value = 0.0;
@@ -171,5 +181,4 @@ int main(int argc, char *argv[]) {
 
   return EXIT_SUCCESS;
 }
-
 
