@@ -42,6 +42,10 @@
 # 
 # Check if the shared object (.so) file contains the missing symbol:
 #  $> nm -D libHepMC.so
+#
+# -----------------------------------------------------------------------
+# Creating shared libraries, use -fPIC flag, then:
+# g++ -shared MH1.o -o libMH1.so
 # 
 # 
 # USE [TABS] for intendation while modifying this file!
