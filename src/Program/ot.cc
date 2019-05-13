@@ -1,7 +1,7 @@
 // GRANIITTI - Monte Carlo event generator for high energy diffraction
 // https://github.com/mieskolainen/graniitti
 //
-// <OT>
+// <OT TEST PROGRAM>
 //
 // (c) 2017-2019 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
@@ -55,8 +55,8 @@ void ReadEvents(const std::string& inputfile, std::vector<std::vector<double>>& 
     for (HepMC3::ConstGenParticlePtr p1 : ev.particles()) {
 
       // Check is final state and pion
-      if (p1->status() == gra::PDG::PDG_STABLE && std::abs(p1->id()) < 1000) {
-
+      if (p1->status() == gra::PDG::PDG_STABLE && std::abs(p1->pdg_id()) < 1000) {
+        
         // Take 4-momentum
         HepMC3::FourVector pvec = p1->momentum();
 
