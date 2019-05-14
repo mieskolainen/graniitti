@@ -30,6 +30,26 @@ class MH1 {
 
   std::pair<double, double> WeightMeanAndError() const;
 
+  // Probability density
+  std::vector<double> GetProbDensity() const {
+    double sum = 0;
+    for (std::size_t i = 0; i < weights.size(); ++i) {
+      sum += GetPositiveDefinite(i);
+    }
+    std::vector<double> p(weights.size(), 0.0);
+    if (sum > 0){
+    for (std::size_t i = 0; i < weights.size(); ++i) {
+      p[i] = GetPositiveDefinite(i) / sum;
+    }
+    }
+    return p;
+  }
+
+  // Get full histogram data
+  std::vector<T> GetWeights() const            { return weights;  }
+  std::vector<T> GetWeights2() const           { return weights2; }
+  std::vector<long long int> GetCounts() const { return counts;   }
+
   void GetXPositiveDefinite(std::valarray<double> &x, std::valarray<double> &y) const;
 
   T SumWeights() const;

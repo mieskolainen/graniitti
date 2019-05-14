@@ -15,6 +15,7 @@
 #include "Graniitti/MTransport.h"
 #include "Graniitti/MMatrix.h"
 #include "Graniitti/MMatOper.h"
+#include "Graniitti/MMath.h"
 
 // Eigen
 #include <Eigen/Dense>
@@ -22,14 +23,56 @@
 namespace gra {
 namespace opt {
 
+
+	// Input:  n, m,    Kernel dimensions
+	//         lambda,  Entropic regularization
+	//
+	// Output: K (n x m) Convolution kernel matrix
+	//
+	void ConvKernel(std::size_t n, std::size_t m, double lambda, MMatrix<double>& K) {
+
+		std::vector<double> x = math::linspace(0.0, n-1.0, n);
+		matoper::ScaleVector(x, 1.0 / (n-1.0));
+
+		std::vector<double> y = math::linspace(0.0, m-1.0, m);
+		matoper::ScaleVector(y, 1.0 / (m-1.0));
+
+		MMatrix<double> X;
+		MMatrix<double> Y;
+		matoper::MeshGrid(x,y, X, Y);
+
+		// Convolution matrix
+		K = MMatrix<double>(X.size_row(), X.size_col());
+		for (std::size_t i = 0; i < X.size_row(); ++i) {
+			for (std::size_t j = 0; j < X.size_col(); ++j) {
+				K[i][j] = std::exp( - math::pow2(X[i][j] - Y[i][j]) / lambda);
+			}
+		}
+	}
+
+	// Input:  lambda,    Entropic regularization
+	//         C (n x m), Cost matrix
+	//
+	// Output: K (n x m) Gibbs (Gaussian convolution) kernel matrix
+	//
+	void GibbsKernel(double lambda, const MMatrix<double>& C, MMatrix<double>& K) {
+
+		// Gibbs Kernel: Entropy regularized distance matrix
+		K = MMatrix<double>(C.size_row(), C.size_col());
+		for (std::size_t i = 0; i < C.size_row(); ++i) {
+			for (std::size_t j = 0; j < C.size_col(); ++j) {
+				K[i][j] = std::exp(- C[i][j] / lambda);
+			}
+		}
+	}
+
   // Sinkhorn-Knopp non-linear but convex optimization algorithm
   // 
   // Input:
   // 
-  // Cost matrix C between elements of p and q              (n x m)   e.g. ||x_i - x_j||^2
+  // Kernel matrix between elements of p and q              (n x m)
   // Probability density p (histogram / dirac point mass)   (n x 1)   with \sum = 1
   // Probability density q (histogram / dirac point mass)   (m x 1)   with \sum = 1
-  // Entropic regularization lambda                         (scalar)
   // Iterations                                             (scalar)
   // 
   // Output:
@@ -37,10 +80,10 @@ namespace opt {
   // Optimal Transport Matrix Pi                            (n x m)
   // Distance measure                                       (scalar)
   // 
-	double SinkHorn(MMatrix<double>& Pi, const MMatrix<double>& C,
-									std::vector<double>& p, std::vector<double>& q, double lambda, unsigned int iter) {
+	double SinkHorn(MMatrix<double>& Pi, const MMatrix<double>& K,
+									std::vector<double>& p, std::vector<double>& q, std::size_t iter) {
 		
-		const double SAFE_EPS = 1e-30;
+		const double SAFE_EPS = 1e-64;
 
 		std::cout << "opt::SinkHorn optimization:" << std::endl;
 
@@ -63,62 +106,70 @@ namespace opt {
 		}
 		// ============================================================
 
-		const std::size_t n = C.size_row();
-		const std::size_t m = C.size_col();
-		
-		// Gibbs Kernel: Entropy regularized distance matrix
-		MMatrix<double> K(n,m,0.0);
-		for (std::size_t i = 0; i < n; ++i) {
-			for (std::size_t j = 0; j < m; ++j) {
-				K[i][j] = std::exp(- C[i][j] / lambda);
-			}
-		}
-		
+		const std::size_t n = K.size_row();
+		const std::size_t m = K.size_col();
+
 		// Transposed version
 		MMatrix<double> KT = K.Transpose();
 
 		// Initialization
-		std::vector<double> u(n, 1.0/n);
-		std::vector<double> v(m, 1.0/m);
+		std::vector<double> u(n, 0.0); // no need for initialization
+		std::vector<double> v(m, 1.0); // I
 
 		// || Pi * 1 - p || or || Pi^T 1 - q ||
-		std::vector<double> ones_u(n, 1.0);
-		std::vector<double> ones_v(m, 1.0);
+		std::vector<double> ones_p(m, 1.0);
+		std::vector<double> ones_q(n, 1.0);
 
-		auto resnorm = [&] (const MMatrix<double>& Pi) {
+		auto resnorm_p = [&] (const MMatrix<double>& Pi) {
 			double value = 0.0;
-			const std::vector<double> lhs = Pi * ones_v;
+			const std::vector<double> lhs = Pi * ones_p;
 			for (std::size_t i = 0; i < lhs.size(); ++i) {
-				value += math::pow2(lhs[i] - p[i]);
+				value += std::abs(lhs[i] - p[i]);
 			}
-			return math::msqrt(value);
+			return value;
+		};
+
+		auto resnorm_q = [&] (const MMatrix<double>& PiT) {
+			double value = 0.0;
+			const std::vector<double> lhs = PiT * ones_q;
+			for (std::size_t i = 0; i < lhs.size(); ++i) {
+				value += std::abs(lhs[i] - q[i]);
+			}
+			return value;
 		};
 
 		// Sinkhorn iterations
-		double cost = 0.0;
+		double p_cost = 0.0;
+		double q_cost = 0.0;
 
-		for (unsigned int k = 0; k < iter; ++k) {
+
+		MMatrix<double> PiT;
+
+		for (std::size_t k = 0; k < iter; ++k) {
 
 			const std::vector<double> Kv  = K  * v; // >= 0
-			for (std::size_t i = 0; i < n; ++i) { u[i] = p[i] /  std::max(SAFE_EPS, Kv[i]); }
-			
+			for (std::size_t i = 0; i < n; ++i) { u[i] = p[i] / std::max(SAFE_EPS,  Kv[i]); }
+
 			const std::vector<double> KTu = KT * u; // >= 0
 			for (std::size_t i = 0; i < m; ++i) { v[i] = q[i] / std::max(SAFE_EPS, KTu[i]); }
-			
+
 			// Calculate metrics
 			if ((k+1) % (iter / 10) == 0 || k == 0 || k == iter - 1) {
-			
+					
 				// Transport coupling matrix
-				Pi = matoper::diagAdiag(u, K, v);
+				Pi  = matoper::diagAdiag(u, K, v);
+				PiT = Pi.Transpose();
 
 				// Transport cost
-				cost = resnorm(Pi);
+				p_cost = resnorm_p(Pi);
+				q_cost = resnorm_q(PiT);
 
-				printf("iter = %3d / %3d : cost = %0.5E, log(cost) = %0.1f \n", k+1, iter, cost, std::log(cost));
+				printf("iter = %4lu / %4lu : p_cost = %0.5E, log(p_cost) = %4.1f, q_cost = %0.5E, log(q_cost) = %4.1f \n",
+					k+1, iter, p_cost, std::log(p_cost), q_cost, std::log(q_cost));
 			}
 		}
 		
-		return cost;
+		return p_cost;
 	}
 
 } // opt namespace

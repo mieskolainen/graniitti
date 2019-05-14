@@ -19,9 +19,31 @@
 namespace gra {
 namespace matoper {
 
+// MATLAB style meshgrid
+//
+// X is a matrix with each row    == x
+// Y is a matrix with each column == y
+template <typename T>
+inline void MeshGrid(const std::vector<T>& x, const std::vector<T>& y, MMatrix<T>& X, MMatrix<T>& Y) {
+  
+  X = MMatrix<T>(y.size(), x.size());
+  Y = MMatrix<T>(y.size(), x.size());
+
+  for (std::size_t i = 0; i < X.size_row(); ++i) {
+    for (std::size_t j = 0; j < X.size_col(); ++j) {
+      X[i][j] = x[j];
+    }
+  }
+  for (std::size_t i = 0; i < Y.size_row(); ++i) {
+    for (std::size_t j = 0; j < Y.size_col(); ++j) {
+      Y[i][j] = y[i];
+    }
+  }
+}
+
 // diag(x) * A * diag(y) product
 template <typename T>
-inline gra::MMatrix<T> diagAdiag(const std::vector<T>& x, const MMatrix<T>& A, const std::vector<T>& y) {
+inline MMatrix<T> diagAdiag(const std::vector<T>& x, const MMatrix<T>& A, const std::vector<T>& y) {
 
   // Over [i,j] of A
   const std::size_t n = A.size_row();
@@ -38,9 +60,9 @@ inline gra::MMatrix<T> diagAdiag(const std::vector<T>& x, const MMatrix<T>& A, c
 
 // Return diagonal matrix constructed from a vector
 template <typename T>
-inline gra::MMatrix<T> Diag(const std::vector<T>& x) {
+inline MMatrix<T> Diag(const std::vector<T>& x) {
 
-  gra::MMatrix<T> A(x.size(), x.size(), 0.0);
+  MMatrix<T> A(x.size(), x.size(), 0.0);
   for (std::size_t i = 0; i < x.size(); ++i) {
     A[i][i] = x[i];
   }
@@ -57,6 +79,20 @@ inline std::vector<T> Unit(const std::vector<T> &x) {
   std::vector<T> y = x;
   for (std::size_t k = 0; k < y.size(); ++k) {
     y[k] /= norm;  // normalize
+  }
+  return y;
+}
+
+// Return unit sum normalized (\sum_i x_i = 1)
+template <typename T>
+inline std::vector<T> Normalized(const std::vector<T> &x) {
+  double sum = 0.0;
+  for (std::size_t k = 0; k < x.size(); ++k) { sum += x[k]; }
+  std::vector<T> y = x;
+  if (sum > 0) {
+  for (std::size_t k = 0; k < y.size(); ++k) {
+    y[k] /= sum;  // normalize
+  }
   }
   return y;
 }

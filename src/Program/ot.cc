@@ -27,10 +27,12 @@
 #include "Graniitti/MTransport.h"
 #include "Graniitti/MMatrix.h"
 #include "Graniitti/MMath.h"
+#include "Graniitti/MH1.h"
 
 // Libraries
 #include "cxxopts.hpp"
 
+using namespace gra;
 
 void ReadEvents(const std::string& inputfile, std::vector<std::vector<double>>& S) {
 
@@ -138,15 +140,37 @@ int main(int argc, char *argv[]) {
   std::string inputfile2(input[1]);
 
   // ------------------------------------------------------------
-
   std::vector<std::vector<double>> S1;
   ReadEvents(inputfile1, S1);
 
   std::vector<std::vector<double>> S2;
   ReadEvents(inputfile2, S2);
-
+  
   // ------------------------------------------------------------
+  // Create histograms
+  const int BINS1 = 60;
+  const int BINS2 = 60;
 
+
+  int MODE = 1;
+
+  // Transport matrix to be calculated by optimization
+  gra::MMatrix<double> Pi;
+
+
+  if (MODE == 1) {
+
+  MH1<double> h1(BINS1, 0.28, 3.0, "data_1");
+  MH1<double> h2(BINS2, 0.28, 3.0, "data_2");
+
+  for (const auto& i : aux::indices(S1)) { h1.Fill(S1[i][0]); }
+  for (const auto& i : aux::indices(S2)) { h2.Fill(S2[i][0]); }
+
+  std::vector<double> p = h1.GetProbDensity();
+  std::vector<double> q = h2.GetProbDensity();
+  
+  // ------------------------------------------------------------
+  /*
   // l2-metric squared || x - y ||^2
   auto l2metric = [] (const std::vector<double>& x, const std::vector<double>& y) {
 
@@ -162,22 +186,78 @@ int main(int argc, char *argv[]) {
 
   for (std::size_t i = 0; i < C.size_row(); ++i) {
     for (std::size_t j = 0; j < C.size_col(); ++j) {
-      C[i][j] = l2metric(S1[i], S2[j]); 
+      //C[i][j] = l2metric(S1[i], S2[j]); 
+
+      C[i][j] = math::pow2(p[i] - q[j]);
     }
   }
+  */
+
+  // Kernel matrix for comparing histograms
+  MMatrix<double> K;
+  gra::opt::ConvKernel(BINS1, BINS2, lambda, K);  
+
+  /*
+  gra::opt::GibbsKernel(lambda, C, K);
+
+  // Target histograms (for unweighted set == 1/size)
+  std::vector<double> p(S1.size(), 1.0 / S1.size());
+  std::vector<double> q(S2.size(), 1.0 / S2.size());
+  */
+
+  gra::opt::SinkHorn(Pi, K, p, q, iter);
+  Pi.Print();
+
+  }
+
+  // ---------------------------------------------------------------
+  // Gaussian histograms
+  if (MODE == 2) {
   
-  // Transport matrix
-  gra::MMatrix<double> gamma;
+  MMatrix<double> K;
+  gra::opt::ConvKernel(BINS1, BINS2, lambda, K);
+  
+  // Normal function
+  auto gaussfunc = [] (double mu, double sigma, std::size_t N) {
+    std::vector<double> y(N);
+    
+    // Create x-value
+    std::vector<double> x = math::linspace(0.0, N-1.0, N);
+    matoper::ScaleVector(x, 1.0/(N-1.0));
 
-  //C.Print();
+    for (std::size_t i = 0; i < N; ++i) {
+      y[i] = std::exp(-math::pow2(x[i] - mu) / (2*math::pow2(sigma)) );
+    }
+    return y;
+  };
 
-  // Event vector weights (for unweighted set == 1/size)
-  std::vector<double> p1(S1.size(), 1.0 / S1.size());
-  std::vector<double> p2(S2.size(), 1.0 / S2.size());
+  auto normfunc = [] (std::vector<double>& x) {
+    const double alpha = 0.02;
+    const double maxval = *std::max_element(x.begin(), x.end());
+    for (std::size_t i = 0; i < x.size(); ++i) {
+      x[i] += maxval * alpha;
+    }
+    x = matoper::Normalized(x);
+  };
 
-  double cost = gra::opt::SinkHorn(gamma, C, p1, p2, lambda, iter);
+  auto printfunc = [] (const std::vector<double>& x) {
+    for (std::size_t i = 0; i < x.size(); ++i) {
+      std::cout << x[i] << std::endl;
+    }
+  };
 
-  printf("Sinkhorn cost = %0.5E \n", cost);
+  const double sigma = 0.06;
+  std::vector<double> p = gaussfunc(0.25, sigma, BINS1); 
+  std::vector<double> q = gaussfunc(0.8, sigma, BINS2);
+  normfunc(p);
+  normfunc(q);
+  
+  // ---------------------------------------------------------------
+
+  gra::opt::SinkHorn(Pi, K, p, q, iter);
+  Pi.Print();
+
+  }
 
   return EXIT_SUCCESS;
 }

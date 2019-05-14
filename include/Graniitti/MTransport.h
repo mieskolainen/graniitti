@@ -24,8 +24,11 @@
 namespace gra {
 namespace opt {
 
-  double SinkHorn(MMatrix<double>& P, const MMatrix<double>& C,
-                  std::vector<double>& p, std::vector<double>& q, double lambda, unsigned int iter);
+  void ConvKernel(std::size_t n, std::size_t m, double lambda, MMatrix<double>& K);
+  void GibbsKernel(double lambda, const MMatrix<double>& C, MMatrix<double>& K);
+
+  double SinkHorn(MMatrix<double>& P, const MMatrix<double>& K,
+                  std::vector<double>& p, std::vector<double>& q, std::size_t iter);
 
 }  // math namespace ends
 }  // gra namespace ends

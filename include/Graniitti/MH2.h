@@ -22,8 +22,13 @@ class MH2 {
   MH2(int xbins, int ybins, std::string namestr = "noname");
   MH2();
   ~MH2();
-
+  
   void ResetBounds(int xbins, double xmin, double xmax, int ybins, double ymin, double ymax);
+
+  // Get full histogram data
+  MMatrix<double> GetWeights() const       { return weights;  }
+  MMatrix<double> GetWeights2() const      { return weights2; }
+  MMatrix<long long int> GetCounts() const { return counts;   }
 
   void Fill(double xvalue, double yvalue);
   void Fill(double xvalue, double yvalue, double weight);
