@@ -7,7 +7,7 @@ https://arxiv.org/abs/1811.01730
 
 ## Algorithmic Engine and Monte Carlo Event Generator for High Energy Diffraction
 
-<img src="docs/img/frames.png">
+<img width="600px" src="docs/img/dsigmadt.png">
 
 See VERSION.json for the version information and automatic build status
 
