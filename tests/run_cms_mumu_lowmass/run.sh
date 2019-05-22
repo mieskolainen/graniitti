@@ -25,7 +25,7 @@ make -j4 && ./bin/analyze \
 -i CMS_mumu_lowmass \
 -g 13 \
 -n 2 \
--l 'GRANIITTI #gamma#gamma #rightarrow #mu^{+}#mu^{-}' \
+-l '#gamma#gamma #rightarrow #mu^{+}#mu^{-}' \
 -t '#sqrt{s} = 13 TeV, |#eta| < 2.5, p_{T} > 0.1 GeV' \
 -M 95,0.0,3.0 \
 -Y 95,-3.0,3.0 \
