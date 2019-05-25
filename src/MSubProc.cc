@@ -423,7 +423,7 @@ inline double MSubProc::GetBareAmplitude2_yy(gra::LORENTZSCALAR &lts) {
 
   // const double phasespace = lts.s / lts.s_hat;    // This causes numerical problems at low shat
   const double phasespace = 1.0 / (lts.x1 * lts.x2);
-
+  
   // To "amplitude level"
   const double fluxes = gammaflux1 * gammaflux2 * phasespace;
 
