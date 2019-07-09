@@ -31,6 +31,40 @@ constexpr const std::complex<double> zi(0.0, 1.0);
 constexpr const double PI   = 3.141592653589793238462643383279502884197169399375105820974944L;
 constexpr const double PIPI = PI * PI;
 
+// Index all combinations of numbers in vectors [recursive function]
+//
+// -----------------------------------------------------------------------
+// Test code:
+//
+// const std::vector<std::vector<size_t>> allind = {{0,1,2}, {0,1}, {0,1,2,3}};
+//
+// std::vector<size_t> current;
+// std::vector<std::vector<std::size_t>> output;
+// math::IndexComb(allind, 0, current, output);
+//
+// for (std::size_t i = 0; i < output.size(); ++i) {
+//   for (std::size_t j = 0; j < output[i].size(); ++j) {
+//     std::cout << output[i][j] << " ";
+//   }
+//   std::cout << std::endl;
+// }
+// -----------------------------------------------------------------------
+template <typename T>
+void IndexComb(const std::vector<std::vector<T>>& allind, std::size_t index,
+               std::vector<T> current, std::vector<std::vector<T>>& output) {
+
+  if (index >= allind.size()) {
+      output.push_back(current);
+      return;
+  }
+  for (std::size_t i = 0; i < allind[index].size(); ++i) {
+
+    std::vector<T> b = current;
+    b.push_back(allind[index][i]);
+    IndexComb(allind, index+1, b, output);
+  }
+}
+
 // Moore-Penrose Pseudoinverse for Eigen
 template <typename T>
 T PseudoInverse(const T &a, double epsilon = std::numeric_limits<double>::epsilon()) {

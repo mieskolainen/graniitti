@@ -316,7 +316,7 @@ BIN_DIR = bin
 .SUFFIXES:      .o .cc
 
 # Normal
-EXE_NAMES      = gr xscan exloop minbias hepmc3tolhe data2hepmc3 pathmark pdebench ot
+EXE_NAMES      = gr xscan exloop minbias hepmc3tolhe data2hepmc3 pathmark pdebench sommerfeld ot 
 PROGRAM        = $(EXE_NAMES:%=$(BIN_DIR)/%)
 
 ifeq ($(ROOT),TRUE)

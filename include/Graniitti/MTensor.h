@@ -62,6 +62,29 @@ class MTensor {
   // Size operators
   std::size_t size(std::size_t ind) const { return dim[ind]; }
 
+/*
+  // Print full tensor
+  void Print() {
+
+    X(:,:,1,1,1) =
+    std::vector<std::size_t> state(dim.size()-2, 0);
+
+    while (true) {
+      for (std::size_t k = 2; k < dim.size(); ++k) {
+      }
+    }
+
+    for (std::size_t i = 0; i < dim[0]; ++i) {
+      for (std::size_t j = 0; j < dim[1]; ++j) {
+
+        const std::size_t ind = Index({i,j,})
+        std::cout <<
+      }
+    }
+    std::cout << data[i]
+ }
+*/
+
  private:
   // Multidimensional indexing algorithm
   // Row-major order
