@@ -126,6 +126,10 @@ inline std::vector<T> vabs(const std::vector<T> &x) {
 //
 template <typename T>
 inline std::vector<T> linspace(T start, T stop, std::size_t size) {
+
+  if (size == 0) { throw std::invalid_argument("linspace: argument size == 0"); }
+  if (size == 1) { return {stop}; }
+
   std::vector<T> v(size);
   for (std::size_t i = 0; i < size; ++i) { v[i] = start + i * (stop - start) / (size - 1); }
   return v;
@@ -133,12 +137,17 @@ inline std::vector<T> linspace(T start, T stop, std::size_t size) {
 
 template <template <typename T> class container_type, class value_type>
 inline container_type<value_type> linspace(value_type start, value_type stop, std::size_t size) {
+
+  if (size == 0) { throw std::invalid_argument("linspace: argument size == 0"); }
+  if (size == 1) { return {stop}; }
+
   container_type<value_type> v(size);
   for (std::size_t i = 0; i < size; ++i) { v[i] = start + i * (stop - start) / (size - 1); }
   return v;
 }
 template <template <typename T> class container_type, class value_type>
 inline container_type<value_type> arange(value_type start, value_type step, value_type stop) {
+
   std::size_t                size = (stop - start) / step;
   container_type<value_type> v(size);
   for (std::size_t i = 0; i < size; ++i) { v[i] = start + step * i; }
