@@ -3,4 +3,6 @@
 *.csv
 *.pdf
 *.tex
+*.m
+*.ascii
 
