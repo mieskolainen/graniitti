@@ -2,6 +2,7 @@
 //
 // See:
 // [REFERENCE: Ewerz, Maniatis, Nachtmann, https://arxiv.org/pdf/1309.3478.pdf]
+// [REFERENCE: Lebiodowicz, Nachtmann, Szczurek, https://arxiv.org/pdf/1601.04537.pdf]
 // [REFERENCE: Lebiedowicz, Nachtmann, Szczurek, https://arxiv.org/pdf/1801.03902.pdf]
 // [REFERENCE: Lebiedowicz, Nachtmann, Szczurek, https://arxiv.org/pdf/1901.11490.pdf]
 //
@@ -14,6 +15,7 @@
 #include <vector>
 
 // Own
+#include "Graniitti/MAux.h"
 #include "Graniitti/M4Vec.h"
 #include "Graniitti/MDirac.h"
 #include "Graniitti/MForm.h"
@@ -76,6 +78,8 @@
   }                         \
   }
 
+
+using gra::aux::indices;
 using gra::math::msqrt;
 using gra::math::pow2;
 using gra::math::zi;
@@ -88,8 +92,13 @@ using FTensor::Tensor3;
 using FTensor::Tensor4;
 
 namespace gra {
+
 // 2 -> 3 amplitudes
-std::complex<double> MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const {
+//
+// return value: matrix element squared with helicities summed over
+// lts.hamp:     individual helicity amplitudes
+//
+double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const {
   // Kinematics
   const M4Vec pa = lts.pbeam1;
   const M4Vec pb = lts.pbeam2;
@@ -142,11 +151,12 @@ std::complex<double> MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES
   // ====================================================================
   // Construct Central Vertex
 
-  Tensor4<std::complex<double>, 4, 4, 4, 4> CX;
+  Tensor4<std::complex<double>, 4, 4, 4, 4> cvtx;
 
+  // Pomeron-Pomeron-Scalar coupling
   if (J == 0 && P == 1) {
-    // Pomeron-Pomeron-Scalar coupling
-    CX = iG_PPS_total(lts.q1, lts.q2, M0, "scalar", resonance.g_Tensor);
+
+    cvtx = iG_PPS_total(lts.q1, lts.q2, M0, "scalar", resonance.g_Tensor);
 
     // Scalar BW-propagator
     std::complex<double> iD = iD_MES(lts.pfinal[0], M0, Gamma);
@@ -155,12 +165,13 @@ std::complex<double> MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES
     iD *= resonance.g_decay;
 
     FOR_EACH_4(LI);
-    CX(u, v, k, l) *= iD;
+    cvtx(u, v, k, l) *= iD;
     FOR_EACH_4_END;
 
+  // Pomeron-Pomeron-Pseudoscalar coupling
   } else if (J == 0 && P == -1) {
-    // Pomeron-Pomeron-Pseudoscalar coupling
-    CX = iG_PPS_total(lts.q1, lts.q2, M0, "pseudoscalar", resonance.g_Tensor);
+
+    cvtx = iG_PPS_total(lts.q1, lts.q2, M0, "pseudoscalar", resonance.g_Tensor);
 
     // Scalar BW-propagator
     std::complex<double> iD = iD_MES(lts.pfinal[0], M0, Gamma);
@@ -169,28 +180,37 @@ std::complex<double> MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES
     iD *= resonance.g_decay;
 
     FOR_EACH_4(LI);
-    CX(u, v, k, l) *= iD;
+    cvtx(u, v, k, l) *= iD;
     FOR_EACH_4_END;
 
+  // Pomeron-Pomeron-Tensor coupling
   } else if (J == 2) {
-    // Pomeron-Pomeron-Tensor coupling
+  
     const MTensor<std::complex<double>> iGPPf2 =
         iG_PPT_total(lts.q1, lts.q2, M0, resonance.g_Tensor);
 
-    // Tensor BW-propagator
-    const Tensor4<std::complex<double>, 4, 4, 4, 4> iDF2 = iD_TMES(lts.pfinal[0], M0, Gamma);
+    // Scalar BW-propagator
+    std::complex<double> iD = iD_MES(lts.pfinal[0], M0, Gamma);
 
-    // f2 -> pipi
-    const Tensor2<std::complex<double>, 4, 4> iGf2PIPI = iG_f2pipi(p3, p4);
+    // Decay coupling constant
+    iD *= resonance.g_decay;
 
-    Tensor2<std::complex<double>, 4, 4> AUX2;
-    AUX2(mu1, nu1) = iDF2(mu1, nu1, rho1, rho2) * iGf2PIPI(rho1, rho2);
+    // Tensor BW-propagator [UNDER CONSTRUCTION]
+    /*
+    const Tensor4<std::complex<double>, 4, 4, 4, 4> iDf2 = iD_TMES(lts.pfinal[0], M0, Gamma);
 
+    // f2 -> pipi decay structure
+    const Tensor2<std::complex<double>, 4, 4> iGf2PIPI = iG_f2pipi(p3, p4, M0);
+    Tensor2<std::complex<double>, 4, 4> iD;
+    iD(mu1, nu1) = iDf2(mu1, nu1, rho1, rho2) * iGf2PIPI(rho1, rho2);
+    */
+
+    // Construct central vertex
     FOR_EACH_4(LI);
-    CX(u, v, k, l) = 0.0;
+    cvtx(u, v, k, l) = 0.0;
     for (auto const &rho : LI) {
       for (auto const &sigma : LI) {
-        CX(u, v, k, l) += iGPPf2({u, v, k, l, rho, sigma}) * AUX2(rho, sigma);
+        cvtx(u, v, k, l) += iGPPf2({u, v, k, l, rho, sigma}) * iD; //iD(rho, sigma);
       }
     }
     FOR_EACH_4_END;
@@ -221,7 +241,7 @@ std::complex<double> MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES
 
   // s-channel amplitude
   const std::complex<double> A = (-zi) * iG_1a(mu1, nu1) * iDP_1(mu1, nu1, alpha1, beta1) *
-                                 CX(alpha1, beta1, alpha2, beta2) * iDP_2(alpha2, beta2, mu2, nu2) *
+                                 cvtx(alpha1, beta1, alpha2, beta2) * iDP_2(alpha2, beta2, mu2, nu2) *
                                  iG_2b(mu2, nu2);
 
   lts.hamp.push_back(A);
@@ -230,14 +250,21 @@ std::complex<double> MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES
 
   // Get total amplitude squared 1/4 \sum_h |A_h|^2
   double SumAmp2 = 0.0;
-  for (std::size_t i = 0; i < lts.hamp.size(); ++i) { SumAmp2 += gra::math::abs2(lts.hamp[i]); }
+  for (const auto &i : indices(lts.hamp)) {
+    SumAmp2 += gra::math::abs2(lts.hamp[i]);
+  }
   SumAmp2 /= 4;  // Initial state helicity average
 
-  return msqrt(SumAmp2);  // We expect amplitude
+  return SumAmp2; // Amplitude squared
 }
 
 // 2 -> 4 amplitudes
-std::complex<double> MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
+//
+// return value: matrix element squared with helicities summed over
+// lts.hamp:     individual helicity amplitudes
+//
+double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
+
   // Kinematics
   const M4Vec pa = lts.pbeam1;
   const M4Vec pb = lts.pbeam2;
@@ -511,7 +538,7 @@ std::complex<double> MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
 
       FOR_EACH_4_END;
 
-      lts.hamp.push_back(msqrt(Amp2));
+      lts.hamp.push_back(msqrt(Amp2)); // Phase information lost here
     }
     // --------------------------------------------------
     
@@ -528,7 +555,7 @@ std::complex<double> MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
           const std::complex<double> amp =
               eps_3_conj[h3](rho3) * eps_4_conj[h4](rho4) * M(rho3, rho4);
 
-          lts.hamp.push_back(amp);
+          lts.hamp.push_back(amp); // Phase information retained
         }
       }
     }
@@ -537,12 +564,12 @@ std::complex<double> MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
 
   // Get total amplitude squared 1/4 \sum_h |A_h|^2
   double SumAmp2 = 0.0;
-  for (std::size_t i = 0; i < lts.hamp.size(); ++i) {
+  for (const auto &i : indices(lts.hamp)) {
     SumAmp2 += math::abs2(lts.hamp[i]);
   }
   SumAmp2 /= 4;  // Initial state helicity average
 
-  return msqrt(SumAmp2);  // We expect amplitude
+  return SumAmp2;  // Amplitude squared
 }
 
 
@@ -778,7 +805,7 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_PPS_1(double g_PPS)
 
   Tensor4<std::complex<double>, 4, 4, 4, 4> T;
   FOR_EACH_4(LI);
-  T(u, v, k, l) = FACTOR * (g[u][k] * g[v][l] + g[u][k] * g[v][k] - 0.5 * g[u][v] * g[k][l]);
+  T(u, v, k, l) = FACTOR * (g[u][k] * g[v][l] + g[u][l] * g[v][k] - 0.5 * g[u][v] * g[k][l]);
   FOR_EACH_4_END;
 
   return T;
@@ -810,7 +837,7 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_PPS_2(const M4Vec &
 //
 Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_PPPS_1(const M4Vec &q1,
                                                                     const M4Vec &q2,
-                                                                    double       g_PPPS) const {
+                                                                    double g_PPPS) const {
   const double S0 = 1.0;  // Mass scale (GeV)
 
   const M4Vec q1_q2 = q1 - q2;
@@ -847,7 +874,7 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_PPPS_2(const M4Vec 
   const M4Vec                q1_q2  = q1 - q2;
   const M4Vec                q      = q1 + q2;
   const double               q1q2   = q1 * q2;
-  const std::complex<double> FACTOR = zi * g_PPPS / (gra::math::pow3(S0));
+  const std::complex<double> FACTOR = zi * g_PPPS / gra::math::pow3(S0);
 
   Tensor4<std::complex<double>, 4, 4, 4, 4> T;
 
@@ -880,8 +907,7 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_PPPS_2(const M4Vec 
 MTensor<std::complex<double>> MTensorPomeron::iG_PPT_total(const M4Vec &q1, const M4Vec &q2,
                                                            double                     M0,
                                                            const std::vector<double> &g_PPT) const {
-  MTensor<std::complex<double>> T = MTensor({4, 4, 4, 4, 4, 4}, std::complex<double>(0.0));
-  auto FM_                        = [](double t) -> double {
+  auto FM_ = [](double t) -> double {
     const double LAMBDA = 1.0;  // GeV
     return 1.0 / (1.0 - t / pow2(LAMBDA));
   };
@@ -894,14 +920,22 @@ MTensor<std::complex<double>> MTensorPomeron::iG_PPT_total(const M4Vec &q1, cons
   const double F_tilde = FM_(q1.M2()) * FM_(q2.M2()) * F_((q1 + q2).M2(), M0);
 
   // Tensor structures [1 ... 7] (3 implemented currently)
-  const MTensor<std::complex<double>> iG1 = iG_PPT_1(g_PPT[0]);
+  static const MTensor<std::complex<double>> iG1 = iG_PPT_1();
+
+/*
   const MTensor<std::complex<double>> iG2 = iG_PPT_23(q1, q2, 2, g_PPT[1]);
   const MTensor<std::complex<double>> iG3 = iG_PPT_23(q1, q2, 3, g_PPT[2]);
+*/
 
-  // Construct vertex
+  // Construct vertex by summing
+  MTensor<std::complex<double>> T = MTensor({4, 4, 4, 4, 4, 4}, std::complex<double>(0.0));
+
   FOR_EACH_6(LI);
   const std::vector<size_t> ind = {u, v, k, l, r, s};  // Indexing
-  T(ind)                        = (iG1(ind) + iG2(ind) + iG3(ind)) * F_tilde;
+
+  T(ind)                        = iG1(ind)*g_PPT[0] * F_tilde;
+  //T(ind)                        = (iG1(ind)*g_PPT[0] + iG2(ind) + iG3(ind)) * F_tilde;
+
   FOR_EACH_6_END;
 
   return T;
@@ -909,12 +943,15 @@ MTensor<std::complex<double>> MTensorPomeron::iG_PPT_total(const M4Vec &q1, cons
 
 // Pomeron-Pomeron-Tensor coupling structure #1 ~ (l,s) = (0,2)
 //
-// DEBUG THIS ONE - MALFUNCTION!
+// This is kinematics independent, can be pre-calculated.
 //
-MTensor<std::complex<double>> MTensorPomeron::iG_PPT_1(double g_PPT) const {
-  MTensor<std::complex<double>> T      = MTensor({4, 4, 4, 4, 4, 4}, std::complex<double>(0.0));
+// Remember to apply g_PPT (coupling constant) outside this
+//
+MTensor<std::complex<double>> MTensorPomeron::iG_PPT_1() const {
   const double                  M0     = 1.0;
-  const std::complex<double>    FACTOR = (2.0 * zi) * g_PPT * M0;
+  const std::complex<double>    FACTOR = (2.0 * zi) * M0;
+
+  MTensor<std::complex<double>> T      = MTensor({4, 4, 4, 4, 4, 4}, std::complex<double>(0.0));
 
   FOR_EACH_6(LI);
   for (auto const &v1 : LI) {
@@ -942,25 +979,25 @@ MTensor<std::complex<double>> MTensorPomeron::iG_PPT_1(double g_PPT) const {
 // Pomeron-Pomeron-Tensor coupling structure #2 ~ (l,s) = (2,0) - (2,2)
 // Pomeron-Pomeron-Tensor coupling structure #3 ~ (l,s) = (2,0) + (2,2)
 //
-//
-// DEBUG THIS ONE - MALFUNCTION!
+// Extremely slow function, speed this up!
 //
 MTensor<std::complex<double>> MTensorPomeron::iG_PPT_23(const M4Vec &q1, const M4Vec &q2, int mode,
                                                         double g_PPT) const {
-  MTensor<std::complex<double>> T      = MTensor({4, 4, 4, 4, 4, 4}, std::complex<double>(0.0));
   const double                  M0     = 1.0;
   const double                  q1q2   = q1 * q2;
   const std::complex<double>    FACTOR = -(2.0 * zi) / M0 * g_PPT;
 
   // Coupling structure 2 or 3
   double sign = 0.0;
-  if (mode == 2) {
+  if        (mode == 2) {
     sign = -1.0;
   } else if (mode == 3) {
-    sign = 1.0;
+    sign =  1.0;
   } else {
     throw std::invalid_argument("MTensorPomeron::iG_PPT_23: Error, mode should be 2 or 3");
   }
+
+  MTensor<std::complex<double>> T = MTensor({4, 4, 4, 4, 4, 4}, std::complex<double>(0.0));
 
   FOR_EACH_6(LI);
   for (auto const &a1 : LI) {
@@ -971,8 +1008,8 @@ MTensor<std::complex<double>> MTensorPomeron::iG_PPT_23(const M4Vec &q1, const M
           T({u, v, k, l, r, s}) +=
               FACTOR *
               (q1q2 * R_DDDD(u, v, r1, a1) * R_DDDU(k, l, s1, a1) +
-               sign * (q1 % (r1)) * (q2 ^ (u1)) * R_DDDD(u, v, u1, a1) * R_DDDU(k, l, s1, a1) +
-               sign * (q1 ^ (u1)) * (q2 % (s1)) * R_DDDD(u, v, r1, a1) * R_DDDU(k, l, u1, a1) +
+               sign * (q1 % (r1)) * (q2   [u1]) * R_DDDD(u, v, u1, a1) * R_DDDU(k, l, s1, a1) +
+               sign * (q1   [u1]) * (q2 % (s1)) * R_DDDD(u, v, r1, a1) * R_DDDU(k, l, u1, a1) +
                (q1 % (r1)) * (q2 % (s1)) * R_DDDD(u, v, k, l)) *
               R_DDUU(r, s, r1, s1);
         }
@@ -1002,36 +1039,43 @@ Tensor1<std::complex<double>, 4> MTensorPomeron::iG_rhopipi(const M4Vec &k1,
 }
 
 // f2-Pi-Pi vertex function: i\Gamma_{\kappa\lambda}(k1,k2)
-//
-// Input as contravariant (upper index) 4-vectors
-//
+// 
+// 
+// Input as contravariant (upper index) 4-vectors, M0 is the f2 meson on-shell mass
+// 
 Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_f2pipi(const M4Vec &k1,
-                                                              const M4Vec &k2) const {
+                                                              const M4Vec &k2, double M0) const {
   // Form FACTOR
-  auto F_f2pipi                       = [&](double q2) { return 1.0; };
+  const double lambda2  = 1.0; // GeV^2 (normalization scale)
+  auto F_f2pipi                       = [&](double q2) { return std::exp(-(q2 - M0*M0) / lambda2); };
+
   const double               g_f2pipi = 9.26;  // Coupling
   const double               S0       = 1.0;   // Mass scale (GeV)
-  const double               ksq      = (k1 + k2).M2();
-  const M4Vec                p        = k1 - k2;
-  const std::complex<double> FACTOR   = -zi * g_f2pipi / (2 * S0) * F_f2pipi(ksq);
+  const M4Vec                k1_k2    = k1 - k2;
+  const std::complex<double> FACTOR   = -zi * g_f2pipi / (2 * S0) * F_f2pipi((k1+k2).M2());
+
+  const double k1_k2_sq = k1_k2.M2();
 
   Tensor2<std::complex<double>, 4, 4> T;
   for (const auto &k : LI) {
-    for (const auto &l : LI) { T(k, l) = FACTOR * ((p % k) * (p % l) - 0.25 * g[k][l] * p.M2()); }
+    for (const auto &l : LI) {
+      T(k, l) = FACTOR * ((k1_k2 % k) * (k1_k2 % l) - 0.25 * g[k][l] * k1_k2_sq);
+    }
   }
   return T;
 }
 
 // f2-gamma-gamma vertex function: i\Gamma_{\mu\nu\kappa\lambda}(k1,k2)
 //
-// Input as contravariant (upper index) 4-vectors
+// Input as contravariant (upper index) 4-vectors, M0 is the f2 meson on-shell mass
 //
 Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_f2yy(const M4Vec &k1,
-                                                                  const M4Vec &k2) const {
+                                                                  const M4Vec &k2, double M0) const {
   const double e = msqrt(alpha_QED * 4.0 * PI);  // ~ 0.3
 
   // Form FACTOR
-  auto F_f2yy = [&](double q2) { return 1.0; };
+  const double lambda2  = 1.0; // GeV^2 (normalization scale)
+  auto F_f2yy = [&](double q2) { return std::exp(-(q2 - M0*M0) / lambda2); };
 
   // Couplings
   const double a_f2yy = pow2(e) / (4 * PI) * 1.45;  // GeV^{-3}
@@ -1270,7 +1314,10 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iD_TMES(const M4Vec &p
   Tensor4<std::complex<double>, 4, 4, 4, 4> T;
 
   // Inline lambda function
-  auto ghat = [&](int mu, int nu) { return -g[mu][nu] + (p % mu) * (p % nu) / m2; };
+  auto ghat = [&](int mu, int nu) { 
+    if (mu != nu) { return 0.0;
+    } else { return -g[mu][nu] + (p % mu) * (p % nu) / m2; }
+  };
 
   // Breit-Wigner
   const std::complex<double> Delta = 1.0 / (m2 - pow2(M0) + zi * M0 * Gamma);
@@ -1375,7 +1422,7 @@ void MTensorPomeron::CalcRTensor() {
 
   // ------------------------------------------------------------------
   // Covariant 4D-epsilon tensor
-
+  
   const MTensor<int> etensor = math::EpsTensor(4);
 
   FOR_EACH_4(LI);

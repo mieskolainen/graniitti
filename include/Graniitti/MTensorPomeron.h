@@ -30,9 +30,9 @@ class MTensorPomeron : public MDirac {
   }
   ~MTensorPomeron() {}
 
-  // Amplitudes
-  std::complex<double> ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const;
-  std::complex<double> ME4(gra::LORENTZSCALAR &lts) const;
+  // Amplitude squared
+  double ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const;
+  double ME4(gra::LORENTZSCALAR &lts) const;
   
   // Scalar, Pseudoscalar, Tensor coupling structures
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_PPS_1(double g_PPS) const;
@@ -42,7 +42,7 @@ class MTensorPomeron : public MDirac {
                                                                double g_PPPS) const;
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_PPPS_2(const M4Vec &q1, const M4Vec &q2,
                                                                double g_PPPS) const;
-  MTensor<std::complex<double>> iG_PPT_1(double g_PPT) const;
+  MTensor<std::complex<double>> iG_PPT_1() const;
   MTensor<std::complex<double>> iG_PPT_23(const M4Vec &q1, const M4Vec &q2, int mode,
                                           double g_PPT) const;
 
@@ -77,9 +77,9 @@ class MTensorPomeron : public MDirac {
                                                             const M4Vec &p) const;
 
   FTensor::Tensor1<std::complex<double>, 4> iG_rhopipi(const M4Vec &k1, const M4Vec &k2) const;
-  FTensor::Tensor2<std::complex<double>, 4, 4> iG_f2pipi(const M4Vec &k1, const M4Vec &k2) const;
+  FTensor::Tensor2<std::complex<double>, 4, 4> iG_f2pipi(const M4Vec &k1, const M4Vec &k2, double M0) const;
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_f2yy(const M4Vec &k1,
-                                                             const M4Vec &k2) const;
+                                                             const M4Vec &k2, double M0) const;
   FTensor::Tensor2<std::complex<double>, 4, 4> yV(std::string type) const;
 
   // Propagators

@@ -270,7 +270,7 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
             "MSubProc: RESTENSOR process does not currently support J = 1 "
             "resonances");
       }
-      A = TensorPomeron.ME3(lts, lts.RESONANCES.begin()->second);
+      return TensorPomeron.ME3(lts, lts.RESONANCES.begin()->second);
 
     } else {
       throw std::invalid_argument(
@@ -280,7 +280,7 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
   } else if (CHANNEL == "CONTENSOR") {
     if (lts.decaytree.size() == 2) {
       static MTensorPomeron TensorPomeron;
-      A = TensorPomeron.ME4(lts);
+      return TensorPomeron.ME4(lts);
 
     } else {
       throw std::invalid_argument(
@@ -291,10 +291,10 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
     if (lts.decaytree.size() == 2) {
       static MTensorPomeron TensorPomeron;
 
-      // 1. Continuum matrix element
+      // 1. Evaluate continuum matrix element -> helicity amplitudes to lts.hamp
       TensorPomeron.ME4(lts);
 
-      // Add to temp
+      // Add to temp vector (init with zero!)
       std::vector<std::complex<double>> tempsum(lts.hamp.size(), 0.0);
       std::transform(tempsum.begin(), tempsum.end(), lts.hamp.begin(), tempsum.begin(),
                      std::plus<std::complex<double>>());
@@ -307,15 +307,16 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
               "support J = 1 resonances");
         }
 
-        // Pomeron-Pomeron
+        // 2. Evaluate resonance matrix element -> helicity amplitudes to lts.hamp
         TensorPomeron.ME3(lts, x.second);
-        // Add to temp
+
+        // Add to temp vector
         std::transform(tempsum.begin(), tempsum.end(), lts.hamp.begin(), tempsum.begin(),
                        std::plus<std::complex<double>>());
       }
 
       // ------------------------------------------------------------------
-      // For screening loop
+      // Now set for the screening loop
       lts.hamp = tempsum;
       // ------------------------------------------------------------------
 
@@ -435,7 +436,7 @@ inline double MSubProc::GetBareAmplitude2_yy(gra::LORENTZSCALAR &lts) {
   const double sqrt_fluxes = msqrt(fluxes); // to "amplitude level"
   for (const auto &i : aux::indices(lts.hamp)) { lts.hamp[i] *= sqrt_fluxes; }
   // --------------------------------------------------------------------
-
+  
   return tot;
 }
 
