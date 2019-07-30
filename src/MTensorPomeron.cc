@@ -2,9 +2,9 @@
 //
 // See:
 // [REFERENCE: Ewerz, Maniatis, Nachtmann, https://arxiv.org/pdf/1309.3478.pdf]
-// [REFERENCE: Lebiodowicz, Nachtmann, Szczurek, https://arxiv.org/pdf/1601.04537.pdf]
-// [REFERENCE: Lebiedowicz, Nachtmann, Szczurek, https://arxiv.org/pdf/1801.03902.pdf]
-// [REFERENCE: Lebiedowicz, Nachtmann, Szczurek, https://arxiv.org/pdf/1901.11490.pdf]
+// [REFERENCE: Lebiodowicz, Nachtmann, Szczurek, arxiv.org/pdf/1601.04537.pdf
+// [REFERENCE: LNS, arxiv.org/pdf/1801.03902.pdf]
+// [REFERENCE: LNS, arxiv.org/pdf/1901.11490.pdf]
 //
 // (c) 2017-2019 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
@@ -32,6 +32,16 @@
   for (const auto &u : X) {     \
     for (const auto &v : X)     {
 #define FOR_EACH_2_END \
+  }                    \
+  }
+
+#define FOR_EACH_3(X)           \
+  for (const auto &u : X) {     \
+    for (const auto &v : X) {   \
+      for (const auto &k : X)   {
+
+#define FOR_EACH_3_END \
+  }                    \
   }                    \
   }
 
@@ -216,7 +226,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
       }
     }
     FOR_EACH_4_END;
-
+    
   } else {
     throw std::invalid_argument("MTensorPomeron::ME3: Unknown spin-parity input");
   }
@@ -777,7 +787,7 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_PPS_total(
   Tensor4<std::complex<double>, 4, 4, 4, 4> iG1;
   Tensor4<std::complex<double>, 4, 4, 4, 4> iG2;
 
-  if (mode == "scalar") {
+  if        (mode == "scalar") {
     iG1 = MTensorPomeron::iG_PPS_1(g_PPS[0]);
     iG2 = MTensorPomeron::iG_PPS_2(q1, q2, g_PPS[1]);
   } else if (mode == "pseudoscalar") {
@@ -798,7 +808,8 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_PPS_total(
   return T;
 }
 
-// Pomeron-Pomeron-Scalar coupling structure iG_{\mu \nu \kappa \lambda} ~ (l,s) = (0,0)
+// Pomeron-Pomeron-Scalar coupling structure
+// iG_{\mu \nu \kappa \lambda} ~ (l,s) = (0,0)
 //
 // Input as contravariant (upper index) 4-vectors
 //
@@ -814,7 +825,8 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_PPS_1(double g_PPS)
   return T;
 }
 
-// Pomeron-Pomeron-Scalar coupling structure iG_{\mu \nu \kappa \lambda} ~ (l,s) = (2,0)
+// Pomeron-Pomeron-Scalar coupling structure
+// iG_{\mu \nu \kappa \lambda} ~ (l,s) = (2,0)
 //
 // Input as contravariant (upper index) 4-vectors
 //
@@ -834,7 +846,8 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_PPS_2(const M4Vec &
   return T;
 }
 
-// Pomeron-Pomeron-Pseudoscalar coupling structure iG_{\mu \nu \kappa \lambda} ~ (l,s) = (1,1)
+// Pomeron-Pomeron-Pseudoscalar coupling structure
+// iG_{\mu \nu \kappa \lambda} ~ (l,s) = (1,1)
 //
 // Input as contravariant (upper index) 4-vectors
 //
@@ -866,7 +879,8 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_PPPS_1(const M4Vec 
   return T;
 }
 
-// Pomeron-Pomeron-Pseudoscalar coupling structure iG_{\mu \nu \kappa \lambda} ~ (l,s) = (3,3)
+// Pomeron-Pomeron-Pseudoscalar coupling structure
+// iG_{\mu \nu \kappa \lambda} ~ (l,s) = (3,3)
 //
 // Input as contravariant (upper index) 4-vectors
 //
@@ -922,22 +936,49 @@ MTensor<std::complex<double>> MTensorPomeron::iG_PPT_total(const M4Vec &q1, cons
   // Form FACTOR
   const double F_tilde = FM_(q1.M2()) * FM_(q2.M2()) * F_((q1 + q2).M2(), M0);
 
-  // Tensor structures [1 ... 7] (3 implemented currently)
+  // Kinematics independent tensor structure [1]
   static const MTensor<std::complex<double>> iG1 = iG_PPT_1();
 
-/*
-  const MTensor<std::complex<double>> iG2 = iG_PPT_23(q1, q2, 2, g_PPT[1]);
-  const MTensor<std::complex<double>> iG3 = iG_PPT_23(q1, q2, 3, g_PPT[2]);
-*/
+  std::vector<MTensor<std::complex<double>>> iGx;
 
-  // Construct vertex by summing
+  // Kinematics dependent tensor structures  [2 ... 7]
+  const double EPSILON = 1e-6;
+  if (g_PPT[1] > EPSILON)
+    iGx.push_back( iG_PPT_23(q1, q2, g_PPT[2-1], 2) );
+
+  if (g_PPT[2] > EPSILON)
+    iGx.push_back( iG_PPT_23(q1, q2, g_PPT[3-1], 3) );
+
+  if (g_PPT[3] > EPSILON)
+    iGx.push_back( iG_PPT_4(q1, q2, g_PPT[4-1]) );
+
+  if (g_PPT[4] > EPSILON)
+    iGx.push_back( iG_PPT_5(q1, q2, g_PPT[5-1]) );
+
+  if (g_PPT[5] > EPSILON)
+    iGx.push_back( iG_PPT_6(q1, q2, g_PPT[6-1]) );
+
+  if (g_PPT[6] > EPSILON)
+    iGx.push_back( iG_PPT_7(q1, q2, g_PPT[7-1]) );
+
+  // Construct total vertex by summing up the tensors
   MTensor<std::complex<double>> T = MTensor({4, 4, 4, 4, 4, 4}, std::complex<double>(0.0));
 
   FOR_EACH_6(LI);
-  const std::vector<size_t> ind = {u, v, k, l, r, s};  // Indexing
 
-  T(ind)                        = iG1(ind)*g_PPT[0] * F_tilde;
-  //T(ind)                        = (iG1(ind)*g_PPT[0] + iG2(ind) + iG3(ind)) * F_tilde;
+  // Indexing
+  const std::vector<size_t> ind = {u, v, k, l, r, s};
+
+  // For number [1], we apply coupling here
+  T(ind)                        = iG1(ind)*g_PPT[1-1];
+
+  // For number [2-7], couplings have been already applied, just loop over
+  for (const auto& i : indices(iGx)) {
+    T(ind) += iGx[i](ind);
+  }
+
+  // Apply form factors
+  T(ind) *= F_tilde;
 
   FOR_EACH_6_END;
 
@@ -955,10 +996,12 @@ MTensor<std::complex<double>> MTensorPomeron::iG_PPT_1() const {
   const double                  M0     = 1.0;
   const std::complex<double>    FACTOR = (2.0 * zi) * M0;
 
-  // Init with zeros
+  // Init with zeros!
   MTensor<std::complex<double>> T      = MTensor({4, 4, 4, 4, 4, 4}, std::complex<double>(0.0));
-  
+
   FOR_EACH_6(LI);
+  const std::vector<size_t> ind = {u, v, k, l, r, s};
+
   for (auto const &v1 : LI) {
     for (auto const &a1 : LI) {
       for (auto const &l1 : LI) {
@@ -968,8 +1011,8 @@ MTensor<std::complex<double>> MTensorPomeron::iG_PPT_1() const {
               if (v1 != a1 || l1 != r1 || s1 != u1) { continue; }  // speed it up
 
               // Note +=
-              T({u, v, k, l, r, s}) += FACTOR * R_DDDD(u, v, u1, v1) * R_DDDD(k, l, a1, l1) *
-                                       R_DDDD(r, s, r1, s1) * g[v1][a1] * g[l1][r1] * g[s1][u1];
+              T(ind) += FACTOR * R_DDDD(u, v, u1, v1) * R_DDDD(k, l, a1, l1) *
+                                 R_DDDD(r, s, r1, s1) * g[v1][a1] * g[l1][r1] * g[s1][u1];
             }
           }
         }
@@ -981,16 +1024,13 @@ MTensor<std::complex<double>> MTensorPomeron::iG_PPT_1() const {
   return T;
 }
 
-// Pomeron-Pomeron-Tensor coupling structure #2
-// iG_{\mu \nu \kappa \lambda \rho \sigma} ~ (l,s) = (2,0) - (2,2)
-//
-// Pomeron-Pomeron-Tensor coupling structure #3
-// iG_{\mu \nu \kappa \lambda \rho \sigma} ~ (l,s) = (2,0) + (2,2)
-//
-// Extremely slow function, speed this up!
-//
-MTensor<std::complex<double>> MTensorPomeron::iG_PPT_23(const M4Vec &q1, const M4Vec &q2, int mode,
-                                                        double g_PPT) const {
+// Pomeron-Pomeron-Tensor coupling structures #2 and #3
+// iG_{\mu \nu \kappa \lambda \rho \sigma}
+// ~ (l,s) = (2,0) - (2,2)
+// ~ (l,s) = (2,0) + (2,2)
+// 
+MTensor<std::complex<double>> MTensorPomeron::iG_PPT_23(const M4Vec &q1, const M4Vec &q2,
+                                                        double g_PPT, int mode) const {
   const double                  M0     = 1.0;
   const double                  q1q2   = q1 * q2;
   const std::complex<double>    FACTOR = -(2.0 * zi) / M0 * g_PPT;
@@ -1005,29 +1045,276 @@ MTensor<std::complex<double>> MTensorPomeron::iG_PPT_23(const M4Vec &q1, const M
     throw std::invalid_argument("MTensorPomeron::iG_PPT_23: Error, mode should be 2 or 3");
   }
 
-  MTensor<std::complex<double>> T = MTensor({4, 4, 4, 4, 4, 4}, std::complex<double>(0.0));
+  // ------------------------------------------------
 
+  Tensor1<double, 4> q1_U = {q1[0], q1[1], q1[2], q1[3]};
+  Tensor1<double, 4> q2_U = {q2[0], q2[1], q2[2], q2[3]};
+  Tensor1<double, 4> q1_D = {q1 % 0, q1 % 1, q1 % 2, q1 % 3};
+  Tensor1<double, 4> q2_D = {q2 % 0, q2 % 1, q2 % 2, q2 % 3};
+
+  MTensor<std::complex<double>> T = MTensor({4, 4, 4, 4, 4, 4}, std::complex<double>(0.0));
   FOR_EACH_6(LI);
-  for (auto const &a1 : LI) {
+  const std::vector<size_t> ind = {u, v, k, l, r, s};
+
+  // Pre-calculated tensor contraction structures T1,T2,T2 used here
+  T(ind) += q1q2 * T1(ind);
+
+  for (auto const &u1 : LI) {
     for (auto const &r1 : LI) {
-      for (auto const &s1 : LI) {
-        for (auto const &u1 : LI) {
-          // Note +=
-          T({u, v, k, l, r, s}) +=
-              FACTOR *
-              (q1q2 * R_DDDD(u, v, r1, a1) * R_DDDU(k, l, s1, a1) +
-               sign * (q1 % (r1)) * (q2   [u1]) * R_DDDD(u, v, u1, a1) * R_DDDU(k, l, s1, a1) +
-               sign * (q1   [u1]) * (q2 % (s1)) * R_DDDD(u, v, r1, a1) * R_DDDU(k, l, u1, a1) +
-               (q1 % (r1)) * (q2 % (s1)) * R_DDDD(u, v, k, l)) *
-              R_DDUU(r, s, r1, s1);
+      // Note +=
+      T(ind) += sign * q2_U(u1) * q1_D(r1) * T2({u,v,k,l,r,s,u1,r1});
+    }
+  }
+  for (auto const &u1 : LI) {
+    for (auto const &s1 : LI) {
+      // Note +=
+      T(ind) += sign * q1_U(u1) * q2_D(s1) * T3({u,v,k,l,r,s,u1,s1});
+    }
+  }
+  for (auto const &r1 : LI) {
+    for (auto const &s1 : LI) {
+      // Note +=
+      T(ind) += q1_D(r1) * q2_D(s1) * R_DDDD(u, v, k, l) * R_DDUU(r, s, r1, s1);
+    }
+  }
+
+  T(ind) *= FACTOR;
+  FOR_EACH_6_END;
+
+  return T;
+}
+
+// Pomeron-Pomeron-Tensor coupling structure #4
+// iG_{\mu \nu \kappa \lambda \rho \sigma} ~ (l,s) = (2,4)
+//
+MTensor<std::complex<double>> MTensorPomeron::iG_PPT_4(const M4Vec &q1, const M4Vec &q2, double g_PPT) const {
+
+  const double                  M0     = 1.0;
+  const std::complex<double>    FACTOR = - zi / M0 * g_PPT;
+
+  Tensor3<double, 4,4,4> A;
+  Tensor3<double, 4,4,4> B;
+  Tensor3<double, 4,4,4> C;
+  Tensor3<double, 4,4,4> D;  
+
+  // Manual contractions
+  FOR_EACH_3(LI);
+  A(u,v,k) = 0.0;
+  B(u,v,k) = 0.0;
+  for (auto const &x : LI) {
+    // Note +=
+    A(u,v,k) += q2[x] * R_DDDD(u,v,x,k);
+    B(u,v,k) += q1[x] * R_DDDD(u,v,x,k);
+  }
+  FOR_EACH_3_END;
+
+  // Final rank-6 tensor
+  MTensor<std::complex<double>> T      = MTensor({4, 4, 4, 4, 4, 4}, std::complex<double>(0.0));
+  FOR_EACH_6(LI);
+  const std::vector<size_t> ind = {u, v, k, l, r, s};
+  for (auto const &v1 : LI) {
+    for (auto const &l1 : LI) {
+      // Note +=
+      T(ind) += (A(u,v,v1) * B(k,l,l1) + A(u,v,l1) * B(k,l,v1)) * R_UUDD(v1,l1,r,s);
+    }
+  }
+  T(ind) *= FACTOR;
+  /*
+
+  // NAIVE LOOP
+  for (auto const &v1 : LI) {
+    for (auto const &a1 : LI) {
+      for (auto const &l1 : LI) {
+          for (auto const &u1 : LI) {
+
+            // Note +=
+            T(ind) += FACTOR * (q2[u1] * R_DDDD(u,v,u1,v1) * q1[a1] * R_DDDD(k,l,a1,l1) +
+                                q2[a1] * R_DDDD(u,v,a1,l1) * q1[u1] * R_DDDD(k,l,u1,v1)) * R_UUDD(v1,l1,r,s);
         }
+      }
+    }
+  }
+  */
+  FOR_EACH_6_END;
+  
+  return T;
+}
+
+// Pomeron-Pomeron-Tensor coupling structure #5
+// iG_{\mu \nu \kappa \lambda \rho \sigma} ~ (l,s) = (4,2)
+//
+MTensor<std::complex<double>> MTensorPomeron::iG_PPT_5(const M4Vec &q1, const M4Vec &q2, double g_PPT) const {
+  
+  const double                  M0     = 1.0;
+  const std::complex<double>    FACTOR = - 2.0 * zi / math::pow3(M0) * g_PPT;
+  const double q1q2 = q1*q2;
+
+  Tensor1<double, 4> q1_U = {q1[0], q1[1], q1[2], q1[3]};
+  Tensor1<double, 4> q2_U = {q2[0], q2[1], q2[2], q2[3]};
+  Tensor1<double, 4> q1_D = {q1 % 0, q1 % 1, q1 % 2, q1 % 3};
+  Tensor1<double, 4> q2_D = {q2 % 0, q2 % 1, q2 % 2, q2 % 3};
+
+  Tensor4<double, 4,4,4,4> A;
+  Tensor4<double, 4,4,4,4> B;
+  Tensor2<double, 4,4> C;
+
+  // Manual contractions (not possible with autocontraction)
+  FOR_EACH_4(LI);
+  A(u,v,k,l) = 0.0;
+  B(u,v,k,l) = 0.0;
+
+  for (auto const &u1 : LI) {
+    for (auto const &v1 : LI) {
+      for (auto const &a1 : LI) {
+        // Note +=
+        A(u,v,k,l) += q2_U(v1) * R_DDDD(u,v,v1,a1) * q1_U(u1) * R_DDDU(k,l,u1,a1);
+        B(u,v,k,l) += q2_U(u1) * R_DDDD(u,v,u1,a1) * q1_U(v1) * R_DDDU(k,l,v1,a1);
+      }
+    }
+  }
+  FOR_EACH_4_END;
+
+  // Autocontractions
+  {
+    FTensor::Index<'a', 4> r;
+    FTensor::Index<'b', 4> s;
+    FTensor::Index<'c', 4> a1;
+    FTensor::Index<'d', 4> l1;
+
+    C(r,s) = q1_D(a1) * q2_D(l1) * R_UUDD(a1,l1,r,s);
+  }
+
+  // Final rank-6 expression
+  MTensor<std::complex<double>> T      = MTensor({4, 4, 4, 4, 4, 4}, std::complex<double>(0.0));
+  FOR_EACH_6(LI);
+  T({u,v,k,l,r,s}) = FACTOR * ( A(u,v,k,l) + B(u,v,k,l) - 2.0 * q1q2 * R_DDDD(u,v,k,l)) * C(r,s);
+
+  /*
+  // NAIVE LOOP
+  for (auto const &v1 : LI) {
+    for (auto const &a1 : LI) {
+      for (auto const &l1 : LI) {
+        for (auto const &u1 : LI) {
+
+          // Note +=
+          T(ind) += FACTOR * (q2[v1] * R_DDDD(u,v,v1,a1) * q1[u1] * R_DDDU(k,l,u1,a1)
+                            + q2[u1] * R_DDDD(u,v,u1,a1) * q1[v1] * R_DDDU(k,l,v1,a1)
+                            - 2.0 * q1q2 * R_DDDD(u,v,k,l)) * (q1 % a1) * (q2 % l1) * R_UUDD(a1,l1,r,s);
+        }
+      }
+    }
+  }
+  */
+  FOR_EACH_6_END;
+  return T;
+}
+
+// Pomeron-Pomeron-Tensor coupling structure #6
+// iG_{\mu \nu \kappa \lambda \rho \sigma} ~ (l,s) = (4,4)
+//
+MTensor<std::complex<double>> MTensorPomeron::iG_PPT_6(const M4Vec &q1, const M4Vec &q2, double g_PPT) const {
+  
+  const double                  M0     = 1.0;
+  const std::complex<double>    FACTOR = 2.0 * zi / math::pow3(M0) * g_PPT;
+
+  Tensor1<double, 4> q1_U = {q1[0], q1[1], q1[2], q1[3]};
+  Tensor1<double, 4> q2_U = {q2[0], q2[1], q2[2], q2[3]};
+  Tensor1<double, 4> q1_D = {q1 % 0, q1 % 1, q1 % 2, q1 % 3};
+  Tensor1<double, 4> q2_D = {q2 % 0, q2 % 1, q2 % 2, q2 % 3};
+
+  Tensor4<double, 4,4,4,4> A;
+  Tensor2<double, 4,4> B;
+  Tensor4<double, 4,4,4,4> C;
+  Tensor2<double, 4,4> D;
+
+  // Manual contractions (not possible with autocontraction)
+  MTensor<std::complex<double>> T      = MTensor({4, 4, 4, 4, 4, 4}, std::complex<double>(0.0));
+  FOR_EACH_6(LI);
+  A(u,v,r,s) = 0.0;
+  C(k,l,r,s) = 0.0;
+
+  for (auto const &u1 : LI) {
+    for (auto const &v1 : LI) {
+      for (auto const &r1 : LI) {
+        // Note +=
+        A(u,v,r,s) += q2_U(u1) * R_DDDD(u,v,u1,v1) * q2_D(r1) * R_UUDD(v1,r1,r,s);
+        C(k,l,r,s) += q1_U(u1) * R_DDDD(k,l,u1,v1) * q1_D(r1) * R_UUDD(v1,r1,r,s);
       }
     }
   }
   FOR_EACH_6_END;
 
+  // Autocontractions
+  {
+    FTensor::Index<'a', 4> u;
+    FTensor::Index<'b', 4> v;
+    FTensor::Index<'c', 4> k;
+    FTensor::Index<'d', 4> l;
+    FTensor::Index<'j', 4> a1;
+    FTensor::Index<'k', 4> l1;
+
+    B(k,l) = q1_U(a1) * q1_U(l1) * R_DDDD(k,l,a1,l1);
+    D(u,v) = q2_U(a1) * q2_U(l1) * R_DDDD(u,v,a1,l1);
+  }
+  
+  // Final rank-6 expression
+  FOR_EACH_6(LI);
+  T({u, v, k, l, r, s}) = FACTOR * (A(u,v,r,s)*B(k,l) + C(k,l,r,s)*D(u,v));
+
+  /*
+  // NAIVE LOOP
+  for (auto const &v1 : LI) {
+    for (auto const &a1 : LI) {
+      for (auto const &l1 : LI) {
+        for (auto const &u1 : LI) {
+          for (auto const &r1 : LI) {
+
+            // Note +=
+            T(ind) += FACTOR * (q2[u1] * (q2 % r1) * R_DDDD(u,v,u1,v1) * R_UUDD(v1,r1,r,s) * q1[a1] * q1[l1] * R_DDDD(k,l,a1,l1) 
+                             +  q1[u1] * (q1 % r1) * R_DDDD(k,l,u1,v1) * R_UUDD(v1,r1,r,s) * q2[a1] * q2[l1] * R_DDDD(u,v,a1,l1));
+          }
+        }
+      }
+    }
+  }
+  */
+  FOR_EACH_6_END;
   return T;
 }
+
+// Pomeron-Pomeron-Tensor coupling structure #7
+// iG_{\mu \nu \kappa \lambda \rho \sigma} ~ (l,s) = (6,4)
+//
+MTensor<std::complex<double>> MTensorPomeron::iG_PPT_7(const M4Vec &q1, const M4Vec &q2, double g_PPT) const {
+  
+  const double               M0     = 1.0;
+  const std::complex<double> FACTOR = - 2.0 * zi / math::pow5(M0) * g_PPT;
+
+  FTensor::Index<'a', 4> a;
+  FTensor::Index<'b', 4> b;
+  FTensor::Index<'c', 4> c;
+  FTensor::Index<'d', 4> d;
+
+  Tensor1<double, 4> q1_U = {q1[0], q1[1], q1[2], q1[3]};
+  Tensor1<double, 4> q2_U = {q2[0], q2[1], q2[2], q2[3]};
+
+  Tensor2<double, 4,4> A;
+  Tensor2<double, 4,4> B;
+  Tensor2<double, 4,4> C;
+  
+  // Use associativity of the product and evaluate term by term
+  A(a,b) = q2_U(c) * q2_U(d) * R_DDDD(a,b,c,d);
+  B(a,b) = q1_U(c) * q1_U(d) * R_DDDD(a,b,c,d);
+  C(a,b) = q1_U(c) * q2_U(d) * R_DDDD(a,b,c,d);
+
+  MTensor<std::complex<double>> T = MTensor({4, 4, 4, 4, 4, 4}, std::complex<double>(0.0));
+  FOR_EACH_6(LI);
+  T({u, v, k, l, r, s}) = FACTOR * A(u,v) * B(k,l) * C(r,s);
+  FOR_EACH_6_END;
+
+  return T;
+}
+
 
 // ======================================================================
 
@@ -1206,10 +1493,10 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::yV(std::string type) const {
 // Contraction with g^{\mu\nu} or g^{\kappa\lambda} gives 0
 //
 Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iD_P(double s, double t) const {
-  Tensor4<std::complex<double>, 4, 4, 4, 4> T;
 
   const std::complex<double> FACTOR = 1.0 / (4.0 * s) * std::pow(-zi * s * ap_P, alpha_P(t) - 1.0);
 
+  Tensor4<std::complex<double>, 4, 4, 4, 4> T;
   FOR_EACH_4(LI);
   T(u, v, k, l) = FACTOR * (g[u][k] * g[v][l] + g[u][l] * g[v][k] - 0.5 * g[u][v] * g[k][l]);
   FOR_EACH_4_END;
@@ -1324,8 +1611,8 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iD_VMES(const M4Vec &p, doub
 Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iD_TMES(const M4Vec &p, double M0,
                                                                   double Gamma, bool INDEX_UP) const {
   const double m2 = p.M2();
-
-  // Inline lambda function
+  
+  // Inline auxialary function
   auto ghat = [&](int u, int v) {
     if (INDEX_UP) {
       return -g[u][v] + (p ^ u) * (p ^ v) / m2;
@@ -1461,7 +1748,7 @@ void MTensorPomeron::CalcRTensor() {
   // ------------------------------------------------------------------
 
   // Aux tensor R
-  FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> R;
+  FTensor::Tensor4<double, 4, 4, 4, 4> R;
 
   R(a, b, c, d) =
       0.5 * gT(a, c) * gT(b, d) + 0.5 * gT(a, d) * gT(b, c) + 0.25 * gT(a, b) * gT(c, d);
@@ -1472,6 +1759,62 @@ void MTensorPomeron::CalcRTensor() {
   R_DDDU(a, b, c, d) = R(a, b, c, alfa) * gT(d, alfa);
   R_DDUU(a, b, c, d) = R(a, b, alfa, beta) * gT(c, alfa) * gT(d, beta);
   R_UUDD(a, b, c, d) = R(alfa, beta, c, d) * gT(a, alfa) * gT(b, beta);
+
+  // -------------------------------------------------------------------
+  // Pre-calculated tensor contractions for tensor resonances
+
+  auto FIX1 = [&] () {
+  MTensor<double> A = MTensor({4, 4, 4, 4, 4, 4}, double(0.0));
+  FOR_EACH_6(LI);
+  const std::vector<size_t> ind = {u, v, k, l, r, s};
+  for (auto const &a1 : LI) {
+    for (auto const &r1 : LI) {
+      for (auto const &s1 : LI) {
+          A(ind) += R_DDDD(u, v, r1, a1) * R_DDDU(k, l, s1, a1) * R_DDUU(r, s, r1, s1);
+      }
+    }
+  }
+  FOR_EACH_6_END;
+  return A;
+  };
+
+  auto FIX2 = [&] () {
+  MTensor<double> A = MTensor({4, 4, 4, 4, 4, 4, 4, 4}, double(0.0));
+  FOR_EACH_6(LI);
+  for (auto const &a1 : LI) {
+    for (auto const &r1 : LI) {
+      for (auto const &s1 : LI) {
+        for (auto const &u1 : LI) {
+
+          A({u,v,k,l,r,s,u1,r1}) += R_DDDD(u, v, u1, a1) * R_DDDU(k, l, s1, a1) * R_DDUU(r, s, r1, s1);
+        }
+      }
+    }
+  }
+  FOR_EACH_6_END;
+  return A;
+  };
+
+  auto FIX3 = [&] () {
+  MTensor<double> A = MTensor({4, 4, 4, 4, 4, 4, 4, 4}, double(0.0));
+  FOR_EACH_6(LI);
+  for (auto const &a1 : LI) {
+    for (auto const &r1 : LI) {
+      for (auto const &s1 : LI) {
+        for (auto const &u1 : LI) {
+
+          A({u,v,k,l,r,s,u1,s1}) += R_DDDD(u, v, r1, a1) * R_DDDU(k, l, u1, a1) * R_DDUU(r, s, r1, s1);
+        }
+      }
+    }
+  }
+  FOR_EACH_6_END;
+  return A;
+  };
+
+  T1 = FIX1();
+  T2 = FIX2();
+  T3 = FIX3();
 }
 
 }  // gra namespace ends

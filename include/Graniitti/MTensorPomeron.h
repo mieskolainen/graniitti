@@ -43,8 +43,11 @@ class MTensorPomeron : public MDirac {
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_PPPS_2(const M4Vec &q1, const M4Vec &q2,
                                                                double g_PPPS) const;
   MTensor<std::complex<double>> iG_PPT_1() const;
-  MTensor<std::complex<double>> iG_PPT_23(const M4Vec &q1, const M4Vec &q2, int mode,
-                                          double g_PPT) const;
+  MTensor<std::complex<double>> iG_PPT_23(const M4Vec &q1, const M4Vec &q2, double g_PPT, int mode) const;
+  MTensor<std::complex<double>> iG_PPT_4(const M4Vec &q1, const M4Vec &q2, double g_PPT) const;
+  MTensor<std::complex<double>> iG_PPT_5(const M4Vec &q1, const M4Vec &q2, double g_PPT) const;
+  MTensor<std::complex<double>> iG_PPT_6(const M4Vec &q1, const M4Vec &q2, double g_PPT) const;
+  MTensor<std::complex<double>> iG_PPT_7(const M4Vec &q1, const M4Vec &q2, double g_PPT) const;
 
   // Vertex functions
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_PPS_total(
@@ -137,23 +140,23 @@ class MTensorPomeron : public MDirac {
   // alpha_QED at q^2 ~ 0
   static constexpr double alpha_QED = 1.0 / 137.035999139;
 
-  // Pomeron-Pomeron-Scalar/Pseudoscalar/Tensor meson couplings
-  std::vector<double> g_PPS;
-  std::vector<double> g_PPT;
-
  private:
   // Minkowski metric tensor
-  FTensor::Tensor2<std::complex<double>, 4, 4> gT;
+  FTensor::Tensor2<double, 4, 4> gT;
 
   // Epsilon tensors
-  FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> eps_lo;
-  FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> eps_hi;
+  FTensor::Tensor4<double, 4, 4, 4, 4> eps_lo;
+  FTensor::Tensor4<double, 4, 4, 4, 4> eps_hi;
 
   // Aux tensors
-  FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> R_DDDD;
-  FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> R_DDDU;
-  FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> R_DDUU;
-  FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> R_UUDD;
+  FTensor::Tensor4<double, 4, 4, 4, 4> R_DDDD;
+  FTensor::Tensor4<double, 4, 4, 4, 4> R_DDDU;
+  FTensor::Tensor4<double, 4, 4, 4, 4> R_DDUU;
+  FTensor::Tensor4<double, 4, 4, 4, 4> R_UUDD;
+
+  MTensor<double> T1;
+  MTensor<double> T2;
+  MTensor<double> T3;
 };
 
 }  // gra namespace ends

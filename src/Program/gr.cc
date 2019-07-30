@@ -90,6 +90,8 @@ int main(int argc, char *argv[]) {
       std::cout << "  @FRAME:X                  set common Lorentz frame for "
                    "parametric spin correlated resonance decays (X = SR, HE, CS)"
                 << std::endl;
+      std::cout << "  @PARAMTP[f0_980]{g0:1.0, g1:0.2} set new couplings for Tensor Pomeron amplitudes"
+                << std::endl;
       std::cout << std::endl;
       std::cout << rang::style::bold << " PROCESS string examples:" << rang::style::reset
                 << std::endl;

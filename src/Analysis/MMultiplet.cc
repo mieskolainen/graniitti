@@ -31,11 +31,11 @@ void GetLegendPosition(unsigned int N, double &x1, double &x2, double &y1, doubl
   // North-East
   x1 = 0.70;
   x2 = x1 + 0.18;
-  y1 = 0.75 - 0.01 * N;
+  y1 = 0.75 - 0.02 * N;
 
   // South-East
   if (legendposition.compare("southeast") == 0) { y1 = 0.10 - 0.01 * N; }
-  y2 = y1 + 0.05 * N;  // Scale by the number of histograms
+  y2 = y1 + 0.04 * N;  // Scale by the number of histograms
 }
 
 h1Multiplet::h1Multiplet(const std::string &name, const std::string &labeltext, int N,
@@ -241,7 +241,7 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
   // Save logscale pdf
   if (MINVAL > 0) {
     pad1->cd()->SetLogy();  // pad2 becomes the current pad
-    for (const auto &i : indices(h)) { h[i]->GetYaxis()->SetRangeUser(MINVAL / 2, MAXVAL * 5); }
+    for (const auto &i : indices(h)) { h[i]->GetYaxis()->SetRangeUser(std::max(MINVAL, MAXVAL * 1e-9), MAXVAL * 5); }
     fullfile = fullpath + name_ + "_logy" + ".pdf";
     c0.SaveAs(fullfile.c_str());
   }

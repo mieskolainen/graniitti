@@ -27,7 +27,7 @@
         
     "BEAM" :   ["p+","p+"],                  // Beam PDG-ID / Name
     "ENERGY" : [6500, 6500],                 // Beam energy in the lab (GeV)
-    "PROCESS" : "PP[RESTENSOR]<F> -> pi+ pi-", // Process
+    "PROCESS" : "PP[RESTENSOR]<F> -> pi+ pi- @PARAMTP[f2_1270]{g0:1.0, g1:0.0, g2:0.0, g3:0.0, g4:0.0, g5:0.0, g6:0.0}", // Process
     "RES" : ["f2_1270"],
     "POMLOOP" : false,           // Eikonal Pomeron loop screening
     "NSTARS" : 0,                // N* excitation (0 = elastic, 1 = single, 2 = double)
@@ -51,8 +51,8 @@
 
       "BINS" : 128,          // Maximum number of bins per dimension (NOTE: EVEN NUMBER)
       "LAMBDA" : 1.5,        // Regularization parameter
-      "NCALL" : 1000,       // Number of function calls per initialization iteration (5000 or more)
-      "ITER"  : 5,          // Number of initialization iteration (10 or more)
+      "NCALL" : 5000,        // Number of function calls per initialization iteration (5000 or more)
+      "ITER"  : 5,           // Number of initialization iteration (10 or more)
       "CHI2MAX" : 10.0,      // Maximum Chi^2 in initialization
       "PRECISION"  : 0.01,   // Integral relative precision target
       "DEBUG" : -1           // Debug output (default -1)
@@ -72,12 +72,12 @@
   "GENCUTS" : {
 
     "<C>" : {
-      "Rap" : [-5.0, 5.0]  // Rapidity boundaries of the final states (<C> class)
+      "Rap" : [-2.5, 2.5]  // Rapidity boundaries of the final states (<C> class)
     },
     
     "<F>" : {
-      "Rap" : [-5.0, 5.0], // Rapidity boundaries of the system (<F> class)
-      "M"   : [1.0, 1.5],
+      "Rap" : [-2.5, 2.5], // Rapidity boundaries of the system (<F> class)
+      "M"   : [0.0, 2.5],
       "Pt"  : [0.0, 1.5],
     },
     "<Q>" : {
@@ -96,9 +96,9 @@
      // Central system final states
     "PARTICLE" : {
 
-      "Eta"  : [-5.0, 5.0],     // Pseudorapidity
+      "Eta"  : [-2.5, 2.5],     // Pseudorapidity
       "Rap"  : [-10.0, 10.0],   // Rapidity
-      "Pt"   : [0.0, 100000.0], // Transverse momentum
+      "Pt"   : [0.15, 100000.0], // Transverse momentum
       "Et"   : [0.0, 100000.0]  // Transverse energy
     },
     

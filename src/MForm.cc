@@ -172,7 +172,7 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
   } catch (...) {
     throw std::invalid_argument("form::ReadResonance: Error parsing '" + resparam_str + "'");
   }
-
+  
   // Resonance parameters
   gra::PARAM_RES res;
 
