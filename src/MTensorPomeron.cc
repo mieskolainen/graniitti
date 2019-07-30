@@ -28,6 +28,13 @@
 #include "FTensor.hpp"
 
 // LOOP MACROS
+#define FOR_EACH_2(X)           \
+  for (const auto &u : X) {     \
+    for (const auto &v : X)     {
+#define FOR_EACH_2_END \
+  }                    \
+  }
+
 #define FOR_EACH_4(X)           \
   for (const auto &u : X) {     \
     for (const auto &v : X) {   \
@@ -185,32 +192,27 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
 
   // Pomeron-Pomeron-Tensor coupling
   } else if (J == 2) {
-  
+
     const MTensor<std::complex<double>> iGPPf2 =
         iG_PPT_total(lts.q1, lts.q2, M0, resonance.g_Tensor);
 
-    // Scalar BW-propagator
-    std::complex<double> iD = iD_MES(lts.pfinal[0], M0, Gamma);
-
-    // Decay coupling constant
-    iD *= resonance.g_decay;
-
-    // Tensor BW-propagator [UNDER CONSTRUCTION]
-    /*
-    const Tensor4<std::complex<double>, 4, 4, 4, 4> iDf2 = iD_TMES(lts.pfinal[0], M0, Gamma);
-
     // f2 -> pipi decay structure
     const Tensor2<std::complex<double>, 4, 4> iGf2PIPI = iG_f2pipi(p3, p4, M0);
+    
+    // Tensor BW-propagator
+    const bool INDEX_UP = true;
+    const Tensor4<std::complex<double>, 4, 4, 4, 4> iDf2 = iD_TMES(lts.pfinal[0], M0, Gamma, INDEX_UP);
+
+    // Contract
     Tensor2<std::complex<double>, 4, 4> iD;
     iD(mu1, nu1) = iDf2(mu1, nu1, rho1, rho2) * iGf2PIPI(rho1, rho2);
-    */
-
+ 
     // Construct central vertex
     FOR_EACH_4(LI);
     cvtx(u, v, k, l) = 0.0;
     for (auto const &rho : LI) {
       for (auto const &sigma : LI) {
-        cvtx(u, v, k, l) += iGPPf2({u, v, k, l, rho, sigma}) * iD; //iD(rho, sigma);
+        cvtx(u, v, k, l) += iGPPf2({u, v, k, l, rho, sigma}) * iD(rho, sigma);
       }
     }
     FOR_EACH_4_END;
@@ -468,13 +470,15 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
   if (SPINMODE == "vector_pair") {
 
     // t-channel blocks
+    const bool INDEX_UP = true;
+
     const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_tA = iG_Pvv(pt, -p3);
-    const Tensor2<std::complex<double>, 4, 4> iDMES_t = iD_VMES(pt, M_mes, Gamma_mes);
+    const Tensor2<std::complex<double>, 4, 4> iDMES_t = iD_VMES(pt, M_mes, Gamma_mes, INDEX_UP);
     const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_tB = iG_Pvv(p4, pt);
 
     // u-channel blocks
     const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_uA = iG_Pvv(p4, pu);
-    const Tensor2<std::complex<double>, 4, 4> iDMES_u = iD_VMES(pu, M_mes, Gamma_mes);
+    const Tensor2<std::complex<double>, 4, 4> iDMES_u = iD_VMES(pu, M_mes, Gamma_mes, INDEX_UP);
     const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_uB = iG_Pvv(pu, -p3);
 
     FTensor::Index<'e', 4> rho3;
@@ -632,19 +636,18 @@ Tensor1<std::complex<double>, 4> MTensorPomeron::iG_ypp(
 }
 
 // High-Energy limit proton-Pomeron-proton vertex times \delta^{lambda_prime,
-// \lambda} (helicity
-// conservation)
+// \lambda} (helicity conservation)
 // (~1.5 faster evaluation than the exact spinor structure)
 Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_PppHE(const M4Vec &prime,
                                                              const M4Vec p) const {
-  Tensor2<std::complex<double>, 4, 4> T;
   const M4Vec psum = prime + p;
-
   const std::complex<double> FACTOR = -zi * 3.0 * betaPNN * F1((prime - p).M2());
 
-  for (auto &mu : LI) {
-    for (auto &nu : LI) { T(mu, nu) = FACTOR * (psum % mu) * (psum % nu); }
-  }
+  Tensor2<std::complex<double>, 4, 4> T;
+  FOR_EACH_2(LI);
+  T(u,v) = FACTOR * (psum % u) * (psum % v);
+  FOR_EACH_2_END;
+
   return T;
 }
 
@@ -795,7 +798,7 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_PPS_total(
   return T;
 }
 
-// Pomeron-Pomeron-Scalar coupling structure ~ (l,s) = (0,0)
+// Pomeron-Pomeron-Scalar coupling structure iG_{\mu \nu \kappa \lambda} ~ (l,s) = (0,0)
 //
 // Input as contravariant (upper index) 4-vectors
 //
@@ -811,7 +814,7 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_PPS_1(double g_PPS)
   return T;
 }
 
-// Pomeron-Pomeron-Scalar coupling structure ~ (l,s) = (2,0)
+// Pomeron-Pomeron-Scalar coupling structure iG_{\mu \nu \kappa \lambda} ~ (l,s) = (2,0)
 //
 // Input as contravariant (upper index) 4-vectors
 //
@@ -831,7 +834,7 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_PPS_2(const M4Vec &
   return T;
 }
 
-// Pomeron-Pomeron-Pseudoscalar coupling structure ~ (l,s) = (1,1)
+// Pomeron-Pomeron-Pseudoscalar coupling structure iG_{\mu \nu \kappa \lambda} ~ (l,s) = (1,1)
 //
 // Input as contravariant (upper index) 4-vectors
 //
@@ -863,7 +866,7 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_PPPS_1(const M4Vec 
   return T;
 }
 
-// Pomeron-Pomeron-Pseudoscalar coupling structure ~ (l,s) = (3,3)
+// Pomeron-Pomeron-Pseudoscalar coupling structure iG_{\mu \nu \kappa \lambda} ~ (l,s) = (3,3)
 //
 // Input as contravariant (upper index) 4-vectors
 //
@@ -941,7 +944,8 @@ MTensor<std::complex<double>> MTensorPomeron::iG_PPT_total(const M4Vec &q1, cons
   return T;
 }
 
-// Pomeron-Pomeron-Tensor coupling structure #1 ~ (l,s) = (0,2)
+// Pomeron-Pomeron-Tensor coupling structure #1
+// iG_{\mu \nu \kappa \lambda \rho \sigma} ~ (l,s) = (0,2)
 //
 // This is kinematics independent, can be pre-calculated.
 //
@@ -951,8 +955,9 @@ MTensor<std::complex<double>> MTensorPomeron::iG_PPT_1() const {
   const double                  M0     = 1.0;
   const std::complex<double>    FACTOR = (2.0 * zi) * M0;
 
+  // Init with zeros
   MTensor<std::complex<double>> T      = MTensor({4, 4, 4, 4, 4, 4}, std::complex<double>(0.0));
-
+  
   FOR_EACH_6(LI);
   for (auto const &v1 : LI) {
     for (auto const &a1 : LI) {
@@ -976,8 +981,11 @@ MTensor<std::complex<double>> MTensorPomeron::iG_PPT_1() const {
   return T;
 }
 
-// Pomeron-Pomeron-Tensor coupling structure #2 ~ (l,s) = (2,0) - (2,2)
-// Pomeron-Pomeron-Tensor coupling structure #3 ~ (l,s) = (2,0) + (2,2)
+// Pomeron-Pomeron-Tensor coupling structure #2
+// iG_{\mu \nu \kappa \lambda \rho \sigma} ~ (l,s) = (2,0) - (2,2)
+//
+// Pomeron-Pomeron-Tensor coupling structure #3
+// iG_{\mu \nu \kappa \lambda \rho \sigma} ~ (l,s) = (2,0) + (2,2)
 //
 // Extremely slow function, speed this up!
 //
@@ -1057,11 +1065,10 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_f2pipi(const M4Vec &k1,
   const double k1_k2_sq = k1_k2.M2();
 
   Tensor2<std::complex<double>, 4, 4> T;
-  for (const auto &k : LI) {
-    for (const auto &l : LI) {
-      T(k, l) = FACTOR * ((k1_k2 % k) * (k1_k2 % l) - 0.25 * g[k][l] * k1_k2_sq);
-    }
-  }
+  FOR_EACH_2(LI);
+  T(u,v) = FACTOR * ((k1_k2 % u) * (k1_k2 % v) - 0.25 * g[u][v] * k1_k2_sq);
+  FOR_EACH_2_END;
+  
   return T;
 }
 
@@ -1116,11 +1123,10 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_Ppsps(const M4Vec &prime,
   Tensor2<std::complex<double>, 4, 4> T;
   const std::complex<double> FACTOR = -zi * 2.0 * beta_P * FM((prime - p).M2());
 
-  for (const auto &mu : LI) {
-    for (const auto &nu : LI) {
-      T(mu, nu) = FACTOR * ((psum % mu) * (psum % nu) - 0.25 * g[mu][nu] * M2);
-    }
-  }
+  FOR_EACH_2(LI);
+  T(u,v) = FACTOR * ((psum % u) * (psum % v) - 0.25 * g[u][v] * M2);
+  FOR_EACH_2_END;
+  
   return T;
 }
 
@@ -1176,9 +1182,10 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::yV(std::string type) const {
 
   Tensor2<std::complex<double>, 4, 4> T;
 
-  for (const auto &mu : LI) {
-    for (const auto &nu : LI) { T(mu, nu) = -zi * e * pow2(mV) / gammaV * g[mu][nu]; }
-  }
+  FOR_EACH_2(LI);
+  T(u,v) = -zi * e * pow2(mV) / gammaV * g[u][v];
+  FOR_EACH_2_END;
+
   return T;
 }
 
@@ -1215,11 +1222,11 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iD_P(double s, double 
 // Input as (sub)-Mandelstam invariants: s,t
 //
 Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iD_2R(double s, double t) const {
-  Tensor4<std::complex<double>, 4, 4, 4, 4> T;
 
   const std::complex<double> FACTOR =
       1.0 / (4.0 * s) * std::pow(-zi * s * ap_2R, alpha_2R(t) - 1.0);
 
+  Tensor4<std::complex<double>, 4, 4, 4, 4> T;
   FOR_EACH_4(LI);
   T(u, v, k, l) = FACTOR * (g[u][k] * g[v][l] + g[u][l] * g[v][k] - 0.5 * g[u][v] * g[k][l]);
   FOR_EACH_4_END;
@@ -1232,14 +1239,15 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iD_2R(double s, double
 // Input as (sub)-Mandelstam invariants s,t
 //
 Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iD_1R(double s, double t) const {
-  Tensor2<std::complex<double>, 4, 4> T;
 
   const std::complex<double> FACTOR =
       zi / pow2(M_1R) * std::pow(-zi * s * ap_1R, alpha_1R(t) - 1.0);
 
-  for (const auto &u : LI) {
-    for (const auto &v : LI) { T(u, v) = FACTOR * g[u][v]; }
-  }
+  Tensor2<std::complex<double>, 4, 4> T;
+  FOR_EACH_2(LI);
+  T(u, v) = FACTOR * g[u][v];
+  FOR_EACH_2_END;
+
   return T;
 }
 
@@ -1248,14 +1256,15 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iD_1R(double s, double t) co
 // Input as (sub)-Mandelstam invariants s,t
 //
 Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iD_O(double s, double t) const {
-  Tensor2<std::complex<double>, 4, 4> T;
 
   const std::complex<double> FACTOR =
       -zi * eta_O / pow2(M_O) * std::pow(-zi * s * ap_O, alpha_O(t) - 1.0);
 
-  for (const auto &u : LI) {
-    for (const auto &v : LI) { T(u, v) = FACTOR * g[u][v]; }
-  }
+  Tensor2<std::complex<double>, 4, 4> T;
+  FOR_EACH_2(LI);
+  T(u, v) = FACTOR * g[u][v];
+  FOR_EACH_2_END;
+
   return T;
 }
 
@@ -1279,14 +1288,12 @@ std::complex<double> MTensorPomeron::iD_MES(const M4Vec &p, double M0, double Ga
   return zi * Delta;
 }
 
-// Massive vector propagator iD_{\mu \nu}
+// Massive vector propagator iD_{\mu \nu} or iD^{\mu \nu} with INDEX_UP == true
 //
-// Input as contravariant 4-vector and the particle peak mass M0 and full width
+// Input as contravariant 4-vector and the particle peak mass M0 and full width Gamma
 //
 Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iD_VMES(const M4Vec &p, double M0,
-                                                            double Gamma) const {
-  Tensor2<std::complex<double>, 4, 4> T;
-
+                                                            double Gamma, bool INDEX_UP) const {
   // Transverse part
   const double               m2      = p.M2();
   const std::complex<double> Delta_T = 1.0 / (m2 - pow2(M0) + zi * M0 * Gamma);
@@ -1294,34 +1301,43 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iD_VMES(const M4Vec &p, doub
   // Longitudinal part (does not enter here)
   // const double Delta_L = 0.0;
 
-  for (const auto &mu : LI) {
-    for (const auto &nu : LI) {
-      T(mu, nu) = zi * (-g[mu][nu] + (p % mu) * (p % nu) / m2) * Delta_T;
-      // - zi*(p%u)*(p%v)/m2 * Delta_L; // this part does not enter
-    }
+  Tensor2<std::complex<double>, 4, 4> T;
+
+  if (INDEX_UP) {
+    FOR_EACH_2(LI);
+    T(u,v) = zi * (-g[u][v] + (p ^ u) * (p ^ v) / m2) * Delta_T; // - zi*(p^u)*(p^v)/m2 * Delta_L; // this part does not enter
+    FOR_EACH_2_END;
+  } else {
+    FOR_EACH_2(LI);
+    T(u,v) = zi * (-g[u][v] + (p % u) * (p % v) / m2) * Delta_T; // - zi*(p%u)*(p%v)/m2 * Delta_L; // this part does not enter
+    FOR_EACH_2_END;
   }
+
   return T;
 }
 
-// Tensor meson propagator iD_{\mu \nu \kappa \lambda}
+// Massive tensor propagator iD_{\mu \nu \kappa \lambda} or iD^{} with INDEX_UP == true
 //
 // Input as contravariant (upper index) 4-vector and the particle peak mass M0
-// and full width
+// and full width Gamma
 //
 Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iD_TMES(const M4Vec &p, double M0,
-                                                                  double Gamma) const {
+                                                                  double Gamma, bool INDEX_UP) const {
   const double m2 = p.M2();
-  Tensor4<std::complex<double>, 4, 4, 4, 4> T;
 
   // Inline lambda function
-  auto ghat = [&](int mu, int nu) { 
-    if (mu != nu) { return 0.0;
-    } else { return -g[mu][nu] + (p % mu) * (p % nu) / m2; }
+  auto ghat = [&](int u, int v) {
+    if (INDEX_UP) {
+      return -g[u][v] + (p ^ u) * (p ^ v) / m2;
+    } else {
+      return -g[u][v] + (p % u) * (p % v) / m2;
+    }
   };
 
   // Breit-Wigner
   const std::complex<double> Delta = 1.0 / (m2 - pow2(M0) + zi * M0 * Gamma);
 
+  Tensor4<std::complex<double>, 4, 4, 4, 4> T;
   FOR_EACH_4(LI);
   T(u, v, k, l) = zi * Delta * (0.5 * (ghat(u, k) * ghat(v, l) + ghat(u, l) * ghat(v, k)) -
                                 1.0 / 3.0 * ghat(u, v) * ghat(k, l));
@@ -1416,12 +1432,12 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::Gamma2(const M4Vec &k1
 //
 void MTensorPomeron::CalcRTensor() {
   // Minkowski metric tensor (+1,-1,-1,-1)
-  for (const auto &mu : LI) {
-    for (const auto &nu : LI) { gT(mu, nu) = g[mu][nu]; }
-  }
+  FOR_EACH_2(LI);
+  gT(u,v) = g[u][v];
+  FOR_EACH_2_END;
 
   // ------------------------------------------------------------------
-  // Covariant 4D-epsilon tensor
+  // Covariant [lower index] 4D-epsilon tensor
   
   const MTensor<int> etensor = math::EpsTensor(4);
 
@@ -1441,6 +1457,7 @@ void MTensorPomeron::CalcRTensor() {
   // Contravariant version (make it in two steps)
   eps_hi(a, b, c, d) = eps_lo(alfa, beta, c, d) * gT(a, alfa) * gT(b, beta);
   eps_hi(a, b, c, d) = eps_hi(a, b, alfa, beta) * gT(c, alfa) * gT(d, beta);
+  
   // ------------------------------------------------------------------
 
   // Aux tensor R
