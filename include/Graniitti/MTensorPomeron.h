@@ -35,19 +35,19 @@ class MTensorPomeron : public MDirac {
   double ME4(gra::LORENTZSCALAR &lts) const;
   
   // Scalar, Pseudoscalar, Tensor coupling structures
-  FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_PPS_1(double g_PPS) const;
-  FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_PPS_2(const M4Vec &q1, const M4Vec &q2,
+  FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_PPS_0(double g_PPS) const;
+  FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_PPS_1(const M4Vec &q1, const M4Vec &q2,
                                                               double g_PPS) const;
+  FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_PPPS_0(const M4Vec &q1, const M4Vec &q2,
+                                                               double g_PPPS) const;
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_PPPS_1(const M4Vec &q1, const M4Vec &q2,
                                                                double g_PPPS) const;
-  FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_PPPS_2(const M4Vec &q1, const M4Vec &q2,
-                                                               double g_PPPS) const;
-  MTensor<std::complex<double>> iG_PPT_1() const;
-  MTensor<std::complex<double>> iG_PPT_23(const M4Vec &q1, const M4Vec &q2, double g_PPT, int mode) const;
-  MTensor<std::complex<double>> iG_PPT_4(const M4Vec &q1, const M4Vec &q2, double g_PPT) const;
-  MTensor<std::complex<double>> iG_PPT_5(const M4Vec &q1, const M4Vec &q2, double g_PPT) const;
-  MTensor<std::complex<double>> iG_PPT_6(const M4Vec &q1, const M4Vec &q2, double g_PPT) const;
-  MTensor<std::complex<double>> iG_PPT_7(const M4Vec &q1, const M4Vec &q2, double g_PPT) const;
+  MTensor<std::complex<double>> iG_PPT_00() const;
+  MTensor<std::complex<double>> iG_PPT_12(const M4Vec &q1, const M4Vec &q2, double g_PPT, int mode) const;
+  MTensor<std::complex<double>> iG_PPT_03(const M4Vec &q1, const M4Vec &q2, double g_PPT) const;
+  MTensor<std::complex<double>> iG_PPT_04(const M4Vec &q1, const M4Vec &q2, double g_PPT) const;
+  MTensor<std::complex<double>> iG_PPT_05(const M4Vec &q1, const M4Vec &q2, double g_PPT) const;
+  MTensor<std::complex<double>> iG_PPT_06(const M4Vec &q1, const M4Vec &q2, double g_PPT) const;
 
   // Vertex functions
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_PPS_total(

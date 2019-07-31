@@ -432,11 +432,11 @@ void MQuasiElastic::PrintInit(bool silent) const {
                 << std::endl;
 
       if (ProcPtr.CHANNEL != "EL") {
-        printf("- xi  [min, max]   = [%0.3E, %0.3E] (xi == M^2/s) \n", gcuts.XI_min, gcuts.XI_max);
+      printf("- Xi  [min, max]   = [%0.3E, %0.3E] (Xi == M^2/s) \n", gcuts.XI_min, gcuts.XI_max);
       }
       printf("- |t| [max]        = %0.3f GeV^2 \n", pow2(Eikonal.Numerics.MaxLoopKT));
       std::cout << std::endl;
-
+      
       // Fiducial cuts
       std::cout << rang::style::bold << "Fiducial cuts:" << rang::style::reset << std::endl
                 << std::endl;

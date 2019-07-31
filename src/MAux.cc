@@ -713,6 +713,10 @@ std::vector<OneCMD> SplitCommands(const std::string &fullstr) {
           throw std::invalid_argument("gra::SplitCommands: @Syntax not good with '" + keyvals[i] +
                                       "'");
         }
+
+        // Strip spaces from the key
+        TrimExtraSpace(strip[0]);
+        
         arg[strip[0]] = strip[1];  // add to map
       }
     }

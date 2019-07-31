@@ -526,9 +526,9 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
       RESONANCES[RES[i]]    = gra::form::ReadResonance(str, proc->random);
     }
 
-    // Command syntax override
+    // @ Command syntax override "on-the-flight parameters"
     for (const auto &i : indices(syntax)) {
-      if (syntax[i].id.find("PARAMTP") != std::string::npos) {
+      if (syntax[i].id.find("RES") != std::string::npos) {
 
         std::size_t left  = syntax[i].id.find("[");
         std::size_t right = syntax[i].id.find("]");
@@ -540,30 +540,46 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
 
         if ( RESONANCES.find(RESNAME) == RESONANCES.end() ) {
           // Not found
-          throw std::invalid_argument("@Syntax error: invalid PARAMTP[] (" + RESNAME + ") [not found]");
+          throw std::invalid_argument("@Syntax error: invalid RES[] (" + RESNAME + ") [not found]");
         }
-        
-        // Find couplings [we assume format gX, where X = 0,1,2,...]
+
+        bool couplings_touched = false;
+
+        // Loop over parameters
         for (const auto &x : syntax[i].arg) {
 
+          if (x.first == "M") {
+            RESONANCES[RESNAME].p.mass  = std::stod(x.second);
+            std::cout << rang::fg::green << "@RES[" << RESNAME << "] new mass: "
+              << RESONANCES[RESNAME].p.mass << rang::fg::reset << std::endl;
+          }
+          if (x.first == "W") {
+            RESONANCES[RESNAME].p.width = std::stod(x.second);
+            std::cout << rang::fg::green << "@RES[" << RESNAME << "] new width: "
+              << RESONANCES[RESNAME].p.width << rang::fg::reset << std::endl;
+          }
+          
           // Set couplings
           for (std::size_t n = 0; n < RESONANCES[RESNAME].g_Tensor.size(); ++n) {
             if (x.first == ("g" + std::to_string(n)) ) {
               RESONANCES[RESNAME].g_Tensor[n] = std::stod(x.second);
+              couplings_touched = true;
             }
           }
         }
-
+        
         // Print new coupling array
-        std::cout << rang::fg::green << "@Set new parameters: [" << RESNAME << "] : g_Tensor[";
-        for (std::size_t k = 0; k < RESONANCES[RESNAME].g_Tensor.size(); ++k) {
-          std::cout << RESONANCES[RESNAME].g_Tensor[k];
-          if (k < RESONANCES[RESNAME].g_Tensor.size() - 1) { std::cout << ", "; }
+        if (couplings_touched) {
+          std::cout << rang::fg::green << "@RES[" << RESNAME << "] new couplings: g_Tensor[";
+          for (std::size_t k = 0; k < RESONANCES[RESNAME].g_Tensor.size(); ++k) {
+            std::cout << RESONANCES[RESNAME].g_Tensor[k];
+            if (k < RESONANCES[RESNAME].g_Tensor.size() - 1) { std::cout << ", "; }
+          }
+          std::cout << "]" << rang::fg::reset << std::endl;
         }
-        std::cout << "]" << rang::fg::reset << std::endl;
       }
     }
-
+    
     proc->SetResonances(RESONANCES);
 
     // Setup resonance branching (final step!)

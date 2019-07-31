@@ -250,17 +250,17 @@ void MContinuum::PrintInit(bool silent) const {
     }
     std::cout << proton2 << std::endl;
     std::cout << std::endl;
-
+    
     // Generation cuts
     std::cout << std::endl;
     std::cout << rang::style::bold << "Generation cuts:" << rang::style::reset << std::endl
               << std::endl;
     printf(
-        "- Final state rapidity (Rap) [min, max] = [%0.2f, %0.2f]     "
+        "- Rap : Final state rapidity [min, max] = [%0.2f, %0.2f]     "
         "\t(user)       \n"
-        "- Intermediate (Kt)          [min, max] = [%0.2f, %0.2f] GeV "
+        "- Kt  : Intermediate         [min, max] = [%0.2f, %0.2f] GeV "
         "\t(fixed/user) \n"
-        "- Forward leg (Pt)           [min, max] = [%0.2f, %0.2f] GeV "
+        "- Pt  : Forward leg          [min, max] = [%0.2f, %0.2f] GeV "
         "\t(fixed/user) "
         "\n",
         gcuts.rap_min, gcuts.rap_max, gcuts.kt_min, gcuts.kt_max, gcuts.forward_pt_min,
@@ -268,7 +268,7 @@ void MContinuum::PrintInit(bool silent) const {
 
     if (EXCITATION != 0) {
       printf(
-          "- Forward leg (Xi)           [min, max] = [%0.2E, %0.2E]     "
+        "- Xi  : Forward leg          [min, max] = [%0.2E, %0.2E]     "
           "\t(fixed/user) \n",
           gcuts.XI_min, gcuts.XI_max);
     }
