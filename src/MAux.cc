@@ -39,10 +39,10 @@ namespace aux {
 // -------------------------------------------------------
 // FIXED HERE manually
 
-double      GetVersion() {       return 0.45; }
+double      GetVersion() {       return 0.50; }
 std::string GetVersionType() {   return "beta"; }
-std::string GetVersionDate() {   return "27.05.2019"; }
-std::string GetVersionUpdate() { return "minor updates"; }
+std::string GetVersionDate() {   return "31.07.2019"; }
+std::string GetVersionUpdate() { return "tensor amplitude structures"; }
 
 // -------------------------------------------------------
 
@@ -716,7 +716,7 @@ std::vector<OneCMD> SplitCommands(const std::string &fullstr) {
 
         // Strip spaces from the key
         TrimExtraSpace(strip[0]);
-        
+
         arg[strip[0]] = strip[1];  // add to map
       }
     }
