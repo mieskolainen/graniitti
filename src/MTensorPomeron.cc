@@ -359,11 +359,11 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
   // DEDUCE mode
   std::string SPINMODE;
   if        (lts.decaytree[0].p.spinX2 == 0 && lts.decaytree[1].p.spinX2 == 0) {
-    SPINMODE = "scalar_pair";
+    SPINMODE = "2xS";
   } else if (lts.decaytree[0].p.spinX2 == 1 && lts.decaytree[1].p.spinX2 == 1) {
-    SPINMODE = "fermion_pair";
+    SPINMODE = "2xF";
   } else if (lts.decaytree[0].p.spinX2 == 2 && lts.decaytree[1].p.spinX2 == 2) {
-    SPINMODE = "vector_pair";
+    SPINMODE = "2xV";
   } else {
     throw std::invalid_argument(
         "MTensorPomeron::ME4: Invalid daughter spin "
@@ -390,7 +390,7 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
 
   // ==============================================================
   // 2 x pseudoscalar
-  if (SPINMODE == "scalar_pair") {
+  if (SPINMODE == "2xS") {
 
     // t-channel blocks
     const Tensor2<std::complex<double>, 4, 4> iG_ta = iG_Ppsps(pt, -p3);
@@ -432,7 +432,7 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
 
   // ==============================================================
   // 2 x fermion
-  if (SPINMODE == "fermion_pair") {
+  if (SPINMODE == "2xF") {
 
     for (const auto &h3 : {0, 1}) {
       for (const auto &h4 : {0, 1}) {
@@ -477,7 +477,7 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
   
   // ==============================================================
   // 2 x vector meson
-  if (SPINMODE == "vector_pair") {
+  if (SPINMODE == "2xV") {
 
     // t-channel blocks
     const bool INDEX_UP = true; // Keep it up
@@ -586,7 +586,6 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
 
   return SumAmp2;  // Amplitude squared
 }
-
 
 
 // -------------------------------------------------------------------------
