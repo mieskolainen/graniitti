@@ -2,7 +2,7 @@
 //
 // See:
 // [REFERENCE: Ewerz, Maniatis, Nachtmann, https://arxiv.org/pdf/1309.3478.pdf]
-// [REFERENCE: Lebiodowicz, Nachtmann, Szczurek, arxiv.org/pdf/1601.04537.pdf
+// [REFERENCE: Lebiodowicz, Nachtmann, Szczurek, arxiv.org/pdf/1601.04537.pdf]
 // [REFERENCE: LNS, arxiv.org/pdf/1801.03902.pdf]
 // [REFERENCE: LNS, arxiv.org/pdf/1901.11490.pdf]
 //
