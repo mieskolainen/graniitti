@@ -405,12 +405,38 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 
         h2["h2_2B_M_dphi"]->h[SID]->Fill(M, a.DeltaPhi(b), W);
 
-        // Frame transform
-        std::vector<M4Vec> rf = {a, b};
-        gra::kinematics::SRframe(rf);
+        h2["h2_2B_eta1_eta2"]->h[SID]->Fill(a.Eta(), b.Eta(), W);
 
-        hP["hP_S_M_PL2"]->h[SID]->Fill(M, math::LegendrePl(2, rf[0].CosTheta()), W);
-        hP["hP_S_M_PL4"]->h[SID]->Fill(M, math::LegendrePl(4, rf[0].CosTheta()), W);
+        // Frame transform
+        std::vector<M4Vec> SR = {a, b};
+        gra::kinematics::SRframe(SR);
+
+        std::vector<M4Vec> HE = {a, b};
+        gra::kinematics::HEframe(HE);
+
+        std::vector<M4Vec> CS = {a, b};
+        gra::kinematics::CSframe(CS);
+
+        std::vector<M4Vec> GJ = {a, b};
+        const M4Vec propagator = p_beam_plus - p_final_plus;
+        gra::kinematics::GJframe(GJ, propagator);
+        
+        h1["h1_costheta_SR"]->h[SID]->Fill(SR[0].CosTheta(), W);
+        h1["h1_phi_SR"]->h[SID]->Fill(SR[0].Phi(), W);
+
+        h1["h1_costheta_HE"]->h[SID]->Fill(HE[0].CosTheta(), W);
+        h1["h1_phi_HE"]->h[SID]->Fill(HE[0].Phi(), W);
+
+        h1["h1_costheta_CS"]->h[SID]->Fill(CS[0].CosTheta(), W);
+        h1["h1_phi_CS"]->h[SID]->Fill(CS[0].Phi(), W);
+
+        h1["h1_costheta_GJ"]->h[SID]->Fill(GJ[0].CosTheta(), W);
+        h1["h1_phi_GJ"]->h[SID]->Fill(GJ[0].Phi(), W);
+
+        // ---------------------------------------------------------------------------
+        
+        hP["hP_S_M_PL2"]->h[SID]->Fill(M, math::LegendrePl(2, SR[0].CosTheta()), W);
+        hP["hP_S_M_PL4"]->h[SID]->Fill(M, math::LegendrePl(4, SR[0].CosTheta()), W);
         h2["h2_2B_eta1_eta2"]->h[SID]->Fill(a.Eta(), b.Eta(), W);
       }
 

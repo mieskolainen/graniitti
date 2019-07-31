@@ -86,6 +86,19 @@ void Init1DHistogram(std::map<std::string, std::unique_ptr<h1Multiplet>> &h,
 
   // 2-Body observables
   if (std::find(multiplicity.begin(), multiplicity.end(), 2) != multiplicity.end()) {
+
+    const std::vector<std::string> FRAMES = {"HE","CS","GJ","SR"};
+
+    for (const auto& i : FRAMES) {
+      name    = "h1_costheta_" + i;
+      h[name] = std::make_unique<h1Multiplet>(
+        name, title + ";Central final state cos(#theta) [" + i + " frame];d" + U + "/dcos(#theta)", bP.N, -1.0, 1.0, legendtext);
+
+      name    = "h1_phi_" + i;
+      h[name] = std::make_unique<h1Multiplet>(
+        name, title + ";Central final state #phi [" + i + " frame];d" + U + "/dcos #phi", bP.N, 0.0, math::PI, legendtext);
+    }
+
     name = "h1_2B_acop";
     h[name] =
         std::make_unique<h1Multiplet>(name, title +
