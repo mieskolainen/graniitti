@@ -1,19 +1,25 @@
-GRANIITTI (BETA) FAQ: 07.05.2019
+GRANIITTI FAQ: 31.07.2019
 
 mikael.mieskolainen@cern.ch
 -----------
 
-Processes under construction/validation:
+Processes & features under validation:
 
-- tensor pomeron amplitudes for 2xPS,2xV,2xF implemented but not fully validated
-- tensor pomeron amplitudes for S,PS,T resonances implemented. S,PS working, T not yet.
-- forward excitation is now implemented also for gamma-gamma (via F2 structure functions) but not fully validated
-- "sliding regge helicity amplitudes" under implementation
-- perturbative meson pair (higher mass) continuum under construction
-- vetocuts are not activated
+- tensor pomeron amplitudes for 2xPS,2xV,2xF implemented
+- tensor pomeron amplitudes for S,PS,T resonances implemented
+- forward excitation is implemented also for gamma-gamma (via F2 structure functions)
+- perturbative (Durham QCD) meson pair (higher mass) continuum
 
+Processes & features under implementation
+
+- "sliding" Regge helicity amplitudes (helicity trajectories)
+
+Missing features:
+
+- vetocuts are not activate for minbias processes
 
 Known problems:
 - Looping processes in sequencies with different LHAPDF sets causes crash (in ./bin/exloop) 
   -> single instances of ./bin/gr not affected, ./bin/xscan perhaps. Something to do with LHAPDF memory access.
+
 
