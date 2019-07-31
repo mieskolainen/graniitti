@@ -479,16 +479,16 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
   // 2 x vector meson
   if (SPINMODE == "2xV") {
 
-    // t-channel blocks
     const bool INDEX_UP = true; // Keep it up
 
+    // t-channel blocks
     const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_tA = iG_Pvv(pt, -p3);
-    const Tensor2<std::complex<double>, 4, 4> iDMES_t = iD_VMES(pt, M_mes, Gamma_mes, INDEX_UP);
+    const Tensor2<std::complex<double>, 4, 4> iDMES_t = iD_VMES(pt, M_mes, Gamma_mes, INDEX_UP); // iD_V(pt, M_mes);
     const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_tB = iG_Pvv(p4, pt);
 
     // u-channel blocks
     const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_uA = iG_Pvv(p4, pu);
-    const Tensor2<std::complex<double>, 4, 4> iDMES_u = iD_VMES(pu, M_mes, Gamma_mes, INDEX_UP);
+    const Tensor2<std::complex<double>, 4, 4> iDMES_u = iD_VMES(pu, M_mes, Gamma_mes, INDEX_UP); // iD_V(pu, M_mes);
     const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_uB = iG_Pvv(pu, -p3);
 
     FTensor::Index<'e', 4> rho3;
@@ -535,9 +535,9 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
     // Total amplitude: iM = [ ... ]  <-> M = (-i)*[ ...
     // ]
     Tensor2<std::complex<double>, 4, 4> M;
-    for (const auto &mu : LI) {
-      for (const auto &nu : LI) { M(mu, nu) = (-zi) * (M_t(mu, nu) + M_u(mu, nu)); }
-    }
+    FOR_EACH_2(LI);
+      M(u,v) = (-zi) * (M_t(u,v) + M_u(u,v));
+    FOR_EACH_2_END;
 
     const int OPTION = 1; // Use 1 for now
 
@@ -547,8 +547,8 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
 
       FOR_EACH_4(LI);
 
-      const std::complex<double> contract = std::conj(M(u, v)) * M(k, l) * g[u][k] * g[v][l];
-      Amp2 += std::real(contract);  // real for casting to double
+        const std::complex<double> contract = std::conj(M(u, v)) * M(k, l) * g[u][k] * g[v][l];
+        Amp2 += std::real(contract);  // real for casting to double
 
       FOR_EACH_4_END;
 
@@ -556,14 +556,12 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
     }
     // --------------------------------------------------
     
-    // Explicit polarization vectors [EXPERIMENTAL - NOT TESTED!]
+    // Explicit polarization vectors [EXPERIMENTAL - NEEDS TESTING]
     if (OPTION == 2) {
       // Loop over massive Spin-1 helicity states
-      const std::vector<size_t> STATES = {0,2};   // -1 and 1
-      //const std::vector<size_t> STATES = {0,1,2}; // -1, 0, 1      
-
-      for (const auto &h3 : STATES) {
-        for (const auto &h4 : STATES) {
+      
+      for (const auto &h3 : indices(eps_3_conj)) {
+        for (const auto &h4 : indices(eps_4_conj)) {
           // Contract Lorentz indices
           // to get the full helicity
           // amplitude A(ha,hb,h1,h2,h3,h4)
@@ -1405,8 +1403,7 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_Ppsps(const M4Vec &prime,
 }
 
 // Pomeron-Vector(massive)-Vector(massive) vertex function:
-// i\Gamma_{\alpha\beta\gamma\delta} (p',
-// p)
+// i\Gamma_{\alpha\beta\gamma\delta} (p',p)
 //
 // Input M0 is the vector meson on-shell mass
 //
@@ -1537,6 +1534,22 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iD_O(double s, double t) con
   Tensor2<std::complex<double>, 4, 4> T;
   FOR_EACH_2(LI);
   T(u, v) = FACTOR * g[u][v];
+  FOR_EACH_2_END;
+
+  return T;
+}
+
+
+// Vector propagator iD_{\mu \nu} == iD^{\mu \nu}
+//
+// Input as contravariant 4-vector and the particle peak mass M0
+//
+Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iD_V(const M4Vec &p, double M0) const {
+  const double               m2      = p.M2();
+
+  Tensor2<std::complex<double>, 4, 4> T;
+  FOR_EACH_2(LI);
+  T(u,v) = -g[u][v] / (m2 - M0*M0);
   FOR_EACH_2_END;
 
   return T;
