@@ -385,12 +385,12 @@ Tensor2<std::complex<double>, 4, 4> MDirac::iD_y(const M4Vec &q) const {
 //
 MMatrix<std::complex<double>> MDirac::iD_F(const M4Vec &q, double m) const {
   const double q2 = q.M2();
-
+  
   // gamma_\mu q^\mu contraction
   MMatrix<std::complex<double>> M(4, 4, 0.0);  // Init with zero!
 
-  for (const auto &mu : LI) { M += (gamma_lo[mu] * q[mu] + I4 * m); }
-  M = M * (zi / (q2 - m * m));
+  for (const auto &mu : LI) { M += gamma_lo[mu] * q[mu] + I4 * m; }
+  M = M * (zi / (q2 - pow2(m)));
   return M;
 }
 
