@@ -684,7 +684,7 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_Ppp(
       }
 
       // \bar{spinor} [Gamma Matrix] \spinor product
-      T(mu, nu) = FACTOR * gra::matoper::VecVecMultiply(ubar, A * u);
+      T(mu, nu) = FACTOR * gra::matoper::VecMatVecMultiply(ubar, A, u);
     }
   }
   return T;
@@ -731,11 +731,11 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_PppbarP(
         for (const auto &nu1 : LI) {
           rhs_A = (gamma_lo[mu1] * (rhs_psum % nu1) + gamma_lo[nu1] * (rhs_psum % mu1)) * 0.5;
           if (mu1 == nu1) {  // Speed it up
-            rhs_A = (rhs_A - rhs_slash * 0.25 * g[mu1][nu1]);
+            rhs_A = rhs_A - rhs_slash * 0.25 * g[mu1][nu1];
           }
 
           // \bar{spinor} [Gamma Matrix] \spinor product
-          T(mu2, nu2, mu1, nu1) = lhs_FACTOR * rhs_FACTOR * gra::matoper::VecVecMultiply(ubarM, rhs_A * v);
+          T(mu2, nu2, mu1, nu1) = lhs_FACTOR * rhs_FACTOR * gra::matoper::VecMatVecMultiply(ubarM, rhs_A, v);
         }
       }
     }

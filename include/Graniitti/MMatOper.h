@@ -111,6 +111,24 @@ inline void AddConstMat(MMatrix<T> &A, T2 c) {
   }
 }
 
+// Vector-Matrix-Vector Multiplication 
+// where a is (1 x m)
+//       B is (m x n)
+//       c is (n x 1)
+template <typename T>
+inline T VecMatVecMultiply(const std::vector<T> &A, const MMatrix<T> &B, const std::vector<T> &C) {
+  const std::size_t m = A.size();
+  const std::size_t n = C.size(); 
+
+  T value = 0.0;
+  for (std::size_t i = 0; i < m; ++i) {
+    for (std::size_t j = 0; j < n; ++j) {
+      value += A[i] * B[i][j] * C[j];  // notice plus
+    }
+  }
+  return value;
+}
+
 // Vector-Matrix Multiplication c = aB,
 // where a is (1 x m)
 //       B is (m x p),
