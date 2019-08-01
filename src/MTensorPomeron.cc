@@ -672,7 +672,6 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_Ppp(
 
   // Lorentz indices
   MMatrix<std::complex<double>> A;
-  MMatrix<std::complex<double>> MAT;
 
   const MMatrix<std::complex<double>> slash = FSlash(psum);
 
@@ -680,13 +679,11 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_Ppp(
     for (const auto &nu : LI) {
       A = (gamma_lo[mu] * (psum % nu) + gamma_lo[nu] * (psum % mu)) * 0.5;
       if (mu == nu) {  // Speed it up
-        MAT = (A - slash * 0.25 * g[mu][nu]);
-      } else {
-        MAT = A;
+        A = A - slash * 0.25 * g[mu][nu];
       }
-
+      
       // \bar{spinor} [Gamma Matrix] \spinor product
-      T(mu, nu) = FACTOR * gra::matoper::VecVecMultiply(ubar, MAT * u);
+      T(mu, nu) = FACTOR * gra::matoper::VecVecMultiply(ubar, A * u);
     }
   }
   return T;
