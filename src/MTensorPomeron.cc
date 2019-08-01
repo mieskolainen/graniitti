@@ -530,8 +530,7 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
                         pow2(PARAM_REGGE::Meson_FF(pu.M2(), pow2(M_mes)));
     }
 
-    // Total amplitude: iM = [ ... ]  <-> M = (-i)*[ ...
-    // ]
+    // Total amplitude: iM = [ ... ]  <-> M = (-i)*[ ... ]
     Tensor2<std::complex<double>, 4, 4> M;
     FOR_EACH_2(LI);
       M(u,v) = (-zi) * (M_t(u,v) + M_u(u,v));
