@@ -46,7 +46,7 @@ MDirac::MDirac(const std::string& basis) {
 
 void MDirac::InitGammaMatrices(const std::string &basis) {
   // Set gamma basis
-  if (basis == "DIRAC") {
+  if        (basis == "DIRAC") {
     BASIS = "D";
   } else if (basis == "CHIRAL") {
     BASIS = "C";
@@ -692,7 +692,7 @@ double MDirac::TestGammaAntiCommutation() const {
   return diffsum;
 }
 
-// Test \slash{p}\slash{p} = p^2 I_4
+// Test \slash{p}\slash{p} = p^2 I_4 (identity matrix being I4)
 //
 double MDirac::TestFSlashFSlash(const M4Vec &p) const {
   const MMatrix<std::complex<double>> A = FSlash(p) * FSlash(p);

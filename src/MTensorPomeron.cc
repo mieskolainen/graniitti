@@ -375,14 +375,14 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
   if (ha != h1 || hb != h2) { continue; }
 
   // Full proton-Pomeron-proton spinor structure (upper and lower vertex)
-  /*
   const Tensor2<std::complex<double>,4,4> iG_1a = iG_Ppp(p1, pa, ubar_1[h1], u_a[ha]);
   const Tensor2<std::complex<double>,4,4> iG_2b = iG_Ppp(p2, pb, ubar_2[h2], u_b[hb]);
-  */
 
   // High Energy Limit proton-Pomeron-proton spinor structure
+  /*
   const Tensor2<std::complex<double>, 4, 4> iG_1a = iG_PppHE(p1, pa);
   const Tensor2<std::complex<double>, 4, 4> iG_2b = iG_PppHE(p2, pb);
+  */
 
   // ==============================================================
   // 2 x pseudoscalar
@@ -632,8 +632,9 @@ Tensor1<std::complex<double>, 4> MTensorPomeron::iG_ypp(
     const MMatrix<std::complex<double>> G = (A + B) * ((-1.0) * zi * e);
 
     // \bar{spinor} [Gamma Matrix] \spinor product
-    T(mu) = gra::matoper::VecVecMultiply(ubar, G * u);
+    T(mu) = gra::matoper::VecMatVecMultiply(ubar, G, u);
   }
+  
   return T;
 }
 
@@ -664,8 +665,9 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_PppHE(const M4Vec &prime,
 Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_Ppp(
     const M4Vec &prime, const M4Vec &p, const std::vector<std::complex<double>> &ubar,
     const std::vector<std::complex<double>> &u) const {
+  
   const double t    = (prime - p).M2();
-  const M4Vec  psum = prime + p;
+  const M4Vec  psum =  prime + p;
 
   Tensor2<std::complex<double>, 4, 4> T;
   const std::complex<double> FACTOR = -zi * 3.0 * betaPNN * F1(t);
@@ -706,7 +708,7 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_PppbarP(
 
   const M4Vec lhs_psum = prime + pt;
   const M4Vec rhs_psum = pt + p;
-    
+  
   // Feynman slashes
   const MMatrix<std::complex<double>> lhs_slash = FSlash(lhs_psum);
   const MMatrix<std::complex<double>> rhs_slash = FSlash(rhs_psum);

@@ -45,7 +45,7 @@ class MMatrix {
       throw std::invalid_argument("MMatrix: Unknown initialization string:" + special);
     }
   }
-  // Set matrix to identity
+  // Set matrix to identity [diagonal = 1, otherwise 0]
   void Identity() {
     for (std::size_t i = 0; i < rows; ++i) {
       for (std::size_t j = 0; j < cols; ++j) { this->operator()(i, j) = (i == j) ? 1.0 : 0.0; }
