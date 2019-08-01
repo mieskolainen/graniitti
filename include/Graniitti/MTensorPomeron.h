@@ -90,8 +90,8 @@ class MTensorPomeron : public MDirac {
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iD_2R(double s, double t) const;
   FTensor::Tensor2<std::complex<double>, 4, 4> iD_O(double s, double t) const;
   FTensor::Tensor2<std::complex<double>, 4, 4> iD_1R(double s, double t) const;
-  
-  FTensor::Tensor2<std::complex<double>, 4, 4> iD_V(const M4Vec &p, double M0) const;
+
+  FTensor::Tensor2<std::complex<double>, 4, 4> iD_V(const M4Vec &p, double M0, double s34) const;
   std::complex<double> iD_MES0(const M4Vec &p, double M0) const;
   std::complex<double> iD_MES(const M4Vec &p, double M0, double Gamma) const;
   FTensor::Tensor2<std::complex<double>, 4, 4> iD_VMES(const M4Vec &p, double M0,

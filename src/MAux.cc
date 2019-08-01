@@ -39,10 +39,10 @@ namespace aux {
 // -------------------------------------------------------
 // FIXED HERE manually
 
-double      GetVersion() {       return 0.50; }
+double      GetVersion() {       return 0.51; }
 std::string GetVersionType() {   return "beta"; }
-std::string GetVersionDate() {   return "31.07.2019"; }
-std::string GetVersionUpdate() { return "tensor amplitude structures"; }
+std::string GetVersionDate() {   return "01.08.2019"; }
+std::string GetVersionUpdate() { return "tensor amplitudes improved"; }
 
 // -------------------------------------------------------
 

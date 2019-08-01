@@ -288,7 +288,7 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
 
   // Intermediate boson/fermion mass
   const double M_mes     = lts.decaytree[0].p.mass;
-  const double Gamma_mes = lts.decaytree[0].p.width;
+  //const double Gamma_mes = lts.decaytree[0].p.width;
   
   // Momentum convention of sub-diagrams
   //
@@ -479,16 +479,14 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
   // 2 x vector meson
   if (SPINMODE == "2xV") {
 
-    const bool INDEX_UP = true; // Keep it up
-
     // t-channel blocks
     const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_tA = iG_Pvv(pt, -p3);
-    const Tensor2<std::complex<double>, 4, 4> iDMES_t = iD_VMES(pt, M_mes, Gamma_mes, INDEX_UP); // iD_V(pt, M_mes);
+    const Tensor2<std::complex<double>, 4, 4> iDMES_t = iD_V(pt, M_mes, lts.pfinal[0].M2());
     const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_tB = iG_Pvv(p4, pt);
 
     // u-channel blocks
     const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_uA = iG_Pvv(p4, pu);
-    const Tensor2<std::complex<double>, 4, 4> iDMES_u = iD_VMES(pu, M_mes, Gamma_mes, INDEX_UP); // iD_V(pu, M_mes);
+    const Tensor2<std::complex<double>, 4, 4> iDMES_u = iD_V(pu, M_mes, lts.pfinal[0].M2());
     const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_uB = iG_Pvv(pu, -p3);
 
     FTensor::Index<'e', 4> rho3;
@@ -556,10 +554,10 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
     }
     // --------------------------------------------------
     
-    // Explicit polarization vectors [EXPERIMENTAL - NEEDS TESTING]
+    // Explicit polarization vectors [NEEDS TESTING]
     if (OPTION == 2) {
       // Loop over massive Spin-1 helicity states
-      
+
       for (const auto &h3 : indices(eps_3_conj)) {
         for (const auto &h4 : indices(eps_4_conj)) {
           // Contract Lorentz indices
@@ -1540,16 +1538,23 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iD_O(double s, double t) con
 }
 
 
-// Vector propagator iD_{\mu \nu} == iD^{\mu \nu}
+// Vector propagator iD_{\mu \nu} == iD^{\mu \nu} with (naive) Reggeization
 //
 // Input as contravariant 4-vector and the particle peak mass M0
 //
-Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iD_V(const M4Vec &p, double M0) const {
-  const double               m2      = p.M2();
+Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iD_V(const M4Vec &p, double M0, double s34) const {
+
+  const double m2       = p.M2();
+  const double alpha    = 0.1 + 0.9 * m2;
+  const double s_thresh = 4*pow2(M0);
+  const double phi      = PI/2.0 * std::exp((s_thresh - s34) / s_thresh) - PI/2.0;
+
+  // Reggeization
+  std::complex<double> REGGEIZE = std::pow(std::exp(zi * phi) * s34 / s_thresh, alpha - 1.0);
 
   Tensor2<std::complex<double>, 4, 4> T;
   FOR_EACH_2(LI);
-  T(u,v) = -g[u][v] / (m2 - M0*M0);
+  T(u,v) = -g[u][v] / (m2 - M0*M0) * REGGEIZE;
   FOR_EACH_2_END;
 
   return T;
