@@ -1,7 +1,7 @@
 {
  "name": "GRANIITTI",
- "version": 0.51,
+ "version": 0.52,
  "type": "beta",
- "date": "01.08.2019",
- "update": "tensor amplitudes improved"
+ "date": "02.08.2019",
+ "update": "full QED gamma gamma -> l+l-, qqbar"
 }
