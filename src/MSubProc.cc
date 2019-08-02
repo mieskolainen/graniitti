@@ -72,11 +72,11 @@ void MSubProc::ConstructDescriptions(const std::string &first) {
   } else if (first == "PP") {
     std::map<std::string, std::string> channels;
     channels.insert(std::pair<std::string, std::string>("CONTENSOR",
-      "Regge continuum 2-body                      [Tensor Pomeron]      @@ UNDER TESTING @@"));
+      "Regge continuum 2-body                      [Tensor Pomeron]      @@ UNDER VALIDATION @@"));
     channels.insert(std::pair<std::string, std::string>("RESTENSOR",
-      "Regge resonance                             [Tensor Pomeron]      @@ UNDER TESTING @@"));
+      "Regge resonance                             [Tensor Pomeron]      @@ UNDER VALIDATION @@"));
     channels.insert(std::pair<std::string, std::string>("RES+CONTENSOR",
-      "Regge resonances + continuum 2-body         [Tensor Pomeron]      @@ UNDER TESTING @@"));
+      "Regge resonances + continuum 2-body         [Tensor Pomeron]      @@ UNDER VALIDATION @@"));
     channels.insert(std::pair<std::string, std::string>("CON",
       "Regge continuum 2/4/6-body                  [Pomeron]"));
     channels.insert(std::pair<std::string, std::string>("CON-",
@@ -116,7 +116,7 @@ void MSubProc::ConstructDescriptions(const std::string &first) {
     channels.insert(std::pair<std::string, std::string>("chic(0)",
       "QCD resonance chic(0)                       [Durham QCD]"));
     channels.insert(std::pair<std::string, std::string>("CON",
-      "QCD continuum to gg, 2 x pseudoscalar       [Durham QCD]          @@ UNDER TESTING @@"));
+      "QCD continuum to gg, 2 x pseudoscalar       [Durham QCD]          @@ UNDER VALIDATION @@"));
     descriptions.insert(std::pair<std::string, std::map<std::string, std::string>>("gg", channels));
 
   } else if (first == "yy_DZ") {
