@@ -240,11 +240,13 @@ int main(int argc, char *argv[]) {
     x = matoper::Normalized(x);
   };
 
+  /*
   auto printfunc = [] (const std::vector<double>& x) {
     for (std::size_t i = 0; i < x.size(); ++i) {
       std::cout << x[i] << std::endl;
     }
   };
+  */
 
   const double sigma = 0.06;
   std::vector<double> p = gaussfunc(0.25, sigma, BINS1); 
@@ -258,7 +260,7 @@ int main(int argc, char *argv[]) {
   Pi.Print();
 
   }
-
+  
   return EXIT_SUCCESS;
 }
 

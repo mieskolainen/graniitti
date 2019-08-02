@@ -13,7 +13,6 @@
 
 // MadGraph
 #include "Graniitti/Amplitude/MAmpMG5_yy_ll.h"
-#include "Graniitti/Amplitude/MAmpMG5_yy_ll_2to4.h"
 #include "Graniitti/Amplitude/MAmpMG5_yy_ww.h"
 
 // Own
@@ -42,7 +41,6 @@ class MGamma {
 
  protected:
   // MADGRAPH amplitudes added here
-  MAmpMG5_yy_ll_2to4 AmpMG5_yy_ll_2to4;
   MAmpMG5_yy_ll      AmpMG5_yy_ll;
   MAmpMG5_yy_ww      AmpMG5_yy_ww;
 };
