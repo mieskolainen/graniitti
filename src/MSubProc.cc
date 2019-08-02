@@ -108,7 +108,7 @@ void MSubProc::ConstructDescriptions(const std::string &first) {
     channels.insert(std::pair<std::string, std::string>("CON",
       "2xGamma to l+l-, qqbar, W+W-, monopolepair  [kt-EPA]"));
     channels.insert(std::pair<std::string, std::string>("QED",
-      "2xGamma to l+l+, qqbar                      [FULL QED] "));
+      "2xGamma to l+l-, qqbar                      [FULL QED] "));
     descriptions.insert(std::pair<std::string, std::map<std::string, std::string>>("yy", channels));
 
   } else if (first == "gg") {
