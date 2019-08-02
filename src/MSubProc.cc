@@ -94,19 +94,19 @@ void MSubProc::ConstructDescriptions(const std::string &first) {
   } else if (first == "yP") {
     std::map<std::string, std::string> channels;
     channels.insert(std::pair<std::string, std::string>("RES",
-      "Photoproduced parametric resonance          [EPA] x [Pomeron]"));
+      "Photoproduced parametric resonance          [kt-EPA] x [Pomeron]"));
     descriptions.insert(std::pair<std::string, std::map<std::string, std::string>>("yP", channels));
 
   } else if (first == "yy") {
     std::map<std::string, std::string> channels;
     channels.insert(std::pair<std::string, std::string>("RES",
-      "2xGamma to parametric resonance             [EPA]"));
+      "2xGamma to parametric resonance             [kt-EPA]"));
     channels.insert(std::pair<std::string, std::string>("Higgs",
-      "2xGamma to SM Higgs                         [EPA]"));
+      "2xGamma to SM Higgs                         [kt-EPA]"));
     channels.insert(std::pair<std::string, std::string>("monopolium(0)",
-      "2xGamma to Monopolium (J=0)                 [EPA]"));
+      "2xGamma to Monopolium (J=0)                 [kt-EPA]"));
     channels.insert(std::pair<std::string, std::string>("CON",
-      "2xGamma to l+l-, qqbar, W+W-, monopolepair  [EPA]"));
+      "2xGamma to l+l-, qqbar, W+W-, monopolepair  [kt-EPA]"));
     channels.insert(std::pair<std::string, std::string>("QED",
       "2xGamma to l+l+, qqbar                      [FULL QED] "));
     descriptions.insert(std::pair<std::string, std::map<std::string, std::string>>("yy", channels));
@@ -122,10 +122,10 @@ void MSubProc::ConstructDescriptions(const std::string &first) {
   } else if (first == "yy_DZ") {
     std::map<std::string, std::string> channels;
     channels.insert(std::pair<std::string, std::string>(
-        "CON", "Collinear yy to l+l, qqbar, W+W- or monopolepair   [Drees-Zeppenfeld]"));
+        "CON", "Collinear yy to l+l, qqbar, W+W- or monopolepair   [Drees-Zeppenfeld EPA]"));
     descriptions.insert(
         std::pair<std::string, std::map<std::string, std::string>>("yy_DZ", channels));
-
+    
   } else if (first == "yy_LUX") {
     std::map<std::string, std::string> channels;
     channels.insert(std::pair<std::string, std::string>("CON",
