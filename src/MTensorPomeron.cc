@@ -374,6 +374,48 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
   // This gives at least 4 x speed improvement
   if (ha != h1 || hb != h2) { continue; }
 
+  // ==============================================================
+  // Lepton or quark pair via two photon fusion
+  if (SPINMODE == "2xF" && std::abs(lts.decaytree[0].p.pdg) <= 15) {
+
+    // Full proton-gamma-proton spinor structure (upper and lower vertex)
+    const Tensor1<std::complex<double>,4>      iG_1 = iG_ypp(p1, pa, ubar_1[h1], u_a[ha]);
+    const Tensor1<std::complex<double>,4>      iG_2 = iG_ypp(p2, pb, ubar_2[h2], u_b[hb]);
+
+    // Photon propagators
+    const Tensor2<std::complex<double>,4,4>    iD_1 = iD_y(lts.t1);
+    const Tensor2<std::complex<double>,4,4>    iD_2 = iD_y(lts.t2);
+
+    double FACTOR = 1.0;
+    // ------------------------------------------------------------------
+    // quark pair (charge 1/3 or 2/3), apply charge and color factors
+    if (std::abs(lts.decaytree[0].p.pdg) <= 6) {  // we have a quark
+
+      const double Q  = lts.decaytree[0].p.chargeX3 / 3.0;
+      const double NC = 3.0;                // quarks come in three colors
+      FACTOR = msqrt( math::pow4(Q) * NC ); // sqrt to "amplitude level"
+    }
+    // ------------------------------------------------------------------
+
+    for (const auto &h3 : indices(v_3)) {
+      for (const auto &h4 : indices(ubar_4)) {
+
+        // Vertex functions
+        const Tensor2<std::complex<double>, 4,4> iyFy_t = iG_yeebary(ubar_4[h4], iSF_t, v_3[h3]);
+        const Tensor2<std::complex<double>, 4,4> iyFy_u = iG_yeebary(ubar_4[h4], iSF_u, v_3[h3]);
+
+        // Full amplitude: t-channel + u_channel
+        std::complex<double> M_tu =
+          (-zi) * iG_1(mu1)*iD_1(mu1, nu1)*(iyFy_t(nu2, nu1) + iyFy_u(nu1, nu2))*iD_2(nu2, mu2)*iG_2(mu2);
+
+        M_tu *= FACTOR;
+
+        lts.hamp.push_back(M_tu);
+    }}
+  
+    continue; // skip parts below, only for Pomeron amplitudes
+  }
+
   // Full proton-Pomeron-proton spinor structure (upper and lower vertex)
   const Tensor2<std::complex<double>,4,4> iG_1a = iG_Ppp(p1, pa, ubar_1[h1], u_a[ha]);
   const Tensor2<std::complex<double>,4,4> iG_2b = iG_Ppp(p2, pb, ubar_2[h2], u_b[hb]);
@@ -418,8 +460,7 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
       M_u *= iDMES_u * pow2(PARAM_REGGE::Meson_FF(pu.M2(), pow2(M_)));
     }
 
-    // Full amplitude: iM = [ ... ]  <-> M = (-i)*[ ...
-    // ]
+    // Full amplitude: iM = [ ... ]  <-> M = (-i)*[ ... ]
     std::complex<double> M = (-zi) * (M_t + M_u);
     lts.hamp.push_back(M);
   }
@@ -464,8 +505,7 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
           M_u *= pow2(PARAM_REGGE::Baryon_FF(pu.M2(), pow2(M_)));
         }
 
-        // Full amplitude: iM = [ ... ]  <->
-        // M = (-i)*[ ... ]
+        // Full amplitude: iM = [ ... ]  <-> M = (-i)*[ ... ]
         std::complex<double> M = (-zi) * (M_t + M_u);
         lts.hamp.push_back(M);
       }
@@ -611,7 +651,6 @@ Tensor1<std::complex<double>, 4> MTensorPomeron::iG_yee(
 
 // Gamma-Proton-Proton vertex: iGamma_\mu (p', p)
 //
-//
 // contracted in \bar{spinor} iG_\mu \bar{spinor}
 //
 // Input as contravariant (upper index) 4-vectors
@@ -619,24 +658,51 @@ Tensor1<std::complex<double>, 4> MTensorPomeron::iG_yee(
 Tensor1<std::complex<double>, 4> MTensorPomeron::iG_ypp(
     const M4Vec &prime, const M4Vec &p, const std::vector<std::complex<double>> &ubar,
     const std::vector<std::complex<double>> &u) const {
+
   const double t    = (prime - p).M2();
   const double e    = msqrt(alpha_QED * 4.0 * PI);  // ~ 0.3
   const M4Vec  psum = prime - p;
 
   Tensor1<std::complex<double>, 4> T;
   for (const auto &mu : LI) {
-    MMatrix<std::complex<double>> SUM(4, 4, 0.0);
-    for (const auto &                   nu : LI) { SUM += sigma_lo[mu][nu] * psum[nu]; }
+    MMatrix<std::complex<double>> SUM(4,4, 0.0);
+    for (const auto &nu : LI) {
+      SUM += sigma_lo[mu][nu] * psum[nu];
+    }
     const MMatrix<std::complex<double>> A = gamma_lo[mu] * F1(t);
     const MMatrix<std::complex<double>> B = SUM * zi / (2 * mp) * F2(t);
-    const MMatrix<std::complex<double>> G = (A + B) * ((-1.0) * zi * e);
+    const MMatrix<std::complex<double>> G = (A + B) * (-zi * e);
 
     // \bar{spinor} [Gamma Matrix] \spinor product
     T(mu) = gra::matoper::VecMatVecMultiply(ubar, G, u);
   }
-  
+
   return T;
 }
+
+// gamma - electron - fermion propagator - positron - gamma vertex
+//
+Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_yeebary(
+    const std::vector<std::complex<double>> &ubar,
+    const MMatrix<std::complex<double>> &iSF,
+    const std::vector<std::complex<double>> &v) const {
+
+  const double e = msqrt(alpha_QED * 4.0 * PI);  // ~ 0.3
+  const std::complex<double> vertex = zi * e;
+
+  Tensor2<std::complex<double>, 4, 4> T;
+  for (const auto &mu : LI) {
+
+    const std::vector<std::complex<double>> lhs =
+      gra::matoper::VecMatMultiply(ubar, gamma_lo[mu]*iSF);
+
+    for (const auto &nu : LI) {
+      T(mu,nu) = vertex * gra::matoper::VecVecMultiply(lhs, gamma_lo[nu] * v) * vertex;
+    }
+  }
+  return T;
+}
+
 
 // High-Energy limit proton-Pomeron-proton vertex times \delta^{lambda_prime,
 // \lambda} (helicity conservation)
@@ -1644,12 +1710,12 @@ double MTensorPomeron::alpha_2R(double t) const { return 1.0 + delta_2R + ap_2R 
 
 // Proton electromagnetic Dirac form FACTOR (electric)
 double MTensorPomeron::F1(double t) const {
-  return (1 - (t / (4 * mp * mp)) * mu_ratio) / (1 - t / (4 * mp * mp)) * GD(t);
+  return (1 - (t / (4 * pow2(mp))) * mu_ratio) / (1 - t / (4 * pow2(mp))) * GD(t);
 }
 
 // Proton electromagnetic Pauli form FACTOR (magnetic)
 double MTensorPomeron::F2(double t) const {
-  return (mu_ratio - 1) / (1 - t / (4 * mp * mp)) * GD(t);
+  return (mu_ratio - 1) / (1 - t / (4 * pow2(mp))) * GD(t);
 }
 
 // Dipole form FACTOR

@@ -62,6 +62,11 @@ class MTensorPomeron : public MDirac {
       const M4Vec &prime, const M4Vec &p, const std::vector<std::complex<double>> &ubar,
       const std::vector<std::complex<double>> &u) const;
 
+  FTensor::Tensor2<std::complex<double>, 4, 4> iG_yeebary(
+      const std::vector<std::complex<double>> &ubar,
+      const MMatrix<std::complex<double>> &iSF,
+      const std::vector<std::complex<double>> &v) const;
+
   FTensor::Tensor1<std::complex<double>, 4> iG_ypp(
       const M4Vec &prime, const M4Vec &p, const std::vector<std::complex<double>> &ubar,
       const std::vector<std::complex<double>> &u) const;

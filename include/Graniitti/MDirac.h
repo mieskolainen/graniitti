@@ -55,9 +55,9 @@ class MDirac {
   MMatrix<std::complex<double>> FSlash(const M4Vec &a) const;
 
   // Propagators
-  FTensor::Tensor2<std::complex<double>, 4, 4> iD_y(const M4Vec &q) const;
+  FTensor::Tensor2<std::complex<double>, 4, 4> iD_y(const double q2) const;
   MMatrix<std::complex<double>> iD_F(const M4Vec &q, double m) const;
-
+  
   // Dirac spinors
   std::vector<std::complex<double>> uDirac(const M4Vec &p, int spin) const;
   std::vector<std::complex<double>> vDirac(const M4Vec &p, int spin) const;

@@ -59,100 +59,77 @@ MSubProc::MSubProc(const std::vector<std::string> &first) {
 void MSubProc::ConstructDescriptions(const std::string &first) {
   if (first == "X") {
     std::map<std::string, std::string> channels;
-    channels.insert(std::pair<std::string, std::string>(
-        "EL", "Elastic                                  [Eikonal Pomeron]"));
+    channels.insert(std::pair<std::string, std::string>("EL",
+      "Elastic                                     [Eikonal Pomeron]"));
     channels.insert(std::pair<std::string, std::string>("SD",
-                                                        "Single Diffractive            "
-                                                        "           [Triple Pomeron]   "
-                                                        "   @@ UNDER CONSTRUCTION @@"));
+      "Single Diffractive                          [Triple Pomeron]      @@ UNDER CONSTRUCTION @@"));
     channels.insert(std::pair<std::string, std::string>("DD",
-                                                        "Double Diffractive            "
-                                                        "           [Triple Pomeron]   "
-                                                        "   @@ UNDER CONSTRUCTION @@"));
-    channels.insert(std::pair<std::string, std::string>(
-        "ND",
-        "Non-Diffractive                          [N-cut soft Pomerons] "
-        "@@ UNDER "
-        "CONSTRUCTION @@"));
+      "Double Diffractive                          [Triple Pomeron]      @@ UNDER CONSTRUCTION @@"));
+    channels.insert(std::pair<std::string, std::string>("ND",
+      "Non-Diffractive                             [N-cut soft Pomerons] @@ UNDER CONSTRUCTION @@"));
     descriptions.insert(std::pair<std::string, std::map<std::string, std::string>>("X", channels));
+
   } else if (first == "PP") {
     std::map<std::string, std::string> channels;
-    channels.insert(
-        std::pair<std::string, std::string>("CONTENSOR",
-                                            "Regge continuum 2-body                   [Tensor "
-                                            "Pomeron] x [Tensor Pomeron] "
-                                            "@@ UNDER TESTING @@"));
-    channels.insert(
-        std::pair<std::string, std::string>("RESTENSOR",
-                                            "Regge resonance                          [Tensor "
-                                            "Pomeron] x [Tensor Pomeron] "
-                                            "@@ UNDER TESTING @@"));
-    channels.insert(
-        std::pair<std::string, std::string>("RES+CONTENSOR",
-                                            "Regge resonances + continuum 2-body      [Tensor "
-                                            "Pomeron] x [Tensor Pomeron] "
-                                            "@@ UNDER TESTING @@"));
-
-    channels.insert(std::pair<std::string, std::string>(
-        "CON", "Regge continuum 2/4/6-body               [Pomeron] x [Pomeron]"));
-    channels.insert(std::pair<std::string, std::string>(
-        "CON-", "Regge continuum 2-body negative subamp   [Pomeron] x [Pomeron]"));
-
+    channels.insert(std::pair<std::string, std::string>("CONTENSOR",
+      "Regge continuum 2-body                      [Tensor Pomeron]      @@ UNDER TESTING @@"));
+    channels.insert(std::pair<std::string, std::string>("RESTENSOR",
+      "Regge resonance                             [Tensor Pomeron]      @@ UNDER TESTING @@"));
+    channels.insert(std::pair<std::string, std::string>("RES+CONTENSOR",
+      "Regge resonances + continuum 2-body         [Tensor Pomeron]      @@ UNDER TESTING @@"));
+    channels.insert(std::pair<std::string, std::string>("CON",
+      "Regge continuum 2/4/6-body                  [Pomeron]"));
+    channels.insert(std::pair<std::string, std::string>("CON-",
+      "Regge continuum 2-body with [t-u] amplitude [Pomeron]"));
     channels.insert(
         std::pair<std::string, std::string>("RES+CON",
-                                            "Regge resonances + continuum 2-body      [Pomeron] x "
-                                            "[Gamma/Pomeron]"));
-    channels.insert(std::pair<std::string, std::string>(
-        "RES", "Regge parametric resonance               [Pomeron] x [Pomeron]"));
+      "Regge resonances + continuum 2-body         [Pomeron / yP]"));
+    channels.insert(std::pair<std::string, std::string>("RES",
+      "Regge parametric resonance                  [Pomeron]"));
     channels.insert(
         std::pair<std::string, std::string>("RESHEL",
-                                            "Regge sliding helicity amplitudes        [Pomeron] x "
-                                            "[Pomeron] @@ UNDER "
-                                            "CONSTRUCTION @@"));
+      "Regge sliding helicity amplitudes           [Pomeron]             @@ UNDER CONSTRUCTION @@"));
     descriptions.insert(std::pair<std::string, std::map<std::string, std::string>>("PP", channels));
+
   } else if (first == "yP") {
     std::map<std::string, std::string> channels;
-    channels.insert(std::pair<std::string, std::string>(
-        "RES", "Photoproduced parametric resonance       [EPA] x [Pomeron]"));
+    channels.insert(std::pair<std::string, std::string>("RES",
+      "Photoproduced parametric resonance          [EPA] x [Pomeron]"));
     descriptions.insert(std::pair<std::string, std::map<std::string, std::string>>("yP", channels));
+
   } else if (first == "yy") {
     std::map<std::string, std::string> channels;
-    channels.insert(std::pair<std::string, std::string>(
-        "RES", "Gamma-Gamma to parametric resonance      [EPA] x [EPA]"));
-    channels.insert(std::pair<std::string, std::string>(
-        "Higgs", "Gamma-Gamma to SM Higgs                  [EPA] x [EPA]"));
+    channels.insert(std::pair<std::string, std::string>("RES",
+      "2xGamma to parametric resonance             [EPA]"));
+    channels.insert(std::pair<std::string, std::string>("Higgs",
+      "2xGamma to SM Higgs                         [EPA]"));
     channels.insert(std::pair<std::string, std::string>("monopolium(0)",
-                                                        "Gamma-Gamma to Monopolium "
-                                                        "(J=0)          [EPA] x [EPA]  "
-                                                        "       @@ UNDER TESTING @@"));
-    channels.insert(std::pair<std::string, std::string>(
-        "CON", "Gamma-Gamma to l+l-, W+W-, monopoles     [EPA] x [EPA]"));
+      "2xGamma to Monopolium (J=0)                 [EPA]"));
+    channels.insert(std::pair<std::string, std::string>("CON",
+      "2xGamma to l+l-, qqbar, W+W-, monopolepair  [EPA]"));
     channels.insert(std::pair<std::string, std::string>("QED",
-                                                        "Gamma-Gamma qq -> q l+ l- q   "
-                                                        "           [FULL QED]         "
-                                                        "   @@ TEST PROCESS @@"));
+      "2xGamma to l+l+, qqbar                      [FULL QED] "));
     descriptions.insert(std::pair<std::string, std::map<std::string, std::string>>("yy", channels));
+
   } else if (first == "gg") {
     std::map<std::string, std::string> channels;
-    channels.insert(std::pair<std::string, std::string>(
-        "chic(0)", "QCD resonance chic(0)                    [Durham QCD]"));
+    channels.insert(std::pair<std::string, std::string>("chic(0)",
+      "QCD resonance chic(0)                       [Durham QCD]"));
     channels.insert(std::pair<std::string, std::string>("CON",
-                                                        "QCD continuum to gg, 2 x "
-                                                        "pseudoscalar    [Durham QCD]  "
-                                                        "        @@ UNDER TESTING @@"));
+      "QCD continuum to gg, 2 x pseudoscalar       [Durham QCD]          @@ UNDER TESTING @@"));
     descriptions.insert(std::pair<std::string, std::map<std::string, std::string>>("gg", channels));
+
   } else if (first == "yy_DZ") {
     std::map<std::string, std::string> channels;
     channels.insert(std::pair<std::string, std::string>(
-        "CON", "Collinear yy to l+l, W+W- or monopolepair   [DZ] x [DZ]"));
+        "CON", "Collinear yy to l+l, qqbar, W+W- or monopolepair   [Drees-Zeppenfeld]"));
     descriptions.insert(
         std::pair<std::string, std::map<std::string, std::string>>("yy_DZ", channels));
+
   } else if (first == "yy_LUX") {
     std::map<std::string, std::string> channels;
     channels.insert(std::pair<std::string, std::string>("CON",
-                                                        "Collinear yy to l+l, W+W- or "
-                                                        "monopolepair   [LUX] x [LUX]     "
-                                                        "    @@ UNDER TESTING @@"));
+                                                        "Collinear yy to l+l, qqbar, W+W- or monopolepair   [LUX-PDF]"));
     descriptions.insert(
         std::pair<std::string, std::map<std::string, std::string>>("yy_LUX", channels));
   }
@@ -409,7 +386,10 @@ inline double MSubProc::GetBareAmplitude2_yy(gra::LORENTZSCALAR &lts) {
       amp2 = yyffbar(lts);
     }
   } else if (CHANNEL == "QED") {
-    amp2 = AmpMG5_yy_ll_2to4.CalcAmp2(lts);
+    //amp2 = AmpMG5_yy_ll_2to4.CalcAmp2(lts);
+    static MTensorPomeron TensorPomeron;
+    return TensorPomeron.ME4(lts);
+
   } else {
     throw std::invalid_argument("MSubProc::GetBareAmplitude2: Unknown CHANNEL = " + CHANNEL);
   }
