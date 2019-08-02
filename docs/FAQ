@@ -1,4 +1,4 @@
-GRANIITTI (BETA) FAQ: 12.05.2019
+GRANIITTI FAQ: 02.08.2019
 
 mikael.mieskolainen@cern.ch
 -----------
@@ -180,9 +180,10 @@ Q:  What are '<C>' and '<F>' phase space classes?
 A:  Different ways to organize the phase space sampling.
     With equivalent generation+fiducial cuts, they should produce
     identical results. However, the (other) one can be faster
-    or numerically more stable with difficult amplitudes. In general,
-    we recommend '<C>' for continuum / continuum+resonance processes
-    and '<F>' for isolated resonances and high final state leg count continuum processes.
+    or numerically more stable with difficult amplitudes, usually <F> is more stable.
+    In general, one may use '<C>' for continuum / continuum+resonance processes
+    and '<F>' for isolated resonances, gamma-gamma processes and high
+    final state leg count continuum processes.
 
 
 Q:  I get different integrals with '<C>' and '<F>' algorithms.
@@ -269,7 +270,7 @@ A:  The soft central production amplitude parameters are such that an approximat
     in all cases (see /modeldata/TUNE/BRANCHING.json). Elastic "eikonal pomeron"
     parameters are tuned with better accuracy to high energy elastic dsigma/dt.
     Low energy data seems to require additional parametrizations (reggeology), which we
-    are not currently interested to fit. My ultimate goal is to find minimal
+    are not currently interested to fit. The ultimate goal is to find minimal
     descriptions, better theoretical understanding of (high energy) data, not a perfect fit.
 
 

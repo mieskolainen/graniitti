@@ -5,12 +5,12 @@
 //
 // mikael.mieskolainen@cern.ch, 2019
 {
-  
+
   // ----------------------------------------------------------------------
   // GENERAL setup
-  
+
   "GENERALPARAM" : {
-    
+
     "OUTPUT"     : "test",      // Output filename
     "FORMAT"     : "hepmc3",    // hepmc3, hepmc2, hepevt
     "CORES"      : 0,           // Number of CPU threads (0 for automatic)
@@ -19,12 +19,12 @@
     "WEIGHTED"   : false,       // Weighted events (default false)
     "MODELPARAM" : "TUNE0"      // General model tune
   },
-  
+
   // ----------------------------------------------------------------------
   // Process setup
-  
+
   "PROCESSPARAM" : {
-    
+
     "BEAM"    : ["p+","p+"],    // Beam PDG-ID / Name
     "ENERGY"  : [6500, 6500],   // Beam energy in the lab (GeV)
     //"PROCESS" : "PP[CON]<C> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-}", // Process mode
@@ -36,17 +36,17 @@
     "HIST"    : 2,              // On-the-flight histograms (0 = off,1,2)
     "RNDSEED" : 12345678        // Random seed (int32)
   },
-  
+
   // ----------------------------------------------------------------------
   // Monte Carlo integrator setup
-  
+
   "INTEGRALPARAM" : {
-    
+
     // Loop integration
     "POMLOOP" : {
       "ND" : 0                // Loop integral discretization
     },
-    
+
     // VEGAS integrator
     "VEGAS" : {
 
@@ -89,7 +89,7 @@
   // ----------------------------------------------------------------------
   // Central system fiducial cuts
   // All central system particles need to fullfill the conditions
-  
+
   "FIDCUTS" : {
 
     "active" : true,
@@ -106,7 +106,7 @@
     // Central system
     "SYSTEM" : {
 
-      "M"    : [0.0, 100000.0],  // Mass
+      "M"    : [0.1, 100000.0],  // Mass
       "Rap"  : [-10.0, 10.0],    // Rapidity
       "Pt"   : [0.0, 100000.0]   // Transverse momentum
     },
@@ -144,6 +144,5 @@
     }
     // Domain 2 (add arbitrary one more here) ...
   }
-
 
 }
