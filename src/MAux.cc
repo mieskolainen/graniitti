@@ -42,7 +42,7 @@ namespace aux {
 double      GetVersion() {       return 0.52; }
 std::string GetVersionType() {   return "beta"; }
 std::string GetVersionDate() {   return "02.08.2019"; }
-std::string GetVersionUpdate() { return "full QED gamma gamma -> l+l-"; }
+std::string GetVersionUpdate() { return "full QED gamma gamma -> l+l-, qqbar"; }
 
 // -------------------------------------------------------
 
