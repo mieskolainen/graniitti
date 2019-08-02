@@ -239,7 +239,7 @@ int main(int argc, char *argv[]) {
     }
     x = matoper::Normalized(x);
   };
-
+  
   /*
   auto printfunc = [] (const std::vector<double>& x) {
     for (std::size_t i = 0; i < x.size(); ++i) {
