@@ -25,8 +25,7 @@ class MH1 {
 
   long long int FillCount() const { return fills; }
   long long int SumBinCounts() const;
-  double        GetMean() const;
-  double        GetSquareMean() const;
+  double        GetMean(int power) const;
 
   std::pair<double, double> WeightMeanAndError() const;
 
@@ -98,6 +97,7 @@ class MH1 {
     h.fills     = this->fills + rhs.fills;
     h.underflow = this->underflow + rhs.underflow;
     h.overflow  = this->overflow + rhs.overflow;
+    h.nanflow   = this->nanflow + rhs.nanflow;
 
     // DATA
     h.weights  = this->weights;
@@ -122,6 +122,7 @@ class MH1 {
     h.fills     = this->fills - rhs.fills;
     h.underflow = this->underflow - rhs.underflow;
     h.overflow  = this->overflow - rhs.overflow;
+    h.nanflow  = this->nanflow - rhs.nanflow;
 
     // DATA
     h.weights  = this->weights;
@@ -146,6 +147,7 @@ class MH1 {
     h.fills     = this->fills;
     h.underflow = this->underflow;
     h.overflow  = this->overflow;
+    h.nanflow   = this->nanflow;
 
     // DATA
     h.weights  = this->weights;
@@ -170,6 +172,7 @@ class MH1 {
     h.fills     = this->fills;
     h.underflow = this->underflow;
     h.overflow  = this->overflow;
+    h.nanflow   = this->nanflow;
 
     // DATA
     h.weights  = this->weights;
@@ -226,6 +229,7 @@ class MH1 {
   long long int fills     = 0;
   long long int overflow  = 0;
   long long int underflow = 0;
+  long long int nanflow   = 0;
 
   // weights (in unweighted case weights = counts)
   std::vector<T>             weights;

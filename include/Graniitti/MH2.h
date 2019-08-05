@@ -34,6 +34,10 @@ class MH2 {
   void Fill(double xvalue, double yvalue, double weight);
   void Clear();
   std::pair<double, double> WeightMeanAndError() const;
+
+  double        GetMeanX(int power) const;
+  double        GetMeanY(int power) const;
+
   double        SumWeights() const;
   double        SumWeights2() const;
   long long int SumBinCounts() const;
@@ -61,12 +65,12 @@ class MH2 {
     if ((this->XBINS != rhs.XBINS) || (this->YBINS != rhs.YBINS)) {
       throw std::domain_error("MH2 + operator: Histograms with different number of bins");
     }
-
     MH2 h(this->XBINS, this->XMIN, this->XMAX, this->YBINS, this->YMIN, this->YMAX, this->name);
 
     h.fills     = this->fills + rhs.fills;
     h.underflow = {this->underflow[0] + rhs.underflow[0], this->underflow[1] + rhs.underflow[1]};
     h.overflow  = {this->overflow[0] + rhs.overflow[0], this->overflow[1] + rhs.overflow[1]};
+    h.nanflow   = this->nanflow + rhs.nanflow;
 
     // DATA
     h.weights  = this->weights + rhs.weights;
@@ -131,6 +135,7 @@ class MH2 {
   long long int              fills     = 0;
   std::vector<long long int> overflow  = {0, 0};
   std::vector<long long int> underflow = {0, 0};
+  long long int                nanflow = 0;
 
   // Logarithmic binning
   bool LOGX = false;

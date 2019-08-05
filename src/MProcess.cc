@@ -1396,60 +1396,6 @@ void MProcess::PrintFiducialCuts() const {
   std::cout << std::endl;
 }
 
-/*
-bool MProcess::B5Getgra::LORENTZSCALARs() {
-
-  // 5 Lorentz scalars:
-  //
-  //      t1
-  // ----------->              lts.pf[1]
-  //      |  s10 (s1)
-  //  s   |-------> shat (s0)  lts.pf[0]
-  //      |  s20 (s2)
-  // ----------->              lts.pf[2]
-  //      t2
-
-  // s-type scalars
-  lts.ss[1][0] = (lts.pfinal[1] + lts.pfinal[0]).M2();
-  lts.ss[2][0] = (lts.pfinal[2] + lts.pfinal[0]).M2();
-  lts.s1 = lts.ss[1][0];
-  lts.s2 = lts.ss[2][0];
-
-  lts.m2    = lts.pfinal[0].M2();
-  lts.s_hat = lts.m2;
-  lts.Y     = lts.pfinal[0].Rap();
-  lts.Pt    = lts.pfinal[0].Pt();
-
-  // t-type scalars
-  lts.t1 = (lts.pbeam1 - lts.pfinal[1]).M2();
-  lts.t2 = (lts.pbeam2 - lts.pfinal[2]).M2();
-
-  // For 2-body central process
-  lts.t_hat = (lts.pbeam1 - lts.pfinal[1] - lts.decaytree[0].p4).M2(  ); // that
-  lts.u_hat = (lts.pbeam1 - lts.pfinal[1] - lts.decaytree[1].p4).M2(  ); // uhat
-
-  // Bjorken-x
-  lts.x1 = (1.0 - lts.pfinal[1].Pz() / lts.pbeam1.Pz() );
-  lts.x2 = (1.0 - lts.pfinal[2].Pz() / lts.pbeam2.Pz() );
-
-  // Propagator vectors
-  lts.q1 = lts.pbeam1 - lts.pfinal[1];
-  lts.q2 = lts.pbeam2 - lts.pfinal[2];
-
-  // Propagator pt
-  lts.qt1 = lts.q1.Pt();
-  lts.qt2 = lts.q2.Pt();
-
-  // Test scalars
-  if ( lts.s1 > lts.s || lts.s1 < 0) return false;
-  if ( lts.s2 > lts.s || lts.s2 < 0) return false;
-  if ( lts.m2  > lts.s) return false;
-  if ( lts.t1  > 0) return false;
-  if ( lts.t2  > 0) return false;
-
-  return true;
-}
-*/
 
 // Build and check Lorentz scalars
 // Input as the number of final states
@@ -1490,7 +1436,7 @@ bool MProcess::GetLorentzScalars(unsigned int Nf) {
   lts.s1 = lts.ss[1][0];
   lts.s2 = lts.ss[2][0];
   if (lts.s1 < 0 || lts.s2 < 0) { return false; }
-
+  
   // ------------------------------------------------------------------
 
   // t-type Lorentz scalars -->

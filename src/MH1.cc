@@ -112,14 +112,13 @@ void MH1<T>::Print(double width) const {
   // Print statistics
   std::cout << "<binned statistics>" << std::endl;
   std::pair<double, double> valerr = WeightMeanAndError();
-  printf(" <W> = %0.3E +- %0.3E \n", valerr.first, valerr.second);
+  printf(" <W> = %0.3E +- %0.3E  [F = %lld | U/O = %lld/%lld]\n",
+    valerr.first, valerr.second, fills, underflow, overflow);
 
-  const double mean   = GetMean();
-  const double sqmean = GetSquareMean();
-  printf(
-      " <X> = %0.3f, <X^2> = %0.3f, <X^2> - <X>^2 = %0.3f [F = %lld | "
-      "U/O = %lld/%lld] \n",
-      mean, sqmean, sqmean - std::pow(mean, 2), fills, underflow, overflow);
+  const double mean   = GetMean(1);
+  const double sqmean = GetMean(2);
+  printf(" <X> = %0.3f, <X^2> = %0.3f, <X^2> - <X>^2 = %0.3f\n",
+      mean, sqmean, sqmean - std::pow(mean, 2));
 
   std::cout << std::endl;
 }
@@ -147,44 +146,18 @@ void MH1<T>::GetXPositiveDefinite(std::valarray<double> &x, std::valarray<double
 
 // Histogram mean (based on binned values)
 template <class T>
-double MH1<T>::GetMean() const {
+double MH1<T>::GetMean(int power) const {
   double       sum      = 0.0;
   double       norm     = 0.0;  // Normalization
   const double binwidth = (XMAX - XMIN) / XBINS;
 
   for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
-    const double value  = binwidth * (i + 1) - binwidth / 2.0 + XMIN;
+    const double value  = std::pow(binwidth * (i + 1) - binwidth / 2.0 + XMIN, power);
     const double weight = GetPositiveDefinite(i);
     sum += weight * value;
     norm += weight;
   }
-
-  if (norm > 0) {
-    return sum / norm;
-  } else {
-    return 0.0;
-  }
-}
-
-// Histogram mean squared (based on binned values)
-template <class T>
-double MH1<T>::GetSquareMean() const {
-  double       sum      = 0.0;
-  double       norm     = 0.0;  // Normalization
-  const double binwidth = (XMAX - XMIN) / XBINS;
-
-  for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
-    const double value  = std::pow(binwidth * (i + 1) - binwidth / 2.0 + XMIN, 2);
-    const double weight = GetPositiveDefinite(i);
-    sum += weight * value;
-    norm += weight;
-  }
-
-  if (norm > 0) {
-    return sum / norm;
-  } else {
-    return 0.0;
-  }
+  if (norm > 0) { return sum / norm; } else { return 0.0; }
 }
 
 template <class T>
@@ -203,6 +176,7 @@ void MH1<T>::Fill(double xvalue) {
 // Weighted fill
 template <class T>
 void MH1<T>::Fill(double xvalue, T weight) {
+
   if (!FILLBUFF) {  // Normal filling
 
     fills += 1;
@@ -210,6 +184,7 @@ void MH1<T>::Fill(double xvalue, T weight) {
     // Find out bin
     const int idx = GetIdx(xvalue, XMIN, XMAX, XBINS, LOGX);
 
+    if (idx == -3) { nanflow += 1; }
     if (idx == -1) { underflow += 1; }
     if (idx == -2) { overflow += 1; }
 
@@ -248,14 +223,23 @@ void MH1<T>::FlushBuffer() {
     }
     if (sumW > 0) { var /= sumW; }
 
-    // Minimum
-    auto         it     = std::min_element(buff_values.begin(), buff_values.end());
-    const double minval = *it;
+    // Minimum and maximum
+    auto         it1     = std::min_element(buff_values.begin(), buff_values.end());
+    auto         it2     = std::max_element(buff_values.begin(), buff_values.end());
+    const double minval = *it1;
+    const double maxval = *it2;
 
     // Set new histogram bounds
     const double std  = std::sqrt(std::abs(var));
+
     double       xmin = mu - 2.5 * std;
     double       xmax = mu + 2.5 * std;
+
+    // A numerical failure may happen with variance calculation, then use this
+    if (std::isnan(xmin) || std::isnan(xmax)) {
+      xmin = minval;
+      xmax = maxval;
+    }
 
     // If symmetric setup set by user
     if (AUTOSYMMETRY) {
@@ -313,6 +297,7 @@ void MH1<T>::Clear() {
   fills     = 0;
   underflow = 0;
   overflow  = 0;
+  nanflow   = 0;
 }
 
 // Sum over all histogram bin weights
@@ -469,6 +454,8 @@ double MH1<T>::GetBinXVal(int idx, int boundary) const {
 // Overflow  returns -2
 template <class T>
 int MH1<T>::GetIdx(double value, double minval, double maxval, int nbins, bool logbins) const {
+
+  if (std::isnan(value) || std::isinf(value)) { return -3; }
   if (value < minval) { return -1; }  // underflow
   if (value > maxval) { return -2; }  // overflow
 
