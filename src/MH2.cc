@@ -298,7 +298,7 @@ double MH2::GetMeanY(int power) const {
   double       norm     = 0.0;  // Normalization
   const double binwidth = (YMAX - YMIN) / YBINS;
   for (std::size_t j = 0; j < static_cast<unsigned int>(YBINS); ++j) {
-    const double value  = std::pow(binwidth * (j + 1) - binwidth / 2.0 + XMIN, power);
+    const double value  = std::pow(binwidth * (j + 1) - binwidth / 2.0 + YMIN, power);
     for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
       const double weight = GetBinWeight(i,j);
       sum  += weight * value;
