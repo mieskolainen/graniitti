@@ -308,36 +308,14 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
 
   // ------------------------------------------------------------------
 
-  // Spinors (2 helicities)
+  // Incoming and outgoing proton spinors (2 helicities)
   const std::array<std::vector<std::complex<double>>, 2> u_a = SpinorStates(pa, "u");
   const std::array<std::vector<std::complex<double>>, 2> u_b = SpinorStates(pb, "u");
 
   const std::array<std::vector<std::complex<double>>, 2> ubar_1 = SpinorStates(p1, "ubar");
   const std::array<std::vector<std::complex<double>>, 2> ubar_2 = SpinorStates(p2, "ubar");
 
-  // Massive polarization vectors (3 helicities)
-  const std::array<Tensor1<std::complex<double>, 4>, 3> eps_3_conj = Spin1States(p3, "conj");
-  const std::array<Tensor1<std::complex<double>, 4>, 3> eps_4_conj = Spin1States(p4, "conj");
-
   // ------------------------------------------------------------------
-
-  // t-channel Pomeron propagators
-  const Tensor4<std::complex<double>, 4, 4, 4, 4> iDP_13 = iD_P(lts.ss[1][3], lts.t1);
-  const Tensor4<std::complex<double>, 4, 4, 4, 4> iDP_24 = iD_P(lts.ss[2][4], lts.t2);
-
-  // u-channel Pomeron propagators
-  const Tensor4<std::complex<double>, 4, 4, 4, 4> iDP_14 = iD_P(lts.ss[1][4], lts.t1);
-  const Tensor4<std::complex<double>, 4, 4, 4, 4> iDP_23 = iD_P(lts.ss[2][3], lts.t2);
-
-  // ------------------------------------------------------------------
-
-  // Fermion propagator
-  const MMatrix<std::complex<double>> iSF_t = iD_F(pt, M_);
-  const MMatrix<std::complex<double>> iSF_u = iD_F(pu, M_);
-
-  // Central spinors (2 helicities)
-  const std::array<std::vector<std::complex<double>>, 2> v_3    = SpinorStates(p3, "v");
-  const std::array<std::vector<std::complex<double>>, 2> ubar_4 = SpinorStates(p4, "ubar");
 
   // Reset
   lts.hamp.clear();
@@ -354,7 +332,7 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
   FTensor::Index<'k', 4> mu2;
   FTensor::Index<'l', 4> nu2;
 
-  // DEDUCE mode
+  // DEDUCE subprocess
   std::string SPINMODE;
   if        (lts.decaytree[0].p.spinX2 == 0 && lts.decaytree[1].p.spinX2 == 0) {
     SPINMODE = "2xS";
@@ -386,6 +364,15 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
     const Tensor2<std::complex<double>,4,4>    iD_1 = iD_y(lts.t1);
     const Tensor2<std::complex<double>,4,4>    iD_2 = iD_y(lts.t2);
 
+    // Fermion propagator
+    const MMatrix<std::complex<double>> iSF_t = iD_F(pt, M_);
+    const MMatrix<std::complex<double>> iSF_u = iD_F(pu, M_);
+
+    // Central spinors (2 helicities)
+    const std::array<std::vector<std::complex<double>>, 2> v_3    = SpinorStates(p3, "v");
+    const std::array<std::vector<std::complex<double>>, 2> ubar_4 = SpinorStates(p4, "ubar");
+
+
     double FACTOR = 1.0;
     // ------------------------------------------------------------------
     // quark pair (charge 1/3 or 2/3), apply charge and color factors
@@ -415,6 +402,18 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
   
     continue; // skip parts below, only for Pomeron amplitudes
   }
+
+  // ------------------------------------------------------------------
+
+  // t-channel Pomeron propagators
+  const Tensor4<std::complex<double>, 4, 4, 4, 4> iDP_13 = iD_P(lts.ss[1][3], lts.t1);
+  const Tensor4<std::complex<double>, 4, 4, 4, 4> iDP_24 = iD_P(lts.ss[2][4], lts.t2);
+
+  // u-channel Pomeron propagators
+  const Tensor4<std::complex<double>, 4, 4, 4, 4> iDP_14 = iD_P(lts.ss[1][4], lts.t1);
+  const Tensor4<std::complex<double>, 4, 4, 4, 4> iDP_23 = iD_P(lts.ss[2][3], lts.t2);
+
+  // ------------------------------------------------------------------
 
   // Full proton-Pomeron-proton spinor structure (upper and lower vertex)
   const Tensor2<std::complex<double>,4,4> iG_1a = iG_Ppp(p1, pa, ubar_1[h1], u_a[ha]);
@@ -469,6 +468,14 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
   // 2 x fermion
   else if (SPINMODE == "2xF") {
 
+    // Fermion propagator
+    const MMatrix<std::complex<double>> iSF_t = iD_F(pt, M_);
+    const MMatrix<std::complex<double>> iSF_u = iD_F(pu, M_);
+
+    // Central spinors (2 helicities)
+    const std::array<std::vector<std::complex<double>>, 2> v_3    = SpinorStates(p3, "v");
+    const std::array<std::vector<std::complex<double>>, 2> ubar_4 = SpinorStates(p4, "ubar");
+    
     /*
     auto FF = [] (double p2, double M02) {
       const double lambda2 = 1.0; // GeV^2
@@ -515,6 +522,10 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
   // ==============================================================
   // 2 x vector meson
   else if (SPINMODE == "2xV") {
+
+    // Massive polarization vectors (3 helicities)
+    const std::array<Tensor1<std::complex<double>, 4>, 3> eps_3_conj = Spin1States(p3, "conj");
+    const std::array<Tensor1<std::complex<double>, 4>, 3> eps_4_conj = Spin1States(p4, "conj");
 
     // t-channel blocks
     const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_tA = iG_Pvv(pt, -p3);
