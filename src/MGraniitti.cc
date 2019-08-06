@@ -579,7 +579,6 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
         }
       }
     }
-    
     proc->SetResonances(RESONANCES);
 
     // Setup resonance branching (final step!)

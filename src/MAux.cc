@@ -657,7 +657,7 @@ std::vector<OneCMD> SplitCommands(const std::string &fullstr) {
       for (std::size_t i = 0; i < pos.size(); ++i) {
         const int start = pos[i] + 1;  // +1 so we skip @
         const int end   = (i < pos.size() - 1) ? pos[i + 1] : str.size();
-        subcmd.push_back(str.substr(start, end - start + 1));
+        subcmd.push_back(str.substr(start, end - start));
       }
     } else {
       subcmd.push_back(str.substr(1));  // +1 so we skip @

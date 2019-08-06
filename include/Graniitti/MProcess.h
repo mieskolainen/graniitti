@@ -101,21 +101,19 @@ class MProcess : public MUserHistograms {
   bool                 GetISOLATE() { return ISOLATE; }
   void SetFLATMASS2(bool in) {
     if (in == true) {
-      aux::PrintWarning();
+      aux::PrintNotice();
       std::cout << rang::fg::red << "MProcess::SetFLATMASS2: Set flat in mass^2 "
-                                    "sampling in decay trees : true"
+                                    "sampling in decay trees: true"
                 << rang::fg::reset << std::endl;
     }
     FLATMASS2 = in;
   }
   bool GetFLATMASS2() { return FLATMASS2; }
   void SetOFFSHELL(double in) {
-    if (in == true) {
-      aux::PrintWarning();
-      std::cout << rang::fg::red << "MProcess::SetOFFSHELL: Set number of "
-                                    "decay widths in decay trees : "
-                << in << rang::fg::reset << std::endl;
-    }
+    aux::PrintNotice();
+    std::cout << rang::fg::red << "MProcess::SetOFFSHELL: Set number of "
+                                  "decay widths in decay trees: "
+              << in << rang::fg::reset << std::endl;
     OFFSHELL = in;
   }
   double GetOFFSHELL() { return OFFSHELL; }
@@ -123,7 +121,7 @@ class MProcess : public MUserHistograms {
   // Set common Lorentz frame for all resonances
   void SetFRAME(const std::string &FRAME) {
     std::cout << rang::fg::red << "MProcess::SetFRAME: Set common Lorentz "
-                                  "frame for the resonance decays : "
+                                  "frame for the resonance decays: "
               << FRAME << rang::fg::reset << std::endl;
     for (const auto &x : lts.RESONANCES) { lts.RESONANCES[x.first].hc.FRAME = FRAME; }
   }
@@ -180,7 +178,7 @@ class MProcess : public MUserHistograms {
   // Set flat matrix element mode
   void SetFLATAMP(int in) {
     if (in > 0) {
-      aux::PrintWarning();
+      aux::PrintNotice();
       std::cout << rang::fg::red << "MProcess::SetFLATAMP: Flat matrix element FLATAMP : " << in
                 << rang::fg::reset << std::endl;
     }
