@@ -196,7 +196,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
 
       // No decay treatment
       if (lts.decaytree[0].legs.size() == 0) {
-        
+
         throw std::invalid_argument("MTensorPomeron::ME3: [S decay] Please add decay daughters for intermediate vectors");
 
       // Vector decay treatment
@@ -261,7 +261,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
 
   // Pomeron-Pomeron-Tensor coupling
   } else if (J == 2) {
-    
+
     // Rank-6 tensor structure
     const MTensor<std::complex<double>> iGPPf2 = iG_PPT_total(lts.q1, lts.q2, M0, resonance.g_Tensor);
 
@@ -1585,7 +1585,7 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_f0vv(const M4Vec& p3, con
 }
 
 // Vector (Massive) - Pseudoscalar - Pseudoscalar vertex function
-// i\Gamma_\mu(k1,k2)
+// i\Gamma^\mu(k1,k2)
 //
 // Input as contravariant (upper index) 4-vectors
 //

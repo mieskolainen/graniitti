@@ -1855,16 +1855,18 @@ void MGraniitti::PrintStatistics(unsigned int N) {
     // Print recursively
     double product = 1.0;
     double product2pi = 1.0;
-    int N_final = 2;
+    int N_final = 2; // forward legs == 2
     for (std::size_t i = 0; i < proc->lts.decaytree.size(); ++i) {
       proc->PrintPhaseSpace(proc->lts.decaytree[i], product, product2pi, N_final);
       std::cout << std::endl;
     }
     if (product != 1.0) {
       printf("{2->%d cross section}:             %0.3E barn \n", N_final, stat.sigma * product / product2pi);
-      printf("Obtained via phase space factorization \n");
+      printf("Obtained via phase space factorization \\prod_i [ LIPS_i x 1/(2PI) ]\n");
+      printf("\n");
+      printf("** Use 2->%d cross-section with full decay structure amplitudes,         **\n", N_final);
+      printf("** otherwise use 2->%d cross-section and apply branching ratios manually **\n", N_leg);
     }
-    
     gra::aux::PrintBar("-");
 
     std::cout << std::endl;
