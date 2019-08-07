@@ -645,7 +645,7 @@ std::array<std::vector<std::complex<double>>, 2> MDirac::SpinorStates(
 
 // Construct Massive Spin-1 polarization vectors (m = -1,0,1) [indexing with
 // 0,1,2]
-std::array<Tensor1<std::complex<double>, 4>, 3> MDirac::Spin1States(
+std::array<Tensor1<std::complex<double>, 4>, 3> MDirac::MassiveSpin1States(
     const M4Vec &p, std::string type) const {
   std::array<Tensor1<std::complex<double>, 4>, 3> eps;
   const int lambda[3] = {-1, 0, 1};

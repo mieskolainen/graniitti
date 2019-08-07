@@ -1829,15 +1829,10 @@ void MGraniitti::PrintStatistics(unsigned int N) {
       }
       std::cout << std::endl;
 
-      // Collect out phase space weight recursively
+      // Print out phase space weight
       printf("{1->%lu LIPS}:                      %0.3E +- %0.3E \n", proc->lts.decaytree.size(),
              proc->lts.DW_sum.Integral(), proc->lts.DW_sum.IntegralError());
-
-      for (std::size_t i = 0; i < proc->lts.decaytree.size(); ++i) {
-        proc->PrintPhaseSpace(proc->lts.decaytree[i]);
-        std::cout << std::endl;
-      }
-
+    
       // Recursion relation based (phase space factorization):
       // d^N PS(s; p_1, p2, ...p_N) = (1/(2*PI)) * d^3 PS(s;
       // p1,p2,p3) d^{N-2} PS(M^2; p4,p5,..,pN) dM^2
@@ -1856,6 +1851,19 @@ void MGraniitti::PrintStatistics(unsigned int N) {
             "isolation ** \n");
       }
     }
+
+    // Print recursively
+    double product = 1.0;
+    double product2pi = 1.0;
+    int N_final = 2;
+    for (std::size_t i = 0; i < proc->lts.decaytree.size(); ++i) {
+      proc->PrintPhaseSpace(proc->lts.decaytree[i], product, product2pi, N_final);
+      std::cout << std::endl;
+    }
+    if (product != 1.0) {
+      printf("{2->%d cross section}:             %0.3E barn \n", N_final, stat.sigma * product / product2pi);
+    }
+
     gra::aux::PrintBar("-");
 
     std::cout << std::endl;

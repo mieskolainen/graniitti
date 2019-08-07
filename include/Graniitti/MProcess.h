@@ -212,7 +212,7 @@ class MProcess : public MUserHistograms {
   gra::VETOCUT vetocuts;  // Veto cuts
 
   void PrintDecayTree(const gra::MDecayBranch &branch) const;
-  void PrintPhaseSpace(const gra::MDecayBranch &branch) const;
+  void PrintPhaseSpace(const gra::MDecayBranch &branch, double& product, double& product2pi, int& N_final) const;
 
   // Random numbers (keep it public for seeding)
   MRandom random;

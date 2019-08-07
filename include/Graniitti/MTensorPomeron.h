@@ -53,8 +53,7 @@ class MTensorPomeron : public MDirac {
   FTensor::Tensor2<std::complex<double>, 4, 4> iG_vv2psps(const gra::LORENTZSCALAR &lts) const;
 
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_PPS_total(
-      const M4Vec &q1, const M4Vec &q2, double M0, const std::string &mode,
-      const std::vector<double> &g_PPS) const;
+      const M4Vec &q1, const M4Vec &q2, double M0, const std::string &mode, const std::vector<double> &g_PPS) const;
   MTensor<std::complex<double>> iG_PPT_total(const M4Vec &q1, const M4Vec &q2, double M0,
                                              const std::vector<double> &g_PPT) const;
 
@@ -88,7 +87,7 @@ class MTensorPomeron : public MDirac {
   std::complex<double>                               iG_f0ss(const M4Vec& p3, const M4Vec& p4, double M0, double g1) const ;
   FTensor::Tensor2<std::complex<double>, 4, 4>       iG_f0vv(const M4Vec& p3, const M4Vec& p4, double M0, double g1, double g2) const;
 
-  FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_psvv(const M4Vec &p3, const M4Vec &p4, double M0, double g1) const;
+  FTensor::Tensor2<std::complex<double>, 4, 4>       iG_psvv(const M4Vec &p3, const M4Vec &p4, double M0, double g1) const;
   FTensor::Tensor1<std::complex<double>, 4>          iG_vpsps(const M4Vec &k1, const M4Vec &k2, double M0, double g1) const;
 
   FTensor::Tensor2<std::complex<double>, 4, 4>       iG_f2psps(const M4Vec &k1, const M4Vec &k2, double M0, double g1) const;
@@ -97,16 +96,21 @@ class MTensorPomeron : public MDirac {
 
   FTensor::Tensor2<std::complex<double>, 4, 4> yV(std::string type) const;
 
+
+  std::vector<std::complex<double>>            MassiveSpin1PolSum(const FTensor::Tensor2<std::complex<double>, 4,4>& M,
+                                                                  const M4Vec& p3, const M4Vec& p4) const;
+
+
   // Propagators
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iD_P(double s, double t) const;
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iD_2R(double s, double t) const;
-  FTensor::Tensor2<std::complex<double>, 4, 4> iD_O(double s, double t) const;
-  FTensor::Tensor2<std::complex<double>, 4, 4> iD_1R(double s, double t) const;
+  FTensor::Tensor2<std::complex<double>, 4, 4>       iD_O(double s, double t) const;
+  FTensor::Tensor2<std::complex<double>, 4, 4>       iD_1R(double s, double t) const;
 
-  FTensor::Tensor2<std::complex<double>, 4, 4> iD_V(const M4Vec &p, double M0, double s34) const;
+  FTensor::Tensor2<std::complex<double>, 4, 4>       iD_V(const M4Vec &p, double M0, double s34) const;
   std::complex<double> iD_MES0(const M4Vec &p, double M0) const;
   std::complex<double> iD_MES(const M4Vec &p, double M0, double Gamma, bool BW_ON) const;
-  FTensor::Tensor2<std::complex<double>, 4, 4> iD_VMES(const M4Vec &p, double M0,
+  FTensor::Tensor2<std::complex<double>, 4, 4>       iD_VMES(const M4Vec &p, double M0,
                                                        double Gamma, bool INDEX_UP, bool BW_ON) const;
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iD_TMES(const M4Vec &p, double M0,
                                                              double Gamma, bool INDEX_UP, bool BW_ON) const;

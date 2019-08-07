@@ -1188,15 +1188,20 @@ void MProcess::PrintDecayTree(const gra::MDecayBranch &branch) const {
 }
 
 // Recursive function to plot out the decay tree
-void MProcess::PrintPhaseSpace(const gra::MDecayBranch &branch) const {
+void MProcess::PrintPhaseSpace(const gra::MDecayBranch &branch, double& product, double& product2pi, int& N_final) const {
   std::string spaces(branch.depth * 2, ' ');  // Give empty space
   std::string lines = spaces + "|---";
 
   if (branch.W.GetW() > 0) {  // There is decay information
     printf("%s> \t {1->%lu LIPS}:  %0.3E +- %0.3E \n", lines.c_str(), branch.legs.size(),
            branch.W.Integral(), branch.W.IntegralError());
+    product    *= branch.W.Integral();
+    product2pi *= (2*math::PI);
   }
-  for (const auto &i : indices(branch.legs)) { PrintPhaseSpace(branch.legs[i]); }
+  for (const auto &i : indices(branch.legs)) {
+    PrintPhaseSpace(branch.legs[i], product, product2pi, N_final);
+  }
+  if (branch.legs.size() == 0) { ++N_final; } // Final state particle
 }
 
 // Recursive decay tree kinematics (called event by event from inhereting

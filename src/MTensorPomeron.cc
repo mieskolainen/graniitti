@@ -174,21 +174,21 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
 
     cvtx = iG_PPS_total(lts.q1, lts.q2, M0, "scalar", resonance.g_Tensor);
 
-    // Scalar BW-propagator
+    // C-number propagator
     const bool BW_ON = true;
     std::complex<double> iD = iD_MES(lts.pfinal[0], M0, Gamma, BW_ON);
 
     std::complex<double> iDECAY = 0.0;
 
     // Pseudoscalar pair decay
-    if (lts.decaytree[0].p.spinX2 == 0) {
+    if      (lts.decaytree[0].p.spinX2 == 0 && lts.decaytree[1].p.spinX2 == 0) {
 
       double g1 = resonance.g_decay;
-      iDECAY = iG_f0ss(lts.decaytree[0].p4, lts.decaytree[1].p4, M0, resonance.g_decay);
+      iDECAY = iG_f0ss(lts.decaytree[0].p4, lts.decaytree[1].p4, M0, g1);
     }
-    
-    // Vector pair decay
-    else if (lts.decaytree[0].p.spinX2 == 2) {
+
+    // Massive vector pair decay
+    else if (lts.decaytree[0].p.spinX2 == 2 && lts.decaytree[1].p.spinX2 == 2) {
 
       double g1 = 1.0;
       double g2 = 1.0;
@@ -196,18 +196,16 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
 
       // No decay treatment
       if (lts.decaytree[0].legs.size() == 0) {
-
-        throw std::invalid_argument("MTensorPomeron::ME3: Please add decay daughters");
+        
+        throw std::invalid_argument("MTensorPomeron::ME3: [S decay] Please add decay daughters for intermediate vectors");
 
       // Vector decay treatment
       } else {
 
+        // Contract to C-number
         const Tensor2<std::complex<double>, 4, 4> iGvv2psps = iG_vv2psps(lts);
-
-        // Contract
         iDECAY = iGf0vv(mu1, mu2) * iGvv2psps(mu1, mu2);
       }
-
     } else {
       throw std::invalid_argument("MTensorPomeron::ME3: Unknown decay mode for scalar resonance");
     }
@@ -231,8 +229,31 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     const bool BW_ON = true;
     std::complex<double> iD = iD_MES(lts.pfinal[0], M0, Gamma, BW_ON);
 
-    // Decay coupling constant
-    std::complex<double> iDECAY = resonance.g_decay;
+    std::complex<double> iDECAY = 0.0;
+
+    // Massive vector pair
+    if (lts.decaytree[0].p.spinX2 == 2 && lts.decaytree[1].p.spinX2 == 2 &&
+        lts.decaytree[0].p.pdg != 22   && lts.decaytree[1].p.mass != 22) {
+
+      double g1 = 1.0;
+      const Tensor2<std::complex<double>, 4, 4> iGpsvv = iG_psvv(p3, p4, M0, g1);
+
+      // No decay treatment
+      if (lts.decaytree[0].legs.size() == 0) {
+
+        throw std::invalid_argument("MTensorPomeron::ME3: [PS decay] Add decay daughters for intermediate massive vectors");
+
+      // Vector decay treatment
+      } else {
+
+        // Contract to C-number
+        const Tensor2<std::complex<double>, 4, 4> iGvv2psps = iG_vv2psps(lts);
+        iDECAY = iGpsvv(mu1, mu2) * iGvv2psps(mu1, mu2);
+      }
+
+    } else {
+      throw std::invalid_argument("MTensorPomeron::ME3: Unknown decay mode for pseudoscalar resonance");
+    }
 
     FOR_EACH_4(LI);
     cvtx(u, v, k, l) *= iD * iDECAY;
@@ -240,7 +261,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
 
   // Pomeron-Pomeron-Tensor coupling
   } else if (J == 2) {
-
+    
     // Rank-6 tensor structure
     const MTensor<std::complex<double>> iGPPf2 = iG_PPT_total(lts.q1, lts.q2, M0, resonance.g_Tensor);
 
@@ -253,7 +274,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     Tensor2<std::complex<double>, 4, 4> iD;
 
     // Pseudoscalar pair decay
-    if (lts.decaytree[0].p.spinX2 == 0) {
+    if        (lts.decaytree[0].p.spinX2 == 0 && lts.decaytree[1].p.spinX2 == 0) {
 
       // f2 -> PS PS decay structure
       double g1 = resonance.g_decay;
@@ -262,8 +283,9 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
       // Contract
       iD(mu1, nu1) = iDf2(mu1, nu1, rho1, rho2) * iGf2psps(rho1, rho2);
       
-    // Vector pair decay
-    } else if (lts.decaytree[0].p.spinX2 == 2) {
+    // Massive vector pair decay
+    } else if (lts.decaytree[0].p.spinX2 == 2 && lts.decaytree[1].p.spinX2 == 2 &&
+               lts.decaytree[0].p.pdg != 22   && lts.decaytree[1].p.mass != 22) {
 
       // f2 -> V V decay structure
       double g1 = 1.0;
@@ -273,7 +295,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
       // No decay treatment
       if (lts.decaytree[0].legs.size() == 0) {
 
-        throw std::invalid_argument("MTensorPomeron::ME3: Please add decay daughters");
+        throw std::invalid_argument("MTensorPomeron::ME3: [T decay] Add decay daughters for intermediate massive vectors");
 
       // Vector decay treatment
       } else {
@@ -284,6 +306,20 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
         A(alpha1, beta1) = iGf2vv(alpha1, beta1, rho1, rho2) * iGvv2psps(rho1, rho2);
         iD(mu1, nu1) = iDf2(mu1, nu1, alpha1, beta1) * A(alpha1, beta1);
       }
+
+    // Gamma pair decay
+    } else if (lts.decaytree[0].p.pdg == 22 && lts.decaytree[1].p.pdg == 22) { 
+
+      /*
+      
+      // Implement here ...
+      
+      // f2 -> yy decay structure
+      double g1 = 1.0;
+      double g2 = 1.0;
+      const Tensor4<std::complex<double>, 4, 4, 4, 4> iGf2yy = iG_f2yy(p3, p4, M0, g1, g2);
+      
+      */
 
     } else {
       throw std::invalid_argument("MTensorPomeron::ME3: Unknown decay mode for tensor resonance");
@@ -327,7 +363,6 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
   const std::complex<double> A = (-zi) * iG_1a(mu1, nu1) * iDP_1(mu1, nu1, alpha1, beta1) *
                                  cvtx(alpha1, beta1, alpha2, beta2) * iDP_2(alpha2, beta2, mu2, nu2) *
                                  iG_2b(mu2, nu2);
-
   lts.hamp.push_back(A);
 
   FOR_PP_HELICITY_END;
@@ -540,7 +575,7 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
     }
 
     // Full amplitude: iM = [ ... ]  <-> M = (-i)*[ ... ]
-    std::complex<double> M = (-zi) * (M_t + M_u);
+    const std::complex<double> M = (-zi) * (M_t + M_u);
     lts.hamp.push_back(M);
   }
 
@@ -583,7 +618,7 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
           M_u *= pow2(PARAM_REGGE::Baryon_FF(pu.M2(), pow2(M_)));
 
         // Full amplitude: iM = [ ... ]  <-> M = (-i)*[ ... ]
-        std::complex<double> M = (-zi) * (M_t + M_u);
+        const std::complex<double> M = (-zi) * (M_t + M_u);
         lts.hamp.push_back(M);
       }
     }
@@ -667,51 +702,15 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
     // No decay amplitude treatment
     } else {
 
-      // Massive polarization vectors (3 helicities)
-      const std::array<Tensor1<std::complex<double>, 4>, 3> eps_3_conj = Spin1States(p3, "conj");
-      const std::array<Tensor1<std::complex<double>, 4>, 3> eps_4_conj = Spin1States(p4, "conj");
-
       // Total amplitude: iM = [ ... ]  <-> M = (-i)*[ ... ]
       Tensor2<std::complex<double>, 4, 4> M;
       FOR_EACH_2(LI);
       M(u,v) = (-zi) * (M_t(u,v) + M_u(u,v));
       FOR_EACH_2_END;
 
-      const int OPTION = 2;
-
-      // Polarization sum
-      if (OPTION == 1) {
-        double Amp2 = 0.0;
-
-        FOR_EACH_4(LI);
-        const std::complex<double> contract = std::conj(M(u, v)) * M(k, l) * g[u][k] * g[v][l];
-        Amp2 += std::real(contract);  // real for casting to double
-        FOR_EACH_4_END;
-
-        lts.hamp.push_back(msqrt(Amp2)); // Phase information lost here
-      }
-      // --------------------------------------------------
-      
-      // Explicit polarization vectors, at x-section level equivalent with option #1
-      else if (OPTION == 2) {
-
-        // Massive polarization vectors (3 helicities)
-        const std::array<Tensor1<std::complex<double>, 4>, 3> eps_3_conj = Spin1States(p3, "conj");
-        const std::array<Tensor1<std::complex<double>, 4>, 3> eps_4_conj = Spin1States(p4, "conj");
-
-        // Loop over massive Spin-1 helicity states
-        for (const auto &h3 : indices(eps_3_conj)) {
-          for (const auto &h4 : indices(eps_4_conj)) {
-            
-            // Autocontraction of Lorentz indices
-            // To obtain the full helicity amplitude A(ha,hb,h1,h2,h3,h4)
-            const std::complex<double> amp =
-                eps_3_conj[h3](rho3) * eps_4_conj[h4](rho4) * M(rho3, rho4);
-
-            lts.hamp.push_back(amp); // Phase information retained
-          }
-        }
-      }
+      // Calculate helicity amplitudes
+      const std::vector<std::complex<double>> helamp = MassiveSpin1PolSum(M, p3, p4);
+      lts.hamp.insert(lts.hamp.end(), helamp.begin(), helamp.end());
     }
   } // 2xV
   
@@ -728,7 +727,52 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
 }
 
 
+// External massive spin-1 (vector) polarization sum
+//
+std::vector<std::complex<double>> MTensorPomeron::MassiveSpin1PolSum(const Tensor2<std::complex<double>,4,4>& M,
+                                                                     const M4Vec& p3, const M4Vec& p4) const {
+  FTensor::Index<'a', 4> rho3;
+  FTensor::Index<'b', 4> rho4;
+
+  std::vector<std::complex<double>> hamp;
+
+  const int OPTION = true;
+  
+  // Explicit polarization vectors, at x-section level equivalent with option #2
+  if (OPTION) {
+
+    // Massive polarization vectors (3 helicities)
+    const std::array<Tensor1<std::complex<double>, 4>, 3> eps_3_conj = MassiveSpin1States(p3, "conj");
+    const std::array<Tensor1<std::complex<double>, 4>, 3> eps_4_conj = MassiveSpin1States(p4, "conj");
+
+    // Loop over massive Spin-1 helicity states
+    for (const auto &h3 : indices(eps_3_conj)) {
+      for (const auto &h4 : indices(eps_4_conj)) {
+        
+        // Autocontraction
+        const std::complex<double> amp = eps_3_conj[h3](rho3) * eps_4_conj[h4](rho4) * M(rho3, rho4);
+        hamp.push_back(amp); // Phase information retained
+      }
+    }
+  } else {
+    // Polarization sum (completeness relation applied)
+    // already simplified expression => second terms vanishes and leaves only g[u][k] * g[v][l]
+    double Amp2 = 0.0;
+
+    FOR_EACH_4(LI);
+    const std::complex<double> contract = std::conj(M(u, v)) * M(k, l) * g[u][k] * g[v][l];
+    Amp2 += std::real(contract);     // real for casting to double
+    FOR_EACH_4_END;
+
+    hamp.push_back(msqrt(Amp2)); // Phase information lost here
+  }
+
+  return hamp;
+}
+
+
 // 2xvector -> 2xpseudoscalar decay block
+//
 Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_vv2psps(const gra::LORENTZSCALAR &lts) const {
 
   FTensor::Index<'e', 4> rho3;
@@ -1568,8 +1612,7 @@ Tensor1<std::complex<double>, 4> MTensorPomeron::iG_vpsps(const M4Vec &k1, const
 //
 // Input as contravariant (upper index) 4-vectors, M0 is the pseudoscalar on-shell mass
 // 
-Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_psvv(const M4Vec &p3,
-                                                                  const M4Vec &p4, double M0, double g1) const {
+Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_psvv(const M4Vec &p3, const M4Vec &p4, double M0, double g1) const {
   // Form FACTOR
   const double lambda2  = 1.0; // GeV^2 (normalization scale)
   auto F_psvv           = [&](double q2) { return std::exp(-(q2 - M0*M0) / lambda2); };
@@ -1577,10 +1620,17 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_psvv(const M4Vec &p
   const double               S0       = 1.0;   // Mass scale (GeV)
   const std::complex<double> FACTOR   = zi * g1 / (2 * S0) * F_psvv((p3+p4).M2());
 
-  Tensor4<std::complex<double>, 4,4,4,4> T;
-  FOR_EACH_4(LI);
-  T(u,v,k,l) = FACTOR * eps_lo(u,v,k,l) * p3[k] * p4[l];
-  FOR_EACH_4_END;
+  Tensor1<std::complex<double>, 4> p3_ = {p3[0], p3[1], p3[2], p3[3]};
+  Tensor1<std::complex<double>, 4> p4_ = {p4[0], p4[1], p4[2], p4[3]};  
+
+  FTensor::Index<'a', 4> mu;
+  FTensor::Index<'b', 4> nu;
+  FTensor::Index<'c', 4> rho;
+  FTensor::Index<'d', 4> sigma;
+
+  // Contract
+  Tensor2<std::complex<double>, 4,4> T;
+  T(mu,nu) =  FACTOR * p3_(rho) * p4_(sigma) * eps_lo(mu,nu,rho,sigma);
   
   return T;
 }
