@@ -1834,9 +1834,9 @@ void MGraniitti::PrintStatistics(unsigned int N) {
              proc->lts.DW_sum.Integral(), proc->lts.DW_sum.IntegralError());
     
       // Recursion relation based (phase space factorization):
-      // d^N PS(s; p_1, p2, ...p_N) = (1/(2*PI)) * d^3 PS(s;
-      // p1,p2,p3) d^{N-2} PS(M^2; p4,p5,..,pN) dM^2
-
+      // d^N PS(s; p_1, p2, ...p_N)
+      // = 1/(2*PI) * d^3 PS(s; p1,p2,p3) d^{N-2} PS(M^2; p4,p5,..,pN) dM^2
+      // 
       // Decaywidth = 1/(2M S) \int dPS |M_decay|^2, where M
       // = mother mass, S = final state symmetry factor
 
@@ -1848,7 +1848,7 @@ void MGraniitti::PrintStatistics(unsigned int N) {
         std::cout << std::endl;
         printf(
             "** Remember to use &> operator instead of -> for phase space "
-            "isolation ** \n");
+            "isolation ** \n\n");
       }
     }
 
@@ -1862,8 +1862,9 @@ void MGraniitti::PrintStatistics(unsigned int N) {
     }
     if (product != 1.0) {
       printf("{2->%d cross section}:             %0.3E barn \n", N_final, stat.sigma * product / product2pi);
+      printf("Obtained via phase space factorization \n");
     }
-
+    
     gra::aux::PrintBar("-");
 
     std::cout << std::endl;
