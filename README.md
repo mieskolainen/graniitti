@@ -13,7 +13,7 @@ See VERSION.json for the version information and automatic build status
 
 
 ### Installation and introduction at:
-## mieskolainen.github.io
+## https://mieskolainen.github.io
 
 
 mikael.mieskolainen@cern.ch, 2017-2019
