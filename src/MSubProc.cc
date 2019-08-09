@@ -241,12 +241,6 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
   } else if (CHANNEL == "RESTENSOR") {
     if (lts.decaytree.size() == 2) {
       static MTensorPomeron TensorPomeron;
-
-      if (lts.RESONANCES.begin()->second.p.spinX2 == 2) {
-        throw std::invalid_argument(
-            "MSubProc: RESTENSOR process does not currently support J = 1 "
-            "resonances");
-      }
       return TensorPomeron.ME3(lts, lts.RESONANCES.begin()->second);
 
     } else {
@@ -299,7 +293,9 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
 
       // Get total amplitude squared 1/4 \sum_h |A_h|^2
       double amp2 = 0.0;
-      for (const auto& i : aux::indices(lts.hamp)) { amp2 += gra::math::abs2(lts.hamp[i]); }
+      for (const auto& i : aux::indices(lts.hamp)) {
+        amp2 += gra::math::abs2(lts.hamp[i]);
+      }
       amp2 /= 4;  // Initial state helicity average
 
       return amp2;

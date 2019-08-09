@@ -24,13 +24,14 @@
   // Process setup
 
   "PROCESSPARAM" : {
-
+    
     "BEAM"    : ["p+","p+"],    // Beam PDG-ID / Name
-    "ENERGY"  : [6500, 6500],   // Beam energy in the lab (GeV)
+    "ENERGY"  : [3500, 3500],   // Beam energy in the lab (GeV)
     //"PROCESS" : "PP[CON]<C> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-}", // Process mode
     //"PROCESS" : "PP[RESTENSOR]<C> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-} @RES[f2_1270]{g0:1.0}", // Process mode
-    "PROCESS" : "PP[RESTENSOR]<C> -> pi+ pi- @RES[f2_1270]{g0:1.0}", // Process mode
-    "RES"     : ["f2_1270"],
+    //"PROCESS" : "PP[RESTENSOR]<C> -> pi+ pi- @RES[f2_1270]{g0:1.0}", // Process mode
+    "PROCESS" : "PP[RESTENSOR]<F> -> pi+ pi- @RES[rho_770]{g0:1.0}", // Process mode
+    "RES"     : ["rho_770"],
     "POMLOOP" : false,          // Eikonal Pomeron loop screening
     "NSTARS"  : 0,              // N* excitation (0 = elastic, 1 = single, 2 = double)
     "LHAPDF"  : "CT10nlo",      // LHAPDF parton distribution set
@@ -80,7 +81,7 @@
     },
     "<F>" : {
       "Rap" : [-2.5, 2.5],  // Rapidity boundaries of the system (<F> class)
-      "M"   : [1.0, 2.0]
+      "M"   : [0.0, 1.5]
     },
     "<Q>" : {
       "Xi"  : [0, 0.05]     // Invariant scale M^2/s (forward excitation)
@@ -98,7 +99,7 @@
      // Central system final states
     "PARTICLE" : {
 
-      "Eta"  : [-2.5, 2.5],      // Pseudorapidity
+      "Eta"  : [-0.9, 0.9],      // Pseudorapidity
       "Rap"  : [-10.0, 10.0],    // Rapidity
       "Pt"   : [0.1, 1000.0],    // Transverse momentum
       "Et"   : [0.0, 100000.0]   // Transverse energy
