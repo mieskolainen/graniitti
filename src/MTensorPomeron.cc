@@ -185,7 +185,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     // Pseudoscalar pair decay
     if      (lts.decaytree[0].p.spinX2 == 0 && lts.decaytree[1].p.spinX2 == 0) {
 
-      const double g1 = resonance.g_decay;
+      const double g1 = resonance.g_decay; // Use BR-derived one
       iDECAY = iG_f0ss(lts.decaytree[0].p4, lts.decaytree[1].p4, M0, g1);
     }
 
@@ -310,7 +310,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     if (lts.decaytree[0].p.spinX2 == 2 && lts.decaytree[1].p.spinX2 == 2 &&
         lts.decaytree[0].p.pdg != 22   && lts.decaytree[1].p.mass != 22) {
 
-      const double g1 = resonance.g_decay;
+      const double g1 = resonance.g_decay; // Use BR-derived one
       const Tensor2<std::complex<double>, 4, 4> iGpsvv = iG_psvv(p3, p4, M0, g1);
 
       // No decay treatment
