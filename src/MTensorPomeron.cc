@@ -308,9 +308,9 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     if (lts.decaytree[0].p.spinX2 == 2 && lts.decaytree[1].p.spinX2 == 2 &&
         lts.decaytree[0].p.pdg != 22   && lts.decaytree[1].p.mass != 22) {
 
-      double g1 = 1.0; // SET THIS UP!!!
+      const double g1 = resonance.g_decay;
       const Tensor2<std::complex<double>, 4, 4> iGpsvv = iG_psvv(p3, p4, M0, g1);
-
+      
       // No decay treatment
       if (lts.decaytree[0].legs.size() == 0) {
 
