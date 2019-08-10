@@ -353,7 +353,8 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     // Pseudoscalar pair decay
     if        (lts.decaytree[0].p.spinX2 == 0 && lts.decaytree[1].p.spinX2 == 0) {
       
-      double g1 = 9.26; // f2(1270) -> pi+pi- [TBD SET THIS ADAPTIVE!!]
+      // f2(1270) -> pi+pi- [TBD SET THIS ADAPTIVE!!]
+      double g1 = 9.26;
       const Tensor2<std::complex<double>, 4, 4> iGf2psps = iG_f2psps(p3, p4, M0, g1);
 
       // Contract
