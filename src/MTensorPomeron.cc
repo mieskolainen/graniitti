@@ -346,7 +346,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     const bool INDEX_UP = true;
     const bool BW_ON    = true;
     const Tensor4<std::complex<double>, 4, 4, 4, 4> iDf2 = iD_TMES(lts.pfinal[0], M0, Gamma, INDEX_UP, BW_ON);
-
+    
     // Total block
     Tensor2<std::complex<double>, 4, 4> iD;
 
