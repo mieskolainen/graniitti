@@ -1621,9 +1621,10 @@ class PARAM_RES {
 
   // -------------------------------------------------------------------
   // Tensor Pomeron couplings
-  std::vector<double> g_Tensor;
+  std::vector<double> g_Tensor; // Production couplings
+  double g_decay_tensor = 0.0;  // Decay (single number)
   // -------------------------------------------------------------------
-
+  
   // (Complex) production coupling constant
   std::complex<double> g = 0.0;
   

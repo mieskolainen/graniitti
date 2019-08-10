@@ -556,6 +556,9 @@ void MProcess::CalculateSymmetryFactor() {
 void MProcess::SetupBranching() {
   aux::PrintBar(".");
 
+  // Init once for speed
+  MTensorPomeron TensorPomeron;
+
   if (lts.RESONANCES.size() == 0) {  // Empty one is not treated
     std::cout << rang::fg::red << "MProcess::SetupBranching: lts.RESONANCES.size() == 0 !"
               << rang::fg::reset << std::endl;
@@ -705,6 +708,10 @@ void MProcess::SetupBranching() {
         double PS = gra::kinematics::PDW2body(pow2(res.p.mass), pow2(lts.decaytree[0].p.mass),
                                               pow2(lts.decaytree[1].p.mass), amp2, sym);
 
+        // ---------------------------------------------------------------
+        // Tensor Pomeron Model decay couplings
+        res.g_decay_tensor = TensorPomeron.GDecay(res.p.spinX2 / 2, res.p.mass, res.p.width, lts.decaytree[0].p.mass, res.BR);
+
         if (std::abs(PS) < 1e-9) {
           // Try again with higher mother mass, we might
           // be trying purely off-shell decay (such as f0(980) -> K+K-
@@ -714,6 +721,10 @@ void MProcess::SetupBranching() {
             PS = gra::kinematics::PDW2body(pow2(res.p.mass + i * res.p.width),
                                            pow2(lts.decaytree[0].p.mass),
                                            pow2(lts.decaytree[1].p.mass), amp2, sym);
+
+            // ---------------------------------------------------------------
+            // Tensor Pomeron Model decay couplings
+            res.g_decay_tensor = TensorPomeron.GDecay(res.p.spinX2 / 2, res.p.mass + i * res.p.width, res.p.width, lts.decaytree[0].p.mass, res.BR);
 
             if (PS > 1e-9) { break; }
           }
@@ -738,16 +749,20 @@ void MProcess::SetupBranching() {
           throw std::invalid_argument(str);
         }
 
+        // ---------------------------------------------------------------
+
         // 3,4,... body cases [NOT TREATED YET, phase space and matrix
         // element do not factorize there]
       } else {
         res.g_decay = 1.0;  // For the rest, put 1.0
+        res.g_decay_tensor = 1.0;
       }
 
       printf("(Mass, Full width):                (%0.3E, %0.3E GeV) \n", res.p.mass, res.p.width);
       printf("Branching ratio || Partial width:   %0.3E || %0.3E GeV \n", res.BR,
              res.BR * res.p.width);
-      printf("=> Effective decay vertex:          %0.3E GeV \n", res.g_decay);
+      printf("=> Computed decay coupling:                %0.3E \n", res.g_decay);
+      printf("=> Computed Tensor Pomeron decay coupling: %0.3E \n", res.g_decay_tensor);
 
       // Set resonance
       lts.RESONANCES[xpoint.first] = res;

@@ -109,6 +109,31 @@ using FTensor::Tensor4;
 
 namespace gra {
 
+
+// Return decay coupling constant for resonance (M,Gamma) with decay daughter mass mf
+// BR being the branching ratio BR = Width_partial / Width_total
+//
+// Mother (spin = 0/1/2) -> scalar / pseudoscalar daughters
+//
+double MTensorPomeron::GDecay(int J, double M, double Gamma, double mf, double BR) const {
+
+  const double S0 = 1.0; // Should be set as the same scale as in decay amplitudes iG[]
+  const double partialWidth = Gamma * BR;
+
+  if      (J == 0) {
+  return sqrt( partialWidth / (pow2(S0) / (16*PI*M) * sqrt(1 - 4*pow2(mf)/pow2(M))) );
+  }
+  else if (J == 1){
+  return sqrt( partialWidth / (1.0 / (192*PI*pow2(M)) * std::pow(pow2(M) - 4*pow2(mf), 3.0/2.0)) );
+  }
+  else if (J == 2) {
+  return sqrt( partialWidth / (M / (480*PI) * pow2(M/S0) * std::pow(1 - 4*pow2(mf)/pow2(M), 5.0/2.0)) );
+  }
+  else {
+    throw std::invalid_argument("MTensorPomeron::GDecay: Unknown input spin J = " + std::to_string(J));
+  }
+}
+
 // 2 -> 3 amplitudes
 //
 // return value: matrix element squared with helicities summed and averaged over
@@ -185,7 +210,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     // Pseudoscalar pair decay
     if      (lts.decaytree[0].p.spinX2 == 0 && lts.decaytree[1].p.spinX2 == 0) {
 
-      const double g1 = resonance.g_decay; // Use BR-derived one
+      const double g1 = resonance.g_decay_tensor;
       iDECAY = iG_f0ss(lts.decaytree[0].p4, lts.decaytree[1].p4, M0, g1);
     }
 
@@ -250,11 +275,9 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     const Tensor4<std::complex<double>, 4,4,4,4> iGPvv_2 = iG_Pvv(lts.pfinal[0], lts.q2, resonance.g_Tensor[0], resonance.g_Tensor[1]);
 
     // Vector-Pseudoscalar-Pseudoscalar coupling
-
-    // [TBD set this ADAPTIVE for phi->KK etc.!!!]
-    const double g1_vpsps = 11.51; // rho -> pipi
-    const Tensor1<std::complex<double>, 4>   iGvpsps     = iG_vpsps(p3, p4, M0, g1_vpsps);
-
+    const double g1 = resonance.g_decay_tensor;
+    const Tensor1<std::complex<double>, 4>   iGvpsps     = iG_vpsps(p3, p4, M0, g1);
+    
     // Two helicity states for incoming and outgoing protons
     FOR_PP_HELICITY;
 
@@ -310,7 +333,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     if (lts.decaytree[0].p.spinX2 == 2 && lts.decaytree[1].p.spinX2 == 2 &&
         lts.decaytree[0].p.pdg != 22   && lts.decaytree[1].p.mass != 22) {
 
-      const double g1 = resonance.g_decay; // Use BR-derived one
+      const double g1 = resonance.g_decay_tensor;
       const Tensor2<std::complex<double>, 4, 4> iGpsvv = iG_psvv(p3, p4, M0, g1);
 
       // No decay treatment
@@ -353,8 +376,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     // Pseudoscalar pair decay
     if        (lts.decaytree[0].p.spinX2 == 0 && lts.decaytree[1].p.spinX2 == 0) {
       
-      // f2(1270) -> pi+pi- [TBD SET THIS ADAPTIVE!!]
-      double g1 = 9.26;
+      double g1 = resonance.g_decay_tensor;
       const Tensor2<std::complex<double>, 4, 4> iGf2psps = iG_f2psps(p3, p4, M0, g1);
 
       // Contract

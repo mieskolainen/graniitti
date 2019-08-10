@@ -30,6 +30,9 @@ class MTensorPomeron : public MDirac {
   }
   ~MTensorPomeron() {}
 
+  // Decay coupling
+  double GDecay(int J, double M, double Gamma, double mf, double BR) const;
+
   // Amplitude squared
   double ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const;
   double ME4(gra::LORENTZSCALAR &lts) const;
