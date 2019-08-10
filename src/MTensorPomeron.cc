@@ -120,14 +120,16 @@ double MTensorPomeron::GDecay(int J, double M, double Gamma, double mf, double B
   const double S0 = 1.0; // Should be set as the same scale as in decay amplitudes iG[]
   const double partialWidth = Gamma * BR;
 
+  const double P = sqrt(1 - 4*pow2(mf/M));
+
   if      (J == 0) {
-  return sqrt( partialWidth / (pow2(S0) / (16*PI*M) * sqrt(1 - 4*pow2(mf)/pow2(M))) );
+  return sqrt( partialWidth / (1.0 / (16*PI*M) * pow2(S0) * P ));
   }
-  else if (J == 1){
-  return sqrt( partialWidth / (1.0 / (192*PI*pow2(M)) * std::pow(pow2(M) - 4*pow2(mf), 3.0/2.0)) );
+  else if (J == 1) {
+  return sqrt( partialWidth / (M / (192*PI) * math::pow3(P) ));
   }
   else if (J == 2) {
-  return sqrt( partialWidth / (M / (480*PI) * pow2(M/S0) * std::pow(1 - 4*pow2(mf)/pow2(M), 5.0/2.0)) );
+  return sqrt( partialWidth / (M / (480*PI) * pow2(M/S0) * math::pow5(P) ));
   }
   else {
     throw std::invalid_argument("MTensorPomeron::GDecay: Unknown input spin J = " + std::to_string(J));
