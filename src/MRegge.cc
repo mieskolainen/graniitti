@@ -765,10 +765,10 @@ std::complex<double> MRegge::PhotoME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &r
       gammaflux2 / msqrt(lts.x2) * common *
       PhotoProp(lts.s1, lts.t1, pow2(resonance.p.mass), lts.excite1, lts.pfinal[1].M2());
 
-  // Should sum here with negative sign (anti-symmetric initial state) ?
-  // Perhaps leave that as an option (TBD) [IMPROVE THIS PART]
+  // Should sum here with negative sign if proton-antiproton initial state (anti-symmetric)
+  // Implement thateave that as an option (TBD) [IMPROVE THIS PART]
   const std::complex<double> A_prod = (M1 + M2) * PARAM_REGGE::JPCoupling(lts, resonance);
-
+  
   // Spin and decay part
   const std::complex<double> A_decay = gra::spin::SpinAmp(lts, resonance);
 

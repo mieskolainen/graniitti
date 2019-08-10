@@ -43,8 +43,8 @@ MSubProc::MSubProc(const std::string &_ISTATE, const std::string &_CHANNEL, cons
 
   ConstructDescriptions(ISTATE);
 
-  // Construct 4 and 6 body Regge Ladder leg permutations
-  const int mode = 1;  // charged permutations
+  // Construct 4 and 6 body Regge Ladder leg combinatorial permutations
+  const int mode = 1;  // charged permutations +-
   permutations4_ = gra::math::GetAmpPerm(4, mode);
   permutations6_ = gra::math::GetAmpPerm(6, mode);
 
@@ -76,25 +76,25 @@ void MSubProc::ConstructDescriptions(const std::string &first) {
     channels.insert(std::pair<std::string, std::string>("RESTENSOR",
       "Regge resonance                             [Tensor Pomeron]      @@ UNDER VALIDATION @@"));
     channels.insert(std::pair<std::string, std::string>("RES+CONTENSOR",
-      "Regge resonances + continuum 2-body         [Tensor Pomeron]      @@ UNDER VALIDATION @@"));
+      "Regge resonances + continuum 2-body         [Tensor Pomeron / yP] @@ UNDER VALIDATION @@"));
     channels.insert(std::pair<std::string, std::string>("CON",
       "Regge continuum 2/4/6-body                  [Pomeron]"));
     channels.insert(std::pair<std::string, std::string>("CON-",
       "Regge continuum 2-body with [t-u] amplitude [Pomeron]"));
-    channels.insert(
-        std::pair<std::string, std::string>("RES+CON",
+    channels.insert(std::pair<std::string, std::string>("RES+CON",
       "Regge resonances + continuum 2-body         [Pomeron / yP]"));
     channels.insert(std::pair<std::string, std::string>("RES",
       "Regge parametric resonance                  [Pomeron]"));
-    channels.insert(
-        std::pair<std::string, std::string>("RESHEL",
-      "Regge sliding helicity amplitudes           [Pomeron]             @@ UNDER CONSTRUCTION @@"));
+    channels.insert(std::pair<std::string, std::string>("RESHEL",
+      "Regge sliding helicity amplitudes           [Pomeron]             @@ FEASABILITY CONSTRUCTION @@"));
     descriptions.insert(std::pair<std::string, std::map<std::string, std::string>>("PP", channels));
 
   } else if (first == "yP") {
     std::map<std::string, std::string> channels;
     channels.insert(std::pair<std::string, std::string>("RES",
       "Photoproduced parametric resonance          [kt-EPA] x [Pomeron]"));
+    channels.insert(std::pair<std::string, std::string>("RESTENSOR",
+      "Photoproduced resonance                     [QED] x [Tensor Pomeron]"));
     descriptions.insert(std::pair<std::string, std::map<std::string, std::string>>("yP", channels));
 
   } else if (first == "yy") {
@@ -123,26 +123,24 @@ void MSubProc::ConstructDescriptions(const std::string &first) {
     std::map<std::string, std::string> channels;
     channels.insert(std::pair<std::string, std::string>(
         "CON", "Collinear yy to l+l, qqbar, W+W- or monopolepair   [Drees-Zeppenfeld EPA]"));
-    descriptions.insert(
-        std::pair<std::string, std::map<std::string, std::string>>("yy_DZ", channels));
+    descriptions.insert(std::pair<std::string, std::map<std::string, std::string>>("yy_DZ", channels));
     
   } else if (first == "yy_LUX") {
     std::map<std::string, std::string> channels;
     channels.insert(std::pair<std::string, std::string>("CON",
-                                                        "Collinear yy to l+l, qqbar, W+W- or monopolepair   [LUX-PDF]"));
-    descriptions.insert(
-        std::pair<std::string, std::map<std::string, std::string>>("yy_LUX", channels));
+        "Collinear yy to l+l, qqbar, W+W- or monopolepair   [LUX-PDF]"));
+    descriptions.insert(std::pair<std::string, std::map<std::string, std::string>>("yy_LUX", channels));
   }
 }
 
 // This is called last by the initialization routines
 // as the last step before event generation.
 void MSubProc::SetTechnicalBoundaries(gra::GENCUT &gcuts, unsigned int EXCITATION) {
-  if (gcuts.forward_pt_min < 0.0) {  // Not set yet
+  if (gcuts.forward_pt_min < 0.0) {  // Not set yet by the USER
     gcuts.forward_pt_min = 0.0;
   }
 
-  if (gcuts.forward_pt_max < 0.0) {  // Not set yet
+  if (gcuts.forward_pt_max < 0.0) {  // Not set yet by the USER
 
     if (EXCITATION == 0) {  // Elastic forward protons, default values
       if        (ISTATE == "PP") {
@@ -194,7 +192,7 @@ inline double MSubProc::GetBareAmplitude2_X(gra::LORENTZSCALAR &lts) {
   } else if (CHANNEL == "ND") {
     A = 1.0;
   } else {
-    throw std::invalid_argument("MSubProc::GetBareAmplitude2: Unknown CHANNEL = " + CHANNEL);
+    throw std::invalid_argument("MSubProc::GetBareAmplitude2_X: Unknown CHANNEL = " + CHANNEL);
   }
   return abs2(A); // amplitude squared
 }
@@ -231,7 +229,7 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
     }
 
     // ------------------------------------------------------------------
-    // For screening loop
+    // Set for the screening loop
     lts.hamp = {A};
     // ------------------------------------------------------------------
 
@@ -245,8 +243,7 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
 
     } else {
       throw std::invalid_argument(
-          "MSubProc: Only 2-body + sequential final states for [RESTENSOR] "
-          "process");
+          "MSubProc: Only 2-body + sequential final states for [RESTENSOR] process");
     }
   } else if (CHANNEL == "CONTENSOR") {
     if (lts.decaytree.size() == 2) {
@@ -255,8 +252,7 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
 
     } else {
       throw std::invalid_argument(
-          "MSubProc: Only 2-body + sequential final states for [CONTENSOR] "
-          "process");
+          "MSubProc: Only 2-body + sequential final states for [CONTENSOR] process");
     }
   } else if (CHANNEL == "RES+CONTENSOR") {
     if (lts.decaytree.size() == 2) {
@@ -272,11 +268,6 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
 
       // 2. Coherent sum of Resonances (loop over)
       for (auto &x : lts.RESONANCES) {
-        if (x.second.p.spinX2 == 2) {
-          throw std::invalid_argument(
-              "MSubProc: RES+CONTENSOR process does not currently "
-              "support J = 1 resonances");
-        }
 
         // 2. Evaluate resonance matrix element -> helicity amplitudes to lts.hamp
         TensorPomeron.ME3(lts, x.second);
@@ -287,7 +278,7 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
       }
 
       // ------------------------------------------------------------------
-      // Now set for the screening loop
+      // Set helicity amplitudes for the screening loop
       lts.hamp = tempsum;
       // ------------------------------------------------------------------
 
@@ -302,8 +293,7 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
 
     } else {
       throw std::invalid_argument(
-          "MSubProc: Only 2-body + sequential final states for [RES+CONTENSOR] "
-          "process");
+          "MSubProc: Only 2-body + sequential final states for [RES+CONTENSOR] process");
     }
   } else if (CHANNEL == "CON") {
     if (lts.decaytree.size() == 2) {
@@ -314,8 +304,7 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
       A = ME8(lts);
     } else {
       throw std::invalid_argument(
-          "MSubProc: Only 2/4/6-body + sequential final states for [CON] "
-          "process");
+          "MSubProc: Only 2/4/6-body + sequential final states for [CON] process");
     }
   } else if (CHANNEL == "CON-") {
     if (lts.decaytree.size() == 2) {
@@ -342,12 +331,12 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
     }
 
     // ------------------------------------------------------------------
-    // For screening loop
+    // Set helicity amplitudes for the screening loop
     lts.hamp = {A};
     // ------------------------------------------------------------------
 
   } else {
-    throw std::invalid_argument("MSubProc::GetBareAmplitude2: Unknown CHANNEL = " + CHANNEL);
+    throw std::invalid_argument("MSubProc::GetBareAmplitude2_PP: Unknown CHANNEL = " + CHANNEL);
   }
 
   return abs2(A); // amplitude squared
@@ -355,14 +344,22 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
 
 // Gamma-Pomeron
 inline double MSubProc::GetBareAmplitude2_yP(gra::LORENTZSCALAR &lts) {
-  std::complex<double> A(0,0);
-
-  if (CHANNEL == "RES") {
+  
+  if        (CHANNEL == "RES") {
+    
+    std::complex<double> A(0,0);
     A = PhotoME3(lts, lts.RESONANCES.begin()->second);
+    return abs2(A); // amplitude squared
+
+  } else if (CHANNEL == "RESTENSOR") {
+
+    static MTensorPomeron TensorPomeron;
+    return TensorPomeron.ME3(lts, lts.RESONANCES.begin()->second);
+
   } else {
-    throw std::invalid_argument("MSubProc::GetBareAmplitude2: Unknown CHANNEL = " + CHANNEL);
+    throw std::invalid_argument("MSubProc::GetBareAmplitude2_yP: Unknown CHANNEL = " + CHANNEL);
   }
-  return abs2(A); // amplitude squared
+
 }
 
 // Gamma-Gamma
@@ -387,7 +384,7 @@ inline double MSubProc::GetBareAmplitude2_yy(gra::LORENTZSCALAR &lts) {
     return TensorPomeron.ME4(lts);
 
   } else {
-    throw std::invalid_argument("MSubProc::GetBareAmplitude2: Unknown CHANNEL = " + CHANNEL);
+    throw std::invalid_argument("MSubProc::GetBareAmplitude2_yy: Unknown CHANNEL = " + CHANNEL);
   }
   
   // Apply non-collinear EPA fluxes
@@ -432,7 +429,6 @@ inline double MSubProc::GetBareAmplitude2_yy_DZ(gra::LORENTZSCALAR &lts) {
 }
 
 // Gamma-Gamma LUX-pdf (use at \mu > 10 GeV)
-// *** UNDER TESTING ***
 inline double MSubProc::GetBareAmplitude2_yy_LUX(gra::LORENTZSCALAR &lts) {
   
   // @@ MULTITHREADING LOCK NEEDED FOR INITIALIZATION @@
@@ -470,7 +466,7 @@ inline double MSubProc::GetBareAmplitude2_yy_LUX(gra::LORENTZSCALAR &lts) {
       amp2 = yyffbar(lts);
     }
   } else {
-    throw std::invalid_argument("MSubProc::GetBareAmplitude2: Unknown CHANNEL = " + CHANNEL);
+    throw std::invalid_argument("MSubProc::GetBareAmplitude2_yy_LUX: Unknown CHANNEL = " + CHANNEL);
   }
 
   // pdf factorization scale
@@ -507,7 +503,7 @@ inline double MSubProc::GetBareAmplitude2_gg(gra::LORENTZSCALAR &lts) {
       A = DurhamQCD(lts, "MMbar");
     }
   } else {
-    throw std::invalid_argument("MSubProc::GetBareAmplitude2: Unknown CHANNEL = " + CHANNEL);
+    throw std::invalid_argument("MSubProc::GetBareAmplitude2_gg: Unknown CHANNEL = " + CHANNEL);
   }
   return abs2(A); // amplitude squared
 }
