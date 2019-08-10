@@ -229,7 +229,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
   } else if (J == 1 && P == -1) {
 
     // Gamma-Vector coupling
-    const Tensor2<std::complex<double>, 4,4> iGyV        = iG_yV("rho");
+    const Tensor2<std::complex<double>, 4,4> iGyV        = iG_yV(resonance.p.pdg);
 
     // Gamma propagators
     const Tensor2<std::complex<double>, 4,4> iDy_1       = iD_y(lts.q1.M2());
@@ -243,27 +243,13 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     const Tensor2<std::complex<double>, 4,4> iDV_2       = iD_VMES(lts.q2,        M0, Gamma, INDEX_UP, BW_ON);
 
     // Pomeron-Vector-Vector coupling
-    
-    // Couplings (rho meson) (we neglect rho-omega mixing etc.)
-    double g1 = 0.0;
-    double g2 = 0.0;
-    if (lts.decaytree[0].p.mass < 1.0) {
-      g1 = 0.70;  // GeV^{-3}
-      g2 = 6.20;  // GeV^{-1}
-    }
-    // Couplings (phi meson)
-    else if (lts.decaytree[0].p.mass > 1.0) {
-      g1 = 0.49;  // GeV^{-3}
-      g2 = 4.27;  // GeV^{-1}
-    }
-
-    const Tensor4<std::complex<double>, 4,4,4,4> iGPvv_1 = iG_Pvv(lts.pfinal[0], lts.q1, g1, g2);
-    const Tensor4<std::complex<double>, 4,4,4,4> iGPvv_2 = iG_Pvv(lts.pfinal[0], lts.q2, g1, g2);
+    const Tensor4<std::complex<double>, 4,4,4,4> iGPvv_1 = iG_Pvv(lts.pfinal[0], lts.q1, resonance.g_Tensor[0], resonance.g_Tensor[1]);
+    const Tensor4<std::complex<double>, 4,4,4,4> iGPvv_2 = iG_Pvv(lts.pfinal[0], lts.q2, resonance.g_Tensor[0], resonance.g_Tensor[1]);
 
     // Vector-Pseudoscalar-Pseudoscalar coupling
     const double g1_vpsps = 11.5; // rho -> pipi
     const Tensor1<std::complex<double>, 4>   iGvpsps     = iG_vpsps(p3, p4, M0, g1_vpsps);
-    
+
     // Two helicity states for incoming and outgoing protons
     FOR_PP_HELICITY;
 
@@ -424,7 +410,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
   }
   // ====================================================================
 
-  if (lts.hamp.size() == 0) { // Not yet calculated
+  if (lts.hamp.size() == 0) { // If not yet calculated above
 
     // Two helicity states for incoming and outgoing protons
     FOR_PP_HELICITY;
@@ -1840,30 +1826,30 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_Pvv(const M4Vec &pr
 }
 
 
-// Gamma-Vector meson vertex
+// Gamma-Vector meson transition vertex
 // iGamma_{\mu \nu}
-// 
-// type = "rho", "omega", "phi"
 //
-Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_yV(std::string type) const {
+// pdg = 113 / "rho0", 223 / "omega0", 333 / "phi0"
+//
+Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_yV(int pdg) const {
   const double e      = msqrt(alpha_QED * 4.0 * PI);  // ~ 0.3, no running
   double       gammaV = 0.0;
   double       mV     = 0.0;
 
-  if      (type == "rho") {
+  if      (pdg == 113) {
     gammaV = msqrt(4 * PI / 0.496);
     mV     = 0.770;
   }
-  else if (type == "omega") {
+  else if (pdg == 223) {
     gammaV = msqrt(4 * PI / 0.042);
     mV     = 0.785;
   }
-  else if (type == "phi") {
+  else if (pdg == 333) {
     gammaV = (-1.0) * msqrt(4 * PI / 0.0716);
     mV     = 1.020;
   }
   else {
-    throw std::invalid_argument("MTensorPomeron::iG_yV: Unknown vector meson " + type);
+    throw std::invalid_argument("MTensorPomeron::iG_yV: Unknown vector meson pdg = " + std::to_string(pdg));
   }
 
   Tensor2<std::complex<double>, 4, 4> T;

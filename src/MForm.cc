@@ -228,12 +228,16 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
       throw std::invalid_argument("MAux::ReadResonance:: <" + resparam_str +
                                   "> Tensor Pomeron coupling array should be of size 2 for J = 0");
     }
+    if (J == 1 && res.g_Tensor.size() != 2) {
+      throw std::invalid_argument("MAux::ReadResonance:: <" + resparam_str +
+                                  "> Tensor Pomeron coupling array should be of size 2 for J = 1");
+    }
     if (J == 2 && res.g_Tensor.size() != 7) {
       throw std::invalid_argument("MAux::ReadResonance:: <" + resparam_str +
                                   "> Tensor Pomeron coupling array should be of size 7 for J = 2");
     }
     // ------------------------------------------------------------------
-
+    
     // Validity of these is taken care of in the functions
     res.BW = j.at("PARAM_RES").at("BW");
 
