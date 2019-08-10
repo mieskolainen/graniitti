@@ -192,7 +192,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     // Massive vector pair decay
     else if (lts.decaytree[0].p.spinX2 == 2 && lts.decaytree[1].p.spinX2 == 2) {
 
-      // SET THESE UP !!!
+      // [TBD SET THESE UP !!!]
       double g1 = 1.0;
       double g2 = 1.0;
       const Tensor2<std::complex<double>, 4, 4> iGf0vv = iG_f0vv(p3, p4, M0, g1, g2);
@@ -250,6 +250,8 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     const Tensor4<std::complex<double>, 4,4,4,4> iGPvv_2 = iG_Pvv(lts.pfinal[0], lts.q2, resonance.g_Tensor[0], resonance.g_Tensor[1]);
 
     // Vector-Pseudoscalar-Pseudoscalar coupling
+
+    // [TBD set this ADAPTIVE for phi->KK etc.!!!]
     const double g1_vpsps = 11.51; // rho -> pipi
     const Tensor1<std::complex<double>, 4>   iGvpsps     = iG_vpsps(p3, p4, M0, g1_vpsps);
 
@@ -307,10 +309,10 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     // Massive vector pair
     if (lts.decaytree[0].p.spinX2 == 2 && lts.decaytree[1].p.spinX2 == 2 &&
         lts.decaytree[0].p.pdg != 22   && lts.decaytree[1].p.mass != 22) {
-      
+
       const double g1 = resonance.g_decay;
       const Tensor2<std::complex<double>, 4, 4> iGpsvv = iG_psvv(p3, p4, M0, g1);
-      
+
       // No decay treatment
       if (lts.decaytree[0].legs.size() == 0) {
 
@@ -351,7 +353,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     // Pseudoscalar pair decay
     if        (lts.decaytree[0].p.spinX2 == 0 && lts.decaytree[1].p.spinX2 == 0) {
       
-      double g1 = 9.26; // f2(1270) -> pi+pi- [FIXED NOW, SET THIS ADAPTIVE!!]
+      double g1 = 9.26; // f2(1270) -> pi+pi- [TBD SET THIS ADAPTIVE!!]
       const Tensor2<std::complex<double>, 4, 4> iGf2psps = iG_f2psps(p3, p4, M0, g1);
 
       // Contract
@@ -362,8 +364,8 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
                lts.decaytree[0].p.pdg != 22   && lts.decaytree[1].p.mass != 22) {
 
       // f2 -> V V decay structure
-      double g1 = 1.0; // SET THIS UP !!!
-      double g2 = 1.0; // SET THIS UP !!!
+      double g1 = 1.0; // [TBD SET THIS ADAPTIVE !!!]
+      double g2 = 1.0; // [TBD SET THIS ADAPTIVE !!!]
       const Tensor4<std::complex<double>, 4, 4, 4, 4> iGf2vv = iG_f2vv(p3, p4, M0, g1, g2);
 
       // No decay treatment
@@ -411,7 +413,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     throw std::invalid_argument("MTensorPomeron::ME3: Unknown spin-parity input");
   }
   // ====================================================================
-  
+
   if (lts.hamp.size() == 0) { // If not yet calculated above
     
     // High Energy Limit proton-Pomeron-proton spinor structure
