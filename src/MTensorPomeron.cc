@@ -411,7 +411,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     throw std::invalid_argument("MTensorPomeron::ME3: Unknown spin-parity input");
   }
   // ====================================================================
-
+  
   if (lts.hamp.size() == 0) { // If not yet calculated above
     
     // High Energy Limit proton-Pomeron-proton spinor structure
