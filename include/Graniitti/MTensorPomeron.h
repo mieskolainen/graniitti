@@ -94,7 +94,7 @@ class MTensorPomeron : public MDirac {
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_f2vv(const M4Vec &k1, const M4Vec &k2, double M0, double g1, double g2) const;
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_f2yy(const M4Vec &k1, const M4Vec &k2, double M0, double g1, double g2) const;
 
-  FTensor::Tensor2<std::complex<double>, 4, 4> iG_yV(int pdg) const;
+  FTensor::Tensor2<std::complex<double>, 4, 4> iG_yV(double q2, int pdg) const;
 
 
   std::vector<std::complex<double>>            MassiveSpin1PolSum(const FTensor::Tensor2<std::complex<double>, 4,4>& M,

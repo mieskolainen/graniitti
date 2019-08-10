@@ -166,9 +166,9 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
 
   // ====================================================================
   // Construct Central Vertex
-
+  
   Tensor4<std::complex<double>, 4, 4, 4, 4> cvtx;
-
+  
   // Pomeron-Pomeron-Scalar coupling
   // 
   // 
@@ -217,19 +217,21 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     cvtx(u, v, k, l) *= iD * iDECAY;
     FOR_EACH_4_END;
 
-  // Pomeron-Gamma-Vector (Photoproduction of rho, phi ...) coupling
+  // Pomeron-Gamma-Vector (Photoproduction of rho, phi ...) structure
   //
-  //       rho0
-  // y ***====x===== rho0
-  //          |
-  //          | P
-  //          |
-  // p -------x----- p
+  // p --x--------------- p
+  //      *
+  //     y *   rho0
+  //        *x=====x===== rho0
+  //               |
+  //               | P
+  //               |
+  // p ------------x----- p
   //
   } else if (J == 1 && P == -1) {
 
     // Gamma-Vector coupling
-    const Tensor2<std::complex<double>, 4,4> iGyV        = iG_yV(resonance.p.pdg);
+    const Tensor2<std::complex<double>, 4,4> iGyV        = iG_yV(0, resonance.p.pdg);
 
     // Gamma propagators
     const Tensor2<std::complex<double>, 4,4> iDy_1       = iD_y(lts.q1.M2());
@@ -305,7 +307,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     if (lts.decaytree[0].p.spinX2 == 2 && lts.decaytree[1].p.spinX2 == 2 &&
         lts.decaytree[0].p.pdg != 22   && lts.decaytree[1].p.mass != 22) {
 
-      double g1 = 1.0;
+      double g1 = 1.0; // SET THIS UP!!!
       const Tensor2<std::complex<double>, 4, 4> iGpsvv = iG_psvv(p3, p4, M0, g1);
 
       // No decay treatment
@@ -333,13 +335,13 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
   //
   //
   } else if (J == 2) {
-
+    
     // Rank-6 tensor structure
     const MTensor<std::complex<double>> iGPPf2 = iG_PPT_total(lts.q1, lts.q2, M0, resonance.g_Tensor);
 
     // Tensor BW-propagator
     const bool INDEX_UP = true;
-    const bool BW_ON = true;
+    const bool BW_ON    = true;
     const Tensor4<std::complex<double>, 4, 4, 4, 4> iDf2 = iD_TMES(lts.pfinal[0], M0, Gamma, INDEX_UP, BW_ON);
 
     // Total block
@@ -360,8 +362,8 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
                lts.decaytree[0].p.pdg != 22   && lts.decaytree[1].p.mass != 22) {
 
       // f2 -> V V decay structure
-      double g1 = 1.0;
-      double g2 = 1.0;
+      double g1 = 1.0; // SET THIS UP !!!
+      double g2 = 1.0; // SET THIS UP !!!
       const Tensor4<std::complex<double>, 4, 4, 4, 4> iGf2vv = iG_f2vv(p3, p4, M0, g1, g2);
 
       // No decay treatment
@@ -411,6 +413,10 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
   // ====================================================================
 
   if (lts.hamp.size() == 0) { // If not yet calculated above
+    
+    // High Energy Limit proton-Pomeron-proton spinor structure
+    const Tensor2<std::complex<double>, 4, 4> iG_1a = iG_PppHE(p1, pa);
+    const Tensor2<std::complex<double>, 4, 4> iG_2b = iG_PppHE(p2, pb);
 
     // Two helicity states for incoming and outgoing protons
     FOR_PP_HELICITY;
@@ -422,14 +428,13 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     // const Tensor2<std::complex<double>,4,4> iG_1a = iG_Ppp(p1, pa, ubar_1[h1], u_a[ha]);
     // const Tensor2<std::complex<double>,4,4> iG_2b = iG_Ppp(p2, pb, ubar_2[h2], u_b[hb]);
 
-    // High Energy Limit proton-Pomeron-proton spinor structure
-    const Tensor2<std::complex<double>, 4, 4> iG_1a = iG_PppHE(p1, pa);
-    const Tensor2<std::complex<double>, 4, 4> iG_2b = iG_PppHE(p2, pb);
-
     // s-channel amplitude
-    const std::complex<double> A = (-zi) * iG_1a(mu1, nu1) * iDP_1(mu1, nu1, alpha1, beta1) *
-                                   cvtx(alpha1, beta1, alpha2, beta2) * iDP_2(alpha2, beta2, mu2, nu2) *
-                                   iG_2b(mu2, nu2);
+    const std::complex<double> A = (-zi) *
+      iG_1a(mu1, nu1) *
+        iDP_1(mu1, nu1, alpha1, beta1) *
+      cvtx(alpha1, beta1, alpha2, beta2) *
+        iDP_2(alpha2, beta2, mu2, nu2) *
+      iG_2b(mu2, nu2);
     lts.hamp.push_back(A);
 
     FOR_PP_HELICITY_END;
@@ -1831,7 +1836,7 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_Pvv(const M4Vec &pr
 //
 // pdg = 113 / "rho0", 223 / "omega0", 333 / "phi0"
 //
-Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_yV(int pdg) const {
+Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_yV(double q2, int pdg) const {
   const double e      = msqrt(alpha_QED * 4.0 * PI);  // ~ 0.3, no running
   double       gammaV = 0.0;
   double       mV     = 0.0;

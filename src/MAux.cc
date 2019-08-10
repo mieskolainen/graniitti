@@ -39,10 +39,10 @@ namespace aux {
 // -------------------------------------------------------
 // FIXED HERE manually
 
-double      GetVersion() {       return 0.52; }
+double      GetVersion() {       return 0.53; }
 std::string GetVersionType() {   return "beta"; }
-std::string GetVersionDate() {   return "02.08.2019"; }
-std::string GetVersionUpdate() { return "full QED gamma gamma -> l+l-, qqbar"; }
+std::string GetVersionDate() {   return "10.08.2019"; }
+std::string GetVersionUpdate() { return "photoproduction with tensor pomeron"; }
 
 // -------------------------------------------------------
 
