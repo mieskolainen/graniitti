@@ -185,13 +185,14 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     // Pseudoscalar pair decay
     if      (lts.decaytree[0].p.spinX2 == 0 && lts.decaytree[1].p.spinX2 == 0) {
 
-      double g1 = resonance.g_decay;
+      const double g1 = resonance.g_decay;
       iDECAY = iG_f0ss(lts.decaytree[0].p4, lts.decaytree[1].p4, M0, g1);
     }
 
     // Massive vector pair decay
     else if (lts.decaytree[0].p.spinX2 == 2 && lts.decaytree[1].p.spinX2 == 2) {
 
+      // SET THESE UP !!!
       double g1 = 1.0;
       double g2 = 1.0;
       const Tensor2<std::complex<double>, 4, 4> iGf0vv = iG_f0vv(p3, p4, M0, g1, g2);
@@ -249,7 +250,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     const Tensor4<std::complex<double>, 4,4,4,4> iGPvv_2 = iG_Pvv(lts.pfinal[0], lts.q2, resonance.g_Tensor[0], resonance.g_Tensor[1]);
 
     // Vector-Pseudoscalar-Pseudoscalar coupling
-    const double g1_vpsps = 11.5; // rho -> pipi
+    const double g1_vpsps = 11.51; // rho -> pipi
     const Tensor1<std::complex<double>, 4>   iGvpsps     = iG_vpsps(p3, p4, M0, g1_vpsps);
 
     // Two helicity states for incoming and outgoing protons
@@ -349,8 +350,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
 
     // Pseudoscalar pair decay
     if        (lts.decaytree[0].p.spinX2 == 0 && lts.decaytree[1].p.spinX2 == 0) {
-
-      // f2 -> PS PS decay structure
+      
       double g1 = resonance.g_decay;
       const Tensor2<std::complex<double>, 4, 4> iGf2psps = iG_f2psps(p3, p4, M0, g1);
 

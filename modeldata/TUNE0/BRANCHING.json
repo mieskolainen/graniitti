@@ -155,7 +155,7 @@
       "P_conservation" : true,
     },
     "2" : { // pi+pi-pi+pi-
-      // (BR ratio is not uniquely defined, becase of intermediate states)
+      // (BR ratio is not uniquely defined, because of intermediate states)
       "PDG" : [211, -211, 211, -211], "BR" : 0.495,
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,

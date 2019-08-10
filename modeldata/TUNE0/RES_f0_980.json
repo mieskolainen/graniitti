@@ -24,8 +24,8 @@
     "BW" : 2,
 
     // ------------------------------------------------------------------
-    // Tensor Pomeron model couplings (2 for scalar/pseudoscalar, 7 for tensors)
-    "g_Tensor" : [0.5, 0.5],
+    // Tensor Pomeron model couplings (2 for scalar/pseudoscalar, 2 for vector, 7 for tensors)
+    "g_Tensor" : [0.8, 4.0],
     // ------------------------------------------------------------------
     
     // Set 0 for density matrix below, or an integer > 0 for a random sampled
