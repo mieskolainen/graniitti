@@ -39,10 +39,10 @@ namespace aux {
 // -------------------------------------------------------
 // FIXED HERE manually
 
-double      GetVersion() {       return 0.54; }
+double      GetVersion() {       return 0.55; }
 std::string GetVersionType() {   return "beta"; }
-std::string GetVersionDate() {   return "10.08.2019"; }
-std::string GetVersionUpdate() { return "coupling machinery automatization"; }
+std::string GetVersionDate() {   return "11.08.2019"; }
+std::string GetVersionUpdate() { return "recursive phase space constructions"; }
 
 // -------------------------------------------------------
 

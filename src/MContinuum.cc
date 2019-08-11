@@ -184,8 +184,13 @@ double MContinuum::EventWeight(const std::vector<double> &randvec, AuxIntData &a
     // Matrix element squared
     const double MatESQ = GetAmp2(); 
 
+    // --------------------------------------------------------------------
+    // Cascade resonances phase-space
+    const double C_space = CascadePS();
+    // --------------------------------------------------------------------
+
     // ** EVENT WEIGHT **
-    W = (1.0 / S_factor) * BNPhaseSpaceWeight() * BNIntegralVolume() * MatESQ * GeV2barn /
+    W = C_space * (1.0 / S_factor) * BNPhaseSpaceWeight() * BNIntegralVolume() * MatESQ * GeV2barn /
         MollerFlux();
   }
 

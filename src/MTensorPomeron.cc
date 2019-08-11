@@ -795,11 +795,14 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
       // Total amplitude: iM = [ ... ]  <-> M = (-i)*[ ... ]
       const std::complex<double> amp = (-zi) * (M_t(rho3,rho4) + M_u(rho3,rho4)) * DECAY(rho3, rho4);
       lts.hamp.push_back(amp);
-      
+
       // ------------------------------------------------------------
       // *** CONTROL CASCADE SAMPLING ***
       lts.FORCE_FLATMASS2 = true;
       lts.FORCE_OFFSHELL  = 2.0;
+
+      lts.decaytree[0].PS_active = true;
+      lts.decaytree[1].PS_active = true;
       // ------------------------------------------------------------
 
     // No decay amplitude treatment

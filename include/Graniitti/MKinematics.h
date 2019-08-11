@@ -1542,6 +1542,10 @@ struct MDecayBranch {
   // MC weight container
   gra::kinematics::MCW W;
 
+  // Active in the factorized phase space product (by default, no)
+  // This is controlled by the spesific amplitudes
+  bool PS_active = false;
+
   // Decay tree current level
   int depth = 0;
 };

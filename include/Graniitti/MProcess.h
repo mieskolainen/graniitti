@@ -212,6 +212,8 @@ class MProcess : public MUserHistograms {
   gra::VETOCUT vetocuts;  // Veto cuts
 
   void PrintDecayTree(const gra::MDecayBranch &branch) const;
+
+  void CalculatePhaseSpace(const gra::MDecayBranch &branch, double& product, double& product2pi, int& N_final) const;
   void PrintPhaseSpace(const gra::MDecayBranch &branch, double& product, double& product2pi, int& N_final) const;
 
   // Random numbers (keep it public for seeding)
@@ -227,9 +229,12 @@ class MProcess : public MUserHistograms {
   virtual bool LoopKinematics(const std::vector<double> &p1p, const std::vector<double> &p2p) = 0;
   virtual bool FiducialCuts() const = 0;
 
+  // Cascade phase-space factor
+  double CascadePS() const;
+  
   // Amplitude squared
   double GetAmp2();
-  
+
   // Eikonal screening loop
   double S3ScreenedAmp2();
   

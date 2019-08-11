@@ -117,6 +117,19 @@ std::string MProcess::GetProcessDescriptor(std::string str) const {
   return Processes.find(str)->second;
 }
 
+// Cascaded phase-space
+double MProcess::CascadePS() const {
+
+  // Cascade resonances phase-space
+  double product    = 1.0;
+  double product2pi = 1.0;
+  int N_final = 0;
+  for (const auto& i : indices(lts.decaytree)) {
+    CalculatePhaseSpace(lts.decaytree[i], product, product2pi, N_final);
+  }
+  return product / product2pi;
+}
+
 // Amplitude squared
 double MProcess::GetAmp2() {
 
@@ -1216,19 +1229,43 @@ void MProcess::PrintDecayTree(const gra::MDecayBranch &branch) const {
   for (const auto &i : indices(branch.legs)) { PrintDecayTree(branch.legs[i]); }
 }
 
+// Recursive function to calculate phasespace weights
+void MProcess::CalculatePhaseSpace(const gra::MDecayBranch &branch, double& product, double& product2pi, int& N_final) const {
+
+  // There is decay information and this is activated by the amplitude
+  if (branch.PS_active == true && branch.W.GetW() > 0) {
+
+    product    *= branch.W.Integral();
+    product2pi *= (2*math::PI);
+
+    for (const auto &i : indices(branch.legs)) {
+      CalculatePhaseSpace(branch.legs[i], product, product2pi, N_final);
+    }
+  }
+  if (branch.legs.size() == 0) { ++N_final; } // Final state particle
+}
+
 // Recursive function to plot out the decay tree
 void MProcess::PrintPhaseSpace(const gra::MDecayBranch &branch, double& product, double& product2pi, int& N_final) const {
   std::string spaces(branch.depth * 2, ' ');  // Give empty space
   std::string lines = spaces + "|──";
 
   if (branch.W.GetW() > 0) {  // There is decay information
-    printf("%s> \t {1->%lu LIPS}:  %0.3E +- %0.3E \n", lines.c_str(), branch.legs.size(),
+    printf("%s> \t {1->%lu LIPS}:  %0.3E +- %0.3E ", lines.c_str(), branch.legs.size(),
            branch.W.Integral(), branch.W.IntegralError());
+
+    if (branch.PS_active) {
+      std::cout << "[" << rang::fg::green << "ACTIVE   " << rang::fg::reset << "part of integral / (2PI)]" << std::endl;
+    } else {
+      std::cout << "[" << rang::fg::red   << "INACTIVE " << rang::fg::reset << "part of integral <=> apply manual BR]" << std::endl;
+    }
+
     product    *= branch.W.Integral();
     product2pi *= (2*math::PI);
-  }
-  for (const auto &i : indices(branch.legs)) {
-    PrintPhaseSpace(branch.legs[i], product, product2pi, N_final);
+
+    for (const auto &i : indices(branch.legs)) {
+      PrintPhaseSpace(branch.legs[i], product, product2pi, N_final);
+    }
   }
   if (branch.legs.size() == 0) { ++N_final; } // Final state particle
 }

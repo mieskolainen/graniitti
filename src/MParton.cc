@@ -116,7 +116,7 @@ double MParton::EventWeight(const std::vector<double> &randvec, AuxIntData &aux)
   if (aux.Valid()) {
     // Matrix element squared
     const double MatESQ = GetAmp2();
-    
+
     // Calculate central system Phase Space volume
     double exact = 0.0;
     DecayWidthPS(exact);
@@ -127,8 +127,15 @@ double MParton::EventWeight(const std::vector<double> &randvec, AuxIntData &aux)
 
     double C_space = 1.0;
     // We have some legs in the central system
-    if (lts.decaytree.size() != 0 && !ISOLATE) { C_space = lts.DW.Integral(); }
+    if (lts.decaytree.size() != 0 && !ISOLATE) {
+      C_space = lts.DW.Integral();
 
+      // --------------------------------------------------------------------
+      // Cascade resonances phase-space
+      C_space *= CascadePS();
+      // --------------------------------------------------------------------
+    }
+    
     // ** EVENT WEIGHT **
     W = C_space * (1.0 / S_factor) * MatESQ * B2IntegralVolume() * B2PhaseSpaceWeight() * GeV2barn /
         MollerFlux();

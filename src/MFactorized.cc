@@ -166,7 +166,7 @@ double MFactorized::EventWeight(const std::vector<double> &randvec, AuxIntData &
   aux.vetocuts_ok   = VetoCuts();
 
   if (aux.Valid()) {
-    
+
     // Matrix element squared
     const double MatESQ = GetAmp2();
 
@@ -181,6 +181,11 @@ double MFactorized::EventWeight(const std::vector<double> &randvec, AuxIntData &
     double C_space = 1.0;
     if (lts.decaytree.size() != 0 && !ISOLATE) {  // We have some legs in the central system
       C_space = (lts.DW.Integral() / (2 * PI));   // /(2*PI) from phase space factorization
+      
+      // --------------------------------------------------------------------
+      // Cascade resonances phase-space
+      C_space *= CascadePS();
+      // --------------------------------------------------------------------
     }
 
     // ** EVENT WEIGHT **

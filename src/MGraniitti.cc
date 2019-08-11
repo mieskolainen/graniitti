@@ -1274,21 +1274,19 @@ int MGraniitti::VEGAS(unsigned int init, unsigned int calls, unsigned int itermi
       if (std::isnan(stat.sigma) || std::isinf(stat.sigma)) {
         gra::aux::ClearProgress();
         throw std::invalid_argument(
-            "VEGAS:: Integral inf/nan: FATAL ERROR, code or parameters "
-            "needs fixing.");
+            "VEGAS:: Integral inf/nan: FATAL ERROR, cuts or parameters "
+            "need fixing. Try <F> phase space class if not in use.");
       }
       if (stat.sigma < 1e-60) {
         gra::aux::ClearProgress();
         throw std::invalid_argument(
             "VEGAS:: Integral < 1E-60: Check VEGAS parameters, decaymode "
-            "sanity, generation and fiducial cuts!");
+            "sanity, generation and fiducial cuts! Try <F> phase space class if not in use.");
       }
       if (stat.chi2 > 50) {
         gra::aux::ClearProgress();
-        printf(
-            "VEGAS:: chi2 = %0.1f > 50: Convergence problem, increasing 10 "
-            "x calls \n",
-            stat.chi2);
+        printf("VEGAS:: chi2 = %0.1f > 50: Convergence problem, increasing 10 x calls. \n", stat.chi2);
+        printf("Try <F> phase space class if not in use. \n");
         return 10;  // 10 times more calls
       }
     }
@@ -1794,7 +1792,14 @@ void MGraniitti::PrintStatistics(unsigned int N) {
       std::cout << std::endl << std::endl;
     }
 
-    unsigned int N_leg = proc->lts.decaytree.size() + 2;
+    // Check if we have cascaded phase space turned on in the x-section calculation
+    double prod    = 1.0;
+    double prod2pi = 1.0;
+    int Nf = 0;
+    for (const auto& i : indices(proc->lts.decaytree)) {
+      proc->CalculatePhaseSpace(proc->lts.decaytree[i], prod, prod2pi, Nf);
+    }
+    unsigned int N_leg = std::max((int)proc->lts.decaytree.size(), Nf) + 2; // +2 forward legs
 
     // Special cases
     if (proc->GetISOLATE()) { N_leg = 3; }        // ISOLATEd 2->3 process with <F> phase space
@@ -1821,18 +1826,17 @@ void MGraniitti::PrintStatistics(unsigned int N) {
       }
       // only 2-body exact or massless case
       if (proc->lts.decaytree.size() == 2 || MSUM < 1e-6) {
-        printf(
-            "Analytic phase space volume:      %0.3E +- "
-            "%0.3E \n",
+        printf("Analytic phase space volume:      %0.3E +- %0.3E \n",
             PSvolume_exact, PSvolume_exact_error);
         printf("RATIO: MC/analytic:               %0.6f \n", PSvolume / PSvolume_exact);
       }
       std::cout << std::endl;
 
       // Print out phase space weight
-      printf("{1->%lu LIPS}:                      %0.3E +- %0.3E \n", proc->lts.decaytree.size(),
+      printf("{1->%lu LIPS}:                      %0.3E +- %0.3E  ", proc->lts.decaytree.size(),
              proc->lts.DW_sum.Integral(), proc->lts.DW_sum.IntegralError());
-    
+      std::cout << "[" << rang::fg::green << "ACTIVE " << rang::fg::reset << "part of integral / (2PI)]" << std::endl;
+
       // Recursion relation based (phase space factorization):
       // d^N PS(s; p_1, p2, ...p_N)
       // = 1/(2*PI) * d^3 PS(s; p1,p2,p3) d^{N-2} PS(M^2; p4,p5,..,pN) dM^2
@@ -1841,14 +1845,10 @@ void MGraniitti::PrintStatistics(unsigned int N) {
       // = mother mass, S = final state symmetry factor
 
       if (!proc->GetISOLATE() && proc->GetdLIPSDim() != 2) {  // Special cases
-        printf(
-            "{2->3 cross section ~=~ [2->%u / (1->%lu LIPS) x 2PI]}:       "
-            "%0.3E barn \n",
+        printf("\n\n{2->3 cross section ~=~ [2->%u / (1->%lu LIPS) x 2PI]}:       %0.3E barn \n",
             N_leg, proc->lts.decaytree.size(), stat.sigma / proc->lts.DW_sum.Integral() * (2 * PI));
         std::cout << std::endl;
-        printf(
-            "** Remember to use &> operator instead of -> for phase space "
-            "isolation ** \n\n");
+        printf("** Remember to use &> operator instead of -> for phase space isolation ** \n\n");
       }
     }
 
@@ -1856,16 +1856,9 @@ void MGraniitti::PrintStatistics(unsigned int N) {
     double product = 1.0;
     double product2pi = 1.0;
     int N_final = 2; // forward legs == 2
-    for (std::size_t i = 0; i < proc->lts.decaytree.size(); ++i) {
+    for (const auto& i : indices(proc->lts.decaytree)) {
       proc->PrintPhaseSpace(proc->lts.decaytree[i], product, product2pi, N_final);
-      std::cout << std::endl;
-    }
-    if (product != 1.0) {
-      printf("{2->%d cross section}:             %0.3E barn \n", N_final, stat.sigma * product / product2pi);
-      printf("Obtained via phase space factorization \\prod_i [ LIPS_i x 1/(2PI) ]\n");
-      printf("\n");
-      printf("** Use 2->%d cross-section with full decay structure amplitudes,         **\n", N_final);
-      printf("** otherwise use 2->%d cross-section and apply branching ratios manually **\n", N_leg);
+      if (proc->lts.decaytree[i].legs.size() != 0) { std::cout << std::endl; }
     }
     gra::aux::PrintBar("-");
 
