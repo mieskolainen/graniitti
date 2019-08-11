@@ -39,10 +39,10 @@ namespace aux {
 // -------------------------------------------------------
 // FIXED HERE manually
 
-double      GetVersion() {       return 0.55; }
+double      GetVersion() {       return 0.56; }
 std::string GetVersionType() {   return "beta"; }
 std::string GetVersionDate() {   return "11.08.2019"; }
-std::string GetVersionUpdate() { return "recursive phase space constructions"; }
+std::string GetVersionUpdate() { return "2xV -> 2xPS within tensor pomeron"; }
 
 // -------------------------------------------------------
 

@@ -117,17 +117,40 @@ std::string MProcess::GetProcessDescriptor(std::string str) const {
   return Processes.find(str)->second;
 }
 
-// Cascaded phase-space factor
+
+// Cascaded phase-space factor [VOLUME] x [MC INTEGRAL] / (2PI)
 double MProcess::CascadePS() const {
 
   // Cascade resonances phase-space
   double product    = 1.0;
   double product2pi = 1.0;
+  double volume     = 1.0;
   int N_final = 0;
   for (const auto& i : indices(lts.decaytree)) {
-    CalculatePhaseSpace(lts.decaytree[i], product, product2pi, N_final);
+    CalculatePhaseSpace(lts.decaytree[i], product, product2pi, volume, N_final);
   }
-  return product / product2pi;
+  return volume * product / product2pi;
+}
+
+// Recursive function to calculate phasespace weights
+void MProcess::CalculatePhaseSpace(const gra::MDecayBranch &branch, double& product, double& product2pi, double& volume, int& N_final) const {
+
+  // There is decay information and this is activated by the amplitude
+  if (branch.PS_active == true && branch.W.Integral() > 0) {
+    
+    product    *= branch.W.Integral();
+    product2pi *= (2*math::PI);
+
+    // mass^2 interval
+    const double   low  = std::max(0.0, pow2(branch.p.mass - branch.p.width * OFFSHELL));
+    const double   high = pow2(branch.p.mass + branch.p.width * OFFSHELL);
+    volume *= (high - low);
+
+    for (const auto &i : indices(branch.legs)) {
+      CalculatePhaseSpace(branch.legs[i], product, product2pi, volume, N_final);
+    }
+  }
+  if (branch.legs.size() == 0) { ++N_final; } // Final state particle
 }
 
 // Amplitude squared
@@ -807,8 +830,8 @@ void MProcess::SetupBranching() {
 
 // Get intermediate off-shell mass
 void MProcess::GetOffShellMass(const gra::MDecayBranch &branch, double &mass) {
-  // If zero-width particle (electron, gamma ...)
-  if (branch.p.width < 1e-9) {
+  // If zero-width particle (electron, gamma, proton)
+  if (branch.p.width < 1e-40) {
     mass = branch.p.mass;
     return;
   }
@@ -822,8 +845,9 @@ void MProcess::GetOffShellMass(const gra::MDecayBranch &branch, double &mass) {
     // We have decay daughters
     double daughter_masses = 0;
     if (branch.legs.size() > 0) {
+
       // Find daughter offshell masses
-      for (std::size_t i = 0; i < branch.legs.size(); ++i) {
+      for (const auto& i : indices(branch.legs)) {
         const double M = branch.legs[i].p.mass;
         const double W = branch.legs[i].p.width;
 
@@ -1227,22 +1251,6 @@ void MProcess::PrintDecayTree(const gra::MDecayBranch &branch) const {
 
   // ** RECURSION here **
   for (const auto &i : indices(branch.legs)) { PrintDecayTree(branch.legs[i]); }
-}
-
-// Recursive function to calculate phasespace weights
-void MProcess::CalculatePhaseSpace(const gra::MDecayBranch &branch, double& product, double& product2pi, int& N_final) const {
-
-  // There is decay information and this is activated by the amplitude
-  if (branch.PS_active == true && branch.W.GetW() > 0) {
-
-    product    *= branch.W.Integral();
-    product2pi *= (2*math::PI);
-
-    for (const auto &i : indices(branch.legs)) {
-      CalculatePhaseSpace(branch.legs[i], product, product2pi, N_final);
-    }
-  }
-  if (branch.legs.size() == 0) { ++N_final; } // Final state particle
 }
 
 // Recursive function to plot out the decay tree
@@ -1780,6 +1788,7 @@ void MProcess::SetProcess(std::string &str, const std::vector<aux::OneCMD> &synt
           }
           if (x.first == "W") {
             p.width = std::stod(x.second);
+            p.tau   = PDG::hbar / p.width;  // mean lifetime in the rest frame
             if (found_anti) { p_anti.width = p.width; }
           }
         }

@@ -187,7 +187,7 @@ double MFactorized::EventWeight(const std::vector<double> &randvec, AuxIntData &
       C_space *= CascadePS();
       // --------------------------------------------------------------------
     }
-
+    
     // ** EVENT WEIGHT **
     W = C_space * (1.0 / S_factor) * B51PhaseSpaceWeight() * B51IntegralVolume() * MatESQ *
         GeV2barn / MollerFlux();

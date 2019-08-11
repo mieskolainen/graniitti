@@ -75,6 +75,7 @@ double MRandom::G(double mu, double sigma) {
 // Input: resonance m and Gamma
 // Return mass (GeV)
 double MRandom::RelativisticBWRandom(double m, double Gamma, double LIMIT) {
+
   const double m2    = m * m;
   const double m2max = gra::math::pow2(m + LIMIT * Gamma);
   const double m2min = gra::math::pow2(m - LIMIT * Gamma);
@@ -87,7 +88,11 @@ double MRandom::RelativisticBWRandom(double m, double Gamma, double LIMIT) {
         m * Gamma *
             std::tan(std::atan2(m2min - m2, m * Gamma) +
                      R * (std::atan2(m2max - m2, m * Gamma) - std::atan2(m2min - m2, m * Gamma)));
-    if (m2val > 0) { break; }
+    
+    // Note >= handles massless case, otherwise stuck with m = 0
+    if (m2val >= 0) { 
+      break;
+    }
   }
   return gra::math::msqrt(m2val);
 }

@@ -188,12 +188,12 @@ double MContinuum::EventWeight(const std::vector<double> &randvec, AuxIntData &a
     // Cascade resonances phase-space
     const double C_space = CascadePS();
     // --------------------------------------------------------------------
-
+    
     // ** EVENT WEIGHT **
     W = C_space * (1.0 / S_factor) * BNPhaseSpaceWeight() * BNIntegralVolume() * MatESQ * GeV2barn /
         MollerFlux();
   }
-
+  
   aux.amplitude_ok = CheckInfNan(W);
 
   // As the last step: Histograms

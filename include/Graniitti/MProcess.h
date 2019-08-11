@@ -213,7 +213,7 @@ class MProcess : public MUserHistograms {
 
   void PrintDecayTree(const gra::MDecayBranch &branch) const;
 
-  void CalculatePhaseSpace(const gra::MDecayBranch &branch, double& product, double& product2pi, int& N_final) const;
+  void CalculatePhaseSpace(const gra::MDecayBranch &branch, double& product, double& product2pi, double& volume, int& N_final) const;
   void PrintPhaseSpace(const gra::MDecayBranch &branch, double& product, double& product2pi, int& N_final) const;
 
   // Random numbers (keep it public for seeding)

@@ -724,16 +724,16 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
   // 2 x vector meson (rho pair, phi pair ...)
   else if (SPINMODE == "2xV") {
 
+    const int pdg = lts.decaytree[0].p.pdg;
+
     double g1 = 0.0;
     double g2 = 0.0;
-
-    // Couplings (rho meson)
-    if (lts.decaytree[0].p.mass < 1.0) {
+    if      (pdg == 113) { // rho(770)0
       g1 = 0.70;  // GeV^{-3}
       g2 = 6.20;  // GeV^{-1}
     }
     // Couplings (phi meson)
-    else if (lts.decaytree[0].p.mass > 1.0) {
+    else if (pdg == 333) { // phi(1020)0
       g1 = 0.49;  // GeV^{-3}
       g2 = 4.27;  // GeV^{-1}
     }
@@ -799,7 +799,7 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
       // ------------------------------------------------------------
       // *** CONTROL CASCADE SAMPLING ***
       lts.FORCE_FLATMASS2 = true;
-      lts.FORCE_OFFSHELL  = 2.0;
+      lts.FORCE_OFFSHELL  = 3.0;
 
       lts.decaytree[0].PS_active = true;
       lts.decaytree[1].PS_active = true;
@@ -820,6 +820,7 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
     }
   } // 2xV
   
+
   FOR_PP_HELICITY_END;
 
   // Get total amplitude squared 1/4 \sum_h |A_h|^2
@@ -892,15 +893,19 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_vv2psps(const gra::LORENT
   const Tensor2<std::complex<double>, 4,4> iD_V2 = iD_VMES(lts.decaytree[1].p4, lts.decaytree[1].p.mass, lts.decaytree[1].p.width, INDEX_UP);
 
   // Decay couplings
+  const int pdg = lts.decaytree[0].p.pdg;
   double g1 = 0.0;
-  if      (lts.decaytree[0].p.pdg == 113) { // rho(770)0
-    const double BR = 1.0;
+  if      (pdg == 113) { // rho(770)0
+    const double BR = 1.0;   // pi+pi-
     g1 = GDecay(1, lts.decaytree[0].p.mass, lts.decaytree[0].p.width, lts.decaytree[0].legs[0].p.mass, BR);
   }
-  else if (lts.decaytree[0].p.pdg == 333) { // phi(1020)0
-    const double BR = 0.489;
+  else if (pdg == 333) { // phi(1020)0
+    const double BR = 0.489; // K+K-
     g1 = GDecay(1, lts.decaytree[0].p.mass, lts.decaytree[0].p.width, lts.decaytree[0].legs[0].p.mass, BR);
+  } else {
+    throw std::invalid_argument("MTensorPomeron::iGvv2psps: Unsupported vector meson PDG = " + std::to_string(pdg));
   }
+
   const Tensor1<std::complex<double>, 4> iG_D1 = iG_vpsps(lts.decaytree[0].legs[0].p4, lts.decaytree[0].legs[1].p4, lts.decaytree[0].p.mass, g1);
   const Tensor1<std::complex<double>, 4> iG_D2 = iG_vpsps(lts.decaytree[1].legs[0].p4, lts.decaytree[1].legs[1].p4, lts.decaytree[1].p.mass, g1);
 
@@ -1653,8 +1658,8 @@ std::complex<double> MTensorPomeron::iG_f0ss(const M4Vec& p3, const M4Vec& p4, d
   const double S0 = 1.0; // Mass scale (GeV)
 
   // Form FACTOR
-  const double lambda2  = 1.0; // GeV^2 (normalization scale)
-  auto F_f0ss = [&](double q2) { return std::exp(-(q2 - M0*M0) / lambda2); };
+  const double lambda4  = 1.0; // GeV^4 (normalization scale)
+  auto F_f0ss = [&](double q2) { return std::exp(-pow2(q2 - M0*M0) / lambda4); };
 
   return zi * g1 * S0 * F_f0ss((p3 + p4).M2());
 }
@@ -1671,8 +1676,8 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_f0vv(const M4Vec& p3, con
   const double S0 = 1.0; // Mass scale (GeV)
 
   // Form FACTOR
-  const double lambda2  = 1.0; // GeV^2 (normalization scale)
-  auto F_f0vv = [&](double q2) { return std::exp(-(q2 - M0*M0) / lambda2); };
+  const double lambda4  = 1.0; // GeV^4 (normalization scale)
+  auto F_f0vv = [&](double q2) { return std::exp(-pow2(q2 - M0*M0) / lambda4); };
 
   const double p3p4 = p3 * p4;
   const double p3sq = p3.M2();
@@ -1701,8 +1706,8 @@ Tensor1<std::complex<double>, 4> MTensorPomeron::iG_vpsps(const M4Vec &k1, const
   const M4Vec                p         = k1 - k2;
   
   // Form FACTOR
-  const double lambda2  = 1.0; // GeV^2 (normalization scale)
-  auto F_vpsps = [&](double q2) { return std::exp(-(q2 - M0*M0) / lambda2); };
+  const double lambda4  = 1.0; // GeV^4 (normalization scale)
+  auto F_vpsps = [&](double q2) { return std::exp(-pow2(q2 - M0*M0) / lambda4); };
 
   const double F_ = FM(k1.M2()) * FM(k2.M2()) * F_vpsps((k1 + k2).M2());
   const std::complex<double> FACTOR = -0.5 * zi * g1 * F_;
@@ -1720,9 +1725,10 @@ Tensor1<std::complex<double>, 4> MTensorPomeron::iG_vpsps(const M4Vec &k1, const
 // Input as contravariant (upper index) 4-vectors, M0 is the pseudoscalar on-shell mass
 // 
 Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_psvv(const M4Vec &p3, const M4Vec &p4, double M0, double g1) const {
+  
   // Form FACTOR
-  const double lambda2  = 1.0; // GeV^2 (normalization scale)
-  auto F_psvv           = [&](double q2) { return std::exp(-(q2 - M0*M0) / lambda2); };
+  const double lambda4  = 1.0; // GeV^4 (normalization scale)
+  auto F_psvv = [&](double q2) { return std::exp(-pow2(q2 - M0*M0) / lambda4); };
 
   const double               S0       = 1.0;   // Mass scale (GeV)
   const std::complex<double> FACTOR   = zi * g1 / (2 * S0) * F_psvv((p3+p4).M2());
@@ -1749,8 +1755,8 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_psvv(const M4Vec &p3, con
 Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_f2psps(const M4Vec &k1,
                                                               const M4Vec &k2, double M0, double g1) const {
   // Form FACTOR
-  const double lambda2  = 1.0; // GeV^2 (normalization scale)
-  auto F_f2pipi                       = [&](double q2) { return std::exp(-(q2 - M0*M0) / lambda2); };
+  const double lambda4  = 1.0; // GeV^4 (normalization scale)
+  auto F_f2pipi = [&](double q2) { return std::exp(-pow2(q2 - M0*M0) / lambda4); };
 
   const double               S0       = 1.0;   // Mass scale (GeV)
   const M4Vec                k1_k2    = k1 - k2;
@@ -1775,8 +1781,8 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_f2vv(const M4Vec &k
   const double S0 = 1.0; // Mass scale (GeV)
 
   // Form FACTOR
-  const double lambda2  = 1.0; // GeV^2 (normalization scale)
-  auto F_f2vv = [&](double q2) { return std::exp(-(q2 - M0*M0) / lambda2); };
+  const double lambda4  = 1.0; // GeV^4 (normalization scale)
+  auto F_f2vv = [&](double q2) { return std::exp(-pow2(q2 - M0*M0) / lambda4); };
 
   const Tensor4<std::complex<double>, 4, 4, 4, 4> G0 = Gamma0(k1, k2);
   const Tensor4<std::complex<double>, 4, 4, 4, 4> G2 = Gamma2(k1, k2);
@@ -1800,8 +1806,8 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_f2vv(const M4Vec &k
 Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_f2yy(const M4Vec &k1,
                                                                   const M4Vec &k2, double M0, double g1, double g2) const {
   // Form FACTOR
-  const double lambda2  = 1.0; // GeV^2 (normalization scale)
-  auto F_f2yy = [&](double q2) { return std::exp(-(q2 - M0*M0) / lambda2); };
+  const double lambda4  = 1.0; // GeV^4 (normalization scale)
+  auto F_f2yy = [&](double q2) { return std::exp(-pow2(q2 - M0*M0) / lambda4); };
 
   // Couplings
   //const double e = msqrt(alpha_QED * 4.0 * PI);  // ~ 0.3, no running

@@ -1795,9 +1795,10 @@ void MGraniitti::PrintStatistics(unsigned int N) {
     // Check if we have cascaded phase space turned on in the x-section calculation
     double prod    = 1.0;
     double prod2pi = 1.0;
+    double volume  = 1.0;
     int Nf = 0;
     for (const auto& i : indices(proc->lts.decaytree)) {
-      proc->CalculatePhaseSpace(proc->lts.decaytree[i], prod, prod2pi, Nf);
+      proc->CalculatePhaseSpace(proc->lts.decaytree[i], prod, prod2pi, volume, Nf);
     }
     unsigned int N_leg = std::max((int)proc->lts.decaytree.size(), Nf) + 2; // +2 forward legs
 
