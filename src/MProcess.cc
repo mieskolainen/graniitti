@@ -850,19 +850,14 @@ void MProcess::GetOffShellMass(const gra::MDecayBranch &branch, double &mass) {
     double daughter_masses = 0;
     if (branch.legs.size() > 0) {
 
-      // Find daughter offshell masses
+      // Find daughter offshell masses from BW
       for (const auto& i : indices(branch.legs)) {
         const double M = branch.legs[i].p.mass;
         const double W = branch.legs[i].p.width;
 
-        if (!FLATMASS2) {
-          daughter_masses += std::max(0.0, random.RelativisticBWRandom(M, W, OFFSHELL));
-        } else {
-          daughter_masses += msqrt(random.U(std::max(0.0, pow2(M - OFFSHELL * W)),
-                                            std::min(lts.s, pow2(M + OFFSHELL * W))));
-        }
+        daughter_masses += std::max(0.0, random.RelativisticBWRandom(M, W, OFFSHELL));
       }
-      const double safe_margin = 1e-4;  // GeV
+      const double safe_margin = 1e-5;  // GeV
       daughter_masses += safe_margin;
     }
 
@@ -873,14 +868,14 @@ void MProcess::GetOffShellMass(const gra::MDecayBranch &branch, double &mass) {
       const double W = branch.p.width;
 
       if (!FLATMASS2) {
-        mass = std::max(0.0, random.RelativisticBWRandom(M, W, OFFSHELL));
+        mass = std::max(daughter_masses, random.RelativisticBWRandom(M, W, OFFSHELL));
       } else {
-        mass = msqrt(random.U(std::max(0.0, pow2(M - OFFSHELL * W)),
+        mass = msqrt(random.U(std::max(pow2(daughter_masses), pow2(M - OFFSHELL * W)),
                               std::min(lts.s, pow2(M + OFFSHELL * W))));
       }
 
       ++innertrials;
-      if (mass > daughter_masses) {
+      if (mass >= daughter_masses) {
         return;  // all done
       }
       if (innertrials > INNERMAXTRIAL) {
