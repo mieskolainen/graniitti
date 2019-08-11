@@ -137,7 +137,7 @@ void MProcess::CalculatePhaseSpace(const gra::MDecayBranch &branch, double& prod
 
   // There is decay information and this is activated by the amplitude
   if (branch.PS_active == true && branch.W.Integral() > 0) {
-    
+
     product    *= branch.W.Integral();
     product2pi *= (2*math::PI);
 
@@ -163,6 +163,10 @@ double MProcess::GetAmp2() {
     if (lts.FORCE_FLATMASS2 && !FLATMASS2_user) { FLATMASS2 = true; }
     if (lts.FORCE_OFFSHELL >= 0 && !OFFSHELL_user) { OFFSHELL = lts.FORCE_OFFSHELL; }
     // -----------------------------------------------
+
+    for (const auto& i : indices(lts.decaytree)) {
+      lts.decaytree[i].PS_active = true;
+    }
 
     return amp2;
 }

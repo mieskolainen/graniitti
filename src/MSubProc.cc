@@ -73,6 +73,10 @@ void MSubProc::ConstructDescriptions(const std::string &first) {
     std::map<std::string, std::string> channels;
     channels.insert(std::pair<std::string, std::string>("CONTENSOR",
       "Regge continuum 2-body                      [Tensor Pomeron]      @@ UNDER VALIDATION @@"));
+
+    channels.insert(std::pair<std::string, std::string>("CONTENSOR24",
+      "Regge continuum 2-body > 4 body             [Tensor Pomeron]      @@ UNDER VALIDATION @@"));
+    
     channels.insert(std::pair<std::string, std::string>("RESTENSOR",
       "Regge resonance                             [Tensor Pomeron]      @@ UNDER VALIDATION @@"));
     channels.insert(std::pair<std::string, std::string>("RES+CONTENSOR",
@@ -252,7 +256,17 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
 
     } else {
       throw std::invalid_argument(
-          "MSubProc: Only 2-body + sequential final states for [CONTENSOR] process");
+          "MSubProc: Only 2-body final states for [CONTENSOR] process");
+    } 
+  } else if (CHANNEL == "CONTENSOR24") {
+
+    if (lts.decaytree.size() == 4) {
+      static MTensorPomeron TensorPomeron;
+      return TensorPomeron.ME4(lts);
+      
+    } else {
+      throw std::invalid_argument(
+          "MSubProc: Only 4-body final states for [CONTENSOR24] process");
     }
   } else if (CHANNEL == "RES+CONTENSOR") {
     if (lts.decaytree.size() == 2) {

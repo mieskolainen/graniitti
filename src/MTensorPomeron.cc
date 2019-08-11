@@ -537,15 +537,23 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
 
   // DEDUCE subprocess
   std::string SPINMODE;
-  if        (lts.decaytree[0].p.spinX2 == 0 && lts.decaytree[1].p.spinX2 == 0) {
-    SPINMODE = "2xS";
-  } else if (lts.decaytree[0].p.spinX2 == 1 && lts.decaytree[1].p.spinX2 == 1) {
-    SPINMODE = "2xF";
-  } else if (lts.decaytree[0].p.spinX2 == 2 && lts.decaytree[1].p.spinX2 == 2) {
+
+  if (lts.decaytree.size() == 4) {
+
     SPINMODE = "2xV";
+    
   } else {
-    throw std::invalid_argument(
-        "MTensorPomeron::ME4: Invalid daughter spin (J = 0, 1/2, 1 pairs supported)");
+
+    if        (lts.decaytree[0].p.spinX2 == 0 && lts.decaytree[1].p.spinX2 == 0) {
+      SPINMODE = "2xS";
+    } else if (lts.decaytree[0].p.spinX2 == 1 && lts.decaytree[1].p.spinX2 == 1) {
+      SPINMODE = "2xF";
+    } else if (lts.decaytree[0].p.spinX2 == 2 && lts.decaytree[1].p.spinX2 == 2) {
+      SPINMODE = "2xV";
+    } else {
+      throw std::invalid_argument(
+          "MTensorPomeron::ME4: Invalid daughter spin (J = 0, 1/2, 1 pairs supported)");
+    }
   }
 
   // Two helicity states for incoming and outgoing protons
@@ -724,7 +732,18 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
   // 2 x vector meson (rho pair, phi pair ...)
   else if (SPINMODE == "2xV") {
 
-    const int pdg = lts.decaytree[0].p.pdg;
+    int pdg = 0;
+
+    if (lts.decaytree.size() == 2) {
+      pdg = lts.decaytree[0].p.pdg;
+    }
+    if (lts.decaytree.size() == 4) {
+      if (lts.decaytree[0].p.mass < 0.2) {
+        pdg = 113; // rho -> pi+pi-
+      } else {
+        pdg = 333; // phi -> K+K-
+      }
+    }
 
     double g1 = 0.0;
     double g2 = 0.0;
@@ -787,7 +806,7 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
 
     // ==============================================================
     // 2 x vector meson -> 2 x pseudoscalar
-    if (lts.decaytree[0].legs.size() == 2 && lts.decaytree[1].legs.size() == 2) {
+    if (lts.decaytree.size() == 4 || (lts.decaytree[0].legs.size() == 2 && lts.decaytree[1].legs.size() == 2)) {
 
       // Decay block
       Tensor2<std::complex<double>, 4, 4> DECAY = iG_vv2psps(lts);
@@ -797,12 +816,16 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
       lts.hamp.push_back(amp);
 
       // ------------------------------------------------------------
-      // *** CONTROL CASCADE SAMPLING ***
-      lts.FORCE_FLATMASS2 = true;
-      lts.FORCE_OFFSHELL  = 3.0;
+      if (lts.decaytree.size() != 4) {
 
-      lts.decaytree[0].PS_active = true;
-      lts.decaytree[1].PS_active = true;
+        // *** CONTROL CASCADE SAMPLING ***
+        lts.FORCE_FLATMASS2 = true;
+        lts.FORCE_OFFSHELL  = 3.0;
+
+        lts.decaytree[0].PS_active = true;
+        lts.decaytree[1].PS_active = true;
+
+      }
       // ------------------------------------------------------------
 
     // No decay amplitude treatment
@@ -877,7 +900,6 @@ std::vector<std::complex<double>> MTensorPomeron::MassiveSpin1PolSum(const Tenso
   return hamp;
 }
 
-
 // 2xvector -> 2xpseudoscalar decay block
 //
 Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_vv2psps(const gra::LORENTZSCALAR &lts) const {
@@ -887,32 +909,91 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_vv2psps(const gra::LORENT
   FTensor::Index<'g', 4> kappa3;
   FTensor::Index<'h', 4> kappa4;
 
-  // Vector propagators
-  const bool INDEX_UP = true;
-  const Tensor2<std::complex<double>, 4,4> iD_V1 = iD_VMES(lts.decaytree[0].p4, lts.decaytree[0].p.mass, lts.decaytree[0].p.width, INDEX_UP);
-  const Tensor2<std::complex<double>, 4,4> iD_V2 = iD_VMES(lts.decaytree[1].p4, lts.decaytree[1].p.mass, lts.decaytree[1].p.width, INDEX_UP);
+  if (lts.decaytree.size() == 4) { // Fully coherent 4-body amplitudes
 
-  // Decay couplings
-  const int pdg = lts.decaytree[0].p.pdg;
-  double g1 = 0.0;
-  if      (pdg == 113) { // rho(770)0
-    const double BR = 1.0;   // pi+pi-
-    g1 = GDecay(1, lts.decaytree[0].p.mass, lts.decaytree[0].p.width, lts.decaytree[0].legs[0].p.mass, BR);
+    // Decay couplings
+    int pdg = 0;
+
+    if (lts.decaytree[0].p.pdg == 211) {
+      pdg = 113;
+    } else {
+      pdg = 333;
+    }
+    double g1 = 0.0;
+    
+    double M = 0.0;
+    double W = 0.0;
+    if      (pdg == 113) {     // rho(770)0
+      const double BR = 1.0;   // pi+pi-
+      M = 7.7526E-01;
+      W = 1.491E-01;
+
+      g1 = GDecay(1, M, W, lts.decaytree[0].p.mass, BR);
+    }
+    else if (pdg == 333) {     // phi(1020)0
+      const double BR = 0.489; // K+K-
+      M = 1.019461E+00;
+      W = 4.249E-03;
+
+      g1 = GDecay(1, M, W, lts.decaytree[0].p.mass, BR);
+    } else {
+      throw std::invalid_argument("MTensorPomeron::iG_vv2psps: Unsupported vector meson PDG = " + std::to_string(pdg));
+    }
+
+    // Two different permutations
+    const MMatrix<int> R = {{0,1, 2,3}, {0,3, 2,1}};
+    Tensor2<std::complex<double>, 4,4> FULL;
+    
+    for (std::size_t k = 0; k < R.size_row(); ++k) {
+
+      // Vector propagators
+      const bool INDEX_UP = true;
+      const Tensor2<std::complex<double>, 4,4> iD_V1 = iD_VMES(lts.decaytree[R[k][0]].p4 + lts.decaytree[R[k][1]].p4, M, W, INDEX_UP);
+      const Tensor2<std::complex<double>, 4,4> iD_V2 = iD_VMES(lts.decaytree[R[k][2]].p4 + lts.decaytree[R[k][3]].p4, M, W, INDEX_UP);
+
+      // Decay couplings
+      const Tensor1<std::complex<double>, 4>   iG_D1 = iG_vpsps(lts.decaytree[R[k][0]].p4, lts.decaytree[R[k][1]].p4, M, g1);
+      const Tensor1<std::complex<double>, 4>   iG_D2 = iG_vpsps(lts.decaytree[R[k][2]].p4, lts.decaytree[R[k][3]].p4, M, g1);
+
+      Tensor2<std::complex<double>, 4,4> BLOCK;
+      BLOCK(rho3,rho4) = iD_V1(rho3,kappa3) * iG_D1(kappa3) * iD_V2(rho4,kappa4) * iG_D2(kappa4);
+
+      // Add it
+      FULL(rho3,rho4) = FULL(rho3,rho4) + BLOCK(rho3,rho4);
+    }
+    return FULL;
   }
-  else if (pdg == 333) { // phi(1020)0
-    const double BR = 0.489; // K+K-
-    g1 = GDecay(1, lts.decaytree[0].p.mass, lts.decaytree[0].p.width, lts.decaytree[0].legs[0].p.mass, BR);
-  } else {
-    throw std::invalid_argument("MTensorPomeron::iGvv2psps: Unsupported vector meson PDG = " + std::to_string(pdg));
+
+  if (lts.decaytree.size() == 2) {
+
+    // Decay couplings
+    const int pdg = lts.decaytree[0].p.pdg;
+    double g1 = 0.0;
+    if      (pdg == 113) { // rho(770)0
+      const double BR = 1.0;   // pi+pi-
+      g1 = GDecay(1, lts.decaytree[0].p.mass, lts.decaytree[0].p.width, lts.decaytree[0].legs[0].p.mass, BR);
+    }
+    else if (pdg == 333) { // phi(1020)0
+      const double BR = 0.489; // K+K-
+      g1 = GDecay(1, lts.decaytree[0].p.mass, lts.decaytree[0].p.width, lts.decaytree[0].legs[0].p.mass, BR);
+    } else {
+      throw std::invalid_argument("MTensorPomeron::iGvv2psps: Unsupported vector meson PDG = " + std::to_string(pdg));
+    }
+
+    // Vector propagators
+    const bool INDEX_UP = true;
+    const Tensor2<std::complex<double>, 4,4> iD_V1 = iD_VMES(lts.decaytree[0].p4, lts.decaytree[0].p.mass, lts.decaytree[0].p.width, INDEX_UP);
+    const Tensor2<std::complex<double>, 4,4> iD_V2 = iD_VMES(lts.decaytree[1].p4, lts.decaytree[1].p.mass, lts.decaytree[1].p.width, INDEX_UP);
+
+    // Couplings
+    const Tensor1<std::complex<double>, 4> iG_D1 = iG_vpsps(lts.decaytree[0].legs[0].p4, lts.decaytree[0].legs[1].p4, lts.decaytree[0].p.mass, g1);
+    const Tensor1<std::complex<double>, 4> iG_D2 = iG_vpsps(lts.decaytree[1].legs[0].p4, lts.decaytree[1].legs[1].p4, lts.decaytree[1].p.mass, g1);
+
+    Tensor2<std::complex<double>, 4,4> BLOCK;
+    BLOCK(rho3,rho4) = iD_V1(rho3,kappa3) * iG_D1(kappa3) * iD_V2(rho4,kappa4) * iG_D2(kappa4);
+
+    return BLOCK;
   }
-
-  const Tensor1<std::complex<double>, 4> iG_D1 = iG_vpsps(lts.decaytree[0].legs[0].p4, lts.decaytree[0].legs[1].p4, lts.decaytree[0].p.mass, g1);
-  const Tensor1<std::complex<double>, 4> iG_D2 = iG_vpsps(lts.decaytree[1].legs[0].p4, lts.decaytree[1].legs[1].p4, lts.decaytree[1].p.mass, g1);
-
-  Tensor2<std::complex<double>, 4,4> BLOCK;
-  BLOCK(rho3,rho4) = iD_V1(rho3,kappa3) * iG_D1(kappa3) * iD_V2(rho4,kappa4) * iG_D2(kappa4);
-
-  return BLOCK;
 }
 
 
