@@ -100,13 +100,12 @@ class MProcess : public MUserHistograms {
   void SetISOLATE(bool in) { ISOLATE = in; }
   bool                 GetISOLATE() { return ISOLATE; }
   void SetFLATMASS2(bool in) {
-    if (in == true) {
-      aux::PrintNotice();
-      std::cout << rang::fg::red << "MProcess::SetFLATMASS2: Set flat in mass^2 "
-                                    "sampling in decay trees: true"
-                << rang::fg::reset << std::endl;
-    }
+    aux::PrintNotice();
+    std::cout << rang::fg::red << "MProcess::SetFLATMASS2: Set flat in mass^2 "
+                                  "sampling in decay trees: "
+              << rang::fg::reset << std::endl;    
     FLATMASS2 = in;
+    FLATMASS2_user = true; // user has tagged it
   }
   bool GetFLATMASS2() { return FLATMASS2; }
   void SetOFFSHELL(double in) {
@@ -115,6 +114,7 @@ class MProcess : public MUserHistograms {
                                   "decay widths in decay trees: "
               << in << rang::fg::reset << std::endl;
     OFFSHELL = in;
+    OFFSHELL_user = true; // user has tagged it
   }
   double GetOFFSHELL() { return OFFSHELL; }
 
@@ -231,7 +231,7 @@ class MProcess : public MUserHistograms {
 
   // Cascade phase-space factor
   double CascadePS() const;
-  
+
   // Amplitude squared
   double GetAmp2();
 
@@ -338,8 +338,9 @@ class MProcess : public MUserHistograms {
 
   bool   ISOLATE   = false;  // ISOLATE the decay phase space (<F> class)
   bool   FLATMASS2 = false;  // Flat in M^2 instead of Breit-Wigner sampling
-  double OFFSHELL  = 5;      // How many full widths to sample particles in trees
-  // (note that small values can create artifacts!)
+  bool   FLATMASS2_user = false;
+  double OFFSHELL  = 5;      // How many full widths to sample particles in cascades
+  bool   OFFSHELL_user  = false;
 
   // Forward excitation minimum/maximum M^2 boundaries
   double M2_f_min = 0.0;

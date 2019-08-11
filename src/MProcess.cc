@@ -117,7 +117,7 @@ std::string MProcess::GetProcessDescriptor(std::string str) const {
   return Processes.find(str)->second;
 }
 
-// Cascaded phase-space
+// Cascaded phase-space factor
 double MProcess::CascadePS() const {
 
   // Cascade resonances phase-space
@@ -137,8 +137,8 @@ double MProcess::GetAmp2() {
 
     // -----------------------------------------------
     // ** Custom sampling control initiated by amplitudes **
-    if (lts.FORCE_FLATMASS2) { FLATMASS2 = true; }
-    if (lts.FORCE_OFFSHELL >= 0) { OFFSHELL = lts.FORCE_OFFSHELL; }
+    if (lts.FORCE_FLATMASS2 && !FLATMASS2_user) { FLATMASS2 = true; }
+    if (lts.FORCE_OFFSHELL >= 0 && !OFFSHELL_user) { OFFSHELL = lts.FORCE_OFFSHELL; }
     // -----------------------------------------------
 
     return amp2;
