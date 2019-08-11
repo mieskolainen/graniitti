@@ -50,7 +50,7 @@ SOURCE
 |   └── Program        - Main program source files
 |      └── Analysis    - ROOT dependent main program source files
 ├── sudakov            - Special transformed gluon pdfs arrays
-├── tests              - Test suite; automated tests, simulations, analysis
+├── tests              - Test suite; automated tests, simulations & analysis examples
 
 
 PROGRAMS
