@@ -46,7 +46,7 @@ SOURCE
 ├── output             - Simulation output folder
 ├── src                - Source files (C++)
 |   ├── Amplitude      - MadGraph amplitudes
-|   ├── Analysis       - Analysis source files (ROOT dependent)
+|   ├── Analysis       - ROOT dependent analysis source files
 |   └── Program        - Main program source files
 |      └── Analysis    - ROOT dependent main program source files
 ├── sudakov            - Special transformed gluon pdfs arrays
