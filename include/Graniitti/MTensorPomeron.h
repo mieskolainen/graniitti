@@ -112,12 +112,12 @@ class MTensorPomeron : public MDirac {
 
   FTensor::Tensor2<std::complex<double>, 4, 4>       iD_V(const M4Vec &p, double M0, double s34) const;
   std::complex<double> iD_MES0(const M4Vec &p, double M0) const;
-  std::complex<double> iD_MES(const M4Vec &p, double M0, double Gamma, bool BW_ON) const;
+  std::complex<double> iD_MES(const M4Vec &p, double M0, double Gamma) const;
   FTensor::Tensor2<std::complex<double>, 4, 4>       iD_VMES(const M4Vec &p, double M0,
-                                                       double Gamma, bool INDEX_UP, bool BW_ON) const;
+                                                       double Gamma, bool INDEX_UP) const;
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iD_TMES(const M4Vec &p, double M0,
-                                                             double Gamma, bool INDEX_UP, bool BW_ON) const;
-
+                                                             double Gamma, bool INDEX_UP) const;
+  
   // Tensor functions
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> Gamma0(const M4Vec &k1, const M4Vec &k2) const;
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> Gamma2(const M4Vec &k1, const M4Vec &k2) const;

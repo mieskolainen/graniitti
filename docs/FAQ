@@ -24,33 +24,33 @@ Run ./bin/gr and read the output
 SOURCE
 -----------
 
-├── bin                - Compiled binary program files
-├── develop            - Developer scripts
-├── docs               - Documentation
-├── eikonal            - Eikonal screening amplitude and proton density arrays
-├── figs               - Figure output directory
-├── fitcard            - Steering cards for fitting programs
-├── HEPdata            - Measurement data
-|   ├── CD             - Central Diffraction
-|   └── EL             - Elastic scattering
-├── include            - Header files (C++)
-|   └── Graniitti
-|      ├── Amplitude   - MadGraph amplitude headers
-|      └── Analysis    - ROOT dependent analysis header files
-├── input              - Default steering card input folder
-├── install            - Installation scripts and packages
-├── libs               - External libraries (C++)
-├── MG5cards           - MadGraph amplitude parameter cards
-├── modeldata          - Global model parameters
-├── obj                - Compiled object files
-├── output             - Simulation output folder
-├── src                - Source files (C++)
-|   ├── Amplitude      - MadGraph amplitudes
-|   ├── Analysis       - ROOT dependent analysis source files
-|   └── Program        - Main program source files
-|      └── Analysis    - ROOT dependent main program source files
-├── sudakov            - Special transformed gluon pdfs arrays
-├── tests              - Test suite; automated tests, simulations & analysis examples
+├── bin/                - Compiled binary program files
+├── develop/            - Developer scripts
+├── docs/               - Documentation
+├── eikonal/            - Eikonal screening amplitude and proton density arrays
+├── figs/               - Figure output directory
+├── fitcard/            - Steering cards for fitting programs
+├── HEPdata/            - Measurement data
+|   ├── CD/             - Central Diffraction
+|   └── EL/             - Elastic scattering
+├── include/            - Header files (C++)
+|   └── Graniitti/
+|      ├── Amplitude/   - MadGraph amplitude headers
+|      └── Analysis/    - ROOT dependent analysis header files
+├── input/              - Default steering card input folder
+├── install/            - Installation scripts and packages
+├── libs/               - External libraries (C++)
+├── MG5cards/           - MadGraph amplitude parameter cards
+├── modeldata/          - Global model parameters
+├── obj/                - Compiled object files
+├── output/             - Simulation output folder
+├── src/                - Source files (C++)
+|   ├── Amplitude/      - MadGraph amplitudes
+|   ├── Analysis/       - ROOT dependent analysis source files
+|   └── Program/        - Main program source files
+|      └── Analysis/    - ROOT dependent main program source files
+├── sudakov/            - Special transformed gluon pdfs arrays
+├── tests/              - Test suite; automated tests, simulations & analysis examples
 
 
 PROGRAMS

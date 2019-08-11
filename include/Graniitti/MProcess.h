@@ -227,6 +227,9 @@ class MProcess : public MUserHistograms {
   virtual bool LoopKinematics(const std::vector<double> &p1p, const std::vector<double> &p2p) = 0;
   virtual bool FiducialCuts() const = 0;
 
+  // Amplitude squared
+  double GetAmp2();
+  
   // Eikonal screening loop
   double S3ScreenedAmp2();
   

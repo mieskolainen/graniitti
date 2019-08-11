@@ -115,8 +115,8 @@ double MParton::EventWeight(const std::vector<double> &randvec, AuxIntData &aux)
 
   if (aux.Valid()) {
     // Matrix element squared
-    const double MatESQ = (FLATAMP == 0) ? S3ScreenedAmp2() : GetFlatAmp2(lts);
-
+    const double MatESQ = GetAmp2();
+    
     // Calculate central system Phase Space volume
     double exact = 0.0;
     DecayWidthPS(exact);

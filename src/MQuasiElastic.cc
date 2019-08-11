@@ -177,7 +177,7 @@ double MQuasiElastic::EventWeight(const std::vector<double> &randvec, AuxIntData
     if (aux.Valid()) {
       // ** EVENT WEIGHT **
       const double LIPS   = B3PhaseSpaceWeight();   // Phase-space weight
-      const double MatESQ = S3ScreenedAmp2();       // Matrix element squared
+      const double MatESQ = GetAmp2();              // Matrix element squared
       
       // Total weight: phase-space x |M|^2 x barn units
       W                   = LIPS * B3IntegralVolume() * MatESQ * GeV2barn;

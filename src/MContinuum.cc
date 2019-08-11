@@ -180,8 +180,9 @@ double MContinuum::EventWeight(const std::vector<double> &randvec, AuxIntData &a
   aux.vetocuts_ok   = VetoCuts();
 
   if (aux.Valid()) {
+    
     // Matrix element squared
-    const double MatESQ = (FLATAMP == 0) ? S3ScreenedAmp2() : GetFlatAmp2(lts);
+    const double MatESQ = GetAmp2(); 
 
     // ** EVENT WEIGHT **
     W = (1.0 / S_factor) * BNPhaseSpaceWeight() * BNIntegralVolume() * MatESQ * GeV2barn /

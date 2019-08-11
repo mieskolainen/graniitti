@@ -117,6 +117,20 @@ std::string MProcess::GetProcessDescriptor(std::string str) const {
   return Processes.find(str)->second;
 }
 
+// Amplitude squared
+double MProcess::GetAmp2() {
+
+    double amp2 = (FLATAMP == 0) ? S3ScreenedAmp2() : GetFlatAmp2(lts);
+
+    // -----------------------------------------------
+    // ** Custom sampling control initiated by amplitudes **
+    if (lts.FORCE_FLATMASS2) { FLATMASS2 = true; }
+    if (lts.FORCE_OFFSHELL >= 0) { OFFSHELL = lts.FORCE_OFFSHELL; }
+    // -----------------------------------------------
+
+    return amp2;
+}
+
 // Pomeron Loop Screened Amplitude
 //
 // ======xxxxxxxxx======>
@@ -1181,7 +1195,7 @@ void MProcess::FindVetoCuts(const gra::MDecayBranch &branch, bool &ok) const {
 // Recursive function to plot out the decay tree
 void MProcess::PrintDecayTree(const gra::MDecayBranch &branch) const {
   std::string spaces(branch.depth * 2, ' ');  // Give empty space
-  std::string lines = spaces + "|--->  ";
+  std::string lines = spaces + "└──>  ";
 
   if ((branch.depth + 1) % 3 == 0) {
     std::cout << rang::fg::blue << lines << rang::fg::reset;
@@ -1205,7 +1219,7 @@ void MProcess::PrintDecayTree(const gra::MDecayBranch &branch) const {
 // Recursive function to plot out the decay tree
 void MProcess::PrintPhaseSpace(const gra::MDecayBranch &branch, double& product, double& product2pi, int& N_final) const {
   std::string spaces(branch.depth * 2, ' ');  // Give empty space
-  std::string lines = spaces + "|---";
+  std::string lines = spaces + "|──";
 
   if (branch.W.GetW() > 0) {  // There is decay information
     printf("%s> \t {1->%lu LIPS}:  %0.3E +- %0.3E \n", lines.c_str(), branch.legs.size(),

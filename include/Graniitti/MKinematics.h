@@ -1666,6 +1666,11 @@ public:
   int pdf_trials = 0;
   // --------------------------------------------------------------------
 
+  // Cascade sampling forced control initiated by corresponding amplitude functions
+  bool FORCE_FLATMASS2 = false;
+  double FORCE_OFFSHELL = -1;
+
+  // --------------------------------------------------------------------
 
   // Resonances read from JSON input
   std::map<std::string, PARAM_RES> RESONANCES;

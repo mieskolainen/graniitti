@@ -166,8 +166,9 @@ double MFactorized::EventWeight(const std::vector<double> &randvec, AuxIntData &
   aux.vetocuts_ok   = VetoCuts();
 
   if (aux.Valid()) {
+    
     // Matrix element squared
-    const double MatESQ = (FLATAMP == 0) ? S3ScreenedAmp2() : GetFlatAmp2(lts);
+    const double MatESQ = GetAmp2();
 
     // Calculate central system Phase Space volume
     double exact = 0.0;

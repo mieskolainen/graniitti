@@ -204,8 +204,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     cvtx = iG_PPS_total(lts.q1, lts.q2, M0, "scalar", resonance.g_Tensor);
 
     // C-number propagator
-    const bool BW_ON = true;
-    std::complex<double> iD = iD_MES(lts.pfinal[0], M0, Gamma, BW_ON);
+    std::complex<double> iD = iD_MES(lts.pfinal[0], M0, Gamma);
 
     std::complex<double> iDECAY = 0.0;
 
@@ -267,10 +266,9 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
 
     // Vector-meson propagators
     const bool INDEX_UP = true;
-    const bool BW_ON = true;
-    const Tensor2<std::complex<double>, 4,4> iDV_1       = iD_VMES(lts.q1,        M0, Gamma, INDEX_UP, BW_ON);
-    const Tensor2<std::complex<double>, 4,4> iDV         = iD_VMES(lts.pfinal[0], M0, Gamma, INDEX_UP, BW_ON);
-    const Tensor2<std::complex<double>, 4,4> iDV_2       = iD_VMES(lts.q2,        M0, Gamma, INDEX_UP, BW_ON);
+    const Tensor2<std::complex<double>, 4,4> iDV_1       = iD_VMES(lts.q1,        M0, Gamma, INDEX_UP);
+    const Tensor2<std::complex<double>, 4,4> iDV         = iD_VMES(lts.pfinal[0], M0, Gamma, INDEX_UP);
+    const Tensor2<std::complex<double>, 4,4> iDV_2       = iD_VMES(lts.q2,        M0, Gamma, INDEX_UP);
 
     // Pomeron-Vector-Vector coupling
     const Tensor4<std::complex<double>, 4,4,4,4> iGPvv_1 = iG_Pvv(lts.pfinal[0], lts.q1, resonance.g_Tensor[0], resonance.g_Tensor[1]);
@@ -326,8 +324,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     cvtx = iG_PPS_total(lts.q1, lts.q2, M0, "pseudoscalar", resonance.g_Tensor);
 
     // Scalar BW-propagator
-    const bool BW_ON = true;
-    std::complex<double> iD = iD_MES(lts.pfinal[0], M0, Gamma, BW_ON);
+    std::complex<double> iD = iD_MES(lts.pfinal[0], M0, Gamma);
 
     std::complex<double> iDECAY = 0.0;
 
@@ -369,8 +366,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
 
     // Tensor BW-propagator
     const bool INDEX_UP = true;
-    const bool BW_ON    = true;
-    const Tensor4<std::complex<double>, 4, 4, 4, 4> iDf2 = iD_TMES(lts.pfinal[0], M0, Gamma, INDEX_UP, BW_ON);
+    const Tensor4<std::complex<double>, 4, 4, 4, 4> iDf2 = iD_TMES(lts.pfinal[0], M0, Gamma, INDEX_UP);
     
     // Total block
     Tensor2<std::complex<double>, 4, 4> iD;
@@ -728,9 +724,10 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
   // 2 x vector meson (rho pair, phi pair ...)
   else if (SPINMODE == "2xV") {
 
-    // Couplings (rho meson) (we neglect rho-omega mixing etc.)
     double g1 = 0.0;
     double g2 = 0.0;
+
+    // Couplings (rho meson)
     if (lts.decaytree[0].p.mass < 1.0) {
       g1 = 0.70;  // GeV^{-3}
       g2 = 6.20;  // GeV^{-1}
@@ -798,6 +795,12 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
       // Total amplitude: iM = [ ... ]  <-> M = (-i)*[ ... ]
       const std::complex<double> amp = (-zi) * (M_t(rho3,rho4) + M_u(rho3,rho4)) * DECAY(rho3, rho4);
       lts.hamp.push_back(amp);
+      
+      // ------------------------------------------------------------
+      // *** CONTROL CASCADE SAMPLING ***
+      lts.FORCE_FLATMASS2 = true;
+      lts.FORCE_OFFSHELL  = 2.0;
+      // ------------------------------------------------------------
 
     // No decay amplitude treatment
     } else {
@@ -882,23 +885,24 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_vv2psps(const gra::LORENT
 
   // Vector propagators
   const bool INDEX_UP = true;
-  const bool BW_ON = false; // we handle it by kinematics sampling
-  const Tensor2<std::complex<double>, 4, 4> iD_V1 = iD_VMES(lts.decaytree[0].p4, lts.decaytree[0].p.mass, lts.decaytree[0].p.width, INDEX_UP, BW_ON);
-  const Tensor2<std::complex<double>, 4, 4> iD_V2 = iD_VMES(lts.decaytree[1].p4, lts.decaytree[1].p.mass, lts.decaytree[1].p.width, INDEX_UP, BW_ON);
+  const Tensor2<std::complex<double>, 4,4> iD_V1 = iD_VMES(lts.decaytree[0].p4, lts.decaytree[0].p.mass, lts.decaytree[0].p.width, INDEX_UP);
+  const Tensor2<std::complex<double>, 4,4> iD_V2 = iD_VMES(lts.decaytree[1].p4, lts.decaytree[1].p.mass, lts.decaytree[1].p.width, INDEX_UP);
 
   // Decay couplings
   double g1 = 0.0;
-  if      (lts.decaytree[0].legs[0].p.mass < 0.2) {
-    g1 = 11.51; // rho -> pipi
+  if      (lts.decaytree[0].p.pdg == 113) { // rho(770)0
+    const double BR = 1.0;
+    g1 = GDecay(1, lts.decaytree[0].p.mass, lts.decaytree[0].p.width, lts.decaytree[0].legs[0].p.mass, BR);
   }
-  else {
-    g1 = 11.51; // phi -> KK [FIND THIS OUT ???]
+  else if (lts.decaytree[0].p.pdg == 333) { // phi(1020)0
+    const double BR = 0.489;
+    g1 = GDecay(1, lts.decaytree[0].p.mass, lts.decaytree[0].p.width, lts.decaytree[0].legs[0].p.mass, BR);
   }
   const Tensor1<std::complex<double>, 4> iG_D1 = iG_vpsps(lts.decaytree[0].legs[0].p4, lts.decaytree[0].legs[1].p4, lts.decaytree[0].p.mass, g1);
   const Tensor1<std::complex<double>, 4> iG_D2 = iG_vpsps(lts.decaytree[1].legs[0].p4, lts.decaytree[1].legs[1].p4, lts.decaytree[1].p.mass, g1);
 
   Tensor2<std::complex<double>, 4,4> BLOCK;
-  BLOCK(rho3,rho4) = iD_V1(rho3, kappa3) * iG_D1(kappa3) * iD_V2(rho4, kappa4) * iG_D2(kappa4);
+  BLOCK(rho3,rho4) = iD_V1(rho3,kappa3) * iG_D1(kappa3) * iD_V2(rho4,kappa4) * iG_D2(kappa4);
 
   return BLOCK;
 }
@@ -2006,12 +2010,10 @@ std::complex<double> MTensorPomeron::iD_MES0(const M4Vec &p, double M0) const {
 //
 // Input as 4-vector and the particle peak mass M0 and full width
 //
-std::complex<double> MTensorPomeron::iD_MES(const M4Vec &p, double M0, double Gamma, bool BW_ON) const {
+std::complex<double> MTensorPomeron::iD_MES(const M4Vec &p, double M0, double Gamma) const {
 
-  std::complex<double> Delta = 1.0;
-  if (BW_ON) {
-    Delta = 1.0 / (p.M2() - pow2(M0) + zi * M0 * Gamma); // If not done by kinematics sampling
-  }
+  const std::complex<double> Delta = 1.0 / (p.M2() - pow2(M0) + zi * M0 * Gamma);
+  
   return zi * Delta;
 }
 
@@ -2019,15 +2021,10 @@ std::complex<double> MTensorPomeron::iD_MES(const M4Vec &p, double M0, double Ga
 //
 // Input as contravariant 4-vector and the particle peak mass M0 and full width Gamma
 //
-Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iD_VMES(const M4Vec &p, double M0,
-                                                            double Gamma, bool INDEX_UP, bool BW_ON) const {
+Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iD_VMES(const M4Vec &p, double M0, double Gamma, bool INDEX_UP) const {
   // Transverse part
   const double               m2 = p.M2();
-  std::complex<double> Delta_T  = 1.0;
-
-  if (BW_ON) {
-    Delta_T = 1.0 / (m2 - pow2(M0) + zi * M0 * Gamma); // If not done by kinematics sampling
-  }
+  const std::complex<double> Delta_T  = 1.0 / (m2 - pow2(M0) + zi * M0 * Gamma);
 
   // Longitudinal part (does not enter here)
   const double Delta_L = 0.0;
@@ -2050,8 +2047,8 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iD_VMES(const M4Vec &p, doub
 // Input as contravariant (upper index) 4-vector and the particle peak mass M0
 // and full width Gamma
 //
-Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iD_TMES(const M4Vec &p, double M0,
-                                                                  double Gamma, bool INDEX_UP, bool BW_ON) const {
+Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iD_TMES(const M4Vec &p, double M0, double Gamma, bool INDEX_UP) const {
+
   const double m2 = p.M2();
   
   // Inline auxialary function
@@ -2063,10 +2060,7 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iD_TMES(const M4Vec &p
     }
   };
 
-  std::complex<double> Delta = 1.0;
-  if (BW_ON) {
-    Delta = 1.0 / (m2 - pow2(M0) + zi * M0 * Gamma); // If not done by kinematics sampling
-  }
+  const std::complex<double> Delta = 1.0 / (m2 - pow2(M0) + zi * M0 * Gamma);
 
   Tensor4<std::complex<double>, 4, 4, 4, 4> T;
   FOR_EACH_4(LI);
