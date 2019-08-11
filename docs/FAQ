@@ -27,7 +27,7 @@ SOURCE
 ├── bin                - Compiled binary program files
 ├── develop            - Developer scripts
 ├── docs               - Documentation
-├── eikonal            - Eikonal screening amplitude arrays
+├── eikonal            - Eikonal screening amplitude and proton density arrays
 ├── figs               - Figure output directory
 ├── fitcard            - Steering cards for fitting programs
 ├── HEPdata            - Measurement data
