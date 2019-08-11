@@ -35,8 +35,8 @@ SOURCE
 |   └── EL             - Elastic scattering
 ├── include            - Header files (C++)
 |   └── Graniitti
-|       ├── Amplitude  - MadGraph amplitude headers
-|       └── Analysis   - ROOT dependent analysis header files
+|      ├── Amplitude   - MadGraph amplitude headers
+|      └── Analysis    - ROOT dependent analysis header files
 ├── input              - Default steering card input folder
 ├── install            - Installation scripts and packages
 ├── libs               - External libraries (C++)
@@ -48,7 +48,7 @@ SOURCE
 |   ├── Amplitude      - MadGraph amplitudes
 |   ├── Analysis       - Analysis source files (ROOT dependent)
 |   └── Program        - Main program source files
-|       └── Analysis   - ROOT dependent main program source files
+|      └── Analysis    - ROOT dependent main program source files
 ├── sudakov            - Special transformed gluon pdfs arrays
 ├── tests              - Test suite; automated tests, simulations, analysis
 
