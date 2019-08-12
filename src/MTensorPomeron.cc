@@ -232,7 +232,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
       } else {
 
         // Contract to C-number
-        const Tensor2<std::complex<double>, 4, 4> iGvv2psps = iG_vv2psps(lts);
+        const Tensor2<std::complex<double>, 4, 4> iGvv2psps = iG_vv2psps(lts,0);
         iDECAY = iGf0vv(mu1, mu2) * iGvv2psps(mu1, mu2);
       }
     } else {
@@ -342,7 +342,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
       } else {
 
         // Contract to C-number
-        const Tensor2<std::complex<double>, 4, 4> iGvv2psps = iG_vv2psps(lts);
+        const Tensor2<std::complex<double>, 4, 4> iGvv2psps = iG_vv2psps(lts,0);
         iDECAY = iGpsvv(mu1, mu2) * iGvv2psps(mu1, mu2);
       }
 
@@ -372,7 +372,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     // Pseudoscalar pair decay
     if        (lts.decaytree[0].p.spinX2 == 0 && lts.decaytree[1].p.spinX2 == 0) {
       
-      const Tensor2<std::complex<double>, 4, 4> iGf2psps = iG_f2psps(p3, p4, M0, resonance.g_decay_tensor[0]);
+      const Tensor2<std::complex<double>, 4,4> iGf2psps = iG_f2psps(p3, p4, M0, resonance.g_decay_tensor[0]);
 
       // Contract
       iD(mu1, nu1) = iDf2(mu1, nu1, rho1, rho2) * iGf2psps(rho1, rho2);
@@ -385,7 +385,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
       if (resonance.g_decay_tensor.size() != 2) {
         throw std::invalid_argument("MTensorPomeron:: T->VV Coupling array [size 2] 'g_decay_tensor' not in BRANCHING.json for resonance PDG = " + std::to_string(resonance.p.pdg));
       }
-      const Tensor4<std::complex<double>, 4, 4, 4, 4> iGf2vv = iG_f2vv(p3, p4, M0, resonance.g_decay_tensor[0], resonance.g_decay_tensor[1]);
+      const Tensor4<std::complex<double>, 4,4,4,4> iGf2vv = iG_f2vv(p3, p4, M0, resonance.g_decay_tensor[0], resonance.g_decay_tensor[1]);
             
       // No decay treatment
       if (lts.decaytree[0].legs.size() == 0) {
@@ -395,7 +395,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
 
       // Vector decay treatment
       } else {
-        const Tensor2<std::complex<double>, 4, 4> iGvv2psps = iG_vv2psps(lts);
+        const Tensor2<std::complex<double>, 4,4> iGvv2psps = iG_vv2psps(lts,0);
 
         // Contract in two steps
         Tensor2<std::complex<double>, 4,4> A;
@@ -496,8 +496,16 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
 
   const M4Vec p1 = lts.pfinal[1];
   const M4Vec p2 = lts.pfinal[2];
-  const M4Vec p3 = lts.decaytree[0].p4;
-  const M4Vec p4 = lts.decaytree[1].p4;
+  M4Vec p3 = lts.decaytree[0].p4;
+  M4Vec p4 = lts.decaytree[1].p4;
+
+  // For 2xV -> 2x(2xPS)
+  if (lts.decaytree.size() == 4) {
+    p3 = lts.decaytree[0].p4 + lts.decaytree[1].p4;
+    p4 = lts.decaytree[2].p4 + lts.decaytree[3].p4; 
+
+    // Should add permutation treatment here ...
+  }
 
   // Intermediate boson/fermion mass
   const double M_ = lts.decaytree[0].p.mass;
@@ -819,11 +827,24 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
     if (lts.decaytree.size() == 4 || (lts.decaytree[0].legs.size() == 2 && lts.decaytree[1].legs.size() == 2)) {
 
       // Decay block
-      Tensor2<std::complex<double>, 4, 4> DECAY = iG_vv2psps(lts);
+      std::complex<double> amp = 0;
 
-      // Total amplitude: iM = [ ... ]  <-> M = (-i)*[ ... ]
-      const std::complex<double> amp = (-zi) * (M_t(rho3,rho4) + M_u(rho3,rho4)) * DECAY(rho3, rho4);
-      lts.hamp.push_back(amp);
+      if (lts.decaytree.size() == 2) {
+
+          Tensor2<std::complex<double>, 4, 4> DECAY = iG_vv2psps(lts,0);
+          amp += (-zi) * (M_t(rho3,rho4) + M_u(rho3,rho4)) * DECAY(rho3, rho4);
+          
+          lts.hamp.push_back(amp);
+      } else {
+
+        const int N_perm = 1;
+        for (int k = 0; k < N_perm; ++k) {
+          Tensor2<std::complex<double>, 4, 4> DECAY = iG_vv2psps(lts,k);
+          // Total amplitude: iM = [ ... ]  <-> M = (-i)*[ ... ]
+          amp += (-zi) * (M_t(rho3,rho4) + M_u(rho3,rho4)) * DECAY(rho3, rho4);
+        }
+        lts.hamp.push_back(amp);
+      }
 
       // ------------------------------------------------------------
       if (lts.decaytree.size() != 4) {
@@ -910,9 +931,10 @@ std::vector<std::complex<double>> MTensorPomeron::MassiveSpin1PolSum(const Tenso
   return hamp;
 }
 
+
 // 2xvector -> 2xpseudoscalar decay block
 //
-Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_vv2psps(const gra::LORENTZSCALAR &lts) const {
+Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_vv2psps(const gra::LORENTZSCALAR &lts, int k) const {
 
   FTensor::Index<'e', 4> rho3;
   FTensor::Index<'f', 4> rho4;
@@ -948,27 +970,21 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_vv2psps(const gra::LORENT
     }
 
     // Two different permutations
-    const MMatrix<int> R = {{0,1, 2,3}, {0,3, 2,1}};
-    Tensor2<std::complex<double>, 4,4> FULL;
+    const MMatrix<int> R = {{0,1, 2,3}, {0,3, 2,1}, {0,2, 1,3}, {1,2, 0,3}};
 
-    for (std::size_t k = 0; k < R.size_row(); ++k) {
+    // Vector propagators
+    const bool INDEX_UP = true;
+    const Tensor2<std::complex<double>, 4,4> iD_V1 = iD_VMES(lts.decaytree[R[k][0]].p4 + lts.decaytree[R[k][1]].p4, M, W, INDEX_UP);
+    const Tensor2<std::complex<double>, 4,4> iD_V2 = iD_VMES(lts.decaytree[R[k][2]].p4 + lts.decaytree[R[k][3]].p4, M, W, INDEX_UP);
 
-      // Vector propagators
-      const bool INDEX_UP = true;
-      const Tensor2<std::complex<double>, 4,4> iD_V1 = iD_VMES(lts.decaytree[R[k][0]].p4 + lts.decaytree[R[k][1]].p4, M, W, INDEX_UP);
-      const Tensor2<std::complex<double>, 4,4> iD_V2 = iD_VMES(lts.decaytree[R[k][2]].p4 + lts.decaytree[R[k][3]].p4, M, W, INDEX_UP);
+    // Decay couplings
+    const Tensor1<std::complex<double>, 4>   iG_D1 = iG_vpsps(lts.decaytree[R[k][0]].p4, lts.decaytree[R[k][1]].p4, M, g1);
+    const Tensor1<std::complex<double>, 4>   iG_D2 = iG_vpsps(lts.decaytree[R[k][2]].p4, lts.decaytree[R[k][3]].p4, M, g1);
 
-      // Decay couplings
-      const Tensor1<std::complex<double>, 4>   iG_D1 = iG_vpsps(lts.decaytree[R[k][0]].p4, lts.decaytree[R[k][1]].p4, M, g1);
-      const Tensor1<std::complex<double>, 4>   iG_D2 = iG_vpsps(lts.decaytree[R[k][2]].p4, lts.decaytree[R[k][3]].p4, M, g1);
+    Tensor2<std::complex<double>, 4,4> BLOCK;
+    BLOCK(rho3,rho4) = iD_V1(rho3,kappa3) * iG_D1(kappa3) * iD_V2(rho4,kappa4) * iG_D2(kappa4);
 
-      Tensor2<std::complex<double>, 4,4> BLOCK;
-      BLOCK(rho3,rho4) = iD_V1(rho3,kappa3) * iG_D1(kappa3) * iD_V2(rho4,kappa4) * iG_D2(kappa4);
-
-      // Add it
-      FULL(rho3,rho4) = FULL(rho3,rho4) + BLOCK(rho3,rho4);
-    }
-    return FULL;
+    return BLOCK;
   }
 
   else if (lts.decaytree.size() == 2) { // To be used with cascaded phase space

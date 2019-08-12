@@ -148,7 +148,7 @@ void MProcess::CalculatePhaseSpace(const gra::MDecayBranch &branch, double& prod
     const double MIN = std::max(pow2(M_sum), pow2(branch.p.mass - branch.p.width * OFFSHELL));
     const double MAX = pow2(branch.p.mass + branch.p.width * OFFSHELL);
     volume          *= (MAX - MIN);
-
+    
     for (const auto &i : indices(branch.legs)) {
       CalculatePhaseSpace(branch.legs[i], product, product2pi, volume, N_final);
     }
@@ -830,7 +830,7 @@ void MProcess::SetupBranching() {
         printf("%0.3E ", res.g_decay_tensor[i]);
       }
       printf("] %s \n", TP_computed ? "(computed from J, width and BR)" : "");
-      
+
       // Set resonance
       lts.RESONANCES[xpoint.first] = res;
 

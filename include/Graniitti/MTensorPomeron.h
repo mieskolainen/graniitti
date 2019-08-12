@@ -53,7 +53,7 @@ class MTensorPomeron : public MDirac {
   MTensor<std::complex<double>> iG_PPT_06(const M4Vec &q1, const M4Vec &q2, double g_PPT) const;
 
   // Vertex functions
-  FTensor::Tensor2<std::complex<double>, 4, 4> iG_vv2psps(const gra::LORENTZSCALAR &lts) const;
+  FTensor::Tensor2<std::complex<double>, 4, 4> iG_vv2psps(const gra::LORENTZSCALAR &lts, int k) const;
 
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_PPS_total(
       const M4Vec &q1, const M4Vec &q2, double M0, const std::string &mode, const std::vector<double> &g_PPS) const;

@@ -79,7 +79,7 @@
     },
     "<F>" : {
       "Rap" : [-2.5, 2.5],  // Rapidity boundaries of the system (<F> class)
-      "M"   : [2.1, 2.3]
+      "M"   : [0.0, 5.0]
     },
     "<Q>" : {
       "Xi"  : [0, 0.05]     // Invariant scale M^2/s (forward excitation)
@@ -92,7 +92,7 @@
 
   "FIDCUTS" : {
 
-    "active" : true,
+    "active" : false,
 
      // Central system final states
     "PARTICLE" : {
