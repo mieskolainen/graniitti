@@ -758,6 +758,7 @@ void MProcess::SetupBranching() {
       // In 2-body case, the decay phase space and decay amplitude squared
       // factorize
 
+      bool TP_computed = false;
       if (lts.decaytree.size() == 2) {
         // Calculate phase space part:
         // Gamma = PS * |A_decay|^2 then with |A_decay|^2 = 1 <=> Gamma = PS
@@ -790,6 +791,7 @@ void MProcess::SetupBranching() {
               if (PS > 1e-9) { break; }
             }
           }
+          TP_computed = true;
         }
 
         // BR \equiv Gamma/Gamma_tot = (PS * |A_decay|^2) / Gamma_tot
@@ -827,8 +829,8 @@ void MProcess::SetupBranching() {
       for (const auto& i : indices(res.g_decay_tensor)) {
         printf("%0.3E ", res.g_decay_tensor[i]);
       }
-      printf("]\n");
-
+      printf("] %s \n", TP_computed ? "(computed from J, width and BR)" : "");
+      
       // Set resonance
       lts.RESONANCES[xpoint.first] = res;
 

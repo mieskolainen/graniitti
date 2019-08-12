@@ -399,7 +399,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
 
         // Contract in two steps
         Tensor2<std::complex<double>, 4,4> A;
-        A(alpha1, beta1) = iGf2vv(alpha1, beta1, rho1, rho2) * iGvv2psps(rho1, rho2);
+        A(alpha1, beta1) = iGf2vv(rho1, rho2, alpha1, beta1) * iGvv2psps(rho1, rho2);
         iD(mu1, nu1) = iDf2(mu1, nu1, alpha1, beta1) * A(alpha1, beta1);
 
         // --------------------------------------------------------------
@@ -1861,7 +1861,8 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_f2psps(const M4Vec &k1,
   return T;
 }
 
-// f2 - Vector (massive) - Vector (Massive) vertex function: i\Gamma_{\mu\nu\kappa\lambda}(k1,k2)
+// f2 - Vector (massive) - Vector (Massive) vertex function
+// i\Gamma_{\mu\nu\kappa\lambda}(k1,k2)
 //
 // Input as contravariant (upper index) 4-vectors, M0 is the f2 meson on-shell mass
 //
