@@ -214,7 +214,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
       const double g1 = resonance.g_decay_tensor;
       iDECAY = iG_f0ss(lts.decaytree[0].p4, lts.decaytree[1].p4, M0, g1);
     }
-
+    
     // Massive vector pair decay
     else if (lts.decaytree[0].p.spinX2 == 2 && lts.decaytree[1].p.spinX2 == 2) {
 
@@ -388,7 +388,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
       double g1 = 1.0; // [TBD SET THIS ADAPTIVE !!!]
       double g2 = 1.0; // [TBD SET THIS ADAPTIVE !!!]
       const Tensor4<std::complex<double>, 4, 4, 4, 4> iGf2vv = iG_f2vv(p3, p4, M0, g1, g2);
-
+      
       // No decay treatment
       if (lts.decaytree[0].legs.size() == 0) {
 
