@@ -211,17 +211,17 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     // Pseudoscalar pair decay
     if      (lts.decaytree[0].p.spinX2 == 0 && lts.decaytree[1].p.spinX2 == 0) {
 
-      const double g1 = resonance.g_decay_tensor;
+      const double g1 = resonance.g_decay_tensor[0];
       iDECAY = iG_f0ss(lts.decaytree[0].p4, lts.decaytree[1].p4, M0, g1);
     }
     
     // Massive vector pair decay
     else if (lts.decaytree[0].p.spinX2 == 2 && lts.decaytree[1].p.spinX2 == 2) {
 
-      // [TBD SET THESE UP !!!]
-      double g1 = 1.0;
-      double g2 = 1.0;
-      const Tensor2<std::complex<double>, 4, 4> iGf0vv = iG_f0vv(p3, p4, M0, g1, g2);
+      if (resonance.g_decay_tensor.size() != 2) {
+        throw std::invalid_argument("MTensorPomeron:: S->VV Coupling array [size 2] 'g_decay_tensor' not in BRANCHING.json for resonance PDG = " + std::to_string(resonance.p.pdg));
+      }
+      const Tensor2<std::complex<double>, 4, 4> iGf0vv = iG_f0vv(p3, p4, M0, resonance.g_decay_tensor[0], resonance.g_decay_tensor[1]);
 
       // No decay treatment
       if (lts.decaytree[0].legs.size() == 0) {
@@ -275,8 +275,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     const Tensor4<std::complex<double>, 4,4,4,4> iGPvv_2 = iG_Pvv(lts.pfinal[0], lts.q2, resonance.g_Tensor[0], resonance.g_Tensor[1]);
 
     // Vector-Pseudoscalar-Pseudoscalar coupling
-    const double g1 = resonance.g_decay_tensor;
-    const Tensor1<std::complex<double>, 4>   iGvpsps     = iG_vpsps(p3, p4, M0, g1);
+    const Tensor1<std::complex<double>, 4>   iGvpsps     = iG_vpsps(p3, p4, M0, resonance.g_decay_tensor[0]);
     
     // Two helicity states for incoming and outgoing protons
     FOR_PP_HELICITY;
@@ -331,9 +330,8 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     // Massive vector pair
     if (lts.decaytree[0].p.spinX2 == 2 && lts.decaytree[1].p.spinX2 == 2 &&
         lts.decaytree[0].p.pdg != 22   && lts.decaytree[1].p.mass != 22) {
-
-      const double g1 = resonance.g_decay_tensor;
-      const Tensor2<std::complex<double>, 4, 4> iGpsvv = iG_psvv(p3, p4, M0, g1);
+      
+      const Tensor2<std::complex<double>, 4, 4> iGpsvv = iG_psvv(p3, p4, M0, resonance.g_decay_tensor[0]);
 
       // No decay treatment
       if (lts.decaytree[0].legs.size() == 0) {
@@ -374,8 +372,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
     // Pseudoscalar pair decay
     if        (lts.decaytree[0].p.spinX2 == 0 && lts.decaytree[1].p.spinX2 == 0) {
       
-      double g1 = resonance.g_decay_tensor;
-      const Tensor2<std::complex<double>, 4, 4> iGf2psps = iG_f2psps(p3, p4, M0, g1);
+      const Tensor2<std::complex<double>, 4, 4> iGf2psps = iG_f2psps(p3, p4, M0, resonance.g_decay_tensor[0]);
 
       // Contract
       iD(mu1, nu1) = iDf2(mu1, nu1, rho1, rho2) * iGf2psps(rho1, rho2);
@@ -385,14 +382,16 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
                lts.decaytree[0].p.pdg != 22   && lts.decaytree[1].p.mass != 22) {
 
       // f2 -> V V decay structure
-      double g1 = 1.0; // [TBD SET THIS ADAPTIVE !!!]
-      double g2 = 1.0; // [TBD SET THIS ADAPTIVE !!!]
-      const Tensor4<std::complex<double>, 4, 4, 4, 4> iGf2vv = iG_f2vv(p3, p4, M0, g1, g2);
-      
+      if (resonance.g_decay_tensor.size() != 2) {
+        throw std::invalid_argument("MTensorPomeron:: T->VV Coupling array [size 2] 'g_decay_tensor' not in BRANCHING.json for resonance PDG = " + std::to_string(resonance.p.pdg));
+      }
+      const Tensor4<std::complex<double>, 4, 4, 4, 4> iGf2vv = iG_f2vv(p3, p4, M0, resonance.g_decay_tensor[0], resonance.g_decay_tensor[1]);
+            
       // No decay treatment
       if (lts.decaytree[0].legs.size() == 0) {
 
-        throw std::invalid_argument("MTensorPomeron::ME3: [T decay] Add decay daughters for intermediate massive vectors");
+        // ** WE SHOULD ADD HERE **
+        throw std::invalid_argument("MTensorPomeron::ME3: T->VV Add decay daughters for intermediate massive vectors");
 
       // Vector decay treatment
       } else {
@@ -402,18 +401,29 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
         Tensor2<std::complex<double>, 4,4> A;
         A(alpha1, beta1) = iGf2vv(alpha1, beta1, rho1, rho2) * iGvv2psps(rho1, rho2);
         iD(mu1, nu1) = iDf2(mu1, nu1, alpha1, beta1) * A(alpha1, beta1);
+
+        // --------------------------------------------------------------
+        // *** CONTROL CASCADE SAMPLING ***
+        lts.FORCE_FLATMASS2 = true;
+        lts.FORCE_OFFSHELL  = 3.0;
+
+        lts.decaytree[0].PS_active = true;
+        lts.decaytree[1].PS_active = true;
+        // --------------------------------------------------------------
       }
 
     // Gamma pair decay
     } else if (lts.decaytree[0].p.pdg == 22 && lts.decaytree[1].p.pdg == 22) { 
 
-      /*
+      throw std::invalid_argument("MTensorPomeron::ME3: Gamma decay matrix element not implemented");
+
       // Implement here ...
-      
-      // f2 -> yy decay structure
-      double g1 = 1.0;
-      double g2 = 1.0;
-      const Tensor4<std::complex<double>, 4, 4, 4, 4> iGf2yy = iG_f2yy(p3, p4, M0, g1, g2);
+      /*
+      // f2 -> V V decay structure
+      if (resonance.g_decay_tensor.size() != 2) {
+        throw std::invalid_argument("MTensorPomeron:: T->VV Coupling array [size 2] 'g_decay_tensor' not in BRANCHING.json for resonance PDG = " + std::to_string(resonance.p.pdg));
+      }
+      const Tensor4<std::complex<double>, 4, 4, 4, 4> iGf2yy = iG_f2yy(p3, p4, M0, resonance.g_decay_tensor[0], resonance.g_decay_tensor[1]);
       */
 
     } else {

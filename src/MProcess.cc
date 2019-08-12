@@ -686,6 +686,13 @@ void MProcess::SetupBranching() {
           res.hc.P_conservation = j[PDG_STR][SID]["P_conservation"];
           found_decay_mode      = true;
 
+          try {
+            std::vector<double> temp = j[PDG_STR][SID]["g_decay_tensor"];
+            res.g_decay_tensor = temp;  
+          } catch (...) {
+            continue; // Did not found uset set Tensor Pomeron decay coupling array
+          }
+          
           // ----------------------------------------------------------------------------
           // Construct helicity ls-coupling matrix (put default 1.0)
           // indexed directly by ls values
@@ -762,24 +769,26 @@ void MProcess::SetupBranching() {
                                               pow2(lts.decaytree[1].p.mass), amp2, sym);
 
         // ---------------------------------------------------------------
-        // Tensor Pomeron Model decay couplings
-        res.g_decay_tensor = TensorPomeron.GDecay(res.p.spinX2 / 2, res.p.mass, res.p.width, lts.decaytree[0].p.mass, res.BR);
+        // Tensor Pomeron Model decay couplings for 2-body decays directly calculable from width and BR
+        if (res.g_decay_tensor.size() == 0) { // Not set yet
 
-        if (std::abs(PS) < 1e-9) {
-          // Try again with higher mother mass, we might
-          // be trying purely off-shell decay (such as f0(980) -> K+K-
-          // )
-          const unsigned int N_width = 3;
-          for (std::size_t i = 1; i <= N_width; ++i) {
-            PS = gra::kinematics::PDW2body(pow2(res.p.mass + i * res.p.width),
-                                           pow2(lts.decaytree[0].p.mass),
-                                           pow2(lts.decaytree[1].p.mass), amp2, sym);
+          res.g_decay_tensor = {TensorPomeron.GDecay(res.p.spinX2 / 2, res.p.mass, res.p.width, lts.decaytree[0].p.mass, res.BR)};
 
-            // ---------------------------------------------------------------
-            // Tensor Pomeron Model decay couplings
-            res.g_decay_tensor = TensorPomeron.GDecay(res.p.spinX2 / 2, res.p.mass + i * res.p.width, res.p.width, lts.decaytree[0].p.mass, res.BR);
+          if (std::abs(PS) < 1e-9) {
+            // Try again with higher mother mass as a crude approximation, we might
+            // be trying purely off-shell decay (such as f0(980) -> K+K-)
+            const unsigned int N_width = 3;
+            for (std::size_t i = 1; i <= N_width; ++i) {
+              PS = gra::kinematics::PDW2body(pow2(res.p.mass + i * res.p.width),
+                                             pow2(lts.decaytree[0].p.mass),
+                                             pow2(lts.decaytree[1].p.mass), amp2, sym);
 
-            if (PS > 1e-9) { break; }
+              // ---------------------------------------------------------------
+              // Tensor Pomeron Model decay couplings
+              res.g_decay_tensor = {TensorPomeron.GDecay(res.p.spinX2 / 2, res.p.mass + i * res.p.width, res.p.width, lts.decaytree[0].p.mass, res.BR)};
+
+              if (PS > 1e-9) { break; }
+            }
           }
         }
 
@@ -808,14 +817,17 @@ void MProcess::SetupBranching() {
         // element do not factorize there]
       } else {
         res.g_decay = 1.0;  // For the rest, put 1.0
-        res.g_decay_tensor = 1.0;
       }
 
       printf("(Mass, Full width):                (%0.3E, %0.3E GeV) \n", res.p.mass, res.p.width);
       printf("Branching ratio || Partial width:   %0.3E || %0.3E GeV \n", res.BR,
              res.BR * res.p.width);
       printf("=> Computed decay coupling:                %0.3E \n", res.g_decay);
-      printf("=> Computed Tensor Pomeron decay coupling: %0.3E \n", res.g_decay_tensor);
+      printf("=> Tensor Pomeron decay couplings:       [ ");
+      for (const auto& i : indices(res.g_decay_tensor)) {
+        printf("%0.3E ", res.g_decay_tensor[i]);
+      }
+      printf("]\n");
 
       // Set resonance
       lts.RESONANCES[xpoint.first] = res;

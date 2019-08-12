@@ -212,12 +212,13 @@
                      [2,2, 1.0, 0.0],
                      [4,2, 1.0, 0.0] ],
       "P_conservation" : true,
+      "g_decay_tensor" : [1.0, 0.0], // Tensor Pomeron decay coupling
     },
   },
-
+  
   // J/psi
   "443" : {
-      
+
     "0" : { // e+e-
       "PDG" : [11, -11], "BR" : 5.971e-2,
       "alpha_ls" : [ [0,1, 1.0, 0.0], 
@@ -231,7 +232,7 @@
                      [2,1, 1.0, 0.0] ],
       "P_conservation" : true,
     },
-    
+
     "2" : { // pi+pi-
       "PDG" : [211, -211], "BR" : 1.47e-4,
       "alpha_ls" : [ [1,0, 1.0, 0.0] ],
