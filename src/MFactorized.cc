@@ -288,20 +288,7 @@ bool MFactorized::B51RandomKin(const std::vector<double> &randvec) {
     M_MIN               = M_sum + MARGIN;
     M_MAX               = lts.sqrt_s - (lts.pbeam1.M() + lts.pbeam2.M());
 
-    /*
-    // If a single resonance, Now tighten >>
-    if (ProcPtr.CHANNEL == "RES") {
-                    PARAM_RES res;
-                    for (auto const& x : lts.RESONANCES) {
-                                    res = x.second;
-                    }
-                    if (res.p.mass > 0) {
-                                    M_MIN = std::max(M_MIN, res.p.mass - res.p.width * 5);
-                                    M_MAX = std::min(M_MAX, res.p.mass + res.p.width * 5);
-                    }
-    }
-    */
-    // Apply generator cuts (either automatic or user provided)
+    // Apply generator cuts
     M_MIN = std::max(M_MIN, gcuts.M_min);
     M_MAX = std::min(M_MAX, gcuts.M_max);
 
@@ -313,8 +300,8 @@ bool MFactorized::B51RandomKin(const std::vector<double> &randvec) {
           "decaymode and cuts!");
     }
   };
-
-  // Mass squared
+  
+  // Sample mass squared
   const double m2X = pow2(M_MIN) + (pow2(M_MAX) - pow2(M_MIN)) * randvec[5];
 
   // Forward N* system masses
@@ -380,12 +367,10 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
   // Central system decay tree first branch kinematics set up here, the
   // rest is done recursively
 
-  // Mother mass
-  std::vector<double> masses;
-
   // Collect decay product masses
+  std::vector<double> masses;
   for (const auto &i : indices(lts.decaytree)) {
-    // @@ Note, we need to take offshell masses here @@
+    // @@ Note, we need to take offshell masses here calculated first in B51RandomKin @@
     masses.push_back(lts.decaytree[i].m_offshell);
   }
   std::vector<M4Vec> products;

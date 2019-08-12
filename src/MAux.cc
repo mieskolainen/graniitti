@@ -39,9 +39,9 @@ namespace aux {
 // -------------------------------------------------------
 // FIXED HERE manually
 
-double      GetVersion() {       return 0.56; }
+double      GetVersion() {       return 0.57; }
 std::string GetVersionType() {   return "beta"; }
-std::string GetVersionDate() {   return "11.08.2019"; }
+std::string GetVersionDate() {   return "12.08.2019"; }
 std::string GetVersionUpdate() { return "2xV -> 2xPS within tensor pomeron"; }
 
 // -------------------------------------------------------

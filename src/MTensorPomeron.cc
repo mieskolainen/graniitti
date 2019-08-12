@@ -909,7 +909,7 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_vv2psps(const gra::LORENT
   FTensor::Index<'g', 4> kappa3;
   FTensor::Index<'h', 4> kappa4;
 
-  if (lts.decaytree.size() == 4) { // Fully coherent 4-body amplitudes
+  if (lts.decaytree.size() == 4) { // To be used with direct 4-body phase space
 
     // Decay couplings
     int pdg = 0;
@@ -920,21 +920,18 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_vv2psps(const gra::LORENT
       pdg = 333;
     }
     double g1 = 0.0;
-    
-    double M = 0.0;
-    double W = 0.0;
+    double  M = 0.0;
+    double  W = 0.0;
     if      (pdg == 113) {     // rho(770)0
       const double BR = 1.0;   // pi+pi-
       M = 7.7526E-01;
       W = 1.491E-01;
-
       g1 = GDecay(1, M, W, lts.decaytree[0].p.mass, BR);
     }
     else if (pdg == 333) {     // phi(1020)0
       const double BR = 0.489; // K+K-
       M = 1.019461E+00;
       W = 4.249E-03;
-
       g1 = GDecay(1, M, W, lts.decaytree[0].p.mass, BR);
     } else {
       throw std::invalid_argument("MTensorPomeron::iG_vv2psps: Unsupported vector meson PDG = " + std::to_string(pdg));
@@ -943,7 +940,7 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_vv2psps(const gra::LORENT
     // Two different permutations
     const MMatrix<int> R = {{0,1, 2,3}, {0,3, 2,1}};
     Tensor2<std::complex<double>, 4,4> FULL;
-    
+
     for (std::size_t k = 0; k < R.size_row(); ++k) {
 
       // Vector propagators
@@ -964,21 +961,20 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_vv2psps(const gra::LORENT
     return FULL;
   }
 
-  if (lts.decaytree.size() == 2) {
+  else if (lts.decaytree.size() == 2) { // To be used with cascaded phase space
 
     // Decay couplings
     const int pdg = lts.decaytree[0].p.pdg;
+    double BR = 0.0;
     double g1 = 0.0;
-    if      (pdg == 113) { // rho(770)0
-      const double BR = 1.0;   // pi+pi-
-      g1 = GDecay(1, lts.decaytree[0].p.mass, lts.decaytree[0].p.width, lts.decaytree[0].legs[0].p.mass, BR);
-    }
-    else if (pdg == 333) { // phi(1020)0
-      const double BR = 0.489; // K+K-
-      g1 = GDecay(1, lts.decaytree[0].p.mass, lts.decaytree[0].p.width, lts.decaytree[0].legs[0].p.mass, BR);
+    if        (pdg == 113) { // rho(770)0
+      BR = 1.0;   // pi+pi-
+    } else if (pdg == 333) { // phi(1020)0
+      BR = 0.489; // K+K-
     } else {
-      throw std::invalid_argument("MTensorPomeron::iGvv2psps: Unsupported vector meson PDG = " + std::to_string(pdg));
+      throw std::invalid_argument("MTensorPomeron::iG_vv2psps: Unsupported vector meson PDG = " + std::to_string(pdg));
     }
+    g1 = GDecay(1, lts.decaytree[0].p.mass, lts.decaytree[0].p.width, lts.decaytree[0].legs[0].p.mass, BR);
 
     // Vector propagators
     const bool INDEX_UP = true;
@@ -993,6 +989,8 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_vv2psps(const gra::LORENT
     BLOCK(rho3,rho4) = iD_V1(rho3,kappa3) * iG_D1(kappa3) * iD_V2(rho4,kappa4) * iG_D2(kappa4);
 
     return BLOCK;
+  } else {
+    throw std::invalid_argument("MTensorPomeron::iG_vv2psps: Not valid decay");
   }
 }
 

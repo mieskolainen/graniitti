@@ -141,10 +141,13 @@ void MProcess::CalculatePhaseSpace(const gra::MDecayBranch &branch, double& prod
     product    *= branch.W.Integral();
     product2pi *= (2*math::PI);
 
-    // mass^2 interval
-    const double   low  = std::max(0.0, pow2(branch.p.mass - branch.p.width * OFFSHELL));
-    const double   high = pow2(branch.p.mass + branch.p.width * OFFSHELL);
-    volume *= (high - low);
+    // Flat mass^2 interval
+    double M_sum = 0;
+    for (const auto& i : indices(branch.legs)) { M_sum += branch.legs[i].p.mass; } // Daughters give lower limit
+
+    const double MIN = std::max(pow2(M_sum), pow2(branch.p.mass - branch.p.width * OFFSHELL));
+    const double MAX = pow2(branch.p.mass + branch.p.width * OFFSHELL);
+    volume          *= (MAX - MIN);
 
     for (const auto &i : indices(branch.legs)) {
       CalculatePhaseSpace(branch.legs[i], product, product2pi, volume, N_final);
@@ -163,11 +166,7 @@ double MProcess::GetAmp2() {
     if (lts.FORCE_FLATMASS2 && !FLATMASS2_user) { FLATMASS2 = true; }
     if (lts.FORCE_OFFSHELL >= 0 && !OFFSHELL_user) { OFFSHELL = lts.FORCE_OFFSHELL; }
     // -----------------------------------------------
-
-    for (const auto& i : indices(lts.decaytree)) {
-      lts.decaytree[i].PS_active = true;
-    }
-
+    
     return amp2;
 }
 
@@ -846,16 +845,13 @@ void MProcess::GetOffShellMass(const gra::MDecayBranch &branch, double &mass) {
   unsigned int outertrials = 0;
 
   while (true) {
+
     // We have decay daughters
     double daughter_masses = 0;
-    if (branch.legs.size() > 0) {
-
-      // Find daughter offshell masses from BW
+    if (branch.legs.size() != 0) {
+      // Find random daughter offshell masses from BW
       for (const auto& i : indices(branch.legs)) {
-        const double M = branch.legs[i].p.mass;
-        const double W = branch.legs[i].p.width;
-
-        daughter_masses += std::max(0.0, random.RelativisticBWRandom(M, W, OFFSHELL));
+        daughter_masses += std::max(0.0, random.RelativisticBWRandom(branch.legs[i].p.mass, branch.legs[i].p.width, OFFSHELL));
       }
       const double safe_margin = 1e-5;  // GeV
       daughter_masses += safe_margin;
@@ -1257,7 +1253,7 @@ void MProcess::PrintPhaseSpace(const gra::MDecayBranch &branch, double& product,
   std::string spaces(branch.depth * 2, ' ');  // Give empty space
   std::string lines = spaces + "|──";
 
-  if (branch.W.GetW() > 0) {  // There is decay information
+  if (branch.W.Integral() > 0) {  // There is decay information
     printf("%s> \t {1->%lu LIPS}:  %0.3E +- %0.3E ", lines.c_str(), branch.legs.size(),
            branch.W.Integral(), branch.W.IntegralError());
 
@@ -1280,39 +1276,40 @@ void MProcess::PrintPhaseSpace(const gra::MDecayBranch &branch, double& product,
 // Recursive decay tree kinematics (called event by event from inhereting
 // classes)
 bool MProcess::ConstructDecayKinematics(gra::MDecayBranch &branch) {
+
   // This leg has any daughters
-  if (branch.legs.size() > 0) {
-    std::vector<double> masses;
+  if (branch.legs.size() != 0) {
 
     // Generate decay product masses
-    for (const auto &i : indices(branch.legs)) {
-      GetOffShellMass(branch.legs[i], branch.legs[i].m_offshell);
-      masses.push_back(branch.legs[i].m_offshell);
+    std::vector<double> m(branch.legs.size(), 0.0);
+    while (true) {
+      for (const auto &i : indices(branch.legs)) {
+        GetOffShellMass(branch.legs[i], branch.legs[i].m_offshell);
+        m[i] = branch.legs[i].m_offshell;
+      }
+      // Check decay products masses are not over mother mass
+      if (branch.p4.M() < std::accumulate(m.rbegin(), m.rend(), 0.0)) { continue; } else { break; }
     }
-    std::vector<M4Vec> p;
 
     // For now, keep always unweighted
     const bool UNWEIGHT = true;
+    std::vector<M4Vec> p;
 
     // 2-body
     gra::kinematics::MCW w;
     if (branch.legs.size() == 2) {
-      w = gra::kinematics::TwoBodyPhaseSpace(branch.p4, branch.p4.M(), masses, p, random);
+      w = gra::kinematics::TwoBodyPhaseSpace(branch.p4, branch.p4.M(), m, p, random);
       // 3-body
     } else if (branch.legs.size() == 3) {
-      w = gra::kinematics::ThreeBodyPhaseSpace(branch.p4, branch.p4.M(), masses, p, UNWEIGHT,
-                                               random);
+      w = gra::kinematics::ThreeBodyPhaseSpace(branch.p4, branch.p4.M(), m, p, UNWEIGHT, random);
       // N-body
     } else {
-      w = gra::kinematics::NBodyPhaseSpace(branch.p4, branch.p4.M(), masses, p, UNWEIGHT, random);
+      w = gra::kinematics::NBodyPhaseSpace(branch.p4, branch.p4.M(), m, p, UNWEIGHT, random);
     }
     if (w.GetW() < 0) {
-      std::string str =
-          "MProcess::ConstructDecayKinematics: Fatal error: Weight < 0 (Check "
-          "your decay tree)";
+      std::string str = "MProcess::ConstructDecayKinematics: Fatal error: Weight < 0 (Check your decay tree)";
       std::cout << str << std::endl;
       return false;
-      // throw std::invalid_argument();
     }
 
     // Collect weight
@@ -1328,6 +1325,7 @@ bool MProcess::ConstructDecayKinematics(gra::MDecayBranch &branch) {
   }
   return true;
 }
+
 
 // Recursively add final states to the event structure
 void MProcess::WriteDecayKinematics(gra::MDecayBranch &branch, HepMC3::GenParticlePtr &mother,
