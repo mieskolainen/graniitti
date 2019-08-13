@@ -74,20 +74,20 @@ int main(int argc, char *argv[]) {
       std::cout << rang::style::bold << " Inline 'on-the-flight' parameters to "
                                         "concatenate with PROCESS string:"
                 << rang::style::reset << std::endl;
-      std::cout << "  @FLATAMP:N                flat matrix element for 'pure' "
+      std::cout << "  @FLATAMP:N                           flat matrix element for 'pure' "
                    "phase space generation, set N to -1 for more info"
                 << std::endl;
-      std::cout << "  @PDG[X]{M:350.0, W:5.0}   new mass and width for pdg "
+      std::cout << "  @PDG[X]{M:350.0, W:5.0}              new mass and width for pdg "
                    "particle id X"
                 << std::endl;
-      std::cout << "  @OFFSHELL:X               how many +- full widths "
+      std::cout << "  @OFFSHELL:X                          how many +- full widths "
                    "particles can be off-shell in decay trees (X = 0 for "
                    "on-shell, X = 5 is default)"
                 << std::endl;
-      std::cout << "  @FLATMASS2:true           flat sampling in mass^2 instead "
+      std::cout << "  @FLATMASS2:true                      flat sampling in mass^2 instead "
                    "of relativistic Breit-Wigner f(M^2) in decay trees"
                 << std::endl;
-      std::cout << "  @FRAME:X                  set common Lorentz frame for "
+      std::cout << "  @FRAME:X                             set common Lorentz frame for "
                    "parametric spin correlated resonance decays (X = SR, HE, CS)"
                 << std::endl;
                 
@@ -103,10 +103,11 @@ int main(int argc, char *argv[]) {
                 << std::endl;
       std::cout << "  yy[CON]<C> -> mu+ mu-" << std::endl;
       std::cout << "  yy[Higgs]<F> &> 22 22" << std::endl;
-      std::cout << "  PP[CON]<C> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-}" << std::endl;
-      std::cout << "  yy[CON]<F> -> pi+ pi- pi+ pi-" << std::endl;
-      std::cout << "  yy[CON]<C> -> p+ p- @FLATAMP:2" << std::endl;
       std::cout << "  yy[CON]<C> -> 992 -992 @PDG[992]{M:1500,W:0}" << std::endl;
+      std::cout << "  yP[RESTENSOR]<C> -> pi+ pi- @RES{rho_770:1}" << std::endl;
+      std::cout << "  PP[CON]<C> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-}" << std::endl;
+      std::cout << "  PP[CON]<F> -> pi+ pi- pi+ pi-" << std::endl;
+      std::cout << "  PP[CON]<C> -> p+ p- @FLATAMP:2" << std::endl;
       std::cout << "  PP[RES+CON]<F> -> pi+ pi- @RES{f0_500:0,rho_770:1,f0_980:1,f2_1270:1} @R[f0_980]{M:0.98,W:0.065}" << std::endl;
 
       std::cout << std::endl;
