@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
       std::cout << rang::style::bold << " Arrow operators:" << rang::style::reset << std::endl;
       std::cout << "  use -> between initial and final states" << std::endl;
       std::cout << "  use &> (instead of ->) for a decoupled central system "
-                   "phase space (use with <F> class, e.g. for s-channel "
+                   "phase space (use with <F>, <P> class, e.g. for s-channel "
                    "resonances)"
                 << std::endl;
       std::cout << "  use  > for recursive decaytree branchings with curly "

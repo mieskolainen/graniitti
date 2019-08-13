@@ -231,7 +231,7 @@ A:  Your cuts are not equivalent. Please note that '<C>' class applies the
 
 Q:  What are '->' versus '&>' operators?
 A:  The '->' uses full 2->N phase space volume in the cross section
-    integration. The &> operator (with '<F>' phase space) decouples
+    integration. The &> operator (with '<F>', '<P>' phase space) decouples
     the central system phase space, and the process will be
     [2->3] + [unweighted 1->(N-2) decays]. Thus, the '&>' operator is
     useful to use with isolated scalar resonance processes, for example
