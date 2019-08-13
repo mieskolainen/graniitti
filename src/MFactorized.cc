@@ -448,7 +448,7 @@ double MFactorized::B51IntegralVolume() const {
   } else if (EXCITATION == 2) {
     M2_forward_volume = pow2(M2_f_max - M2_f_min);
   }
-
+  
   return (pow2(M_MAX) - pow2(M_MIN)) * (2.0 * gra::math::PI) * (2.0 * gra::math::PI) *
          (gcuts.forward_pt_max - gcuts.forward_pt_min) *
          (gcuts.forward_pt_max - gcuts.forward_pt_min) * (gcuts.Y_max - gcuts.Y_min) *

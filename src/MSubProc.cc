@@ -68,19 +68,19 @@ void MSubProc::ConstructDescriptions(const std::string &first) {
     channels.insert(std::pair<std::string, std::string>("ND",
       "Non-Diffractive                             [N-cut soft Pomerons] @@ UNDER CONSTRUCTION / TOY @@"));
     descriptions.insert(std::pair<std::string, std::map<std::string, std::string>>("X", channels));
-
+    
   } else if (first == "PP") {
     std::map<std::string, std::string> channels;
     channels.insert(std::pair<std::string, std::string>("CONTENSOR",
-      "Regge continuum 2-body                      [Tensor Pomeron]      @@ UNDER VALIDATION @@"));
+      "Regge continuum 2-body                      [Tensor Pomeron]"));
 
     channels.insert(std::pair<std::string, std::string>("CONTENSOR24",
-      "Regge continuum 2-body > 4 body             [Tensor Pomeron]      @@ FEASIBILITY CONSTRUCTION @@"));
+      "Regge continuum 2-body > 4-body             [Tensor Pomeron]      @@ FEASIBILITY CONSTRUCTION @@"));
     
     channels.insert(std::pair<std::string, std::string>("RESTENSOR",
-      "Regge resonance                             [Tensor Pomeron]      @@ UNDER VALIDATION @@"));
+      "Regge resonance                             [Tensor Pomeron]"));
     channels.insert(std::pair<std::string, std::string>("RES+CONTENSOR",
-      "Regge resonances + continuum 2-body         [Tensor Pomeron / yP] @@ UNDER VALIDATION @@"));
+      "Regge resonances + continuum 2-body         [Tensor Pomeron / yP]"));
     channels.insert(std::pair<std::string, std::string>("CON",
       "Regge continuum 2/4/6-body                  [Pomeron]"));
     channels.insert(std::pair<std::string, std::string>("CON-",

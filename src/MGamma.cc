@@ -247,22 +247,20 @@ double MGamma::yyMP(gra::LORENTZSCALAR &lts) const {
 
 // --------------------------------------------------------------------------------------------
 // Gamma-Gamma to SM-Higgs 0++ helicity amplitudes
-//
+// 
 // Generic narrow width yy -> X cross section in terms of partial decay widths:
-//
-// \sigma(yy -> X) = 8\pi^2/M_X (2J+1) \Gamma(X -> yy) \delta(shat - M_X^2) (1 +
-// h1h2)
+// 
+// \sigma(yy -> X) = 8\pi^2/M_X (2J+1) \Gamma(X -> yy) \delta(shat - M_X^2) (1 + h1h2)
 //                 = (8 * \pi)  (2J+1) \Gamma(X -> yy) \Gamma_X (1 + h1h2) /
-//                 ((shat - M_X^2)^2 +
-//                 M_X^2\Gamma_X^2),
-//
+//                   ((shat - M_X^2)^2 + M_X^2\Gamma_X^2),
+// 
 // where h1,h2 = +- gamma helicities
-//
+// 
 // [REFERENCE: Khoze, Martin, Ryskin, https://arxiv.org/abs/hep-ph/0111078]
 // [REFERENCE: Bernal, Lopez-Val, Sola, https://arxiv.org/pdf/0903.4978.pdf]
 // [REFERENCE: Enterria, Lansberg,
 // https://www.slac.stanford.edu/pubs/slacpubs/13750/slac-pub-13786.pdf]
-//
+// 
 double MGamma::yyHiggs(gra::LORENTZSCALAR &lts) const {
   lts.hamp.resize(4);
 

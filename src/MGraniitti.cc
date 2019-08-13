@@ -1836,8 +1836,12 @@ void MGraniitti::PrintStatistics(unsigned int N) {
       // Print out phase space weight
       printf("{1->%lu LIPS}:                      %0.3E +- %0.3E  ", proc->lts.decaytree.size(),
              proc->lts.DW_sum.Integral(), proc->lts.DW_sum.IntegralError());
-      std::cout << "[" << rang::fg::green << "ACTIVE " << rang::fg::reset << "part of integral / (2PI)]" << std::endl;
 
+      if (proc->GetISOLATE()) {
+        std::cout << "[" << rang::fg::red   << "INACTIVE " << rang::fg::reset << "part of integral / (2PI)]" << std::endl;
+      } else {
+        std::cout << "[" << rang::fg::green << "ACTIVE " << rang::fg::reset << "part of integral / (2PI)]" << std::endl;
+      } 
       // Recursion relation based (phase space factorization):
       // d^N PS(s; p_1, p2, ...p_N)
       // = 1/(2*PI) * d^3 PS(s; p1,p2,p3) d^{N-2} PS(M^2; p4,p5,..,pN) dM^2

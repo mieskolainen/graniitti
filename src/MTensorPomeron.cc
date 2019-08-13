@@ -113,7 +113,7 @@ namespace gra {
 // Return decay coupling constant for resonance (M,Gamma) with decay daughter mass mf
 // BR being the branching ratio BR = Width_partial / Width_total
 //
-// Mother (spin = 0/1/2) -> scalar / pseudoscalar daughters
+// Decay: Mother (spin = 0/1/2) -> scalar or pseudoscalar daughters
 //
 double MTensorPomeron::GDecay(int J, double M, double Gamma, double mf, double BR) const {
 
@@ -142,6 +142,7 @@ double MTensorPomeron::GDecay(int J, double M, double Gamma, double mf, double B
 // lts.hamp:     individual complex helicity amplitudes
 //
 double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const {
+
   // Kinematics
   const M4Vec pa = lts.pbeam1;
   const M4Vec pb = lts.pbeam2;
@@ -194,7 +195,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
   // ====================================================================
   // Construct Central Vertex
   
-  Tensor4<std::complex<double>, 4, 4, 4, 4> cvtx;
+  Tensor4<std::complex<double>, 4,4,4,4> cvtx;
   
   // Pomeron-Pomeron-Scalar coupling
   // 
@@ -205,14 +206,12 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
 
     // C-number propagator
     std::complex<double> iD = iD_MES(lts.pfinal[0], M0, Gamma);
-
     std::complex<double> iDECAY = 0.0;
 
     // Pseudoscalar pair decay
     if      (lts.decaytree[0].p.spinX2 == 0 && lts.decaytree[1].p.spinX2 == 0) {
 
-      const double g1 = resonance.g_decay_tensor[0];
-      iDECAY = iG_f0ss(lts.decaytree[0].p4, lts.decaytree[1].p4, M0, g1);
+      iDECAY = iG_f0ss(lts.decaytree[0].p4, lts.decaytree[1].p4, M0, resonance.g_decay_tensor[0]);
     }
     
     // Massive vector pair decay
@@ -225,6 +224,8 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
 
       // No decay treatment
       if (lts.decaytree[0].legs.size() == 0) {
+
+        // Should do massive polarization vector sum here
 
         throw std::invalid_argument("MTensorPomeron::ME3: [S decay] Please add decay daughters for intermediate vectors");
 
@@ -326,7 +327,6 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
 
     // Scalar BW-propagator
     std::complex<double> iD = iD_MES(lts.pfinal[0], M0, Gamma);
-
     std::complex<double> iDECAY = 0.0;
 
     // Massive vector pair
@@ -337,6 +337,8 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
 
       // No decay treatment
       if (lts.decaytree[0].legs.size() == 0) {
+
+        // Should do massive polarization vector sum here
 
         throw std::invalid_argument("MTensorPomeron::ME3: [PS decay] Add decay daughters for intermediate massive vectors");
 
@@ -424,14 +426,13 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
 
       throw std::invalid_argument("MTensorPomeron::ME3: Gamma decay matrix element not implemented");
 
-      // Implement here ...
-      /*
       // f2 -> V V decay structure
       if (resonance.g_decay_tensor.size() != 2) {
         throw std::invalid_argument("MTensorPomeron:: T->VV Coupling array [size 2] 'g_decay_tensor' not in BRANCHING.json for resonance PDG = " + std::to_string(resonance.p.pdg));
       }
-      const Tensor4<std::complex<double>, 4, 4, 4, 4> iGf2yy = iG_f2yy(p3, p4, M0, resonance.g_decay_tensor[0], resonance.g_decay_tensor[1]);
-      */
+      
+      // Implement here ...
+      //const Tensor4<std::complex<double>, 4, 4, 4, 4> iGf2yy = iG_f2yy(p3, p4, M0, resonance.g_decay_tensor[0], resonance.g_decay_tensor[1]);
 
     } else {
       throw std::invalid_argument("MTensorPomeron::ME3: Unknown decay mode for tensor resonance");
@@ -928,17 +929,17 @@ double MTensorPomeron::ME6(gra::LORENTZSCALAR &lts) const {
   // Two helicity states for incoming and outgoing protons
   FOR_PP_HELICITY;
 
-  // Apply proton leg helicity conservation / No helicity flip
-  // (high energy limit)
+  // Apply proton leg helicity conservation / No helicity flip (high energy limit)
   // This gives at least 4 x speed improvement
   if (ha != h1 || hb != h2) { continue; }
 
   std::complex<double> amp = 0;
 
   // Different permutations
-  const MMatrix<int> R = {{0,1, 2,3}, {0,2, 1,3}, {0,3, 2,1}, {2,1, 0,3}};
-  for (std::size_t pind = 0; pind < 2; ++pind) {
-    
+  const MMatrix<int> R = {{0,1, 2,3}, {0,2, 1,3}};//, {0,3, 2,1}, {2,1, 0,3}};
+
+  for (std::size_t pind = 0; pind < R.size_row(); ++pind) {
+
     // ------------------------------------------------------------------
 
     // Full proton-Pomeron-proton spinor structure (upper and lower vertex)
