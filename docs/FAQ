@@ -236,7 +236,7 @@ A:  The '->' uses full 2->N phase space volume in the cross section
     [2->3] + [unweighted 1->(N-2) decays]. Thus, the '&>' operator is
     useful to use with isolated scalar resonance processes, for example
     'yy[Higgs]<F>'. That is, with processes which do not contain any decay
-    amplitude (matrix element). Typically with these processes, user then applies
+    amplitude / matrix element decay part. Typically with these processes, user then applies
     decay branching ratios manually.
 
 
