@@ -1,4 +1,4 @@
-GRANIITTI FAQ: 11.08.2019
+GRANIITTI FAQ: 13.08.2019
 
 mikael.mieskolainen@cern.ch
 -----------
@@ -234,8 +234,10 @@ A:  The '->' uses full 2->N phase space volume in the cross section
     integration. The &> operator (with '<F>' phase space) decouples
     the central system phase space, and the process will be
     [2->3] + [unweighted 1->(N-2) decays]. Thus, the '&>' operator is
-    useful to use with isolated resonance processes, for example
-    'yy[Higgs]<F>'. Be careful, however, one should not use it without care.
+    useful to use with isolated scalar resonance processes, for example
+    'yy[Higgs]<F>'. That is, with processes which do not contain any decay
+    amplitude (matrix element). Typically with these processes, user then applies
+    decay branching ratios manually.
 
 
 Q:  What do you mean by weighted / unweighted events?
