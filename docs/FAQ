@@ -57,22 +57,25 @@ PROGRAMS
 -----------
 
 1. Simulation
+-----------
 
-./bin/gr            Main simulation program
-./bin/xscan         Process cross section energy dependence scanner
-./bin/exloop        Loop over pre-coded LHC/Tevatron fiducial measurements versus simulation [test tool]
-./bin/minbias       Minimum bias processes (SD,DD,ND) combined simulation
-./bin/hepmc3tolhe   Convert .hepmc3 to .lhe event output format
+./bin/gr             Main simulation program
+./bin/xscan          Process cross section energy dependence scanner
+./bin/exloop         Loop over pre-coded LHC/Tevatron fiducial measurements versus simulation [test tool]
+./bin/minbias        Minimum bias processes (SD,DD,ND) combined simulation
+./bin/hepmc3tolhe    Convert .hepmc3 to .lhe event output format
 
 2. Analysis
+-----------
 
-./bin/analyze       Fast histogramming and plotting of fiducial observables in central production
-./bin/fitharmonic   Spherical harmonic inverse expansion and analysis
-./bin/fitcentral    Fit tool for soft central production parameters
-./bin/fitsoft       Fit tool for eikonal Pomeron model parameters
-./bin/data2hepmc3   Push events from external sources to .hepmc3 format for quick analysis
+./bin/analyze        Fast histogramming and plotting of fiducial observables in central production
+./bin/fitharmonic    Spherical harmonic inverse expansion and analysis
+./bin/fitcentral     Fit tool for soft central production parameters
+./bin/fitsoft        Fit tool for eikonal Pomeron model parameters
+./bin/data2hepmc3    Push events from external sources to .hepmc3 format for quick analysis
 
 3. Automated tests
+-----------
 
 Compile with 'make -j4 TEST=TRUE'
 
