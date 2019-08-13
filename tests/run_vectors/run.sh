@@ -2,8 +2,8 @@
 #./bin/gr -i ./tests/run_vectors/test.json -p "PP[CONTENSOR]<F> -> rho(770)0 rho(770)0" -h 0
 #./bin/gr -i ./tests/run_vectors/test.json -p "PP[CONTENSOR]<F> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-}" -h 0
 
-#./bin/gr -i ./tests/run_vectors/test.json -p "PP[CONTENSOR24]<F> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-}" -h 0
-#./bin/gr -i ./tests/run_vectors/test.json -p "PP[CONTENSOR24]<F> -> pi+ pi- pi+ pi-" -h 0
+./bin/gr -i ./tests/run_vectors/test.json -p "PP[CONTENSOR24]<F> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-}" -h 0
+./bin/gr -i ./tests/run_vectors/test.json -p "PP[CONTENSOR24]<F> -> pi+ pi- pi+ pi-" -h 0
 
 # -----------------------------------------------
 
