@@ -107,15 +107,17 @@ int main(int argc, char *argv[]) {
       std::cout << "  yy[CON]<F> -> pi+ pi- pi+ pi-" << std::endl;
       std::cout << "  yy[CON]<C> -> p+ p- @FLATAMP:2" << std::endl;
       std::cout << "  yy[CON]<C> -> 992 -992 @PDG[992]{M:1500,W:0}" << std::endl;
+      std::cout << "  PP[RES+CON]<F> -> pi+ pi- @RES{f0_500:0,rho_770:1,f0_980:1,f2_1270:1} @R[f0_980]{M:0.98,W:0.065}" << std::endl;
+
       std::cout << std::endl;
 
-      std::cout << rang::style::bold
+      std::cout << rang::style::bold << rang::fg::green
                 << " A steering card example with no additional input:" << rang::style::reset
                 << std::endl;
       std::cout << "  " << argv[0] << " -i ./input/test.json" << std::endl << std::endl;
 
-      std::cout << rang::style::bold
-                << " A steering card example + commandline input override:" << rang::style::reset
+      std::cout << rang::style::bold << rang::fg::red
+                << " A steering card example with commandline input override:" << rang::style::reset
                 << std::endl;
       std::cout << "  " << argv[0] << " -i ./input/test.json -p \"yy[C]<F> -> W+ W-\"" << std::endl
                 << std::endl;
