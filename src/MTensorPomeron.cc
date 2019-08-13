@@ -748,7 +748,7 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
   // 2 x vector meson (rho pair, phi pair ...)
   else if (SPINMODE == "2xV") {
 
-    int pdg = lts.decaytree[0].p.pdg;
+    const int pdg = lts.decaytree[0].p.pdg;
     double g1 = 0.0;
     double g2 = 0.0;
     if      (pdg == 113) { // rho(770)0
@@ -936,9 +936,9 @@ double MTensorPomeron::ME6(gra::LORENTZSCALAR &lts) const {
   std::complex<double> amp = 0;
 
   // Different permutations
-  const MMatrix<int> R = {{0,1, 2,3}, {0,2, 1,3}};//, {0,3, 2,1}, {2,1, 0,3}};
+  const MMatrix<int> R = {{0,1, 2,3}, {0,2, 1,3}, {0,3, 2,1}, {2,1, 0,3}};
 
-  for (std::size_t pind = 0; pind < R.size_row(); ++pind) {
+  for (std::size_t pind = 0; pind < 1; ++pind) {
 
     // ------------------------------------------------------------------
 
