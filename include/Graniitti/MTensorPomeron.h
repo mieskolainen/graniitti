@@ -36,7 +36,8 @@ class MTensorPomeron : public MDirac {
   // Amplitude squared
   double ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const;
   double ME4(gra::LORENTZSCALAR &lts) const;
-  
+  double ME6(gra::LORENTZSCALAR &lts) const;
+
   // Scalar, Pseudoscalar, Tensor coupling structures
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_PPS_0(double g_PPS) const;
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_PPS_1(const M4Vec &q1, const M4Vec &q2,
@@ -53,8 +54,8 @@ class MTensorPomeron : public MDirac {
   MTensor<std::complex<double>> iG_PPT_06(const M4Vec &q1, const M4Vec &q2, double g_PPT) const;
 
   // Vertex functions
-  FTensor::Tensor2<std::complex<double>, 4, 4> iG_vv2psps(const gra::LORENTZSCALAR &lts, int k) const;
-
+  FTensor::Tensor2<std::complex<double>, 4, 4> iG_vv2psps(const std::vector<M4Vec>& p, int PDG) const;
+  
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_PPS_total(
       const M4Vec &q1, const M4Vec &q2, double M0, const std::string &mode, const std::vector<double> &g_PPS) const;
   MTensor<std::complex<double>> iG_PPT_total(const M4Vec &q1, const M4Vec &q2, double M0,

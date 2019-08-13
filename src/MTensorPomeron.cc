@@ -231,8 +231,10 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
       // Vector decay treatment
       } else {
 
+        throw std::invalid_argument("MTensorPomeron::ME3: [S decay] Not working yet");
+
         // Contract to C-number
-        const Tensor2<std::complex<double>, 4, 4> iGvv2psps = iG_vv2psps(lts,0);
+        const Tensor2<std::complex<double>, 4, 4> iGvv2psps = iG_vv2psps({}, lts.decaytree[0].p.pdg);
         iDECAY = iGf0vv(mu1, mu2) * iGvv2psps(mu1, mu2);
       }
     } else {
@@ -342,7 +344,9 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
       } else {
 
         // Contract to C-number
-        const Tensor2<std::complex<double>, 4, 4> iGvv2psps = iG_vv2psps(lts,0);
+        throw std::invalid_argument("MTensorPomeron::ME3: [PS decay] Not working yet");
+
+        const Tensor2<std::complex<double>, 4, 4> iGvv2psps = iG_vv2psps({}, lts.decaytree[0].p.pdg);
         iDECAY = iGpsvv(mu1, mu2) * iGvv2psps(mu1, mu2);
       }
 
@@ -395,7 +399,10 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
 
       // Vector decay treatment
       } else {
-        const Tensor2<std::complex<double>, 4,4> iGvv2psps = iG_vv2psps(lts,0);
+
+        throw std::invalid_argument("MTensorPomeron::ME3: [T decay] Not working yet");
+
+        const Tensor2<std::complex<double>, 4,4> iGvv2psps = iG_vv2psps({}, lts.decaytree[0].p.pdg);
 
         // Contract in two steps
         Tensor2<std::complex<double>, 4,4> A;
@@ -499,14 +506,6 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
   M4Vec p3 = lts.decaytree[0].p4;
   M4Vec p4 = lts.decaytree[1].p4;
 
-  // For 2xV -> 2x(2xPS)
-  if (lts.decaytree.size() == 4) {
-    p3 = lts.decaytree[0].p4 + lts.decaytree[1].p4;
-    p4 = lts.decaytree[2].p4 + lts.decaytree[3].p4; 
-
-    // Should add permutation treatment here ...
-  }
-
   // Intermediate boson/fermion mass
   const double M_ = lts.decaytree[0].p.mass;
   
@@ -536,6 +535,20 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
   const std::array<std::vector<std::complex<double>>, 2> ubar_1 = SpinorStates(p1, "ubar");
   const std::array<std::vector<std::complex<double>>, 2> ubar_2 = SpinorStates(p2, "ubar");
 
+
+  // t-channel Pomeron propagators
+  const Tensor4<std::complex<double>, 4, 4, 4, 4> iDP_13 = iD_P(lts.ss[1][3], lts.t1);
+  const Tensor4<std::complex<double>, 4, 4, 4, 4> iDP_24 = iD_P(lts.ss[2][4], lts.t2);
+
+  // u-channel Pomeron propagators
+  const Tensor4<std::complex<double>, 4, 4, 4, 4> iDP_14 = iD_P(lts.ss[1][4], lts.t1);
+  const Tensor4<std::complex<double>, 4, 4, 4, 4> iDP_23 = iD_P(lts.ss[2][3], lts.t2);
+
+
+  // High Energy Limit proton-Pomeron-proton spinor structure
+  const Tensor2<std::complex<double>, 4, 4> iG_1a = iG_PppHE(p1, pa);
+  const Tensor2<std::complex<double>, 4, 4> iG_2b = iG_PppHE(p2, pb);
+
   // ------------------------------------------------------------------
 
   // Reset
@@ -556,23 +569,18 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
   // DEDUCE subprocess
   std::string SPINMODE;
 
-  if (lts.decaytree.size() == 4) {
-
+  if        (lts.decaytree[0].p.spinX2 == 0 && lts.decaytree[1].p.spinX2 == 0) {
+    SPINMODE = "2xS";
+  } else if (lts.decaytree[0].p.spinX2 == 1 && lts.decaytree[1].p.spinX2 == 1) {
+    SPINMODE = "2xF";
+  } else if (lts.decaytree[0].p.spinX2 == 2 && lts.decaytree[1].p.spinX2 == 2) {
     SPINMODE = "2xV";
-    
   } else {
-
-    if        (lts.decaytree[0].p.spinX2 == 0 && lts.decaytree[1].p.spinX2 == 0) {
-      SPINMODE = "2xS";
-    } else if (lts.decaytree[0].p.spinX2 == 1 && lts.decaytree[1].p.spinX2 == 1) {
-      SPINMODE = "2xF";
-    } else if (lts.decaytree[0].p.spinX2 == 2 && lts.decaytree[1].p.spinX2 == 2) {
-      SPINMODE = "2xV";
-    } else {
-      throw std::invalid_argument(
-          "MTensorPomeron::ME4: Invalid daughter spin (J = 0, 1/2, 1 pairs supported)");
-    }
+    throw std::invalid_argument(
+        "MTensorPomeron::ME4: Invalid daughter spin (J = 0, 1/2, 1 pairs supported)");
   }
+
+
 
   // Two helicity states for incoming and outgoing protons
   FOR_PP_HELICITY;
@@ -634,14 +642,6 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
 
   // ------------------------------------------------------------------
 
-  // t-channel Pomeron propagators
-  const Tensor4<std::complex<double>, 4, 4, 4, 4> iDP_13 = iD_P(lts.ss[1][3], lts.t1);
-  const Tensor4<std::complex<double>, 4, 4, 4, 4> iDP_24 = iD_P(lts.ss[2][4], lts.t2);
-
-  // u-channel Pomeron propagators
-  const Tensor4<std::complex<double>, 4, 4, 4, 4> iDP_14 = iD_P(lts.ss[1][4], lts.t1);
-  const Tensor4<std::complex<double>, 4, 4, 4, 4> iDP_23 = iD_P(lts.ss[2][3], lts.t2);
-
   // ------------------------------------------------------------------
 
   // Full proton-Pomeron-proton spinor structure (upper and lower vertex)
@@ -649,13 +649,10 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
   const Tensor2<std::complex<double>,4,4> iG_1a = iG_Ppp(p1, pa, ubar_1[h1], u_a[ha]);
   const Tensor2<std::complex<double>,4,4> iG_2b = iG_Ppp(p2, pb, ubar_2[h2], u_b[hb]);
   */
-  // High Energy Limit proton-Pomeron-proton spinor structure
-  const Tensor2<std::complex<double>, 4, 4> iG_1a = iG_PppHE(p1, pa);
-  const Tensor2<std::complex<double>, 4, 4> iG_2b = iG_PppHE(p2, pb);
 
   // ==============================================================
   // 2 x pseudoscalar (pion pair, kaon pair ...)
-  if (SPINMODE == "2xS") {
+  if      (SPINMODE == "2xS") {
 
     double beta_P = 0.0;
     if (lts.decaytree[0].p.mass < 0.2) {  // Choose based on particle mass
@@ -750,19 +747,7 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
   // 2 x vector meson (rho pair, phi pair ...)
   else if (SPINMODE == "2xV") {
 
-    int pdg = 0;
-
-    if (lts.decaytree.size() == 2) {
-      pdg = lts.decaytree[0].p.pdg;
-    }
-    if (lts.decaytree.size() == 4) {
-      if (lts.decaytree[0].p.mass < 0.2) {
-        pdg = 113; // rho -> pi+pi-
-      } else {
-        pdg = 333; // phi -> K+K-
-      }
-    }
-
+    int pdg = lts.decaytree[0].p.pdg;
     double g1 = 0.0;
     double g2 = 0.0;
     if      (pdg == 113) { // rho(770)0
@@ -822,58 +807,16 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
                         pow2(PARAM_REGGE::Meson_FF(pu.M2(), pow2(M_)));
     }
 
-    // ==============================================================
-    // 2 x vector meson -> 2 x pseudoscalar
-    if (lts.decaytree.size() == 4 || (lts.decaytree[0].legs.size() == 2 && lts.decaytree[1].legs.size() == 2)) {
+    // Total amplitude: iM = [ ... ]  <-> M = (-i)*[ ... ]
+    Tensor2<std::complex<double>, 4, 4> M;
+    FOR_EACH_2(LI);
+    M(u,v) = (-zi) * (M_t(u,v) + M_u(u,v));
+    FOR_EACH_2_END;
 
-      // Decay block
-      std::complex<double> amp = 0;
-
-      if (lts.decaytree.size() == 2) {
-
-          Tensor2<std::complex<double>, 4, 4> DECAY = iG_vv2psps(lts,0);
-          amp += (-zi) * (M_t(rho3,rho4) + M_u(rho3,rho4)) * DECAY(rho3, rho4);
-          
-          lts.hamp.push_back(amp);
-      } else {
-
-        const int N_perm = 1;
-        for (int k = 0; k < N_perm; ++k) {
-          Tensor2<std::complex<double>, 4, 4> DECAY = iG_vv2psps(lts,k);
-          // Total amplitude: iM = [ ... ]  <-> M = (-i)*[ ... ]
-          amp += (-zi) * (M_t(rho3,rho4) + M_u(rho3,rho4)) * DECAY(rho3, rho4);
-        }
-        lts.hamp.push_back(amp);
-      }
-
-      // ------------------------------------------------------------
-      if (lts.decaytree.size() != 4) {
-
-        // *** CONTROL CASCADE SAMPLING ***
-        lts.FORCE_FLATMASS2 = true;
-        lts.FORCE_OFFSHELL  = 3.0;
-
-        lts.decaytree[0].PS_active = true;
-        lts.decaytree[1].PS_active = true;
-
-      }
-      // ------------------------------------------------------------
-
-    // No decay amplitude treatment
-    } else {
-
-      // Total amplitude: iM = [ ... ]  <-> M = (-i)*[ ... ]
-      Tensor2<std::complex<double>, 4, 4> M;
-      FOR_EACH_2(LI);
-      M(u,v) = (-zi) * (M_t(u,v) + M_u(u,v));
-      FOR_EACH_2_END;
-
-      // Calculate helicity amplitudes
-      const std::vector<std::complex<double>> helamp = MassiveSpin1PolSum(M, p3, p4);
-      lts.hamp.insert(lts.hamp.end(), helamp.begin(), helamp.end());
-    }
+    // Calculate helicity amplitudes
+    const std::vector<std::complex<double>> helamp = MassiveSpin1PolSum(M, p3, p4);
+    lts.hamp.insert(lts.hamp.end(), helamp.begin(), helamp.end());
   } // 2xV
-  
 
   FOR_PP_HELICITY_END;
 
@@ -883,6 +826,238 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
     SumAmp2 += math::abs2(lts.hamp[i]);
   }
   SumAmp2 /= 4;  // Initial state helicity average
+
+  return SumAmp2;  // Amplitude squared
+}
+
+
+// 2 -> 6 amplitudes [UNDER TESTING]
+//
+// return value: matrix element squared with helicities summed over
+// lts.hamp:     individual helicity amplitudes
+//
+double MTensorPomeron::ME6(gra::LORENTZSCALAR &lts) const {
+
+  // Free Lorentz indices [second parameter denotes the range of index]
+  FTensor::Index<'a', 4> mu1;
+  FTensor::Index<'b', 4> nu1;
+  FTensor::Index<'c', 4> rho1;
+  FTensor::Index<'d', 4> rho2;
+  FTensor::Index<'g', 4> alpha1;
+  FTensor::Index<'h', 4> beta1;
+  FTensor::Index<'i', 4> alpha2;
+  FTensor::Index<'j', 4> beta2;
+  FTensor::Index<'k', 4> mu2;
+  FTensor::Index<'l', 4> nu2;
+
+  // Kinematics
+  const M4Vec pa = lts.pbeam1;
+  const M4Vec pb = lts.pbeam2;
+
+  const M4Vec p1 = lts.pfinal[1];
+  const M4Vec p2 = lts.pfinal[2];
+
+  std::vector<M4Vec> pf(4); 
+
+  // Intermediate boson/fermion mass
+  double M_ = 0.0;
+
+  if (lts.decaytree.size() == 2) {
+    pf[0] = lts.decaytree[0].legs[0].p4;
+    pf[1] = lts.decaytree[0].legs[1].p4;
+    pf[2] = lts.decaytree[1].legs[0].p4;
+    pf[3] = lts.decaytree[1].legs[1].p4;
+
+    M_    = lts.decaytree[0].legs[0].p.mass;
+  }
+  if (lts.decaytree.size() == 4) {
+    pf[0] = lts.decaytree[0].p4;
+    pf[1] = lts.decaytree[1].p4;
+    pf[2] = lts.decaytree[2].p4;
+    pf[3] = lts.decaytree[3].p4;
+
+    M_    = lts.decaytree[0].p.mass;
+  }
+
+  // ------------------------------------------------------------------
+
+  // Incoming and outgoing proton spinors (2 helicities)
+  const std::array<std::vector<std::complex<double>>, 2>    u_a = SpinorStates(pa, "u");
+  const std::array<std::vector<std::complex<double>>, 2>    u_b = SpinorStates(pb, "u");
+
+  const std::array<std::vector<std::complex<double>>, 2> ubar_1 = SpinorStates(p1, "ubar");
+  const std::array<std::vector<std::complex<double>>, 2> ubar_2 = SpinorStates(p2, "ubar");
+
+  // ------------------------------------------------------------------
+
+  // Reset
+  lts.hamp.clear();
+
+  // High Energy Limit proton-Pomeron-proton spinor structure
+  const Tensor2<std::complex<double>, 4, 4> iG_1a = iG_PppHE(p1, pa);
+  const Tensor2<std::complex<double>, 4, 4> iG_2b = iG_PppHE(p2, pb);
+
+  int PDG = 0;
+
+  if (lts.decaytree.size() == 2) {
+    PDG = lts.decaytree[0].p.pdg;
+  }
+  if (lts.decaytree.size() == 4) {
+    if (lts.decaytree[0].p.mass < 0.2) {
+      PDG = 113; // rho -> pi+pi-
+    } else {
+      PDG = 333; // phi -> K+K-
+    }
+  }
+
+  double g1 = 0.0;
+  double g2 = 0.0;
+  if      (PDG == 113) { // rho(770)0
+    g1 = 0.70;  // GeV^{-3}
+    g2 = 6.20;  // GeV^{-1}
+  }
+  // Couplings (phi meson)
+  else if (PDG == 333) { // phi(1020)0
+    g1 = 0.49;  // GeV^{-3}
+    g2 = 4.27;  // GeV^{-1}
+  }
+
+  FTensor::Index<'e', 4> rho3;
+  FTensor::Index<'f', 4> rho4;
+
+  // Two helicity states for incoming and outgoing protons
+  FOR_PP_HELICITY;
+
+  // Apply proton leg helicity conservation / No helicity flip
+  // (high energy limit)
+  // This gives at least 4 x speed improvement
+  if (ha != h1 || hb != h2) { continue; }
+
+  std::complex<double> amp = 0;
+
+  // Different permutations
+  const MMatrix<int> R = {{0,1, 2,3}, {0,2, 1,3}, {0,3, 2,1}, {2,1, 0,3}};
+  for (std::size_t pind = 0; pind < 2; ++pind) {
+    
+    // ------------------------------------------------------------------
+
+    // Full proton-Pomeron-proton spinor structure (upper and lower vertex)
+    /*
+    const Tensor2<std::complex<double>,4,4> iG_1a = iG_Ppp(p1, pa, ubar_1[h1], u_a[ha]);
+    const Tensor2<std::complex<double>,4,4> iG_2b = iG_Ppp(p2, pb, ubar_2[h2], u_b[hb]);
+    */
+    
+    const M4Vec p3 = pf[R[pind][0]] + pf[R[pind][1]];
+    const M4Vec p4 = pf[R[pind][2]] + pf[R[pind][3]];
+
+    // Momentum convention of sub-diagrams
+    //
+    // ------<------ anti-particle p3
+    // |
+    // | \hat{t} (arrow down)
+    // |
+    // ------>------ particle p4
+    //
+    // ------<------ particle p4
+    // |
+    // | \hat{u} (arrow up)
+    // |
+    // ------>------ anti-particle p3
+    //
+    const M4Vec pt = pa - p1 - p3;  // => q1 = pt + p3, q2 = pt - p4
+    const M4Vec pu = p4 - pa + p1;  // => q2 = pu + p3, q1 = pu - p3
+
+
+    const double s13 = (lts.pfinal[1] + p3).M2();
+    const double s24 = (lts.pfinal[2] + p4).M2();
+    const double s14 = (lts.pfinal[1] + p4).M2();
+    const double s23 = (lts.pfinal[2] + p3).M2();
+
+
+    // t-channel Pomeron propagators
+    const Tensor4<std::complex<double>, 4, 4, 4, 4> iDP_13 = iD_P(s13, lts.t1);
+    const Tensor4<std::complex<double>, 4, 4, 4, 4> iDP_24 = iD_P(s24, lts.t2);
+
+    // u-channel Pomeron propagators
+    const Tensor4<std::complex<double>, 4, 4, 4, 4> iDP_14 = iD_P(s14, lts.t1);
+    const Tensor4<std::complex<double>, 4, 4, 4, 4> iDP_23 = iD_P(s23, lts.t2);
+
+
+    // t-channel blocks
+    const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_tA = iG_Pvv(pt, -p3, g1, g2);
+    const Tensor2<std::complex<double>, 4, 4> iDV_t = iD_V(pt, M_, lts.pfinal[0].M2());
+    const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_tB = iG_Pvv(p4, pt, g1, g2);
+
+    // u-channel blocks
+    const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_uA = iG_Pvv(p4, pu, g1, g2);
+    const Tensor2<std::complex<double>, 4, 4> iDV_u = iD_V(pu, M_, lts.pfinal[0].M2());
+    const Tensor4<std::complex<double>, 4, 4, 4, 4> iG_uB = iG_Pvv(pu, -p3, g1, g2);
+
+
+    // -------------------------------------------------------------------------
+    // TENSOR LORENTZ INDEX CONTRACTION BLOCK
+    // This is done in pieces, due to template <>
+    // argument deduction constraints
+
+    Tensor2<std::complex<double>, 4, 4> M_t;
+    Tensor2<std::complex<double>, 4, 4> M_u;
+
+    // t-channel
+    {
+      // Upper block
+      Tensor2<std::complex<double>, 4, 4> A;
+      A(rho1, rho3) = iG_1a(mu1, nu1) * iDP_13(mu1, nu1, alpha1, beta1) * iG_tA(rho1, rho3, alpha1, beta1);
+      // Lower block
+      Tensor2<std::complex<double>, 4, 4> B;
+      B(rho4, rho2) = iG_2b(mu2, nu2) * iDP_24(alpha2, beta2, mu2, nu2) * iG_tB(rho4, rho2, alpha2, beta2);
+      // Apply off-shell form factors (two of them)
+      M_t(rho3, rho4) = A(rho1, rho3) * iDV_t(rho1, rho2) * B(rho4, rho2) *
+                        pow2(PARAM_REGGE::Meson_FF(pt.M2(), pow2(M_)));
+    }
+
+    // u-channel
+    {
+      // Upper block
+      Tensor2<std::complex<double>, 4, 4> A;
+      A(rho4, rho1) = iG_1a(mu1, nu1) * iDP_14(mu1, nu1, alpha1, beta1) * iG_uA(rho4, rho1, alpha1, beta1);
+      // Lower block
+      Tensor2<std::complex<double>, 4, 4> B;
+      B(rho2, rho3) = iG_2b(mu2, nu2) * iDP_23(alpha2, beta2, mu2, nu2) * iG_uB(rho2, rho3, alpha2, beta2);
+      // Apply off-shell form factors (two of them)
+      M_u(rho3, rho4) = A(rho4, rho1) * iDV_u(rho1, rho2) * B(rho2, rho3) *
+                        pow2(PARAM_REGGE::Meson_FF(pu.M2(), pow2(M_)));
+    }
+
+    // Vector -> PS Decay block
+    Tensor2<std::complex<double>, 4, 4> DECAY =
+      iG_vv2psps({pf[R[pind][0]], pf[R[pind][1]], pf[R[pind][2]], pf[R[pind][3]]}, PDG);
+    
+    // Add
+    amp += (-zi) * (M_t(rho3,rho4) + M_u(rho3,rho4)) * DECAY(rho3, rho4);
+    
+  } // Permutations
+
+  lts.hamp.push_back(amp);
+
+  FOR_PP_HELICITY_END;
+
+  // Get total amplitude squared 1/4 \sum_h |A_h|^2
+  double SumAmp2 = 0.0;
+  for (const auto &i : indices(lts.hamp)) {
+    SumAmp2 += math::abs2(lts.hamp[i]);
+  }
+  SumAmp2 /= 4;  // Initial state helicity average
+
+
+  // --------------------------------------------------------------------
+  // *** CONTROL CASCADE SAMPLING ***
+  lts.FORCE_FLATMASS2 = true;
+  lts.FORCE_OFFSHELL  = 3.0;
+
+  lts.decaytree[0].PS_active = true;
+  lts.decaytree[1].PS_active = true;
+  // --------------------------------------------------------------------
+
 
   return SumAmp2;  // Amplitude squared
 }
@@ -934,90 +1109,44 @@ std::vector<std::complex<double>> MTensorPomeron::MassiveSpin1PolSum(const Tenso
 
 // 2xvector -> 2xpseudoscalar decay block
 //
-Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_vv2psps(const gra::LORENTZSCALAR &lts, int k) const {
+Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_vv2psps(const std::vector<M4Vec>& p, int PDG) const {
 
   FTensor::Index<'e', 4> rho3;
   FTensor::Index<'f', 4> rho4;
   FTensor::Index<'g', 4> kappa3;
   FTensor::Index<'h', 4> kappa4;
 
-  if (lts.decaytree.size() == 4) { // To be used with direct 4-body phase space
-
-    // Decay couplings
-    int pdg = 0;
-
-    if (lts.decaytree[0].p.pdg == 211) {
-      pdg = 113;
-    } else {
-      pdg = 333;
-    }
-    double g1 = 0.0;
-    double  M = 0.0;
-    double  W = 0.0;
-    if      (pdg == 113) {     // rho(770)0
-      const double BR = 1.0;   // pi+pi-
-      M = 7.7526E-01;
-      W = 1.491E-01;
-      g1 = GDecay(1, M, W, lts.decaytree[0].p.mass, BR);
-    }
-    else if (pdg == 333) {     // phi(1020)0
-      const double BR = 0.489; // K+K-
-      M = 1.019461E+00;
-      W = 4.249E-03;
-      g1 = GDecay(1, M, W, lts.decaytree[0].p.mass, BR);
-    } else {
-      throw std::invalid_argument("MTensorPomeron::iG_vv2psps: Unsupported vector meson PDG = " + std::to_string(pdg));
-    }
-
-    // Two different permutations
-    const MMatrix<int> R = {{0,1, 2,3}, {0,3, 2,1}, {0,2, 1,3}, {1,2, 0,3}};
-
-    // Vector propagators
-    const bool INDEX_UP = true;
-    const Tensor2<std::complex<double>, 4,4> iD_V1 = iD_VMES(lts.decaytree[R[k][0]].p4 + lts.decaytree[R[k][1]].p4, M, W, INDEX_UP);
-    const Tensor2<std::complex<double>, 4,4> iD_V2 = iD_VMES(lts.decaytree[R[k][2]].p4 + lts.decaytree[R[k][3]].p4, M, W, INDEX_UP);
-
-    // Decay couplings
-    const Tensor1<std::complex<double>, 4>   iG_D1 = iG_vpsps(lts.decaytree[R[k][0]].p4, lts.decaytree[R[k][1]].p4, M, g1);
-    const Tensor1<std::complex<double>, 4>   iG_D2 = iG_vpsps(lts.decaytree[R[k][2]].p4, lts.decaytree[R[k][3]].p4, M, g1);
-
-    Tensor2<std::complex<double>, 4,4> BLOCK;
-    BLOCK(rho3,rho4) = iD_V1(rho3,kappa3) * iG_D1(kappa3) * iD_V2(rho4,kappa4) * iG_D2(kappa4);
-
-    return BLOCK;
+  double g1 = 0.0;
+  double  M = 0.0;
+  double  W = 0.0;
+  if      (PDG == 113) {     // rho(770)0
+    const double BR = 1.0;   // pi+pi-
+    M = 7.7526E-01;
+    W = 1.491E-01;
+    g1 = GDecay(1, M, W, 1.3957061E-01, BR);
   }
-
-  else if (lts.decaytree.size() == 2) { // To be used with cascaded phase space
-
-    // Decay couplings
-    const int pdg = lts.decaytree[0].p.pdg;
-    double BR = 0.0;
-    double g1 = 0.0;
-    if        (pdg == 113) { // rho(770)0
-      BR = 1.0;   // pi+pi-
-    } else if (pdg == 333) { // phi(1020)0
-      BR = 0.489; // K+K-
-    } else {
-      throw std::invalid_argument("MTensorPomeron::iG_vv2psps: Unsupported vector meson PDG = " + std::to_string(pdg));
-    }
-    g1 = GDecay(1, lts.decaytree[0].p.mass, lts.decaytree[0].p.width, lts.decaytree[0].legs[0].p.mass, BR);
-
-    // Vector propagators
-    const bool INDEX_UP = true;
-    const Tensor2<std::complex<double>, 4,4> iD_V1 = iD_VMES(lts.decaytree[0].p4, lts.decaytree[0].p.mass, lts.decaytree[0].p.width, INDEX_UP);
-    const Tensor2<std::complex<double>, 4,4> iD_V2 = iD_VMES(lts.decaytree[1].p4, lts.decaytree[1].p.mass, lts.decaytree[1].p.width, INDEX_UP);
-
-    // Couplings
-    const Tensor1<std::complex<double>, 4> iG_D1 = iG_vpsps(lts.decaytree[0].legs[0].p4, lts.decaytree[0].legs[1].p4, lts.decaytree[0].p.mass, g1);
-    const Tensor1<std::complex<double>, 4> iG_D2 = iG_vpsps(lts.decaytree[1].legs[0].p4, lts.decaytree[1].legs[1].p4, lts.decaytree[1].p.mass, g1);
-
-    Tensor2<std::complex<double>, 4,4> BLOCK;
-    BLOCK(rho3,rho4) = iD_V1(rho3,kappa3) * iG_D1(kappa3) * iD_V2(rho4,kappa4) * iG_D2(kappa4);
-
-    return BLOCK;
+  else if (PDG == 333) {     // phi(1020)0
+    const double BR = 0.489; // K+K-
+    M = 1.019461E+00;
+    W = 4.249E-03;
+    g1 = GDecay(1, M, W, 4.93677E-01, BR);
   } else {
-    throw std::invalid_argument("MTensorPomeron::iG_vv2psps: Not valid decay");
+    throw std::invalid_argument("MTensorPomeron::iG_vv2psps: Unsupported vector meson PDG = " + std::to_string(PDG));
   }
+
+  // Vector propagators
+  const bool INDEX_UP = true;
+  const Tensor2<std::complex<double>, 4,4> iD_V1 = iD_VMES(p[0] + p[1], M, W, INDEX_UP);
+  const Tensor2<std::complex<double>, 4,4> iD_V2 = iD_VMES(p[2] + p[3], M, W, INDEX_UP);
+
+  // Decay couplings
+  const Tensor1<std::complex<double>, 4>   iG_D1 = iG_vpsps(p[0], p[1], M, g1);
+  const Tensor1<std::complex<double>, 4>   iG_D2 = iG_vpsps(p[2], p[3], M, g1);
+
+  Tensor2<std::complex<double>, 4,4> BLOCK;
+  BLOCK(rho3,rho4) = iD_V1(rho3,kappa3) * iG_D1(kappa3) * iD_V2(rho4,kappa4) * iG_D2(kappa4);
+
+  return BLOCK;
 }
 
 

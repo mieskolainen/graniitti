@@ -75,7 +75,7 @@ void MSubProc::ConstructDescriptions(const std::string &first) {
       "Regge continuum 2-body                      [Tensor Pomeron]      @@ UNDER VALIDATION @@"));
 
     channels.insert(std::pair<std::string, std::string>("CONTENSOR24",
-      "Regge continuum 2-body > 4 body             [Tensor Pomeron]      @@ UNDER VALIDATION @@"));
+      "Regge continuum 2-body > 4 body             [Tensor Pomeron]      @@ FEASIBILITY CONSTRUCTION @@"));
     
     channels.insert(std::pair<std::string, std::string>("RESTENSOR",
       "Regge resonance                             [Tensor Pomeron]      @@ UNDER VALIDATION @@"));
@@ -260,9 +260,10 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
     } 
   } else if (CHANNEL == "CONTENSOR24") {
 
-    if (lts.decaytree.size() == 4) {
+    if (lts.decaytree.size() == 4 ||
+       (lts.decaytree.size() == 2 && lts.decaytree[0].legs.size() == 2 && lts.decaytree[1].legs.size() == 2)) {
       static MTensorPomeron TensorPomeron;
-      return TensorPomeron.ME4(lts);
+      return TensorPomeron.ME6(lts);
       
     } else {
       throw std::invalid_argument(
