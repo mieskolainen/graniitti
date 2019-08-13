@@ -90,10 +90,14 @@ int main(int argc, char *argv[]) {
       std::cout << "  @FRAME:X                  set common Lorentz frame for "
                    "parametric spin correlated resonance decays (X = SR, HE, CS)"
                 << std::endl;
-      std::cout << "  @RES[f0_980]{M:0.990, W:0.065}    set new central resonance mass and width"
+                
+      std::cout << "  @RES{rho_770:1, f0_980:0, f2_1280:1} set new central resonance list (1 active, 0 inactive)"
                 << std::endl;
-      std::cout << "  @RES[f0_980]{g0:1.0, g1:0.2, ...} set new couplings {g0,g1} [scalar] {g0,...,g6} [tensor] for Tensor Pomeron model"
+      std::cout << "  @R[f0_980]{M:0.990, W:0.065}         set new central resonance mass and width"
                 << std::endl;
+      std::cout << "  @R[f0_980]{g0:1.0, g1:0.2, ...}      set new couplings {g0,g1} [scalar] {g0,...,g6} [tensor] for Tensor Pomeron model"
+                << std::endl;
+
       std::cout << std::endl;
       std::cout << rang::style::bold << " PROCESS string examples:" << rang::style::reset
                 << std::endl;

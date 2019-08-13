@@ -690,7 +690,7 @@ void MProcess::SetupBranching() {
             std::vector<double> temp = j[PDG_STR][SID]["g_decay_tensor"];
             res.g_decay_tensor = temp;  
           } catch (...) {
-            continue; // Did not found uset set Tensor Pomeron decay coupling array
+            // Did not found uset set Tensor Pomeron decay coupling array, do nothing
           }
           
           // ----------------------------------------------------------------------------

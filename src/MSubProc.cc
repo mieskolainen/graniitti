@@ -334,7 +334,7 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
     // 2. Coherent sum of Resonances (loop over)
     for (auto &x : lts.RESONANCES) {
       const int J = static_cast<int>(x.second.p.spinX2 / 2.0);
-
+      
       // Gamma-Pomeron for vectors
       if (J == 1 && x.second.p.P == -1) {
         A += PhotoME3(lts, x.second);

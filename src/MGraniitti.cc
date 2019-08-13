@@ -520,7 +520,24 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
   // Read free resonance parameters (only if needed)
   std::map<std::string, gra::PARAM_RES> RESONANCES;
   if (PROCESS_PART.find("RES") != std::string::npos) {
-    const std::vector<std::string> RES = j.at(XID).at("RES");
+    
+    // From .json input
+    std::vector<std::string> RES = j.at(XID).at("RES");
+
+    // @ Command syntax override
+    for (const auto& i : indices(syntax)) {
+      if (syntax[i].id == "RES") {
+        std::vector<std::string> temp;
+        for (const auto &x : syntax[i].arg) {
+          if (x.second == "true" || x.second == "1"){
+            temp.push_back(x.first); // f0_980, ...
+          }
+        }
+        RES = temp;
+      }
+    }
+
+    // Read resonance data
     for (std::size_t i = 0; i < RES.size(); ++i) {
       const std::string str = "RES_" + RES[i] + ".json";
       RESONANCES[RES[i]]    = gra::form::ReadResonance(str, proc->random);
@@ -528,19 +545,19 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
 
     // @ Command syntax override "on-the-flight parameters"
     for (const auto &i : indices(syntax)) {
-      if (syntax[i].id.find("RES") != std::string::npos) {
-
+      if (syntax[i].id.find("R[") != std::string::npos) {
+        
         std::size_t left  = syntax[i].id.find("[");
         std::size_t right = syntax[i].id.find("]");
         if (left == std::string::npos || right == std::string::npos) {
-          throw std::invalid_argument("MGraniitti::ReadProcessParam: invalid @[]{} syntax");
+          throw std::invalid_argument("MGraniitti::ReadProcessParam: invalid @R[]{} syntax");
         }
         // Read resonance identifier
         const std::string RESNAME = syntax[i].id.substr(left + 1, right - left - 1);
 
         if ( RESONANCES.find(RESNAME) == RESONANCES.end() ) {
           // Not found
-          throw std::invalid_argument("@Syntax error: invalid RES[] (" + RESNAME + ") [not found]");
+          throw std::invalid_argument("@Syntax error: invalid R[] (" + RESNAME + ") [not found]");
         }
 
         bool couplings_touched = false;
@@ -550,12 +567,12 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
 
           if (x.first == "M") {
             RESONANCES[RESNAME].p.mass  = std::stod(x.second);
-            std::cout << rang::fg::green << "@RES[" << RESNAME << "] new mass: "
+            std::cout << rang::fg::green << "@R[" << RESNAME << "] new mass: "
               << RESONANCES[RESNAME].p.mass << rang::fg::reset << std::endl;
           }
           if (x.first == "W") {
             RESONANCES[RESNAME].p.width = std::stod(x.second);
-            std::cout << rang::fg::green << "@RES[" << RESNAME << "] new width: "
+            std::cout << rang::fg::green << "@R[" << RESNAME << "] new width: "
               << RESONANCES[RESNAME].p.width << rang::fg::reset << std::endl;
           }
           
@@ -570,7 +587,7 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
         
         // Print new coupling array
         if (couplings_touched) {
-          std::cout << rang::fg::green << "@RES[" << RESNAME << "] new couplings: g_Tensor[";
+          std::cout << rang::fg::green << "@R[" << RESNAME << "] new couplings: g_Tensor[";
           for (std::size_t k = 0; k < RESONANCES[RESNAME].g_Tensor.size(); ++k) {
             std::cout << RESONANCES[RESNAME].g_Tensor[k];
             if (k < RESONANCES[RESNAME].g_Tensor.size() - 1) { std::cout << ", "; }
@@ -1481,7 +1498,7 @@ void MGraniitti::SampleFlat(unsigned int N) {
   // std::function<double(const std::vector<double>&, int, double,
   // std::vector<double>&,
   // bool&)> fifth =
-  //	std::bind(&MQuasiElastic::EventWeight, &proc_Q, _1, _2, _3, _4, _5);
+  //  std::bind(&MQuasiElastic::EventWeight, &proc_Q, _1, _2, _3, _4, _5);
 
   // Event loop
   while (true) {
