@@ -127,7 +127,7 @@ double MParton::EventWeight(const std::vector<double> &randvec, AuxIntData &aux)
 
     double C_space = 1.0;
     // We have some legs in the central system
-    if (lts.decaytree.size() != 0 && !ISOLATE) {
+    if (lts.decaytree.size() != 0 && lts.PS_active) {
       C_space = lts.DW.Integral();
 
       // --------------------------------------------------------------------
@@ -291,8 +291,8 @@ bool MParton::B2BuildKin(double x1, double x2) {
 
   // false if amplitude has dependence on the final state legs (generic),
   // true if amplitude is a function of central system kinematics only (limited)
-  const bool UNWEIGHT = ISOLATE;  // Use ISOLATE tag
-
+  const bool UNWEIGHT = !lts.PS_active;
+  
   gra::kinematics::MCW w;
   // 2-body
   if (lts.decaytree.size() == 2) {

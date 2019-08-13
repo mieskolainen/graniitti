@@ -97,8 +97,8 @@ class MProcess : public MUserHistograms {
   void SetBeamEnergies(double E1, double E2);
 
   // ISOLATE phase space in <F> class processes
-  void SetISOLATE(bool in) { ISOLATE = in; }
-  bool                 GetISOLATE() { return ISOLATE; }
+  void SetISOLATE(bool in) { lts.PS_active = !in; }
+  bool                 GetISOLATE() { return !lts.PS_active; }
   void SetFLATMASS2(bool in) {
     aux::PrintNotice();
     std::cout << rang::fg::red << "MProcess::SetFLATMASS2: Set flat in mass^2 "
@@ -335,8 +335,7 @@ class MProcess : public MUserHistograms {
 
   // ----------------------------------------------------------------------
   // Phase-space control
-
-  bool   ISOLATE   = false;  // ISOLATE the decay phase space (<F> class)
+  
   bool   FLATMASS2 = false;  // Flat in M^2 instead of Breit-Wigner sampling
   bool   FLATMASS2_user = false;
   double OFFSHELL  = 5;      // How many full widths to sample particles in cascades

@@ -1693,6 +1693,10 @@ public:
 
   // Integral weight container (central system phase space)
   gra::kinematics::MCW DW;
+  
+  // Active in the factorized phase space product (by default, true)
+  // This is controlled by the spesific amplitudes
+  bool PS_active = true;
 
   // Sum containers
   gra::kinematics::MCWSUM DW_sum;

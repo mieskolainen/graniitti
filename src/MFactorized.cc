@@ -169,7 +169,7 @@ double MFactorized::EventWeight(const std::vector<double> &randvec, AuxIntData &
 
     // Matrix element squared
     const double MatESQ = GetAmp2();
-
+    
     // Calculate central system Phase Space volume
     double exact = 0.0;
     DecayWidthPS(exact);
@@ -179,8 +179,8 @@ double MFactorized::EventWeight(const std::vector<double> &randvec, AuxIntData &
     lts.DW_sum.Add(lts.DW, aux.vegasweight);
 
     double C_space = 1.0;
-    if (lts.decaytree.size() != 0 && !ISOLATE) {  // We have some legs in the central system
-      C_space = (lts.DW.Integral() / (2 * PI));   // /(2*PI) from phase space factorization
+    if (lts.decaytree.size() != 0 && lts.PS_active) {  // We have some legs in the central system
+      C_space = (lts.DW.Integral() / (2 * PI));        // /(2*PI) from phase space factorization
       
       // --------------------------------------------------------------------
       // Cascade resonances phase-space
@@ -377,8 +377,8 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
 
   // false if amplitude has dependence on the final state legs (generic),
   // true if amplitude is a function of central system kinematics only (limited)
-  const bool UNWEIGHT = ISOLATE;  // Use ISOLATE tag
-
+  const bool UNWEIGHT = !lts.PS_active;
+  
   gra::kinematics::MCW w;
   // 2-body
   if (lts.decaytree.size() == 2) {
