@@ -329,10 +329,10 @@ class MProcess : public MUserHistograms {
   std::string  CID;                 // Phase space sampler identifier <F>,<C>,...
   std::string  DECAYMODE;           // Decaymode identifier string
   bool         SCREENING  = false;  // Pomeron loop on/off
-  unsigned int EXCITATION = 0;      // Forward proton excitation (0 = off, 1 = single, 2 = double)
-  unsigned int USERCUTS   = 0;      // User custom cuts identifier
-  unsigned int FLATAMP    = 0;      // Flat matrix element mode
-
+  int EXCITATION = 0;               // Forward proton excitation (0 = off, 1 = single, 2 = double)
+  int USERCUTS   = 0;               // User custom cuts identifier
+  int FLATAMP    = 0;               // Flat matrix element mode
+  
   // ----------------------------------------------------------------------
   // Phase-space control
   
