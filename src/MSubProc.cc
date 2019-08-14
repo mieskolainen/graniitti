@@ -62,11 +62,11 @@ void MSubProc::ConstructDescriptions(const std::string &first) {
     channels.insert(std::pair<std::string, std::string>("EL",
       "Elastic                                     [Eikonal Pomeron]"));
     channels.insert(std::pair<std::string, std::string>("SD",
-      "Single Diffractive                          [Triple Pomeron]      @@ UNDER CONSTRUCTION / TOY @@"));
+      "Single Diffractive                          [Triple Pomeron]      @@ UNDER CONSTRUCTION / EXPERT TOY @@"));
     channels.insert(std::pair<std::string, std::string>("DD",
-      "Double Diffractive                          [Triple Pomeron]      @@ UNDER CONSTRUCTION / TOY @@"));
+      "Double Diffractive                          [Triple Pomeron]      @@ UNDER CONSTRUCTION / EXPERT TOY @@"));
     channels.insert(std::pair<std::string, std::string>("ND",
-      "Non-Diffractive                             [N-cut soft Pomerons] @@ UNDER CONSTRUCTION / TOY @@"));
+      "Non-Diffractive                             [N-cut soft Pomerons] @@ UNDER CONSTRUCTION / EXPERT TOY @@"));
     descriptions.insert(std::pair<std::string, std::map<std::string, std::string>>("X", channels));
     
   } else if (first == "PP") {
