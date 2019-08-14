@@ -38,17 +38,37 @@ namespace gra {
 namespace aux {
 // Example:
 //
-// @SOMECOMMAND=value
+// @SOMECOMMAND:value
 // @PDG[992]{M:300, W:0}
-//
+
+// Format options:
+// 
+// @id:value is represented with map<"_SINGLET_", value>
+// 
+// @id:value
+// @id{arg}
+// @id[]{arg}
+// @id[target1,target2,...]{arg}
 
 struct OneCMD {
+
   std::string id;
+  std::vector<std::string> target;
   std::map<std::string, std::string> arg;
 
   void Print() {
-    std::cout << "identifier: " << id << std::endl;
+    std::cout << "id : " << id << std::endl;
+
+    std::cout << "[target] : [";
+    for (std::size_t i = 0; i < target.size(); ++i) {
+      std::cout << target[i];
+      if (i < target.size()-1) { std::cout << ","; }
+    }
+    std::cout << "] " << std::endl;
+    
+    std::cout << "{arg} : " << std::endl;
     for (const auto &x : arg) { std::cout << x.first << ":" << x.second << std::endl; }
+    std::cout << std::endl;
   }
 };
 

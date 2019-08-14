@@ -670,13 +670,49 @@ std::vector<OneCMD> SplitCommands(const std::string &fullstr) {
   for (std::size_t i = 0; i < subcmd.size(); ++i) {
     // ** Remove whitespace **
     TrimExtraSpace(subcmd[i]);
-
+    
     std::string id;
+    std::vector<std::string> target;
     std::map<std::string, std::string> arg;
+
+    // ------------------------------------------------------------------
+    // Check we find [] brackets
+    std::size_t left  = subcmd[i].find("[");
+    std::size_t right = subcmd[i].find("]");
+
+    // Incomplete brackets
+    if      (left == std::string::npos && right != std::string::npos) {
+      throw std::invalid_argument("SplitCommands: Incomplete @R[]{} syntax with missing [");
+    }
+    // Incomplete brackets
+    else if (left != std::string::npos && right == std::string::npos) {
+      throw std::invalid_argument("SplitCommands: Incomplete @R[]{} syntax with missing ]");
+    }
+    // Found [] brackets
+    else if (left != std::string::npos && right != std::string::npos) {
+      // Read (multiple) targets out
+      const std::string TARGET_str = subcmd[i].substr(left + 1, right - left - 1);
+      if (TARGET_str != "") { // do not process empty
+      target = SplitStr2Str(TARGET_str, ',');
+      }
+
+      // Remove [...] block including brackets
+      subcmd[i].erase(left, right - left + 1);
+    }
+    // ------------------------------------------------------------------
 
     // Check we find {} brackets
     std::size_t Lpos = subcmd[i].find("{", 0);
     std::size_t Rpos = subcmd[i].find("}", 0);
+
+    // Incomplete brackets
+    if      (Lpos == std::string::npos && Rpos != std::string::npos) {
+      throw std::invalid_argument("SplitCommands: Incomplete @R[]{} syntax with missing {");
+    }
+    // Incomplete brackets
+    else if (Lpos != std::string::npos && Rpos == std::string::npos) {
+      throw std::invalid_argument("SplitCommands: Incomplete @R[]{} syntax with missing }");
+    }
 
     // Singlet command @ID:VALUE
     if (Lpos == std::string::npos && Rpos == std::string::npos) {
@@ -710,8 +746,7 @@ std::vector<OneCMD> SplitCommands(const std::string &fullstr) {
         // Split using syntax definition: key:val
         std::vector<std::string> strip = SplitStr2Str(keyvals[i], ':');
         if (strip.size() != 2) {
-          throw std::invalid_argument("gra::SplitCommands: @Syntax not good with '" + keyvals[i] +
-                                      "'");
+          throw std::invalid_argument("gra::SplitCommands: @Syntax not good with brackets {" + keyvals[i] + "}");
         }
 
         // Strip spaces from the key
@@ -723,8 +758,9 @@ std::vector<OneCMD> SplitCommands(const std::string &fullstr) {
 
     // Add this command block
     OneCMD o;
-    o.id  = id;
-    o.arg = arg;
+    o.id     = id;
+    o.target = target;
+    o.arg    = arg;
     o.Print();  // For debug
     cmd.push_back(o);
   }

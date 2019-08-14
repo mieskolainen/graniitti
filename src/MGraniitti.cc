@@ -545,24 +545,25 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
 
     // @ Command syntax override "on-the-flight parameters"
     for (const auto &i : indices(syntax)) {
-      if (syntax[i].id.find("R[") != std::string::npos) {
+      if (syntax[i].id == "R") {
+
+        // Take target string
+        std::string RESNAME;
+        if        (syntax[i].target.size() == 1) {
+          RESNAME = syntax[i].target[0];
+        } else if (syntax[i].target.size() == 0) {
+          throw std::invalid_argument("@Syntax error: invalid R[] without any target []");
+        } else if (syntax[i].target.size()  > 1) {
+          throw std::invalid_argument("@Syntax error: invalid R[] with multiple targets inside []");
+        }
         
-        std::size_t left  = syntax[i].id.find("[");
-        std::size_t right = syntax[i].id.find("]");
-        if (left == std::string::npos || right == std::string::npos) {
-          throw std::invalid_argument("MGraniitti::ReadProcessParam: invalid @R[]{} syntax");
-        }
-        // Read resonance identifier
-        const std::string RESNAME = syntax[i].id.substr(left + 1, right - left - 1);
-
+        // Do we find target
         if ( RESONANCES.find(RESNAME) == RESONANCES.end() ) {
-          // Not found
-          throw std::invalid_argument("@Syntax error: invalid R[] (" + RESNAME + ") [not found]");
+          throw std::invalid_argument("@Syntax error: invalid R[" + RESNAME + "] not found");
         }
-
         bool couplings_touched = false;
 
-        // Loop over parameters
+        // Loop over key:val arguments
         for (const auto &x : syntax[i].arg) {
 
           if (x.first == "M") {
@@ -587,7 +588,7 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
         
         // Print new coupling array
         if (couplings_touched) {
-          std::cout << rang::fg::green << "@R[" << RESNAME << "] new couplings: g_Tensor[";
+          std::cout << rang::fg::green << "@R[" << RESNAME << "] new production couplings set: g_Tensor[";
           for (std::size_t k = 0; k < RESONANCES[RESNAME].g_Tensor.size(); ++k) {
             std::cout << RESONANCES[RESNAME].g_Tensor[k];
             if (k < RESONANCES[RESNAME].g_Tensor.size() - 1) { std::cout << ", "; }

@@ -1768,53 +1768,61 @@ void MProcess::SetProcess(std::string &str, const std::vector<aux::OneCMD> &synt
 
   // @SYNTAX Read and set new PDG input
   for (const auto &i : indices(syntax)) {
-    if (syntax[i].id.find("PDG") != std::string::npos) {
-      std::size_t left  = syntax[i].id.find("[");
-      std::size_t right = syntax[i].id.find("]");
-      if (left == std::string::npos || right == std::string::npos) {
-        throw std::invalid_argument("MProcess::SetProcess: invalid @PDG[]{} syntax");
-      }
-      // Read pdg id / number
-      const int pdg = std::stoi(syntax[i].id.substr(left + 1, right - left - 1));
 
+    if (syntax[i].id == "PDG") {
+
+      // Take target string
+      std::string pdg_;
+      if        (syntax[i].target.size() == 1) {
+        pdg_ = syntax[i].target[0];
+      } else if (syntax[i].target.size() == 0) {
+        throw std::invalid_argument("@Syntax error: invalid PDG[] without any target []");
+      } else if (syntax[i].target.size()  > 1) {
+        throw std::invalid_argument("@Syntax error: invalid PDG[] with multiple targets inside []");
+      }
+      // Conversion to integer
+      int pdg = 0;
+
+      try {
+        pdg = std::stoi(pdg_);
+      } catch (...) {
+        throw std::invalid_argument("@Syntax error: invalid PDG[] target number, string to int conversion fails");
+      }
+
+      // Try to find the particle from PDG table, will throw exception if fails
       MParticle p = PDG.FindByPDG(pdg);
 
-      // Try to find the particle from PDG table
+      // Check if it has an anti-particle
+      MParticle p_anti;
+      bool      found_anti = false;
       try {
-        MParticle p = PDG.FindByPDG(pdg);
-        MParticle p_anti;
-        bool      found_anti = false;
+        p_anti     = PDG.FindByPDG(-pdg);
+        found_anti = true;
+      } catch (...) {}  // do nothing,
 
-        // Check if it has an anti-particle
-        try {
-          p_anti     = PDG.FindByPDG(-pdg);
-          found_anti = true;
-        } catch (...) {}  // do nothing
-
-        // Set new properties
-        for (const auto &x : syntax[i].arg) {
-          if (x.first == "M") {
-            p.mass = std::stod(x.second);
-            if (found_anti) { p_anti.mass = p.mass; }
-          }
-          if (x.first == "W") {
-            p.width = std::stod(x.second);
-            p.tau   = PDG::hbar / p.width;  // mean lifetime in the rest frame
-            if (found_anti) { p_anti.width = p.width; }
+      // Set new properties
+      for (const auto &x : syntax[i].arg) {
+        if (x.first == "M") {
+          p.mass = std::stod(x.second);
+          if (found_anti) { p_anti.mass = p.mass; }
+        }
+        if (x.first == "W") {
+          p.width = std::stod(x.second);
+          p.tau   = PDG::hbar / p.width;  // mean lifetime in the rest frame
+          if (found_anti) {
+            p_anti.width = p.width;
+            p_anti.tau   = p.tau;
           }
         }
-        // Set new modified to the PDG table
-        PDG.PDG_table[pdg] = p;
-        if (found_anti) { PDG.PDG_table[-pdg] = p_anti; }
-
-        std::cout << rang::fg::red << "MProcess::SetProcess: New particle properties set "
-                                      "with @PDG[ID]{key:val} syntax:"
-                  << rang::fg::reset << std::endl;
-        p.print();
-      } catch (...) {
-        throw std::invalid_argument("MProcess::SetProcess: syntax problem in @PDG[ID] with ID = " +
-                                    std::to_string(pdg));
       }
+      // Set new modified to the PDG table
+      PDG.PDG_table[pdg] = p;
+      if (found_anti) { PDG.PDG_table[-pdg] = p_anti; }
+
+      std::cout << rang::fg::red << "MProcess::SetProcess: New particle properties set "
+                                    "with @PDG[number]{key:val} syntax:"
+                << rang::fg::reset << std::endl;
+      p.print();
     }
   }
 
