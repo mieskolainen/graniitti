@@ -252,13 +252,18 @@ inline void TransparentPad(std::shared_ptr<TPad>& pad) {
 }
 
 // Create GRANIITTI Text
-inline void MadeInFinland(std::shared_ptr<TLatex>& l1, std::shared_ptr<TLatex>& l2, double xpos = 0.93) {
-  l1 = std::make_shared<TLatex>(xpos, 0.03, gra::aux::GetVersionTLatex().c_str());
+inline void MadeInFinland(std::shared_ptr<TLatex>& l1, std::shared_ptr<TLatex>& l2, double xpos = 0.935, std::vector<double> ypos = {0.03, 0.58}) {
+    
+  if (ypos.size() != 2) {
+    throw std::invalid_argument("MROOT::MadeInFinland: argument ypos should be of size 2");
+  }
+
+  l1 = std::make_shared<TLatex>(xpos, ypos[0], gra::aux::GetVersionTLatex().c_str());
   l1->SetNDC();  // Normalized coordinates
   l1->SetTextAngle(90);
   l1->Draw();
 
-  l2 = std::make_shared<TLatex>(xpos, 0.68, gra::aux::GetWebTLatex().c_str());
+  l2 = std::make_shared<TLatex>(xpos, ypos[1], gra::aux::GetWebTLatex().c_str());
   l2->SetNDC();  // Normalized coordinates
   l2->SetTextAngle(90);
   l2->Draw();
