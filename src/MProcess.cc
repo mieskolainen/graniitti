@@ -773,7 +773,8 @@ void MProcess::SetupBranching() {
         // Tensor Pomeron Model decay couplings for 2-body decays directly calculable from width and BR
         if (res.g_decay_tensor.size() == 0) { // Not set yet
 
-          res.g_decay_tensor = {TensorPomeron.GDecay(res.p.spinX2 / 2, res.p.mass, res.p.width, lts.decaytree[0].p.mass, res.BR)};
+          res.g_decay_tensor = {TensorPomeron.GDecay(res.p.spinX2 / 2, res.p.mass,
+            res.p.width, lts.decaytree[0].p.mass, res.BR)};
 
           if (std::abs(PS) < 1e-9) {
             // Try again with higher mother mass as a crude approximation, we might
@@ -786,7 +787,8 @@ void MProcess::SetupBranching() {
 
               // ---------------------------------------------------------------
               // Tensor Pomeron Model decay couplings
-              res.g_decay_tensor = {TensorPomeron.GDecay(res.p.spinX2 / 2, res.p.mass + i * res.p.width, res.p.width, lts.decaytree[0].p.mass, res.BR)};
+              res.g_decay_tensor = {TensorPomeron.GDecay(res.p.spinX2 / 2,
+                res.p.mass + i * res.p.width, res.p.width, lts.decaytree[0].p.mass, res.BR)};
 
               if (PS > 1e-9) { break; }
             }
@@ -865,7 +867,8 @@ void MProcess::GetOffShellMass(const gra::MDecayBranch &branch, double &mass) {
     if (branch.legs.size() != 0) {
       // Find random daughter offshell masses from BW
       for (const auto& i : indices(branch.legs)) {
-        daughter_masses += std::max(0.0, random.RelativisticBWRandom(branch.legs[i].p.mass, branch.legs[i].p.width, OFFSHELL));
+        daughter_masses += std::max(0.0, random.RelativisticBWRandom(branch.legs[i].p.mass,
+          branch.legs[i].p.width, OFFSHELL));
       }
       const double safe_margin = 1e-5;  // GeV
       daughter_masses += safe_margin;

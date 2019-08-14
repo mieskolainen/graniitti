@@ -245,8 +245,7 @@ void MEikonal::S3CalcXS() {
   // calculation see e.g.
   //
   // [REFERENCE: Khoze, Martin, Ryskin, https://arxiv.org/abs/hep-ph/0007359v2]
-  // [REFERENCE: Roehr,
-  // http://inspirehep.net/record/1351489/files/Thesis-2014-Roehr.pdf]
+  // [REFERENCE: Roehr, http://inspirehep.net/record/1351489/files/Thesis-2014-Roehr.pdf]
   //
   // Unitary transformation matrix
   const MMatrix<double> cc = {{1, 1, 1, 1},     // pp

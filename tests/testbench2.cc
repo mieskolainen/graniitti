@@ -1,4 +1,4 @@
-// Testbench 0
+// Testbench 2
 //
 // (c) 2017-2019 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
@@ -16,14 +16,14 @@
 using namespace gra;
 
 
-TEST_CASE("MDirac::TestGammaAntiCommutation", "[single-file]") {
+TEST_CASE("MDirac::TestGammaAntiCommutation", "[MDirac]") {
 	const double EPS = 1e-5;
 	MDirac dirac;
 	REQUIRE(dirac.TestGammaAntiCommutation() < EPS);
 }
 
 
-TEST_CASE("MDirac multiple tests", "[single-file]") {
+TEST_CASE("MDirac multiple tests", "[MDirac]") {
 
 	const double EPS = 1E-5;
 

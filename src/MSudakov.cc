@@ -272,8 +272,7 @@ double MSudakov::fg_xQ2M(double x, double q2, double M) const {
     // GeV^2, M = %0.3f GeV] \n", Tg, x, q2, M);
   }
 
-  // And because our functions return partial derivatives w.r.t. q^2 (not ln
-  // q^2)
+  // And because our functions return partial derivatives w.r.t. q^2 (not ln q^2)
   // we transform:
   // dln(q^2)/dq^2 = 1/q^2 <=> dln(q^2) = dq^2/q^2 =>
   // d[...]/dln(q^2) = d[...]/dq^2 * q^2, applied below:
@@ -339,15 +338,13 @@ std::pair<double, double> MSudakov::Shuvaev_H(double q2, double x) {
 }
 
 // Calculate Sudakov real radiation suppression (veto) factor via direct
-// numerical
-// integral.
+// numerical integral.
 //
 // T(Q_t^2, \mu) = exp( -\int_{Q_t^2}^{\mu^2} dk_t^2 \frac{1}{k_t^2}
 // \frac{\alpha_s(k_t^2)}{2\pi}
 //                       \int_0^{1-DELTA} dz[zP_gg(z) + \sum_q P_qg(z)] ),
 //
-// where DELTA = k_t/mu [REFERENCE: Coughlin, Forshaw,
-// https://arxiv.org/abs/0912.3280v2]
+// where DELTA = k_t/mu
 //
 // Tg  = numerical integral value [range [0,1)]
 // dTg = dTg/dq^2 (analytic derivative)

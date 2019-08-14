@@ -363,8 +363,7 @@ double S3FINEL(double t, double M2) {
 // library.
 //
 // [REFERENCE: Donnachie, Landshoff, https://arxiv.org/abs/hep-ph/9305319]
-// [REFERENCE: Capella, Kaidalov, Merino, Tran Tranh Van,
-// https://arxiv.org/abs/hep-ph/9405338v1]
+// [REFERENCE: Capella, Kaidalov, Merino, Tran Tranh Van, https://arxiv.org/abs/hep-ph/9405338v1]
 //
 double F2xQ2(double xbj, double Q2) {
   const std::string F2TYPE = "CKMT";
@@ -450,8 +449,7 @@ double e_EM() { return msqrt(alpha_EM(0.0) * 4.0 * PI); }
 // achievements and future perspectives, Physics Reports, 2015
 // <https://www.sciencedirect.com/science/article/pzi/S0370157314003184>
 //
-// [REFERENCE: Budnev, Ginzburg, Meledin, Serbo, EPA paper, Physics Reports,
-// 1976]
+// [REFERENCE: Budnev, Ginzburg, Meledin, Serbo, EPA paper, Physics Reports, 1976]
 // <https://www.sciencedirect.com/science/article/pzi/0370157375900095>
 //
 //

@@ -800,9 +800,7 @@ std::complex<double> MRegge::PhotoME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &r
 // and t for the proton (pomeron) side.
 //
 //
-// [REFERENCE: Donnachie, Dosch, Landshoff, Nachtmann, Pomeron Physics and QCD
-// (Cambridge University
-// Press, 2002)]
+// [REFERENCE: Donnachie, Dosch, Landshoff, Nachtmann, Pomeron Physics and QCD, 2002]
 
 std::complex<double> MRegge::PhotoProp(double s, double t, double m2, bool excite,
                                        double M2_forward) const {

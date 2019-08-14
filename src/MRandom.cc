@@ -76,6 +76,9 @@ double MRandom::G(double mu, double sigma) {
 // Return mass (GeV)
 double MRandom::RelativisticBWRandom(double m, double Gamma, double LIMIT) {
 
+  // Very special case
+  if (Gamma < 1e-40) { return m; }
+
   const double m2    = m * m;
   const double m2max = gra::math::pow2(m + LIMIT * Gamma);
   const double m2min = gra::math::pow2(m - LIMIT * Gamma);
@@ -102,6 +105,9 @@ double MRandom::RelativisticBWRandom(double m, double Gamma, double LIMIT) {
 // Input: resonance m and Gamma
 // Return mass (GeV)
 double MRandom::CauchyRandom(double m0, double Gamma, double LIMIT) {
+
+  if (Gamma < 1e-40) { return m0; }
+
   double mval = 0.0;
   while (true) {
     const double R     = U(0, 1);

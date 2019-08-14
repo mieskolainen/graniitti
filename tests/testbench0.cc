@@ -81,7 +81,7 @@ bool PhaseSpaceTest(uint N, double m0, double& a, double& b, double& c) {
 }
 
 
-TEST_CASE("gra::kinematics::TwoBodyPhaseSpace, ThreeBodyPhaseSpace, NBodyPhaseSpace", "[single-file]") {
+TEST_CASE("gra::kinematics::TwoBodyPhaseSpace, ThreeBodyPhaseSpace, NBodyPhaseSpace", "[PhaseSpace]") {
 
 	double M0 = 1500;
 	double  a = 0.0;
@@ -120,7 +120,7 @@ TEST_CASE("gra::kinematics::TwoBodyPhaseSpace, ThreeBodyPhaseSpace, NBodyPhaseSp
 }
 
 
-TEST_CASE("M4Vec: Basic kinematic operations", "[single-file]") {
+TEST_CASE("M4Vec: Basic kinematic operations", "[M4Vec]") {
 
 	const double EPS = 1e-5;
 	const double mpi = 0.139; // GeV
@@ -154,7 +154,7 @@ TEST_CASE("M4Vec: Basic kinematic operations", "[single-file]") {
 }
 
 
-TEST_CASE("gra::math::factorial: with values of 0,1,2,3,10", "[single-file]") {
+TEST_CASE("gra::math::factorial: with values of 0,1,2,3,10", "[gra::math::factorial]") {
 	
     REQUIRE( gra::math::factorial(0) == 1 );
     REQUIRE( gra::math::factorial(1) == 1 );
@@ -164,7 +164,7 @@ TEST_CASE("gra::math::factorial: with values of 0,1,2,3,10", "[single-file]") {
 }
 
 
-TEST_CASE("gra::math::sf_legendre: numerically l = 0 ... 8, m = 0", "[single-file]") {
+TEST_CASE("gra::math::sf_legendre: numerically l = 0 ... 8, m = 0", "[gra::math::sf_legendre]") {
 
 	const double EPS = 1e-5;
 
@@ -178,7 +178,7 @@ TEST_CASE("gra::math::sf_legendre: numerically l = 0 ... 8, m = 0", "[single-fil
 }
 
 
-TEST_CASE("gra::math::Y_complex_basis: numerically", "[single-file]") {
+TEST_CASE("gra::math::Y_complex_basis: numerically", "[gra::math::Y_complex_basis]") {
 
 	const double EPS = 1e-5;
 

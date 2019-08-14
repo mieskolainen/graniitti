@@ -249,6 +249,8 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) c
 
   // Pomeron-Gamma-Vector (Photoproduction of rho, phi ...) structure
   //
+  // TBD: WE SHOULD add a form factor to central vertex in order to have proper t-distribution!
+  //
   // p --x--------------- p
   //      *
   //     y *   rho0

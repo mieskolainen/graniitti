@@ -18,7 +18,7 @@
 #include "LHAPDF/LHAPDF.h"
 
 
-TEST_CASE("LUXqed parton fractions", "[single-file]") {
+TEST_CASE("LUXqed parton fractions", "[LUXqed]") {
 
 	const double EPS = 0.03; // Assert relative error criteria
 
@@ -73,7 +73,7 @@ TEST_CASE("LUXqed parton fractions", "[single-file]") {
 }
 
 
-TEST_CASE("Drell-Yan u u~ -> mu+ mu- & LHAPDF test", "[single-file]") {
+TEST_CASE("Drell-Yan u u~ -> mu+ mu- & LHAPDF test", "[Drell-Yan]") {
 
 	std::unique_ptr<LHAPDF::PDF> GlobalPdfPtr = nullptr;
 
@@ -168,7 +168,7 @@ TEST_CASE("Drell-Yan u u~ -> mu+ mu- & LHAPDF test", "[single-file]") {
 // Compare with MadGraph (remember alpha_qed scale setup in MadGraph)
 // generate e+ e- > mu+ mu- / z
 //
-TEST_CASE("gra::M4Vec & gra::kinematics::TwoBodyPhaseSpace & e+e- -> mu+mu- tree-level", "[single-file]") {
+TEST_CASE("gra::M4Vec & gra::kinematics::TwoBodyPhaseSpace & e+e- -> mu+mu- tree-level", "[M4Vec & TwoBodyPhaseSpace]") {
 
 	using namespace gra;
 	using gra::math::pow2;
