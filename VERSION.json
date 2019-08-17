@@ -1,7 +1,7 @@
 {
  "name": "GRANIITTI",
- "version": 0.60,
+ "version": 0.61,
  "type": "beta",
- "date": "14.08.2019",
- "update": "fixes & input control"
+ "date": "17.08.2019",
+ "update": "add tensor pomeron decays"
 }
