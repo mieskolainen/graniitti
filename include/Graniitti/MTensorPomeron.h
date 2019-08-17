@@ -100,10 +100,16 @@ class MTensorPomeron : public MDirac {
 
   FTensor::Tensor2<std::complex<double>, 4, 4> iG_yV(double q2, int pdg) const;
 
+  // Polarization sums
+  std::vector<FTensor::Tensor2<std::complex<double>,4,4>> MassiveSpin1PolSum(const FTensor::Tensor4<std::complex<double>, 4,4,4,4>& M,
+                                                                     const M4Vec& p3, const M4Vec& p4) const;
+  std::vector<FTensor::Tensor2<std::complex<double>,4,4>> MasslessSpin1PolSum(const FTensor::Tensor4<std::complex<double>, 4,4,4,4>& M,
+                                                                     const M4Vec& p3, const M4Vec& p4) const;
 
+  std::vector<std::complex<double>>            MasslessSpin1PolSum(const FTensor::Tensor2<std::complex<double>, 4,4>& M,
+                                                                  const M4Vec& p3, const M4Vec& p4) const;
   std::vector<std::complex<double>>            MassiveSpin1PolSum(const FTensor::Tensor2<std::complex<double>, 4,4>& M,
                                                                   const M4Vec& p3, const M4Vec& p4) const;
-
 
   // Propagators
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iD_P(double s, double t) const;

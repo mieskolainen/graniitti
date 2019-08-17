@@ -643,8 +643,24 @@ std::array<std::vector<std::complex<double>>, 2> MDirac::SpinorStates(
   return spinor;
 }
 
-// Construct Massive Spin-1 polarization vectors (m = -1,0,1) [indexing with
-// 0,1,2]
+// Construct Massless Spin-1 polarization vectors (m = -1,1) [indexing with 0,1]
+std::array<Tensor1<std::complex<double>, 4>, 2> MDirac::MasslessSpin1States(
+    const M4Vec &p, std::string type) const {
+
+  std::array<Tensor1<std::complex<double>, 4>, 2> eps;
+  const int lambda[2] = {-1, 1};
+
+  for (const auto &m : {0, 1}) {  // loop over helicities
+    eps[m] = MDirac::EpsSpin1(p, lambda[m]);
+
+    if (type == "conj") {  // Take complex conjugate per element
+      for (const auto &mu : LI) { eps[m](mu) = std::conj(eps[m](mu)); }
+    }
+  }
+  return eps;
+}
+
+// Construct Massive Spin-1 polarization vectors (m = -1,0,1) [indexing with 0,1,2]
 std::array<Tensor1<std::complex<double>, 4>, 3> MDirac::MassiveSpin1States(
     const M4Vec &p, std::string type) const {
   std::array<Tensor1<std::complex<double>, 4>, 3> eps;

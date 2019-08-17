@@ -24,7 +24,8 @@
     "BW" : 2,
  
     // ------------------------------------------------------------------
-    // Tensor Pomeron model  production couplings (2 for scalar/pseudoscalar, 7 for tensors)
+    // Tensor Pomeron model production couplings
+    // (2 for scalar/pseudoscalar, 2 for vectors, 7 for tensors)
     "g_Tensor" : [1.0, 1.0, 0, 0, 0, 0, 0],
     // ------------------------------------------------------------------
     
