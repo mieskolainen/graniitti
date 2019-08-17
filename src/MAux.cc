@@ -42,7 +42,7 @@ namespace aux {
 double      GetVersion() {       return 0.61; }
 std::string GetVersionType() {   return "beta"; }
 std::string GetVersionDate() {   return "17.08.2019"; }
-std::string GetVersionUpdate() { return "add tensor pomeron decays"; }
+std::string GetVersionUpdate() { return "add new tensor decays"; }
 
 // -------------------------------------------------------
 
