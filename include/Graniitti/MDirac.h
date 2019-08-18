@@ -36,11 +36,11 @@ class MDirac {
 
   // Spin/spinor state collectors
   std::array<std::vector<std::complex<double>>, 2> SpinorStates(const M4Vec &p,
-                                                                std::string type) const;
+                                                                const std::string& type) const;
   std::array<FTensor::Tensor1<std::complex<double>, 4>, 2> MasslessSpin1States(const M4Vec &p,
-                                                                       std::string type) const;  
+                                                                       const std::string& type, bool INDEX_UP = true) const;  
   std::array<FTensor::Tensor1<std::complex<double>, 4>, 3> MassiveSpin1States(const M4Vec &p,
-                                                                       std::string type) const;
+                                                                       const std::string& type, bool INDEX_UP = true) const;
   
   // Helicity spinors
   std::vector<std::complex<double>> XiSpinor(const M4Vec &p, int helicity) const;

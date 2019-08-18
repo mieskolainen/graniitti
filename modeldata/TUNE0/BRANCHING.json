@@ -189,6 +189,13 @@
       "PDG" : [211, -211], "BR" : 0.039,
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
+    },
+    "2" : { // rho0rho0 (SEEN)
+      "PDG" : [113, 113], "BR" : 0.01,
+      "alpha_ls" : [ [0,0, 1.0, 0.0],
+                     [2,2, 1.0, 0.0]],
+      "P_conservation" : true,
+      "g_decay_tensor" : [1.0, 0.0], // Tensor Pomeron decay coupling
     }
   },
   

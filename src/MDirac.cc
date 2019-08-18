@@ -31,6 +31,7 @@
 using FTensor::Tensor1;
 using FTensor::Tensor2;
 
+using gra::aux::indices;
 using gra::math::msqrt;
 using gra::math::pow2;
 using gra::math::zi;
@@ -615,7 +616,7 @@ std::vector<std::complex<double>> MDirac::vGauge(const M4Vec &p, int helicity) c
 
 // Construct spin-1/2 helicity spinors (-1,1) [indexing with 0,1]
 std::array<std::vector<std::complex<double>>, 2> MDirac::SpinorStates(
-    const M4Vec &p, std::string type) const {
+    const M4Vec &p, const std::string& type) const {
   std::array<std::vector<std::complex<double>>, 2> spinor;
 
   if      (BASIS == "D") { // Dirac
@@ -644,33 +645,46 @@ std::array<std::vector<std::complex<double>>, 2> MDirac::SpinorStates(
 }
 
 // Construct Massless Spin-1 polarization vectors (m = -1,1) [indexing with 0,1]
+//
+// Input p as contravariant (upper index)
+//
 std::array<Tensor1<std::complex<double>, 4>, 2> MDirac::MasslessSpin1States(
-    const M4Vec &p, std::string type) const {
+    const M4Vec &p, const std::string& type, bool INDEX_UP) const {
 
   std::array<Tensor1<std::complex<double>, 4>, 2> eps;
-  const int lambda[2] = {-1, 1};
+  const std::vector<int> lambda = {-1, 1};
 
-  for (const auto &m : {0, 1}) {  // loop over helicities
+  for (const auto &m : indices(lambda)) {  // loop over helicities
     eps[m] = MDirac::EpsSpin1(p, lambda[m]);
 
-    if (type == "conj") {  // Take complex conjugate per element
+    if (type == "conj") { // Take complex conjugate per element
       for (const auto &mu : LI) { eps[m](mu) = std::conj(eps[m](mu)); }
+    }
+    if (!INDEX_UP) {      // Return covariant (lower index) version
+      for (const auto& mu : {1,2,3}) { eps[m](mu) = -eps[m](mu); }
     }
   }
   return eps;
 }
 
 // Construct Massive Spin-1 polarization vectors (m = -1,0,1) [indexing with 0,1,2]
+//
+// Input p as contravariant (upper index)
+//
 std::array<Tensor1<std::complex<double>, 4>, 3> MDirac::MassiveSpin1States(
-    const M4Vec &p, std::string type) const {
+    const M4Vec &p, const std::string& type, bool INDEX_UP) const {
   std::array<Tensor1<std::complex<double>, 4>, 3> eps;
-  const int lambda[3] = {-1, 0, 1};
 
-  for (const auto &m : {0, 1, 2}) {  // loop over helicities
+  const std::vector<int> lambda = {-1, 0, 1};
+
+  for (const auto &m : indices(lambda)) {  // loop over helicities
     eps[m] = MDirac::EpsMassiveSpin1(p, lambda[m]);
 
-    if (type == "conj") {  // Take complex conjugate per element
+    if (type == "conj") { // Take complex conjugate per element
       for (const auto &mu : LI) { eps[m](mu) = std::conj(eps[m](mu)); }
+    }
+    if (!INDEX_UP) {      // Return covariant (lower index) version
+      for (const auto& mu : {1,2,3}) { eps[m](mu) = -eps[m](mu); }
     }
   }
   return eps;
