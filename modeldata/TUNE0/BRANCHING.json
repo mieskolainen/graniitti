@@ -1,28 +1,28 @@
 // Resonance branching ratio PDG tables. Particles are identified by their PDG IDs.
 // Add new particles here as you wish. 
 //
-// mikael.mieskolainen@cern.ch, 2018
+// mikael.mieskolainen@cern.ch, 2019
 
 // Helicity decay amplitude ls-couplings with row format: [l,s, Real part, Imag part]
 // l is the relative angular momentum of daughters, s is the total spin of daughters
 //
-// Value collected manually from PDGlive2018, re-check.
+// Value collected manually from PDGlive2019
 // 
 // Branching ratio BR = Gamma_partial / Gamma
 //
 // ----------------------------------------------------------------------
 // 
 // Example of isospin and PDG notation:
-// 
+//
 // Gamma(X -> \pi+\pi-) = 2 x Gamma(X -> \pi0 \pi0) = 2/3 Gamma(X -> f0 \pi\pi)
-// Gamma(X -> K+K-)     = Gamma(X -> K0\bar{K0})    = 1/2 Gamma(X -> K0\bar{K0})
-//  
+// Gamma(X -> K+K-)     = Gamma(X -> K0\bar{K0})    = 1/2 Gamma(X -> K\bar{K})
+//
 // X above having isospin I = 0, ratios obtained with CG SU(2)-coefficients
-// 
+//
 // ----------------------------------------------------------------------
 {
 
-  // Flat 0+
+  // Flat 0+ [FOR DEBUG/DIAGNOSTICS]
   "0" : {
     "0" : { // pi+pi-
       "PDG" : [-211, 211], "BR" : 1.0,
@@ -40,7 +40,17 @@
   "221" : {
 
     "0" : { // gamma gamma
-      "PDG" : [22, 22], "BR" : 0.39,
+      "PDG" : [22, 22], "BR" : 0.3941,  // PDGlive 19.08.19
+      "alpha_ls" : [ [1,1, 1.0, 0.0] ],
+      "P_conservation" : true,
+    }
+  },
+
+  // etaprime
+  "331" : {
+
+    "0" : { // gamma gamma
+      "PDG" : [22, 22], "BR" : 0.0022,  // PDGlive 19.08.19
       "alpha_ls" : [ [1,1, 1.0, 0.0] ],
       "P_conservation" : true,
     }
@@ -50,27 +60,27 @@
   "9000221" : {
 
     "0" : { // pi+pi- (DOMINANT)
-      "PDG" : [-211, 211], "BR" : 1.0,
+      "PDG" : [-211, 211], "BR" : 1.0,  // Ansatz, PDGlive 19.08.19 no data
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
     "1" : { // K+K- 
-      "PDG" : [-321, 321], "BR" : 0.01,
+      "PDG" : [-321, 321], "BR" : 0.01, // PDGlive 19.08.19 no data
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     }
   },
   
-  // rho0(770)
+  // rho0(770) ( |u\bar{u}> - |d\bar{d}> ) / \sqrt{2}
   "113" : {
     
     "0" : { // pi+pi-
-      "PDG" : [-211, 211], "BR" : 1.0,
+      "PDG" : [-211, 211], "BR" : 1.0, // PDGlive 19.08.19
       "alpha_ls" : [[1,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
     "1" : { // K+K- (highly off-shell)
-      "PDG" : [321, -321], "BR" : 0.0,
+      "PDG" : [321, -321], "BR" : 0.0, // PDGlive 19.08.19
       "alpha_ls" : [ [1,0, 1.0, 0.0] ],
       "P_conservation" : true,
     }
@@ -79,33 +89,33 @@
   // f(0)(980)
   "9010221" : {
 
-    "0" : { // pi+pi- (uncertain)
-      "PDG" : [211, -211], "BR" : 0.5,
+    "0" : { // pi+pi-
+      "PDG" : [211, -211], "BR" : 0.500,  // Ansatz, PDGlive 19.08.19 no data
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
-    "1" : { // K+K- (uncertain)
-      "PDG" : [321, -321], "BR" : 0.5,
+    "1" : { // K+ K-
+      "PDG" : [321, -321], "BR" : 0.345,  // K+K-/pi+pi- ~= 0.69 from https://arxiv.org/abs/hep-ex/0605003
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     }
   },
 
-  // phi(1020)
+  // phi(1020) |s\bar{s}>
   "333" : {
     
     "0" : { // K+K-
-      "PDG" : [321, -321], "BR" : 0.489,
+      "PDG" : [321, -321], "BR" : 0.489,  // PDGlive 19.08.19
       "alpha_ls" : [ [1,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
     "1" : { // K0(L) K0(S)
-      "PDG" : [130, 310],  "BR" : 0.342,
+      "PDG" : [130, 310],  "BR" : 0.342,  // PDGlive 19.08.19
       "alpha_ls" : [ [1,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
     "2" : { // pi+pi-
-      "PDG" : [211, -211], "BR" : 0.01,
+      "PDG" : [211, -211], "BR" : 7.3E-5, // PDGlive 19.08.19
       "alpha_ls" : [ [1,0, 1.0, 0.0] ],
       "P_conservation" : true,
     }
@@ -115,17 +125,17 @@
   "225" : {
 
     "0" : { // pi+pi-
-      "PDG" : [211, -211], "BR" : 0.421,
+      "PDG" : [211, -211], "BR" : 0.562,  // PDGlive 19.08.19
       "alpha_ls" : [ [2,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
     "1" : { // K+K-
-      "PDG" : [321, -321], "BR" : 0.02,
+      "PDG" : [321, -321], "BR" : 0.0227, // PDGlive 19.08.19, K\bar{K} / pipi * Gamma(f2 -> pipi) * [1/2]
       "alpha_ls" : [ [2,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
     "3" : { // pi+pi-pi+pi-
-      "PDG" : [211, -211, 211, -211], "BR" : 0.016,
+      "PDG" : [211, -211, 211, -211], "BR" : 0.028, // PDGlive 19.08.19
       "alpha_ls" : [ [2,0, 1.0, 0.0] ],
       "P_conservation" : true,
     }
@@ -134,9 +144,14 @@
   // f(1)(1420)
   "20333" : {
 
-    "0" : { // K+K-pi0 (DOMINANT)
-      "PDG" : [321, -321, 111], "BR" : 1.0,
+    "0" : { // K+K-pi0
+      "PDG" : [321, -321, 111], "BR" : 1.0,       // PDGlive 19.08.19, SEEN, no data
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
+      "P_conservation" : true,
+    },
+    "1" : { // pi+pi-pi+pi-
+      "PDG" : [211, -211, 211, -211], "BR" : 1.0, // PDGlive 19.08.19, SEEN, no data
+      "alpha_ls" : [ [1,0, 1.0, 0.0] ],
       "P_conservation" : true,
     }
   },
@@ -145,18 +160,17 @@
   "9030221" : {
     
     "0" : { // pi+pi-
-      "PDG" : [211, -211], "BR" : 0.349,
+      "PDG" : [211, -211], "BR" : 0.2299, // PDGlive 19.08.19, pipi * [2/3]
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
     "1" : { // K+K-
-      "PDG" : [321, -321], "BR" : 0.086,
+      "PDG" : [321, -321], "BR" : 0.0425, // PDGlive 19.08.19, KKbar * [1/2]
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
     "2" : { // pi+pi-pi+pi-
-      // (BR ratio is not uniquely defined, because of intermediate states)
-      "PDG" : [211, -211, 211, -211], "BR" : 0.495,
+      "PDG" : [211, -211, 211, -211], "BR" : 0.495, // PDGlive 19.08.19, NOT DEFINITE
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
@@ -166,12 +180,12 @@
   "335" : {
     
     "0" : { // K+K-
-      "PDG" : [321, -321], "BR" : 0.887,
+      "PDG" : [321, -321], "BR" : 0.4435,  // PDGlive 19.08.19, KKbar * [1/2]
       "alpha_ls" : [ [2,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
     "1" : { // pi+pi-
-      "PDG" : [211, -211], "BR" : 0.0082,
+      "PDG" : [211, -211], "BR" : 0.00546, // PDGlive 19.08.19, pipi * [2/3]
       "alpha_ls" : [ [2,0, 1.0, 0.0] ],
       "P_conservation" : true,
     }
@@ -180,30 +194,30 @@
   // f(0)(1710)
   "10331" : {
     
-    "0" : { // K+K- (SEEN)
-      "PDG" : [321, -321], "BR" : 0.36,
+    "0" : { // K+K-
+      "PDG" : [321, -321], "BR" : 0.18,   // PDGlive 19.08.19, KKbar * [1/2]
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
-    "1" : { // pi+pi- (SEEN)
-      "PDG" : [211, -211], "BR" : 0.039,
+    "1" : { // pi+pi-
+      "PDG" : [211, -211], "BR" : 0.0552, // PDGlive 19.08.19, (pipi/KKbar) * Gamma(KKbar) * [2/3]
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
-    "2" : { // rho0rho0 (SEEN)
-      "PDG" : [113, 113], "BR" : 0.01,
+    "2" : { // rho0rho0
+      "PDG" : [113, 113], "BR" : 0.01,    // PDGlive 19.08.19, no data
       "alpha_ls" : [ [0,0, 1.0, 0.0],
                      [2,2, 1.0, 0.0]],
       "P_conservation" : true,
-      "g_decay_tensor" : [1.0, 0.0], // Tensor Pomeron decay coupling
+      "g_decay_tensor" : [1.0, 0.0],      // Tensor Pomeron decay coupling
     }
   },
   
   // f(2)(1950)
   "9050225" : {
       
-    "0" : { // pi+pi- (SEEN)
-      "PDG" : [211, -211], "BR" : 1.0,
+    "0" : { // pi+pi-
+      "PDG" : [211, -211], "BR" : 1.0,    // PDGlive 19.08.19, seen, no data
       "alpha_ls" : [ [2,0, 1.0, 0.0] ],
       "P_conservation" : true,
     }
@@ -212,7 +226,7 @@
   // f2(2200)
   "9080225" : {
 
-    "0" : { // rho(770)0 rho(770)0
+    "0" : { // rho(770)0 rho(770)0        // PDGlive 19.08.19, no data
       "PDG" : [113, 113], "BR" : 1.0,
       "alpha_ls" : [ [0,2, 1.0, 0.0],
                      [2,0, 1.0, 0.0],
@@ -223,40 +237,40 @@
     },
   },
   
-  // J/psi
+  // J/psi |c\bar{c}>
   "443" : {
 
     "0" : { // e+e-
-      "PDG" : [11, -11], "BR" : 5.971e-2,
+      "PDG" : [11, -11], "BR" : 5.971e-2,  // PDGlive 19.08.19
       "alpha_ls" : [ [0,1, 1.0, 0.0], 
                      [2,1, 1.0, 0.0] ],
       "P_conservation" : true,
     },
 
     "1" : { // mu+mu-
-      "PDG" : [13, -13], "BR" : 5.961e-2,
+      "PDG" : [13, -13], "BR" : 5.961e-2,  // PDGlive 19.08.19
       "alpha_ls" : [ [0,1, 1.0, 0.0], 
                      [2,1, 1.0, 0.0] ],
       "P_conservation" : true,
     },
 
     "2" : { // pi+pi-
-      "PDG" : [211, -211], "BR" : 1.47e-4,
+      "PDG" : [211, -211], "BR" : 1.47e-4, // PDGlive 19.08.19
       "alpha_ls" : [ [1,0, 1.0, 0.0] ],
       "P_conservation" : true,
     }
   },
   
-  // chi_c(0)
+  // chi_c(0) |c\bar{c}>
   "10441" : {
     
     "0" : { // pi+pi-
-      "PDG" : [211, -211], "BR" : 5.8e-3,
+      "PDG" : [211, -211], "BR" : 5.8e-3,  // PDGlive 19.08.19
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
     "1" : { // K+K-
-      "PDG" : [211, -211], "BR" : 5.8e-3,
+      "PDG" : [211, -211], "BR" : 5.8e-3,  // PDGlive 19.08.19
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     }

@@ -2,21 +2,21 @@
 //
 // mikael.mieskolainen@cern.ch, 2019
 {
-
+  
   "PARAM_RES" : {
 
     // PDG identifier
-    "PDG" : 9080225,
+    "PDG" : 331,
     
     // Mass, width, spin (0,1/2,1,3/2,2...), parity (1,-1)
-    "M"  : 2.2,
-    "W"  : 0.109,
-    "J"  : 2,
-    "P"  : 1,
-    
+    "M"  : 9.5778E-01,
+    "W"  : 1.96E-04,
+    "J"  : 0,
+    "P"  : -1,
+
     // "Glueball state" (orthogonal transverse geometry)
-    "glue" : true,
-    
+    "glue" : false,
+
     // Breit-Wigner propagator type
     // 1 = fixed width relativistic
     // 2 = running width relativistic
@@ -26,43 +26,33 @@
     // ------------------------------------------------------------------
     // Tensor Pomeron model production couplings
     // (2 for scalar/pseudoscalar, 2 for vectors, 7 for tensors)
-    "g_Tensor" : [1.0, 0.0, 0, 0, 0, 0, 0],
+    "g_Tensor" : [2.6, 1.5],
     // ------------------------------------------------------------------
     
     // Set 0 for density matrix below, or an integer > 0 for a random sampled
     // Different integers give different matrices.
-    "random_rho" : 0,
+    "random_rho" : 1,
 
     // Production coupling constant at amplitude level
-    "g_A"   :   0.1,
-    "g_phi" : -1.57,
-    
+    "g_A"   :  0.098,
+    "g_phi" : -3.14159,
+
     // Production form factor on
     "g_FF"  : true,
-    
+
     // Lorentz frame of spin polarization density
     // (SR ~ no rotation, HE ~ helicity, CS ~ Collins-Soper)
     // Any rest frame is technically ok,
     // but some of them may have simpler representations for the rho matrix.
     "FRAME" : "SR",
     
-    // Resonance spin-density (von Neumann) polarization matrix (Re and Im parts)
-    
-    // Spin-2 example case:
-    //
-    // Longitudinal: rho_00
-    // Transverse:   rho_--, rho_-, rho_+, rho_++
-    "rho_real" : [ [0.25, 0, 0, 0, 0] ,
-                   [0, 0.25, 0, 0, 0] ,
-                   [0, 0, 0, 0, 0] ,
-                   [0, 0, 0, 0.25, 0] ,
-                   [0, 0, 0, 0, 0.25]],
-
-    "rho_imag" : [ [0, 0, 0, 0, 0] ,
-                   [0, 0, 0, 0, 0] ,
-                   [0, 0, 0, 0, 0] ,
-                   [0, 0, 0, 0, 0] ,
-                   [0, 0, 0, 0, 0]],
-
+    // Resonance spin-density (von Neumann) matrix (Re and Im parts)
+    "rho_real" : [ [ 0.0,  0,  0] ,
+                   [ 0,  0.0,  0] ,
+                   [ 0,  0,  0.0] ],
+    "rho_imag" : [ [ 0,   0,   0] ,
+                   [ 0,   0,   0] ,
+                   [ 0,   0,   0] ],
   }
+  
 }

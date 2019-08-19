@@ -243,7 +243,7 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
   } else if (CHANNEL == "RESTENSOR") {
     if (lts.decaytree.size() == 2) {
       static MTensorPomeron TensorPomeron;
-      return TensorPomeron.ME3(lts, lts.RESONANCES.begin()->second);
+      return TensorPomeron.ME3(lts);
 
     } else {
       throw std::invalid_argument(
@@ -278,18 +278,15 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
 
       // Add to temp vector (init with zero!)
       std::vector<std::complex<double>> tempsum(lts.hamp.size(), 0.0);
-      std::transform(tempsum.begin(), tempsum.end(), lts.hamp.begin(), tempsum.begin(),
-                     std::plus<std::complex<double>>());
+      for (const auto& i : aux::indices(lts.hamp)) { tempsum[i] += lts.hamp[i]; }
 
-      // 2. Coherent sum of Resonances (loop over)
-      for (auto &x : lts.RESONANCES) {
+      // 2. Evaluate resonance matrix elements -> helicity amplitudes to lts.hamp
+      if (lts.RESONANCES.size() != 0) {
 
-        // 2. Evaluate resonance matrix element -> helicity amplitudes to lts.hamp
-        TensorPomeron.ME3(lts, x.second);
-
+        // We loop over resonances inside ME3
+        TensorPomeron.ME3(lts);
         // Add to temp vector
-        std::transform(tempsum.begin(), tempsum.end(), lts.hamp.begin(), tempsum.begin(),
-                       std::plus<std::complex<double>>());
+        for (const auto& i : aux::indices(lts.hamp)) { tempsum[i] += lts.hamp[i]; }
       }
 
       // ------------------------------------------------------------------
@@ -369,7 +366,7 @@ inline double MSubProc::GetBareAmplitude2_yP(gra::LORENTZSCALAR &lts) {
   } else if (CHANNEL == "RESTENSOR") {
 
     static MTensorPomeron TensorPomeron;
-    return TensorPomeron.ME3(lts, lts.RESONANCES.begin()->second);
+    return TensorPomeron.ME3(lts);
 
   } else {
     throw std::invalid_argument("MSubProc::GetBareAmplitude2_yP: Unknown CHANNEL = " + CHANNEL);

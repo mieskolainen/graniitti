@@ -75,16 +75,7 @@ void MFactorized::ConstructProcesses() {
 
 // Initialize cut and process spesific postsetup
 void MFactorized::post_Constructor() {
-  if (ProcPtr.CHANNEL == "RES") {
-    // Here we support only single resonances
-    if (lts.RESONANCES.size() != 1) {
-      std::string str =
-          "MFactorized::post_Constructor: Only single resonance supported for "
-          "this process (RESPARAM.size() != 1)";
-      throw std::invalid_argument(str);
-    }
-  }
-
+  
   // Set sampling boundaries
   ProcPtr.SetTechnicalBoundaries(gcuts, EXCITATION);
 

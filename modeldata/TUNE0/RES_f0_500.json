@@ -1,6 +1,6 @@
 // Resonance parameters
 //
-// mikael.mieskolainen@cern.ch, 2017
+// mikael.mieskolainen@cern.ch, 2019
 {
   
   "PARAM_RES" : {
@@ -26,7 +26,7 @@
     // ------------------------------------------------------------------
     // Tensor Pomeron model production couplings
     // (2 for scalar/pseudoscalar, 2 for vectors, 7 for tensors)
-    "g_Tensor" : [0.1, 0],
+    "g_Tensor" : [0.2, 0.0],
     // ------------------------------------------------------------------
     
     // Set 0 for density matrix below, or an integer > 0 for a random sampled
