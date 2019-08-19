@@ -39,7 +39,7 @@ class MTensorPomeron : public MDirac {
   double ME6(gra::LORENTZSCALAR &lts) const;
 
   // Scalar, Pseudoscalar, Tensor coupling structures
-  FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_PPS_0(double g_PPS) const;
+  FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_PPS_0() const;
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_PPS_1(const M4Vec &q1, const M4Vec &q2,
                                                               double g_PPS) const;
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_PPPS_0(const M4Vec &q1, const M4Vec &q2,
