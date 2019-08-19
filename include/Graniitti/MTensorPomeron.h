@@ -140,7 +140,8 @@ class MTensorPomeron : public MDirac {
   double F1(double t) const;
   double F2(double t) const;
   double GD(double t) const;
-  double FM(double t) const;
+  double FM(double q2, double LAMBDA) const;
+  double  F(double q2, double M0, double LAMBDA) const;
 
   // Trajectory parameters
   static constexpr double delta_P  = 0.0808;

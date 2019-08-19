@@ -1497,38 +1497,34 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_PppbarP(
 Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_PPS_total(
     const M4Vec &q1, const M4Vec &q2, double M0, const std::string &mode,
     const std::vector<double> &g_PPS) const {
-  auto FM_ = [](double t) -> double {
-    const double LAMBDA = 1.0;  // GeV
-    return 1.0 / (1.0 - t / pow2(LAMBDA));
-  };
-  auto F_ = [](double q2, double M0) -> double {
-    const double LAMBDA = 1.0;  // GeV^2
-    return std::exp(-pow2(q2 - pow2(M0)) / math::pow4(LAMBDA));
-  };
 
   // Form FACTOR
-  const double F_tilde = FM_(q1.M2()) * FM_(q2.M2()) * F_((q1 + q2).M2(), M0);
+  const double LAMBDA = 1.0; // GeV
+  const double F_tilde = FM(q1.M2(), 1.0) * FM(q2.M2(), 1.0) * F((q1 + q2).M2(), M0, LAMBDA);
 
   // Tensor structures
   Tensor4<std::complex<double>, 4, 4, 4, 4> iG0;
   Tensor4<std::complex<double>, 4, 4, 4, 4> iG1;
 
   if        (mode == "scalar") {
+
     iG0 = MTensorPomeron::iG_PPS_0(g_PPS[0]);
     iG1 = MTensorPomeron::iG_PPS_1(q1, q2, g_PPS[1]);
+
   } else if (mode == "pseudoscalar") {
+
     iG0 = MTensorPomeron::iG_PPPS_0(q1, q2, g_PPS[0]);
     iG1 = MTensorPomeron::iG_PPPS_1(q1, q2, g_PPS[1]);
+
   } else {
     throw std::invalid_argument(
-        "MTensorPomeron::iG_PPS_total: Unknown mode (should be scalar or "
-        "pseudoscalar)");
+        "MTensorPomeron::iG_PPS_total: Unknown mode (should be scalar or pseudoscalar)");
   }
 
   // Construct total vertex
   Tensor4<std::complex<double>, 4, 4, 4, 4> T;
-  FOR_EACH_4(LI);
-  T(u, v, k, l) = (iG0(u, v, k, l) + iG1(u, v, k, l)) * F_tilde;
+  FOR_EACH_4(LI);  
+  T(u,v,k,l) = (iG0(u, v, k, l) + iG1(u, v, k, l))* F_tilde;
   FOR_EACH_4_END;
 
   return T;
@@ -1539,7 +1535,7 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_PPS_total(
 //
 // Input as contravariant (upper index) 4-vectors
 //
-Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_PPS_0(double g_PPS) const {
+Tensor4<std::complex<double>, 4,4,4,4> MTensorPomeron::iG_PPS_0(double g_PPS) const {
   const double               S0     = 1.0;  // Mass scale (GeV)
   const std::complex<double> FACTOR = zi * g_PPS * S0;
 
@@ -1556,7 +1552,7 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_PPS_0(double g_PPS)
 //
 // Input as contravariant (upper index) 4-vectors
 //
-Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_PPS_1(const M4Vec &q1, const M4Vec &q2,
+Tensor4<std::complex<double>, 4,4,4,4> MTensorPomeron::iG_PPS_1(const M4Vec &q1, const M4Vec &q2,
                                                                    double g_PPS) const {
   const double               S0     = 1.0;  // Mass scale (GeV)
   const double               q1q2   = q1 * q2;
@@ -1650,17 +1646,9 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_PPPS_1(const M4Vec 
 MTensor<std::complex<double>> MTensorPomeron::iG_PPT_total(const M4Vec &q1, const M4Vec &q2,
                                                            double                     M0,
                                                            const std::vector<double> &g_PPT) const {
-  auto FM_ = [](double t) -> double {
-    const double LAMBDA = 1.0;  // GeV
-    return 1.0 / (1.0 - t / pow2(LAMBDA));
-  };
-  auto F_ = [](double q2, double M0) -> double {
-    const double LAMBDA = 1.0;  // GeV^2
-    return std::exp(-pow2(q2 - pow2(M0)) / math::pow4(LAMBDA));
-  };
-
   // Form FACTOR
-  const double F_tilde = FM_(q1.M2()) * FM_(q2.M2()) * F_((q1 + q2).M2(), M0);
+  const double LAMBDA = 1.0; // GeV
+  const double F_tilde = FM(q1.M2(), 1.0) * FM(q2.M2(), 1.0) * F((q1 + q2).M2(), M0, LAMBDA);
 
   // Kinematics independent tensor structure [0]
   static const MTensor<std::complex<double>> iG0 = iG_PPT_00();
@@ -2060,17 +2048,14 @@ std::complex<double> MTensorPomeron::iG_f0ss(const M4Vec& p3, const M4Vec& p4, d
 //
 Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_f0vv(const M4Vec& p3, const M4Vec& p4, double M0, double g1, double g2) const {
 
-  const double S0 = 1.0; // Mass scale (GeV)
-
-  // Form FACTOR
-  const double lambda4  = 1.0; // GeV^4 (normalization scale)
-  auto F_f0vv = [&](double q2) { return std::exp(-pow2(q2 - M0*M0) / lambda4); };
+  const double S0 = 1.0;     // Mass scale (GeV)
+  const double LAMBDA = 1.0; // GeV
 
   const double p3p4 = p3 * p4;
   const double p3sq = p3.M2();
   const double p4sq = p4.M2();
 
-  const double F_ = FM(p3sq) * FM(p4sq) * F_f0vv((p3 + p4).M2());
+  const double F_ = FM(p3sq, 0.5) * FM(p4sq, 0.5) * F((p3 + p4).M2(), M0, LAMBDA);
   const std::complex<double> FACTOR1 = zi * g1 * 2.0 / math::pow3(S0) * F_;
   const std::complex<double> FACTOR2 = zi * g2 * 2.0 / S0 * F_;
 
@@ -2093,10 +2078,8 @@ Tensor1<std::complex<double>, 4> MTensorPomeron::iG_vpsps(const M4Vec &k1, const
   const M4Vec                p         = k1 - k2;
   
   // Form FACTOR
-  const double lambda4  = 1.0; // GeV^4 (normalization scale)
-  auto F_vpsps = [&](double q2) { return std::exp(-pow2(q2 - M0*M0) / lambda4); };
-
-  const double F_ = FM(k1.M2()) * FM(k2.M2()) * F_vpsps((k1 + k2).M2());
+  const double LAMBDA = 1.0; // GeV
+  const double F_ = FM(k1.M2(), 0.5) * FM(k2.M2(), 0.5) * F((k1 + k2).M2(), M0, LAMBDA);
   const std::complex<double> FACTOR = -0.5 * zi * g1 * F_;
 
   Tensor1<std::complex<double>, 4> T;
@@ -2114,11 +2097,10 @@ Tensor1<std::complex<double>, 4> MTensorPomeron::iG_vpsps(const M4Vec &k1, const
 Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_psvv(const M4Vec &p3, const M4Vec &p4, double M0, double g1) const {
   
   // Form FACTOR
-  const double lambda4  = 1.0; // GeV^4 (normalization scale)
-  auto F_psvv = [&](double q2) { return std::exp(-pow2(q2 - M0*M0) / lambda4); };
+  const double LAMBDA = 1.0; // GeV
 
   const double               S0       = 1.0;   // Mass scale (GeV)
-  const std::complex<double> FACTOR   = zi * g1 / (2 * S0) * F_psvv((p3+p4).M2());
+  const std::complex<double> FACTOR   = zi * g1 / (2 * S0) * F((p3+p4).M2(), M0, LAMBDA);
 
   Tensor1<std::complex<double>, 4> p3_ = {p3[0], p3[1], p3[2], p3[3]};
   Tensor1<std::complex<double>, 4> p4_ = {p4[0], p4[1], p4[2], p4[3]};  
@@ -2143,13 +2125,11 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_psvv(const M4Vec &p3, con
 Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_f2psps(const M4Vec &k1,
                                                               const M4Vec &k2, double M0, double g1) const {
   // Form FACTOR
-  const double lambda4  = 1.0; // GeV^4 (normalization scale)
-  auto F_f2pipi = [&](double q2) { return std::exp(-pow2(q2 - M0*M0) / lambda4); };
-
+  const double LAMBDA = 1.0; // GeV
   const double               S0       = 1.0;   // Mass scale (GeV)
   const M4Vec                k1_k2    = k1 - k2;
-  const std::complex<double> FACTOR   = -zi * g1 / (2 * S0) * F_f2pipi((k1+k2).M2());
-
+  const std::complex<double> FACTOR   = -zi * g1 / (2 * S0) * F((k1+k2).M2(), M0, LAMBDA);
+  
   const double k1_k2_sq = k1_k2.M2();
 
   Tensor2<std::complex<double>, 4, 4> T;
@@ -2167,16 +2147,13 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_f2psps(const M4Vec &k1,
 //
 Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_f2vv(const M4Vec &k1,
                                                                   const M4Vec &k2, double M0, double g1, double g2) const {
-  const double S0 = 1.0; // Mass scale (GeV)
-
-  // Form FACTOR
-  const double lambda4  = 1.0; // GeV^4 (normalization scale)
-  auto F_f2vv = [&](double q2) { return std::exp(-pow2(q2 - M0*M0) / lambda4); };
+  const double S0 = 1.0;     // Mass scale (GeV)
+  const double LAMBDA = 1.0; // GeV
 
   const Tensor4<std::complex<double>, 4, 4, 4, 4> G0 = Gamma0(k1, k2);
   const Tensor4<std::complex<double>, 4, 4, 4, 4> G2 = Gamma2(k1, k2);
 
-  const std::complex<double> F_ = FM(k1.M2()) * FM(k2.M2()) * F_f2vv((k1 + k2).M2());
+  const std::complex<double> F_ = FM(k1.M2(), 0.5) * FM(k2.M2(), 0.5) * F((k1 + k2).M2(), M0, LAMBDA);
   const std::complex<double> FACTOR1 =  zi * 2.0 / math::pow3(S0) * g1 * F_;
   const std::complex<double> FACTOR2 = -zi * 1.0 / S0 * g2 * F_;
 
@@ -2196,8 +2173,7 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_f2vv(const M4Vec &k
 Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_f2yy(const M4Vec &k1,
                                                                   const M4Vec &k2, double M0, double g1, double g2) const {
   // Form FACTOR
-  const double lambda4  = 1.0; // GeV^4 (normalization scale)
-  auto F_f2yy = [&](double q2) { return std::exp(-pow2(q2 - M0*M0) / lambda4); };
+  const double LAMBDA = 1.0; // GeV
 
   // Couplings
   //const double e = msqrt(alpha_QED * 4.0 * PI);  // ~ 0.3, no running
@@ -2207,7 +2183,7 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_f2yy(const M4Vec &k
   const Tensor4<std::complex<double>, 4,4,4,4> G0 = Gamma0(k1, k2);
   const Tensor4<std::complex<double>, 4,4,4,4> G2 = Gamma2(k1, k2);
 
-  const std::complex<double> FACTOR = zi * FM(k1.M2()) * FM(k2.M2()) * F_f2yy((k1 + k2).M2());
+  const std::complex<double> FACTOR = zi * FM(k1.M2(), 0.5) * FM(k2.M2(), 0.5) * F((k1 + k2).M2(), M0, LAMBDA);
 
   Tensor4<std::complex<double>, 4,4,4,4> T;
   FOR_EACH_4(LI);
@@ -2226,7 +2202,7 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_Ppsps(const M4Vec &prime,
                                                              const M4Vec &p, double g1) const {
   const M4Vec  psum = prime + p;
   const double M2   = psum.M2();
-  const std::complex<double> FACTOR = -zi * 2.0 * g1 * FM((prime - p).M2());
+  const std::complex<double> FACTOR = -zi * 2.0 * g1 * FM((prime - p).M2(), 0.5);
 
   Tensor2<std::complex<double>, 4, 4> T;
   FOR_EACH_2(LI);
@@ -2249,7 +2225,7 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_Pvv(const M4Vec &pr
   const Tensor4<std::complex<double>, 4, 4, 4, 4> G0 = Gamma0(prime, -p);
   const Tensor4<std::complex<double>, 4, 4, 4, 4> G2 = Gamma2(prime, -p);
 
-  const std::complex<double> FACTOR = zi * FM((prime - p).M2());
+  const std::complex<double> FACTOR = zi * FM((prime - p).M2(), 0.5);
 
   Tensor4<std::complex<double>, 4, 4, 4, 4> T;
   FOR_EACH_4(LI);
@@ -2501,9 +2477,13 @@ double MTensorPomeron::GD(double t) const {
 }
 
 // Meson form FACTOR (pion electromagnetic type)
-double MTensorPomeron::FM(double q2) const {
-  const double A2 = 0.5;  // GeV^2
-  return 1.0 / (1.0 - q2 / A2);
+double MTensorPomeron::FM(double q2, double LAMBDA2) const {
+  return 1.0 / (1.0 - q2 / LAMBDA2);
+}
+
+// Resonance form factor
+double MTensorPomeron::F(double q2, double M0, double LAMBDA) const {
+  return std::exp(-pow2(q2 - pow2(M0))/math::pow4(LAMBDA) );
 }
 
 // ----------------------------------------------------------------------
