@@ -185,9 +185,8 @@ bool MAnalyzer::FiducialCuts(HepMC3::GenEvent& ) {
 
 // "Oracle" histogram filler:
 //
-// Oracle here means that in this function we use event tree information
-// (unphysical),
-// not just pure fiducial final state information (physical).
+// Oracle here means that in this function we (may) use event tree information
+// (unphysical), not just pure fiducial final state information which is purely physical observables.
 //
 double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multiplicity,
                                     int finalPDG, unsigned int                           MAXEVENTS,
@@ -209,6 +208,16 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
   // Variables for calculating selection efficiency
   double totalW = 0;
   double selecW = 0;
+
+  // ---------------------------------------------------------------------
+  // Set final state [charged pair or neutral pair]
+  MPDG PDG;
+  PDG.ReadParticleData(gra::aux::GetBasePath(2) + "/modeldata/mass_width_2018.mcd");
+
+  // Try to find the particle from PDG table, will throw exception if fails
+  MParticle p = PDG.FindByPDG(finalPDG);
+  const int NEGfinalPDG = (p.chargeX3 != 0) ? -finalPDG : 0; // Do not double count neutral
+  // ---------------------------------------------------------------------
 
   while (true) {
     // Read event from input file
@@ -246,12 +255,6 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
     }
     totalW += W;
     // --------------------------------------------------------------
-
-    int sign = -1;
-    if (finalPDG == PDG::PDG_gamma || finalPDG == PDG::PDG_gluon || finalPDG == 113) {
-      sign = 0;  // Do not double count neutral
-    }
-    int NEGfinalPDG = sign * finalPDG;
 
     // Central particles
     std::vector<M4Vec> pip;
@@ -709,7 +712,7 @@ void MAnalyzer::PlotAll(const std::string &titlestr) {
   // Create output directory if it does not exist
   const std::string FOLDER = gra::aux::GetBasePath(2) + "/figs/" + inputfile;
   aux::CreateDirectory(FOLDER);
-
+  
   /*
   // FIT FUNCTIONS
   std::unique_ptr<TF1> fb = std::make_unique<TF1>("exp_fit", exponential, 0.05,
