@@ -172,14 +172,14 @@ inline void SetPlotStyle() {
   TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
 
   // See https://root.cern.ch/doc/master/classTColor.html
-  gStyle->SetPalette(53);     // kDarkBodyRadiator
+  //gStyle->SetPalette(53);     // kDarkBodyRadiator
   //gStyle->SetPalette(51);       // kDeepSea
   //gStyle->SetPalette(87);     // kLightTemperature
   //gStyle->SetPalette(105);    // kThermometer
   //gStyle->SetPalette(71);     // kBlueGreenYellow
   //gStyle->SetPalette(57);     // kBird
   //gStyle->SetPalette(75);       // kCherry
-  //gStyle->SetPalette(112);      // kViridis
+  gStyle->SetPalette(112);      // kViridis
 
   //TColor::InvertPalette();      // Palette inversion
   }
