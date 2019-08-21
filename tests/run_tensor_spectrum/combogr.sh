@@ -5,7 +5,7 @@
 N=100000
 
 ./bin/gr -i ./tests/processes/CMS13.json \
--p"PP[RES+CONTENSOR]<F> -> pi+ pi- @RES{f0_500:1,rho_770:1,f0_980:1,f2_1270:1,f0_1500:1,f2_1525:1,f0_1710:1}" \
+-p "PP[RES+CONTENSOR]<F> -> pi+ pi- @RES{f0_500:1,rho_770:1,f0_980:1,f2_1270:1,f0_1500:1,f2_1525:1,f0_1710:1}" \
 -w true -l false -n $N -o "tensor_pipi" -f "hepmc3"
 
 ./bin/gr -i ./tests/processes/CMS13.json \
