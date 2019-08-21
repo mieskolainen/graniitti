@@ -588,9 +588,9 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
         
         // Print new coupling array
         if (couplings_touched) {
-          std::cout << rang::fg::green << "@R[" << RESNAME << "] new production couplings set: g_Tensor[";
+          std::cout << rang::fg::green << "@R[" << RESNAME << "] new production couplings set: g_Tensor = [";
           for (std::size_t k = 0; k < RESONANCES[RESNAME].g_Tensor.size(); ++k) {
-            std::cout << RESONANCES[RESNAME].g_Tensor[k];
+            printf("%0.3E", RESONANCES[RESNAME].g_Tensor[k]);
             if (k < RESONANCES[RESNAME].g_Tensor.size() - 1) { std::cout << ", "; }
           }
           std::cout << "]" << rang::fg::reset << std::endl;

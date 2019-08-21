@@ -11,9 +11,9 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
 # Generate
-source ./tests/run_tensor_multi/combogr.sh
+source ./tests/run_tensor2_multi/combogr.sh
 
 fi
 
 # Analyze
-source ./tests/run_tensor_multi/comboanalyze.sh
+source ./tests/run_tensor2_multi/comboanalyze.sh

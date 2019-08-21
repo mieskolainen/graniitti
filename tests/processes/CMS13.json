@@ -5,13 +5,13 @@
 //
 // mikael.mieskolainen@cern.ch, 2018
 {
-  
+
   // ----------------------------------------------------------------------
   // GENERAL setup
   
   "GENERALPARAM" : {
 
-    "OUTPUT"  : "f2_1270_tensorpom",      // Output filename
+    "OUTPUT"  : "",      // Output filename
     "FORMAT"  : "hepmc3",     // hepmc3, hepmc2, hepevt
     "CORES"   : 0,            // Number of CPU threads (0 for automatic)
     "NEVENTS" : 1000,         // Number of unweighted (weight = 1) events
@@ -27,8 +27,8 @@
         
     "BEAM" :   ["p+","p+"],                  // Beam PDG-ID / Name
     "ENERGY" : [6500, 6500],                 // Beam energy in the lab (GeV)
-    "PROCESS" : "PP[RESTENSOR]<F> -> pi+ pi-", // Process
-    "RES" : ["f2_1270"],
+    "PROCESS" : "", // Process
+    "RES" : [],
     "POMLOOP" : false,           // Eikonal Pomeron loop screening
     "NSTARS" : 0,                // N* excitation (0 = elastic, 1 = single, 2 = double)
     "LHAPDF" : "CT10nlo",        // LHAPDF parton distribution set
