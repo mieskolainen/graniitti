@@ -1551,7 +1551,7 @@ Tensor4<std::complex<double>, 4,4,4,4> MTensorPomeron::iG_PPS_0() const {
 }
 
 // Pomeron-Pomeron-Scalar coupling structure #1
-// iG_{\mu \nu \kappa \lambda} ~ (l,s) = (2,0)
+// iG_{\mu \nu \kappa \lambda} ~ (l,s) = (2,2)
 //
 // Input as contravariant (upper index) 4-vectors
 //

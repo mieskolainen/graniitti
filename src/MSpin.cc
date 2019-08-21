@@ -77,8 +77,8 @@ void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MPartic
             << " Particle 1: " << (is_boson1 ? "boson" : "fermion")
             << " , Particle 2: " << (is_boson2 ? "boson" : "fermion") << std::endl;
 
-  std::cout << "gra::spin::InitTMatrix: Calculating SU(2) decomposition: " << std::endl;
-
+  std::cout << "gra::spin::InitTMatrix: Calculating SU(2) decomposition [lambda = lambda1 - lambda2]: " << std::endl;
+  
   for (int s = 0; s <= static_cast<int>(s1 + s2); ++s) {
     for (int l = 0; l <= static_cast<int>(J + s); ++l) {
       for (int i = 0; i < static_cast<int>(2 * s1 + 1); ++i) {
