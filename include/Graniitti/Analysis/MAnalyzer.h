@@ -43,6 +43,14 @@
 #include "Graniitti/MAux.h"
 
 namespace gra {
+
+namespace analyzer {
+
+// Different Lorentz frame labels
+const std::vector<std::string> FRAMES = {"SR", "HE", "CS", "GJ", "PG", "LAB"};
+
+}
+
 class MAnalyzer {
  public:
   // Constructor, destructor
@@ -51,9 +59,6 @@ class MAnalyzer {
 
   // Default particle name string
   std::string pstr = "daughter";
-
-  // Different Lorentz frame labels
-  const std::vector<TString> frame_labels = {"CS", "HE", "LAB", "GJ", "PG", "SR"};
 
   // ----------------------------------------------------------
   // Forward system quantities
@@ -80,15 +85,7 @@ class MAnalyzer {
   // Correlations between frames
   std::unique_ptr<TH2D> h2CosTheta[NFR][NFR];
   std::unique_ptr<TH2D> h2Phi[NFR][NFR];
-
-  std::unique_ptr<TH1D> hCosTheta_Meson_p[NFR];
-  std::unique_ptr<TH1D> hCosTheta_Meson_m[NFR];
-  std::unique_ptr<TH1D> hPhi_Meson_p[NFR];
-  std::unique_ptr<TH1D> hPhi_Meson_m[NFR];
-  std::unique_ptr<TH2D> h2CosTheta_Phi[NFR];
-
-  std::unique_ptr<TH2D> h2M_CosTheta[NFR];
-  std::unique_ptr<TH2D> h2M_Phi[NFR];
+  // ----------------------------------------------------------
 
   // HepMC3 reader
   double HepMC3_OracleFill(const std::string inputfile, unsigned int multiplicity, int finalPDG,

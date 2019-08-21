@@ -46,7 +46,6 @@
 #include "cxxopts.hpp"
 #include "rang.hpp"
 
-
 using gra::aux::indices;
 using namespace gra;
 
@@ -87,9 +86,7 @@ void Init1DHistogram(std::map<std::string, std::unique_ptr<h1Multiplet>> &h,
   // 2-Body observables
   if (std::find(multiplicity.begin(), multiplicity.end(), 2) != multiplicity.end()) {
 
-    const std::vector<std::string> FRAMES = {"HE","CS","GJ","SR"};
-
-    for (const auto& i : FRAMES) {
+    for (const auto& i : analyzer::FRAMES) {
       name    = "h1_costheta_" + i;
       h[name] = std::make_unique<h1Multiplet>(
         name, title + ";Central final state cos(#theta) [" + i + " frame];d" + U + "/dcos(#theta)  (" + units + ")", bP.N, -1.0, 1.0, legendtext);
@@ -188,6 +185,24 @@ void Init2DHistogram(std::map<std::string, std::unique_ptr<h2Multiplet>> &h,
     h[name] = std::make_unique<h2Multiplet>(
         name, "d" + U + "^2/d#eta_{1}d#eta_{2}  (" + units + ") | " + title + ";#eta_{1}; #eta_{2}",
         bY.N, bY.min, bY.max, bY.N, bY.min, bY.max, legendtext);
+
+    // 2D (M, costheta) in different rest frames
+    for (const auto& i : analyzer::FRAMES) {
+
+      name = "h2_2B_M_costheta_" + i;
+      h[name] = std::make_unique<h2Multiplet>(
+          name, "d" + U + "^2/dMdcos(#theta)  (" + units + "/GeV) | " + title + ";M (GeV); daughter cos(#theta) [" + i + " FRAME]",
+          bM.N, bM.min, bM.max, 100, -1, 1, legendtext);
+    }
+
+    // 2D (M, phi) in different rest frames
+    for (const auto& i : analyzer::FRAMES) {
+
+      name = "h2_2B_M_phi_" + i;
+      h[name] = std::make_unique<h2Multiplet>(
+          name, "d" + U + "^2/dMd#phi  (" + units + "/GeV/rad) | " + title + ";M (GeV); daughter #phi [" + i + " FRAME]",
+          bM.N, bM.min, bM.max, 100, -gra::math::PI, gra::math::PI, legendtext);
+    }
   }
 
   // 4-Body observables
@@ -208,15 +223,15 @@ void InitPrHistogram(std::map<std::string, std::unique_ptr<hProfMultiplet>> &h,
   h[name] =
       std::make_unique<hProfMultiplet>(name, title + ";System M  (GeV); System #LTP_{T}#GT (GeV)",
                                        bM.N, bM.min, bM.max, bP.min, bP.max, legendtext);
-
-  name    = "hP_S_M_PL2";
+  
+  name    = "hP_S_M_PL2_SR";
   h[name] = std::make_unique<hProfMultiplet>(
-      name, title + ";System M  (GeV); Legendre #LTP_{l=2}(cos #theta)#GT | r.f.", bM.N, bM.min,
+      name, title + ";System M  (GeV); Legendre #LTP_{l=2}(cos #theta)#GT [SR frame]", bM.N, bM.min,
       bM.max, -0.4, 0.4, legendtext);
 
-  name    = "hP_S_M_PL4";
+  name    = "hP_S_M_PL4_SR";
   h[name] = std::make_unique<hProfMultiplet>(
-      name, title + ";System M  (GeV); Legendre #LTP_{l=4}(cos #theta)#GT | r.f.", bM.N, bM.min,
+      name, title + ";System M  (GeV); Legendre #LTP_{l=4}(cos #theta)#GT [SR frame]", bM.N, bM.min,
       bM.max, -0.4, 0.4, legendtext);
 
   // 2-body

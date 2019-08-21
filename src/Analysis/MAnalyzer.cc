@@ -100,74 +100,27 @@ MAnalyzer::MAnalyzer(const std::string &ID) {
   }
 
   // Costheta correlations between different frames
-  for (std::size_t i = 0; i < NFR; ++i) {
-    for (std::size_t j = 0; j < NFR; ++j) {
+  for (std::size_t i = 0; i < analyzer::FRAMES.size(); ++i) {
+    for (std::size_t j = 0; j < analyzer::FRAMES.size(); ++j) {
       h2CosTheta[i][j] =
           std::make_unique<TH2D>(Form("%s^{+} cos(theta) %s vs %s_%s", pstr.c_str(),
-                                      frame_labels[i].Data(), frame_labels[j].Data(), ID.c_str()),
+                                      analyzer::FRAMES[i].c_str(), analyzer::FRAMES[j].c_str(), ID.c_str()),
                                  Form(";%s^{+} cos(#theta) %s;%s^{+} cos(#theta) %s", pstr.c_str(),
-                                      frame_labels[i].Data(), pstr.c_str(), frame_labels[j].Data()),
+                                      analyzer::FRAMES[i].c_str(), pstr.c_str(), analyzer::FRAMES[j].c_str()),
                                  NBINS, -1, 1, NBINS, -1, 1);
     }
   }
 
   // Phi correlations between different frames
-  for (std::size_t i = 0; i < NFR; ++i) {
-    for (std::size_t j = 0; j < NFR; ++j) {
+  for (std::size_t i = 0; i < analyzer::FRAMES.size(); ++i) {
+    for (std::size_t j = 0; j < analyzer::FRAMES.size(); ++j) {
       h2Phi[i][j] = std::make_unique<TH2D>(
-          Form("%s^{+} #phi %s vs %s_%s", pstr.c_str(), frame_labels[i].Data(),
-               frame_labels[j].Data(), ID.c_str()),
-          Form(";%s^{+} #phi %s (rad);%s^{+} #phi %s (rad)", pstr.c_str(), frame_labels[i].Data(),
-               pstr.c_str(), frame_labels[j].Data()),
+          Form("%s^{+} #phi %s vs %s_%s", pstr.c_str(), analyzer::FRAMES[i].c_str(),
+               analyzer::FRAMES[j].c_str(), ID.c_str()),
+          Form(";%s^{+} #phi %s (rad);%s^{+} #phi %s (rad)", pstr.c_str(), analyzer::FRAMES[i].c_str(),
+               pstr.c_str(), analyzer::FRAMES[j].c_str()),
           NBINS, -gra::math::PI, gra::math::PI, NBINS, -gra::math::PI, gra::math::PI);
     }
-  }
-
-  // 1D costheta
-  for (std::size_t i = 0; i < NFR; ++i) {
-    hCosTheta_Meson_p[i] = std::make_unique<TH1D>(
-        Form("%s^{+} cos(#theta) %s_%s", pstr.c_str(), frame_labels[i].Data(), ID.c_str()),
-        Form(";%s^{+} cos(#theta) %s; Events", pstr.c_str(), frame_labels[i].Data()), NBINS, -1, 1);
-    hCosTheta_Meson_m[i] = std::make_unique<TH1D>(
-        Form("%s^{-} cos(#theta) %s_%s", pstr.c_str(), frame_labels[i].Data(), ID.c_str()),
-        Form(";%s^{+} cos(#theta) %s; Events", pstr.c_str(), frame_labels[i].Data()), NBINS, -1, 1);
-  }
-
-  // 1D phi
-  for (std::size_t i = 0; i < NFR; ++i) {
-    hPhi_Meson_p[i] = std::make_unique<TH1D>(
-        Form("%s^{+} #phi %s_%s", pstr.c_str(), frame_labels[i].Data(), ID.c_str()),
-        Form(";%s^{+} #phi %s; Events", pstr.c_str(), frame_labels[i].Data()), NBINS,
-        -gra::math::PI, gra::math::PI);
-    hPhi_Meson_m[i] = std::make_unique<TH1D>(
-        Form("%s^{-} #phi %s_%s", pstr.c_str(), frame_labels[i].Data(), ID.c_str()),
-        Form(";%s^{+} #phi %s; Events", pstr.c_str(), frame_labels[i].Data()), NBINS,
-        -gra::math::PI, gra::math::PI);
-  }
-
-  // 2D (costheta, phi)
-  for (std::size_t i = 0; i < NFR; ++i) {
-    h2CosTheta_Phi[i] = std::make_unique<TH2D>(
-        Form("cos(#theta) vs #phi %s_%s", frame_labels[i].Data(), ID.c_str()),
-        Form(" ;%s^{+} cos(#theta) %s;%s^{+} #phi %s (rad)", pstr.c_str(), frame_labels[i].Data(),
-             pstr.c_str(), frame_labels[i].Data()),
-        NBINS / 2, -1, 1, NBINS / 2, -gra::math::PI, gra::math::PI);
-  }
-
-  // 2D (M, costheta)
-  for (std::size_t i = 0; i < NFR; ++i) {
-    h2M_CosTheta[i] = std::make_unique<TH2D>(
-        Form("M vs cos(#theta) %s_%s", frame_labels[i].Data(), ID.c_str()),
-        Form(" ;M (GeV);%s^{+} cos(#theta) %s", pstr.c_str(), frame_labels[i].Data()), NBINS / 2,
-        0.0, 2.5, NBINS / 2, -1, 1);
-  }
-
-  // 2D (M, phi)
-  for (std::size_t i = 0; i < NFR; ++i) {
-    h2M_Phi[i] = std::make_unique<TH2D>(
-        Form("M vs #phi %s_%s", frame_labels[i].Data(), ID.c_str()),
-        Form(" ;M (GeV);%s^{+} #phi %s (rad)", pstr.c_str(), frame_labels[i].Data()), NBINS / 2,
-        0.0, 2.5, NBINS / 2, -gra::math::PI, gra::math::PI);
   }
 }
 
@@ -424,23 +377,49 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
         const M4Vec propagator = p_beam_plus - p_final_plus;
         gra::kinematics::GJframe(GJ, propagator);
         
+        std::vector<M4Vec> PG = {a, b};
+        const int direction = 1;
+        gra::kinematics::PGframe(PG, direction, p_beam_plus, p_beam_minus);
+
         h1["h1_costheta_SR"]->h[SID]->Fill(SR[0].CosTheta(), W);
-        h1["h1_phi_SR"]->h[SID]->Fill(SR[0].Phi(), W);
-
         h1["h1_costheta_HE"]->h[SID]->Fill(HE[0].CosTheta(), W);
-        h1["h1_phi_HE"]->h[SID]->Fill(HE[0].Phi(), W);
-
         h1["h1_costheta_CS"]->h[SID]->Fill(CS[0].CosTheta(), W);
-        h1["h1_phi_CS"]->h[SID]->Fill(CS[0].Phi(), W);
-
         h1["h1_costheta_GJ"]->h[SID]->Fill(GJ[0].CosTheta(), W);
+        h1["h1_costheta_PG"]->h[SID]->Fill(PG[0].CosTheta(), W);
+        h1["h1_costheta_LAB"]->h[SID]->Fill(a.CosTheta(), W);
+
+
+        h1["h1_phi_SR"]->h[SID]->Fill(SR[0].Phi(), W);
+        h1["h1_phi_HE"]->h[SID]->Fill(HE[0].Phi(), W);
+        h1["h1_phi_CS"]->h[SID]->Fill(CS[0].Phi(), W);
         h1["h1_phi_GJ"]->h[SID]->Fill(GJ[0].Phi(), W);
+        h1["h1_phi_PG"]->h[SID]->Fill(PG[0].Phi(), W);        
+        h1["h1_phi_LAB"]->h[SID]->Fill(a.Phi(), W);        
+
+
+        h2["h2_2B_M_costheta_SR"]->h[SID]->Fill(M, SR[0].CosTheta(), W);
+        h2["h2_2B_M_costheta_HE"]->h[SID]->Fill(M, HE[0].CosTheta(), W);
+        h2["h2_2B_M_costheta_CS"]->h[SID]->Fill(M, CS[0].CosTheta(), W);
+        h2["h2_2B_M_costheta_GJ"]->h[SID]->Fill(M, GJ[0].CosTheta(), W);
+        h2["h2_2B_M_costheta_PG"]->h[SID]->Fill(M, PG[0].CosTheta(), W);
+        h2["h2_2B_M_costheta_LAB"]->h[SID]->Fill(M, a.CosTheta(), W);
+
+
+        h2["h2_2B_M_phi_SR"]->h[SID]->Fill(M, SR[0].Phi(), W);
+        h2["h2_2B_M_phi_HE"]->h[SID]->Fill(M, HE[0].Phi(), W);
+        h2["h2_2B_M_phi_CS"]->h[SID]->Fill(M, CS[0].Phi(), W);
+        h2["h2_2B_M_phi_GJ"]->h[SID]->Fill(M, GJ[0].Phi(), W);
+        h2["h2_2B_M_phi_PG"]->h[SID]->Fill(M, PG[0].Phi(), W);
+        h2["h2_2B_M_phi_LAB"]->h[SID]->Fill(M, a.Phi(), W);      
+
 
         // ---------------------------------------------------------------------------
         
-        hP["hP_S_M_PL2"]->h[SID]->Fill(M, math::LegendrePl(2, SR[0].CosTheta()), W);
-        hP["hP_S_M_PL4"]->h[SID]->Fill(M, math::LegendrePl(4, SR[0].CosTheta()), W);
+        hP["hP_S_M_PL2_SR"]->h[SID]->Fill(M, math::LegendrePl(2, SR[0].CosTheta()), W);
+        hP["hP_S_M_PL4_SR"]->h[SID]->Fill(M, math::LegendrePl(4, SR[0].CosTheta()), W);
         h2["h2_2B_eta1_eta2"]->h[SID]->Fill(a.Eta(), b.Eta(), W);
+
+        // ---------------------------------------------------------------------------
       }
 
       // 4-Body only
@@ -536,15 +515,15 @@ void MAnalyzer::FrameObservables(double W, HepMC3::GenEvent &evt, const M4Vec &p
 
   // Make copies
   std::vector<std::vector<M4Vec>> pions;
-  for (std::size_t i = 0; i < NFR; ++i) { pions.push_back(twopions); }
+  for (std::size_t i = 0; i < analyzer::FRAMES.size(); ++i) { pions.push_back(twopions); }
 
   // Frame transformations
-  gra::kinematics::CSframe(pions[0]);
+  gra::kinematics::SRframe(pions[0]);
   gra::kinematics::HEframe(pions[1]);
-  // LABframe(pions[2]), already there, do nothing
-  gra::kinematics::GJframe(pions[3], propagator);
-  gra::kinematics::PGframe(pions[4], direction, p_beam_plus, p_beam_minus);
-  gra::kinematics::SRframe(pions[5]);
+  gra::kinematics::CSframe(pions[3]);
+  gra::kinematics::GJframe(pions[4], propagator);
+  gra::kinematics::PGframe(pions[5], direction, p_beam_plus, p_beam_minus);
+  // LABframe(pions[6]), already there, do nothing
 
   // No forward protons -> set zero
   if (p_final_plus.M() < 0.5) { pions[3] = {M4Vec(0, 0, 0, 0), M4Vec(0, 0, 0, 0)}; }
@@ -561,24 +540,12 @@ void MAnalyzer::FrameObservables(double W, HepMC3::GenEvent &evt, const M4Vec &p
     hPl[l]->Fill(system.M(), value, W);
   }
 
-  // 2D
-  for (std::size_t i = 0; i < NFR; ++i) {
-    for (std::size_t j = 0; j < NFR; ++j) {
+  // FRAME correlations
+  for (std::size_t i = 0; i < analyzer::FRAMES.size(); ++i) {
+    for (std::size_t j = 0; j < analyzer::FRAMES.size(); ++j) {
       h2CosTheta[i][j]->Fill(pions[i][0].CosTheta(), pions[j][0].CosTheta(), W);
       h2Phi[i][j]->Fill(pions[i][0].Phi(), pions[j][0].Phi(), W);
     }
-  }
-  // 1D, 2D
-  for (std::size_t i = 0; i < NFR; ++i) {
-    hCosTheta_Meson_p[i]->Fill(pions[i][0].CosTheta(), W);
-    hCosTheta_Meson_m[i]->Fill(pions[i][1].CosTheta(), W);
-
-    hPhi_Meson_p[i]->Fill(pions[i][0].Phi(), W);
-    hPhi_Meson_m[i]->Fill(pions[i][1].Phi(), W);
-
-    h2CosTheta_Phi[i]->Fill(pions[i][0].CosTheta(), pions[i][0].Phi(), W);
-    h2M_CosTheta[i]->Fill(system.M(), pions[i][0].CosTheta(), W);
-    h2M_Phi[i]->Fill(system.M(), pions[i][0].Phi(), W);
   }
 }
 
@@ -793,13 +760,14 @@ void MAnalyzer::PlotAll(const std::string &titlestr) {
   // *************** *************** ***************
 
   // -------------------------------------------------------------------------------------
+  // FRAME correlations
 
   TCanvas c2("c", "c", 800, 800);
-  c2.Divide(NFR, NFR, 0.0001, 0.0002);
+  c2.Divide(analyzer::FRAMES.size(), analyzer::FRAMES.size(), 0.0001, 0.0002);
 
   int k = 1;
-  for (std::size_t i = 0; i < NFR; ++i) {
-    for (std::size_t j = 0; j < NFR; ++j) {
+  for (std::size_t i = 0; i < analyzer::FRAMES.size(); ++i) {
+    for (std::size_t j = 0; j < analyzer::FRAMES.size(); ++j) {
       c2.cd(k);
       ++k;
       if (j >= i) { h2CosTheta[i][j]->Draw("COLZ"); }
@@ -814,11 +782,11 @@ void MAnalyzer::PlotAll(const std::string &titlestr) {
   // -------------------------------------------------------------------------------------
 
   TCanvas c3("c", "c", 800, 800);
-  c3.Divide(NFR, NFR, 0.0001, 0.0002);
+  c3.Divide(analyzer::FRAMES.size(), analyzer::FRAMES.size(), 0.0001, 0.0002);
 
   k = 1;
-  for (std::size_t i = 0; i < NFR; ++i) {
-    for (std::size_t j = 0; j < NFR; ++j) {
+  for (std::size_t i = 0; i < analyzer::FRAMES.size(); ++i) {
+    for (std::size_t j = 0; j < analyzer::FRAMES.size(); ++j) {
       c3.cd(k);
       ++k;
       if (j >= i) { h2Phi[i][j]->Draw("COLZ"); }
@@ -828,62 +796,6 @@ void MAnalyzer::PlotAll(const std::string &titlestr) {
     }
   }
   c3.SaveAs(Form("%s/figs/%s/h2_frame_correlations_phi.pdf", gra::aux::GetBasePath(2).c_str(),
-                 inputfile.c_str()));
-
-  // -------------------------------------------------------------------------------------
-
-  TCanvas c4("c", "c", 800, 400);
-  c4.Divide(NFR, 3, 0.0001, 0.0002);
-
-  k = 1;
-  for (std::size_t i = 0; i < NFR; ++i) {
-    c4.cd(k);
-    ++k;
-    // gPad->SetLogy();
-    hCosTheta_Meson_p[i]->SetLineColor(9);
-    hCosTheta_Meson_m[i]->SetLineColor(46);
-    hCosTheta_Meson_p[i]->Draw("same");
-    hCosTheta_Meson_m[i]->Draw("same");
-
-    // Titlestr
-    if (i == 0) { hCosTheta_Meson_p[i]->SetTitle(titlestr.c_str()); }
-  }
-  for (std::size_t i = 0; i < NFR; ++i) {
-    c4.cd(k);
-    ++k;
-    gPad->SetLogy();
-    hPhi_Meson_p[i]->SetLineColor(9);
-    hPhi_Meson_m[i]->SetLineColor(46);
-    hPhi_Meson_p[i]->Draw("same");
-    hPhi_Meson_m[i]->Draw("same");
-  }
-  for (std::size_t i = 0; i < NFR; ++i) {
-    c4.cd(k);
-    ++k;
-    h2CosTheta_Phi[i]->Draw("COLZ");
-  }
-  c4.SaveAs(
-      Form("%s/figs/%s/h2_costheta_phi.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));
-
-  // -------------------------------------------------------------------------------------
-
-  TCanvas c5("c", "c", 800, 250);
-  c5.Divide(NFR, 2, 0.001, 0.002);  // 2 rows, NFR columns
-
-  k = 1;
-  for (std::size_t i = 0; i < NFR; ++i) {
-    c5.cd(k);
-    ++k;
-    h2M_CosTheta[i]->Draw("COLZ");
-    // Titlestr
-    if (i == 0) { h2M_CosTheta[i]->SetTitle(titlestr.c_str()); }
-  }
-  for (std::size_t i = 0; i < NFR; ++i) {
-    c5.cd(k);
-    ++k;
-    h2M_Phi[i]->Draw("COLZ");
-  }
-  c5.SaveAs(Form("%s/figs/%s/h2_M_costheta_phi.pdf", gra::aux::GetBasePath(2).c_str(),
                  inputfile.c_str()));
 
   // -------------------------------------------------------------------------------------
