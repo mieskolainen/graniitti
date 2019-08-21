@@ -223,7 +223,7 @@ void InitPrHistogram(std::map<std::string, std::unique_ptr<hProfMultiplet>> &h,
   h[name] =
       std::make_unique<hProfMultiplet>(name, title + ";System M  (GeV); System #LTP_{T}#GT (GeV)",
                                        bM.N, bM.min, bM.max, bP.min, bP.max, legendtext);
-  
+
   name    = "hP_S_M_PL2_SR";
   h[name] = std::make_unique<hProfMultiplet>(
       name, title + ";System M  (GeV); Legendre #LTP_{l=2}(cos #theta)#GT [SR frame]", bM.N, bM.min,
@@ -239,7 +239,7 @@ void InitPrHistogram(std::map<std::string, std::unique_ptr<hProfMultiplet>> &h,
     name    = "hP_2B_M_dphi";
     h[name] = std::make_unique<hProfMultiplet>(
         name, title + ";System M (GeV); Central final state pair #LT#delta#phi#GT  (rad)", bM.N,
-        bM.min, bM.max, 0.0, 3.14159, legendtext);
+        bM.min, bM.max, 0.0, math::PI, legendtext);
   }
 
   // 4-Body observables
