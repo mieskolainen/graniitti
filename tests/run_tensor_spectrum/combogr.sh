@@ -9,6 +9,6 @@ N=100000
 -w true -l false -n $N -o "tensor_pipi" -f "hepmc3"
 
 ./bin/gr -i ./tests/processes/CMS13.json \
--p "PP[RES+CONTENSOR]<F> -> K+ K-   @RES{phi_1020:1,f2_1270:1,f0_1500:1,f2_1525:1,f0_1710:1}" \
+-p "PP[RES+CONTENSOR]<F> -> K+ K-   @RES{f0_980:1,phi_1020:1,f2_1270:1,f0_1500:1,f2_1525:1,f0_1710:1}" \
 -w true -l false -n $N -o "tensor_KK" -f "hepmc3"
 

@@ -848,12 +848,12 @@ void MAnalyzer::PlotAll(const std::string &titlestr) {
   c116->SaveAs(
       Form("%s/figs/%s/hPl_6to8.pdf", gra::aux::GetBasePath(2).c_str(), inputfile.c_str()));
 
-  delete c115;
-  delete c116;
   for (std::size_t i = 0; i < 8; ++i) {
     delete leg[i];
     delete line[i];
   }
+  delete c115;
+  delete c116;
 }
 
 }  // gra namespace ends
