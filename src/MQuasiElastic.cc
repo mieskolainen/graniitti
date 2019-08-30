@@ -362,7 +362,7 @@ bool MQuasiElastic::EventRecord(HepMC3::GenEvent &evt) {
       gra::aux::M4Vec2HepMC3(lts.pfinal[2]), PDG_ID2, PDG_status2);
 
   // Construct vertices
-
+  
   // Upper proton-pomeron-proton
   HepMC3::GenVertexPtr v1 = std::make_shared<HepMC3::GenVertex>();
   v1->add_particle_in(gen_p1);

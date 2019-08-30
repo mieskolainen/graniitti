@@ -388,7 +388,7 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
     return false;  // Kinematically impossible
   }
   lts.DW = w;
-
+  
   // Collect decay products
   const unsigned int offset = 3;
   for (const auto &i : indices(lts.decaytree)) {
@@ -403,12 +403,14 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
   
   // Forward excitation
   if (lts.excite1) {
-    if (!ExciteContinuum(lts.pfinal[1], lts.decayforward1, lts.pfinal[1].M2(), 1, 1, "exp")) {
+    //if (!ExciteContinuum(lts.pfinal[1], lts.decayforward1, lts.pfinal[1].M2(), 1, 1, "exp")) {
+    if (!ExciteNstar(lts.pfinal[1], lts.decayforward1)) {
       return false;
     }
   }
   if (lts.excite2) {
-    if (!ExciteContinuum(lts.pfinal[2], lts.decayforward2, lts.pfinal[2].M2(), 1, 1, "exp")) {
+//    if (!ExciteContinuum(lts.pfinal[2], lts.decayforward2, lts.pfinal[2].M2(), 1, 1, "exp")) {
+    if (!ExciteNstar(lts.pfinal[2], lts.decayforward2)) {
       return false;
     }
   }
