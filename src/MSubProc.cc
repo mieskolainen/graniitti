@@ -152,18 +152,16 @@ void MSubProc::SetTechnicalBoundaries(gra::GENCUT &gcuts, unsigned int EXCITATIO
       } else if (ISTATE == "yP") {
         gcuts.forward_pt_max = 2.0;
       } else if (ISTATE == "yy") {
-        gcuts.forward_pt_max = 1.75;
+        gcuts.forward_pt_max = 2.0;
       } else if (ISTATE == "gg") {
         gcuts.forward_pt_max = 2.5;
       }
     }
-    
-    // Here, we cannot put too high if we use on-shell matrix (e.g. in EPA)
-    // because t ~ -pt^2
-    else if   (EXCITATION == 1) {  // Single
+
+    else if   (EXCITATION == 1) {  // Single excitation
       gcuts.forward_pt_max = 3.0;
-    } else if (EXCITATION == 2) {  // Double
-      gcuts.forward_pt_max = 3.0;
+    } else if (EXCITATION == 2) {  // Double excitation
+      gcuts.forward_pt_max = 4.0;
     }
   }
 }

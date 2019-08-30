@@ -149,11 +149,11 @@ void Init2DHistogram(std::map<std::string, std::unique_ptr<h2Multiplet>> &h,
                                               title + ";System M (GeV); System P_{T} (GeV)",
                                     bM.N, bM.min, bM.max, bP.N, bP.min, bP.max, legendtext);
 
-  name    = "h2_S_M_sqrt1";
-  h[name] = std::make_unique<h2Multiplet>(name, "d" + U + "^2/dMd#sqrt{-t_{1}}  (" + units +
+  name    = "h2_S_M_t";
+  h[name] = std::make_unique<h2Multiplet>(name, "d" + U + "^2/dMd#t  (" + units +
                                                     "/GeV/GeV) | " + title +
-                                                    ";System M (GeV); #sqrt{t_{1}} (GeV)",
-                                          bM.N, bM.min, bM.max, bP.N, bP.min, bP.max, legendtext);
+                                                    ";System M (GeV); |t| (GeV^{2})",
+                                          bM.N, bM.min, bM.max, bP.N, math::pow2(bP.min), math::pow2(bP.max), legendtext);
 
   name    = "h2_S_M_pt";
   h[name] = std::make_unique<h2Multiplet>(
