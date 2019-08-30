@@ -17,7 +17,7 @@ yes | source ./tests/run_alice_single/run.sh
 yes | source ./tests/run_alice_multi/run.sh
 yes | source ./tests/run_cms_multi/run.sh
 
-# harmonic fitting
+# spherical harmonic expansion
 yes | source ./tests/run_cms_harmonic/run.sh
 yes | source ./tests/run_alice_harmonic/run.sh
 
