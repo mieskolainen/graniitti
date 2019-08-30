@@ -27,7 +27,7 @@ then
 fi
 
 # Analyze lowmass
-make -j4 && ./bin/analyze \
+./bin/analyze \
 -i yy_EPA_lo,yy_QED_lo \
 -g 13,13 \
 -n 2,2 \
@@ -40,7 +40,7 @@ make -j4 && ./bin/analyze \
 -S $S2,$S2
 
 # Analyze highmass
-make -j4 && ./bin/analyze \
+./bin/analyze \
 -i yy_EPA_hi,yy_QED_hi \
 -g 13,13 \
 -n 2,2 \

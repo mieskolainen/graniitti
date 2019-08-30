@@ -1,10 +1,13 @@
 #!/bin/sh
 #
-# GLOBAL test of the program, output to be inspected by human
+# GLOBAL benchmark test of the program, output Quality Assurance done by human
 #
 # Run with: source ./tests/megarun.sh > megarun.out
 
 make -j4 TEST=TRUE
+
+# For different ROOT installation versions
+#make -j4 TEST=TRUE ROOT14=TRUE
 
 # single process and plotting
 yes | source ./tests/run_cdf_single/run.sh
@@ -21,8 +24,16 @@ yes | source ./tests/run_alice_harmonic/run.sh
 # eikonal/elastic scattering
 yes | source ./tests/run_elastic/run.sh
 
-# luxpdf
+# kt-EPA vs full QED yy in low-mass and high-mass domain
+yes | source ./tests/run_cms_mumu_low_high/run.sh
+
+# luxpdf gamma-gamma
 yes | source ./tests/run_luxtest/run.sh
+
+# tensor Pomeron
+yes | source ./tests/run_tensor0_multi/run.sh
+yes | source ./tests/run_tensor2_multi/run.sh
+yes | source ./tests/run_tensor_spectrum/run.sh
 
 # minimum bias
 ./bin/minbias 7000,13000 1000
