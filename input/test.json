@@ -34,7 +34,7 @@
     "NSTARS"  : 0,              // N* excitation (0 = elastic, 1 = single, 2 = double)
     "LHAPDF"  : "CT10nlo",      // LHAPDF parton distribution set
     "HIST"    : 2,              // On-the-flight histograms (0 = off,1,2)
-    "RNDSEED" : 12345678        // Random seed (int32)
+    "RNDSEED" : 12345678,       // Random seed (int32)
   },
 
   // ----------------------------------------------------------------------
@@ -44,7 +44,7 @@
 
     // Loop integration
     "POMLOOP" : {
-      "ND" : 0                // Loop integral discretization
+      "ND" : 0,               // Loop integral discretization
     },
 
     // VEGAS integrator
@@ -57,14 +57,14 @@
       "BINS"    : 128,        // Maximum number of bins per dimension (NOTE: EVEN NUMBER)
       "LAMBDA"  : 1.5,        // Regularization parameter
       "CHI2MAX" : 10.0,       // Maximum Chi^2 in initialization
-      "DEBUG"   : -1          // Debug output (default -1)
+      "DEBUG"   : -1,         // Debug output (default -1)
     },
 
     // FLAT integrator
     "FLAT" : {
 
       "PRECISION"  : 0.05,    // Integral relative precision
-      "MIN_EVENTS" : 1000000  // Minimum number of events to be sampled
+      "MIN_EVENTS" : 1000000,  // Minimum number of events to be sampled
     }
   },
 
@@ -75,7 +75,7 @@
 
     "<C>" : {
       "Rap" : [-2.5, 2.5],  // Rapidity boundaries of the final states (<C> class)
-      "Xi"  : [0, 2e-7]     // Invariant scale M^2/s (forward excitation)
+      "Xi"  : [0, 1e-6]     // Invariant scale M^2/s (forward excitation)
     },
     "<F>" : {
       "Rap" : [-2.5, 2.5],  // Rapidity boundaries of the system (<F> class)
@@ -128,21 +128,22 @@
 
   "VETOCUTS" : {
 
-    "active" : false,
+    "active" : true,
 
     // Domain 0
     "0" : {
-      "Eta" : [-8.0, -2.51],
-      "Pt"  : [0.05, 100000.0]
+      "Eta" : [-4.9, -3.0],
+      "Pt"  : [0.03, 100000.0]
     },
 
     // Domain 1
     "1" : {
+      "Eta" : [3.0, 4.9],
+      "Pt"  : [0.03, 100000.0]
+    },
 
-      "Eta" : [2.51, 8.0],
-      "Pt"  : [0.05, 100000.0]
-    }
     // Domain 2 (add arbitrary one more here) ...
+
   }
 
 }

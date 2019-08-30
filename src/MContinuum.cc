@@ -403,7 +403,7 @@ bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1
   lts.pfinal[1] = p1;  // Forward systems
   lts.pfinal[2] = p2;
   lts.pfinal[0] = sumP;  // Central system
-
+  
   double             sumM   = 0;
   const unsigned int offset = 3;
   for (const auto &i : indices(p)) {
@@ -414,7 +414,7 @@ bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1
 
   // -------------------------------------------------------------------
   // Kinematic checks
-
+  
   // Check we are above mass threshold
   if (sumP.M() < sumM) { return false; }
 
@@ -431,9 +431,17 @@ bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1
   }
 
   // Forward excitation
-  if (lts.excite1) { ExciteNstar(lts.pfinal[1], lts.decayforward1); }
-  if (lts.excite2) { ExciteNstar(lts.pfinal[2], lts.decayforward2); }
-
+  if (lts.excite1) {
+    if (!ExciteContinuum(lts.pfinal[1], lts.decayforward1, lts.pfinal[1].M2(), 1, 1, "exp")) {
+      return false;
+    }
+  }
+  if (lts.excite2) {
+    if (!ExciteContinuum(lts.pfinal[2], lts.decayforward2, lts.pfinal[2].M2(), 1, 1, "exp")) {
+      return false;
+    }
+  }
+  
   return GetLorentzScalars(Nf);
 }
 

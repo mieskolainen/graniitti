@@ -28,6 +28,7 @@ constexpr int PDG_Km    = -321;
 constexpr int PDG_gamma = 22;
 constexpr int PDG_gluon = 21;
 constexpr int PDG_muon  = 13;
+constexpr int PDG_rho0  = 113;
 
 constexpr int PDG_pomeron  = 990;
 constexpr int PDG_reggeon  = 110;

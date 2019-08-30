@@ -1,7 +1,7 @@
 {
  "name": "GRANIITTI",
- "version": 0.65,
+ "version": 0.66,
  "type": "beta",
- "date": "21.08.2019",
- "update": "update analyzer"
+ "date": "30.08.2019",
+ "update": "re-organize objects"
 }

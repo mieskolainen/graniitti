@@ -83,6 +83,9 @@ void MFragment::ExpPowRND(double q, double T, double maxpt, const std::vector<do
   std::vector<std::vector<double>> dsdpt(fixmass.size(), std::vector<double>(Nbins, 0.0));
   std::vector<double>              maxval(fixmass.size(), 0.0);
 
+  // -------------------------------------------------------------------------------
+  // Very slow
+
   // Pre-evaluate dsigma/dpt |_y=0 (mid rapidity)
   for (const auto &k : indices(fixmass)) {
     const double m2 = pow2(fixmass[k]);
@@ -95,6 +98,7 @@ void MFragment::ExpPowRND(double q, double T, double maxpt, const std::vector<do
       maxval[k] = (dsdpt[k][i] > maxval[k]) ? dsdpt[k][i] : maxval[k];
     }
   }
+  // -------------------------------------------------------------------------------
 
   // For each particle, generate pt
   x.resize(mass.size(), 0.0);
@@ -110,7 +114,7 @@ void MFragment::ExpPowRND(double q, double T, double maxpt, const std::vector<do
       }
     }
 
-    // Acceptance-Rejection
+    // Acceptance-Rejection, very slow
     unsigned int trials = 0;
     while (true) {
       const int BIN = RANDI(rng.rng);
@@ -139,8 +143,8 @@ void MFragment::ExpPowRND(double q, double T, double maxpt, const std::vector<do
 // Return: 1.0 for a valid fragmentation and -1.0 for a kinematically impossible
 
 double MFragment::TubeFragment(const M4Vec &mother, double M0, const std::vector<double> &m,
-                               std::vector<M4Vec> &p, double q, double T, double maxpt,
-                               MRandom &rng) {
+                               std::vector<M4Vec> &p, double q, double T, double lambda, double maxpt,
+                               MRandom &rng, const std::string& pt_distribution) {
   // Number of re-trials in a case of failing kinematics
   const unsigned int MAXTRIAL = 30;
   unsigned int       trials   = 0;
@@ -160,7 +164,18 @@ double MFragment::TubeFragment(const M4Vec &mother, double M0, const std::vector
   while (true) {
     // Random sample px,py and initial rapidity
     std::vector<double> pt(N);
-    ExpPowRND(q, T, maxpt, m, pt, rng);
+
+    if      (pt_distribution == "powexp") {
+      ExpPowRND(q, T, maxpt, m, pt, rng);
+    }
+    else if (pt_distribution == "exp") {
+      for (const auto & i : indices(pt)) {
+        pt2[i] = rng.ExpRandom(lambda);
+        pt[i]  = msqrt(pt2[i]);
+      }
+    } else {
+      throw std::invalid_argument("MFragment::TubeFragment: Unknown pt-distribution parameter = " + pt_distribution);
+    }
 
     for (const auto &i : indices(pt)) {
       // Sample angle, px, py
@@ -404,10 +419,10 @@ void MFragment::GetSingleForwardMass(double &mass, MRandom &random) {
 
 // Simple statistical toy particle pick-up, nothing more
 //
-int MFragment::PickParticles(double M, unsigned int N, int B, int S, int Q,
+bool MFragment::PickParticles(double M, unsigned int N, int B, int S, int Q,
                              std::vector<double> &mass, std::vector<int> &pdgcode, const MPDG &PDG,
                              MRandom &rng) {
-  const unsigned int MAXTRIAL = 1e5;
+  const unsigned int MAXTRIAL = 1e4;
 
   // C++11, thread_local is also static
   thread_local std::uniform_int_distribution<int> RANDI3(0, 2);
@@ -424,6 +439,8 @@ int MFragment::PickParticles(double M, unsigned int N, int B, int S, int Q,
   const std::vector<int> neutral_B   = {0, 0, 1};
   const std::vector<int> neutral_S   = {0, 1, 0};
 
+  const double QProb  = 2.0 / 3.0;       // Charged probability
+  const double DOUBLE = 0.9;             // Prob to pick particle pair
   // -----------------------------------------------------------------
 
   // Now resize!
@@ -432,10 +449,7 @@ int MFragment::PickParticles(double M, unsigned int N, int B, int S, int Q,
   std::vector<int> Qcharges(N, 0);
   std::vector<int> Bcharges(N, 0);
   std::vector<int> Scharges(N, 0);
-
   unsigned int trials = 0;
-  const double QProb  = 2.0 / 3.0;
-  const double DOUBLE = 0.9;
 
   while (true) {
     unsigned int i = 0;
@@ -458,9 +472,9 @@ int MFragment::PickParticles(double M, unsigned int N, int B, int S, int Q,
               ++i;  // Next slot
 
               Qcharges[i] = -1;
-              Bcharges[i] = (-1) * charged_B[bin];
-              Scharges[i] = (-1) * charged_S[bin];
-              pdgcode[i]  = (-1) * charged_pdg[bin];
+              Bcharges[i] = - charged_B[bin];
+              Scharges[i] = - charged_S[bin];
+              pdgcode[i]  = - charged_pdg[bin];
               ++i;
               break;
             }
@@ -474,7 +488,7 @@ int MFragment::PickParticles(double M, unsigned int N, int B, int S, int Q,
             if (rng.U(0, 1) < ratio3[bin]) {
               int sign = 0;
               sign     = (rng.U(0, 1) < 0.5) ? 1 : -1;
-
+              
               Qcharges[i] = sign;
               Bcharges[i] = sign * charged_B[bin];
               Scharges[i] = sign * charged_S[bin];
@@ -526,11 +540,11 @@ int MFragment::PickParticles(double M, unsigned int N, int B, int S, int Q,
       // printf("[PICK] Q_sum = %d, B_sum = %d, M_sum = %0.1f, M = %0.1f, N = %d
       // \n", Q_sum, B_sum, M_sum, M, N);
       ++trials;
-      if (trials > MAXTRIAL) { return 1; }
+      if (trials > MAXTRIAL) { return false; }
     }
   }  // Out loop
 
-  return 0;
+  return true;
 }
 
 }  // gra namespace ends

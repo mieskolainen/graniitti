@@ -216,7 +216,7 @@ double MQuasiElastic::EventWeight(const std::vector<double> &randvec, AuxIntData
   return W;
 }
 
-// Record HepMC33 event
+// Record HepMC3 event
 bool MQuasiElastic::EventRecord(HepMC3::GenEvent &evt) {
   // ----------------------------------------------------------------------
   // Non-Diffractive
@@ -301,11 +301,16 @@ bool MQuasiElastic::EventRecord(HepMC3::GenEvent &evt) {
           B_sum = 1;
           Q_sum = 1;
         }
-
-        if (ExciteContinuum(pomeron4vec, gen_X, evt, Q2_scale, B_sum, Q_sum) == 1) {
+        
+        // Excite it
+        MDecayBranch branch;
+        if (!ExciteContinuum(pomeron4vec, branch, Q2_scale, B_sum, Q_sum)) {
           std::cout << "ND failed with ExciteContinuum" << std::endl;
           return false;  // failed
         }
+        
+        // Save it
+        SaveBranch(evt, branch, gen_X);
       }
     }
 
@@ -378,19 +383,17 @@ bool MQuasiElastic::EventRecord(HepMC3::GenEvent &evt) {
 
   // Upper proton excitation
   if (lts.excite1 == true) {
-    // ExciteNstar(lts.pfinal[1], gen_p1f, evt);
-    // Try to fragment
-    if (ExciteContinuum(lts.pfinal[1], gen_p1f, evt, lts.pfinal[1].M2(), 1, 1) == 1) {
+    if (!ExciteContinuum(lts.pfinal[1], lts.decayforward1, lts.pfinal[1].M2(), 1, 1)) {
       return false;  // failed
     }
+    SaveBranch(evt, lts.decayforward1, gen_p1f);
   }
   // Lower proton excitation
   if (lts.excite2 == true) {
-    // ExciteNstar(lts.pfinal[2], gen_p2f, evt);
-    // Try to fragment
-    if (ExciteContinuum(lts.pfinal[2], gen_p2f, evt, lts.pfinal[2].M2(), 1, 1) == 1) {
+    if (!ExciteContinuum(lts.pfinal[2], lts.decayforward2, lts.pfinal[2].M2(), 1, 1)) {
       return false;  // failed
     }
+    SaveBranch(evt, lts.decayforward2, gen_p2f);
   }
   return true;
 }

@@ -250,13 +250,14 @@ class MProcess : public MUserHistograms {
   // -------------------------------------------------------
   // Recursive function to treat decay trees
 
+  void SaveBranch(HepMC3::GenEvent &evt, const gra::MDecayBranch& branch, const HepMC3::GenParticlePtr& pX);
   bool CommonRecord(HepMC3::GenEvent &evt);
   bool VetoCuts() const;
   bool CommonCuts() const;
   void FindDecayCuts(const gra::MDecayBranch &branch, bool &ok) const;
   void FindVetoCuts(const gra::MDecayBranch &branch, bool &ok) const;
   bool ConstructDecayKinematics(gra::MDecayBranch &branch);
-  void WriteDecayKinematics(gra::MDecayBranch &branch, HepMC3::GenParticlePtr &mother,
+  void WriteDecayKinematics(const gra::MDecayBranch &branch, const HepMC3::GenParticlePtr &mother,
                             HepMC3::GenEvent &evt);
   void PrintFiducialCuts() const;
 
@@ -271,14 +272,11 @@ class MProcess : public MUserHistograms {
   // --------------------------------------------------------
   // System fragmentation
 
-  void ExciteNstar(const M4Vec &nstar, gra::MDecayBranch &forward);
-
-  int ExciteContinuum(const M4Vec &nstar, const HepMC3::GenParticlePtr gen_nstar,
-                      HepMC3::GenEvent &evt, double Q2_scale, int B_sum, int Q_sum);
-
-  void BranchForwardSystem(const std::vector<M4Vec> &products, const std::vector<int> &pdgcode,
-                           const std::vector<bool> &    isstable,
-                           const HepMC3::GenParticlePtr gen_nstar, HepMC3::GenEvent &evt);
+  bool ExciteNstar(const M4Vec &nstar, gra::MDecayBranch &forward);
+  bool ExciteContinuum(const M4Vec &nstar, gra::MDecayBranch &forward, double Q2_scale, int B_sum, int Q_sum,
+                       const std::string& pt_distribution = "powexp");
+  void BranchForwardSystem(const std::vector<M4Vec> &p4, const std::vector<MParticle> &p,
+                           const M4Vec &nstar, gra::MDecayBranch &forward);
 
   // ---------------------------------------------------------
 

@@ -1,22 +1,28 @@
-GRANIITTI FAQ: 12.08.2019
+GRANIITTI UNDERWORK: 30.08.2019
 
 mikael.mieskolainen@cern.ch
 -----------
+
 
 Processes & features under validation/implementation:
 
 - tensor pomeron decay structures [f2 -> VV, 2xV -> 2x(2xPS)]
 - perturbative (Durham QCD) meson pair (higher mass) continuum
 
-Processes & features under construction
+
+Processes & features under construction/feasibility inspection
 
 - "sliding" Regge helicity amplitudes (helicity trajectories)
+- in forward excitation, the "partonic beam-split" for PYTHIA could be useful
+
 
 Missing features:
 
 - vetocuts are not activate for minbias processes
 
+
 Known problems:
+- ./bin/analyze may throw memory dump after exit, harmless ROOT problem
 - Looping processes in sequencies with different LHAPDF sets causes crash (in ./bin/exloop) 
   -> single instances of ./bin/gr not affected, ./bin/xscan perhaps. Something to do with LHAPDF memory access.
 

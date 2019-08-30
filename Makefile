@@ -16,6 +16,8 @@
 #
 # To compile with ROOT using -std=c++14:   make ROOT14=TRUE
 #
+# To compile with profiling:               make VALGRIND=TRUE
+#
 # -----------------------------------------------------------------------
 # 
 # EXTERNAL LIBRARIES SETUP:
@@ -200,6 +202,11 @@ endif
 
 OPTIM      = -O3 -DNDEBUG -ftree-vectorize -fno-signed-zeros
 CXXFLAGS   = -Wall -fPIC -pipe $(OPTIM)
+
+# Profiling & debug
+ifeq ($(VALGRIND),TRUE)
+OPTIM   += -pg 
+endif
 
 
 # Needed by PyTorch if using pre-compiled (ABI = Application Binary Interface)

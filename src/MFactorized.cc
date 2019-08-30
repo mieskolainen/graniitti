@@ -400,11 +400,19 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
   for (const auto &i : indices(lts.decaytree)) {
     if (!ConstructDecayKinematics(lts.decaytree[i])) { return false; }
   }
-
+  
   // Forward excitation
-  if (lts.excite1) { ExciteNstar(lts.pfinal[1], lts.decayforward1); }
-  if (lts.excite2) { ExciteNstar(lts.pfinal[2], lts.decayforward2); }
-
+  if (lts.excite1) {
+    if (!ExciteContinuum(lts.pfinal[1], lts.decayforward1, lts.pfinal[1].M2(), 1, 1, "exp")) {
+      return false;
+    }
+  }
+  if (lts.excite2) {
+    if (!ExciteContinuum(lts.pfinal[2], lts.decayforward2, lts.pfinal[2].M2(), 1, 1, "exp")) {
+      return false;
+    }
+  }
+  
   // ==============================================================================
   // Check that we are above mass threshold -> not necessary, this is
   // done in mass sampling function

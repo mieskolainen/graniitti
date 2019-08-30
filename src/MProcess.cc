@@ -908,18 +908,23 @@ void MProcess::GetOffShellMass(const gra::MDecayBranch &branch, double &mass) {
   }
 }
 
-// Proton continuum excitation (this is not yet written in the same format as
-// central system - TBD!)
+// -----------------------------------------------------------------------
+
+// Proton continuum excitation
 //
-int MProcess::ExciteContinuum(const M4Vec &nstar, const HepMC3::GenParticlePtr gen_nstar,
-                              HepMC3::GenEvent &evt, double Q2_scale, int B, int Q) {
+// Return true if OK
+// Return false if FAILS
+//
+bool MProcess::ExciteContinuum(const M4Vec &nstar, gra::MDecayBranch &forward, double Q2_scale, int B, int Q,
+                               const std::string& pt_distribution) {
+
   // Sanity check (2 x pion mass)
   if (msqrt(Q2_scale) < 0.3) {
-    // return 1; // not valid
+    // return false; // not valid
   }
   const double QProb      = 2.0 / 3.0;  // Probability for a charged particle (isospin)
   const int    OUTERTRIAL = 100;
-
+  
   // Average multiplicity
   const double a0          = 0.0;
   double       b0          = 2.0;
@@ -936,7 +941,7 @@ int MProcess::ExciteContinuum(const M4Vec &nstar, const HepMC3::GenParticlePtr g
       N = random.PoissonRandom(avgN);
       // if (M < 10) { // low-mass smearing treatment
       for (std::size_t r = 0; r < 3; ++r) {
-        //		N = PoissonRND(N);
+        //    N = PoissonRND(N);
       }
       //}
       if (nstar.M() > N * 0.14) break;  // Minimal mass threshold
@@ -952,41 +957,39 @@ int MProcess::ExciteContinuum(const M4Vec &nstar, const HepMC3::GenParticlePtr g
 
     std::vector<double> mass;
     std::vector<int>    pdgcode;
-    if (MFragment::PickParticles(M, N, B, 0, Q, mass, pdgcode, PDG, random) == 1) {
+    if (!MFragment::PickParticles(M, N, B, 0, Q, mass, pdgcode, PDG, random)) {
       ++outertrials;
       continue;
     }
 
     // --------------------------------------------------------------------
     // Now decay >>
-    std::vector<bool> isstable(N, false);
-    MFragment::GetDecayStatus(pdgcode, isstable);
 
-    // Decay p
-    std::vector<M4Vec> products;
+    std::vector<M4Vec> p4;
 
     double q = std::pow(N, 0.11 / 3);  // Powerlaw high-pt slope
     double T = 0.065;                  // Temperature
-    if (etree.size() > 0) {            // "Temperature" rises ~ 1/impact parameter squared
+    if (etree.size() > 0) {            // For ND soft-cuts, "Temperature" rises ~ 1/impact parameter squared
       T *= std::pow(1 / (bt * bt), 0.10);
     }
-    const double maxpt = 15.0;  // Maximum Pt per particle
-    const double W     = MFragment::TubeFragment(nstar, M, mass, products, q, T, maxpt, random);
-
+    const double maxpt  = 15.0;  // Maximum Pt per particle
+    const double lambda = 2.0;   // GeV^{-2}, for exponential pt^2
+    const double W     = MFragment::TubeFragment(nstar, M, mass, p4, q, T, lambda, maxpt, random, pt_distribution);
+    
     if (W <= 0) {
       ++outertrials;
       if (outertrials > OUTERTRIAL) {
         // std::cout << "MProcess::ExciteContinuum: Outer loop failure!" <<
         // std::endl;
-        return 1;  // too many failures
+        return false;  // too many failures
       } else {
         continue;  // try again!
       }
     } else {
       // Re-check kinematics
       bool fail = false;
-      for (const auto &i : indices(products)) {
-        if (std::isnan(products[i].Rap())) {
+      for (const auto &i : indices(p4)) {
+        if (std::isnan(p4[i].Rap())) {
           // std::cout << rang::fg::yellow <<
           // "MProcess::ExciteContinuum: Kinematics failure!" <<
           // rang::style::reset << std::endl;
@@ -994,104 +997,36 @@ int MProcess::ExciteContinuum(const M4Vec &nstar, const HepMC3::GenParticlePtr g
           if (outertrials > OUTERTRIAL) {
             // std::cout << "MProcess::ExciteContinuum: Outer
             // loop failure!" << std::endl;
-            return 1;  // too many failures
+            return false;  // too many failures
           }
           fail = true;
           break;
         }
       }
       if (fail) { continue; }
-      // Save event output
-      BranchForwardSystem(products, pdgcode, isstable, gen_nstar, evt);
+
+      // Get corresponding PDG particles
+      std::vector<gra::MParticle> p(p4.size());
+      for (const auto &i : indices(p)) {
+        p[i]    = PDG.FindByPDG(pdgcode[i]);
+      }
+
+      // Create decaytree
+      BranchForwardSystem(p4, p, nstar, forward);
       break;
     }
   }
-  return 0;
+  return true;
 }
 
 // This is used with continuum excitation
 //
-void MProcess::BranchForwardSystem(const std::vector<M4Vec> &p, const std::vector<int> &pdgcode,
-                                   const std::vector<bool> &    isstable,
-                                   const HepMC3::GenParticlePtr gen_nstar, HepMC3::GenEvent &evt) {
-  // Create N* decay vertex
-  HepMC3::GenVertexPtr v = std::make_shared<HepMC3::GenVertex>();
-  evt.add_vertex(v);
-
-  // Add N* in to the decay vertex
-  v->add_particle_in(gen_nstar);
-
-  // Add decay products to the decay vertex
-  std::vector<HepMC3::GenParticlePtr> gen_part;
-  for (const auto &i : indices(p)) {
-    int                    status = (isstable[i] == true) ? PDG::PDG_STABLE : PDG::PDG_DECAY;
-    HepMC3::GenParticlePtr gen_p =
-        std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(p[i]), pdgcode[i], status);
-    gen_part.push_back(gen_p);
-
-    // Add to the vertex
-    v->add_particle_out(gen_p);
-  }
-
-  // --------------------------------------------------------------
-  // Do the (pi0 -> yy) decays
-
-  for (const auto &i : indices(pdgcode)) {
-    if (pdgcode[i] == PDG::PDG_pi0) {  // pi0
-
-      // Decay
-      std::vector<double> m = {0.0, 0.0};
-      std::vector<M4Vec>  pgamma;
-      gra::kinematics::TwoBodyPhaseSpace(p[i], p[i].M(), m, pgamma, random);
-
-      // Gammas
-      HepMC3::GenParticlePtr gen_p1 = std::make_shared<HepMC3::GenParticle>(
-          gra::aux::M4Vec2HepMC3(pgamma[0]), PDG::PDG_gamma, PDG::PDG_STABLE);
-      HepMC3::GenParticlePtr gen_p2 = std::make_shared<HepMC3::GenParticle>(
-          gra::aux::M4Vec2HepMC3(pgamma[1]), PDG::PDG_gamma, PDG::PDG_STABLE);
-
-      // Create a decay vertex and put particles in and out
-      HepMC3::GenVertexPtr vert = std::make_shared<HepMC3::GenVertex>();
-      evt.add_vertex(vert);
-
-      // In
-      vert->add_particle_in(gen_part[i]);
-
-      // Out
-      vert->add_particle_out(gen_p1);
-      vert->add_particle_out(gen_p2);
-    }
-  }
-}
-
-// Proton low mass excitation (this function is now written in same format as
-// central system)
-//
-void MProcess::ExciteNstar(const M4Vec &nstar, gra::MDecayBranch &forward) {
-  // Find random decaymode
-  std::vector<int> pdgcode;
-  MFragment::NstarDecayTable(nstar.M(), pdgcode, random);
-
-  // Get corresponding masses
-  std::vector<gra::MParticle> p(pdgcode.size());
-  std::vector<double>         mass(pdgcode.size(), 0.0);
-
-  for (const auto &i : indices(pdgcode)) {
-    p[i]    = PDG.FindByPDG(pdgcode[i]);
-    mass[i] = p[i].mass;
-  }
-
-  // 4-momenta
-  std::vector<M4Vec> p4;
-
-  // Do the 2 or 3-body isotropic decay
-  if (mass.size() == 2) { gra::kinematics::TwoBodyPhaseSpace(nstar, nstar.M(), mass, p4, random); }
-  if (mass.size() == 3) {
-    const bool UNWEIGHT = true;
-    gra::kinematics::ThreeBodyPhaseSpace(nstar, nstar.M(), mass, p4, UNWEIGHT, random);
-  }
-
-  // ------------------------------------------------------------------
+void MProcess::BranchForwardSystem(const std::vector<M4Vec> &p4, const std::vector<MParticle> &p,
+                                   const M4Vec &nstar, gra::MDecayBranch &forward) {
+/*
+  std::vector<bool> isstable(N, false);
+  MFragment::GetDecayStatus(pdgcode, isstable);
+*/
 
   // Construct decaytree
   forward       = gra::MDecayBranch();  // Initialize!!
@@ -1108,30 +1043,91 @@ void MProcess::ExciteNstar(const M4Vec &nstar, gra::MDecayBranch &forward) {
     branch.p  = p[i];
     branch.p4 = p4[i];
 
-    // Treat pi0 -> yy
+    // Treat pi0 -> yy (BR ~ 100%)
     if (branch.p.pdg == PDG::PDG_pi0) {
       // Decay
-      std::vector<double> mgamma = {0.0, 0.0};
-      std::vector<M4Vec>  pgamma;
-      gra::kinematics::TwoBodyPhaseSpace(branch.p4, branch.p4.M(), mgamma, pgamma, random);
+      const std::vector<double> md = {0.0, 0.0};
+      std::vector<M4Vec>  pd;
+      gra::kinematics::TwoBodyPhaseSpace(branch.p4, branch.p4.M(), md, pd, random);
 
       // Add gamma legs
       branch.legs.resize(2);
       for (std::size_t k = 0; k < 2; ++k) {
-        gra::MDecayBranch gammabranch;
-        gammabranch.p  = PDG.FindByPDG(22);
-        gammabranch.p4 = pgamma[k];
+        gra::MDecayBranch decaybranch;
+        decaybranch.p  = PDG.FindByPDG(PDG::PDG_gamma);
+        decaybranch.p4 = pd[k];
 
-        branch.legs[k]       = gammabranch;
+        branch.legs[k]       = decaybranch;
         branch.legs[k].depth = 2;
       }
     }
+
+    // Treat rho0 -> pi+ pi- (BR ~ 100%)
+    else if (branch.p.pdg == PDG::PDG_rho0) {
+
+      // Decay
+      const std::vector<double> md = {PDG::mpi, PDG::mpi};
+      const std::vector<int> pdg   = {PDG::PDG_pip, PDG::PDG_pim};
+      std::vector<M4Vec>  pd;
+      gra::kinematics::TwoBodyPhaseSpace(branch.p4, branch.p4.M(), md, pd, random);
+
+      // Add pion legs
+      branch.legs.resize(2);
+      for (std::size_t k = 0; k < 2; ++k) {
+        gra::MDecayBranch decaybranch;
+        decaybranch.p  = PDG.FindByPDG(pdg[k]);
+        decaybranch.p4 = pd[k];
+
+        branch.legs[k]       = decaybranch;
+        branch.legs[k].depth = 2;
+      }
+    }
+
+    // Here, we could add other MAJOR resonant decays
+    // ...    
 
     // Add leg
     forward.legs[i]       = branch;
     forward.legs[i].depth = 1;
   }
 }
+
+
+// Proton low mass N* 2-body and 3-body excitation
+// 
+// Return true  if OK
+// Return false if FAILS
+// 
+bool MProcess::ExciteNstar(const M4Vec &nstar, gra::MDecayBranch &forward) {
+
+  // Find random decaymode
+  std::vector<int> pdgcode;
+  MFragment::NstarDecayTable(nstar.M(), pdgcode, random);
+
+  // Get corresponding PDG particles
+  std::vector<gra::MParticle> p(pdgcode.size());
+  std::vector<double>         mass(pdgcode.size(), 0.0);
+  for (const auto &i : indices(pdgcode)) {
+    p[i]    = PDG.FindByPDG(pdgcode[i]);
+    mass[i] = p[i].mass;
+  }
+
+  // Products 4-momenta
+  std::vector<M4Vec> p4;
+
+  // Do the 2 or 3-body isotropic decay
+  if (mass.size() == 2) { gra::kinematics::TwoBodyPhaseSpace(nstar, nstar.M(), mass, p4, random); }
+  if (mass.size() == 3) {
+    const bool UNWEIGHT = true;
+    gra::kinematics::ThreeBodyPhaseSpace(nstar, nstar.M(), mass, p4, UNWEIGHT, random);
+  }
+
+  // Create decaytree
+  BranchForwardSystem(p4, p, nstar, forward);
+
+  return true;
+}
+
 
 bool MProcess::VetoCuts() const {
   bool ok = true;
@@ -1345,7 +1341,7 @@ bool MProcess::ConstructDecayKinematics(gra::MDecayBranch &branch) {
 
 
 // Recursively add final states to the event structure
-void MProcess::WriteDecayKinematics(gra::MDecayBranch &branch, HepMC3::GenParticlePtr &mother,
+void MProcess::WriteDecayKinematics(const gra::MDecayBranch &branch, const HepMC3::GenParticlePtr &mother,
                                     HepMC3::GenEvent &evt) {
   // This particle has daughters
   if (branch.legs.size() > 0) {
@@ -1711,54 +1707,39 @@ bool MProcess::CommonRecord(HepMC3::GenEvent &evt) {
 
   // ----------------------------------------------------------------
   // Upper proton excitation
-  if (lts.excite1 == true) {
-    // Create vertex
-    HepMC3::GenVertexPtr v1X = std::make_shared<HepMC3::GenVertex>();
-    evt.add_vertex(v1X);
-
-    // Add N* in
-    v1X->add_particle_in(gen_p1f);
-
-    // Add direct daughters
-    for (const auto &i : indices(lts.decayforward1.legs)) {
-      const int STATE =
-          (lts.decayforward1.legs[i].legs.size() > 0) ? PDG::PDG_DECAY : PDG::PDG_STABLE;
-      // TBD: ADD HERE THE ctau > 1.0 cm definition for the status code
-
-      HepMC3::GenParticlePtr particle = std::make_shared<HepMC3::GenParticle>(
-          gra::aux::M4Vec2HepMC3(lts.decayforward1.legs[i].p4), lts.decayforward1.legs[i].p.pdg,
-          STATE);
-      v1X->add_particle_out(particle);
-
-      WriteDecayKinematics(lts.decayforward1.legs[i], particle, evt);
-    }
+  if (lts.excite1) {
+    SaveBranch(evt, lts.decayforward1, gen_p1f);
   }
 
   // Lower proton excitation
-  if (lts.excite2 == true) {
-    // Create vertex
-    HepMC3::GenVertexPtr v2X = std::make_shared<HepMC3::GenVertex>();
-    evt.add_vertex(v2X);
-
-    // Add N* in
-    v2X->add_particle_in(gen_p2f);
-
-    // Add direct daughters
-    for (const auto &i : indices(lts.decayforward2.legs)) {
-      const int STATE =
-          (lts.decayforward2.legs[i].legs.size() > 0) ? PDG::PDG_DECAY : PDG::PDG_STABLE;
-      // TBD: ADD HERE THE ctau > 1.0 cm definition for the status code
-
-      HepMC3::GenParticlePtr particle = std::make_shared<HepMC3::GenParticle>(
-          gra::aux::M4Vec2HepMC3(lts.decayforward2.legs[i].p4), lts.decayforward2.legs[i].p.pdg,
-          STATE);
-      v2X->add_particle_out(particle);
-
-      WriteDecayKinematics(lts.decayforward2.legs[i], particle, evt);
-    }
+  if (lts.excite2) {
+    SaveBranch(evt, lts.decayforward2, gen_p2f);
   }
 
   return true;
+}
+
+// Save branch to event with mother pX
+void MProcess::SaveBranch(HepMC3::GenEvent &evt, const gra::MDecayBranch& branch, const HepMC3::GenParticlePtr& pX) {
+
+  // Create vertex
+  HepMC3::GenVertexPtr vX = std::make_shared<HepMC3::GenVertex>();
+  evt.add_vertex(vX);
+
+  // Add N* in
+  vX->add_particle_in(pX);
+
+  // Add direct daughters
+  for (const auto &i : indices(branch.legs)) {
+    const int STATE = (branch.legs[i].legs.size() > 0) ? PDG::PDG_DECAY : PDG::PDG_STABLE;
+    // TBD: ADD HERE THE ctau > 1.0 cm definition for the status code
+
+    HepMC3::GenParticlePtr particle = std::make_shared<HepMC3::GenParticle>(
+        gra::aux::M4Vec2HepMC3(branch.legs[i].p4), branch.legs[i].p.pdg, STATE);
+    vX->add_particle_out(particle);
+
+    WriteDecayKinematics(branch.legs[i], particle, evt);
+  }
 }
 
 // Set process
