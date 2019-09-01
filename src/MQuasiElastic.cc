@@ -745,13 +745,13 @@ bool MQuasiElastic::B3RandomKin(const std::vector<double> &randvec) {
 
   // Then limit the "diffraction cone" due to screening loop limit
   t_min = std::min(std::max(-pow2(Eikonal.Numerics.MaxLoopKT), t_min), t_max);
-  // t_min = -6.0;
 
-  // Finally sample the Mandelstam t within valid range
-  double t = t_min + (t_max - t_min) * randvec[0];
-  // printf("randvec[0] = %0.9E, t = %0.2E, tmin = %0.2E, tmax = %0.2E \n",
-  // randvec[0], t,
-  // t_min, t_max);
+  // Logarithmic change of variable sampling
+  const double A = std::abs(t_max);
+  const double B = std::abs(t_min);
+  
+  const double r = std::log(A + ZERO_EPS) + (std::log(B+ZERO_EPS) - std::log(A+ZERO_EPS)) * randvec[0];
+  const double t = -std::exp(r);
 
   return B3BuildKin(s3, s4, t);
 }
@@ -824,21 +824,29 @@ bool MQuasiElastic::B3GetLorentzScalars() {
 // 1/2/3-Dim Integral Volume [t] x [M^2] x [M^2]
 //
 double MQuasiElastic::B3IntegralVolume() const {
+
+  // Mandelstam t, log change of variable, volume with jacobian
+  const double A = std::abs(t_max);
+  const double B = std::abs(t_min);
+  const double t_VOL = (std::log(B+ZERO_EPS) - std::log(A+ZERO_EPS)) * std::abs(lts.t);
+
   if (ProcPtr.CHANNEL == "EL") {
-    return std::abs(t_max - t_min);
+    return t_VOL;
 
   } else if (ProcPtr.CHANNEL == "SD") {
     
     // Jacobian from log-change of variable:
     // \int_a^b f(M2) dM2 = \int_{ln(a)}^{ln(b)} f(exp(u)) * exp(u) du, where u = ln(M2)
     const double J = (lts.excite1) ? lts.ss[1][1] : lts.ss[2][2];
-    return std::abs(t_max - t_min) * (log_M2_f_max - log_M2_f_min) * J;
+    const double M2_VOL = (log_M2_f_max - log_M2_f_min) * J;
+    return t_VOL * M2_VOL;
 
   } else if (ProcPtr.CHANNEL == "DD") {
 
     // Jacobian from log-change of variables
     const double J = lts.ss[1][1] * lts.ss[2][2];
-    return std::abs(t_max - t_min) * (log_M2_f_max - log_M2_f_min) * (log_DD_M2_max - log_M2_f_min) * J;
+    const double M2_VOL = (log_M2_f_max - log_M2_f_min) * (log_DD_M2_max - log_M2_f_min) * J;
+    return t_VOL * M2_VOL;
 
   } else {
     return 0;
