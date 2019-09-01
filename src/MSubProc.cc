@@ -60,13 +60,13 @@ void MSubProc::ConstructDescriptions(const std::string &first) {
   if (first == "X") {
     std::map<std::string, std::string> channels;
     channels.insert(std::pair<std::string, std::string>("EL",
-      "Elastic                                     [Eikonal Pomeron]     [Use with screening loop on]"));
+      "Elastic                                     [Eikonal Pomeron]     (Use with screening loop on)"));
     channels.insert(std::pair<std::string, std::string>("SD",
-      "Single Diffractive                          [Triple Pomeron]      [With TOY fragmentation]"));
+      "Single Diffractive                          [Triple Pomeron]      (With TOY fragmentation)"));
     channels.insert(std::pair<std::string, std::string>("DD",
-      "Double Diffractive                          [Triple Pomeron]      [With TOY fragmentation]"));
+      "Double Diffractive                          [Triple Pomeron]      (With TOY fragmentation)"));
     channels.insert(std::pair<std::string, std::string>("ND",
-      "Non-Diffractive                             [N-cut soft Pomerons] [With TOY fragmentation]"));
+      "Non-Diffractive                             [N-cut soft Pomerons] (With TOY fragmentation)"));
     descriptions.insert(std::pair<std::string, std::map<std::string, std::string>>("X", channels));
     
   } else if (first == "PP") {
@@ -75,7 +75,7 @@ void MSubProc::ConstructDescriptions(const std::string &first) {
       "Regge continuum 2-body                      [Tensor Pomeron]"));
 
     channels.insert(std::pair<std::string, std::string>("CONTENSOR24",
-      "Regge continuum 2-body > 4-body             [Tensor Pomeron]      @@ DEVELOPER ONLY CONSTRUCTION @@"));
+      "Regge continuum 2-body > 4-body             [Tensor Pomeron]      <-- DEVELOPER ONLY CONSTRUCTION!"));
     
     channels.insert(std::pair<std::string, std::string>("RESTENSOR",
       "Regge resonance                             [Tensor Pomeron]"));
@@ -90,7 +90,7 @@ void MSubProc::ConstructDescriptions(const std::string &first) {
     channels.insert(std::pair<std::string, std::string>("RES",
       "Regge parametric resonance                  [Pomeron]"));
     channels.insert(std::pair<std::string, std::string>("RESHEL",
-      "Regge sliding helicity amplitudes           [Pomeron]             @@ DEVELOPER ONLY CONSTRUCTION @@"));
+      "Regge sliding helicity amplitudes           [Pomeron]             <-- DEVELOPER ONLY CONSTRUCTION!"));
     descriptions.insert(std::pair<std::string, std::map<std::string, std::string>>("PP", channels));
 
   } else if (first == "yP") {
@@ -120,7 +120,7 @@ void MSubProc::ConstructDescriptions(const std::string &first) {
     channels.insert(std::pair<std::string, std::string>("chic(0)",
       "QCD resonance chic(0)                       [Durham QCD]"));
     channels.insert(std::pair<std::string, std::string>("CON",
-      "QCD continuum to gg, 2 x pseudoscalar       [Durham QCD]          @@ UNDER VALIDATION @@"));
+      "QCD continuum to gg, 2 x pseudoscalar       [Durham QCD]          <-- UNDER VALIDATION!"));
     descriptions.insert(std::pair<std::string, std::map<std::string, std::string>>("gg", channels));
 
   } else if (first == "yy_DZ") {
@@ -157,7 +157,7 @@ void MSubProc::SetTechnicalBoundaries(gra::GENCUT &gcuts, unsigned int EXCITATIO
         gcuts.forward_pt_max = 5.0;
       }
     }
-    
+
     else if   (EXCITATION == 1) {  // Single excitation
       gcuts.forward_pt_max = 50.0;
     } else if (EXCITATION == 2) {  // Double excitation
