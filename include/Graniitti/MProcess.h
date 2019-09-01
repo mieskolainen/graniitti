@@ -264,6 +264,8 @@ class MProcess : public MUserHistograms {
   // Offshell mass pick
   void GetOffShellMass(const gra::MDecayBranch &branch, double &mass);
 
+  double ForwardVolume() const;
+
   // Lorentz scalars
   bool GetLorentzScalars(unsigned int Nf);
 
@@ -340,8 +342,12 @@ class MProcess : public MUserHistograms {
   bool   OFFSHELL_user  = false;
 
   // Forward excitation minimum/maximum M^2 boundaries
-  double M2_f_min = 0.0;
-  double M2_f_max = 0.0;
+  double M2_f_min     = 0.0;
+  double M2_f_max     = 0.0;
+  double log_M2_f_min = 0.0;
+  double log_M2_f_max = 0.0;
+  
+  static constexpr double ZERO_EPS = 1e-12; // To use with log(0+ZERO_EPS)
   // ----------------------------------------------------------------------
 
   // Non-Diffractive

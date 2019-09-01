@@ -47,7 +47,7 @@ MContinuum::MContinuum() {
 MContinuum::MContinuum(std::string process, const std::vector<aux::OneCMD> &syntax) {
   InitHistograms();
   SetProcess(process, syntax);
-
+  
   // Init final states
   M4Vec zerovec(0, 0, 0, 0);
   for (std::size_t i = 0; i < 10; ++i) { lts.pfinal.push_back(zerovec); }
@@ -287,10 +287,13 @@ void MContinuum::PrintInit(bool silent) const {
 bool MContinuum::BNRandomKin(unsigned int Nf, const std::vector<double> &randvec) {
   const unsigned int Kf = Nf - 2;  // Central system multiplicity
 
-  const double pt1 =
-      gcuts.forward_pt_min + (gcuts.forward_pt_max - gcuts.forward_pt_min) * randvec[0];
-  const double pt2 =
-      gcuts.forward_pt_min + (gcuts.forward_pt_max - gcuts.forward_pt_min) * randvec[1];
+  // log-change of variables for pt
+  const double u1 = std::log(gcuts.forward_pt_min+ZERO_EPS) + (std::log(gcuts.forward_pt_max) - std::log(gcuts.forward_pt_min+ZERO_EPS)) * randvec[0];
+  const double u2 = std::log(gcuts.forward_pt_min+ZERO_EPS) + (std::log(gcuts.forward_pt_max) - std::log(gcuts.forward_pt_min+ZERO_EPS)) * randvec[1];
+
+  const double pt1 = std::exp(u1);
+  const double pt2 = std::exp(u2);
+
   const double       phi1   = 2.0 * gra::math::PI * randvec[2];
   const double       phi2   = 2.0 * gra::math::PI * randvec[3];
   const unsigned int offset = 4;  // 4 variables above
@@ -309,14 +312,14 @@ bool MContinuum::BNRandomKin(unsigned int Nf, const std::vector<double> &randvec
     kt[i] = gcuts.kt_min + (gcuts.kt_max - gcuts.kt_min) * randvec[ind];
     ++ind;
   }
-
+  
   // Intermediate phi
   std::vector<double> phi(Kf - 1, 0.0);  // Kf-1
   for (const auto &i : indices(phi)) {
     phi[i] = 2.0 * PI * randvec[ind];
     ++ind;
   }
-
+  
   // Final state rapidity
   std::vector<double> y(Kf, 0.0);  // Kf
   for (const auto &i : indices(y)) {
@@ -630,22 +633,25 @@ fprintf('};\n');
 // For reference, Nf = 4 special case in:
 // [REFERENCE: Lebiedowicz, Szczurek, arxiv.org/abs/0912.0190]
 double MContinuum::BNIntegralVolume() const {
+  
   // Number of central states
   const unsigned int Kf = pkt_.size() + 1;
 
   // Forward leg integration
-  double M2_forward_volume = 1.0;
+  const double forward_volume = ForwardVolume();
 
-  if (EXCITATION == 1) {
-    M2_forward_volume = M2_f_max - M2_f_min;
-  } else if (EXCITATION == 2) {
-    M2_forward_volume = pow2(M2_f_max - M2_f_min);
-  }
+  // Intermediate kt volume
+  double KT_vol = std::pow(gcuts.kt_max - gcuts.kt_min, Kf - 1);
 
-  return pow2(2.0 * PI) * pow2(gcuts.forward_pt_max - gcuts.forward_pt_min) *
-         std::pow(2.0 * PI, Kf - 1) * std::pow(gcuts.kt_max - gcuts.kt_min, Kf - 1) *
-         std::pow(gcuts.rap_max - gcuts.rap_min, Kf) * M2_forward_volume;
+  // phi angle volume
+  KT_vol *= std::pow(2.0 * PI, Kf - 1);
+  
+  // rapidity volume
+  KT_vol *= std::pow(gcuts.rap_max - gcuts.rap_min, Kf);
+
+  return KT_vol * forward_volume;
 }
+
 
 double MContinuum::BNPhaseSpaceWeight() const {
   // Jacobian, close to constant 0.5

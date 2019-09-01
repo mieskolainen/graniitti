@@ -75,14 +75,14 @@
 
     "<C>" : {
       "Rap" : [-2.5, 2.5],  // Rapidity boundaries of the final states (<C> class)
-      "Xi"  : [0, 1e-6]     // Invariant scale M^2/s (forward excitation)
+      "Xi"  : [0, 0.1],     // Invariant scale M^2/s (forward excitation)
     },
     "<F>" : {
       "Rap" : [-2.5, 2.5],  // Rapidity boundaries of the system (<F> class)
       "M"   : [0.0, 6.0]
     },
     "<Q>" : {
-      "Xi"  : [0, 0.05]     // Invariant scale M^2/s (forward excitation)
+      "Xi"  : [0, 0.1],     // Invariant scale M^2/s (forward excitation)
     }
   },
 
@@ -102,7 +102,7 @@
       "Pt"   : [0.1, 1000.0],    // Transverse momentum
       "Et"   : [0.0, 100000.0]   // Transverse energy
     },
-
+    
     // Central system
     "SYSTEM" : {
 

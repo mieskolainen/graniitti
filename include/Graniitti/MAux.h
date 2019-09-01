@@ -216,16 +216,43 @@ std::string GetWebTLatex();
 
 // Assert functions
 
-// Check cut, lower bound needs to be smaller than upper bound
+
+// Check cut, lower value needs to be smaller than upper value
 template <typename T>
 bool AssertCut(std::vector<T> cut, const std::string &name = "", bool dothrow = false) {
   if (cut.size() != 2) {
     throw std::invalid_argument("AssertCut: Input '" + name + "' vector size not 2");
   }
-  if (cut[1] <= cut[0] && dothrow) {
-    std::string message = "AssertCut: Input '" + name + "' with " + std::to_string(cut[1]) +
-                          " <= " + std::to_string(cut[0]);
+  if (cut[1] <= cut[0]) {
+  if (dothrow) {
+    std::string message = "AssertCut: Input '" + name + "' with [" + std::to_string(cut[0]) +
+                          "," + std::to_string(cut[1]) + "] (maximum value smaller than minimum value)";
     throw std::invalid_argument(message);
+  }
+  return false;
+  }
+  return true;
+}
+
+
+// Check cut obeys given boundaries
+template <typename T>
+bool AssertCutRange(std::vector<T> cut, std::vector<T> bounds, const std::string &name = "", bool dothrow = false) {
+  if (cut.size() != 2) {
+    throw std::invalid_argument("AssertCutRange: Input '" + name + "' vector size not 2");
+  }
+  if (!AssertCut(cut, name, dothrow)) {
+    return false;
+  }
+
+  if (cut[0] < bounds[0] || cut[1] > bounds[1]) {
+  if (dothrow) {
+    std::string message = "AssertCutRange: Input '" + name + "' with [" + std::to_string(cut[0]) +
+                          "," + std::to_string(cut[1]) + "]" + " invalid given bounds: ["
+                              + std::to_string(bounds[0]) + "," + std::to_string(bounds[1]) + "]";
+    throw std::invalid_argument(message);
+  }
+  return false;
   }
   return true;
 }

@@ -39,10 +39,10 @@ namespace aux {
 // -------------------------------------------------------
 // FIXED HERE manually
 
-double      GetVersion() {       return 0.66; }
+double      GetVersion() {       return 0.70; }
 std::string GetVersionType() {   return "beta"; }
-std::string GetVersionDate() {   return "30.08.2019"; }
-std::string GetVersionUpdate() { return "re-organize objects"; }
+std::string GetVersionDate() {   return "01.09.2019"; }
+std::string GetVersionUpdate() { return "performance update"; }
 
 // -------------------------------------------------------
 

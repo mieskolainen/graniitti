@@ -254,8 +254,13 @@ void MFactorized::PrintInit(bool silent) const {
 // 5+1-dimensional phase space vector initialization
 bool MFactorized::B51RandomKin(const std::vector<double> &randvec) {
   
-  const double pt1  = gcuts.forward_pt_min + (gcuts.forward_pt_max - gcuts.forward_pt_min) * randvec[0];
-  const double pt2  = gcuts.forward_pt_min + (gcuts.forward_pt_max - gcuts.forward_pt_min) * randvec[1];
+  // log-change of variables for pt
+  const double u1 = std::log(gcuts.forward_pt_min+ZERO_EPS) + (std::log(gcuts.forward_pt_max) - std::log(gcuts.forward_pt_min+ZERO_EPS)) * randvec[0];
+  const double u2 = std::log(gcuts.forward_pt_min+ZERO_EPS) + (std::log(gcuts.forward_pt_max) - std::log(gcuts.forward_pt_min+ZERO_EPS)) * randvec[1];
+  
+  const double pt1 = std::exp(u1);
+  const double pt2 = std::exp(u2);
+
   const double phi1 = 2.0 * gra::math::PI * randvec[2];
   const double phi2 = 2.0 * gra::math::PI * randvec[3];
   const double yX   = gcuts.Y_min + (gcuts.Y_max - gcuts.Y_min) * randvec[4];
@@ -441,19 +446,11 @@ void MFactorized::DecayWidthPS(double &exact) const {
 // Integral over central mass^2 is separate [phase-space factorization], but
 // encapsulated here (+1 dimension)
 double MFactorized::B51IntegralVolume() const {
-  // Forward leg integration
-  double M2_forward_volume = 1.0;
 
-  if (EXCITATION == 1) {
-    M2_forward_volume = M2_f_max - M2_f_min;
-  } else if (EXCITATION == 2) {
-    M2_forward_volume = pow2(M2_f_max - M2_f_min);
-  }
-  
-  return (pow2(M_MAX) - pow2(M_MIN)) * (2.0 * gra::math::PI) * (2.0 * gra::math::PI) *
-         (gcuts.forward_pt_max - gcuts.forward_pt_min) *
-         (gcuts.forward_pt_max - gcuts.forward_pt_min) * (gcuts.Y_max - gcuts.Y_min) *
-         M2_forward_volume;
+  // Forward leg integration
+  const double forward_volume = ForwardVolume();
+
+  return (pow2(M_MAX) - pow2(M_MIN)) * (gcuts.Y_max - gcuts.Y_min) * forward_volume;
 }
 
 // 5-Dim phase space weight

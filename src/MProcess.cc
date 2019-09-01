@@ -776,7 +776,7 @@ void MProcess::SetupBranching() {
           res.g_decay_tensor = {TensorPomeron.GDecay(res.p.spinX2 / 2, res.p.mass,
             res.p.width, lts.decaytree[0].p.mass, res.BR)};
 
-          if (std::abs(PS) < 1e-9) {
+          if (std::abs(PS) < ZERO_EPS) {
             // Try again with higher mother mass as a crude approximation, we might
             // be trying purely off-shell decay (such as f0(980) -> K+K-)
             const unsigned int N_width = 3;
@@ -790,7 +790,7 @@ void MProcess::SetupBranching() {
               res.g_decay_tensor = {TensorPomeron.GDecay(res.p.spinX2 / 2,
                 res.p.mass + i * res.p.width, res.p.width, lts.decaytree[0].p.mass, res.BR)};
 
-              if (PS > 1e-9) { break; }
+              if (PS > ZERO_EPS) { break; }
             }
           }
           TP_computed = true;
@@ -854,7 +854,7 @@ void MProcess::GetOffShellMass(const gra::MDecayBranch &branch, double &mass) {
     mass = branch.p.mass;
     return;
   }
-
+  
   const unsigned int OUTERMAXTRIAL = 1e4;
   const unsigned int INNERMAXTRIAL = 1e4;
 
@@ -1381,6 +1381,9 @@ void MProcess::SampleForwardMasses(std::vector<double> &mvec, const std::vector<
     M2_f_min = pow2(1.09);  // neutron + pi+ threshold
     M2_f_max = gcuts.XI_max * lts.s;
 
+    log_M2_f_min = std::log(M2_f_min);
+    log_M2_f_max = std::log(M2_f_max);    
+
     if (M2_f_max <= M2_f_min) {
       throw std::invalid_argument(
           "MProcess::SampleForwardMasses: Forward leg Xi : [max = " + std::to_string(gcuts.XI_max) +
@@ -1388,21 +1391,62 @@ void MProcess::SampleForwardMasses(std::vector<double> &mvec, const std::vector<
           " GeV, below the inelastic threshold. Increase the upper (max) bound.");
     }
 
-    if (EXCITATION == 1) {  // Single
-      const double mforward = msqrt(M2_f_min + (M2_f_max - M2_f_min) * randvec[0]);
-      if (random.U(0, 1) < 0.5) {  // 50-50
-        mvec[0]     = mforward;
+    if        (EXCITATION == 1) {  // Single
+
+      // log-change of variable
+      const double u = log_M2_f_min + (log_M2_f_max - log_M2_f_min) * randvec[0];
+      const double r = std::exp(u);
+
+      if (random.U(0,1) < 0.5) {  // 50-50
+        mvec[0]     = msqrt(r);
         lts.excite1 = true;
       } else {
-        mvec[1]     = mforward;
+        mvec[1]     = msqrt(r);
         lts.excite2 = true;
       }
     } else if (EXCITATION == 2) {  // Double
-      mvec[0]     = msqrt(M2_f_min + (M2_f_max - M2_f_min) * randvec[0]);
-      mvec[1]     = msqrt(M2_f_min + (M2_f_max - M2_f_min) * randvec[1]);
+
+      // log-change of variable
+      const double u1 = log_M2_f_min + (log_M2_f_max - log_M2_f_min) * randvec[0];
+      const double r1 = std::exp(u1);
+
+      const double u2 = log_M2_f_min + (log_M2_f_max - log_M2_f_min) * randvec[1];
+      const double r2 = std::exp(u2);
+
+      mvec[0]     = msqrt(r1);
+      mvec[1]     = msqrt(r2);
       lts.excite1 = true;
       lts.excite2 = true;
     }
+  }
+}
+
+// Forward leg integration volume
+double MProcess::ForwardVolume() const {
+
+  // Forward leg phi1,phi2 volumes gives (2pi)^2
+  const double PHI_vol = pow2(2.0 * math::PI);
+
+  // Forward leg pt volume with log-change of variables
+  const double J_pt = lts.pfinal[1].Pt() * lts.pfinal[2].Pt(); 
+  const double PT_vol = J_pt * pow2(std::log(gcuts.forward_pt_max) - std::log(gcuts.forward_pt_min+ZERO_EPS));
+  
+  if         (EXCITATION == 0) {
+    
+    return PHI_vol * PT_vol;
+
+  } else if  (EXCITATION == 1) {
+    // log-change of variable jacobian
+    // \int_a^b f(M2) dM2 = \int_{ln(a)}^{ln(b)} f(exp(u)) * exp(u) du, where u = ln(M2)    
+    const double J_M2 = (lts.excite1) ? lts.pfinal[1].M2() : lts.pfinal[2].M2();
+    return PHI_vol * PT_vol * J_M2 * (log_M2_f_max - log_M2_f_min);
+
+  } else if (EXCITATION == 2) {
+    // log-change of variable jacobian
+    const double J_M2 = lts.pfinal[1].M2() * lts.pfinal[2].M2();
+    return PHI_vol * PT_vol * J_M2 * pow2(log_M2_f_max - log_M2_f_min);
+  } else {
+    throw std::invalid_argument("MProcess::ForwardVolume: EXCITATION variable in invalid state");
   }
 }
 

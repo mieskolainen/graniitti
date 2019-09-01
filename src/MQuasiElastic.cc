@@ -362,7 +362,7 @@ bool MQuasiElastic::EventRecord(HepMC3::GenEvent &evt) {
       gra::aux::M4Vec2HepMC3(lts.pfinal[2]), PDG_ID2, PDG_status2);
 
   // Construct vertices
-  
+
   // Upper proton-pomeron-proton
   HepMC3::GenVertexPtr v1 = std::make_shared<HepMC3::GenVertex>();
   v1->add_particle_in(gen_p1);
@@ -688,12 +688,17 @@ bool MQuasiElastic::B3RandomKin(const std::vector<double> &randvec) {
   M2_f_min = std::max(gcuts.XI_min * lts.s, gra::math::pow2(1.3));
   M2_f_max = gcuts.XI_max * lts.s;
 
+  log_M2_f_min = std::log(M2_f_min);
+  log_M2_f_max = std::log(M2_f_max);
+
   lts.excite1 = false;
   lts.excite2 = false;
 
   // Sample diffractive system masses
   if (ProcPtr.CHANNEL == "SD") {
-    const double r = M2_f_min + (M2_f_max - M2_f_min) * randvec[1];
+    // Log-change of variable
+    const double u = log_M2_f_min + (log_M2_f_max - log_M2_f_min) * randvec[1];
+    const double r = std::exp(u);
 
     // Choose random permutation
     if (random.U(0, 1) < 0.5) {
@@ -706,9 +711,16 @@ bool MQuasiElastic::B3RandomKin(const std::vector<double> &randvec) {
       lts.excite2 = true;
     }
   } else if (ProcPtr.CHANNEL == "DD") {
-    const double r1 = M2_f_min + (M2_f_max - M2_f_min) * randvec[1];
+    // Log-change of variable
+    const double u1 = log_M2_f_min + (log_M2_f_max - log_M2_f_min) * randvec[1];
+    const double r1 = std::exp(u1);
+
     DD_M2_max       = gcuts.XI_max * (pow2(mp) * lts.s) / r1;
-    const double r2 = M2_f_min + (DD_M2_max - M2_f_min) * randvec[2];
+    log_DD_M2_max   = std::log(DD_M2_max);
+
+    // Log-change of variable
+    const double u2 = log_M2_f_min + (log_DD_M2_max - log_M2_f_min) * randvec[2];
+    const double r2 = std::exp(u2);
 
     // Choose random permutations
     if (random.U(0, 1) < 0.5) {
@@ -814,10 +826,20 @@ bool MQuasiElastic::B3GetLorentzScalars() {
 double MQuasiElastic::B3IntegralVolume() const {
   if (ProcPtr.CHANNEL == "EL") {
     return std::abs(t_max - t_min);
+
   } else if (ProcPtr.CHANNEL == "SD") {
-    return std::abs(t_max - t_min) * (M2_f_max - M2_f_min);
+    
+    // Jacobian from log-change of variable:
+    // \int_a^b f(M2) dM2 = \int_{ln(a)}^{ln(b)} f(exp(u)) * exp(u) du, where u = ln(M2)
+    const double J = (lts.excite1) ? lts.ss[1][1] : lts.ss[2][2];
+    return std::abs(t_max - t_min) * (log_M2_f_max - log_M2_f_min) * J;
+
   } else if (ProcPtr.CHANNEL == "DD") {
-    return std::abs(t_max - t_min) * (M2_f_max - M2_f_min) * (DD_M2_max - M2_f_min);
+
+    // Jacobian from log-change of variables
+    const double J = lts.ss[1][1] * lts.ss[2][2];
+    return std::abs(t_max - t_min) * (log_M2_f_max - log_M2_f_min) * (log_DD_M2_max - log_M2_f_min) * J;
+
   } else {
     return 0;
   }

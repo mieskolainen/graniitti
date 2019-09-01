@@ -720,7 +720,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     gcuts.rap_min = rap[0];
     gcuts.rap_max = rap[1];
     gra::aux::AssertCut(rap, "GENCUTS::<C>::Rap", true);
-
+      
     // This is optional, intermediate kt
     std::vector<double> kt;
     try {
@@ -732,7 +732,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     if (kt.size() != 0) {
       gcuts.kt_min = kt[0];
       gcuts.kt_max = kt[1];
-      gra::aux::AssertCut(kt, "GENCUTS::<C>::Kt", true);
+      gra::aux::AssertCutRange(kt, {0.0, 1e32}, "GENCUTS::<C>::Kt", true);
     }
 
     // This is optional, forward leg pt
@@ -746,7 +746,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     if (pt.size() != 0) {
       gcuts.forward_pt_min = pt[0];
       gcuts.forward_pt_max = pt[1];
-      gra::aux::AssertCut(pt, "GENCUTS::<C>::Pt", true);
+      gra::aux::AssertCutRange(pt, {0.0, 1e32}, "GENCUTS::<C>::Pt", true);
     }
 
     // This is optional, forward leg excitation
@@ -760,7 +760,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     if (Xi.size() != 0) {
       gcuts.XI_min = Xi[0];
       gcuts.XI_max = Xi[1];
-      gra::aux::AssertCut(Xi, "GENCUTS::<C>::Xi", true);
+      gra::aux::AssertCutRange(Xi, {0.0, 1.0}, "GENCUTS::<C>::Xi", true);
     }
   }
 
@@ -792,7 +792,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     }
     gcuts.M_min = M[0];
     gcuts.M_max = M[1];
-    gra::aux::AssertCut(M, "GENCUTS::<F>::M", true);
+    gra::aux::AssertCutRange(M, {0.0, 1e32}, "GENCUTS::<F>::M", true);
 
     // This is optional, forward leg pt
     std::vector<double> pt;
@@ -805,7 +805,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     if (pt.size() != 0) {
       gcuts.forward_pt_min = pt[0];
       gcuts.forward_pt_max = pt[1];
-      gra::aux::AssertCut(pt, "GENCUTS::<F>::Pt", true);
+      gra::aux::AssertCutRange(pt, {0.0, 1e32}, "GENCUTS::<F>::Pt", true);
     }
 
     // This is optional, forward leg excitation
@@ -819,7 +819,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     if (Xi.size() != 0) {
       gcuts.XI_min = Xi[0];
       gcuts.XI_max = Xi[1];
-      gra::aux::AssertCut(Xi, "GENCUTS::<F>::Xi", true);
+      gra::aux::AssertCutRange(Xi, {0.0, 1.0}, "GENCUTS::<F>::Xi", true);
     }
   }
 
@@ -836,7 +836,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     }
     gcuts.XI_min = Xi[0];
     gcuts.XI_max = Xi[1];
-    gra::aux::AssertCut(Xi, "GENCUTS::<Q>::Xi", true);
+    gra::aux::AssertCutRange(Xi, {0.0, 1.0}, "GENCUTS::<Q>::Xi", true);
   }
 
   proc->SetGenCuts(gcuts);
