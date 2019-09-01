@@ -75,7 +75,7 @@ void MSubProc::ConstructDescriptions(const std::string &first) {
       "Regge continuum 2-body                      [Tensor Pomeron]"));
 
     channels.insert(std::pair<std::string, std::string>("CONTENSOR24",
-      "Regge continuum 2-body > 4-body             [Tensor Pomeron]      <-- DEVELOPER ONLY CONSTRUCTION!"));
+      "Regge continuum 2-body > 4-body             [Tensor Pomeron]      <-- DEVELOPER ONLY PROCESS!"));
     
     channels.insert(std::pair<std::string, std::string>("RESTENSOR",
       "Regge resonance                             [Tensor Pomeron]"));
@@ -90,7 +90,7 @@ void MSubProc::ConstructDescriptions(const std::string &first) {
     channels.insert(std::pair<std::string, std::string>("RES",
       "Regge parametric resonance                  [Pomeron]"));
     channels.insert(std::pair<std::string, std::string>("RESHEL",
-      "Regge sliding helicity amplitudes           [Pomeron]             <-- DEVELOPER ONLY CONSTRUCTION!"));
+      "Regge sliding helicity amplitudes           [Pomeron]             <-- DEVELOPER ONLY PROCESS!"));
     descriptions.insert(std::pair<std::string, std::map<std::string, std::string>>("PP", channels));
 
   } else if (first == "yP") {
