@@ -749,7 +749,7 @@ bool MQuasiElastic::B3RandomKin(const std::vector<double> &randvec) {
   // Logarithmic change of variable sampling
   const double A = std::abs(t_max);
   const double B = std::abs(t_min);
-  
+
   const double r = std::log(A + ZERO_EPS) + (std::log(B+ZERO_EPS) - std::log(A+ZERO_EPS)) * randvec[0];
   const double t = -std::exp(r);
 
@@ -825,11 +825,11 @@ bool MQuasiElastic::B3GetLorentzScalars() {
 //
 double MQuasiElastic::B3IntegralVolume() const {
 
-  // Mandelstam t, log change of variable, volume with jacobian
+  // Mandelstam t, log change of variable, volume times jacobian
   const double A = std::abs(t_max);
   const double B = std::abs(t_min);
   const double t_VOL = (std::log(B+ZERO_EPS) - std::log(A+ZERO_EPS)) * std::abs(lts.t);
-
+  
   if (ProcPtr.CHANNEL == "EL") {
     return t_VOL;
 
