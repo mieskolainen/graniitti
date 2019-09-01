@@ -233,16 +233,16 @@ void MFactorized::PrintInit(bool silent) const {
     std::cout << rang::style::bold << "Generation cuts:" << rang::style::reset << std::endl
               << std::endl;
     printf(
-        "- Rap : System rapidity [min, max] = [%0.2f, %0.2f]     \t(user) \n"
-        "- M   : System mass     [min, max] = [%0.2f, %0.2f] GeV \t(user) \n"
-        "- Pt  : Forward leg     [min, max] = [%0.2f, %0.2f] GeV "
+        "- Rap : System rapidity     [min, max] = [%0.2f, %0.2f]     \t(user) \n"
+        "- M   : System mass         [min, max] = [%0.2f, %0.2f] GeV \t(user) \n"
+        "- Pt  : Forward leg         [min, max] = [%0.2f, %0.2f] GeV "
         "\t(fixed/user) \n",
         gcuts.Y_min, gcuts.Y_max, gcuts.M_min, gcuts.M_max, gcuts.forward_pt_min,
         gcuts.forward_pt_max);
 
     if (EXCITATION != 0) {
       printf(
-        "- Xi  : Forward leg     [min, max] = [%0.2E, %0.2E]     "
+        "- Xi  : Forward leg (M^2/s) [min, max] = [%0.2E, %0.2E]     "
           "\t(fixed/user) \n",
           gcuts.XI_min, gcuts.XI_max);
     }

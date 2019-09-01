@@ -274,7 +274,7 @@ void MContinuum::PrintInit(bool silent) const {
 
     if (EXCITATION != 0) {
       printf(
-        "- Xi  : Forward leg          [min, max] = [%0.2E, %0.2E]     "
+        "- Xi  : Forward leg (M^2/s)  [min, max] = [%0.2E, %0.2E]     "
           "\t(fixed/user) \n",
           gcuts.XI_min, gcuts.XI_max);
     }
