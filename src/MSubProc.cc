@@ -148,18 +148,18 @@ void MSubProc::SetTechnicalBoundaries(gra::GENCUT &gcuts, unsigned int EXCITATIO
 
     if        (EXCITATION == 0) {   // Elastic forward protons, default values
       if        (ISTATE == "PP") {
-        gcuts.forward_pt_max = 5.0;
+        gcuts.forward_pt_max = 3.0;
       } else if (ISTATE == "yP") {
-        gcuts.forward_pt_max = 5.0;
+        gcuts.forward_pt_max = 3.0;
       } else if (ISTATE == "yy") {
-        gcuts.forward_pt_max = 5.0;
+        gcuts.forward_pt_max = 3.0;
       } else if (ISTATE == "gg") {
-        gcuts.forward_pt_max = 5.0;
+        gcuts.forward_pt_max = 3.0;
       }
     }
 
     else if   (EXCITATION == 1) {  // Single excitation
-      gcuts.forward_pt_max = 50.0;
+      gcuts.forward_pt_max = 10.0;
     } else if (EXCITATION == 2) {  // Double excitation
       gcuts.forward_pt_max = 100.0;
     }
