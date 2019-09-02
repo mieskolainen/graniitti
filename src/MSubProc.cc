@@ -502,20 +502,18 @@ inline double MSubProc::GetBareAmplitude2_yy_LUX(gra::LORENTZSCALAR &lts) {
 
 // Durham gg
 inline double MSubProc::GetBareAmplitude2_gg(gra::LORENTZSCALAR &lts) {
-  std::complex<double> A(0,0);
-
-  if (CHANNEL == "chic(0)") {
-    A = DurhamQCD(lts, CHANNEL);
+  
+  if        (CHANNEL == "chic(0)") {
+    return DurhamQCD(lts, CHANNEL);
   } else if (CHANNEL == "CON") {
     if (std::abs(lts.decaytree[0].p.pdg) == 21 && std::abs(lts.decaytree[1].p.pdg) == 21) {
-      A = DurhamQCD(lts, "gg");
+      return DurhamQCD(lts, "gg");
     } else {
-      A = DurhamQCD(lts, "MMbar");
+      return DurhamQCD(lts, "MMbar");
     }
   } else {
     throw std::invalid_argument("MSubProc::GetBareAmplitude2_gg: Unknown CHANNEL = " + CHANNEL);
   }
-  return abs2(A); // amplitude squared
 }
 
 }  // gra namespace ends

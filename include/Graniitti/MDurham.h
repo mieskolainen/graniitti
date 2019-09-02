@@ -81,18 +81,16 @@ struct MDurhamParam {
       throw std::invalid_argument(str);
     }
   }
-
 };
-
 
 // Matrix element dimension: " GeV^" << -(2*external_legs - 8)
 class MDurham {
  public:
-  MDurham() {}
+  MDurham()  {}
   ~MDurham() {}
 
-  std::complex<double> DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process);
-  std::complex<double> DQtloop(gra::LORENTZSCALAR &                           lts,
+  double DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process);
+  double DQtloop(gra::LORENTZSCALAR &lts,
                                std::vector<std::vector<std::complex<double>>> Amp);
   inline void DScaleChoise(double qt2, double q1_2, double q2_2, double &Q1_2_scale,
                            double &Q2_2_scale) const;

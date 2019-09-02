@@ -51,9 +51,8 @@ enum SPINPARITY { P0, M0, P2, M2 };  // Implicit conversion to int
 // https://arxiv.org/abs/1005.0695]
 // [REFERENCE: Harland-Lang, Khoze, Ryskin, https://arxiv.org/abs/1409.4785]
 //
-std::complex<double> MDurham::DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process) {
-
-
+double MDurham::DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process) {
+  
   // First run, init parameters
   // @@ MULTITHREADING LOCK NEEDED FOR THE INITIALIZATION @@
   gra::g_mutex.lock();
@@ -197,6 +196,7 @@ inline std::complex<double> MDurham::DHelProj(const std::vector<std::complex<dou
   std::cout << std::endl << std::endl;
   */
 
+  // Coherent sum!
   return aP0 + aM0 + aP2 + aM2;
 }
 
@@ -260,7 +260,7 @@ inline void MDurham::DScaleChoise(double qt2, double q1_2, double q2_2, double &
 //               x f_g(x_1,x_1',Q_1^2,\mu_2;t_1) x
 //               f_g(x_2,x_2',Q_2^2,\mu_2;t_2)
 //
-std::complex<double> MDurham::DQtloop(gra::LORENTZSCALAR &                           lts,
+double MDurham::DQtloop(gra::LORENTZSCALAR &                           lts,
                                       std::vector<std::vector<std::complex<double>>> Amp) {
   // Forward (proton) system pt-vectors
   const std::vector<double> pt1 = {lts.pfinal[1].Px(), lts.pfinal[1].Py()};
@@ -276,6 +276,8 @@ std::complex<double> MDurham::DQtloop(gra::LORENTZSCALAR &                      
   const static MMatrix<double> WSimpson = math::Simpson38Weight2D(Param.N_qt, Param.N_phi);
 
   // NOTE N + 1, init with zero!
+
+  // Amp.size == 4 for example for the gg -> gg process [initial states summed coherently]
   std::vector<MMatrix<std::complex<double>>> f(
       Amp.size(), MMatrix<std::complex<double>>(Param.N_qt + 1, Param.N_phi + 1, 0.0));
 
@@ -325,7 +327,7 @@ std::complex<double> MDurham::DQtloop(gra::LORENTZSCALAR &                      
       const double fg_2 = lts.GlobalSudakovPtr->fg_xQ2M(lts.x2, Q2_2_scale, MU);
 
       // Amplitude weight:
-      // * \pi^2 : see original KMR papers
+      // * \pi^2 : see original KMR papers: [\alpha_s CF -> pi x f_g] for fg_1 and fg_2
       // *    2  : factor from initial state boson-statistics, check it:!
       // *    qt : jacobian of d^2qt -> dphi dqt qt
       std::complex<double> weight = fg_1 * fg_2 / (qt2 * q1_2 * q2_2);
@@ -333,6 +335,7 @@ std::complex<double> MDurham::DQtloop(gra::LORENTZSCALAR &                      
 
       // Loop over (outgoing) helicity combinations.
       // Amp[h] contains initial state gluon helicity combinations --,-+,+-,++
+      // Here we sum coherently
       for (std::size_t h = 0; h < f.size(); ++h) { f[h][i][j] = weight * DHelProj(Amp[h], JzP); }
 
     }  // phi-loop
@@ -346,12 +349,9 @@ std::complex<double> MDurham::DQtloop(gra::LORENTZSCALAR &                      
 
   // *****Make sure it is of right size!*****
   lts.hamp.resize(f.size());
-  
-  // Final outcome as a coherent sum over helicity combinations
-  // That is, sum at amplitude level in contrast to the usual \sum_{h \in
-  // helicity set}
-  // |A_h|^2
-  std::complex<double> A(0, 0);
+
+  // Outgoing helicity combinations
+  double A2 = 0.0;
   for (std::size_t h = 0; h < f.size(); ++h) {
     lts.hamp[h] = sum[h];
 
@@ -366,19 +366,20 @@ std::complex<double> MDurham::DQtloop(gra::LORENTZSCALAR &                      
     lts.hamp[h] *= msqrt(16.0 * math::PIPI);
     lts.hamp[h] *= msqrt(lts.s / lts.s_hat);
 
-    // For the total complex amplitude (for no eikonal screening applied)
-    A += lts.hamp[h];
+    // For the total amplitude squared (for no eikonal screening applied)
+    A2 += math::abs2(lts.hamp[h]);
   }
+  // Initial state helicity average 1/4 not needed here
 
   // --------------------------------------------------------------------
   // Amplitude cutoff (hard perturbative limit)
   if (gra::math::msqrt(lts.m2) < 2.0) {
-    A = 0.0;
+    A2 = 0.0;
     lts.hamp = std::vector<std::complex<double>>(f.size(), 0.0);
   }
   // --------------------------------------------------------------------
   
-  return A;
+  return A2;
 }
 
 // ======================================================================
@@ -406,16 +407,16 @@ void MDurham::Dgg2chic0(const gra::LORENTZSCALAR &                      lts,
   // Apply Breit-Wigner propagator shape delta-function
   A *= gra::form::deltaBWamp(lts.s_hat, M0, W0);
 
-  // Initial state gluon helicity combinations
-  // [RE-CHECK this point]
+  // Initial state gluon helicity combinations,
+  // ++ and -- give contribution for 0+ state (see DHelProj function)
   std::vector<std::complex<double>> is(4, 0.0);
   is[MM] = A;
-  is[MP] = A;
-  is[PM] = A;
+  is[MP] = 0;
+  is[PM] = 0;
   is[PP] = A;
-
-  // 0+ final state
-  Amp[P0] = is;
+  
+  // No polarization for the final state to loop over, only one index
+  Amp[0] = is;
 }
 
 // ======================================================================
