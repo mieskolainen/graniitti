@@ -170,7 +170,7 @@ class MProcess : public MUserHistograms {
     if (EXCITATION > 0) {
       aux::PrintWarning();
       std::cout << rang::fg::red << "MProcess::SetExcitation: Proton "
-                                    "excitation is under construction : "
+                                    "excitation is under construction / some processes contain only kinematic part: "
                 << in << rang::fg::reset << std::endl;
     }
   }
