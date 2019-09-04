@@ -142,7 +142,7 @@ std::complex<double> MEikonal::SingleAmpElastic(double s, double t) {
 
   // Pomeron trajectory alpha(t)
   const double alpha_P = gra::form::S3PomAlpha(t);
-  
+
   // Pomeron exchange amplitude:
   // [Regge signature x Proton Form Factor x coupling x Proton
   //  Form Factor x coupling x Propagator ]
