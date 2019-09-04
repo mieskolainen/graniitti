@@ -400,7 +400,7 @@ void MDurham::Dgg2chic0(const gra::LORENTZSCALAR &                      lts,
   const double M0    = 3.41475;             // chi_c(0+) mass (GeV)
   const double W0    = 0.0108;              // chi_c(0+) width (GeV)
   const double NC    = 3.0;                 // #colors
-
+  
   // Gluonic width \Gamma(\chi_c(0+) -> gg), see references
   std::complex<double> A = K_NLO * 8.0 * math::zi * gs2 / M0 * msqrt(0.075) / msqrt(PI * M0 * NC);
 

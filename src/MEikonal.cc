@@ -129,7 +129,7 @@ void MEikonal::S3Constructor(double s_in, const std::vector<gra::MParticle> &ini
   S3INIT = true;
 }
 
-// Proton bt-density by Fourier-Bessel transform of the t-density
+// Proton bt-density Omega(s,b_t) by Fourier-Bessel transform of the t-density
 // see <http://mathworld.wolfram.com/HankelTransform.html>
 //
 //
@@ -184,23 +184,21 @@ std::complex<double> MEikonal::S3Density(double bt) const {
 
     std::complex<double> A = gra::math::pow2(PARAM_SOFT::gN_P) * F_i * F_k *
                              gra::form::ReggeEta(alpha_P, 1) *
-                             std::pow(s / s0, alpha_P - 1.0);  // Pomeron (C-even)
+                             std::pow(s / s0, alpha_P);  // Pomeron (C-even)
 
     // Value
     f[i] = A * gra::math::BESSJ0(bt * kt) * kt;
     //f[i] = A * std::cyl_bessel_j(0, bt * kt) * kt; // c++17, slow
   }
-  // Fourier-Bessel transformation denominator
-  const double TD = 2.0 * gra::math::PI;
-
-  return gra::math::CSIntegral(f, kt_STEP) / TD;
+  // [2pi from Bessel phi-integral] / [ (2pi)^2] (2D-Fourier factor) * s ]
+  const double FACTOR = 1 / (2.0 * gra::math::PI * s);
+  
+  return gra::math::CSIntegral(f, kt_STEP) * FACTOR;
 }
 
-// Calculate elastic screening amplitude by "Eikonalization",
-// in kt^2 obtained via bt-space Fourier-Bessel integral
+// Calculate eikonalized elastic screening amplitude: A_eik(s,t=-kt^2)
+// in kt^2 space via bt-space Fourier-Bessel integral
 //
-//
-// Amplitude in bt-space:  A_el(b_t) = i(1 - exp(i*XI(b_t)/2))
 //
 std::complex<double> MEikonal::S3Screening(double kt2) const {
   // Local discretization
@@ -221,10 +219,11 @@ std::complex<double> MEikonal::S3Screening(double kt2) const {
     f[i] = A * gra::math::BESSJ0(bt * kt) * bt;
     // f[i] = A * std::cyl_bessel_j(0, bt * kt) * bt; // c++17, slow
   }
-  const double C = 2.0 * gra::math::PI;  // phi-integral
+  // Bessel phi-integral factor
+  const double FACTOR = 2.0 * gra::math::PI;
 
   // Numerical integration
-  return (2.0 * s) * C * gra::math::CSIntegral(f, STEP);
+  return (2.0 * s) * FACTOR * gra::math::CSIntegral(f, STEP);
 }
 
 // Calculate screened total, elastic and inelastic cross sections
@@ -280,8 +279,8 @@ void MEikonal::S3CalcXS() {
     // Elastic amplitude A_el(s,b)
     const std::complex<double> A_el = gra::math::zi * (1.0 - std::exp(gra::math::zi * XI / 2.0));
 
-    // TOTAL: Im A_el(s,b)
-    f_tot[i] = std::imag(A_el);
+    // TOTAL: 2.0 * Im A_el(s,b)
+    f_tot[i] = 2.0 * std::imag(A_el);
 
     // ELASTIC: |A_el(s,b)|^2
     f_el[i] = gra::math::abs2(A_el);
@@ -316,7 +315,7 @@ void MEikonal::S3CalcXS() {
 
   // Composite Simpson's rule, real is taken for C++ reasons in order to
   // be able to substitute into double
-  sigma_tot  = 2.0 * IC * std::real(gra::math::CSIntegral(f_tot, STEP)) * PDG::GeV2barn;
+  sigma_tot  = IC * std::real(gra::math::CSIntegral(f_tot, STEP)) * PDG::GeV2barn;
   sigma_el   = IC * std::real(gra::math::CSIntegral(f_el, STEP)) * PDG::GeV2barn;
   sigma_inel = IC * std::real(gra::math::CSIntegral(f_in, STEP)) * PDG::GeV2barn;
   // sigma_inel = sigma_tot - sigma_el; // cross check
