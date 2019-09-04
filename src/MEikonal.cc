@@ -211,10 +211,10 @@ std::complex<double> MEikonal::S3Screening(double kt2) const {
   // Numerical integral loop over impact parameter (b_t) space
   for (const auto &i : indices(f)) {
     const double               bt = Numerics.MinBT + i * STEP;
-    const std::complex<double> XI = MBT.Interpolate1D(bt);
+    const std::complex<double> Omega = MBT.Interpolate1D(bt);
 
     // I. STANDARD EIKONAL APPROXIMATION
-    const std::complex<double> A = gra::math::zi * (1.0 - std::exp(gra::math::zi * XI / 2.0));
+    const std::complex<double> A = gra::math::zi * (1.0 - std::exp(gra::math::zi * Omega / 2.0));
 
     f[i] = A * gra::math::BESSJ0(bt * kt) * bt;
     // f[i] = A * std::cyl_bessel_j(0, bt * kt) * bt; // c++17, slow
@@ -271,13 +271,13 @@ void MEikonal::S3CalcXS() {
     const double bt = Numerics.MinBT + i * STEP;
 
     // Calculate density
-    const std::complex<double> XI = MBT.Interpolate1D(bt);
+    const std::complex<double> Omega = MBT.Interpolate1D(bt);
 
     // ----------------------------------------------------------------------
     // Single-Channel eikonal
 
     // Elastic amplitude A_el(s,b)
-    const std::complex<double> A_el = gra::math::zi * (1.0 - std::exp(gra::math::zi * XI / 2.0));
+    const std::complex<double> A_el = gra::math::zi * (1.0 - std::exp(gra::math::zi * Omega / 2.0));
 
     // TOTAL: 2.0 * Im A_el(s,b)
     f_tot[i] = 2.0 * std::imag(A_el);
@@ -292,10 +292,10 @@ void MEikonal::S3CalcXS() {
     // ----------------------------------------------------------------------
     // Two-channel Eikonal solutions for pp->p(*)p(*)
     const std::vector<std::complex<double>> sol = {
-        1.0 - std::exp(gra::math::zi * lambda[0] * XI / 2.0),
-        1.0 - std::exp(gra::math::zi * lambda[1] * XI / 2.0),
-        1.0 - std::exp(gra::math::zi * lambda[2] * XI / 2.0),
-        1.0 - std::exp(gra::math::zi * lambda[3] * XI / 2.0)};
+        1.0 - std::exp(gra::math::zi * lambda[0] * Omega / 2.0),
+        1.0 - std::exp(gra::math::zi * lambda[1] * Omega / 2.0),
+        1.0 - std::exp(gra::math::zi * lambda[2] * Omega / 2.0),
+        1.0 - std::exp(gra::math::zi * lambda[3] * Omega / 2.0)};
 
     for (std::size_t k = 0; k < 4; ++k) {
       // Amplitude squared
