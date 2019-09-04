@@ -129,6 +129,35 @@ void MEikonal::S3Constructor(double s_in, const std::vector<gra::MParticle> &ini
   S3INIT = true;
 }
 
+// Single elastic-pp Pomeron exchange amplitude
+//
+// This is used within eikonalization procedure
+//
+//
+std::complex<double> MEikonal::SingleAmpElastic(double s, double t) {
+
+  // Proton form factors (could be here extended to multichannel)
+  const double F_i = gra::form::S3F(t);
+  const double F_k = gra::form::S3F(t);
+
+  // Pomeron trajectory alpha(t)
+  const double alpha_P = gra::form::S3PomAlpha(t);
+  
+  // Pomeron exchange amplitude:
+  // [Regge signature x Proton Form Factor x coupling x Proton
+  //  Form Factor x coupling x Propagator ]
+  const double s0 = 1.0;  // Typical (normalization) scale GeV^{-2}
+
+  // const std::complex<double> eta_O =
+  // std::exp(gra::math::zi*PARAM_SOFT::PHASE_O);
+
+  std::complex<double> A = gra::math::pow2(PARAM_SOFT::gN_P) * F_i * F_k *
+                           gra::form::ReggeEta(alpha_P, 1) *
+                           std::pow(s / s0, alpha_P);  // Pomeron (C-even)
+  return A;
+}
+
+
 // Proton bt-density Omega(s,b_t) by Fourier-Bessel transform of the t-density
 // see <http://mathworld.wolfram.com/HankelTransform.html>
 //
@@ -164,27 +193,11 @@ std::complex<double> MEikonal::S3Density(double bt) const {
   for (const auto &i : indices(f)) {
     const double kt = Numerics.FBIntegralMinKT + i * kt_STEP;
 
-    // negative, with Mandelstam t ~= -kt^2
+    // Negative, with Mandelstam t ~= -kt^2
     const double t = -gra::math::pow2(kt);
 
-    // Proton form factors (could be here extended to multichannel)
-    const double F_i = gra::form::S3F(t);
-    const double F_k = gra::form::S3F(t);
-
-    // Pomeron trajectory alpha(t)
-    const double alpha_P = gra::form::S3PomAlpha(t);
-
-    // Pomeron exchange amplitude:
-    // [Regge signature x Proton Form Factor x coupling x Proton
-    //  Form Factor x coupling x Propagator ]
-    const double s0 = 1.0;  // Typical (normalization) scale GeV^{-2}
-
-    // const std::complex<double> eta_O =
-    // std::exp(gra::math::zi*PARAM_SOFT::PHASE_O);
-
-    std::complex<double> A = gra::math::pow2(PARAM_SOFT::gN_P) * F_i * F_k *
-                             gra::form::ReggeEta(alpha_P, 1) *
-                             std::pow(s / s0, alpha_P);  // Pomeron (C-even)
+    // Single Pomeron exchange
+    const std::complex<double> A = SingleAmpElastic(s,t);
 
     // Value
     f[i] = A * gra::math::BESSJ0(bt * kt) * kt;
@@ -192,7 +205,7 @@ std::complex<double> MEikonal::S3Density(double bt) const {
   }
   // [2pi from Bessel phi-integral] / [ (2pi)^2] (2D-Fourier factor) * s ]
   const double FACTOR = 1 / (2.0 * gra::math::PI * s);
-  
+
   return gra::math::CSIntegral(f, kt_STEP) * FACTOR;
 }
 

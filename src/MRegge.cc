@@ -15,10 +15,12 @@
 #include "Graniitti/MMath.h"
 #include "Graniitti/MRegge.h"
 #include "Graniitti/MSpin.h"
+#include "Graniitti/MEikonal.h"
 
 // Libraries
 #include "json.hpp"
 #include "rang.hpp"
+
 
 using gra::math::msqrt;
 using gra::math::pow2;
@@ -141,7 +143,10 @@ std::complex<double> MRegge::ME2(gra::LORENTZSCALAR &lts, int mode) const {
 
   if (mode == 1) {  // Elastic
 
-    return 1.0;            // Elastic purely by the screening loop
+    // Single Pomeron exchange
+    // (this calls eikonal pomeron without eikonalization, just for test, use loop on)
+    return MEikonal::SingleAmpElastic(lts.s, lts.t);
+    
   } else if (mode == 2) {  // SD triple Pomeron
 
     // Which proton is excited

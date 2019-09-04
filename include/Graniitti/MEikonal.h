@@ -185,6 +185,7 @@ class MEikonal {
   // Get total cross sections
   void GetTotXS(double &tot, double &el, double &in) const;
 
+  static std::complex<double> SingleAmpElastic(double s, double t);
   std::complex<double> S3Density(double bt) const;
   std::complex<double> S3Screening(double kt2) const;
 
