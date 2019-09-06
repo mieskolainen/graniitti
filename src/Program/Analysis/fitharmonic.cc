@@ -436,7 +436,7 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
       gra::kinematics::PGframe(rf, direction, p_beam_plus, p_beam_minus);
       // Collins-Soper frame
     } else if (FRAME == "CS") {
-      gra::kinematics::CSframe(rf);
+      //gra::kinematics::CSframe(rf);
       // Gottfried-Jackson frame
     } else if (FRAME == "GJ") {
       M4Vec propagator = p_beam_plus - p_final_plus;

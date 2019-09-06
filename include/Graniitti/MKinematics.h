@@ -1070,21 +1070,21 @@ inline void LorentzFrame(std::vector<T> &pfout, const T &pb1boost, const T &pb2b
     yaxis = {0, 1, 0};
   }
   // @@ COLLINS-SOPER FRAME POLARIZATION AXIS DEFINITION @@
-  else if (frametype == "CS") {
+  else if (frametype == "CS" || frametype == "G1") {
     zaxis = gra::matoper::Unit(
         gra::matoper::Minus(gra::matoper::Unit(pb1boost3), gra::matoper::Unit(pb2boost3)));
   }
   // @@ ANTI-HELICITY FRAME POLARIZATION AXIS DEFINITION @@
-  else if (frametype == "AH") {
+  else if (frametype == "AH" || frametype == "G2") {
     zaxis = gra::matoper::Unit(
         gra::matoper::Plus(gra::matoper::Unit(pb1boost3), gra::matoper::Unit(pb2boost3)));
   }
   // @@ HELICITY FRAME POLARIZATION AXIS DEFINITION @@
-  else if (frametype == "HE") {
+  else if (frametype == "HE" || frametype == "G3") {
     zaxis = gra::matoper::Unit(gra::matoper::Negat(gra::matoper::Plus(pb1boost3, pb2boost3)));
   }
   // @@ PSEUDO-GOTTFRIED-JACKSON AXIS DEFINITION: [1] or [2] @@
-  else if (frametype == "PG") {
+  else if (frametype == "PG" || frametype == "G4") {
     if (direction == -1) {
       zaxis = gra::matoper::Unit(pb1boost3);
     } else if (direction == 1) {
@@ -1122,7 +1122,8 @@ inline void LorentzFrame(std::vector<T> &pfout, const T &pb1boost, const T &pb2b
 const bool   DEBUG   = false;
 const double epsilon = 1e-8;
 
-// From lab to Collins-Soper frame
+/*
+// From lab to Collins-Soper frame [THIS FUNCTION IS FAULTY - USE LorentzFrame() ]
 // Quantization z-axis is defined as the bisector of two beams, in the rest
 // frame of the resonance
 template <typename T>
@@ -1189,6 +1190,7 @@ inline void CSframe(std::vector<T> &p) {
     printf("CSframe:: Not a rest frame!! \n");
   }
 }
+*/
 
 // From lab to Gottfried-Jackson frame
 // Quantization z-axis spanned by the propagator (Pomeron, Gamma etc.) momentum
@@ -1228,6 +1230,7 @@ inline void GJframe(std::vector<T> &p, const T &q) {
   for (const auto &i : gra::aux::indices(p)) {
     gra::kinematics::RotateZ(p[i], Z_angle);
     gra::kinematics::RotateY(p[i], Y_angle);
+    //gra::kinematics::RotateZ(p[i], math::PI);
   }
 
   // ********************************************************************
@@ -1239,6 +1242,7 @@ inline void GJframe(std::vector<T> &p, const T &q) {
     // Rotate propagator
     gra::kinematics::RotateZ(propagator, Z_angle);
     gra::kinematics::RotateY(propagator, Y_angle);
+    //gra::kinematics::RotateZ(propagator, math::PI);
 
     printf("GJframe:: Propagator in Gottfried-Jackson FRAME: \n");
     propagator.Print();
@@ -1272,7 +1276,7 @@ inline void HEframe(std::vector<T> &p) {
   }
   // ********************************************************************
 
-  // ACTIVE (cf. PAsinthIVE) rotation of final states by z-y-z
+  // ACTIVE (cf. PASSIVE) rotation of final states by z-y-z
   // (phi,theta,-phi)
   // (in the opposite direction -> minus signs) Euler angle sequence.
   const double Z_angle = -X.Phi();
@@ -1281,8 +1285,6 @@ inline void HEframe(std::vector<T> &p) {
   for (const auto &i : gra::aux::indices(p)) {
     gra::kinematics::RotateZ(p[i], Z_angle);
     gra::kinematics::RotateY(p[i], Y_angle);
-    //    gra::kinematics::RotateZ(p[i], -Z_angle); // Comment this one
-    //    out for tests
   }
 
   // ********************************************************************
@@ -1357,7 +1359,7 @@ inline void HEframe(std::vector<T> &p) {
 // Quantization z-axis spanned by the beam proton +z (or -z) momentum
 // in the rest frame of the central system
 //
-// Direction (1 = +z direction proton, -1 = -z direction proton)
+// Direction (-1 = +z direction proton, 1 = -z direction proton)
 template <typename T>
 inline void PGframe(std::vector<T> &p, const int direction, const T &p_beam_plus,
                     const T &p_beam_minus) {
@@ -1392,10 +1394,10 @@ inline void PGframe(std::vector<T> &p, const int direction, const T &p_beam_plus
   double Y_angle = 0;
 
   // Choose which proton we use
-  if (direction == 1) {
+  if (direction == -1) {
     Z_angle = -proton_p.Phi();
     Y_angle = -proton_p.Theta();
-  } else if (direction == -1) {
+  } else if (direction == 1) {
     Z_angle = -proton_m.Phi();
     Y_angle = -proton_m.Theta();
   } else {
@@ -1407,8 +1409,7 @@ inline void PGframe(std::vector<T> &p, const int direction, const T &p_beam_plus
   for (const auto &i : gra::aux::indices(p)) {
     gra::kinematics::RotateZ(p[i], Z_angle);
     gra::kinematics::RotateY(p[i], Y_angle);
-    //    gra::kinematics::RotateZ(p[i], -Z_angle);  // Comment this
-    //    one out for tests
+    gra::kinematics::RotateZ(p[i], math::PI);
   }
 
   // ********************************************************************

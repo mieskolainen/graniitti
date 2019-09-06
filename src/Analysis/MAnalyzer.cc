@@ -371,7 +371,7 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
         gra::kinematics::HEframe(HE);
 
         std::vector<M4Vec> CS = {a, b};
-        gra::kinematics::CSframe(CS);
+        //gra::kinematics::CSframe(CS);
 
         std::vector<M4Vec> GJ = {a, b};
         const M4Vec propagator = p_beam_plus - p_final_plus;
@@ -520,7 +520,7 @@ void MAnalyzer::FrameObservables(double W, HepMC3::GenEvent &evt, const M4Vec &p
   // Frame transformations
   gra::kinematics::SRframe(pions[0]);
   gra::kinematics::HEframe(pions[1]);
-  gra::kinematics::CSframe(pions[3]);
+  //gra::kinematics::CSframe(pions[3]);
   gra::kinematics::GJframe(pions[4], propagator);
   gra::kinematics::PGframe(pions[5], direction, p_beam_plus, p_beam_minus);
   // LABframe(pions[6]), already there, do nothing

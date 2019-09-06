@@ -194,8 +194,7 @@ constexpr T pow8(T x) {
 }
 
 // Energy-Momentum conservation
-inline bool CheckEMC(const M4Vec &diff) {
-  const double epsilon = 1e-6;  // This is ok with Double Precision
+inline bool CheckEMC(const M4Vec &diff, double epsilon = 1e-6) {
   if (std::abs(diff.Px()) > epsilon || std::abs(diff.Py()) > epsilon ||
       std::abs(diff.Pz()) > epsilon || diff.E() > epsilon) {
     return false;

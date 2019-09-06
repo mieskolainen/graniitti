@@ -302,7 +302,7 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &reso
   // Spin polarization density matrix defined:
 
   // In Helicity frame
-  if (resonance.hc.FRAME == "HE") {
+  if        (resonance.hc.FRAME == "HE") {
     theta_rotation = lts.pfinal[0].Theta();
     phi_rotation   = lts.pfinal[0].Phi();
 
@@ -310,11 +310,7 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &reso
   } else if (resonance.hc.FRAME == "SR") {
     theta_rotation = 0;
     phi_rotation   = 0;
-
-    // In Collins-Soper frame
-  } else if (resonance.hc.FRAME == "CS") {
-    theta_rotation = lts.pfinal[0].Theta();
-    phi_rotation   = -lts.pfinal[0].Phi();
+    
   } else {
     // Throw exception
     std::string str =

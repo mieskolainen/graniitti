@@ -53,6 +53,16 @@ void MUserHistograms::InitHistograms() {
       MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [Non-Rotated rest frame]");
   h2["costhetaphi_LA"] = MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [LAB frame]");
 
+
+  h2["costhetaphi_G1"] =
+      MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [G1 frame]");
+  h2["costhetaphi_G2"] =
+      MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [G2 frame]");
+  h2["costhetaphi_G3"] =
+      MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [G3 frame]");
+  h2["costhetaphi_G4"] =
+      MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [G4 frame]");
+
   // Level 3
   /*
   h2["Mphi_CS"]        = MH2(Nbins,  1.0, 1.5, Nbins, -PI, PI, "(M, phi)
@@ -112,6 +122,7 @@ void MUserHistograms::FillCosThetaPhi(double totalweight, const gra::LORENTZSCAL
   // Choose Pseudo-Gottfried beam direction (1,-1)
   const int direction = 1;
 
+{
   // ** PREPARE LORENTZ TRANSFORMATION COMMON VARIABLES **
   M4Vec              pb1boost;  // beam1 particle boosted
   M4Vec              pb2boost;  // beam2 particle boosted
@@ -128,15 +139,26 @@ void MUserHistograms::FillCosThetaPhi(double totalweight, const gra::LORENTZSCAL
     // h2["Mphi_"+frametype[k]].Fill(gra::math::msqrt(lts.m2), pfout[0].Phi(),
     // totalweight);
   }
-  // ------------------------------------------------------------------
+}
+{
+  M4Vec              q1boost;  // beam1 particle boosted
+  M4Vec              q2boost;  // beam2 particle boosted
+  std::vector<M4Vec> pfboost;   // central particles boosted
+  gra::kinematics::LorentFramePrepare(pf, lts.q1, lts.q2, q1boost, q2boost, pfboost);
+  
+  // ** TRANSFORM TO DIFFERENT LORENTZ FRAMES **
+  std::vector<std::string> frametype = {"G1", "G2", "G3", "G4"};
+  for (const auto &k : indices(frametype)) {
+    // Transform and histogram
+    std::vector<M4Vec> pfout;
+    gra::kinematics::LorentzFrame(pfout, q1boost, q2boost, pfboost, frametype[k], direction);
+    h2["costhetaphi_" + frametype[k]].Fill(std::cos(pfout[0].Theta()), pfout[0].Phi(), totalweight);
+    // h2["Mphi_"+frametype[k]].Fill(gra::math::msqrt(lts.m2), pfout[0].Phi(),
+    // totalweight);
+  }
 
-  // Helicity frame
-  /*
-  std::vector<M4Vec> pfHE = pf;
-  gra::kinematics::HEframe(pfHE);
-  h2["costhetaphiHE"].Fill(std::cos(pfHE[0].Theta()), pfHE[0].Phi(),
-  totalweight);
-  */
+}
+  // ------------------------------------------------------------------
 
   // Gottfried-Jackson frame
   std::vector<M4Vec> pfGJ = pf;

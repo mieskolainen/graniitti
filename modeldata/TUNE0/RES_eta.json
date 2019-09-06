@@ -41,7 +41,7 @@
     "g_FF"  : true,
 
     // Lorentz frame of spin polarization density
-    // (SR ~ no rotation, HE ~ helicity, CS ~ Collins-Soper)
+    // (SR ~ no rotation, HE ~ helicity)
     // Any rest frame is technically ok,
     // but some of them may have simpler representations for the rho matrix.
     "FRAME" : "SR",
