@@ -63,37 +63,37 @@ MAnalyzer::MAnalyzer(const std::string &ID) {
   const int NBINS = 150;
 
   // Energy
-  hE_Pions = std::make_unique<TH1D>(Form("%s_%s", "Energy #pi (GeV)", ID.c_str()),
+  hE_Pions = std::make_shared<TH1D>(Form("%s_%s", "Energy #pi (GeV)", ID.c_str()),
                                     ";Energy (GeV);Events", NBINS, 0, sqrts / 2.0);
-  hE_Gamma = std::make_unique<TH1D>(Form("%s_%s", "Energy #gamma (GeV)", ID.c_str()),
+  hE_Gamma = std::make_shared<TH1D>(Form("%s_%s", "Energy #gamma (GeV)", ID.c_str()),
                                     ";Energy (GeV);Events", NBINS, 0, sqrts / 2.0);
-  hE_Neutron = std::make_unique<TH1D>(Form("%s_%s", "Energy n (GeV)", ID.c_str()),
+  hE_Neutron = std::make_shared<TH1D>(Form("%s_%s", "Energy n (GeV)", ID.c_str()),
                                       ";Energy (GeV);Events", NBINS, 0, sqrts / 2.0);
-  hE_GammaNeutron = std::make_unique<TH1D>(Form("%s_%s", "Energy y+n (GeV)", ID.c_str()),
+  hE_GammaNeutron = std::make_shared<TH1D>(Form("%s_%s", "Energy y+n (GeV)", ID.c_str()),
                                            ";Energy (GeV);Events", NBINS, 0, sqrts / 2.0);
 
   // Feynman-x
-  hXF_Pions = std::make_unique<TH1D>(Form("%s_%s", "xF #pi", ID.c_str()), ";Feynman-x;Events",
+  hXF_Pions = std::make_shared<TH1D>(Form("%s_%s", "xF #pi", ID.c_str()), ";Feynman-x;Events",
                                      NBINS, -1.0, 1.0);
-  hXF_Gamma = std::make_unique<TH1D>(Form("%s_%s", "xF #gamma", ID.c_str()), ";Feynman-x;Events",
+  hXF_Gamma = std::make_shared<TH1D>(Form("%s_%s", "xF #gamma", ID.c_str()), ";Feynman-x;Events",
                                      NBINS, -1.0, 1.0);
-  hXF_Neutron = std::make_unique<TH1D>(Form("%s_%s", "xF n", ID.c_str()), ";Feynman-x;Events",
+  hXF_Neutron = std::make_shared<TH1D>(Form("%s_%s", "xF n", ID.c_str()), ";Feynman-x;Events",
                                        NBINS, -1.0, 1.0);
 
   // Forward systems
   hEta_Pions =
-      std::make_unique<TH1D>(Form("%s_%s", "#eta pi", ID.c_str()), ";#eta;Events", NBINS, -12, 12);
+      std::make_shared<TH1D>(Form("%s_%s", "#eta pi", ID.c_str()), ";#eta;Events", NBINS, -12, 12);
   hEta_Gamma =
-      std::make_unique<TH1D>(Form("%s_%s", "#eta y", ID.c_str()), ";#eta;Events", NBINS, -12, 12);
+      std::make_shared<TH1D>(Form("%s_%s", "#eta y", ID.c_str()), ";#eta;Events", NBINS, -12, 12);
   hEta_Neutron =
-      std::make_unique<TH1D>(Form("%s_%s", "#eta n", ID.c_str()), ";#eta;Events", NBINS, -12, 12);
+      std::make_shared<TH1D>(Form("%s_%s", "#eta n", ID.c_str()), ";#eta;Events", NBINS, -12, 12);
   hM_NSTAR =
-      std::make_unique<TH1D>(Form("%s_%s", "M (GeV)", ID.c_str()), ";M (GeV);Events", NBINS, 0, 10);
+      std::make_shared<TH1D>(Form("%s_%s", "M (GeV)", ID.c_str()), ";M (GeV);Events", NBINS, 0, 10);
 
   // Legendre polynomials, DO NOT CHANGE THE Y-RANGE [-1,1]
   for (std::size_t i = 0; i < 8; ++i) {
     hPl[i] =
-        std::make_unique<TProfile>(Form("hPl%lu_%s", i + 1, ID.c_str()), "", 100, 0.0, 4.0, -1, 1);
+        std::make_shared<TProfile>(Form("hPl%lu_%s", i + 1, ID.c_str()), "", 100, 0.0, 4.0, -1, 1);
     hPl[i]->Sumw2();  // Error saving on
     hPl[i]->SetXTitle(Form("System M (GeV)"));
     hPl[i]->SetYTitle(Form("Legendre #LTP_{l}(cos #theta)#GT | r.f."));
@@ -103,7 +103,7 @@ MAnalyzer::MAnalyzer(const std::string &ID) {
   for (std::size_t i = 0; i < analyzer::FRAMES.size(); ++i) {
     for (std::size_t j = 0; j < analyzer::FRAMES.size(); ++j) {
       h2CosTheta[i][j] =
-          std::make_unique<TH2D>(Form("%s^{+} cos(theta) %s vs %s_%s", pstr.c_str(),
+          std::make_shared<TH2D>(Form("%s^{+} cos(theta) %s vs %s_%s", pstr.c_str(),
                                       analyzer::FRAMES[i].c_str(), analyzer::FRAMES[j].c_str(), ID.c_str()),
                                  Form(";%s^{+} cos(#theta) %s;%s^{+} cos(#theta) %s", pstr.c_str(),
                                       analyzer::FRAMES[i].c_str(), pstr.c_str(), analyzer::FRAMES[j].c_str()),
@@ -114,7 +114,7 @@ MAnalyzer::MAnalyzer(const std::string &ID) {
   // Phi correlations between different frames
   for (std::size_t i = 0; i < analyzer::FRAMES.size(); ++i) {
     for (std::size_t j = 0; j < analyzer::FRAMES.size(); ++j) {
-      h2Phi[i][j] = std::make_unique<TH2D>(
+      h2Phi[i][j] = std::make_shared<TH2D>(
           Form("%s^{+} #phi %s vs %s_%s", pstr.c_str(), analyzer::FRAMES[i].c_str(),
                analyzer::FRAMES[j].c_str(), ID.c_str()),
           Form(";%s^{+} #phi %s (rad);%s^{+} #phi %s (rad)", pstr.c_str(), analyzer::FRAMES[i].c_str(),
@@ -143,9 +143,9 @@ bool MAnalyzer::FiducialCuts(HepMC3::GenEvent& ) {
 //
 double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multiplicity,
                                     int finalPDG, unsigned int                           MAXEVENTS,
-                                    std::map<std::string, std::unique_ptr<h1Multiplet>> &h1,
-                                    std::map<std::string, std::unique_ptr<h2Multiplet>> &h2,
-                                    std::map<std::string, std::unique_ptr<hProfMultiplet>> &hP,
+                                    std::map<std::string, std::shared_ptr<h1Multiplet>> &h1,
+                                    std::map<std::string, std::shared_ptr<h2Multiplet>> &h2,
+                                    std::map<std::string, std::shared_ptr<hProfMultiplet>> &hP,
                                     unsigned int SID) {
   inputfile                     = input;
   const std::string   totalpath = gra::aux::GetBasePath(2) + "/output/" + input + ".hepmc3";
@@ -690,12 +690,12 @@ void MAnalyzer::PlotAll(const std::string &titlestr) {
   
   /*
   // FIT FUNCTIONS
-  std::unique_ptr<TF1> fb = std::make_unique<TF1>("exp_fit", exponential, 0.05,
+  std::shared_ptr<TF1> fb = std::make_shared<TF1>("exp_fit", exponential, 0.05,
   0.5, 2);
   fb->SetParameter(0, 10.0); // A
   fb->SetParameter(1, -8.0); // b
 
-  std::unique_ptr<TF1> fa = std::make_unique<TF1>("pow_fit", powerlaw, 0.5, 3.0,
+  std::shared_ptr<TF1> fa = std::make_shared<TF1>("pow_fit", powerlaw, 0.5, 3.0,
   3);
   fa->SetParameter(0, 10.0); // A
   fa->SetParameter(1, 0.15); // T

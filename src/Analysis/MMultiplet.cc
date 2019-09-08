@@ -107,7 +107,7 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
   TCanvas c0("c", "c", 750, 800);
 
   // Upper plot will be in pad1
-  std::shared_ptr<TPad> pad1 = std::make_unique<TPad>("pad1", "pad1", 0, 0.3, 1, 1.0);
+  std::shared_ptr<TPad> pad1 = std::make_shared<TPad>("pad1", "pad1", 0, 0.3, 1, 1.0);
 
   pad1->SetBottomMargin(0.015);  // Upper and lower plot are joined
   // pad1->SetGridx();          // Vertical grid
@@ -158,7 +158,7 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
 
   double x1, x2, y1, y2 = 0.0;
   GetLegendPosition(h.size(), x1, x2, y1, y2, legendposition_);
-  std::shared_ptr<TLegend> legend = std::make_unique<TLegend>(x1, y1, x2, y2);
+  std::shared_ptr<TLegend> legend = std::make_shared<TLegend>(x1, y1, x2, y2);
   legend->SetFillColor(0);  // White background
   // legend->SetBorderSize(0); // No box
 
@@ -175,7 +175,7 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
   // -------------------------------------------------------------------
   // Ratio plots
   c0.cd();
-  std::shared_ptr<TPad> pad2 = std::make_unique<TPad>("pad2", "pad2", 0, 0.05, 1, 0.3);
+  std::shared_ptr<TPad> pad2 = std::make_shared<TPad>("pad2", "pad2", 0, 0.05, 1, 0.3);
   pad2->SetTopMargin(0.025);
   pad2->SetBottomMargin(0.25);
   pad2->SetGridx();  // vertical grid
@@ -186,7 +186,7 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
   std::vector<TH1D *> hR(h.size(), nullptr);
 
   for (const auto &i : indices(h)) {
-    hR[i] = (TH1D *)h[i]->Clone(Form("ratio_%lu", i));
+    hR[i] = static_cast<TH1D*>( h[i]->Clone(Form("ratio_%lu", i)) );
     hR[i]->Divide(h[0]);
 
     hR[i]->SetMinimum(0.0);  // y-axis range
@@ -217,7 +217,7 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
 
   // Draw horizontal line
   const double           ymax = 1.0;
-  std::shared_ptr<TLine> line = std::make_unique<TLine>(minval_, ymax, maxval_, ymax);
+  std::shared_ptr<TLine> line = std::make_shared<TLine>(minval_, ymax, maxval_, ymax);
   line->SetLineColor(15);
   line->SetLineWidth(2.0);
   line->Draw();
@@ -331,7 +331,7 @@ double h2Multiplet::SaveFig(const std::string &fullpath) const {
     c0.cd(i + 1 + h.size()); // Choose position
     c0.cd(i + 1 + h.size())->SetRightMargin(0.13);
 
-    hR[i] = (TH2D *)h[i]->Clone(Form("h2R_%lu", i));
+    hR[i] = static_cast<TH2D*>(h[i]->Clone(Form("h2R_%lu", i)));
 
     hR[i]->Divide(h[0]);        // Divide by 0-th histogram
     hR[i]->GetYaxis()->SetTitleOffset(1.3);
@@ -404,7 +404,7 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
   TCanvas c0("c", "c", 750, 800);
 
   // Upper plot will be in pad1
-  std::shared_ptr<TPad> pad1 = std::make_unique<TPad>("pad1", "pad1", 0, 0.3, 1, 1.0);
+  std::shared_ptr<TPad> pad1 = std::make_shared<TPad>("pad1", "pad1", 0, 0.3, 1, 1.0);
   pad1->SetBottomMargin(0.015);  // Upper and lower plot are joined
   // pad1->SetGridx();           // Vertical grid
   pad1->Draw();       // Draw the upper pad: pad1
@@ -418,7 +418,7 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
     if (h[i]->GetMaximum() > MAXVAL) { MAXVAL = h[i]->GetMaximum(); }
     if (h[i]->GetMinimum() < MINVAL) { MINVAL = h[i]->GetMinimum(); }
   }
-
+  
   // Loop over histograms
   for (const auto &i : indices(h)) {
     h[i]->SetLineColor(color[i]);
@@ -435,7 +435,7 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
   // North-East
   double x1, x2, y1, y2 = 0.0;
   GetLegendPosition(h.size(), x1, x2, y1, y2, legendposition_);
-  std::shared_ptr<TLegend> legend = std::make_unique<TLegend>(x1, y1, x2, y2);
+  std::shared_ptr<TLegend> legend = std::make_shared<TLegend>(x1, y1, x2, y2);
 
   legend->SetFillColor(0);  // White background
   // legend->SetBorderSize(0); // No box
@@ -454,7 +454,7 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
   // -------------------------------------------------------------------
   // Ratio plots
   c0.cd();
-  std::shared_ptr<TPad> pad2 = std::make_unique<TPad>("pad2", "pad2", 0, 0.05, 1, 0.3);
+  std::shared_ptr<TPad> pad2 = std::make_shared<TPad>("pad2", "pad2", 0, 0.05, 1, 0.3);
   pad2->SetTopMargin(0.025);
   pad2->SetBottomMargin(0.25);
   pad2->SetGridx();  // vertical grid
@@ -467,14 +467,14 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
   TH1D* hx0 = nullptr;
 
   for (const auto &i : indices(h)) {
-    hxP[i] = (TProfile *)h[i]->Clone(Form("ratio_%lu", i));
+    hxP[i] = static_cast<TProfile*>(h[i]->Clone(Form("ratio_%lu", i)));
 
     // --------------------------------------------------------------
     // To get proper errors, we need to use TH1 instead of TProfile
     hR[i] = hxP[i]->ProjectionX();
     
     if (i == 0) {  // this is needed as the denominator
-    hx0 = (TH1D* )hxP[i]->Clone("denominator");
+    hx0 = static_cast<TH1D*>(hxP[i]->Clone("denominator"));
     }
 
     // Set same colors as above
@@ -516,7 +516,7 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
 
   // Draw horizontal line
   const double           ymax = 1.0;
-  std::shared_ptr<TLine> line = std::make_unique<TLine>(minval1_, ymax, maxval1_, ymax);
+  std::shared_ptr<TLine> line = std::make_shared<TLine>(minval1_, ymax, maxval1_, ymax);
   line->SetLineColor(15);
   line->SetLineWidth(2.0);
   line->Draw();
@@ -550,7 +550,7 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
     delete hR[i];
   }
   delete hx0;
-  
+
   return 0.0;
 }
 

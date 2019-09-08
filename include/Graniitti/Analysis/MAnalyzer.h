@@ -62,37 +62,37 @@ class MAnalyzer {
 
   // ----------------------------------------------------------
   // Forward system quantities
-  std::unique_ptr<TH1D> hE_Pions;
-  std::unique_ptr<TH1D> hE_Gamma;
-  std::unique_ptr<TH1D> hE_Neutron;
-  std::unique_ptr<TH1D> hE_GammaNeutron;
+  std::shared_ptr<TH1D> hE_Pions;
+  std::shared_ptr<TH1D> hE_Gamma;
+  std::shared_ptr<TH1D> hE_Neutron;
+  std::shared_ptr<TH1D> hE_GammaNeutron;
 
-  std::unique_ptr<TH1D> hXF_Pions;
-  std::unique_ptr<TH1D> hXF_Gamma;
-  std::unique_ptr<TH1D> hXF_Neutron;
+  std::shared_ptr<TH1D> hXF_Pions;
+  std::shared_ptr<TH1D> hXF_Gamma;
+  std::shared_ptr<TH1D> hXF_Neutron;
 
-  std::unique_ptr<TH1D> hEta_Pions;
-  std::unique_ptr<TH1D> hEta_Gamma;
-  std::unique_ptr<TH1D> hEta_Neutron;
-  std::unique_ptr<TH1D> hM_NSTAR;
+  std::shared_ptr<TH1D> hEta_Pions;
+  std::shared_ptr<TH1D> hEta_Gamma;
+  std::shared_ptr<TH1D> hEta_Neutron;
+  std::shared_ptr<TH1D> hM_NSTAR;
 
   // ----------------------------------------------------------
   // Angular observables
-  std::unique_ptr<TProfile> hPl[8];
+  std::shared_ptr<TProfile> hPl[8];
 
   static constexpr unsigned int NFR = 6;  // number of frames
 
   // Correlations between frames
-  std::unique_ptr<TH2D> h2CosTheta[NFR][NFR];
-  std::unique_ptr<TH2D> h2Phi[NFR][NFR];
+  std::shared_ptr<TH2D> h2CosTheta[NFR][NFR];
+  std::shared_ptr<TH2D> h2Phi[NFR][NFR];
   // ----------------------------------------------------------
 
   // HepMC3 reader
   double HepMC3_OracleFill(const std::string inputfile, unsigned int multiplicity, int finalPDG,
                            unsigned int MAXEVENTS,
-                           std::map<std::string, std::unique_ptr<h1Multiplet>> &   h1,
-                           std::map<std::string, std::unique_ptr<h2Multiplet>> &   h2,
-                           std::map<std::string, std::unique_ptr<hProfMultiplet>> &hP,
+                           std::map<std::string, std::shared_ptr<h1Multiplet>> &   h1,
+                           std::map<std::string, std::shared_ptr<h2Multiplet>> &   h2,
+                           std::map<std::string, std::shared_ptr<hProfMultiplet>> &hP,
                            unsigned int SID);
 
   // Plot out all local histograms

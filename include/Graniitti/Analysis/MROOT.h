@@ -53,8 +53,8 @@ inline void CreateColorMap(std::vector<int>& color, std::vector<std::shared_ptr<
   rootcolor = std::vector<std::shared_ptr<TColor>> (color.size(), nullptr);
 
   for (const auto &i : aux::indices(color)) {
-    // colors.at(i)  = TColor::GetFreeColorIndex();
-    color[i] = 9000 + i;  // some big number not used
+    color[i] = TColor::GetFreeColorIndex();
+    //color[i] = 9000 + i;  // some big number not used
 
     // ROOT style, we need to create some hidden memory part
     rootcolor[i] = std::make_shared<TColor>(color[i], colormap[i][0], colormap[i][1], colormap[i][2]);
