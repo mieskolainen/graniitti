@@ -14,4 +14,4 @@ N=100000
 
 ./bin/gr -i ./tests/processes/CMS13.json \
 -p "PP[RES+CONTENSOR]<F> -> p+ p- " \
--w true -l false -n $N -o "tensor_ppbar" -f "hepmc3"
+-w true -l false -n 10000 -o "tensor_ppbar" -f "hepmc3"
