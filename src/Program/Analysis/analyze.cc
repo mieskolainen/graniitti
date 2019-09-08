@@ -100,13 +100,13 @@ void Init1DHistogram(std::map<std::string, std::unique_ptr<h1Multiplet>> &h,
     h[name] =
         std::make_unique<h1Multiplet>(name, title +
                                                 ";Central final state acoplanarity #rho = 1 - "
-                                                "|#delta#phi|/#pi;d" +
+                                                "|#Delta#phi|/#pi;d" +
                                                 U + "/d#rho  (" + units + "/rad)",
                                       100, 0.0, 1.0, legendtext);
 
     name    = "h1_2B_diffrap";
     h[name] = std::make_unique<h1Multiplet>(
-        name, title + ";#deltay #equiv y_{1} - y_{2};d" + U + "/d#deltay  (" + units + ")", bY.N,
+        name, title + ";#deltay #equiv y_{1} - y_{2};d" + U + "/d#Deltay  (" + units + ")", bY.N,
         bY.min, bY.max, legendtext);
   }
 
@@ -118,7 +118,7 @@ void Init1DHistogram(std::map<std::string, std::unique_ptr<h1Multiplet>> &h,
   // Forward proton observables
   name    = "h1_PP_dphi";
   h[name] = std::make_unique<h1Multiplet>(
-      name, title + ";Proton pair #delta#phi (rad);d" + U + "/#delta#phi  (" + units + "/rad)", 100,
+      name, title + ";Proton pair #Delta#phi (rad);d" + U + "/d#Delta#phi  (" + units + "/rad)", 100,
       0.0, 3.14159, legendtext);
 
   name    = "h1_PP_t1";
@@ -128,9 +128,9 @@ void Init1DHistogram(std::map<std::string, std::unique_ptr<h1Multiplet>> &h,
 
   name    = "h1_PP_dpt";
   h[name] = std::make_unique<h1Multiplet>(name, title +
-                                                    ";Proton pair |#delta#bar{p}_{T}| "
+                                                    ";Proton pair |#Delta#bar{p}_{T}| "
                                                     "(GeV);d" +
-                                                    U + "/|#delta#bar{p}_{T}|  (" + units + "/GeV)",
+                                                    U + "/d|#Delta#bar{p}_{T}|  (" + units + "/GeV)",
                                           bP.N, bP.min, bP.max, legendtext);
 }
 
@@ -163,22 +163,22 @@ void Init2DHistogram(std::map<std::string, std::unique_ptr<h2Multiplet>> &h,
 
   name    = "h2_S_M_dphipp";
   h[name] = std::make_unique<h2Multiplet>(
-      name, "d" + U + "^2/dMd#delta_{pp}  (" + units + "/GeV/rad) | " + title +
-                ";System M (GeV); Forward proton #delta#phi_{pp}",
+      name, "d" + U + "^2/dMd#Delta#phi_{pp}  (" + units + "/GeV/rad) | " + title +
+                ";System M (GeV); Forward proton #Delta#phi_{pp}",
       bM.N, bM.min, bM.max, 100, 0.0, gra::math::PI, legendtext);
 
   name    = "h2_S_M_dpt";
   h[name] = std::make_unique<h2Multiplet>(
-      name, "d" + U + "^2/dMd|#delta#bar{p}_{T}|  (" + units + "/GeV/GeV) | " + title +
-                ";System M (GeV); Proton pair |#delta#bar{p}_{T}| (GeV)",
+      name, "d" + U + "^2/dMd|#Delta#bar{p}_{T}|  (" + units + "/GeV/GeV) | " + title +
+                ";System M (GeV); Proton pair |#Delta#bar{p}_{T}| (GeV)",
       bM.N, bM.min, bM.max, 100, 0.0, 2.0, legendtext);
 
   // 2-Body
   if (std::find(multiplicity.begin(), multiplicity.end(), 2) != multiplicity.end()) {
     name    = "h2_2B_M_dphi";
     h[name] = std::make_unique<h2Multiplet>(
-        name, "d" + U + "^2/dMd#delta#phi  (" + units + "/GeV/rad) | " + title +
-                  ";System M (GeV); Central final state #delta#phi (rad)",
+        name, "d" + U + "^2/dMd#Delta#phi  (" + units + "/GeV/rad) | " + title +
+                  ";System M (GeV); Central final state #Delta#phi (rad)",
         bM.N, bM.min, bM.max, 100, 0.0, gra::math::PI, legendtext);
 
     name    = "h2_2B_eta1_eta2";

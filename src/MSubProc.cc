@@ -389,7 +389,6 @@ inline double MSubProc::GetBareAmplitude2_yy(gra::LORENTZSCALAR &lts) {
       amp2 = yyffbar(lts);
     }
   } else if (CHANNEL == "QED") {
-    //amp2 = AmpMG5_yy_ll_2to4.CalcAmp2(lts);
     static MTensorPomeron TensorPomeron;
     return TensorPomeron.ME4(lts);
 
@@ -405,8 +404,8 @@ inline double MSubProc::GetBareAmplitude2_yy(gra::LORENTZSCALAR &lts) {
                                 ? gra::form::IncohFlux(lts.x2, lts.t2, lts.qt2, lts.pfinal[2].M2())
                                 : form::CohFlux(lts.x2, lts.t2, lts.qt2);
 
-  // const double phasespace = lts.s / lts.s_hat;    // This causes numerical problems at low shat
-  const double phasespace = 1.0 / (lts.x1 * lts.x2);
+  //const double phasespace = lts.s / lts.s_hat;    // This gives problems at low masses
+  const double phasespace = 1.0 / (lts.x1 * lts.x2); // Consistent with kt-factorization
   
   // To "amplitude level"
   const double fluxes = gammaflux1 * gammaflux2 * phasespace;

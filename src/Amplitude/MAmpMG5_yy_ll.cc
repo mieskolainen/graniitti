@@ -65,7 +65,7 @@ double MAmpMG5_yy_ll::CalcAmp2(gra::LORENTZSCALAR &lts) {
   
   // Do kinematic transform
   gra::kinematics::OffShell2LightCone(p1_, p2_, pf);
-
+  
   // Set components
   double p1[] = {p1_.E(), p1_.Px(), p1_.Py(), p1_.Pz()};
   double p2[] = {p2_.E(), p2_.Px(), p2_.Py(), p2_.Pz()};
@@ -115,7 +115,7 @@ double MAmpMG5_yy_ll::CalcAmp2(gra::LORENTZSCALAR &lts) {
   double amp2 = 0.0;
   for (std::size_t i = 0; i < lts.hamp.size(); ++i) { amp2 += gra::math::abs2(lts.hamp[i]); }
   amp2 /= 4;  // spin average matrix element squared
-  
+
   return amp2;  // amplitude squared
 }
 

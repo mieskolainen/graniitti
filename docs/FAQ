@@ -1,4 +1,4 @@
-GRANIITTI FAQ: 13.08.2019
+GRANIITTI FAQ: 08.09.2019
 
 mikael.mieskolainen@cern.ch
 -----------
@@ -50,7 +50,7 @@ SOURCE
 |   └── Program/        - Main program source files
 |      └── Analysis/    - ROOT dependent main program source files
 ├── sudakov/            - Special transformed gluon pdfs arrays
-├── tests/              - Test suite; automated tests, simulations & analysis examples
+├── tests/              - Test suite; automated tests, simulations & analysis benchmark examples
 
 
 PROGRAMS
@@ -72,14 +72,16 @@ PROGRAMS
 ./bin/fitharmonic    Spherical harmonic inverse expansion and analysis
 ./bin/fitcentral     Fit tool for soft central production parameters
 ./bin/fitsoft        Fit tool for eikonal Pomeron model parameters
-./bin/data2hepmc3    Push events from external sources to .hepmc3 format for quick analysis
+./bin/data2hepmc3    Push events from external sources to .hepmc3 format for a quick analysis
 
 3. Automated tests
 -----------
 
 Compile with 'make -j4 TEST=TRUE'
 
-./bin/testbench*    Test cases using catch2 framework
+./bin/testbench*     Test cases using catch2 framework
+./tests/megarun.sh   Will run all the global and unit tests, runtime 1 hour+
+
 
 
 INSTALLATION
@@ -115,6 +117,7 @@ A:  Your ROOT library is probably not compiled with -std=c++17 switch,
 Q:  How to turn off ROOT dependent compilation completely?
 A:  Compile with 'make -j4 ROOTSYS=' or run 'unset ROOTSYS' for removing the shell variable.
     The simulation part of GRANIITTI is not dependent on ROOT but the analysis tools are.
+
 
 
 BASIC OPERATION
@@ -175,8 +178,13 @@ A:  No. Their transverse momentum is limited to few GeV to improve CPU efficienc
 
 
 Q:  Can I simulate processes as low in transverse momentum and mass as possible?
-A:  Yes, the processes are numerically constructed to be floating point and
-    kinematically safe. Naturally, perturbative QCD processes have certain cutoff scales applied.
+A:  In principle yes, the processes are numerically constructed to be floating point and
+    kinematically safe. However, note that kt-EPA processes coupled with (MadGraph based) on-shell
+    matrix elements should not be trusted here at very low system masses, say M ~ 1 GeV or less,
+    with these user should use a minimum mass cutoff. The better way is to run full QED based
+    gamma-gamma -> l+l- simulation which goes safely down to 0 GeV, which is the best option.
+    
+    Naturally, perturbative QCD processes have certain cutoff scales applied.
     If you spot some new problems in some corners of phase space, which may happen
     e.g. due to unfortunate floating point loss of precision, send email.
 
@@ -217,8 +225,7 @@ A:  Different ways to organize the phase space sampling.
     identical results. However, the (other) one can be faster
     or numerically more stable with difficult amplitudes, usually <F> is more stable.
     In general, one may use '<C>' for continuum / continuum+resonance processes
-    and '<F>' for isolated resonances, gamma-gamma processes and high
-    final state leg count continuum processes.
+    with 2 outgoing legs and '<F>' in principle with all processes.
 
 
 Q:  I get different integrals with '<C>' and '<F>' algorithms.
@@ -285,7 +292,7 @@ A:  With ROOT installed, just try some examples under /tests/.
 Q:  I want to do a full spherical harmonics expansion.
 A:  Sure, if you have ROOT installed, which is needed for plotting and
     Extended Maximum Likelihood via TMinuit. This advanced analysis algorithm is fully automated
-    including the efficiency and acceptance inversion. See examples under /tests/harmonicrun.
+    including the efficiency and acceptance inversion. See examples under /tests/run_*_harmonic.
     Please do note that this is an ill-posed inverse problem, like unfolding. You need to
     inspect the condition number of moment mixing matrices which is automatically calculated,
     take care of (possible) regularization, have very large MC statistics for the detector expansion and so on.
