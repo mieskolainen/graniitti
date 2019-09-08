@@ -17,11 +17,11 @@ then
 fi
 
 # ***********************************************************************
-# Fiducial cuts <ETAMIN,ETAMAX,PTMIN,PTMAX>
+# Fiducial cuts <ETAMIN,ETAMAX,PTMIN,PTMAX> (no white space!)
 FIDCUTS=-0.9,0.9,0.1,100.0
 # ***********************************************************************
 
-# System kinematic variables binning <bins,min,max>
+# System kinematic variables binning <bins,min,max> (no white space!)
 MBINS=30,0.28,2.0
 PBINS=1,0.0,10.0
 YBINS=1,-0.9,0.9
@@ -51,7 +51,7 @@ do
 -M $MBINS -P $PBINS -Y $YBINS \
 -S "-1.0, -1.0, -1.0" \
 -w "" \
--X 100
+-X 100000000
 
 # -S -1 for normalized rates
 
