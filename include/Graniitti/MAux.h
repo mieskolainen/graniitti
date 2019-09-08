@@ -142,6 +142,9 @@ bool IsIntegerDigits(const std::string &str);
 
 // Trim extra spaces of a string
 void TrimExtraSpace(std::string &value);
+void TrimLeadSpace(std::string &value);
+void TrimTrailSpace(std::string &value);
+void TrimEmptySpace(std::string &value);
 
 // Number to string with formatting
 template <typename T>
@@ -158,7 +161,7 @@ std::string Charge3XtoString(int q3);
 std::string Spin2XtoString(int J2);
 
 // String splitting
-std::vector<std::string> SplitStr2Str(std::string input, const char delim = ',');
+std::vector<std::string> SplitStr2Str(std::string input, const char delim = ',', bool trimextraspace = true);
 std::vector<int> SplitStr2Int(std::string input, const char delim = ',');
 std::vector<std::string> Extract(const std::string &str);
 
@@ -172,6 +175,8 @@ std::vector<T> SplitStr(std::string input, T type, const char delim = ',') {
   while (ss.good()) {
     std::string substr;
     std::getline(ss, substr, delim);
+
+    TrimExtraSpace(substr);
 
     // Detect type >>
     // int
@@ -188,7 +193,6 @@ std::vector<T> SplitStr(std::string input, T type, const char delim = ',') {
 
 // Check if file exists
 bool FileExist(const std::string &name);
-
 
 void PrintNotice();
 void PrintWarning();

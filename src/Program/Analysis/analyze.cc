@@ -93,7 +93,7 @@ void Init1DHistogram(std::map<std::string, std::unique_ptr<h1Multiplet>> &h,
 
       name    = "h1_phi_" + i;
       h[name] = std::make_unique<h1Multiplet>(
-        name, title + ";Central final state #phi [" + i + " frame];d" + U + "/dcos #phi  (" + units + ")", bP.N, 0.0, math::PI, legendtext);
+        name, title + ";Central final state #phi [" + i + " frame];d" + U + "/dcos #phi  (" + units + ")", bP.N, -math::PI, math::PI, legendtext);
     }
     
     name = "h1_2B_acop";
@@ -185,22 +185,31 @@ void Init2DHistogram(std::map<std::string, std::unique_ptr<h2Multiplet>> &h,
     h[name] = std::make_unique<h2Multiplet>(
         name, "d" + U + "^2/d#eta_{1}d#eta_{2}  (" + units + ") | " + title + ";#eta_{1}; #eta_{2}",
         bY.N, bY.min, bY.max, bY.N, bY.min, bY.max, legendtext);
-
-    // 2D (M, costheta) in different rest frames
+    
+    // 2D (costheta, phi) in different rest frames
     for (const auto& i : analyzer::FRAMES) {
 
+      name = "h2_2B_costheta_phi_" + i;
+      h[name] = std::make_unique<h2Multiplet>(
+          name, "d" + U + "^2/cos(#theta)#phi  (" + units + ") | " + title + ";daughter cos(#theta); daughter #phi (rad) [" + i + " FRAME]",
+          100, -1, 1, 100, -gra::math::PI, gra::math::PI, legendtext);
+    }
+    
+    // 2D (M, costheta) in different rest frames
+    for (const auto& i : analyzer::FRAMES) {
+      
       name = "h2_2B_M_costheta_" + i;
       h[name] = std::make_unique<h2Multiplet>(
           name, "d" + U + "^2/dMdcos(#theta)  (" + units + "/GeV) | " + title + ";M (GeV); daughter cos(#theta) [" + i + " FRAME]",
           bM.N, bM.min, bM.max, 100, -1, 1, legendtext);
     }
-
+    
     // 2D (M, phi) in different rest frames
     for (const auto& i : analyzer::FRAMES) {
-
+      
       name = "h2_2B_M_phi_" + i;
       h[name] = std::make_unique<h2Multiplet>(
-          name, "d" + U + "^2/dMd#phi  (" + units + "/GeV/rad) | " + title + ";M (GeV); daughter #phi [" + i + " FRAME]",
+          name, "d" + U + "^2/dMd#phi  (" + units + "/GeV/rad) | " + title + ";M (GeV); daughter #phi (rad) [" + i + " FRAME]",
           bM.N, bM.min, bM.max, 100, -gra::math::PI, gra::math::PI, legendtext);
     }
   }
@@ -401,6 +410,9 @@ int main(int argc, char *argv[]) {
     printf("Analyze:: \n");
     std::vector<double> cross_section(inputfile.size(), 0.0);
     for (const auto &i : indices(inputfile)) {
+
+      std::cout << i << " :: input:" << inputfile[i] << std::endl;
+
       analysis.push_back(std::make_unique<MAnalyzer>("ID" + std::to_string(i)));
       cross_section[i] = analysis[i]->HepMC3_OracleFill(
           inputfile[i], (uint)multiplicity[i], finalstatePDG[i], (uint)MAXEVENTS, h1, h2, hP, i);

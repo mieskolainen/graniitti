@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
                    "of relativistic Breit-Wigner f(M^2) in decay trees"
                 << std::endl;
       std::cout << "  @FRAME:X                             set common Lorentz frame for "
-                   "parametric spin correlated resonance decays (X = SR, HE, CS)"
+                   "parametric spin correlated resonance decays (X = SR, HE)"
                 << std::endl;
                 
       std::cout << "  @RES{rho_770:1, f0_980:0, f2_1280:1} set new central resonance list (1 active, 0 inactive)"

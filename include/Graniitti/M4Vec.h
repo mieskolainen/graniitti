@@ -147,8 +147,8 @@ class M4Vec {
   double Et2() const { return Mt2(); }
 
   // Angles
-  double Phi() const { return std::atan2(Py(), Px()); }    // y / x
-  double Theta() const { return std::atan2(Pt(), Pz()); }  // |Pt| / z
+  double Phi() const { return (Px() == 0.0 && Py() == 0.0) ? 0.0 : std::atan2(Py(),Px()); }    // y / x, range [-PI,PI]
+  double Theta() const { return (Px() == 0.0 && Py() == 0.0 && Pz() == 0.0) ? 0.0 : std::atan2(Pt(),Pz()); }  // |Pt| / z
   double CosTheta() const { return std::cos(Theta()); }
 
   // Pseudorapidity and rapidity (boost) in z-direction
@@ -274,8 +274,9 @@ class M4Vec {
   }
 
   void Print(const std::string name = "") const {
-    std::cout << "M4Vec::" << name << " Px | X: " << Px() << ", Py | Y: " << Py()
-              << ", Pz | Z: " << Pz() << ", E | T: " << E() << ", M | dS: " << M() << std::endl;
+    std::cout << "M4Vec::" << name << " Px (X): " << Px() << ", Py (Y): " << Py()
+              << ", Pz (Z): " << Pz() << ", E (T): " << E() << ", M (S): " << M()
+              << ", theta: " << Theta() << ", phi: " << Phi() << std::endl;
   }
 
   // Particle 4-position starting starting propagation from (0,0,0,0)

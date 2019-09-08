@@ -39,10 +39,10 @@ namespace aux {
 // -------------------------------------------------------
 // FIXED HERE manually
 
-double      GetVersion() {       return 0.71; }
+double      GetVersion() {       return 0.75; }
 std::string GetVersionType() {   return "beta"; }
-std::string GetVersionDate() {   return "02.09.2019"; }
-std::string GetVersionUpdate() { return "tweaks & performance update"; }
+std::string GetVersionDate() {   return "08.09.2019"; }
+std::string GetVersionUpdate() { return "bugfixes & updates"; }
 
 // -------------------------------------------------------
 
@@ -389,8 +389,8 @@ std::string Spin2XtoString(int J2) {
     return "0";
 }
 
-// Split a string to strings
-std::vector<std::string> SplitStr2Str(std::string input, const char delim) {
+// Split a string to strings separated by delimiter
+std::vector<std::string> SplitStr2Str(std::string input, const char delim, bool trimextraspace) {
   std::vector<std::string> output;
   std::stringstream        ss(input);
 
@@ -398,6 +398,8 @@ std::vector<std::string> SplitStr2Str(std::string input, const char delim) {
   while (ss.good()) {
     std::string substr;
     std::getline(ss, substr, delim);
+
+    if (trimextraspace) { TrimExtraSpace(substr); }
     output.push_back(substr);
   }
   return output;
@@ -412,14 +414,28 @@ std::vector<int> SplitStr2Int(std::string input, const char delim) {
   while (ss.good()) {
     std::string substr;
     std::getline(ss, substr, delim);
+    
+    TrimExtraSpace(substr);
     output.push_back(std::stoi(substr));
   }
   return output;
 }
 
-// Trim extra space
+// Trim leading, extra and trailing spaces
 void TrimExtraSpace(std::string &value) {
-  value = std::regex_replace(value, std::regex("^ +| +$|( ) +"), "$1");
+  value = std::regex_replace(value, std::regex(R"(^ +| +$|( ) +)"), "$1");
+}
+
+void TrimLeadSpace(std::string& value) {
+  value = std::regex_replace(value, std::regex(R"(^ +)"), "$1");
+}
+
+void TrimTrailSpace(std::string& value) {
+  value = std::regex_replace(value, std::regex(R"( +$)"), "$1");
+}
+
+void TrimEmptySpace(std::string &value) {
+  value = std::regex_replace(value, std::regex(R"( +)"), "$1");
 }
 
 // Extract words from a string

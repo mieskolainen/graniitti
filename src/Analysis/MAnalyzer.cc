@@ -371,7 +371,7 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
         gra::kinematics::HEframe(HE);
 
         std::vector<M4Vec> CS = {a, b};
-        //gra::kinematics::CSframe(CS);
+        gra::kinematics::CSframe(CS);
 
         std::vector<M4Vec> GJ = {a, b};
         const M4Vec propagator = p_beam_plus - p_final_plus;
@@ -395,24 +395,32 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
         h1["h1_phi_GJ"]->h[SID]->Fill(GJ[0].Phi(), W);
         h1["h1_phi_PG"]->h[SID]->Fill(PG[0].Phi(), W);        
         h1["h1_phi_LAB"]->h[SID]->Fill(a.Phi(), W);        
-
-
+        
+        
+        h2["h2_2B_costheta_phi_SR"]->h[SID]->Fill(SR[0].CosTheta(), SR[0].Phi(), W);
+        h2["h2_2B_costheta_phi_HE"]->h[SID]->Fill(HE[0].CosTheta(), HE[0].Phi(), W);
+        h2["h2_2B_costheta_phi_CS"]->h[SID]->Fill(CS[0].CosTheta(), CS[0].Phi(), W);
+        h2["h2_2B_costheta_phi_GJ"]->h[SID]->Fill(GJ[0].CosTheta(), GJ[0].Phi(), W);
+        h2["h2_2B_costheta_phi_PG"]->h[SID]->Fill(PG[0].CosTheta(), PG[0].Phi(), W);
+        h2["h2_2B_costheta_phi_LAB"]->h[SID]->Fill(a.CosTheta(), a.Phi(), W);
+        
+        
         h2["h2_2B_M_costheta_SR"]->h[SID]->Fill(M, SR[0].CosTheta(), W);
         h2["h2_2B_M_costheta_HE"]->h[SID]->Fill(M, HE[0].CosTheta(), W);
         h2["h2_2B_M_costheta_CS"]->h[SID]->Fill(M, CS[0].CosTheta(), W);
         h2["h2_2B_M_costheta_GJ"]->h[SID]->Fill(M, GJ[0].CosTheta(), W);
         h2["h2_2B_M_costheta_PG"]->h[SID]->Fill(M, PG[0].CosTheta(), W);
         h2["h2_2B_M_costheta_LAB"]->h[SID]->Fill(M, a.CosTheta(), W);
-
-
+        
+        
         h2["h2_2B_M_phi_SR"]->h[SID]->Fill(M, SR[0].Phi(), W);
         h2["h2_2B_M_phi_HE"]->h[SID]->Fill(M, HE[0].Phi(), W);
         h2["h2_2B_M_phi_CS"]->h[SID]->Fill(M, CS[0].Phi(), W);
         h2["h2_2B_M_phi_GJ"]->h[SID]->Fill(M, GJ[0].Phi(), W);
         h2["h2_2B_M_phi_PG"]->h[SID]->Fill(M, PG[0].Phi(), W);
         h2["h2_2B_M_phi_LAB"]->h[SID]->Fill(M, a.Phi(), W);      
-
-
+        
+        
         // ---------------------------------------------------------------------------
         
         hP["hP_S_M_PL2_SR"]->h[SID]->Fill(M, math::LegendrePl(2, SR[0].CosTheta()), W);
@@ -520,7 +528,7 @@ void MAnalyzer::FrameObservables(double W, HepMC3::GenEvent &evt, const M4Vec &p
   // Frame transformations
   gra::kinematics::SRframe(pions[0]);
   gra::kinematics::HEframe(pions[1]);
-  //gra::kinematics::CSframe(pions[3]);
+  gra::kinematics::CSframe(pions[3]);
   gra::kinematics::GJframe(pions[4], propagator);
   gra::kinematics::PGframe(pions[5], direction, p_beam_plus, p_beam_minus);
   // LABframe(pions[6]), already there, do nothing

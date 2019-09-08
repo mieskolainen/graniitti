@@ -303,12 +303,13 @@ void h2Multiplet::NormalizeAll(const std::vector<double> &cross_section,
 }
 
 double h2Multiplet::SaveFig(const std::string &fullpath) const {
-  TCanvas c0("c", "c", 800 / 3.0 * h.size(), 525);  // scale canvas according to number of sources
-  c0.Divide(h.size(), 2, 0.01, 0.02);               // [columns] x [rows]
 
+  TCanvas c0("c", "c", h.size() == 1 ? 525 : 750 / 3.0 * h.size(), 525); // scale canvas according to number of sources
+  c0.Divide(h.size(), h.size() == 1 ? 1 : 2, 0.01, 0.02);                // [columns] x [rows]
+  
   // Normalize by the first histogram
   //const double ZMAX = h[0]->GetMaximum();
-
+  
   // Histograms on TOP ROW
   for (const auto &i : indices(h)) {
     c0.cd(i + 1);  // choose position
@@ -324,6 +325,8 @@ double h2Multiplet::SaveFig(const std::string &fullpath) const {
   // Ratio histograms on BOTTOM ROW
   std::vector<TH2D *> hR(h.size(), nullptr);
 
+  if (h.size() > 1) { // Only if we have more than 1
+
   for (const auto &i : indices(h)) {
     c0.cd(i + 1 + h.size()); // Choose position
     c0.cd(i + 1 + h.size())->SetRightMargin(0.13);
@@ -336,6 +339,8 @@ double h2Multiplet::SaveFig(const std::string &fullpath) const {
     hR[i]->Draw("COLZ");
     hR[i]->GetZaxis()->SetRangeUser(0.0, 2.0);
     hR[i]->SetTitle(Form("Ratio: %s / %s", legendtext_[i].c_str(), legendtext_[0].c_str()));
+  }
+
   }
 
   // -------------------------------------------------------------------
@@ -357,10 +362,12 @@ double h2Multiplet::SaveFig(const std::string &fullpath) const {
   c0.SaveAs(fullfile.c_str());
 
   // Delete ratio histograms from memory
-  for (const auto &i : indices(hR)) { delete hR[i]; }
-
+  if (h.size() > 1) {
+    for (const auto &i : indices(hR)) { delete hR[i]; }
+  }  
   return 0.0;
 }
+
 
 hProfMultiplet::hProfMultiplet(const std::string &name, const std::string &labeltext, int N,
                                double minval1, double maxval1, double minval2, double maxval2,
