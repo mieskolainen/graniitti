@@ -47,7 +47,7 @@ yes $CMD | source ./tests/run_tensor2_multi/run.sh
 yes $CMD | source ./tests/run_tensor_spectrum/run.sh
 
 # minimum bias
-./bin/minbias 7000,13000 1000
+./bin/minbias "7000,13000" 1000
 
 # catch2 driven tests
 ./bin/testbench0
