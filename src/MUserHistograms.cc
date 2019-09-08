@@ -53,7 +53,7 @@ void MUserHistograms::InitHistograms() {
       MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [Non-Rotated rest frame]");
   h2["costhetaphi_LA"] = MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [LAB frame]");
 
-
+/*
   h2["costhetaphi_G1"] =
       MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [G1 frame]");
   h2["costhetaphi_G2"] =
@@ -62,7 +62,7 @@ void MUserHistograms::InitHistograms() {
       MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [G3 frame]");
   h2["costhetaphi_G4"] =
       MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [G4 frame]");
-
+*/
   // Level 3
   /*
   h2["Mphi_CS"]        = MH2(Nbins,  1.0, 1.5, Nbins, -PI, PI, "(M, phi)
@@ -140,6 +140,7 @@ void MUserHistograms::FillCosThetaPhi(double totalweight, const gra::LORENTZSCAL
     // totalweight);
   }
 }
+/*
 {
   M4Vec              q1boost;  // beam1 particle boosted
   M4Vec              q2boost;  // beam2 particle boosted
@@ -156,8 +157,8 @@ void MUserHistograms::FillCosThetaPhi(double totalweight, const gra::LORENTZSCAL
     // h2["Mphi_"+frametype[k]].Fill(gra::math::msqrt(lts.m2), pfout[0].Phi(),
     // totalweight);
   }
-
 }
+*/
   // ------------------------------------------------------------------
 
   // Gottfried-Jackson frame
