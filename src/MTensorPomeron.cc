@@ -1711,7 +1711,7 @@ MTensor<std::complex<double>> MTensorPomeron::iG_PPT_total(const M4Vec &q1, cons
 //
 MTensor<std::complex<double>> MTensorPomeron::iG_PPT_00() const {
   const double                  S0     = 1.0; // Mass scale (GeV)
-  const std::complex<double>    FACTOR = (2.0 * zi) * S0;
+  const std::complex<double>    FACTOR = 2.0 * zi * S0;
 
   // Init with zeros!
   MTensor<std::complex<double>> T      = MTensor({4, 4, 4, 4, 4, 4}, std::complex<double>(0.0));
@@ -1753,7 +1753,7 @@ MTensor<std::complex<double>> MTensorPomeron::iG_PPT_12(const M4Vec &q1, const M
   }
   const double                  S0     = 1.0;  // Mass scale (GeV)
   const double                  q1q2   = q1 * q2;
-  const std::complex<double>    FACTOR = -(2.0 * zi) / S0 * g_PPT;
+  const std::complex<double>    FACTOR = -2.0 * zi / S0 * g_PPT;
 
   // Coupling structure 1 or 2
   const double sign = (mode == 1) ? -1.0 : 1.0;
@@ -1853,7 +1853,7 @@ MTensor<std::complex<double>> MTensorPomeron::iG_PPT_03(const M4Vec &q1, const M
 MTensor<std::complex<double>> MTensorPomeron::iG_PPT_04(const M4Vec &q1, const M4Vec &q2, double g_PPT) const {
   
   const double                  S0     = 1.0;  // Mass scale (GeV)
-  const std::complex<double>    FACTOR = - 2.0 * zi / math::pow3(S0) * g_PPT;
+  const std::complex<double>    FACTOR = -2.0 * zi / math::pow3(S0) * g_PPT;
   const double q1q2 = q1*q2;
 
   Tensor1<double, 4> q1_D = {q1 % 0, q1 % 1, q1 % 2, q1 % 3};
@@ -1920,7 +1920,7 @@ MTensor<std::complex<double>> MTensorPomeron::iG_PPT_04(const M4Vec &q1, const M
 MTensor<std::complex<double>> MTensorPomeron::iG_PPT_05(const M4Vec &q1, const M4Vec &q2, double g_PPT) const {
   
   const double                  S0     = 1.0;  // Mass scale (GeV)
-  const std::complex<double>    FACTOR = 2.0 * zi / math::pow3(S0) * g_PPT;
+  const std::complex<double>    FACTOR = zi / math::pow3(S0) * g_PPT;
 
   Tensor1<double, 4> q1_U = {q1[0], q1[1], q1[2], q1[3]};
   Tensor1<double, 4> q2_U = {q2[0], q2[1], q2[2], q2[3]};
@@ -1993,8 +1993,8 @@ MTensor<std::complex<double>> MTensorPomeron::iG_PPT_05(const M4Vec &q1, const M
 MTensor<std::complex<double>> MTensorPomeron::iG_PPT_06(const M4Vec &q1, const M4Vec &q2, double g_PPT) const {
   
   const double               S0     = 1.0;  // Mass scale (GeV)
-  const std::complex<double> FACTOR = - 2.0 * zi / math::pow5(S0) * g_PPT;
-
+  const std::complex<double> FACTOR = -2.0 * zi / math::pow5(S0) * g_PPT;
+  
   FTensor::Index<'a', 4> a;
   FTensor::Index<'b', 4> b;
   FTensor::Index<'c', 4> c;
