@@ -99,6 +99,8 @@ int main(int argc, char *argv[]) {
         cxxopts::value<std::string>())(
         "l,legend", "Legend text                               <title1,title2,...>",
         cxxopts::value<std::string>())(
+        "w,yaxis", "Y-axis text                                <label>",
+        cxxopts::value<std::string>())(
         "d,mode", "Input mode                                <MC|DATA,...>      ",
         cxxopts::value<std::string>())(
         "c,cuts", "Fiducial cuts                             <ETAMIN,ETAMAX,PTMIN,PTMAX>",
@@ -199,7 +201,7 @@ int main(int argc, char *argv[]) {
 
     // ------------------------------------------------------------------
     // INPUT
-    const std::string ref = r["ref"].as<std::string>();
+    const std::string ref   = r["ref"].as<std::string>();
 
     // Lorentz frame
     const std::string FRAME = r["frame"].as<std::string>();
@@ -237,8 +239,7 @@ int main(int argc, char *argv[]) {
     // Scaling
     std::vector<double> scale(input.size(), 1.0);  // Default 1.0 for all
     if (r.count("scale")) {
-      const std::vector<std::string> str_vals =
-          gra::aux::SplitStr2Str(r["scale"].as<std::string>());
+      const std::vector<std::string> str_vals = gra::aux::SplitStr2Str(r["scale"].as<std::string>());
       if (str_vals.size() == input.size()) {
         for (auto const &i : indices(str_vals)) { scale[i] = std::stod(str_vals[i]); }
       } else {
@@ -256,6 +257,12 @@ int main(int argc, char *argv[]) {
           "(detector,fiducial,reference)");
     }
 
+    // yaxis
+    std::string yaxis_label = "";
+    if (r.count("yaxis")) {
+      yaxis_label = r["yaxis"].as<std::string>();
+    }
+
     for (const auto &i : indices(input)) {
       // Read in data
       gra::spherical::Data data;
@@ -265,6 +272,7 @@ int main(int argc, char *argv[]) {
       data.META.FRAME   = FRAME;
       data.META.FASTSIM = (fastsim[i] == "true") ? true : false;
       data.META.SCALE   = scale[i];
+      data.META.YAXIS   = yaxis_label;
 
       data.META.TITLES = titles;
       ReadIn(data.META.NAME, data.EVENTS, data.META.FRAME, MAXEVENTS, data.META.FASTSIM);
@@ -280,7 +288,14 @@ int main(int argc, char *argv[]) {
     // ha.PrintLoop(outputname);
 
     // Plot all
-    const std::string outputpath = ref + "+" + r["input"].as<std::string>();
+    std::string inputstr = r["input"].as<std::string>();
+    aux::TrimAllSpace(inputstr);
+    std::string outputpath = ref + "___";
+    for (std::size_t i = 0; i < input.size(); ++i) {
+      const std::string marker = (i < input.size()-1) ? "+" : "";
+      outputpath += input[i] + marker;
+    }
+
     ha.PlotAll(outputpath);
 
   } catch (const std::invalid_argument &e) {

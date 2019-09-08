@@ -461,6 +461,9 @@ void MHarmonic::PlotFigures(
   std::string              FRAME;
   std::vector<std::string> TITLES;
 
+  // Y-axis title
+  std::string yaxis_label = "Events / bin";
+
   for (const auto &source : tensor) {
     legendstrs[ind] = source.first.LEGEND;
     BINS            = source.second.size(OBSERVABLE);
@@ -469,6 +472,13 @@ void MHarmonic::PlotFigures(
     int k = 0;
 
     double SCALE = source.first.SCALE;
+
+    if (SCALE < 0 && source.first.YAXIS == "") {
+      yaxis_label = "Normalized to 1";
+    }
+    if (source.first.YAXIS != "") {
+      yaxis_label  = source.first.YAXIS;
+    }
 
     for (int l = 0; l <= param.LMAX; ++l) {
       for (int m = -l; m <= l; ++m) {
@@ -479,7 +489,7 @@ void MHarmonic::PlotFigures(
         // Set canvas position
         c1->cd(k + 1);
 
-        // Loop over mass
+        // Loop over observable
         double x[BINS]     = {0.0};
         double y[BINS]     = {0.0};
         double x_err[BINS] = {0.0};
@@ -575,8 +585,10 @@ void MHarmonic::PlotFigures(
       // First draw, then setup (otherwise crash)
       mg[k]->Draw("AC*");
 
-      // Title
+      // Title and y-axis
       if (k == 0) {
+
+        // Title
         if (SPACE == "det") {
           mg[k]->SetTitle(Form("%s | #it{lm} = <%d,%d>", TITLES[0].c_str(), l, m));
         }
@@ -586,6 +598,12 @@ void MHarmonic::PlotFigures(
         if (SPACE == "fla") {
           mg[k]->SetTitle(Form("%s | #it{lm} = <%d,%d>", TITLES[2].c_str(), l, m));
         }
+
+        // y-axis (for some ROOT reason, this needs to be always after SetTitle)
+        mg[k]->GetYaxis()->SetTitle(yaxis_label.c_str());
+        gPad->SetLeftMargin(0.15); // 15 per cent of pad for left margin, default is 10%
+        mg[k]->GetYaxis()->SetTitleOffset(1.25);
+
       } else {
         mg[k]->SetTitle(Form("Moment #it{lm} = <%d,%d>", l, m));
       }

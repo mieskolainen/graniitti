@@ -27,7 +27,7 @@ PBINS=1,0.0,10.0
 YBINS=1,-0.9,0.9
 
 # PARAMETERS
-LMAX=4
+LMAX=1
 REMOVEODD=true
 REMOVENEGATIVE=true
 SVDREG=1e-5
@@ -45,12 +45,13 @@ do
 -l "GRANIITTI J=0, GRANIITTI, #pi^{+}#pi^{-} 7 TeV (DATA)" \
 -d "MC,MC,DATA" \
 -z "true,true,false"  \
--t '#Omega{Detector}: |#eta| < 0.9 #wedge p_{T} > 0.1 GeV,#Omega{Fiducial}: |#eta| < 0.9 #wedge p_{T} > 0.1 GeV,#Omega{Flat}: |Y_{x}| < 0.9' \
+-t "#Omega{Detector}: |#eta| < 0.9 #wedge p_{T} > 0.1 GeV,#Omega{Fiducial}: |#eta| < 0.9 #wedge p_{T} > 0.1 GeV,#Omega{Flat}: |Y_{x}| < 0.9" \
 -c $FIDCUTS \
 -f $FRAME -g $LMAX -o $REMOVEODD -v $REMOVENEGATIVE -a $SVDREG -b $L1REG -e $EML \
 -M $MBINS -P $PBINS -Y $YBINS \
--S -1.0,-1.0,-1.0 \
--X 100000
+-S "-1.0, -1.0, -1.0" \
+-w "" \
+-X 100
 
 # -S -1 for normalized rates
 

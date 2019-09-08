@@ -145,6 +145,8 @@ void TrimExtraSpace(std::string &value);
 void TrimLeadSpace(std::string &value);
 void TrimTrailSpace(std::string &value);
 void TrimEmptySpace(std::string &value);
+void TrimAllSpace(std::string &value);
+
 
 // Number to string with formatting
 template <typename T>

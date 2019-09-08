@@ -21,10 +21,11 @@ namespace spherical {
 struct Meta {
   std::string NAME;             // Input name ID
   std::string LEGEND;           // Legend string
+  std::string YAXIS;            // Yaxis string
   std::string MODE;             // MC or DATA
   bool        FASTSIM = false;  // Fast simulation on
   std::string FRAME;            // Lorentz frame
-  double      SCALE;            // Scale/normalization value
+  double      SCALE = 1.0;      // Scale/normalization value
 
   std::vector<std::string> TITLES;  // Phase space titles
 
@@ -34,6 +35,7 @@ struct Meta {
   void Print() const {
     std::cout << "NAME:     " << NAME << std::endl;
     std::cout << "LEGEND:   " << LEGEND << std::endl;
+    std::cout << "YAXIS:    " << YAXIS << std::endl;
     std::cout << "MODE:     " << MODE << std::endl;
     std::cout << "FRAME:    " << FRAME << std::endl;
     std::cout << "FASTSIM:  " << (FASTSIM ? "true" : "false") << std::endl;

@@ -438,6 +438,11 @@ void TrimEmptySpace(std::string &value) {
   value = std::regex_replace(value, std::regex(R"( +)"), "$1");
 }
 
+void TrimAllSpace(std::string &value) {
+  value = std::regex_replace(value, std::regex(R"([^\S\r\n]+)"), "$1");
+}
+
+
 // Extract words from a string
 std::vector<std::string> Extract(const std::string &str) {
   std::vector<std::string> words;
