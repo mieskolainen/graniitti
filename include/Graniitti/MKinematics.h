@@ -1013,36 +1013,29 @@ inline void OffShell2LightCone(M4Vec& p1, M4Vec& p2, std::vector<M4Vec>& p) {
 // "PG" : Pseudo-Gottfried-Jackson
 //
 // Collins-Soper: Quantization z-axis defined by the bi-sector vector between
-// initial state
-// p1 and (-p2) (NEGATIVE) directions in the (resonance) system rest frame,
+// initial state p1 and (-p2) (NEGATIVE) directions in the (resonance) system rest frame,
 // where p1 and p2 are the initial state proton 3-momentum.
 //
 // Anti-Helicity: Quantization z-axis defined by the bisector vector between
-// initial state
-// p1 and (p2) (POSITIVE) directions in the (resonance) system rest frame,
+// initial state p1 and (p2) (POSITIVE) directions in the (resonance) system rest frame,
 // where p1 and p2 are the initial state proton 3-momentum.
-//
-// Helicity: Quantization axis defined by the resonance system 3-momentum vector
-// in
-// the colliding beams frame (lab frame).
-//
+// 
+// Helicity: Quantization axis defined by the resonance system
+// 3-momentum vector in the colliding beams frame (lab frame).
+// 
 // Pseudo-Gottfried-Jackson: Quantization axis defined by the initial state
-// proton
-// p1 (or p2) 3-momentum vector in the (resonance) system rest frame.
+// proton p1 (or p2) 3-momentum vector in the (resonance) system rest frame.
 //
 
 template <typename T>
-inline void LorentFramePrepare(const std::vector<T> &pf, const T &pbeam1, const T &pbeam2,
-                               T &pb1boost, T &pb2boost, std::vector<T> &pfboost) {
-  // 1. Central system 4-momentum as a sum
-  T X(0, 0, 0, 0);
-  for (const auto &k : gra::aux::indices(pf)) { X += pf[k]; }
+inline void LorentFramePrepare(const std::vector<T> &p, const T& X, const T &pbeam1, const T &pbeam2,
+                               T &pb1boost, T &pb2boost, std::vector<T> &pboost) {
   const double     M = X.M();
 
-  // 2. Boost each final state to the system rest frame
-  pfboost = pf;
-  for (const auto &k : gra::aux::indices(pf)) {
-    gra::kinematics::LorentzBoost(X, M, pfboost[k], -1);  // note minus sign
+  // 2. Boost each particle to the system rest frame
+  pboost = p;
+  for (const auto &k : gra::aux::indices(p)) {
+    gra::kinematics::LorentzBoost(X, M, pboost[k], -1);  // note minus sign
   }
 
   // 3. Boost initial state protons
@@ -1051,6 +1044,7 @@ inline void LorentFramePrepare(const std::vector<T> &pf, const T &pbeam1, const 
   gra::kinematics::LorentzBoost(X, M, pb1boost, -1);  // note minus sign
   gra::kinematics::LorentzBoost(X, M, pb2boost, -1);  // note minus sign
 }
+
 
 template <typename T>
 inline void LorentzFrame(std::vector<T> &pfout, const T &pb1boost, const T &pb2boost,
@@ -1101,7 +1095,7 @@ inline void LorentzFrame(std::vector<T> &pfout, const T &pb1boost, const T &pb2b
   // y-axis
   if (frametype != "SR") {
     yaxis = gra::matoper::Unit(
-        gra::matoper::Cross(gra::matoper::Unit(pb2boost3), gra::matoper::Unit(pb1boost3)));
+        gra::matoper::Cross(gra::matoper::Unit(pb1boost3), gra::matoper::Unit(pb2boost3)));
   }
 
   // x-axis
@@ -1118,30 +1112,24 @@ inline void LorentzFrame(std::vector<T> &pfout, const T &pb1boost, const T &pb2b
   }
 }
 
-// ---------------------------------------------------------------------------
-const bool   DEBUG   = false;
-const double epsilon = 1e-6;
 
 // From lab to Collins-Soper frame
 // Quantization z-axis is defined as the bisector of two beams, in the rest
 // frame of the resonance
 // 
+// Input:     p  =  Set of 4-momentum to be transformed
+//            X  =  System 4-momentum
+//            p1 =  Beam 1 4-momentum
+//            p2 =  Beam 2 4-momentum
+//
 template <typename T>
-inline void CSframe(std::vector<T> &p) {
-
-  T p1b(0,0,1,1);  // beam 1 in the lab, just to get the 3-momentum direction
-  T p2b(0,0,-1,1); // beam 2 in the lab
-  
-  // Sum to get the system 4-momentum
-  T X(0,0,0,0);
-  for (const auto &i : gra::aux::indices(p)) { X += p[i]; }
-
+inline void CSframe(std::vector<T> &p, const T& X, const T& p1, const T& p2, bool DEBUG = false) {
+    
   // ********************************************************************
   if (DEBUG) {
     printf("\n\n ::COLLINS-SOPER FRAME:: \n");
     printf("CSframe:: Daughters in LAB FRAME: \n");
-    p[0].Print();
-    p[1].Print();
+    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
   }
   // ********************************************************************
 
@@ -1150,11 +1138,14 @@ inline void CSframe(std::vector<T> &p) {
     gra::kinematics::LorentzBoost(X, X.M(), p[i], -1);  // Note the minus sign
   }
 
+  T p1b = p1;
+  T p2b = p2;
+
   // Boost the beam particles
   gra::kinematics::LorentzBoost(X, X.M(), p1b, -1);  // Note the minus sign
   gra::kinematics::LorentzBoost(X, X.M(), p2b, -1);  // Note the minus sign  
 
-  // Now get the rotation angles
+  // Now get the 3-momentum
   const std::vector<double> pb1boost3 = p1b.P3();
   const std::vector<double> pb2boost3 = p2b.P3();
 
@@ -1168,14 +1159,14 @@ inline void CSframe(std::vector<T> &p) {
       gra::matoper::Minus(gra::matoper::Unit(pb1boost3), gra::matoper::Unit(pb2boost3)));
 
   /* ALTERNATIVE WAY, but gives random reflection (rotation around Z by PI)
-
+  
   M4Vec bijector;
   bijector.SetP3(zaxis);
-
+  
   // Now get the rotation angle, note the minus
   const double Z_angle = -bijector.Phi();
   const double Y_angle = -bijector.Theta();
-
+  
   // Rotate final states
   for (const auto &i : gra::aux::indices(p)) {
     gra::kinematics::RotateZ(p[i], Z_angle);
@@ -1185,7 +1176,7 @@ inline void CSframe(std::vector<T> &p) {
   */
 
   yaxis = gra::matoper::Unit(
-      gra::matoper::Cross(gra::matoper::Unit(pb2boost3), gra::matoper::Unit(pb1boost3)));
+      gra::matoper::Cross(gra::matoper::Unit(pb1boost3), gra::matoper::Unit(pb2boost3)));
 
   xaxis = gra::matoper::Unit(gra::matoper::Cross(yaxis, zaxis));  // x = y [cross product] z
 
@@ -1198,44 +1189,34 @@ inline void CSframe(std::vector<T> &p) {
     p[k] = T(p3new[0], p3new[1], p3new[2], p[k].E());  // Full 4-momentum [px; py; pz; E]
   }
   
-
   // ********************************************************************
   if (DEBUG) {
     printf("CSframe:: Daughters in CS FRAME: \n");
-    p[0].Print();
-    p[1].Print();
+    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
   }
   // ********************************************************************
-
-  T sum;
-  for (const auto &i : gra::aux::indices(p)) { sum += p[i]; }
-  if (std::abs(sum.Px()) > epsilon || std::abs(sum.Py()) > epsilon ||
-      std::abs(sum.Pz()) > epsilon) {
-    printf("CSframe:: Not a rest frame >> ");
-    sum.Print();
-  }
 }
 
 
 // From lab to Gottfried-Jackson frame
-// Quantization z-axis spanned by the propagator (Pomeron, Gamma etc.) momentum
-// in the rest frame of the central system
+// Quantization z-axis spanned by the propagator (momentum transfer vector)
+// momentum in the rest frame of the central system
+// 
+// Input:  p         = Set of 4-momentum to be transformed
+//         X         = System 4-momentum
+//         direction = -1 or 1
+//         q1        = 4-momentum transfer vector 1
+//         q2        = 4-momentum transfer vector 2
+// 
 template <typename T>
-inline void GJframe(std::vector<T> &p, const T &q) {
-  // Take the lab frame propagator, we will boost and rotate this
-  T propagator = q;
-
-  // Sum to get the system 4-momentum
-  T X(0, 0, 0, 0);
-  for (const auto &i : gra::aux::indices(p)) { X += p[i]; }
+inline void GJframe(std::vector<T> &p, const T& X, int direction, const T &q1, const T &q2, bool DEBUG = false) {
 
   // ********************************************************************
   if (DEBUG) {
     printf("\n\n ::GOTTFRIED-JACKSON FRAME:: \n");
 
     printf("GJframe:: Daughters in LAB FRAME: \n");
-    p[0].Print();
-    p[1].Print();
+    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
   }
   // ********************************************************************
 
@@ -1244,157 +1225,76 @@ inline void GJframe(std::vector<T> &p, const T &q) {
     gra::kinematics::LorentzBoost(X, X.M(), p[i], -1);  // Note the minus sign
   }
 
-  // Boost the propagator (Pomeron)
-  gra::kinematics::LorentzBoost(X, X.M(), propagator, -1);  // Note the minus sign
+  // Boost the propagators
+  T q1boost = q1;
+  T q2boost = q2;  
+  gra::kinematics::LorentzBoost(X, X.M(), q1boost, -1);  // Note the minus sign
+  gra::kinematics::LorentzBoost(X, X.M(), q2boost, -1);  // Note the minus sign
 
   // Now get the rotation angle, note the minus
-  const double Z_angle = -propagator.Phi();
-  const double Y_angle = -propagator.Theta();
+  double Z_angle = 0;
+  double Y_angle = 0;
+  if        (direction == -1) {
+    Z_angle = -q1boost.Phi();
+    Y_angle = -q1boost.Theta();
+  } else if (direction ==  1) {
+    Z_angle = -q2boost.Phi();
+    Y_angle = -q2boost.Theta();
+  } else {
+    throw std::invalid_argument("GJframe: direction not -1 or 1");
+  }
+
+  const auto rotate = [&](T& p) {
+    gra::kinematics::RotateZ(p, Z_angle);
+    gra::kinematics::RotateY(p, Y_angle);
+    //gra::kinematics::RotateZ(p, math::PI); // Reflection
+  };
 
   // Rotate final states
   for (const auto &i : gra::aux::indices(p)) {
-    gra::kinematics::RotateZ(p[i], Z_angle);
-    gra::kinematics::RotateY(p[i], Y_angle);
-    //gra::kinematics::RotateZ(p[i], math::PI);
+    rotate(p[i]);
   }
 
   // ********************************************************************
   if (DEBUG) {
     printf("GJframe:: Daughters in Gottfried-Jackson FRAME: \n");
-    p[0].Print();
-    p[1].Print();
+    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
 
     // Rotate propagator
-    gra::kinematics::RotateZ(propagator, Z_angle);
-    gra::kinematics::RotateY(propagator, Y_angle);
-    //gra::kinematics::RotateZ(propagator, math::PI);
+    rotate(q1boost);
+    rotate(q2boost);
 
-    printf("GJframe:: Propagator in Gottfried-Jackson FRAME: \n");
-    propagator.Print();
+    printf("GJframe:: Propagators are along z-axis \n");
+    printf("GJframe:: Propagator 1 in Gottfried-Jackson FRAME: \n");
+    q1boost.Print();
+
+    printf("GJframe:: Propagator 2 in Gottfried-Jackson FRAME: \n");
+    q2boost.Print();
   }
   // ********************************************************************
-
-  T sum;
-  for (const auto &i : gra::aux::indices(p)) { sum += p[i]; }
-  if (std::abs(sum.Px()) > epsilon || std::abs(sum.Py()) > epsilon ||
-      std::abs(sum.Pz()) > epsilon) {
-    printf("GJframe:: Not a rest frame!! \n");
-  }
 }
 
-// From lab to the Helicity frame
-// Quantization z-axis as the direction of the resonance in the lab frame
-//
-// Input is a vector of final state 4-momentum
-template <typename T>
-inline void HEframe(std::vector<T> &p) {
-  // Sum to get the system 4-momentum
-  T X(0, 0, 0, 0);
-  for (const auto &i : gra::aux::indices(p)) { X += p[i]; }
-
-  // ********************************************************************
-  if (DEBUG) {
-    printf("\n\n ::HELICITY FRAME:: \n");
-    printf("HEframe:: Daughters in LAB FRAME: \n");
-    p[0].Print();
-    p[1].Print();
-  }
-  // ********************************************************************
-  
-  // Rotation angles, note the minus
-  const double Z_angle = -X.Phi();
-  const double Y_angle = -X.Theta();
-
-  for (const auto &i : gra::aux::indices(p)) {
-    gra::kinematics::RotateZ(p[i], Z_angle);
-    gra::kinematics::RotateY(p[i], Y_angle);
-    //gra::kinematics::RotateZ(p[i], math::PI);
-  }
-
-  // ********************************************************************
-  if (DEBUG) {
-    printf("HEframe:: Daughters in ROTATED LAB FRAME: \n");
-    p[0].Print();
-    p[1].Print();
-
-    T ex(1, 0, 0, 0);
-    T ey(0, 1, 0, 0);
-    T ez(0, 0, 1, 0);
-
-    // x -> x'
-    gra::kinematics::RotateZ(ex, Z_angle);
-    gra::kinematics::RotateY(ex, Y_angle);
-
-    // y -> y'
-    gra::kinematics::RotateZ(ey, Z_angle);
-    gra::kinematics::RotateY(ey, Y_angle);
-
-    // z -> z'
-    gra::kinematics::RotateZ(ez, Z_angle);
-    gra::kinematics::RotateY(ez, Y_angle);
-
-    printf("HEframe:: AXIS vectors after rotation: \n");
-
-    ex.Print();
-    ey.Print();
-    ez.Print();
-  }
-  // ********************************************************************
-
-  // Construct the central system 4-momentum in ROTATED FRAME
-  T XNEW(0, 0, 0, 0);
-  for (const auto &i : gra::aux::indices(p)) { XNEW += p[i]; }
-
-  // Boost particles to the central system rest frame
-  // -> Helicity frame obtained
-  for (const auto &i : gra::aux::indices(p)) {
-    gra::kinematics::LorentzBoost(XNEW, XNEW.M(), p[i], -1);  // Note the minus sign
-  }
-
-  // ********************************************************************
-  if (DEBUG) {
-    printf("HEframe:: Daughters after boost in HELICITY FRAME: \n");
-    p[0].Print();
-    p[1].Print();
-
-    printf("HEframe:: Central system in LAB FRAME: \n");
-    X.Print();
-
-    printf("HEframe:: Central system in ROTATED LAB FRAME: \n");
-    XNEW.Print();
-
-    printf("\n");
-  }
-  // ********************************************************************
-
-  T sum;
-  for (const auto &i : gra::aux::indices(p)) { sum += p[i]; }
-  if (std::abs(sum.Px()) > epsilon || std::abs(sum.Py()) > epsilon ||
-      std::abs(sum.Pz()) > epsilon) {
-    printf("CSframe:: Not a rest frame >> ");
-    sum.Print();
-  }
-}
 
 // From lab to Pseudo-Gottfried-Jackson frame
 // Quantization z-axis spanned by the beam proton +z (or -z) momentum
 // in the rest frame of the central system
+// 
+// Input:  p            = Set of 4-momentum to be transformed
+//         X            = System 4-momentum
+//         direction    = -1 or 1
+//         p_beam_plus  = 4-momentum of beam1
+//         p_beam_minus = 4-momentum of beam2
 //
-// Direction (-1 = +z direction proton, 1 = -z direction proton)
 template <typename T>
-inline void PGframe(std::vector<T> &p, const int direction, const T &p_beam_plus,
-                    const T &p_beam_minus) {
-  // Sum to get the system 4-momentum
-  T X(0, 0, 0, 0);
-  for (const auto &i : gra::aux::indices(p)) { X += p[i]; }
+inline void PGframe(std::vector<T> &p, const T& X, const int direction, const T &p_beam_plus,
+                    const T &p_beam_minus, bool DEBUG = false) {
 
   // ********************************************************************
   if (DEBUG) {
     printf("\n\n ::PSEUDO-GOTTFRIED-JACKSON FRAME:: \n");
 
     printf("PGframe:: Daughters in LAB FRAME: \n");
-    p[0].Print();
-    p[1].Print();
+    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
   }
   // ********************************************************************
 
@@ -1414,10 +1314,10 @@ inline void PGframe(std::vector<T> &p, const int direction, const T &p_beam_plus
   double Z_angle = 0;
   double Y_angle = 0;
 
-  if (direction == -1) {
+  if        (direction == -1) {
     Z_angle = -proton_p.Phi();
     Y_angle = -proton_p.Theta();
-  } else if (direction == 1) {
+  } else if (direction ==  1) {
     Z_angle = -proton_m.Phi();
     Y_angle = -proton_m.Theta();
   } else {
@@ -1425,63 +1325,138 @@ inline void PGframe(std::vector<T> &p, const int direction, const T &p_beam_plus
     return;
   }
 
+  // Rotation function
+  const auto rotate = [&](T& p) {
+    gra::kinematics::RotateZ(p, Z_angle);
+    gra::kinematics::RotateY(p, Y_angle);
+    //gra::kinematics::RotateZ(p, math::PI); // Reflection    
+  };
+
   // Rotate final states
   for (const auto &i : gra::aux::indices(p)) {
-    gra::kinematics::RotateZ(p[i], Z_angle);
-    gra::kinematics::RotateY(p[i], Y_angle);
-    gra::kinematics::RotateZ(p[i], math::PI);
+    rotate(p[i]);
   }
 
   // ********************************************************************
   if (DEBUG) {
     printf("PGframe:: Daughters in Pseudo-Gottfried-Jackson FRAME: \n");
-    p[0].Print();
-    p[1].Print();
+    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
 
     // Rotate proton
-    gra::kinematics::RotateZ(proton_p, Z_angle);
-    gra::kinematics::RotateY(proton_p, Y_angle);
+    rotate(proton_p);
 
     printf("Protons are on (zx)-plane: \n");
     printf("USER chosen direction along %d beam direction \n", direction);
-    printf("- +z Proton in Pseudo-Gottfried-Jackson FRAME: \n");
+    printf("  +z Proton in Pseudo-Gottfried-Jackson FRAME: \n");
     proton_p.Print();
 
     // Rotate other proton
-    gra::kinematics::RotateZ(proton_m, Z_angle);
-    gra::kinematics::RotateY(proton_m, Y_angle);
+    rotate(proton_m);
 
-    printf("PGframe:: -z Proton in Pseudo-Gottfried-Jackson FRAME: \n");
+    printf("  -z Proton in Pseudo-Gottfried-Jackson FRAME: \n");
     proton_m.Print();
 
     // Mandelstam invariant
     printf("Mandelstam s = %0.5f \n", (proton_p + proton_m).M());
   }
   // ********************************************************************
-  T sum;
-  for (const auto &i : gra::aux::indices(p)) { sum += p[i]; }
-  if (std::abs(sum.Px()) > epsilon || std::abs(sum.Py()) > epsilon ||
-      std::abs(sum.Pz()) > epsilon) {
-    printf("PGframe:: Not a rest frame!! \n");
-  }
 }
 
-// "Rest frame" (no boost, beam axis as z-axis / spin quantization axis)
+
+// From lab to the Helicity frame
+// Quantization z-axis as the direction of the resonance in the lab frame
 // 
-// Input is a vector of final state 4-momentum
+// Input:  p = Set of 4-momentum to be transformed
+//         X = System 4-momentum
+//
 template <typename T>
-inline void SRframe(std::vector<T> &p) {
-  // Sum to get the system 4-momentum
-  T X(0, 0, 0, 0);
-  for (const auto &i : gra::aux::indices(p)) { X += p[i]; }
+inline void HEframe(std::vector<T> &p, const T& X, bool DEBUG = false) {
+
+  // ********************************************************************
+  if (DEBUG) {
+    printf("\n\n ::HELICITY FRAME:: \n");
+    printf("HEframe:: Daughters in LAB FRAME: \n");
+    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
+  }
+  // ********************************************************************
+  
+  // Rotation angles, note the minus
+  const double Z_angle = -X.Phi();
+  const double Y_angle = -X.Theta();
+
+  const auto rotate = [&](T& p) {
+    gra::kinematics::RotateZ(p, Z_angle);
+    gra::kinematics::RotateY(p, Y_angle);
+    gra::kinematics::RotateZ(p, math::PI); // Reflection
+  };
+
+  for (const auto &i : gra::aux::indices(p)) {
+    rotate(p[i]);
+  }
+
+  // ********************************************************************
+  if (DEBUG) {
+    printf("HEframe:: Daughters in ROTATED LAB FRAME: \n");
+    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
+
+    T ex(1, 0, 0, 0);
+    T ey(0, 1, 0, 0);
+    T ez(0, 0, 1, 0);
+
+    // x -> x', y -> y', z -> z'
+    rotate(ex);
+    rotate(ey);
+    rotate(ez);
+
+    printf("HEframe:: AXIS vectors after rotation: \n");
+
+    ex.Print();
+    ey.Print();
+    ez.Print();
+  }
+  // ********************************************************************
+
+  // Construct the central system 4-momentum in ROTATED FRAME
+  T XNEW = X;
+  rotate(XNEW);
+
+  // Boost particles to the central system rest frame
+  // -> Helicity frame obtained
+  for (const auto &i : gra::aux::indices(p)) {
+    gra::kinematics::LorentzBoost(XNEW, XNEW.M(), p[i], -1);  // Note the minus sign
+  }
+
+  // ********************************************************************
+  if (DEBUG) {
+    printf("HEframe:: Daughters after boost in HELICITY FRAME: \n");
+    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
+
+    printf("HEframe:: Central system in LAB FRAME: \n");
+    X.Print();
+
+    printf("HEframe:: Central system in ROTATED LAB FRAME: \n");
+    XNEW.Print();
+
+    printf("\n");
+  }
+  // ********************************************************************
+}
+
+
+// "Rest frame" (no boost, beam axis as z-axis / spin quantization axis)
+//  
+// Input:  p = Set of 4-momentum to be transformed
+//         X = System 4-momentum
+//
+template <typename T>
+inline void SRframe(std::vector<T> &p, const T& X, bool DEBUG = false) {
 
   // ********************************************************************
   if (DEBUG) {
     printf("\n\n ::STANDARD REST FRAME:: \n");
 
-    printf("- Daughters in LAB FRAME: \n");
-    p[0].Print();
-    p[1].Print();
+    printf("SRframe:: Daughters in LAB FRAME: \n");
+    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
   }
   // ********************************************************************
 
@@ -1492,17 +1467,10 @@ inline void SRframe(std::vector<T> &p) {
 
   // ********************************************************************
   if (DEBUG) {
-    printf("- Daughters in REST FRAME: \n");
-    p[0].Print();
-    p[1].Print();
+    printf("SRframe:: Daughters in REST FRAME: \n");
+    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
   }
   // ********************************************************************
-  T sum;
-  for (const auto &i : gra::aux::indices(p)) { sum += p[i]; }
-  if (std::abs(sum.Px()) > epsilon || std::abs(sum.Py()) > epsilon ||
-      std::abs(sum.Pz()) > epsilon) {
-    printf("SRframe:: Not a rest frame!! \n");
-  }
 }
 
 }  // Namespace MKinematics

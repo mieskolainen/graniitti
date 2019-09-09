@@ -254,7 +254,7 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &reso
     // direction
     // (B-helicity rest frame)
     std::vector<M4Vec> daughter = {lts.decaytree[B].legs[B1].p4, lts.decaytree[B].legs[B2].p4};
-    gra::kinematics::HEframe(daughter);
+    gra::kinematics::HEframe(daughter, lts.decaytree[B].p4);
 
     fB = fMatrix(T, lts.decaytree[B].p.spinX2 / 2.0, s1, s2, daughter[B1].Theta(),
                  daughter[B1].Phi());
@@ -278,7 +278,7 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &reso
     // direction
     // (C-helicity rest frame)
     std::vector<M4Vec> daughter = {lts.decaytree[C].legs[C1].p4, lts.decaytree[C].legs[C2].p4};
-    gra::kinematics::HEframe(daughter);
+    gra::kinematics::HEframe(daughter, lts.decaytree[C].p4);
 
     fC = fMatrix(T, lts.decaytree[C].p.spinX2 / 2.0, s1, s2, daughter[C1].Theta(),
                  daughter[C1].Phi());

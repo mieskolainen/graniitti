@@ -439,23 +439,25 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
     // Do the frame transformations
     std::vector<M4Vec> rf = {pip[0], pim[0]};
 
+    const int direction = 1; // PG and GJ
+
+    const M4Vec X = pip[0] + pim[0];
+
     // Non-rotated rest frame
     if (FRAME == "SR") {
-      gra::kinematics::SRframe(rf);
+      gra::kinematics::SRframe(rf, X);
       // Helicity frame
     } else if (FRAME == "HE") {
-      gra::kinematics::HEframe(rf);
+      gra::kinematics::HEframe(rf, X);
       // Pseudo GJ-frame
     } else if (FRAME == "PG") {
-      const unsigned int direction = 1;  // (1,-1) which proton direction
-      gra::kinematics::PGframe(rf, direction, p_beam_plus, p_beam_minus);
+      gra::kinematics::PGframe(rf, X, direction, p_beam_plus, p_beam_minus);
       // Collins-Soper frame
     } else if (FRAME == "CS") {
-      gra::kinematics::CSframe(rf);
+      gra::kinematics::CSframe(rf, X, p_beam_plus, p_beam_minus);
       // Gottfried-Jackson frame
     } else if (FRAME == "GJ") {
-      M4Vec propagator = p_beam_plus - p_final_plus;
-      gra::kinematics::GJframe(rf, propagator);
+      gra::kinematics::GJframe(rf, X, direction, p_beam_plus - p_final_plus, p_beam_minus - p_final_minus);
     } else {
       throw std::invalid_argument("MHarmonic::ReadIn: Unknown Lorentz frame: " + FRAME);
     }

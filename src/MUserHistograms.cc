@@ -21,6 +21,7 @@ using gra::math::PI;
 
 namespace gra {
 void MUserHistograms::InitHistograms() {
+  
   // Level 1
   unsigned int Nbins = 40;
 
@@ -113,13 +114,18 @@ void MUserHistograms::FillHistograms(double totalweight, const gra::LORENTZSCALA
 // (costheta,phi) of daughter in different Lorentz frames, input as the total
 // event weight
 void MUserHistograms::FillCosThetaPhi(double totalweight, const gra::LORENTZSCALAR &lts) {
+
   // Central final states
   std::vector<M4Vec> pf;
   pf.push_back(lts.decaytree[0].p4);
   pf.push_back(lts.decaytree[1].p4);
 
+  // System 4-momentum
+  M4Vec X;
+  for (const auto& i : indices(lts.decaytree)) { X += lts.decaytree[i].p4; }
+  
   // ------------------------------------------------------------------
-  // Choose Pseudo-Gottfried beam direction (1,-1)
+  // Choose Pseudo-Gottfried-Jackson beam direction (-1,1)
   const int direction = 1;
 
 {
@@ -127,7 +133,7 @@ void MUserHistograms::FillCosThetaPhi(double totalweight, const gra::LORENTZSCAL
   M4Vec              pb1boost;  // beam1 particle boosted
   M4Vec              pb2boost;  // beam2 particle boosted
   std::vector<M4Vec> pfboost;   // central particles boosted
-  gra::kinematics::LorentFramePrepare(pf, lts.pbeam1, lts.pbeam2, pb1boost, pb2boost, pfboost);
+  gra::kinematics::LorentFramePrepare(pf, X, lts.pbeam1, lts.pbeam2, pb1boost, pb2boost, pfboost);
 
   // ** TRANSFORM TO DIFFERENT LORENTZ FRAMES **
   std::vector<std::string> frametype = {"CS", "HE", "AH", "PG", "SR"};
@@ -140,6 +146,7 @@ void MUserHistograms::FillCosThetaPhi(double totalweight, const gra::LORENTZSCAL
     // totalweight);
   }
 }
+
 /*
 {
   M4Vec              q1boost;  // beam1 particle boosted
@@ -159,11 +166,11 @@ void MUserHistograms::FillCosThetaPhi(double totalweight, const gra::LORENTZSCAL
   }
 }
 */
+  
   // ------------------------------------------------------------------
-
   // Gottfried-Jackson frame
   std::vector<M4Vec> pfGJ = pf;
-  gra::kinematics::GJframe(pfGJ, lts.q1);
+  gra::kinematics::GJframe(pfGJ, lts.pfinal[0], direction, lts.q1, lts.q2, false);
   h2["costhetaphi_GJ"].Fill(std::cos(pfGJ[0].Theta()), pfGJ[0].Phi(), totalweight);
 
   // Laboratory frame

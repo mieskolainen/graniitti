@@ -22,27 +22,25 @@ using gra::math::pow2;
 
 // Test Lorentz frame transformation functions
 // 
-TEST_CASE("gra::kinematics::LorentzFrame, PGframe, HEframe, CSframe", "[Lorentz Frames]") {
+TEST_CASE("gra::kinematics::LorentzFrame versus PGframe, HEframe, CSframe", "[Lorentz Frames]") {
 	
+	const bool DEBUG = false;
+
 	const int N = 1e5; // Number of trials
-	const double EPS = 1e-6;
-	
+	const double EPS = 1e-5;
+
     MRandom rng;
     rng.SetSeed(123456);
 
-    const double sqrts = 7000; // GeV
-
-	// Massless beams
-	M4Vec p1(0,0, sqrts/2, sqrts/2);
-	M4Vec p2(0,0,-sqrts/2, sqrts/2);
-
+	const double mproton = 0.938;
 	const double mpion = 0.14; // pion
-	std::vector<double> m(2, mpion);
 	std::vector<M4Vec> pf(2);
 
 	int repeat = 0;
 	do {
+		const int direction = 1; // GJ and PG frames
 
+		if (repeat % 10000 == 0)
 		std::cout << repeat << " / " << N << std::endl;
 
 		// Random mother mass from the threshold up to 100 GeV
@@ -56,27 +54,25 @@ TEST_CASE("gra::kinematics::LorentzFrame, PGframe, HEframe, CSframe", "[Lorentz 
 		M4Vec mother;
 		mother.SetPxPyPzM(px, py, pz, M0);
 
-		// Random decay
+		// Random 1 -> 2 process
 		gra::kinematics::MCW x;
- 		x = gra::kinematics::TwoBodyPhaseSpace(mother, M0, m, pf, rng);
+ 		x = gra::kinematics::TwoBodyPhaseSpace(mother, M0, {mpion, mpion}, pf, rng);
 
-		printf("pf[0]: "); pf[0].Print();
-		printf("pf[1]: "); pf[1].Print();
-
-		std::cout << " ***************************************************** " << std::endl;
-
- 		// Do Lorentz transforms
+		// Proton beams
+	    const double PZ = rng.U(50, 7000); // GeV
+		const M4Vec p1(0,0, PZ, sqrt( pow2(mproton) + pow2(PZ)));
+		const M4Vec p2(0,0,-PZ, sqrt( pow2(mproton) + pow2(PZ)));
 
 		// --------------------------------------------------------------------
 		// ** TRANSFORM TO DIFFERENT LORENTZ FRAMES **
-		
+		const M4Vec X = pf[0] + pf[1];
+
 		M4Vec              pb1boost;  // beam1 particle boosted
 		M4Vec              pb2boost;  // beam2 particle boosted
-		std::vector<M4Vec> pfboost;   // central particles boosted
-		gra::kinematics::LorentFramePrepare(pf, p1, p2, pb1boost, pb2boost, pfboost);
+		std::vector<M4Vec> pfboost;   // particles boosted
+		gra::kinematics::LorentFramePrepare(pf, X, p1, p2, pb1boost, pb2boost, pfboost);
 
 		std::vector<std::string> frametype = {"CS", "HE", "AH", "PG", "SR"};
-		const int direction = 1;
 		for (const auto &k : indices(frametype)) {
 
 			// Transform using the generic routine
@@ -85,13 +81,13 @@ TEST_CASE("gra::kinematics::LorentzFrame, PGframe, HEframe, CSframe", "[Lorentz 
 
 			// Pseudo-Gottfried-Jackson frame test
 			if (frametype[k] == "PG") {
-				printf("PG[0]:      "); pfout[0].Print();
-				printf("PG[1]:      "); pfout[1].Print();				
+				//printf("PG[0]:      "); pfout[0].Print();
+				//printf("PG[1]:      "); pfout[1].Print();				
 
 		  		std::vector<M4Vec> pfPG = pf;
-		  		gra::kinematics::PGframe(pfPG, direction, p1, p2);
-				printf("PGframe[0]: "); pfPG[0].Print();
-				printf("PGframe[1]: "); pfPG[1].Print();
+		  		gra::kinematics::PGframe(pfPG, X, direction, p1, p2, DEBUG);
+				//printf("PGframe[0]: "); pfPG[0].Print();
+				//printf("PGframe[1]: "); pfPG[1].Print();
 
 				// Difference
 				REQUIRE( gra::math::CheckEMC(pfout[0] - pfPG[0], EPS) );
@@ -100,13 +96,13 @@ TEST_CASE("gra::kinematics::LorentzFrame, PGframe, HEframe, CSframe", "[Lorentz 
 
 			// Helicity frame test
 			if (frametype[k] == "HE") {
-				printf("HE[0]:      "); pfout[0].Print();
-				printf("HE[1]:      "); pfout[1].Print();				
+				//printf("HE[0]:      "); pfout[0].Print();
+				//printf("HE[1]:      "); pfout[1].Print();				
 
 		  		std::vector<M4Vec> pfHE = pf;
-		  		gra::kinematics::HEframe(pfHE);
-				printf("HEframe[0]: "); pfHE[0].Print();
-				printf("HEframe[1]: "); pfHE[1].Print();				
+		  		gra::kinematics::HEframe(pfHE, X, DEBUG);
+				//printf("HEframe[0]: "); pfHE[0].Print();
+				//printf("HEframe[1]: "); pfHE[1].Print();				
 
 				// Difference
 				REQUIRE( gra::math::CheckEMC(pfout[0] - pfHE[0], EPS) );
@@ -115,24 +111,71 @@ TEST_CASE("gra::kinematics::LorentzFrame, PGframe, HEframe, CSframe", "[Lorentz 
 
 			// Collins-Soper frame test
 			if (frametype[k] == "CS") {
-				printf("CS[0]:      "); pfout[0].Print();
-				printf("CS[1]:      "); pfout[1].Print();				
+				//printf("CS[0]:      "); pfout[0].Print();
+				//printf("CS[1]:      "); pfout[1].Print();				
 
 		  		std::vector<M4Vec> pfCS = pf;
-		  		gra::kinematics::CSframe(pfCS);
-				printf("CSframe[0]: "); pfCS[0].Print();
-				printf("CSframe[1]: "); pfCS[1].Print();
+		  		gra::kinematics::CSframe(pfCS, X, p1, p2, DEBUG);
+				//printf("CSframe[0]: "); pfCS[0].Print();
+				//printf("CSframe[1]: "); pfCS[1].Print();
 				
 				// Difference
 				REQUIRE( gra::math::CheckEMC(pfout[0] - pfCS[0], EPS) );
 				REQUIRE( gra::math::CheckEMC(pfout[1] - pfCS[1], EPS) );	
 			}
 		}
-		// --------------------------------------------------------------------
-		std::cout << " -----------------------------------------------------" << std::endl;
-
 
 	} while ((++repeat) < N);
 
+}
+
+
+// Test Lorentz frame transformation functions
+// 
+TEST_CASE("gra::kinematics::GJframe", "[Lorentz Frames]") {
+	
+	const bool DEBUG = false;
+
+	const int N = 1e5; // Number of trials
+	const double EPS = 1e-5;
+
+    MRandom rng;
+    rng.SetSeed(123456);
+
+	const double mproton = 0.938;
+	const double mpion = 0.14; // pion
+	std::vector<M4Vec> pf4(4);	
+
+	int repeat = 0;
+	do {
+		const int direction = 1; // GJ and PG frames
+		
+		if (repeat % 10000 == 0)
+		std::cout << repeat << " / " << N << std::endl;
+
+		// Proton beams
+	    const double PZ = rng.U(50, 7000); // GeV
+		const M4Vec p1(0,0, PZ, sqrt( pow2(mproton) + pow2(PZ)));
+		const M4Vec p2(0,0,-PZ, sqrt( pow2(mproton) + pow2(PZ)));
+
+		// Random 2 -> 4 process
+		gra::kinematics::NBodyPhaseSpace(p1 + p2, (p1+p2).M(), {mproton, mpion, mpion, mproton}, pf4, false, rng);
+
+ 		const M4Vec X  = pf4[1] + pf4[2];
+  		const M4Vec q1 = p1 - pf4[0];
+  		const M4Vec q2 = p2 - pf4[3];
+
+  		// Transform q1 and q2
+  		std::vector<M4Vec> out = {q1, q2};
+  		gra::kinematics::GJframe(out, X, direction, q1, q2, DEBUG);
+
+  		// Propagators should be aligned back-to-back on z-axis
+		REQUIRE( std::abs(out[0].Px()) < EPS ); // ~ 0
+		REQUIRE( std::abs(out[0].Py()) < EPS ); // ~ 0
+		REQUIRE( std::abs(out[1].Px()) < EPS ); // ~ 0
+		REQUIRE( std::abs(out[1].Py()) < EPS ); // ~ 0
+		REQUIRE( std::abs(out[0].Pz() + out[1].Pz()) < EPS ); // pz_1 + pz_2 ~ 0
+
+	} while ((++repeat) < N);
 }
 

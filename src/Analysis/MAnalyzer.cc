@@ -364,22 +364,24 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
         h2["h2_2B_eta1_eta2"]->h[SID]->Fill(a.Eta(), b.Eta(), W);
 
         // Frame transform
+        const int direction = 1;
+
+        const M4Vec X = a + b;
+
         std::vector<M4Vec> SR = {a, b};
-        gra::kinematics::SRframe(SR);
+        gra::kinematics::SRframe(SR, X);
 
         std::vector<M4Vec> HE = {a, b};
-        gra::kinematics::HEframe(HE);
+        gra::kinematics::HEframe(HE, X);
 
         std::vector<M4Vec> CS = {a, b};
-        gra::kinematics::CSframe(CS);
+        gra::kinematics::CSframe(CS, X, p_beam_plus, p_beam_minus);
 
         std::vector<M4Vec> GJ = {a, b};
-        const M4Vec propagator = p_beam_plus - p_final_plus;
-        gra::kinematics::GJframe(GJ, propagator);
+        gra::kinematics::GJframe(GJ, X, direction, p_beam_plus - p_final_plus, p_beam_minus - p_final_minus);
         
         std::vector<M4Vec> PG = {a, b};
-        const int direction = 1;
-        gra::kinematics::PGframe(PG, direction, p_beam_plus, p_beam_minus);
+        gra::kinematics::PGframe(PG, X, direction, p_beam_plus, p_beam_minus);
 
         h1["h1_costheta_SR"]->h[SID]->Fill(SR[0].CosTheta(), W);
         h1["h1_costheta_HE"]->h[SID]->Fill(HE[0].CosTheta(), W);
@@ -502,16 +504,8 @@ void MAnalyzer::FrameObservables(double W, HepMC3::GenEvent &evt, const M4Vec &p
                                  const M4Vec &p_beam_minus, const M4Vec &p_final_plus,
                                  const M4Vec &p_final_minus, const std::vector<M4Vec> &pip,
                                  const std::vector<M4Vec> &pim) {
-  // GJ-frame direction
-  const unsigned int direction = 1;
-  M4Vec              propagator;
-
-  // Calculate propagator (= Pomeron) 4-vector
-  if (direction == 1) {
-    propagator = p_beam_plus - p_final_plus;
-  } else {
-    propagator = p_beam_minus - p_final_minus;
-  }
+  const int direction = 1; // PG and GJ
+  
   std::vector<M4Vec> twopions;
 
   if (pip.size() != 0 && pim.size() != 0) {  // Charged pair
@@ -520,19 +514,21 @@ void MAnalyzer::FrameObservables(double W, HepMC3::GenEvent &evt, const M4Vec &p
   if (pip.size() == 2 && pim.size() == 0) {  // Neutral pair
     twopions = {pip[0], pip[1]};
   }
-
+  
   // Make copies
   std::vector<std::vector<M4Vec>> pions;
   for (std::size_t i = 0; i < analyzer::FRAMES.size(); ++i) { pions.push_back(twopions); }
 
   // Frame transformations
-  gra::kinematics::SRframe(pions[0]);
-  gra::kinematics::HEframe(pions[1]);
-  gra::kinematics::CSframe(pions[3]);
-  gra::kinematics::GJframe(pions[4], propagator);
-  gra::kinematics::PGframe(pions[5], direction, p_beam_plus, p_beam_minus);
+  const M4Vec X = twopions[0] + twopions[1];
+  
+  gra::kinematics::SRframe(pions[0], X);
+  gra::kinematics::HEframe(pions[1], X);
+  gra::kinematics::CSframe(pions[3], X, p_beam_plus, p_beam_minus);
+  gra::kinematics::GJframe(pions[4], X, direction, p_beam_plus - p_final_plus, p_beam_minus - p_final_minus);
+  gra::kinematics::PGframe(pions[5], X, direction, p_beam_plus, p_beam_minus);
   // LABframe(pions[6]), already there, do nothing
-
+  
   // No forward protons -> set zero
   if (p_final_plus.M() < 0.5) { pions[3] = {M4Vec(0, 0, 0, 0), M4Vec(0, 0, 0, 0)}; }
 

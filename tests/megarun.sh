@@ -9,7 +9,7 @@ make -j4 TEST=TRUE ROOT14=TRUE
 # For different ROOT installation versions
 #make -j4 TEST=TRUE
 
-read -p "alicerun: Generate events (or only analyze)? [y/n] " -n 1 -r
+read -p "megarun: Generate events (or only analyze)? [y/n] " -n 1 -r
 echo # New line
 
 if [[ $REPLY =~ ^[Yy]$ ]]
