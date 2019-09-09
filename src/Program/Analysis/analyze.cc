@@ -93,7 +93,7 @@ void Init1DHistogram(std::map<std::string, std::shared_ptr<h1Multiplet>> &h,
 
       name    = "h1_phi_" + i;
       h[name] = std::make_shared<h1Multiplet>(
-        name, title + ";Central final state #phi [" + i + " frame];d" + U + "/dcos #phi  (" + units + ")", bP.N, -math::PI, math::PI, legendtext);
+        name, title + ";Central final state #phi [" + i + " frame];d" + U + "/d#phi  (" + units + ")", bP.N, -math::PI, math::PI, legendtext);
     }
     
     name = "h1_2B_acop";
@@ -191,7 +191,7 @@ void Init2DHistogram(std::map<std::string, std::shared_ptr<h2Multiplet>> &h,
 
       name = "h2_2B_costheta_phi_" + i;
       h[name] = std::make_shared<h2Multiplet>(
-          name, "d" + U + "^2/cos(#theta)#phi  (" + units + ") | " + title + ";daughter cos(#theta); daughter #phi (rad) [" + i + " FRAME]",
+          name, "d" + U + "^2/dcos(#theta)d#phi  (" + units + ") | " + title + ";daughter cos(#theta); daughter #phi (rad) [" + i + " FRAME]",
           100, -1, 1, 100, -gra::math::PI, gra::math::PI, legendtext);
     }
     
