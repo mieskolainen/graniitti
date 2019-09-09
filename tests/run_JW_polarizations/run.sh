@@ -11,7 +11,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
 # Generate
-N=100000
+N=1000000
 
 ./bin/gr -i ./tests/processes/CMS13.json -p "PP[RES]<F> -> pi+ pi- @RES{f0_980:1}  @FRAME:SR" \
 -w true -l false -n $N -o "f0_980" -f "hepmc3"
