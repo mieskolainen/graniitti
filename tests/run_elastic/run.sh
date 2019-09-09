@@ -6,4 +6,12 @@
 
 # Screening loop must be on!
 
+read -p "Generate events (or only analyze)? [y/n] " -n 1 -r
+echo # New line
+
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+
 ./bin/xscan -i ./tests/run_minbias/el.json -e 62,500,546,1800,7000,8000,13000,60000 -l true
+
+fi

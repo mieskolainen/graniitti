@@ -4,9 +4,19 @@
 #
 # Run with: source ./tests/run_xxx/run.sh
 
-./bin/minbias 900   10000
-./bin/minbias 7000  10000
-./bin/minbias 13000 10000
+read -p "Generate events (or only analyze)? [y/n] " -n 1 -r
+echo # New line
+
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+
+N=10000
+
+./bin/minbias 900   $N
+./bin/minbias 7000  $N
+./bin/minbias 13000 $N
+
+fi
 
 
 # SET RIVET source here (otherwise collapse between HepMC2 and HepMC3 libraries!)
