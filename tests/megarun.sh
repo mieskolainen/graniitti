@@ -27,6 +27,7 @@ yes $CMD | source ./tests/run_alice_single/run.sh
 # multiple processes and plotting
 yes $CMD | source ./tests/run_alice_multi/run.sh
 yes $CMD | source ./tests/run_cms_multi/run.sh
+yes $CMD | source ./tests/run_JW_polarizations/run.sh
 
 # spherical harmonic expansion
 yes $CMD | source ./tests/run_cms_harmonic/run.sh

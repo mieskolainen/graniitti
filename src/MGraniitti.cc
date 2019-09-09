@@ -562,6 +562,13 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
           throw std::invalid_argument("@Syntax error: invalid R[" + RESNAME + "] not found");
         }
         bool couplings_touched = false;
+        bool density_touched   = false;
+
+        MMatrix<std::complex<double>> newrho;
+        if (RESONANCES[RESNAME].p.spinX2 != 0) {
+          const int N = RESONANCES[RESNAME].hc.rho.size_row();
+          newrho = MMatrix<std::complex<double>>(N,N, 0.0);
+        }
 
         // Loop over key:val arguments
         for (const auto &x : syntax[i].arg) {
@@ -584,6 +591,34 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
               couplings_touched = true;
             }
           }
+
+          // Set diagonal spin density elements
+          for (std::size_t n = 0; n <= (newrho.size_row()-1)/2; ++n) {
+            const int J = (newrho.size_row()-1)/2;
+            if (x.first == ("JZ" + std::to_string(n))) {
+              const double value = std::stod(x.second);
+
+              newrho[newrho.size_row()-1-J-n][newrho.size_row()-1-J-n] = value;
+              
+              newrho[newrho.size_row()-1-J+n][newrho.size_row()-1-J+n] = value;
+              density_touched = true;
+            }
+          }
+        }
+
+        // Normalize the trace and save it
+        if (density_touched) {
+          const std::complex<double> trace = newrho.Trace();
+          if (std::abs(trace) > 0) {
+            newrho = newrho * (1.0/trace);
+          } else {
+            throw std::invalid_argument("MGraniitti::ReadProcessParam: @R[] Spin density error with negative diagonal");
+          }
+          RESONANCES[RESNAME].hc.rho = newrho;
+
+          std::cout << rang::fg::green << "@R[" << RESNAME << "] new spin density set:" << std::endl;
+          RESONANCES[RESNAME].hc.rho.Print();
+          std::cout << rang::fg::reset << std::endl;
         }
         
         // Print new coupling array

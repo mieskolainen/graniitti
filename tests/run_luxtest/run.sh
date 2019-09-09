@@ -5,14 +5,23 @@
 #
 # Run with: source ./tests/run_xxx/run.sh
 
+read -p "run: Generate events (or only analyze)? [y/n] " -n 1 -r
+echo # New line
+
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+
 # Generate
 ./bin/gr -i ./tests/run_luxtest/LUX.json -w true -n 50000
+
+fi
 
 # Scale factor 3 x for three lepton flavors (we generate a sample only for one flavor)
 SCALE=3
 
 # Analyze
-./bin/analyze -i LUX \
+./bin/analyze \
+-i LUX \
 -g 11 \
 -n 2 \
 -l "l^{+}l^{-} / 13 TeV" \
