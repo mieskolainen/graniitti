@@ -301,16 +301,28 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &reso
 
   // Spin polarization density matrix defined:
 
-  // In Helicity frame
-  if        (resonance.hc.FRAME == "HE") {
-    theta_rotation = lts.pfinal[0].Theta();
-    phi_rotation   = lts.pfinal[0].Phi();
+  // In direct non-rotated rest frame
+  if        (resonance.hc.FRAME == "SR") {
 
-    // In Non-Rotated frame
-  } else if (resonance.hc.FRAME == "SR") {
     theta_rotation = 0;
     phi_rotation   = 0;
-    
+
+  // In helicity rest frame [quantization axis by system orientation in the lab]
+  } else if (resonance.hc.FRAME == "HE") {
+
+    theta_rotation = lts.pfinal[0].Theta(); // +
+    phi_rotation   = lts.pfinal[0].Phi();   // +
+
+  // In Gottfried-Jackson frame [quantization axis by the momentum transfer vector]
+  } else if (resonance.hc.FRAME == "GJ") {
+
+    // Propagator
+    M4Vec q1boost = lts.q1;
+    gra::kinematics::LorentzBoost(lts.pfinal[0], lts.pfinal[0].M(), q1boost, -1);  // Note the minus sign
+
+    theta_rotation = q1boost.Theta(); // +
+    phi_rotation   = q1boost.Phi();   // +
+
   } else {
     // Throw exception
     const std::string str =
@@ -327,8 +339,8 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &reso
   const MMatrix<std::complex<double>> D =
       gra::spin::DMatrix(resonance.p.spinX2 / 2.0, theta_rotation, phi_rotation);
 
-  // rho_rot = D*rho*D^dagger
-  const MMatrix<std::complex<double>> rho_ROT = D * resonance.hc.rho * D.Dagger();
+  // rho_rot = D^\dagger*rho*D [keep this sandwich order!]
+  const MMatrix<std::complex<double>> rho_ROT = D.Dagger() * resonance.hc.rho * D;
 
   // Weight (amplitude squared) of the event by the density matrix formalism:
   // Tr[f*rho*f^dagger]
