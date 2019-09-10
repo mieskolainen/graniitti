@@ -35,7 +35,7 @@ S2=0.15
 -g "113, 333, 113, 333" \
 -n "2, 2, 2, 2" \
 -l "#rho^{0}#rho^{0} #rightarrow #pi^{+}#pi^{-}, #phi#phi #rightarrow K^{+}K^{-}, #rho^{0}#rho^{0} #rightarrow #pi^{+}#pi^{-} (TP), #phi#phi #rightarrow K^{+}K^{-} (TP)" \
--M "95, 0.0, 4.0" \
+-M "95, 0.0, 7.0" \
 -Y "95,-2.5, 2.5" \
 -P "95, 0.0, 2.0" \
 -u ub \
