@@ -266,7 +266,7 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
       sqrts = CheckEnergyMomentum(evt);
       // ==============================================================
     }
-    
+
     // Beam (initial state ) protons
     for (const HepMC3::GenParticlePtr &p1 : beam_protons) {
       M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
@@ -576,7 +576,7 @@ void MAnalyzer::NStarObservables(double W, HepMC3::GenEvent &evt) {
   bool excited_minus = false;
   for (const HepMC3::GenParticlePtr &p1 : search_nstar) {
     M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
-    hM_NSTAR->Fill(pvec.M());
+    hM_NSTAR->Fill(pvec.M(), W);
 
     if (pvec.Rap() > 0) { excited_plus = true; }
     if (pvec.Rap() < 0) { excited_minus = true; }
