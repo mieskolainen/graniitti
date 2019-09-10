@@ -35,7 +35,7 @@ fi
 
 # Analyze
 # Hard-coded integrated screening factor (for speed, set 1 if Pomeron loop was on)
-S2=0.18
+S2=0.15
 S2_photo=0.7
 
 ./bin/analyze \

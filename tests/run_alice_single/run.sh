@@ -7,8 +7,7 @@
 POMLOOP=false
 
 # Hard-coded integrated screening factor (for speed, set 1 if Pomeron loop was on)
-#S2=1.0
-S2=0.18
+S2=0.15
 
 read -p "Generate events (or only analyze)? [y/n] " -n 1 -r
 echo # New line
@@ -16,8 +15,10 @@ echo # New line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
+N=100000
+
 # Generate
-./bin/gr -i ./tests/processes/ALICE7_2pi.json -n 100000 -l $POMLOOP -w true
+./bin/gr -i ./tests/processes/ALICE7_2pi.json -n $N -l $POMLOOP -w true
 
 fi
 

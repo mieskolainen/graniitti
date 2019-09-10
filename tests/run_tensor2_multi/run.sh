@@ -27,7 +27,7 @@ fi
 
 # Analyze
 # Hard-coded integrated screening factor (for speed, set 1 if Pomeron loop was on)
-S2=0.18
+S2=0.15
 
 ./bin/analyze \
 -i "f2_0, f2_1, f2_2, f2_3, f2_4, f2_5, f2_6" \

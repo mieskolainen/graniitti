@@ -19,12 +19,11 @@ N=100000
 ./bin/gr -i ./tests/processes/CMS13.json -p "PP[RESTENSOR]<F> -> 22 22-  @RES{eta:1}     @R[eta]{g0:0.0, g1:1.0}"     -w true -l false -n $N -o "eta_1" -f "hepmc3"
 ./bin/gr -i ./tests/processes/CMS13.json -p "yP[RESTENSOR]<F> -> pi+ pi- @RES{rho_770:1}" -w true -l false -n $N -o "rho" -f "hepmc3"
 
-
 fi
 
 # Analyze
 # Hard-coded integrated screening factor (for speed, set 1 if Pomeron loop was on)
-S2=0.18
+S2=0.15
 S2photo=0.7
 
 ./bin/analyze \

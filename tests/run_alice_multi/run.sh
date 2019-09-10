@@ -21,7 +21,7 @@ fi
 
 # Analyze
 # Hard-coded integrated screening factor (for speed, set 1 if Pomeron loop was on)
-S2=0.18
+S2=0.15
 
 ./bin/analyze \
 -i "ALICE_2pi, ALICE_2K, ALICE_ppbar" \

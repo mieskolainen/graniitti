@@ -21,7 +21,7 @@ fi
 
 # Analyze
 # Hard-coded integrated screening factor (for speed, set 1 if Pomeron loop was on)
-S2=0.18
+S2=0.15
 
 ./bin/analyze \
 -i "CMS19_2pi, CMS19_2K, CMS19_ppbar" \
