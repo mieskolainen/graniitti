@@ -103,7 +103,7 @@
     // Central system
     "SYSTEM" : {
       
-      "M"    : [3.3, 3.5],      // Mass
+      "M"    : [3.0, 4.0],      // Mass
       "Rap"  : [-10.0, 10.0],   // Rapidity
       "Pt"   : [0.0, 100000.0]  // Transverse momentum
     },
