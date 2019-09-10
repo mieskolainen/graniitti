@@ -1,6 +1,7 @@
 #!/bin/sh
 #
 # Simulation and analysis with different rest frame definitions for the spin polarization density
+# Basic check: sample generated with SR should look as it should in SR frame plots, same for HE in HE frame, GJ in GJ frame
 #
 # Run with: source ./tests/run_xxx/run.sh
 
