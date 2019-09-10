@@ -1,6 +1,5 @@
 #!/bin/sh
 #
-#
 # LUXpdf and inclusive lepton pair production via gamma-gamma fusion
 #
 # Run with: source ./tests/run_xxx/run.sh

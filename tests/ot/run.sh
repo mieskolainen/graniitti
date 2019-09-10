@@ -1,9 +1,9 @@
 #!/bin/s
 #
-# OT
+# Optimal Transport tests
 #
 
-read -p "ot: Generate events (or only analyze)? [y/n] " -n 1 -r
+read -p "run: Generate events (or only analyze)? [y/n] " -n 1 -r
 echo # New line
 
 if [[ $REPLY =~ ^[Yy]$ ]]

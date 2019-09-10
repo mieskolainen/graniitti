@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Simulation and analysis with different tensor Pomeron couplings
+# Simulation and analysis with different tensor Pomeron spin-2 couplings
 #
 # Run with: source ./tests/run_xxx/run.sh
 

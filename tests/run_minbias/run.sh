@@ -4,7 +4,7 @@
 #
 # Run with: source ./tests/run_xxx/run.sh
 
-read -p "Generate events (or only analyze)? [y/n] " -n 1 -r
+read -p "run: Generate events (or only analyze)? [y/n] " -n 1 -r
 echo # New line
 
 if [[ $REPLY =~ ^[Yy]$ ]]
@@ -17,7 +17,6 @@ N=10000
 ./bin/minbias 13000 $N
 
 fi
-
 
 # SET RIVET source here (otherwise collapse between HepMC2 and HepMC3 libraries!)
 source ./lenovo/rivet/local/rivetenv.sh

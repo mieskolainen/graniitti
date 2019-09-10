@@ -4,14 +4,21 @@
 #
 # Run with: source ./tests/run_xxx/run.sh
 
+read -p "run: Generate events (or only analyze)? [y/n] " -n 1 -r
+echo # New line
+
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+
 # Generate events
 ./bin/gr ./tests/processes/CMS11_mumu.json
+
+fi
 
 # Set source here (otherwise collapse between HepMC2 and HepMC3 libraries!)
 
 #source ./lenovo/rivet/local/rivetenv.sh
 source ./i5/local/rivetenv.sh
-
 
 # -----------------------------------------------------------------------------------
 # 7 TeV

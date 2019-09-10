@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Simulation and analysis with Tensor Pomeron
+# Simulation pi+pi-, K+K-, ppbar and analysis with Tensor Pomeron
 #
 # Run with: source ./tests/run_xxx/run.sh
 

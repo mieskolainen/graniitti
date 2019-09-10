@@ -1,12 +1,12 @@
 #!/bin/sh
 #
-# Elastic scattering at different energies
+# Elastic pp scattering at different energies
 #
 # Run with: source ./tests/run_elastic/run.sh
 
 # Screening loop must be on!
 
-read -p "Generate events (or only analyze)? [y/n] " -n 1 -r
+read -p "run: Generate events (or only analyze)? [y/n] " -n 1 -r
 echo # New line
 
 if [[ $REPLY =~ ^[Yy]$ ]]

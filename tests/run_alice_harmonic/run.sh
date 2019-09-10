@@ -4,7 +4,7 @@
 #
 # Run with: source ./tests/run_xxx/run.sh
 
-read -p "aliceharmonicrun: Generate events (or only analyze)? [y/n] " -n 1 -r
+read -p "run: Generate events (or only analyze)? [y/n] " -n 1 -r
 echo # New line
 
 if [[ $REPLY =~ ^[Yy]$ ]]

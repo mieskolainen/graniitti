@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Simulation and analysis of low mass mumu
+# Simulation yy -> mu+mu- (low mass and high mass domains) and analysis
 #
 # Run with: source ./tests/run_xxx/run.sh
 
@@ -12,7 +12,7 @@ S2=1.0
 # Number of events
 N=1000000
 
-read -p "Generate events (or only analyze)? [y/n] " -n 1 -r
+read -p "run: Generate events (or only analyze)? [y/n] " -n 1 -r
 echo # New line
 
 if [[ $REPLY =~ ^[Yy]$ ]]
