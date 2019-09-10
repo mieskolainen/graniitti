@@ -709,20 +709,19 @@ std::complex<double> MRegge::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resona
   // s-channel
   // Factor 2 x from initial state (identical boson) statistics
   const std::complex<double> A_prod =
-      2.0 * PropOnly(lts.s1, lts.t1) * FF_A * PARAM_SOFT::gN_P * CBW(lts, resonance) * resonance.g *
-      PARAM_REGGE::JPCoupling(lts, resonance) *
+      2.0 * PropOnly(lts.s1, lts.t1) * FF_A * PARAM_SOFT::gN_P * CBW(lts, resonance) *
       PARAM_REGGE::ResonanceFormFactor(lts.m2, pow2(resonance.p.mass), resonance.g_FF) *
       PropOnly(lts.s2, lts.t2) * FF_B * PARAM_SOFT::gN_P;
 
-  // Decay amplitude
-  const std::complex<double> A_decay = gra::spin::SpinAmp(lts, resonance);
+  // Production and Decay amplitude
+  const std::complex<double> A_spin = spin::ProdAmp(lts, resonance) * spin::SpinAmp(lts, resonance);
 
   // Flux
   // const double V = msqrt(lts.s / lts.s1 / lts.s2);
   const double V = msqrt(1.0 / lts.m2);
 
   // Full amplitude
-  const std::complex<double> A = A_prod * A_decay * V;
+  const std::complex<double> A = A_prod * A_spin * V;
 
   // --------------------------------------------------------------------
   // For screening loop
@@ -752,7 +751,7 @@ std::complex<double> MRegge::PhotoME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &r
 
   // Resonance part
   const std::complex<double> common =
-      CBW(lts, resonance) * resonance.g *
+      CBW(lts, resonance) *
       PARAM_REGGE::ResonanceFormFactor(lts.m2, pow2(resonance.p.mass), resonance.g_FF);
 
   double gammaflux1 = lts.excite1 ? IncohFlux(lts.x1, lts.t1, lts.qt1, lts.pfinal[1].M2())
@@ -775,14 +774,13 @@ std::complex<double> MRegge::PhotoME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &r
       PhotoProp(lts.s1, lts.t1, pow2(resonance.p.mass), lts.excite1, lts.pfinal[1].M2());
 
   // Should sum here with negative sign if proton-antiproton initial state (anti-symmetric)
-  // Implement thateave that as an option (TBD) [IMPROVE THIS PART]
-  const std::complex<double> A_prod = (M1 + M2) * PARAM_REGGE::JPCoupling(lts, resonance);
+  const std::complex<double> A_prod = (lts.beam1.pdg == lts.beam2.pdg) ? (M1 + M2) : (M1 - M2);
   
-  // Spin and decay part
-  const std::complex<double> A_decay = gra::spin::SpinAmp(lts, resonance);
+  // Production and Decay amplitude
+  const std::complex<double> A_spin = spin::ProdAmp(lts, resonance) * spin::SpinAmp(lts, resonance);
 
   // Full amplitude
-  const std::complex<double> A = A_prod * A_decay;
+  const std::complex<double> A = A_prod * A_spin;
 
   // --------------------------------------------------------------------
   // For screening loop
@@ -1039,116 +1037,9 @@ std::complex<double> JPC_CS_coupling(const gra::LORENTZSCALAR &lts,
   return 1.0;
 }
 
-// Propagator-Propagator-Resonance spin-parity transverse coupling structure
-// ansatz for different spin-parities.
-//
-// Idea: If Pomeron does not obey any basic spin-classification scheme,
-// it may be effective a different quasiparticle (anyon etc.)
-//
-//
 // For data, see:
 //
 // [REFERENCE: Kirk for WA102, https://arxiv.org/abs/hep-ph/9908253v1]
-//
-// Remember that Pomeron loop makes its own,
-// in certain kinematic domain very significant contribution to
-// the transverse distributions -- take into account in parameter tuning.
-//
-//
-// See also:
-// [REFERENCE: https://arxiv.org/pdf/1406.7010.pdf]
-//
-std::complex<double> JPCoupling(const gra::LORENTZSCALAR &lts, const gra::PARAM_RES &resonance) {
-  // return JPC_CS_coupling(lts, resonance);
-
-  // Forward proton pair deltaphi
-  const double dphi = lts.pfinal[1].DeltaPhiAbs(lts.pfinal[2]);
-
-  //  ^  WA102 data (not fully sin(phi) symmetric after MC, due to kinematics, presumably)
-  //  |   .---.
-  //  |  .     .
-  //  | .       .
-  //  ------------->
-  //  0           180 deg
-  //
-  if (resonance.p.spinX2 == 0 &&
-      resonance.p.P == -1) {  // 0- = pseudoscalar, [e.g. eta(548), eta(958)']
-    return msqrt(std::abs(lts.t1)) * msqrt(std::abs(lts.t2)) * std::sin(dphi);
-  }
-
-  //  ^  WA102 data
-  //  |-----
-  //  |     -------
-  //  |
-  //  ------------->
-  //  0           180 deg
-  //
-  if (resonance.p.spinX2 == 0 && resonance.p.P == 1) {  // 0+ = scalar, [e.g. f0(980), f0(1710)]
-    return 1.0;
-  }
-
-  //  ^
-  //  |
-  //  |    ??? (set 1.0)
-  //  |
-  //  ------------->
-  //  0           180 deg
-  //
-  if (resonance.p.spinX2 == 2 &&
-      resonance.p.P == -1) {  // 1- = vector, [e.g. rho(770), omega, phi(1020), K*(892)]
-    return 1.0;
-  }
-
-  // Steepness
-  const double alpha = 0.0;
-
-  double A = 0.0;
-  if (!resonance.p.glue) {  // "normal state ansatz"
-    A = msqrt(alpha * pow2(msqrt(std::abs(lts.t1)) - msqrt(std::abs(lts.t2))) +
-              msqrt(lts.t1 * lts.t2) * pow2(std::sin(dphi / 2.0)));
-  } else {  // "glue state ansatz"
-    A = msqrt(alpha * pow2(msqrt(std::abs(lts.t1)) - msqrt(std::abs(lts.t2))) +
-              msqrt(lts.t1 * lts.t2) * pow2(std::cos(dphi / 2.0)));
-  }
-
-  //  ^  WA102 data
-  //  |      -----
-  //  |  ----
-  //  |--
-  //  ------------->
-  //  0           180 deg
-  //
-  if (resonance.p.spinX2 == 2 &&
-      resonance.p.P == 1) {  // 1+ = axialvector, [e.g. f1(1285), f1(1420)]
-    return A;
-  }
-
-  //  ^
-  //  |
-  //  |    ???
-  //  |
-  //  ------------->
-  //  0           180 deg
-  //
-  if (resonance.p.spinX2 == 4 && resonance.p.P == -1) {  // 2- = tensor
-    return A;
-  }
-
-  //  ^  WA102 data
-  //  |      -----
-  //  |  ----
-  //  |--
-  //  ------------->
-  //  0           180 deg
-  //
-  if (resonance.p.spinX2 == 4 && resonance.p.P == 1) {  // 2+ = tensor, [e.g. f2(1270)]
-    return A;
-  }
-
-  throw std::invalid_argument("JPCoupling: Unknown (2xJ)^P (spin-parity) structure: " +
-                              std::to_string(resonance.p.spinX2) + " " +
-                              std::to_string(resonance.p.P));
-}
 
 // Off-Shell meson form factor
 double Meson_FF(double t_hat, double M2) {

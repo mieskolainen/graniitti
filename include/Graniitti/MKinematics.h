@@ -1687,6 +1687,10 @@ public:
   gra::kinematics::MCWSUM DW_sum;
   gra::kinematics::MCWSUM DW_sum_exact;
 
+  // Initial states
+  gra::MParticle beam1;
+  gra::MParticle beam2;
+  
   // Four momenta of initial and final states
   M4Vec              pbeam1;
   M4Vec              pbeam2;

@@ -304,15 +304,14 @@ double MGamma::yyHiggs(gra::LORENTZSCALAR &lts) const {
 double MGamma::yyX(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const {
   // Factor of 2 x from (identical) initial state boson statistics
   std::complex<double> A_prod =
-      2.0 * gra::form::CBW(lts, resonance) * resonance.g *
-      PARAM_REGGE::ResonanceFormFactor(lts.m2, pow2(resonance.p.mass), resonance.g_FF) *
-      PARAM_REGGE::JPCoupling(lts, resonance);
-
-  // Spin and decay part
-  const std::complex<double> A_decay = gra::spin::SpinAmp(lts, resonance);
+      2.0 * gra::form::CBW(lts, resonance) *
+      PARAM_REGGE::ResonanceFormFactor(lts.m2, pow2(resonance.p.mass), resonance.g_FF);
+  
+  // Production and Decay amplitude
+  const std::complex<double> A_spin = spin::ProdAmp(lts, resonance) * spin::SpinAmp(lts, resonance);
 
   // Total
-  const std::complex<double> A = A_prod * A_decay;
+  const std::complex<double> A = A_prod * A_spin;
 
   // --------------------------------------------------------------------
   // For screening loop

@@ -14,7 +14,7 @@
     "J"  : 0,
     "P"  : 1,
     
-    // "Glueball state" (orthogonal transverse geometry)
+    // "Glueball state" (orthogonal transverse geometry) [NOT ACTIVE]
     "glue" : false,
 
     // Breit-Wigner propagator type
@@ -34,7 +34,7 @@
     "random_rho" : 0,
 
     // Production coupling constant at amplitude level
-    "g_A"   :  0.08,
+    "g_A"   :  0.075,
     "g_phi" : -3.14159,
 
     // Production form factor on

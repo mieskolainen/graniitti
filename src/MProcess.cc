@@ -55,7 +55,7 @@ void MProcess::PrintSetup() const {
   std::cout << rang::style::bold << "Process setup:" << rang::style::reset << std::endl
             << std::endl;
   std::cout << "- Random seed:      " << random.GetSeed() << std::endl;
-  std::cout << "- Initial state:    " << beam1.name << " " << beam2.name << std::endl;
+  std::cout << "- Initial state:    " << lts.beam1.name << " " << lts.beam2.name << std::endl;
   printf("- Beam energies:   [%0.1f %0.1f] GeV \n", lts.pbeam1.E(), lts.pbeam2.E());
   printf("- CMS energy:       %0.1f GeV\n", lts.sqrt_s);
   std::cout << "- Process:          " << PROCESS << rang::fg::green << "  <"
@@ -436,13 +436,13 @@ void MProcess::SetInitialState(const std::vector<std::string> &beam,
     throw std::invalid_argument("MProcess::SetInitialState: Input ENERGY vector not dim 2!");
   }
 
-  beam1 = PDG.FindByPDGName(beam[0]);
-  beam2 = PDG.FindByPDGName(beam[1]);
+  lts.beam1 = PDG.FindByPDGName(beam[0]);
+  lts.beam2 = PDG.FindByPDGName(beam[1]);
 
   // Beam particle 4-momenta re-setup with safety threshold if fixed target
   // setup
-  const double E1 = std::max(energy[0], 1.001 * beam1.mass);
-  const double E2 = std::max(energy[1], 1.001 * beam2.mass);
+  const double E1 = std::max(energy[0], 1.001 * lts.beam1.mass);
+  const double E2 = std::max(energy[1], 1.001 * lts.beam2.mass);
 
   SetBeamEnergies(E1,E2);
 }
@@ -450,26 +450,26 @@ void MProcess::SetInitialState(const std::vector<std::string> &beam,
 // Beam needs to be set before this!
 void MProcess::SetBeamEnergies(double E1, double E2) {
 
-  if (beam1.pdg == 0 || beam1.pdg == 0) {
+  if (lts.beam1.pdg == 0 || lts.beam2.pdg == 0) {
     throw std::invalid_argument("MProcess::SetBeamEnergies: Beam PDG particles not set yet!");
   }
 
   // Beam 4-momentum (px,py,pz,E)
-  lts.pbeam1 = M4Vec(0, 0,  msqrt(pow2(E1) - pow2(beam1.mass)), E1);  // positive z-axis
-  lts.pbeam2 = M4Vec(0, 0, -msqrt(pow2(E2) - pow2(beam2.mass)), E2);  // negative z-axis
+  lts.pbeam1 = M4Vec(0, 0,  msqrt(pow2(E1) - pow2(lts.beam1.mass)), E1);  // positive z-axis
+  lts.pbeam2 = M4Vec(0, 0, -msqrt(pow2(E2) - pow2(lts.beam2.mass)), E2);  // negative z-axis
 
   // Mandelstam s
   lts.s      = (lts.pbeam1 + lts.pbeam2).M2();
   lts.sqrt_s = msqrt(lts.s);
 
-  if (lts.sqrt_s < (beam1.mass + beam2.mass)) {
+  if (lts.sqrt_s < (lts.beam1.mass + lts.beam2.mass)) {
     std::string str = "MProcess::SetBeamEnergies: Error with input CMS energy: " +
                       std::to_string(lts.sqrt_s) + " GeV < initial state masses!";
     throw std::invalid_argument(str);
   }
 
   printf("MProcess::SetBeamEnergies: beam: [%s, %s], energy = [%0.1f, %0.1f] \n",
-         beam2.name.c_str(), beam2.name.c_str(), E1, E2);
+         lts.beam1.name.c_str(), lts.beam2.name.c_str(), E1, E2);
 }
 
 
@@ -1372,7 +1372,7 @@ void MProcess::WriteDecayKinematics(const gra::MDecayBranch &branch, const HepMC
 
 // Forward excitation mass sampling
 void MProcess::SampleForwardMasses(std::vector<double> &mvec, const std::vector<double> &randvec) {
-  mvec = {beam1.mass, beam2.mass};
+  mvec = {lts.beam1.mass, lts.beam2.mass};
 
   lts.excite1 = false;
   lts.excite2 = false;
@@ -1652,13 +1652,13 @@ bool MProcess::GetLorentzScalars(unsigned int Nf) {
 bool MProcess::CommonRecord(HepMC3::GenEvent &evt) {
   // Initial state protons (4-momentum, pdg-id, status code)
   HepMC3::GenParticlePtr gen_p1 = std::make_shared<HepMC3::GenParticle>(
-      gra::aux::M4Vec2HepMC3(lts.pbeam1), beam1.pdg, PDG::PDG_BEAM);
+      gra::aux::M4Vec2HepMC3(lts.pbeam1), lts.beam1.pdg, PDG::PDG_BEAM);
   HepMC3::GenParticlePtr gen_p2 = std::make_shared<HepMC3::GenParticle>(
-      gra::aux::M4Vec2HepMC3(lts.pbeam2), beam2.pdg, PDG::PDG_BEAM);
+      gra::aux::M4Vec2HepMC3(lts.pbeam2), lts.beam2.pdg, PDG::PDG_BEAM);
 
   // Final state protons/N*
-  int PDG_ID1 = beam1.pdg;
-  int PDG_ID2 = beam2.pdg;
+  int PDG_ID1 = lts.beam1.pdg;
+  int PDG_ID2 = lts.beam2.pdg;
 
   int PDG_status1 = PDG::PDG_STABLE;
   int PDG_status2 = PDG::PDG_STABLE;

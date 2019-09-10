@@ -14,7 +14,7 @@
     "J"  : 0,
     "P"  : 1,
     
-    // "Glueball state" (orthogonal transverse geometry)
+    // "Glueball state" (orthogonal transverse geometry) [NOT ACTIVE]
     "glue" : false,
     
     // Breit-Wigner propagator type

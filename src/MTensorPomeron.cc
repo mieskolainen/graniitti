@@ -131,7 +131,9 @@ double MTensorPomeron::GDecay(int J, double M, double Gamma, double mf, double B
   else if (J == 2) {
   return sqrt( partialWidth / (M / (480*PI) * pow2(M/S0) * math::pow5(P) ));
   }
-  else {
+  else if (J == 4) {
+  return 1.0; // future
+  } else {
     throw std::invalid_argument("MTensorPomeron::GDecay: Unknown input spin J = " + std::to_string(J));
   }
 }

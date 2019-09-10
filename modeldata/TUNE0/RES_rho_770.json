@@ -14,7 +14,7 @@
     "J"  :  1,
     "P"  :  -1,
 
-    // "Glueball state" (orthogonal transverse geometry)
+    // "Glueball state" (orthogonal transverse geometry) [NOT ACTIVE]
     "glue" : false,
 
     // Breit-Wigner propagator type
@@ -34,7 +34,7 @@
     "random_rho" : 0,
     
     // Production coupling constant at amplitude level
-    "g_A"   :  0.23,
+    "g_A"   :  0.333,
     "g_phi" :  -2.36, // 3/4 pi
     
     // Production form factor on
@@ -47,7 +47,6 @@
     "FRAME" : "SR",
     
     // Resonance spin-density (von Neumann) matrix (Re and Im parts)
-    
     // Spin-1
     // rho_00 = longitudinal part, rho_-1-1, rho_11 = transverse parts
     "rho_real" : [ [ 0.5, 0,   0] ,

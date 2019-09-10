@@ -323,9 +323,9 @@ bool MQuasiElastic::EventRecord(HepMC3::GenEvent &evt) {
 
   // Initial state protons (4-momentum, pdg-id, status code)
   HepMC3::GenParticlePtr gen_p1 = std::make_shared<HepMC3::GenParticle>(
-      gra::aux::M4Vec2HepMC3(lts.pbeam1), beam1.pdg, PDG::PDG_BEAM);
+      gra::aux::M4Vec2HepMC3(lts.pbeam1), lts.beam1.pdg, PDG::PDG_BEAM);
   HepMC3::GenParticlePtr gen_p2 = std::make_shared<HepMC3::GenParticle>(
-      gra::aux::M4Vec2HepMC3(lts.pbeam2), beam2.pdg, PDG::PDG_BEAM);
+      gra::aux::M4Vec2HepMC3(lts.pbeam2), lts.beam2.pdg, PDG::PDG_BEAM);
 
   // Pomeron 4-vector and generator particle
   M4Vec                  q1(lts.pbeam1 - lts.pfinal[1]);
@@ -333,8 +333,8 @@ bool MQuasiElastic::EventRecord(HepMC3::GenEvent &evt) {
       gra::aux::M4Vec2HepMC3(q1), PDG::PDG_pomeron, PDG::PDG_INTERMEDIATE);
 
   // Final state protons/N*
-  int PDG_ID1     = beam1.pdg;
-  int PDG_ID2     = beam2.pdg;
+  int PDG_ID1     = lts.beam1.pdg;
+  int PDG_ID2     = lts.beam2.pdg;
   int PDG_status1 = PDG::PDG_STABLE;
   int PDG_status2 = PDG::PDG_STABLE;
 
@@ -858,7 +858,7 @@ double MQuasiElastic::B3IntegralVolume() const {
 double MQuasiElastic::B3PhaseSpaceWeight() const {
   // expression -> 16 * pi * s^2 (if s >> m1,m2)
   const double norm =
-      16.0 * gra::math::PI * pow2(lts.s * gra::kinematics::beta12(lts.s, beam1.mass, beam2.mass));
+      16.0 * gra::math::PI * pow2(lts.s * gra::kinematics::beta12(lts.s, lts.beam1.mass, lts.beam2.mass));
 
   if (ProcPtr.CHANNEL == "EL") {
     return 1.0 / norm;

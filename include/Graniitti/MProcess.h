@@ -128,7 +128,7 @@ class MProcess : public MUserHistograms {
 
   // Get initial state
   std::vector<gra::MParticle> GetInitialState() {
-    std::vector<gra::MParticle> beams = {beam1, beam2};
+    std::vector<gra::MParticle> beams = {lts.beam1, lts.beam2};
     return beams;
   }
   
@@ -310,9 +310,6 @@ class MProcess : public MUserHistograms {
   unsigned int N_inf = 0;
   unsigned int N_nan = 0;
 
-  // Initial states
-  gra::MParticle beam1;
-  gra::MParticle beam2;
   double         S_factor = 0.0;  // Cross section statistical 1/S symmetry factor
   // (for identical final states)
   // ----------------------------------------------------------------------

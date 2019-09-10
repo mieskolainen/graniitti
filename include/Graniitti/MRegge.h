@@ -42,9 +42,6 @@ extern std::vector<bool>   n;  // on/off
 
 void PrintParam();
 
-// Regge transverse coupling
-std::complex<double> JPCoupling(const gra::LORENTZSCALAR &lts, const gra::PARAM_RES &resonance);
-
 std::complex<double> JPC_CS_coupling(const gra::LORENTZSCALAR &lts,
                                      const gra::PARAM_RES &    resonance);
 

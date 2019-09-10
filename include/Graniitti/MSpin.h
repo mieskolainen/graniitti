@@ -17,7 +17,8 @@
 
 namespace gra {
 namespace spin {
-// Amplitude squared
+
+std::complex<double> ProdAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance);
 std::complex<double> SpinAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance);
 
 MMatrix<std::complex<double>> DMatrix(double J, double theta_mother, double phi_mother);

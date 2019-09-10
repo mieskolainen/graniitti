@@ -14,8 +14,8 @@
     "J"  : 2,
     "P"  : 1,
     
-    // "Glueball state" (orthogonal transverse geometry)
-    "glue" : true,
+    // "Glueball state" (orthogonal transverse geometry) [NOT ACTIVE]
+    "glue" : false,
     
     // Breit-Wigner propagator type
     // 1 = fixed width relativistic
@@ -34,8 +34,8 @@
     "random_rho" : 0,
 
     // Production coupling constant at amplitude level
-    "g_A"   :   0.1,
-    "g_phi" : -1.57,
+    "g_A"   :  0.1,
+    "g_phi" :  -1.57,
     
     // Production form factor on
     "g_FF"  : true,
@@ -46,18 +46,16 @@
     // but some of them may have simpler representations for the rho matrix.
     "FRAME" : "SR",
     
-    // Resonance spin-density (von Neumann) polarization matrix (Re and Im parts)
-    
-    // Spin-2 example case:
-    //
-    // Longitudinal: rho_00
-    // Transverse:   rho_--, rho_-, rho_+, rho_++
-    "rho_real" : [ [0.25, 0, 0, 0, 0] ,
-                   [0, 0.25, 0, 0, 0] ,
-                   [0, 0, 0, 0, 0] ,
-                   [0, 0, 0, 0.25, 0] ,
-                   [0, 0, 0, 0, 0.25]],
+    // Resonance spin-density (von Neumann) matrix (Re and Im parts)
+    // Transverse:   rho |2-2>, rho |2 -1>, rho |2 1>, rho |2 2>
+    // Longitudinal: rho |2 0>
 
+    "rho_real" : [ [0.5, 0, 0, 0, 0] ,
+                   [0, 0, 0, 0, 0] ,
+                   [0, 0, 0, 0, 0] ,
+                   [0, 0, 0, 0, 0] ,
+                   [0, 0, 0, 0, 0.5]],
+    
     "rho_imag" : [ [0, 0, 0, 0, 0] ,
                    [0, 0, 0, 0, 0] ,
                    [0, 0, 0, 0, 0] ,

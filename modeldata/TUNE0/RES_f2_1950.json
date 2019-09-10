@@ -14,8 +14,8 @@
     "J"  : 2,
     "P"  : 1,
     
-    // "Glueball state" (orthogonal transverse geometry)
-    "glue" : true,
+    // "Glueball state" (orthogonal transverse geometry) [NOT ACTIVE]
+    "glue" : false,
 
     // Breit-Wigner propagator type
     // 1 = fixed width relativistic
@@ -35,8 +35,8 @@
     
     // Production coupling constant at amplitude level
     "g_A"   :  0.1,
-    "g_phi" : -1.57,
-
+    "g_phi" :  -1.57,
+    
     // Production form factor on
     "g_FF"  : true,
 
@@ -47,17 +47,15 @@
     "FRAME" : "SR",
     
     // Resonance spin-density (von Neumann) matrix (Re and Im parts)
+    // Transverse:   rho |2-2>, rho |2 -1>, rho |2 1>, rho |2 2>
+    // Longitudinal: rho |2 0>
 
-    // Spin-2 example case
-    // Transverse:   rho_--, rho_-, rho_+, rho_++
-    // Longitudinal: rho_00
-    
-    "rho_real" : [ [0.25, 0, 0, 0, 0] ,
-                   [0, 0.25, 0, 0, 0] ,
+    "rho_real" : [ [0.5, 0, 0, 0, 0] ,
                    [0, 0, 0, 0, 0] ,
-                   [0, 0, 0, 0.25, 0] ,
-                   [0, 0, 0, 0, 0.25]],
-
+                   [0, 0, 0, 0, 0] ,
+                   [0, 0, 0, 0, 0] ,
+                   [0, 0, 0, 0, 0.5]],
+    
     "rho_imag" : [ [0, 0, 0, 0, 0] ,
                    [0, 0, 0, 0, 0] ,
                    [0, 0, 0, 0, 0] ,

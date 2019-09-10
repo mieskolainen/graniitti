@@ -241,14 +241,15 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
     // Validity of these is taken care of in the functions
     res.BW = j.at("PARAM_RES").at("BW");
 
+    // Spin dependent
+    res.hc.FRAME              = j.at("PARAM_RES").at("FRAME");
+    const bool P_conservation = true;
+
+    const int                     n = res.p.spinX2 + 1;  // n = 2J + 1
+    MMatrix<std::complex<double>> rho(n, n);
+    
     // If we have spin
     if (res.p.spinX2 != 0) {
-      // Spin dependent
-      res.hc.FRAME              = j.at("PARAM_RES").at("FRAME");
-      const bool P_conservation = true;
-
-      const int                     n = res.p.spinX2 + 1;  // n = 2J + 1
-      MMatrix<std::complex<double>> rho(n, n);
 
       // Draw random density matrices (until the number set by user)
       if (j.at("PARAM_RES").at("random_rho") > 0) {

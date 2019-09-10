@@ -157,6 +157,7 @@ void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MPartic
                             (hc.P_conservation ? std::string("true]") : std::string("false]"));
     throw std::invalid_argument(str0 + str);
   }
+  std::cout << "T matrix:" << std::endl;
   gra::matoper::PrintMatrixSeparate(hc.T);
 
   // Do we have missing values?
@@ -198,6 +199,78 @@ bool FermiSymmetry(int l, int s) {
   return false;
 }
 
+
+// Initial state spin treatment: Pomeron + Pomeron/Gamma -> Resonance X
+//
+//
+std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &resonance) {
+
+  // Apply coupling here
+  std::complex<double> A0 = resonance.g;
+
+  // ---------------------------------------------------------------------
+  // Tensors J^P = 2+, 4+, 6+,...
+  // "Pomeron effective spins"
+  double s1 = 0;
+  double s2 = 0;
+  MMatrix<std::complex<double>> T0 = {{std::complex<double>(1.0)}};
+  
+  // ---------------------------------------------------------------------
+
+  // Scalar
+  if (resonance.p.spinX2 == 0 && resonance.p.P == 1) {
+    return A0;
+  }
+
+  // Pseudoscalar J^P = 0-, [e.g. eta(548), eta(958)']
+  if (resonance.p.spinX2 == 0 && resonance.p.P == -1) {
+    s1 = 1;
+    s2 = 1;
+    // SU(2) decomposition as given by InitTMatrix
+    T0 = {{std::complex<double>(0.408), std::complex<double>(0.000), std::complex<double>( 0.000)},
+          {std::complex<double>(0.000), std::complex<double>(0.000), std::complex<double>( 0.000)},
+          {std::complex<double>(0.000), std::complex<double>(0.000), std::complex<double>(-0.408)}};
+    
+    // Forward proton pair deltaphi
+    const double dphi = lts.pfinal[1].DeltaPhiAbs(lts.pfinal[2]);
+
+    //  ^  WA102 data (not fully sin(phi) symmetric after MC, due to kinematics)
+    //  |   .---.
+    //  |  .     .
+    //  | .       .
+    //  ------------->
+    //  0           180 deg
+    //
+    return A0 * msqrt(std::abs(lts.t1)) * msqrt(std::abs(lts.t2)) * std::sin(dphi);
+  }
+  // Axial vector J^P = 1+ [e.g. f1_1420]
+  if (resonance.p.spinX2 == 2 && resonance.p.P == 1) {
+    s1 = 1;
+    s2 = 1;
+    // SU(2) decomposition as given by InitTMatrix
+    T0 = {{std::complex<double>(0.000), std::complex<double>(-0.387), std::complex<double>( 0.000)},
+          {std::complex<double>(0.387), std::complex<double>( 0.000), std::complex<double>(-0.387)},
+          {std::complex<double>(0.000), std::complex<double>( 0.387), std::complex<double>( 0.000)}};
+  }
+  // Vector photoproduction J^P = 1- [e.g. rho770]
+  if (resonance.p.spinX2 == 2 && resonance.p.P == -1) {
+    s1 = 0;
+    s2 = 1;
+    // SU(2) decomposition as given by InitTMatrix
+    T0 = {{std::complex<double>(-0.707), std::complex<double>(0.0), std::complex<double>(0.707)}};
+  }
+  
+  // Boost propagator to the system rest frame
+  M4Vec q1 = lts.q1;
+  gra::kinematics::LorentzBoost(lts.pfinal[0], lts.pfinal[0].M(), q1, -1);
+  
+  const MMatrix<std::complex<double>> f0 = spin::fMatrix(T0, resonance.p.spinX2 / 2.0, s1, s2, q1.Theta(), q1.Phi());
+  const MMatrix<std::complex<double>> f0Rfd0 = f0 * resonance.hc.rho * f0.Dagger();
+
+  return A0 * msqrt(std::real(f0Rfd0.Trace()));
+}
+
+
 // Recursive decay chain with spin correlations:
 // A -> B + C, B -> B1 + B2, C -> C1 + C2
 //
@@ -218,11 +291,11 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &reso
   if (resonance.p.spinX2 == 0) {
     return resonance.hc.T[0][0] * resonance.g_decay;  // (l,s) = (0,0)
   }
-
+  
   // Transition amplitude matrix
   // A -> B + C (in A rest frame)
   if (lts.decaytree.size() == 2) {
-    // Get daughter spins and parities
+    // Get daughter spins
     const double s1 = lts.decaytree[B].p.spinX2 / 2.0;
     const double s2 = lts.decaytree[C].p.spinX2 / 2.0;
 
@@ -232,8 +305,6 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &reso
 
     fA = fMatrix(resonance.hc.T, resonance.p.spinX2 / 2.0, s1, s2, boosted_daughter.Theta(),
                  boosted_daughter.Phi());
-  } else {
-    return 1.0;
   }
 
   // Transition amplitude matrix
@@ -242,7 +313,7 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &reso
     const unsigned int B1 = 0;
     const unsigned int B2 = 1;
 
-    // Get daughter spins and parities
+    // Get daughter spins
     const double s1 = lts.decaytree[B].legs[B1].p.spinX2 / 2.0;
     const double s2 = lts.decaytree[B].legs[B2].p.spinX2 / 2.0;
 
@@ -266,7 +337,7 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &reso
     const unsigned int C1 = 0;
     const unsigned int C2 = 1;
 
-    // Get daughter spins and parities
+    // Get daughter spins
     const double s1 = lts.decaytree[C].legs[C1].p.spinX2 / 2.0;
     const double s2 = lts.decaytree[C].legs[C2].p.spinX2 / 2.0;
 
@@ -901,11 +972,9 @@ bool Positivity(const MMatrix<std::complex<double>> &rho, unsigned int J) {
     }
   } else {
     std::string str =
-        "gra::spin::Positivity: Not a valid spin (only J = 1 and 2 "
-        "accepted) !";
+        "gra::spin::Positivity: Not a valid spin, only J = 1 and 2 currently tested -- check manually";
     gra::matoper::PrintMatrixSeparate(rho);
-    throw std::invalid_argument(str);
-    return false;
+    return true;
   }
 }
 
