@@ -263,10 +263,10 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
     // If we have full event, check energy-momentum
     if (beam_protons.size()) {
       // ==============================================================
-      // sqrts = CheckEnergyMomentum(evt);
+      sqrts = CheckEnergyMomentum(evt);
       // ==============================================================
     }
-
+    
     // Beam (initial state ) protons
     for (const HepMC3::GenParticlePtr &p1 : beam_protons) {
       M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());

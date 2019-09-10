@@ -19,15 +19,22 @@ else
 CMD=n
 fi
 
-# single process and plotting
+# processes and plotting
 yes $CMD | source ./tests/run_screening/run.sh
 yes $CMD | source ./tests/run_cdf_single/run.sh
-yes $CMD | source ./tests/run_alice_single/run.sh
-
-# multiple processes and plotting
 yes $CMD | source ./tests/run_alice_multi/run.sh
+yes $CMD | source ./tests/run_alice_single/run.sh
 yes $CMD | source ./tests/run_cms_multi/run.sh
+yes $CMD | source ./tests/run_excitation/run.sh
+yes $CMD | source ./tests/run_rhorho_phiphi/run.sh
+
+# Spin density generation and control
 yes $CMD | source ./tests/run_JW_polarizations/run.sh
+yes $CMD | source ./tests/run_JW_frames/run.sh
+
+# Durham QCD
+yes $CMD | source ./tests/run_durham_chic0/run.sh
+yes $CMD | source ./tests/run_durham_mmbar/run.sh
 
 # spherical harmonic expansion
 yes $CMD | source ./tests/run_cms_harmonic/run.sh
@@ -48,7 +55,8 @@ yes $CMD | source ./tests/run_tensor2_multi/run.sh
 yes $CMD | source ./tests/run_tensor_spectrum/run.sh
 
 # minimum bias
-./bin/minbias "7000,13000" 1000
+yes $CMD | source ./tests/run_minbias/run.sh
+
 
 # catch2 driven tests
 ./bin/testbench0
