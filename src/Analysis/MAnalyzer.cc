@@ -321,6 +321,7 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
       // 1D: System
       h1["h1_S_M"]->h[SID]->Fill(M, W);
       h1["h1_S_Pt"]->h[SID]->Fill(Pt, W);
+      h1["h1_S_Pt2"]->h[SID]->Fill(math::pow2(Pt), W);
       h1["h1_S_Y"]->h[SID]->Fill(Y, W);
       hP["hP_S_M_Pt"]->h[SID]->Fill(M, Pt, W);
 

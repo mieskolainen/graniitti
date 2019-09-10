@@ -68,6 +68,11 @@ void Init1DHistogram(std::map<std::string, std::shared_ptr<h1Multiplet>> &h,
       name, title + ";System P_{T} (GeV);d" + U + "/dP_{T}  (" + units + "/GeV)", bP.N, bP.min,
       bP.max, legendtext);
 
+  name    = "h1_S_Pt2";
+  h[name] = std::make_shared<h1Multiplet>(
+      name, title + ";System P_{T}^{2} (GeV^{2});d" + U + "/dP_{T}^{2}  (" + units + "/GeV^{2})", bP.N, math::pow2(bP.min),
+      math::pow2(bP.max), legendtext);
+
   name    = "h1_S_Y";
   h[name] = std::make_shared<h1Multiplet>(name, title + ";System Y;d" + U + "/dY  (" + units + ")",
                                           bY.N, bY.min, bY.max, legendtext);
