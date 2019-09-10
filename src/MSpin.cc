@@ -303,7 +303,7 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &reso
 
   // In direct non-rotated rest frame
   if        (resonance.hc.FRAME == "SR") {
-
+    
     theta_rotation = 0;
     phi_rotation   = 0;
 

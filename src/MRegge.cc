@@ -48,12 +48,16 @@ void MRegge::InitReggeAmplitude(int PDG, const std::string &MODELPARAM) {
 
     // Setup the parameter string
     std::string str;
-    if (PDG == 211 || PDG == 111) {  // Charged or Neutral Pions
+    if        (PDG == 211 || PDG == 111) {    // Charged or Neutral Pions
       str = "PARAM_PI";
-    } else if (PDG == 321 || PDG == 311) {  // Charged or Neutral Kaons
+    } else if (PDG == 321 || PDG == 311) {    // Charged or Neutral Kaons
       str = "PARAM_K";
     } else if (PDG == 2212 || PDG == 2112) {  // Protons or Neutrons
       str = "PARAM_P";
+    } else if (PDG == 113 || PDG == 213) {    // Neutral or charged rho(770)
+      str = "PARAM_RHO";
+    } else if (PDG == 331) {                  // phi(1020)
+      str = "PARAM_PHI"; 
     } else {  // The rest will use PARAM_X setup
       str = "PARAM_X";
     }

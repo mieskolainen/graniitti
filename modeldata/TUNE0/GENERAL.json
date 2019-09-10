@@ -77,7 +77,7 @@
   },
 
   // ---------------------------------------------------------------------
-  // Continuum amplitude couplings:
+  // Continuum amplitude couplings (non-tensor Pomeron model):
   //
   // For coupling constants see e.g.
   //   pipi: Phys. Rev. D81 (2010) 036003
@@ -103,16 +103,28 @@
     "c" : [30.35376, 44.31084, 23.38164],
     "n" : [true, false, false]
   },
-
+  
   // proton (ansatz) (here one can compare with gN_P above)
   "PARAM_P" : {
-    "c" : [27.35376, 44.31084, 23.38164],
+    "c" : [27.0, 0, 0],
     "n" : [true, false, false]
   },
 
-  // other (ansatz)
+  // rho(770) (ansatz)
+  "PARAM_RHO" : {
+    "c" : [25.0, 0, 0],
+    "n" : [true, false, false]
+  },
+  
+  // phi(1020) (ansatz)
+  "PARAM_PHI" : {
+    "c" : [18.0, 0, 0],
+    "n" : [true, false, false]
+  },
+
+  // other, such as lambda(1115) (ansatz)
   "PARAM_X" : {
-    "c" : [27.35376, 44.31084, 23.38164],
+    "c" : [15.0, 0, 0],
     "n" : [true, false, false]
   },
   
