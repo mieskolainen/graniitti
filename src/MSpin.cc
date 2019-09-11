@@ -8,6 +8,10 @@
 // That is, functions use [-1/2, 1/2] not for example [-1, 1].
 //
 //
+// TBD: Add permutation coherent spin chains with Bose-Einstein / Fermi-Dirac sign
+// combinations, together with Breit-Wigner weights at amplitude level.
+//
+//
 // (c) 2017-2019 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
