@@ -566,7 +566,7 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
 
         MMatrix<std::complex<double>> newrho;
         if (RESONANCES[RESNAME].p.spinX2 != 0) {
-          const int N = RESONANCES[RESNAME].hc.rho.size_row();
+          const int N = RESONANCES[RESNAME].rho.size_row();
           newrho = MMatrix<std::complex<double>>(N,N, 0.0);
         }
 
@@ -598,6 +598,8 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
             if (x.first == ("JZ" + std::to_string(n))) {
               const double value = std::stod(x.second);
 
+              if (value < 0) { throw std::invalid_argument("MGraniitti::ReadProcessParam: @R[] JZ value < 0"); }
+
               newrho[newrho.size_row()-1-J-n][newrho.size_row()-1-J-n] = value;
               
               newrho[newrho.size_row()-1-J+n][newrho.size_row()-1-J+n] = value;
@@ -612,12 +614,12 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
           if (std::abs(trace) > 0) {
             newrho = newrho * (1.0/trace);
           } else {
-            throw std::invalid_argument("MGraniitti::ReadProcessParam: @R[] Spin density error with negative diagonal");
+            throw std::invalid_argument("MGraniitti::ReadProcessParam: @R[] Spin density error with <= 0 trace");
           }
-          RESONANCES[RESNAME].hc.rho = newrho;
+          RESONANCES[RESNAME].rho = newrho;
 
           std::cout << rang::fg::green << "@R[" << RESNAME << "] new spin density set:" << std::endl;
-          RESONANCES[RESNAME].hc.rho.Print();
+          RESONANCES[RESNAME].rho.Print();
           std::cout << rang::fg::reset << std::endl;
         }
         

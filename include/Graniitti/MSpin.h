@@ -18,8 +18,12 @@
 namespace gra {
 namespace spin {
 
-std::complex<double> ProdAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance);
-std::complex<double> SpinAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance);
+MMatrix<std::complex<double>> CalculateFMatrix(const MDecayBranch& branch);
+void TreeRecursion(MDecayBranch& branch);
+void TensorTree(const MDecayBranch& branch, MMatrix<std::complex<double>>& out);
+
+std::complex<double> ProdAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &res);
+std::complex<double> SpinAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res);
 
 MMatrix<std::complex<double>> DMatrix(double J, double theta_mother, double phi_mother);
 MMatrix<std::complex<double>> fMatrix(const MMatrix<std::complex<double>> &T, double J, double s1,

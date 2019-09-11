@@ -20,6 +20,27 @@ using gra::aux::indices;
 using gra::math::pow2;
 
 
+TEST_CASE("MMatrix:: Dagger and Trace", "[MMatrix]") {
+
+	const double EPS = 1e-5;
+
+	const MMatrix<std::complex<double>> A =
+		{{std::complex<double>(0.4)}, { std::complex<double>(0.0)},
+		 {std::complex<double>(0.0)}, {-std::complex<double>(0.4)}};
+	A.Print();
+
+	const MMatrix<std::complex<double>> A_dagger = A.Transpose();
+	A_dagger.Print();
+
+	const MMatrix<std::complex<double>> AAT = A*A_dagger;
+	AAT.Print();
+
+	const double trace = std::real( AAT.Trace() );
+	
+	REQUIRE( trace == Approx(0.32).epsilon(EPS) );
+}
+
+
 // Test Lorentz frame transformation functions
 // 
 TEST_CASE("gra::kinematics::LorentzFrame versus PGframe, HEframe, CSframe", "[Lorentz Frames]") {

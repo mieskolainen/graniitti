@@ -242,10 +242,10 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
     res.BW = j.at("PARAM_RES").at("BW");
 
     // Spin dependent
-    res.hc.FRAME              = j.at("PARAM_RES").at("FRAME");
+    res.FRAME              = j.at("PARAM_RES").at("FRAME");
     const bool P_conservation = true;
 
-    const int                     n = res.p.spinX2 + 1;  // n = 2J + 1
+    const int            n = res.p.spinX2 + 1;  // n = 2J + 1
     MMatrix<std::complex<double>> rho(n, n);
     
     // If we have spin
@@ -273,7 +273,7 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
           throw std::invalid_argument(str);
         }
       }
-      res.hc.rho = rho;
+      res.rho = rho;
     }
     std::cout << " [DONE]" << std::endl;
   } catch (nlohmann::json::exception &e) {

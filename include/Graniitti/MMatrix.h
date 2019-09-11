@@ -12,6 +12,7 @@
 #include <iostream>
 
 namespace gra {
+  
 // Constant size matrix
 template <typename T>
 class MMatrix {
@@ -306,12 +307,12 @@ class MMatrix {
   T Trace() const {
     T sum = 0.0;
     for (std::size_t i = 0; i < rows; ++i) {
-      for (std::size_t j = 0; j < cols; ++j) { sum += this->operator()(i, j); }
+      sum += this->operator()(i,i);
     }
     return sum;
   }
   T Tr() const { return Trace(); }
-
+  
   void Print(const std::string &name = "") const {
     std::cout << "MMatrix::Print: " << name << std::endl;
     std::cout << std::setprecision(4);

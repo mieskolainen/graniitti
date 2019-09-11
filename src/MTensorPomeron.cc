@@ -196,13 +196,13 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts) const {
   // 2. Coherent sum of Resonances (loop over)
   for (auto &x : lts.RESONANCES) {
 
-    const PARAM_RES resonance = x.second;
-
+    const PARAM_RES res = x.second;
+    
     // Resonance parameters
-    const double M0    = resonance.p.mass;
-    const double Gamma = resonance.p.width;
-    const int    J     = resonance.p.spinX2 / 2.0;
-    const int    P     = resonance.p.P;
+    const double M0    = res.p.mass;
+    const double Gamma = res.p.width;
+    const int    J     = res.p.spinX2 / 2.0;
+    const int    P     = res.p.P;
 
     // ------------------------------------------------------------------
 
@@ -215,7 +215,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts) const {
       Tensor4<std::complex<double>, 4,4,4,4> cvtx;
       std::vector<std::complex<double>> eps3eps4;
 
-      cvtx = iG_PPS_total(lts.q1, lts.q2, M0, "scalar", resonance.g_Tensor);
+      cvtx = iG_PPS_total(lts.q1, lts.q2, M0, "scalar", res.g_Tensor);
 
       // Scalar BW-propagator
       const std::complex<double> iD = iD_MES(lts.pfinal[0], M0, Gamma);
@@ -223,17 +223,17 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts) const {
       // [PS PS]  Pseudoscalar pair decay
       if      (lts.decaytree[0].p.spinX2 == 0 && lts.decaytree[1].p.spinX2 == 0) {
         eps3eps4.clear();
-        eps3eps4.push_back( iG_f0ss(lts.decaytree[0].p4, lts.decaytree[1].p4, M0, resonance.g_decay_tensor[0]) );
+        eps3eps4.push_back( iG_f0ss(lts.decaytree[0].p4, lts.decaytree[1].p4, M0, res.hel.g_decay_tensor[0]) );
       }
 
       // [V   V]  Massive vector pair decay
       else if (lts.decaytree[0].p.spinX2 == 2 && lts.decaytree[1].p.spinX2 == 2) {
 
-        if (resonance.g_decay_tensor.size() != 2) {
-          throw std::invalid_argument("MTensorPomeron:: S->VV Coupling array [size 2] 'g_decay_tensor' not in BRANCHING.json for resonance PDG = " + std::to_string(resonance.p.pdg));
+        if (res.hel.g_decay_tensor.size() != 2) {
+          throw std::invalid_argument("MTensorPomeron:: S->VV Coupling array [size 2] 'hel.g_decay_tensor' not in BRANCHING.json for resonance PDG = " + std::to_string(res.p.pdg));
         }      
         // Decay vertex with different outgoing helicity combinations
-        Tensor2<std::complex<double>, 4, 4> iGf0vv = iG_f0vv(p3, p4, M0, resonance.g_decay_tensor[0], resonance.g_decay_tensor[1]);
+        Tensor2<std::complex<double>, 4, 4> iGf0vv = iG_f0vv(p3, p4, M0, res.hel.g_decay_tensor[0], res.hel.g_decay_tensor[1]);
         eps3eps4 = MassiveSpin1PolSum(iGf0vv, p3, p4);
 
         // Sequential decay correlations [TBD]
@@ -291,7 +291,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts) const {
     } else if (J == 1 && P == -1) {
 
       // Gamma-Vector coupling
-      const Tensor2<std::complex<double>, 4,4> iGyV        = iG_yV(0, resonance.p.pdg);
+      const Tensor2<std::complex<double>, 4,4> iGyV        = iG_yV(0, res.p.pdg);
 
       // Gamma propagators
       const Tensor2<std::complex<double>, 4,4> iDy_1       = iD_y(lts.q1.M2());
@@ -304,11 +304,11 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts) const {
       const Tensor2<std::complex<double>, 4,4> iDV_2       = iD_VMES(lts.q2,        M0, Gamma, INDEX_UP);
 
       // Pomeron-Vector-Vector coupling
-      const Tensor4<std::complex<double>, 4,4,4,4> iGPvv_1 = iG_Pvv(lts.pfinal[0], lts.q1, resonance.g_Tensor[0], resonance.g_Tensor[1]);
-      const Tensor4<std::complex<double>, 4,4,4,4> iGPvv_2 = iG_Pvv(lts.pfinal[0], lts.q2, resonance.g_Tensor[0], resonance.g_Tensor[1]);
+      const Tensor4<std::complex<double>, 4,4,4,4> iGPvv_1 = iG_Pvv(lts.pfinal[0], lts.q1, res.g_Tensor[0], res.g_Tensor[1]);
+      const Tensor4<std::complex<double>, 4,4,4,4> iGPvv_2 = iG_Pvv(lts.pfinal[0], lts.q2, res.g_Tensor[0], res.g_Tensor[1]);
 
       // Vector-Pseudoscalar-Pseudoscalar coupling
-      const Tensor1<std::complex<double>, 4>   iGvpsps     = iG_vpsps(p3, p4, M0, resonance.g_decay_tensor[0]);
+      const Tensor1<std::complex<double>, 4>   iGvpsps     = iG_vpsps(p3, p4, M0, res.hel.g_decay_tensor[0]);
       
       // Two helicity states for incoming and outgoing protons
       std::size_t index = 0;
@@ -359,7 +359,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts) const {
       
       Tensor4<std::complex<double>, 4,4,4,4> cvtx;
       std::vector<std::complex<double>> eps3eps4;
-      cvtx = iG_PPS_total(lts.q1, lts.q2, M0, "pseudoscalar", resonance.g_Tensor);
+      cvtx = iG_PPS_total(lts.q1, lts.q2, M0, "pseudoscalar", res.g_Tensor);
 
       // Scalar BW-propagator
       const std::complex<double> iD = iD_MES(lts.pfinal[0], M0, Gamma);
@@ -370,7 +370,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts) const {
       }
 
       // Decay vertex with different outgoing helicity combinations
-      Tensor2<std::complex<double>, 4,4> iDECAY = iG_psvv(p3, p4, M0, resonance.g_decay_tensor[0]);
+      Tensor2<std::complex<double>, 4,4> iDECAY = iG_psvv(p3, p4, M0, res.hel.g_decay_tensor[0]);
       eps3eps4 = MasslessSpin1PolSum(iDECAY, p3, p4);
 
       // Two helicity states for incoming and outgoing protons
@@ -409,7 +409,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts) const {
     } else if (J == 2) {
 
       // Rank-6 tensor structure
-      const MTensor<std::complex<double>> iGPPf2 = iG_PPT_total(lts.q1, lts.q2, M0, resonance.g_Tensor);
+      const MTensor<std::complex<double>> iGPPf2 = iG_PPT_total(lts.q1, lts.q2, M0, res.g_Tensor);
 
       // Tensor BW-propagator
       const bool INDEX_UP = true;
@@ -421,7 +421,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts) const {
       // [PS PS] Pseudoscalar pair decay
       if        (lts.decaytree[0].p.spinX2 == 0 && lts.decaytree[1].p.spinX2 == 0) {
         
-        const Tensor2<std::complex<double>, 4,4> iGf2psps = iG_f2psps(p3, p4, M0, resonance.g_decay_tensor[0]);
+        const Tensor2<std::complex<double>, 4,4> iGf2psps = iG_f2psps(p3, p4, M0, res.hel.g_decay_tensor[0]);
         
         Tensor2<std::complex<double>, 4,4> temp;
         temp(mu1, nu1) = iDf2(mu1, nu1, rho1, rho2) * iGf2psps(rho1, rho2);
@@ -431,10 +431,10 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts) const {
       } else if (lts.decaytree[0].p.spinX2 == 2 && lts.decaytree[1].p.spinX2 == 2 &&
                  lts.decaytree[0].p.pdg != 22   && lts.decaytree[1].p.mass != 22) {
 
-        if (resonance.g_decay_tensor.size() != 2) {
-          throw std::invalid_argument("MTensorPomeron:: T->VV Coupling array [size 2] 'g_decay_tensor' not in BRANCHING.json for resonance PDG = " + std::to_string(resonance.p.pdg));
+        if (res.hel.g_decay_tensor.size() != 2) {
+          throw std::invalid_argument("MTensorPomeron:: T->VV Coupling array [size 2] 'hel.g_decay_tensor' not in BRANCHING.json for resonance PDG = " + std::to_string(res.p.pdg));
         }
-        const Tensor4<std::complex<double>, 4,4,4,4> iGf2vv = iG_f2vv(p3, p4, M0, resonance.g_decay_tensor[0], resonance.g_decay_tensor[1]);
+        const Tensor4<std::complex<double>, 4,4,4,4> iGf2vv = iG_f2vv(p3, p4, M0, res.hel.g_decay_tensor[0], res.hel.g_decay_tensor[1]);
         const std::vector<Tensor2<std::complex<double>, 4,4>> eps3eps4 = MassiveSpin1PolSum(iGf2vv, p3, p4);
 
         // Over all helicity combinations
@@ -467,10 +467,10 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts) const {
       // [y  y] Gamma pair decay
       } else if (lts.decaytree[0].p.pdg == 22 && lts.decaytree[1].p.pdg == 22) { 
 
-        if (resonance.g_decay_tensor.size() != 2) {
-          throw std::invalid_argument("MTensorPomeron:: T->VV Coupling array [size 2] 'g_decay_tensor' not in BRANCHING.json for resonance PDG = " + std::to_string(resonance.p.pdg));
+        if (res.hel.g_decay_tensor.size() != 2) {
+          throw std::invalid_argument("MTensorPomeron:: T->VV Coupling array [size 2] 'hel.g_decay_tensor' not in BRANCHING.json for resonance PDG = " + std::to_string(res.p.pdg));
         }
-        Tensor4<std::complex<double>, 4,4,4,4> iGf2yy = iG_f2yy(p3, p4, M0, resonance.g_decay_tensor[0], resonance.g_decay_tensor[1]);
+        Tensor4<std::complex<double>, 4,4,4,4> iGf2yy = iG_f2yy(p3, p4, M0, res.hel.g_decay_tensor[0], res.hel.g_decay_tensor[1]);
         const std::vector<Tensor2<std::complex<double>, 4,4>> eps3eps4 = MasslessSpin1PolSum(iGf2yy, p3, p4);
 
         // Over all helicity combinations

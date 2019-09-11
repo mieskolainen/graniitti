@@ -6,6 +6,7 @@
 #ifndef MKINEMATICS_H
 #define MKINEMATICS_H
 
+
 // C++
 #include <complex>
 #include <random>
@@ -13,6 +14,7 @@
 #include <vector>
 
 // Own
+#include "Graniitti/MHELMatrix.h"
 #include "Graniitti/M4Vec.h"
 #include "Graniitti/MAux.h"
 #include "Graniitti/MMatOper.h"
@@ -1514,15 +1516,25 @@ struct MParticle {
   }
 };
 
+
 // Recursive decay tree branch
 struct MDecayBranch {
+
+  MDecayBranch() {
+    f = MMatrix<std::complex<double>> (1,1, 1.0); // Unit element
+  }
+
   // Offshell mass picked event by event
   double m_offshell = 0.0;
 
-  MParticle                 p;               // PDG particle
-  M4Vec                     p4;              // 4-momentum
-  std::vector<MDecayBranch> legs;            // Daughters
-  M4Vec                     decay_position;  // Decay 4-position
+  MParticle                   p;              // PDG particle
+  M4Vec                       p4;             // 4-momentum
+  std::vector<MDecayBranch>   legs;           // Daughters
+  M4Vec                       decay_position; // Decay 4-position
+  gra::HELMatrix              hel;            // Decay helicity information
+
+  // Used with helicity amplitudes
+  MMatrix<std::complex<double>> f;
 
   // MC weight container
   gra::kinematics::MCW W;
@@ -1535,29 +1547,6 @@ struct MDecayBranch {
   int depth = 0;
 };
 
-struct HELMatrix {
-  void InitAlphaToZero() {
-    const unsigned int N = 20;
-    alpha                = MMatrix<std::complex<double>>(N, N, 0.0);
-    alpha_set            = MMatrix<bool>(N, N, true);
-  }
-
-  // Lorentz frame of the spin distribution
-  std::string FRAME = "";
-
-  // Spin-density matrix (constant)
-  MMatrix<std::complex<double>> rho;
-
-  // Decay amplitude matrix (constant)
-  MMatrix<std::complex<double>> T;
-
-  // Helicity amplitude decay ls-couplings (constant)
-  MMatrix<std::complex<double>> alpha;
-  MMatrix<bool>                 alpha_set;
-
-  // Parity conservation
-  bool P_conservation = true;
-};
 
 // Resonance parameters
 class PARAM_RES {
@@ -1581,20 +1570,20 @@ class PARAM_RES {
 
     std::cout << std::endl;
     printf("<Decay> \n");
-    printf("- BR:          %0.3E\n", BR);
-    printf("- Effective vertex constant g_f:  %0.3E", g_decay);
+    printf("- BR:          %0.3E\n", hel.BR);
+    printf("- Effective vertex constant g_f:  %0.3E", hel.g_decay);
     std::cout << std::endl << std::endl;
 
     if (p.spinX2 != 0) {
-      std::cout << "- Polarization Lorentz frame: " << hc.FRAME << std::endl;
+      std::cout << "- Polarization Lorentz frame: " << FRAME << std::endl;
       std::cout << std::endl;
       std::cout << "- Spin polarization density matrix [rho]:" << std::endl << std::endl;
 
       // Print elements
-      for (std::size_t i = 0; i < hc.rho.size_row(); ++i) {
-        for (std::size_t j = 0; j < hc.rho.size_col(); ++j) {
-          std::string delim = (j < hc.rho.size_col() - 1) ? ", " : "";
-          printf("%6.3f+i%6.3f%s ", std::real(hc.rho[i][j]), std::imag(hc.rho[i][j]),
+      for (std::size_t i = 0; i < rho.size_row(); ++i) {
+        for (std::size_t j = 0; j < rho.size_col(); ++j) {
+          std::string delim = (j < rho.size_col() - 1) ? ", " : "";
+          printf("%6.3f+i%6.3f%s ", std::real(rho[i][j]), std::imag(rho[i][j]),
                  delim.c_str());
         }
         std::cout << std::endl;
@@ -1611,8 +1600,6 @@ class PARAM_RES {
   // -------------------------------------------------------------------
   // Tensor Pomeron couplings
   std::vector<double> g_Tensor;        // Production couplings
-  
-  std::vector<double> g_decay_tensor;  // Decay couplings
   // -------------------------------------------------------------------
   
   // (Complex) production coupling constant
@@ -1624,13 +1611,15 @@ class PARAM_RES {
   // Breit-Wigner type
   int BW = 0;
 
-  // Branching Ratio to a particular decay
-  double BR      = 1.0;
-  double g_decay = 1.0;  // Equivalent decay coupling
+  // Lorentz frame of the spin distribution
+  std::string FRAME = "";
+
+  // Spin-density matrix (constant)
+  MMatrix<std::complex<double>> rho;
 
   // --------------------------------------------------------------------
-  // Helicity amplitude matrix
-  HELMatrix hc;
+  // Helicity and decay amplitude information
+  HELMatrix hel;
   // --------------------------------------------------------------------
 };
 

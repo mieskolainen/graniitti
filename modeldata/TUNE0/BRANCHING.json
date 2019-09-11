@@ -36,6 +36,16 @@
     }
   },
   
+  // pi0
+  "111" : {
+
+    "0" : { // gamma gamma
+      "PDG" : [22, 22], "BR" : 1.0,     // PDGlive 19.08.19
+      "alpha_ls" : [ [1,1, 1.0, 0.0] ],
+      "P_conservation" : true,      
+    }
+  },
+  
   // eta
   "221" : {
 

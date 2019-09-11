@@ -17,13 +17,14 @@
 #include "HepMC3/GenParticle.h"
 
 // Own
+#include "Graniitti/MHELMatrix.h"
+#include "Graniitti/MKinematics.h"
 #include "Graniitti/M4Vec.h"
 #include "Graniitti/MAux.h"
 #include "Graniitti/MEikonal.h"
 #include "Graniitti/MGlobals.h"
 #include "Graniitti/MH1.h"
 #include "Graniitti/MH2.h"
-#include "Graniitti/MKinematics.h"
 #include "Graniitti/MPDG.h"
 #include "Graniitti/MRandom.h"
 #include "Graniitti/MSubProc.h"
@@ -31,6 +32,7 @@
 #include "Graniitti/MUserHistograms.h"
 
 namespace gra {
+
 // Event-by-event auxialary data for integration
 struct AuxIntData {
   // Aux weight
@@ -89,6 +91,8 @@ class MProcess : public MUserHistograms {
   // Set central system decay structure
   void SetDecayMode(std::string str);
   void SetupBranching();
+  void ProcessHelicityTree(MDecayBranch& branch);
+  HELMatrix ProcessHelicityDecay(const MParticle& p, const std::vector<MParticle>& daughter) const;
 
   // Set initial state
   void SetInitialState(const std::vector<std::string> &beam, const std::vector<double> &energy);
@@ -123,7 +127,7 @@ class MProcess : public MUserHistograms {
     std::cout << rang::fg::red << "MProcess::SetFRAME: Set common Lorentz "
                                   "frame for the resonance decays: "
               << FRAME << rang::fg::reset << std::endl;
-    for (const auto &x : lts.RESONANCES) { lts.RESONANCES[x.first].hc.FRAME = FRAME; }
+    for (const auto &x : lts.RESONANCES) { lts.RESONANCES[x.first].FRAME = FRAME; }
   }
 
   // Get initial state

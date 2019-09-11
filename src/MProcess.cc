@@ -17,6 +17,7 @@
 #include <vector>
 
 // Own
+#include "Graniitti/MHELMatrix.h"
 #include "Graniitti/MAux.h"
 #include "Graniitti/MFactorized.h"
 #include "Graniitti/MForm.h"
@@ -32,7 +33,7 @@
 #include "Graniitti/MTimer.h"
 #include "Graniitti/MUserCuts.h"
 
-// HepMC33
+// HepMC3
 #include "HepMC3/FourVector.h"
 #include "HepMC3/GenEvent.h"
 #include "HepMC3/GenParticle.h"
@@ -609,9 +610,6 @@ void MProcess::CalculateSymmetryFactor() {
 void MProcess::SetupBranching() {
   aux::PrintBar(".");
 
-  // Init once for speed
-  MTensorPomeron TensorPomeron;
-
   if (lts.RESONANCES.size() == 0) {  // Empty one is not treated
     std::cout << rang::fg::red << "MProcess::SetupBranching: lts.RESONANCES.size() == 0 !"
               << rang::fg::reset << std::endl;
@@ -623,9 +621,65 @@ void MProcess::SetupBranching() {
     return;
   }
 
-  // Get particle listing
+  // Loop over resonances
+  for (auto const &xpoint : lts.RESONANCES) {
+
+      // Take the resonance
+      gra::PARAM_RES res = xpoint.second;
+
+      // Process helicity decay information
+      std::vector<MParticle> daughter;
+      for (const auto& i : indices(lts.decaytree)) {
+        daughter.push_back(lts.decaytree[i].p);
+      }
+      res.hel = ProcessHelicityDecay(res.p, daughter);
+
+      // Set the updated resonance
+      lts.RESONANCES[xpoint.first] = res;
+  }
+
+  // Recursively over the decaytree
+  for (const auto& i : indices(lts.decaytree)) {
+    if (lts.decaytree[i].legs.size() != 0) { // Has any daughters?
+      ProcessHelicityTree(lts.decaytree[i]);
+    }
+  }
+}
+
+// Recursive function
+//
+void MProcess::ProcessHelicityTree(MDecayBranch& branch) {
+
+  // Process decay information
+  std::vector<MParticle> daughter;
+  for (const auto& i : indices(branch.legs)) {
+    daughter.push_back(branch.legs[i].p);
+  }
+  branch.hel = ProcessHelicityDecay(branch.p, daughter);
+
+  // Recursion
+  for (const auto& i : indices(branch.legs)) {
+    if (branch.legs[i].legs.size() != 0) { // Has any daughters?
+      ProcessHelicityTree(branch.legs[i]);
+    }
+  }
+}
+
+// Process decay helicity amplitude by
+// reading alpha_ls and (tensor pomeron model) couplings from BRANCHING.json
+//
+HELMatrix MProcess::ProcessHelicityDecay(const MParticle& p, const std::vector<MParticle>& daughter) const {
+
+  HELMatrix hc;
+
+  // Init once for speed
+  static MTensorPomeron TensorPomeron;
+
+  // Get decay daughter PDG ids
   std::vector<int> refdecay;
-  for (const auto &i : indices(lts.decaytree)) { refdecay.push_back(lts.decaytree[i].p.pdg); }
+  for (const auto &i : indices(daughter)) {
+    refdecay.push_back(daughter[i].pdg);
+  }
 
   // Setup branching fractions for resonances
   using json = nlohmann::json;
@@ -642,210 +696,207 @@ void MProcess::SetupBranching() {
     throw std::invalid_argument(str);
   }
 
-  // Loop over resonances
-  for (auto const &xpoint : lts.RESONANCES) {
-    // Take resonance
-    gra::PARAM_RES res = xpoint.second;
+  // --------------------------------------------------------------------
 
-    // Find out if we have this resonance in tables
-    std::string PDG_STR = std::to_string(res.p.pdg);
+  const int pdg = p.pdg;
 
-    // Did we find that resonance written down it in the Branching Tables
-    bool found = j.count(PDG_STR);
+  // Find out if we have this resonance in tables
+  std::string PDG_STR = std::to_string(pdg);
 
-    if (found == true) {
-      // Do we find it from PDG database
-      std::string resonance_name = "not-found-from-PDG";
-      try {
-        MParticle part = PDG.FindByPDG(res.p.pdg);
-        resonance_name = part.name;
-      } catch (...) {
-        // continue;
-      }
-      std::cout << "MProcess::SetupBranching: Resonance PDG = " + std::to_string(res.p.pdg) +
-                       " / " + resonance_name
-                << std::endl;
+  // Did we find that resonance written down it in the Branching Tables
+  bool found = j.count(PDG_STR);
 
-      // Try to find the decaymode
-      bool               found_decay_mode = false;
-      const unsigned int MAXDECAYS        = 500;
-      for (std::size_t i = 0; i < MAXDECAYS; ++i) {
-        const std::string SID = std::to_string(i);
-        std::vector<int>  decay;
-        try {
-          std::vector<int> vec = j[PDG_STR][SID]["PDG"];
-          decay                = vec;
-        } catch (...) {
-          continue;  // Did not found anything with this
-                     // index ["i"]
-        }
-
-        if (std::is_permutation(refdecay.begin(), refdecay.end(), decay.begin())) {
-          // Found matching decay
-          res.BR                = j[PDG_STR][SID]["BR"];
-          res.hc.P_conservation = j[PDG_STR][SID]["P_conservation"];
-          found_decay_mode      = true;
-
-          try {
-            std::vector<double> temp = j[PDG_STR][SID]["g_decay_tensor"];
-            res.g_decay_tensor = temp;  
-          } catch (...) {
-            // Did not found uset set Tensor Pomeron decay coupling array, do nothing
-          }
-          
-          // ----------------------------------------------------------------------------
-          // Construct helicity ls-coupling matrix (put default 1.0)
-          // indexed directly by ls values
-          MMatrix<std::complex<double>> alpha(20, 20, 1.0);
-          MMatrix<bool>                 alpha_set(20, 20, false);
-
-          // Allow 50 coupling parameter (l,s) pairs (more than
-          // enough)
-          for (std::size_t a = 0; a < 50; ++a) {
-            try {
-              const unsigned int l  = j[PDG_STR][SID]["alpha_ls"][a][0];
-              const unsigned int s  = j[PDG_STR][SID]["alpha_ls"][a][1];
-              const double       Re = j[PDG_STR][SID]["alpha_ls"][a][2];
-              const double       Im = j[PDG_STR][SID]["alpha_ls"][a][3];
-
-              // Set value
-              alpha[l][s] = Re + zi * Im;
-
-              // Mark it set
-              alpha_set[l][s] = true;
-
-              std::cout << "Found ls-coupling: "
-                        << "[l=" << l << ",s=" << s << "] = " << alpha[l][s] << " (Re,Im)"
-                        << std::endl;
-            } catch (...) { continue; }
-          }
-          res.hc.alpha     = alpha;
-          res.hc.alpha_set = alpha_set;
-          break;
-        }
-      }
-
-      if (!found_decay_mode) {
-        gra::aux::PrintWarning();
-        std::cout << rang::fg::red
-                  << "WARNING: BRANCHING.json contains no information on "
-                     "this decaymode '" +
-                         DECAYMODE + "' for resonance PDG = " + std::to_string(res.p.pdg) +
-                         " (setting up BR = 1.0, alpha_ls == 1.0, "
-                         "P_conservation = true) "
-                  << rang::fg::reset << std::endl;
-        res.BR                = 1.0;
-        res.hc.P_conservation = true;
-        res.hc.alpha          = MMatrix<std::complex<double>>(20, 20, 1.0);
-        res.hc.alpha_set      = MMatrix<bool>(20, 20, true);
-      }
-
-      // ----------------------------------------------------------------------------
-      // Init T-matrix
-      if (lts.decaytree.size() == 2) {
-        try {
-          gra::spin::InitTMatrix(res.hc, res.p, lts.decaytree[0].p, lts.decaytree[1].p);
-        } catch (std::invalid_argument &e) {
-          throw std::invalid_argument("Problem with resonance PDG = " + std::to_string(res.p.pdg) +
-                                      " : " + e.what());
-        }
-      }
-      // ----------------------------------------------------------------------------
-
-      // ----------------------------------------------------------------------------
-      // Calculate equivalent decay coupling for 2-body cases
-      //
-      // In 2-body case, the decay phase space and decay amplitude squared
-      // factorize
-
-      bool TP_computed = false;
-      if (lts.decaytree.size() == 2) {
-        // Calculate phase space part:
-        // Gamma = PS * |A_decay|^2 then with |A_decay|^2 = 1 <=> Gamma = PS
-
-        const double amp2 = 1.0;
-        const double sym  = 1.0;
-
-        double PS = gra::kinematics::PDW2body(pow2(res.p.mass), pow2(lts.decaytree[0].p.mass),
-                                              pow2(lts.decaytree[1].p.mass), amp2, sym);
-
-        // ---------------------------------------------------------------
-        // Tensor Pomeron Model decay couplings for 2-body decays directly calculable from width and BR
-        if (res.g_decay_tensor.size() == 0) { // Not set yet
-
-          res.g_decay_tensor = {TensorPomeron.GDecay(res.p.spinX2 / 2, res.p.mass,
-            res.p.width, lts.decaytree[0].p.mass, res.BR)};
-
-          if (std::abs(PS) < ZERO_EPS) {
-            // Try again with higher mother mass as a crude approximation, we might
-            // be trying purely off-shell decay (such as f0(980) -> K+K-)
-            const unsigned int N_width = 3;
-            for (std::size_t i = 1; i <= N_width; ++i) {
-              PS = gra::kinematics::PDW2body(pow2(res.p.mass + i * res.p.width),
-                                             pow2(lts.decaytree[0].p.mass),
-                                             pow2(lts.decaytree[1].p.mass), amp2, sym);
-
-              // ---------------------------------------------------------------
-              // Tensor Pomeron Model decay couplings
-              res.g_decay_tensor = {TensorPomeron.GDecay(res.p.spinX2 / 2,
-                res.p.mass + i * res.p.width, res.p.width, lts.decaytree[0].p.mass, res.BR)};
-
-              if (PS > ZERO_EPS) { break; }
-            }
-          }
-          TP_computed = true;
-        }
-
-        // BR \equiv Gamma/Gamma_tot = (PS * |A_decay|^2) / Gamma_tot
-        // <=>
-        // |A|^2 = BR * Gamma_tot / Gamma_PS and sqrt to get 'amplitude
-        // level'
-        //
-        // ** GeV unit can be obtained by inspecting PDW2body function **
-        res.g_decay = msqrt(res.BR * res.p.width / PS);
-
-        if (std::isnan(res.g_decay) || std::isinf(res.g_decay)) {
-          std::string str =
-              "MProcess::SetupBranching:: Kinematic coupling problem "
-              "to '" +
-              DECAYMODE + "' with resonance PDG " + res.p.name + "(" + std::to_string(res.p.pdg) +
-              ")" +
-              " (daughters too heavy?) (check RESONANCE, DECAYMODE "
-              "and BRANCHING tables)";
-          throw std::invalid_argument(str);
-        }
-
-        // ---------------------------------------------------------------
-
-        // 3,4,... body cases [NOT TREATED YET, phase space and matrix
-        // element do not factorize there]
-      } else {
-        res.g_decay = 1.0;  // For the rest, put 1.0
-      }
-
-      printf("(Mass, Full width):                (%0.3E, %0.3E GeV) \n", res.p.mass, res.p.width);
-      printf("Branching ratio || Partial width:   %0.3E || %0.3E GeV \n", res.BR,
-             res.BR * res.p.width);
-      printf("=> Computed decay coupling:                %0.3E \n", res.g_decay);
-      printf("=> Tensor Pomeron decay couplings:       [ ");
-      for (const auto& i : indices(res.g_decay_tensor)) {
-        printf("%0.3E ", res.g_decay_tensor[i]);
-      }
-      printf("] %s \n", TP_computed ? "(computed from J, width and BR)" : "");
-
-      // Set resonance
-      lts.RESONANCES[xpoint.first] = res;
-
-      aux::PrintBar(".");
-    } else {
-      std::string str =
-          "MProcess::SetupBranching:: Did not find any "
-          "branching ratio data for resonance with PDG: " +
-          std::to_string(res.p.pdg);
-      throw std::invalid_argument(str);
+  if (found == true) {
+    // Do we find it from PDG database
+    std::string resonance_name = "not-found-from-PDG";
+    try {
+      MParticle part = PDG.FindByPDG(pdg);
+      resonance_name = part.name;
+    } catch (...) {
+      // continue;
     }
+    std::cout << "MProcess::ProcessHelicityDecay: Resonance PDG = " + std::to_string(pdg) +
+                     " / " + resonance_name << std::endl;
+    std::cout << "Decay to ";
+    for (const auto& i : indices(daughter)) {
+      std::cout << daughter[i].pdg << " ";
+    }
+    std::cout << std::endl;
+
+    // Try to find the decaymode
+    bool               found_decay_mode = false;
+    const unsigned int MAXDECAYS        = 500;
+    for (std::size_t i = 0; i < MAXDECAYS; ++i) {
+      const std::string SID = std::to_string(i);
+      std::vector<int>  decay;
+      try {
+        std::vector<int> vec = j[PDG_STR][SID]["PDG"];
+        decay                = vec;
+      } catch (...) {
+        continue;  // Did not found anything with this
+                   // index ["i"]
+      }
+
+      if (std::is_permutation(refdecay.begin(), refdecay.end(), decay.begin())) {
+        // Found matching decay
+        hc.BR             = j[PDG_STR][SID]["BR"];
+        hc.P_conservation = j[PDG_STR][SID]["P_conservation"];
+        found_decay_mode  = true;
+
+        try {
+          std::vector<double> temp = j[PDG_STR][SID]["g_decay_tensor"];
+          hc.g_decay_tensor = temp;  
+        } catch (...) {
+          // Did not found uset set Tensor Pomeron decay coupling array, do nothing
+        }
+        
+        // ----------------------------------------------------------------------------
+        // Construct helicity ls-coupling matrix (put default 1.0)
+        // indexed directly by ls values
+        MMatrix<std::complex<double>> alpha(20, 20, 1.0);
+        MMatrix<bool>                 alpha_set(20, 20, false);
+        
+        // Allow 50 coupling parameter (l,s) pairs (more than
+        // enough)
+        for (std::size_t a = 0; a < 50; ++a) {
+          try {
+            const unsigned int l  = j[PDG_STR][SID]["alpha_ls"][a][0];
+            const unsigned int s  = j[PDG_STR][SID]["alpha_ls"][a][1];
+            const double       Re = j[PDG_STR][SID]["alpha_ls"][a][2];
+            const double       Im = j[PDG_STR][SID]["alpha_ls"][a][3];
+
+            // Set value
+            alpha[l][s] = Re + zi * Im;
+
+            // Mark it set
+            alpha_set[l][s] = true;
+
+            std::cout << "Found ls-coupling from BRANCHING.json: "
+                      << "[l=" << l << ",s=" << s << "] = " << alpha[l][s] << " (Re,Im)" << std::endl;
+          } catch (...) { continue; }
+        }
+        hc.alpha     = alpha;
+        hc.alpha_set = alpha_set;
+        break;
+      }
+    }
+
+    if (!found_decay_mode) {
+      gra::aux::PrintWarning();
+      std::cout << rang::fg::red
+                << "WARNING: BRANCHING.json contains no information on this decay: " + std::to_string(pdg) + " -> ";
+
+      for (const auto& i : indices(daughter)) {
+        std::cout << daughter[i].pdg << " ";
+      }
+      std::cout << std::endl;
+      
+      std::cout << "(setting up BR = 1.0, alpha_ls == 1.0, P_conservation = true)" << rang::fg::reset << std::endl;
+      hc.BR             = 1.0;
+      hc.P_conservation = true;
+      hc.alpha          = MMatrix<std::complex<double>>(20, 20, 1.0);
+      hc.alpha_set      = MMatrix<bool>(20, 20, true);
+    }
+
+    // ----------------------------------------------------------------------------
+    // Init T-matrix
+    if (daughter.size() == 2) {
+      try {
+        gra::spin::InitTMatrix(hc, p, daughter[0], daughter[1]);
+      } catch (std::invalid_argument &e) {
+        throw std::invalid_argument("Problem with resonance PDG = " + std::to_string(pdg) +
+                                    " : " + e.what());
+      }
+    }
+    // ----------------------------------------------------------------------------
+
+    // ----------------------------------------------------------------------------
+    // Calculate equivalent decay coupling for 2-body cases
+    //
+    // In 2-body case, the decay phase space and decay amplitude squared
+    // factorize
+
+    bool TP_computed = false;
+    if (daughter.size() == 2) {
+      // Calculate phase space part:
+      // Gamma = PS * |A_decay|^2 then with |A_decay|^2 = 1 <=> Gamma = PS
+
+      const double amp2 = 1.0;
+      const double sym  = 1.0;
+
+      double PS = gra::kinematics::PDW2body(pow2(p.mass), pow2(daughter[0].mass), pow2(daughter[1].mass), amp2, sym);
+
+      // ---------------------------------------------------------------
+      // Tensor Pomeron Model decay couplings for 2-body decays directly calculable from width and BR
+      if (hc.g_decay_tensor.size() == 0) { // Not set yet
+
+        hc.g_decay_tensor = {TensorPomeron.GDecay(p.spinX2 / 2, p.mass, p.width, daughter[0].mass, hc.BR)};
+
+        if (std::abs(PS) < ZERO_EPS) {
+          // Try again with higher mother mass as a crude approximation, we might
+          // be trying purely off-shell decay (such as f0(980) -> K+K-)
+          const unsigned int N_width = 3;
+          for (std::size_t i = 1; i <= N_width; ++i) {
+            PS = gra::kinematics::PDW2body(pow2(p.mass + i * p.width),
+                                           pow2(daughter[0].mass),
+                                           pow2(daughter[1].mass), amp2, sym);
+
+            // ---------------------------------------------------------------
+            // Tensor Pomeron Model decay couplings
+            hc.g_decay_tensor = {TensorPomeron.GDecay(p.spinX2 / 2, p.mass + i * p.width, p.width, daughter[0].mass, hc.BR)};
+
+            if (PS > ZERO_EPS) { break; }
+          }
+        }
+        TP_computed = true;
+      }
+
+      // BR \equiv Gamma/Gamma_tot = (PS * |A_decay|^2) / Gamma_tot
+      // <=>
+      // |A|^2 = BR * Gamma_tot / Gamma_PS and sqrt to get 'amplitude
+      // level'
+      //
+      // ** GeV unit can be obtained by inspecting PDW2body function **
+      hc.g_decay = msqrt(hc.BR * p.width / PS);
+
+      if (std::isnan(hc.g_decay) || std::isinf(hc.g_decay)) {
+        std::string str =
+            "MProcess::ProcessHelicityDecay: Kinematic coupling problem "
+            "to '" +
+            DECAYMODE + "' with resonance PDG " + p.name + "(" + std::to_string(p.pdg) +
+            ")" +
+            " (daughters too heavy?) (check RESONANCE, DECAYMODE "
+            "and BRANCHING tables)";
+        throw std::invalid_argument(str);
+      }
+      // ---------------------------------------------------------------
+
+      // 3,4,... body cases [NOT TREATED YET, phase space and matrix
+      // element do not factorize there]
+    } else {
+      hc.g_decay = 1.0;  // For the rest, put 1.0
+    }
+
+    printf("(Mass, Full width):                (%0.3E, %0.3E GeV) \n",  p.mass, p.width);
+    printf("Branching ratio || Partial width:   %0.3E || %0.3E GeV \n", hc.BR, hc.BR * p.width);
+    printf("=> Computed decay coupling:                %0.3E \n", hc.g_decay);
+    printf("=> Tensor Pomeron decay couplings:       [ ");
+    for (const auto& i : indices(hc.g_decay_tensor)) {
+      printf("%0.3E ", hc.g_decay_tensor[i]);
+    }
+    printf("] %s \n", TP_computed ? "(computed from J, width and BR)" : "");
+
+  } else {
+    std::string str =
+        "MProcess::ProcessHelicityDecay: Did not find any branching ratio data for resonance with PDG: " +
+        std::to_string(p.pdg);
+    throw std::invalid_argument(str);
   }
+  aux::PrintBar(".");
+
+  return hc;
 }
+
 
 // Get intermediate off-shell mass
 void MProcess::GetOffShellMass(const gra::MDecayBranch &branch, double &mass) {

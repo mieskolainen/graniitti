@@ -34,6 +34,8 @@ using gra::math::zi;
 
 namespace gra {
 namespace spin {
+
+
 // Used for checking eigenvalues
 const double epsilon = 1e-6;
 
@@ -203,10 +205,10 @@ bool FermiSymmetry(int l, int s) {
 // Initial state spin treatment: Pomeron + Pomeron/Gamma -> Resonance X
 //
 //
-std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &resonance) {
+std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &res) {
 
   // Apply coupling here
-  std::complex<double> A0 = resonance.g;
+  std::complex<double> A0 = res.g;
 
   // ---------------------------------------------------------------------
   // Tensors J^P = 2+, 4+, 6+,...
@@ -218,19 +220,20 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &reso
   // ---------------------------------------------------------------------
 
   // Scalar
-  if (resonance.p.spinX2 == 0 && resonance.p.P == 1) {
+  if (res.p.spinX2 == 0 && res.p.P == 1) {
     return A0;
   }
 
   // Pseudoscalar J^P = 0-, [e.g. eta(548), eta(958)']
-  if (resonance.p.spinX2 == 0 && resonance.p.P == -1) {
+  if (res.p.spinX2 == 0 && res.p.P == -1) {
+    /*
     s1 = 1;
     s2 = 1;
     // SU(2) decomposition as given by InitTMatrix
     T0 = {{std::complex<double>(0.408), std::complex<double>(0.000), std::complex<double>( 0.000)},
           {std::complex<double>(0.000), std::complex<double>(0.000), std::complex<double>( 0.000)},
           {std::complex<double>(0.000), std::complex<double>(0.000), std::complex<double>(-0.408)}};
-    
+    */
     // Forward proton pair deltaphi
     const double dphi = lts.pfinal[1].DeltaPhiAbs(lts.pfinal[2]);
 
@@ -244,7 +247,7 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &reso
     return A0 * msqrt(std::abs(lts.t1)) * msqrt(std::abs(lts.t2)) * std::sin(dphi);
   }
   // Axial vector J^P = 1+ [e.g. f1_1420]
-  if (resonance.p.spinX2 == 2 && resonance.p.P == 1) {
+  if (res.p.spinX2 == 2 && res.p.P == 1) {
     s1 = 1;
     s2 = 1;
     // SU(2) decomposition as given by InitTMatrix
@@ -253,7 +256,7 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &reso
           {std::complex<double>(0.000), std::complex<double>( 0.387), std::complex<double>( 0.000)}};
   }
   // Vector photoproduction J^P = 1- [e.g. rho770]
-  if (resonance.p.spinX2 == 2 && resonance.p.P == -1) {
+  if (res.p.spinX2 == 2 && res.p.P == -1) {
     s1 = 0;
     s2 = 1;
     // SU(2) decomposition as given by InitTMatrix
@@ -264,105 +267,113 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &reso
   M4Vec q1 = lts.q1;
   gra::kinematics::LorentzBoost(lts.pfinal[0], lts.pfinal[0].M(), q1, -1);
   
-  const MMatrix<std::complex<double>> f0 = spin::fMatrix(T0, resonance.p.spinX2 / 2.0, s1, s2, q1.Theta(), q1.Phi());
-  const MMatrix<std::complex<double>> f0Rfd0 = f0 * resonance.hc.rho * f0.Dagger();
+  const MMatrix<std::complex<double>> f0 = spin::fMatrix(T0, res.p.spinX2 / 2.0, s1, s2, q1.Theta(), q1.Phi());
+  const MMatrix<std::complex<double>> f0Rfd0 = f0 * res.rho * f0.Dagger();
 
   return A0 * msqrt(std::real(f0Rfd0.Trace()));
 }
 
 
-// Recursive decay chain with spin correlations:
-// A -> B + C, B -> B1 + B2, C -> C1 + C2
+// Decay amplitude matrix X -> A + B
 //
-// TBD. Write down a fully recursive (infinite length) 2->2 chain version
-//
-std::complex<double> SpinAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) {
-  const unsigned int B = 0;
-  const unsigned int C = 1;
+MMatrix<std::complex<double>> CalculateFMatrix(const MDecayBranch& branch) {
 
-  MMatrix<std::complex<double>> fA;
-  MMatrix<std::complex<double>> fB;
-  MMatrix<std::complex<double>> fC;
+  const unsigned int A = 0;
+  const unsigned int B = 1;
+
+  // Get daughter spins
+  const double s1 = branch.legs[A].p.spinX2 / 2.0;
+  const double s2 = branch.legs[B].p.spinX2 / 2.0;
+
+  // Rotate and boost daughters to the frame where z-spanned by X-flight direction (X-helicity rest frame)
+  std::vector<M4Vec> daughter = {branch.legs[A].p4, branch.legs[B].p4};
+  gra::kinematics::HEframe(daughter, branch.p4);
+
+  return fMatrix(branch.hel.T, branch.p.spinX2 / 2.0, s1, s2, daughter[A].Theta(), daughter[A].Phi());
+}
+
+// Forward traverse
+void TreeRecursion(MDecayBranch& branch) {
+
+  if (branch.legs.size() == 2) {
+    branch.f = CalculateFMatrix(branch);
+    // Infinite recursion
+    for (const auto& i : aux::indices(branch.legs)) {
+      TreeRecursion(branch.legs[i]);
+    }
+  }
+}
+
+// Reverse traverse
+void TensorTree(const MDecayBranch& branch, MMatrix<std::complex<double>>& out) {
+
+  if (branch.legs.size() == 2) {
+    
+    MMatrix<std::complex<double>> f0;
+    MMatrix<std::complex<double>> f1;
+    
+    TensorTree(branch.legs[0], f0);
+    TensorTree(branch.legs[1], f1);
+
+    // Now we are traversing backwards the binary tree at branch points
+    if (branch.legs[0].legs.size() == 0 && branch.legs[1].legs.size() == 0) {
+      out = branch.f;
+    } else {
+      out = matoper::TensorProd(f0, f1) * branch.f;
+    }
+
+  // Last leg
+  } else {
+    out = MMatrix<std::complex<double>>(1,1, 1.0);
+  }
+}
+
+// Recursive decay chain with spin correlations:
+// X -> A > {A1 + A2} B > {B1 > {C1 + C2} + B2} ...
+//
+std::complex<double> SpinAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
 
   // This function handles only 2-body decays
-  if (lts.decaytree.size() != 2) { return resonance.g_decay; }
-
+  if (lts.decaytree.size() != 2) {
+    return res.hel.g_decay;
+  }
   // No spin, no need
-  if (resonance.p.spinX2 == 0) {
-    return resonance.hc.T[0][0] * resonance.g_decay;  // (l,s) = (0,0)
-  }
-  
-  // Transition amplitude matrix
-  // A -> B + C (in A rest frame)
-  if (lts.decaytree.size() == 2) {
-    // Get daughter spins
-    const double s1 = lts.decaytree[B].p.spinX2 / 2.0;
-    const double s2 = lts.decaytree[C].p.spinX2 / 2.0;
-
-    // Boost daughter to the A-rest frame
-    M4Vec boosted_daughter = lts.decaytree[B].p4;
-    gra::kinematics::LorentzBoost(lts.pfinal[0], lts.pfinal[0].M(), boosted_daughter, -1);
-
-    fA = fMatrix(resonance.hc.T, resonance.p.spinX2 / 2.0, s1, s2, boosted_daughter.Theta(),
-                 boosted_daughter.Phi());
+  if (res.p.spinX2 == 0) {
+    return res.hel.T[0][0] * res.hel.g_decay;  // (l,s) = (0,0)
   }
 
-  // Transition amplitude matrix
-  // B -> B1 + B2
-  if (lts.decaytree[B].legs.size() == 2) {
-    const unsigned int B1 = 0;
-    const unsigned int B2 = 1;
+  // Transition amplitude matrix f for X -> A + B in the X rest frame
+  // Daughter spins
+  const double s1 = lts.decaytree[0].p.spinX2 / 2.0;
+  const double s2 = lts.decaytree[1].p.spinX2 / 2.0;
 
-    // Get daughter spins
-    const double s1 = lts.decaytree[B].legs[B1].p.spinX2 / 2.0;
-    const double s2 = lts.decaytree[B].legs[B2].p.spinX2 / 2.0;
+  // Boost daughter to the A-rest frame
+  M4Vec boosted_daughter = lts.decaytree[0].p4;
+  gra::kinematics::LorentzBoost(lts.pfinal[0], lts.pfinal[0].M(), boosted_daughter, -1);
 
-    // Constant 1.0 for now (solid for "Magic Decays", i.e., which have T == 1)
-    const MMatrix<std::complex<double>> T((unsigned int)(2 * s1 + 1), (unsigned int)(2 * s2 + 1),
-                                          1.0);
+  MMatrix<std::complex<double>> fX =
+    fMatrix(res.hel.T, res.p.spinX2 / 2.0, s1, s2, boosted_daughter.Theta(), boosted_daughter.Phi());
 
-    // Rotate and boost daughters to the frame where z-spanned by B-flight
-    // direction
-    // (B-helicity rest frame)
-    std::vector<M4Vec> daughter = {lts.decaytree[B].legs[B1].p4, lts.decaytree[B].legs[B2].p4};
-    gra::kinematics::HEframe(daughter, lts.decaytree[B].p4);
+  // Now go through the decay tree leaves recursively
+  TreeRecursion(lts.decaytree[0]);
+  TreeRecursion(lts.decaytree[1]);
 
-    fB = fMatrix(T, lts.decaytree[B].p.spinX2 / 2.0, s1, s2, daughter[B1].Theta(),
-                 daughter[B1].Phi());
-  }
+  // Get tensor products back
+  MMatrix<std::complex<double>> fA;
+  TensorTree(lts.decaytree[0], fA);
 
-  // Transition amplitude matrix
-  // C -> C1 + C2
-  if (lts.decaytree[C].legs.size() == 2) {
-    const unsigned int C1 = 0;
-    const unsigned int C2 = 1;
-
-    // Get daughter spins
-    const double s1 = lts.decaytree[C].legs[C1].p.spinX2 / 2.0;
-    const double s2 = lts.decaytree[C].legs[C2].p.spinX2 / 2.0;
-
-    // Constant 1.0 for now (solid for "Magic Decays", i.e., which have T == 1)
-    const MMatrix<std::complex<double>> T((unsigned int)(2 * s1 + 1), (unsigned int)(2 * s2 + 1),
-                                          1.0);
-
-    // Rotate and boost daughters to the frame where z-spanned by C-flight
-    // direction
-    // (C-helicity rest frame)
-    std::vector<M4Vec> daughter = {lts.decaytree[C].legs[C1].p4, lts.decaytree[C].legs[C2].p4};
-    gra::kinematics::HEframe(daughter, lts.decaytree[C].p4);
-
-    fC = fMatrix(T, lts.decaytree[C].p.spinX2 / 2.0, s1, s2, daughter[C1].Theta(),
-                 daughter[C1].Phi());
-  }
+  MMatrix<std::complex<double>> fB;
+  TensorTree(lts.decaytree[1], fB);
 
   // Total transition amplitude matrix as a tensor product
   MMatrix<std::complex<double>> f;
-  if (fB.size_row() > 0 && fC.size_row() > 0) {
-    const MMatrix<std::complex<double>> prod = gra::matoper::TensorProd(fB, fC);
-    f                                        = prod * fA;  // Matrix x Matrix product
+  if (fA.size_row() > 0 && fB.size_row() > 0) {
+    f = gra::matoper::TensorProd(fA, fB) * fX;  // Matrix x Matrix product
   } else {
-    f = fA;  // No recursion
+    f = fX;  // No recursion
   }
+
+  MMatrix<std::complex<double>> fA_D = fA.Dagger();
 
   // ------------------------------------------------------------------
   // Construct the D-matrix for an event-by-event spin space density operator
@@ -373,19 +384,19 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &reso
   // Spin polarization density matrix defined:
 
   // In direct non-rotated rest frame
-  if        (resonance.hc.FRAME == "SR") {
+  if        (res.FRAME == "SR") {
     
     theta_rotation = 0;
     phi_rotation   = 0;
 
   // In helicity rest frame [quantization axis by system orientation in the lab]
-  } else if (resonance.hc.FRAME == "HE") {
+  } else if (res.FRAME == "HE") {
 
     theta_rotation = lts.pfinal[0].Theta(); // +
     phi_rotation   = lts.pfinal[0].Phi();   // +
 
   // In Gottfried-Jackson frame [quantization axis by the momentum transfer vector]
-  } else if (resonance.hc.FRAME == "GJ") {
+  } else if (res.FRAME == "GJ") {
 
     // Propagator
     M4Vec q1boost = lts.q1;
@@ -399,7 +410,7 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &reso
     const std::string str =
         "gra::spin::SpinAmp2: Unknown polarization Lorentz rest FRAME chosen: "
         "\"" +
-        resonance.hc.FRAME +
+        res.FRAME +
         "\" (valid currently are: \"SR\" (no rotation), \"HE\" (helicity)";
     throw std::invalid_argument(str);
   }
@@ -408,10 +419,10 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &reso
   // Rotation does mixing of spin states. N.B. Eigenvalues do not change in
   // rotation.
   const MMatrix<std::complex<double>> D =
-      gra::spin::DMatrix(resonance.p.spinX2 / 2.0, theta_rotation, phi_rotation);
+      gra::spin::DMatrix(res.p.spinX2 / 2.0, theta_rotation, phi_rotation);
 
   // rho_rot = D^\dagger*rho*D [keep this sandwich order!]
-  const MMatrix<std::complex<double>> rho_ROT = D.Dagger() * resonance.hc.rho * D;
+  const MMatrix<std::complex<double>> rho_ROT = D.Dagger() * res.rho * D;
 
   // Weight (amplitude squared) of the event by the density matrix formalism:
   // Tr[f*rho*f^dagger]
@@ -421,12 +432,12 @@ std::complex<double> SpinAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &reso
 
   // (2J+1) is normalization to match production coupling with spin-0
   // (same cross section obtained as with spin-0 if density matrix == I ==
-  // totally
-  // unpolarized)
-  const double NORM = msqrt(resonance.p.spinX2 + 1.0);
+  //  totally unpolarized)
+  const double NORM = msqrt(res.p.spinX2 + 1.0);
 
-  return NORM * A * resonance.g_decay;
+  return NORM * A * res.hel.g_decay;
 }
+
 
 // Create spin projections -J <= M <= J (number of 2J+1)
 // negative to positive
@@ -510,8 +521,8 @@ MMatrix<std::complex<double>> fMatrix(const MMatrix<std::complex<double>> &T, do
       f[i][j] = WignerD(theta, phi, lambda, M[j], J) * T[lambda_index[i][0]][lambda_index[i][1]];
     }
   }
-  // std::cout << "f:::" << std::endl;
-  // gra::matoper::PrintMatrixSeparate(f);
+  //std::cout << "f::" << std::endl;
+  //gra::matoper::PrintMatrixSeparate(f);
   // exit(1);
 
   return f;
