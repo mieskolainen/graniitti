@@ -29,6 +29,8 @@ extern double ALPHA_P;
 
 // Couplings
 extern double gN_P;
+extern double gN_O;
+
 extern double g3P;
 extern double gamma;
 

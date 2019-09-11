@@ -732,6 +732,55 @@ std::complex<double> MRegge::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resona
 }
 
 // ============================================================================
+// Simple matrix element ansatz for Odderon-Pomeron resonances
+//
+// ===========
+//      O
+//      O
+//      x---->
+//      P
+//      P
+// ===========
+//
+std::complex<double> MRegge::ME3ODD(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const {
+  // Proton form factors
+  const double FF_A =
+      lts.excite1 ? gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : gra::form::S3F(lts.t1);
+  const double FF_B =
+      lts.excite2 ? gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : gra::form::S3F(lts.t2);
+
+  // s-channel
+  const std::complex<double> A1 =
+      PropOnly(lts.s1, lts.t1) * FF_A * PARAM_SOFT::gN_P * CBW(lts, resonance) *
+      PARAM_REGGE::ResonanceFormFactor(lts.m2, pow2(resonance.p.mass), resonance.g_FF) *
+      OdderonProp(lts.s2, lts.t2) * FF_B * PARAM_SOFT::gN_O;
+  
+  const std::complex<double> A2 =
+      OdderonProp(lts.s1, lts.t1) * FF_A * PARAM_SOFT::gN_O * CBW(lts, resonance) *
+      PARAM_REGGE::ResonanceFormFactor(lts.m2, pow2(resonance.p.mass), resonance.g_FF) *
+      PropOnly(lts.s2, lts.t2) * FF_B * PARAM_SOFT::gN_P;
+
+  // Production and Decay amplitude
+  const std::complex<double> A_spin = spin::ProdAmp(lts, resonance) * spin::SpinAmp(lts, resonance);
+
+  // Flux
+  // const double V = msqrt(lts.s / lts.s1 / lts.s2);
+  const double V = msqrt(1.0 / lts.m2);
+
+  // Should sum here with negative sign if proton-antiproton initial state (anti-symmetric)
+  const std::complex<double> A_prod = (lts.beam1.pdg == lts.beam2.pdg) ? (A1 + A2) : (A1 - A2);
+  const std::complex<double> A = A_prod * A_spin * V;
+
+  // --------------------------------------------------------------------
+  // For screening loop
+  lts.hamp = {A};
+  // --------------------------------------------------------------------
+
+  return A;
+}
+
+
+// ============================================================================
 // Simple matrix element ansatz for Photoproduction of resonances
 //
 // ===========
@@ -870,6 +919,24 @@ std::complex<double> MRegge::PropOnly(double s, double t) const {
     }
   }
   return M;
+}
+
+// ============================================================================
+// Odderon propagators in the form (s/s0)^alpha(t)
+//
+std::complex<double> MRegge::OdderonProp(double s, double t) const {
+
+  // Use Pomeron parameters
+  const double alpha = PARAM_REGGE::a0[0] + t * PARAM_REGGE::ap[0];
+
+  // Complex Regge signature
+  // (cannot be used with linear trajectory due to poles)
+  // const std::complex<double> eta = ReggeEta(alpha, PARAM_REGGE::sgn[k]);
+
+  // Evaluate at t = 0 to avoid poles (for linear trajectory) [NEGATIVE SIGNATURE HERE!]
+  const std::complex<double> eta = ReggeEta(PARAM_REGGE::a0[0], (-1) * PARAM_REGGE::sgn[0]);
+  
+  return eta * std::pow(s / PARAM_REGGE::s0, alpha);
 }
 
 // ----------------------------------------------------------------------

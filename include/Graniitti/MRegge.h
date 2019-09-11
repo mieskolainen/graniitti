@@ -71,6 +71,8 @@ class MRegge {
   std::complex<double> ME4(gra::LORENTZSCALAR &lts, double sign) const;
   std::complex<double> ME2(gra::LORENTZSCALAR &lts, int mode) const;
   std::complex<double> ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const;
+  std::complex<double> ME3ODD(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const;
+  
   std::complex<double> ME3HEL(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const;
   std::complex<double> PhotoME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const;
 
@@ -83,6 +85,7 @@ class MRegge {
 
   // Regge propagators
   std::complex<double> PropOnly(double s, double t) const;
+  std::complex<double> OdderonProp(double s, double t) const;
   std::complex<double> PhotoProp(double s, double t, double m2, bool excite,
                                  double M2_forward) const;
 

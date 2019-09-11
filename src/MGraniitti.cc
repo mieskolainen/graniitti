@@ -379,13 +379,14 @@ void MGraniitti::ReadModelParam(const std::string &inputfile) {
                       " (Check for extra/missing commas)";
     throw std::invalid_argument(str);
   }
-
+  
   try {
     // Soft model parameters
     PARAM_SOFT::DELTA_P = j.at("PARAM_SOFT").at("DELTA_P");
     PARAM_SOFT::ALPHA_P = j.at("PARAM_SOFT").at("ALPHA_P");
     PARAM_SOFT::gN_P    = j.at("PARAM_SOFT").at("gN_P");
-
+    PARAM_SOFT::gN_O    = j.at("PARAM_SOFT").at("gN_O");    
+    
     double triple3P   = j.at("PARAM_SOFT").at("g3P");
     PARAM_SOFT::g3P   = triple3P * PARAM_SOFT::gN_P;  // Convention
     PARAM_SOFT::gamma = j.at("PARAM_SOFT").at("gamma");

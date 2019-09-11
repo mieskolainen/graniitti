@@ -33,6 +33,7 @@ yes $CMD | source ./tests/run_alice_single/run.sh
 yes $CMD | source ./tests/run_cms_multi/run.sh
 yes $CMD | source ./tests/run_excitation/run.sh
 yes $CMD | source ./tests/run_rhorho_phiphi/run.sh
+yes $CMD | source ./tests/run_odderon_phi/run.sh
 
 # Spin density generation and control
 yes $CMD | source ./tests/run_JW_polarizations/run.sh

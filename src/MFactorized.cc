@@ -42,7 +42,7 @@ using gra::PDG::GeV2barn;
 namespace gra {
 // This is needed by construction
 MFactorized::MFactorized() {
-  std::vector<std::string> supported = {"PP", "yP", "yy", "gg"};
+  std::vector<std::string> supported = {"PP", "yP", "OP", "yy", "gg"};
   ProcPtr                            = MSubProc(supported);
   ConstructProcesses();
 }

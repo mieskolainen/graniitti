@@ -38,7 +38,7 @@ using gra::math::PI;
 namespace gra {
 // This is needed by construction
 MContinuum::MContinuum() {
-  std::vector<std::string> supported = {"PP", "yP", "yy", "gg"};
+  std::vector<std::string> supported = {"PP", "yP", "OP", "yy", "gg"};
   ProcPtr                            = MSubProc(supported);
   ConstructProcesses();
 }
@@ -84,9 +84,9 @@ void MContinuum::post_Constructor() {
 
     // Pomeron-Pomeron continuum (low-pt guaranteed by form factors)
     gcuts.kt_max = 10.0 / lts.decaytree.size();
-
+    
     // QED/EW/Durham-QCD processes (high pt)
-    if (ProcPtr.ISTATE != "PP" && ProcPtr.ISTATE != "yP") {
+    if (ProcPtr.ISTATE != "PP" && ProcPtr.ISTATE != "yP" && ProcPtr.ISTATE != "OP") {
       gcuts.kt_max = lts.sqrt_s / 2.0;  // kinematic maximum
     }
   }

@@ -39,9 +39,9 @@ namespace aux {
 // -------------------------------------------------------
 // FIXED HERE manually
 
-double      GetVersion() {       return 0.86; }
+double      GetVersion() {       return 0.87; }
 std::string GetVersionType() {   return "pre-release"; }
-std::string GetVersionDate() {   return "11.09.2019"; }
+std::string GetVersionDate() {   return "12.09.2019"; }
 std::string GetVersionUpdate() { return "new spin model"; }
 
 // -------------------------------------------------------

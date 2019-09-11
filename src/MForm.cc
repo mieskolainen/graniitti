@@ -41,6 +41,7 @@ double ALPHA_P = 0.0;
 
 // Couplings
 double gN_P  = 0.0;
+double gN_O  = 0.0;
 double g3P   = 0.0;
 double gamma = 0.0;
 
@@ -53,7 +54,7 @@ double fc3 = 0.0;
 
 std::string GetHashString() {
   std::string str = std::to_string(PARAM_SOFT::DELTA_P) + std::to_string(PARAM_SOFT::ALPHA_P) +
-                    std::to_string(PARAM_SOFT::gN_P) + std::to_string(PARAM_SOFT::fc1) +
+                    std::to_string(PARAM_SOFT::gN_P) + std::to_string(PARAM_SOFT::gN_O) + std::to_string(PARAM_SOFT::fc1) +
                     std::to_string(PARAM_SOFT::fc2) + std::to_string(PARAM_SOFT::fc3);
   return str;
 }
@@ -63,6 +64,7 @@ void PrintParam() {
   printf("- DELTA_P = %0.4f \n", DELTA_P);
   printf("- ALPHA_P = %0.4f [GeV^{-2}] \n", ALPHA_P);
   printf("- gN_P    = %0.4f [GeV^{-1}] \n", gN_P);
+  printf("- gN_O    = %0.4f [GeV^{-1}] \n", gN_O);
   printf("- g3P     = %0.4f \n", g3P / gN_P);  // Convention
   printf("- gamma   = %0.4f \n", gamma);
   printf("- fc1     = %0.4f [GeV^2] \n", fc1);

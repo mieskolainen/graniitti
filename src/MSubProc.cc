@@ -93,6 +93,12 @@ void MSubProc::ConstructDescriptions(const std::string &first) {
       "Regge sliding helicity amplitudes           [Pomeron]             <-- DEVELOPER ONLY PROCESS!"));
     descriptions.insert(std::pair<std::string, std::map<std::string, std::string>>("PP", channels));
 
+  } else if (first == "OP") {
+    std::map<std::string, std::string> channels;
+    channels.insert(std::pair<std::string, std::string>("RES",
+      "Regge parametric vector resonance           [Odderon] x [Pomeron]"));
+    descriptions.insert(std::pair<std::string, std::map<std::string, std::string>>("OP", channels));
+
   } else if (first == "yP") {
     std::map<std::string, std::string> channels;
     channels.insert(std::pair<std::string, std::string>("RES",
@@ -147,15 +153,7 @@ void MSubProc::SetTechnicalBoundaries(gra::GENCUT &gcuts, unsigned int EXCITATIO
   if (gcuts.forward_pt_max < 0.0) { // Not set yet by the USER
 
     if        (EXCITATION == 0) {   // Elastic forward protons, default values
-      if        (ISTATE == "PP") {
-        gcuts.forward_pt_max = 2.5;
-      } else if (ISTATE == "yP") {
-        gcuts.forward_pt_max = 2.5;
-      } else if (ISTATE == "yy") {
-        gcuts.forward_pt_max = 2.5;
-      } else if (ISTATE == "gg") {
-        gcuts.forward_pt_max = 2.5;
-      }
+      gcuts.forward_pt_max = 2.5;
     }
 
     else if   (EXCITATION == 1) {  // Single excitation
@@ -173,6 +171,8 @@ double MSubProc::GetBareAmplitude2(gra::LORENTZSCALAR &lts) {
     return GetBareAmplitude2_PP(lts);
   } else if (ISTATE == "yP") {
     return GetBareAmplitude2_yP(lts);
+  } else if (ISTATE == "OP") {
+    return GetBareAmplitude2_OP(lts);
   } else if (ISTATE == "yy") {
     return GetBareAmplitude2_yy(lts);
   } else if (ISTATE == "gg") {
@@ -186,8 +186,23 @@ double MSubProc::GetBareAmplitude2(gra::LORENTZSCALAR &lts) {
   }
 }
 
+// First run, init parameters
+inline void MSubProc::ReggeReset(gra::LORENTZSCALAR& lts) {
+
+  gra::g_mutex.lock();
+  if (!PARAM_REGGE::initialized) {
+    const int PDG = std::abs(lts.decaytree[0].p.pdg);
+    InitReggeAmplitude(PDG, gra::MODELPARAM);
+    PARAM_REGGE::initialized = true;
+  }
+  gra::g_mutex.unlock();
+}
+
 // Inclusive processes
 inline double MSubProc::GetBareAmplitude2_X(gra::LORENTZSCALAR &lts) {
+
+  ReggeReset(lts);
+
   std::complex<double> A(0, 0);
   if (CHANNEL == "EL" || CHANNEL == "SD" || CHANNEL == "DD") {
     A = ME2(lts, LIPSDIM);
@@ -199,19 +214,35 @@ inline double MSubProc::GetBareAmplitude2_X(gra::LORENTZSCALAR &lts) {
   return abs2(A); // amplitude squared
 }
 
+// Odderon-Pomeron
+inline double MSubProc::GetBareAmplitude2_OP(gra::LORENTZSCALAR &lts) {
+  
+  ReggeReset(lts);
+
+  if        (CHANNEL == "RES") {
+    
+    std::complex<double> A(0,0);
+    // Coherent sum of Resonances (loop over)
+    for (auto &x : lts.RESONANCES) {
+      const int J = static_cast<int>(x.second.p.spinX2 / 2.0);
+      // Vectors only
+      if (J == 1 && x.second.p.P == -1) {
+        A += ME3ODD(lts, x.second);
+      }
+    }
+    return abs2(A); // amplitude squared
+    
+  } else {
+    throw std::invalid_argument("MSubProc::GetBareAmplitude2_OP: Unknown CHANNEL = " + CHANNEL);
+  }
+}
+
+
 // Pomeron-Pomeron
 inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
-  // ------------------------------------------------------------------
-  // First run, init parameters
-  gra::g_mutex.lock();
-  if (!PARAM_REGGE::initialized) {
-    const int PDG = std::abs(lts.decaytree[0].p.pdg);
-    InitReggeAmplitude(PDG, gra::MODELPARAM);
-    PARAM_REGGE::initialized = true;
-  }
-  gra::g_mutex.unlock();
-  // ------------------------------------------------------------------
-
+  
+  ReggeReset(lts);
+  
   std::complex<double> A(0, 0);
 
   if (CHANNEL == "RES") {
@@ -355,10 +386,20 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
 // Gamma-Pomeron
 inline double MSubProc::GetBareAmplitude2_yP(gra::LORENTZSCALAR &lts) {
   
+  ReggeReset(lts);
+
   if        (CHANNEL == "RES") {
-    
+
     std::complex<double> A(0,0);
-    A = PhotoME3(lts, lts.RESONANCES.begin()->second);
+
+    // Coherent sum of Resonances (loop over)
+    for (auto &x : lts.RESONANCES) {
+      const int J = static_cast<int>(x.second.p.spinX2 / 2.0);
+      // Vectors only
+      if (J == 1 && x.second.p.P == -1) {
+        A += PhotoME3(lts, lts.RESONANCES.begin()->second);
+      }
+    }
     return abs2(A); // amplitude squared
 
   } else if (CHANNEL == "RESTENSOR") {
@@ -369,7 +410,6 @@ inline double MSubProc::GetBareAmplitude2_yP(gra::LORENTZSCALAR &lts) {
   } else {
     throw std::invalid_argument("MSubProc::GetBareAmplitude2_yP: Unknown CHANNEL = " + CHANNEL);
   }
-
 }
 
 // Gamma-Gamma
