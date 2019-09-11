@@ -241,7 +241,7 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
   // Save logscale pdf
   if (MINVAL > 0) {
     pad1->cd()->SetLogy();  // pad2 becomes the current pad
-    for (const auto &i : indices(h)) { h[i]->GetYaxis()->SetRangeUser(std::max(MINVAL, MAXVAL * 1e-9), MAXVAL * 5); }
+    for (const auto &i : indices(h)) { h[i]->GetYaxis()->SetRangeUser(std::max(MINVAL, MAXVAL * 1e-8), MAXVAL * 5); }
     fullfile = fullpath + name_ + "_logy" + ".pdf";
     c0.SaveAs(fullfile.c_str());
   }
@@ -425,7 +425,7 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
     h[i]->SetMarkerColor(color[i]);
     h[i]->SetMarkerStyle(20);
     h[i]->SetMarkerSize(0.5);
-    h[i]->GetYaxis()->SetRangeUser(MINVAL * 1.5, MAXVAL * 1.5);
+    h[i]->GetYaxis()->SetRangeUser(MINVAL, MAXVAL * 1.25);
 
     h[i]->Draw("L SAME");
   }
