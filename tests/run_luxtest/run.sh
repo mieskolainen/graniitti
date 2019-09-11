@@ -10,8 +10,14 @@ echo # New line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
+# Not set
+if [ -z "$EVENTS" ]
+then
+	EVENTS=10000
+fi
+
 # Generate
-./bin/gr -i ./tests/run_luxtest/LUX.json -w true -n 50000
+./bin/gr -i ./tests/run_luxtest/LUX.json -w true -n $EVENTS
 
 fi
 

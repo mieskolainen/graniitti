@@ -545,6 +545,7 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
 
     // @ Command syntax override "on-the-flight parameters"
     for (const auto &i : indices(syntax)) {
+
       if (syntax[i].id == "R") {
 
         // Take target string
@@ -564,7 +565,7 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
         bool couplings_touched = false;
         bool density_touched   = false;
 
-        MMatrix<std::complex<double>> newrho;
+        MMatrix<std::complex<double>> newrho(1,1, 0.0);
         if (RESONANCES[RESNAME].p.spinX2 != 0) {
           const int N = RESONANCES[RESNAME].rho.size_row();
           newrho = MMatrix<std::complex<double>>(N,N, 0.0);
@@ -583,7 +584,7 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
             std::cout << rang::fg::green << "@R[" << RESNAME << "] new width: "
               << RESONANCES[RESNAME].p.width << rang::fg::reset << std::endl;
           }
-          
+
           // Set couplings
           for (std::size_t n = 0; n < RESONANCES[RESNAME].g_Tensor.size(); ++n) {
             if (x.first == ("g" + std::to_string(n)) ) {

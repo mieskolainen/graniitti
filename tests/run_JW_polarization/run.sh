@@ -10,26 +10,29 @@ echo # New line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
-# Generate
-N=1000000
+# Not set
+if [ -z "$EVENTS" ]
+then
+	EVENTS=10000
+fi
 
 ./bin/gr -i ./tests/processes/CMS13.json -p "PP[RES]<F> -> pi+ pi- @RES{f0_980:1}  @FRAME:SR" \
--w true -l false -n $N -o "f0_980" -f "hepmc3"
+-w true -l false -n $EVENTS -o "f0_980" -f "hepmc3"
 
 ./bin/gr -i ./tests/processes/CMS13.json -p "yP[RES]<F> -> pi+ pi- @RES{rho_770:1} @R[rho_770]{JZ0:1, JZ1:0} @FRAME:SR" \
--w true -l false -n $N -o "rho_JZ0" -f "hepmc3"
+-w true -l false -n $EVENTS -o "rho_JZ0" -f "hepmc3"
 
 ./bin/gr -i ./tests/processes/CMS13.json -p "yP[RES]<F> -> pi+ pi- @RES{rho_770:1} @R[rho_770]{JZ0:0, JZ1:1} @FRAME:SR" \
--w true -l false -n $N -o "rho_JZ1" -f "hepmc3"
+-w true -l false -n $EVENTS -o "rho_JZ1" -f "hepmc3"
 
 ./bin/gr -i ./tests/processes/CMS13.json -p "PP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:1, JZ1:0, JZ2:0} @FRAME:SR" \
--w true -l false -n $N -o "f2_JZ0" -f "hepmc3"
+-w true -l false -n $EVENTS -o "f2_JZ0" -f "hepmc3"
 
 ./bin/gr -i ./tests/processes/CMS13.json -p "PP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:0, JZ1:1, JZ2:0} @FRAME:SR" \
--w true -l false -n $N -o "f2_JZ1" -f "hepmc3"
+-w true -l false -n $EVENTS -o "f2_JZ1" -f "hepmc3"
 
 ./bin/gr -i ./tests/processes/CMS13.json -p "PP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:0, JZ1:0, JZ2:1} @FRAME:SR" \
--w true -l false -n $N -o "f2_JZ2" -f "hepmc3"
+-w true -l false -n $EVENTS -o "f2_JZ2" -f "hepmc3"
 
 fi
 

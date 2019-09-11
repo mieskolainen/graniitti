@@ -10,12 +10,16 @@ echo # New line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
-N=100000
+# Not set
+if [ -z "$EVENTS" ]
+then
+	EVENTS=10000
+fi
 
 # Generate
-./bin/gr -i ./tests/processes/ALICE_2pi.json -w true -l false -n $N -s 0 -o "2pi_excite_0" -f "hepmc3"
-./bin/gr -i ./tests/processes/ALICE_2pi.json -w true -l false -n $N -s 1 -o "2pi_excite_1" -f "hepmc3"
-./bin/gr -i ./tests/processes/ALICE_2pi.json -w true -l false -n $N -s 2 -o "2pi_excite_2" -f "hepmc3"
+./bin/gr -i ./tests/processes/ALICE_2pi.json -w true -l false -n $EVENTS -s 0 -o "2pi_excite_0" -f "hepmc3"
+./bin/gr -i ./tests/processes/ALICE_2pi.json -w true -l false -n $EVENTS -s 1 -o "2pi_excite_1" -f "hepmc3"
+./bin/gr -i ./tests/processes/ALICE_2pi.json -w true -l false -n $EVENTS -s 2 -o "2pi_excite_2" -f "hepmc3"
 
 fi
 

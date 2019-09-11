@@ -10,12 +10,16 @@ echo # New line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
-N=100000
+# Not set
+if [ -z "$EVENTS" ]
+then
+	EVENTS=10000
+fi
 
 # Generate
-./bin/gr -i ./tests/processes/CMS19_2pi.json -w true -l false -n $N
-./bin/gr -i ./tests/processes/CMS19_2K.json -w true -l false -n $N
-./bin/gr -i ./tests/processes/CMS19_ppbar.json -w true -l false -n $N
+./bin/gr -i ./tests/processes/CMS19_2pi.json -w true -l false -n $EVENTS
+./bin/gr -i ./tests/processes/CMS19_2K.json -w true -l false -n $EVENTS
+./bin/gr -i ./tests/processes/CMS19_ppbar.json -w true -l false -n $EVENTS
 
 fi
 

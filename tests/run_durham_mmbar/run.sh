@@ -10,13 +10,24 @@ echo # New line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
-N=1000000
+# Not set
+if [ -z "$EVENTS" ]
+then
+	EVENTS=10000
+fi
 
 # Generate
-./bin/gr -i ./tests/processes/gg2MMbar.json -p "gg[CON]<F> -> pi+ pi-"               -w true -l false -n $N -o "gg2pipi"     -f "hepmc3"
-./bin/gr -i ./tests/processes/gg2MMbar.json -p "gg[CON]<F> -> K+ K-"                 -w true -l false -n $N -o "gg2KK"       -f "hepmc3"
-./bin/gr -i ./tests/processes/gg2MMbar.json -p "gg[CON]<F> -> eta0 eta0"             -w true -l false -n $N -o "gg2etaeta"   -f "hepmc3"
-./bin/gr -i ./tests/processes/gg2MMbar.json -p "gg[CON]<F> -> eta'(958)0 eta'(958)0" -w true -l false -n $N -o "gg2etapetap" -f "hepmc3"
+./bin/gr -i ./tests/processes/gg2MMbar.json \
+-p "gg[CON]<F> -> pi+ pi-"               -w true -l false -n $EVENTS -o "gg2pipi"     -f "hepmc3"
+
+./bin/gr -i ./tests/processes/gg2MMbar.json \
+-p "gg[CON]<F> -> K+ K-"                 -w true -l false -n $EVENTS -o "gg2KK"       -f "hepmc3"
+
+./bin/gr -i ./tests/processes/gg2MMbar.json \
+-p "gg[CON]<F> -> eta0 eta0"             -w true -l false -n $EVENTS -o "gg2etaeta"   -f "hepmc3"
+
+./bin/gr -i ./tests/processes/gg2MMbar.json \
+-p "gg[CON]<F> -> eta'(958)0 eta'(958)0" -w true -l false -n $EVENTS -o "gg2etapetap" -f "hepmc3"
 
 fi
 

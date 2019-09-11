@@ -10,17 +10,21 @@ echo # New line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
-N=10000
+# Not set
+if [ -z "$EVENTS" ]
+then
+	EVENTS=10000
+fi
 
 # Generate, operator &> decouples the decay phase space integral volume, thus we can apply branching ratio manually
 
-./bin/gr -i ./tests/processes/gg2chic0.json -p "gg[chic(0)]<F> &> pi+ pi-" -w true -l false -n $N \
+./bin/gr -i ./tests/processes/gg2chic0.json -p "gg[chic(0)]<F> &> pi+ pi-" -w true -l false -n $EVENTS \
 -o "chic0_MSTW2008lo68cl" -f "hepmc3" -q "MSTW2008lo68cl"
 
-./bin/gr -i ./tests/processes/gg2chic0.json -p "gg[chic(0)]<F> &> pi+ pi-" -w true -l false -n $N \
+./bin/gr -i ./tests/processes/gg2chic0.json -p "gg[chic(0)]<F> &> pi+ pi-" -w true -l false -n $EVENTS \
 -o "chic0_CT10nlo"        -f "hepmc3" -q "CT10nlo"
 
-./bin/gr -i ./tests/processes/gg2chic0.json -p "gg[chic(0)]<F> &> pi+ pi-" -w true -l false -n $N \
+./bin/gr -i ./tests/processes/gg2chic0.json -p "gg[chic(0)]<F> &> pi+ pi-" -w true -l false -n $EVENTS \
 -o "chic0_MMHT2014lo68cl" -f "hepmc3" -q "MMHT2014lo68cl"
 
 fi

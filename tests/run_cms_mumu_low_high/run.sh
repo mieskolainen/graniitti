@@ -9,20 +9,30 @@ POMLOOP=false
 # Hard-coded integrated screening factor (for speed, set 1 if Pomeron loop was on)
 S2=1.0
 
-# Number of events
-N=1000000
-
 read -p "run: Generate events (or only analyze)? [y/n] " -n 1 -r
 echo # New line
 
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
+# Not set
+if [ -z "$EVENTS" ]
+then
+	EVENTS=10000
+fi
+
 # Simulate mu+mu-
-./bin/gr -i ./tests/run_cms_mumu_low_high/CMS_mumu_lowmass.json -p "yy[CON]<F> -> mu+ mu-" -n $N -w true -o "yy_EPA_lo" -f "hepmc3"
-./bin/gr -i ./tests/run_cms_mumu_low_high/CMS_mumu_lowmass.json -p "yy[QED]<F> -> mu+ mu-" -n $N -w true -o "yy_QED_lo" -f "hepmc3"
-./bin/gr -i ./tests/run_cms_mumu_low_high/CMS_mumu_himass.json  -p "yy[CON]<F> -> mu+ mu-" -n $N -w true -o "yy_EPA_hi" -f "hepmc3"
-./bin/gr -i ./tests/run_cms_mumu_low_high/CMS_mumu_himass.json  -p "yy[QED]<F> -> mu+ mu-" -n $N -w true -o "yy_QED_hi" -f "hepmc3"
+./bin/gr -i ./tests/run_cms_mumu_low_high/CMS_mumu_lowmass.json \
+-p "yy[CON]<F> -> mu+ mu-" -n $EVENTS -w true -o "yy_EPA_lo" -f "hepmc3"
+
+./bin/gr -i ./tests/run_cms_mumu_low_high/CMS_mumu_lowmass.json \
+-p "yy[QED]<F> -> mu+ mu-" -n $EVENTS -w true -o "yy_QED_lo" -f "hepmc3"
+
+./bin/gr -i ./tests/run_cms_mumu_low_high/CMS_mumu_himass.json  \
+-p "yy[CON]<F> -> mu+ mu-" -n $EVENTS -w true -o "yy_EPA_hi" -f "hepmc3"
+
+./bin/gr -i ./tests/run_cms_mumu_low_high/CMS_mumu_himass.json  \
+-p "yy[QED]<F> -> mu+ mu-" -n $EVENTS -w true -o "yy_QED_hi" -f "hepmc3"
 
 fi
 

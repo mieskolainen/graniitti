@@ -10,11 +10,18 @@ echo # New line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
-N=100000
+# Not set
+if [ -z "$EVENTS" ]
+then
+	EVENTS=10000
+fi
 
 # Generate
-./bin/gr -i ./tests/processes/ALICE_2K.json -p "PP[CON]<F> -> K+ K-" -w true -l false -n $N -o "continuum" -f "hepmc3"
-./bin/gr -i ./tests/processes/ALICE_2K.json -p "PP[CON]<F> -> K+ K-" -w true -l true  -n $N -o "continuum_screened" -f "hepmc3"
+./bin/gr -i ./tests/processes/ALICE_2K.json \
+-p "PP[CON]<F> -> K+ K-" -w true -l false -n $EVENTS -o "continuum" -f "hepmc3"
+
+./bin/gr -i ./tests/processes/ALICE_2K.json \
+-p "PP[CON]<F> -> K+ K-" -w true -l true  -n $EVENTS -o "continuum_screened" -f "hepmc3"
 
 fi
 

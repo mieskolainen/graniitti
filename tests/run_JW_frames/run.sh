@@ -11,17 +11,20 @@ echo # New line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
-# Generate
-N=100000
+# Not set
+if [ -z "$EVENTS" ]
+then
+	EVENTS=10000
+fi
 
 ./bin/gr -i ./tests/processes/CMS13.json -p "PP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:0, JZ1:1, JZ2:0} @FRAME:SR" \
--w true -l false -n $N -o "f2_JZ0_SR" -f "hepmc3"
+-w true -l false -n $EVENTS -o "f2_JZ0_SR" -f "hepmc3"
 
 ./bin/gr -i ./tests/processes/CMS13.json -p "PP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:0, JZ1:1, JZ2:0} @FRAME:HE" \
--w true -l false -n $N -o "f2_JZ1_HE" -f "hepmc3"
+-w true -l false -n $EVENTS -o "f2_JZ1_HE" -f "hepmc3"
 
 ./bin/gr -i ./tests/processes/CMS13.json -p "PP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:0, JZ1:1, JZ2:0} @FRAME:GJ" \
--w true -l false -n $N -o "f2_JZ2_GJ" -f "hepmc3"
+-w true -l false -n $EVENTS -o "f2_JZ2_GJ" -f "hepmc3"
 
 fi
 

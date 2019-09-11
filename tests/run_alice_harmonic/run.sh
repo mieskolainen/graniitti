@@ -10,11 +10,15 @@ echo # New line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
-N=100000
+# Not set
+if [ -z "$EVENTS" ]
+then
+	EVENTS=1000000
+fi
 
 # Generate
-./bin/gr -i ./tests/run_alice_harmonic/SH_2pi_J0_ALICE.json -n $N
-./bin/gr -i ./tests/run_alice_harmonic/SH_2pi_ALICE.json    -n $N
+./bin/gr -i ./tests/run_alice_harmonic/SH_2pi_J0_ALICE.json -n $EVENTS
+./bin/gr -i ./tests/run_alice_harmonic/SH_2pi_ALICE.json    -n $EVENTS
 
 fi
 

@@ -10,19 +10,23 @@ echo # New line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
-N=100000
+# Not set
+if [ -z "$EVENTS" ]
+then
+	EVENTS=10000
+fi
 
 ./bin/gr -i ./tests/processes/CMS13.json -p "PP[CON]<F> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-}" \
--w true -l false -n $N -o "rhorho" -f "hepmc3"
+-w true -l false -n $EVENTS -o "rhorho" -f "hepmc3"
 
 ./bin/gr -i ./tests/processes/CMS13.json -p "PP[CON]<F> -> phi(1020)0 > {K+ K-} phi(1020)0 > {K+ K-}" \
--w true -l false -n $N -o "phiphi" -f "hepmc3"
+-w true -l false -n $EVENTS -o "phiphi" -f "hepmc3"
 
 ./bin/gr -i ./tests/processes/CMS13.json -p "PP[CONTENSOR]<F> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-}" \
--w true -l false -n $N -o "rhorho_tensor" -f "hepmc3"
+-w true -l false -n $EVENTS -o "rhorho_tensor" -f "hepmc3"
 
 ./bin/gr -i ./tests/processes/CMS13.json -p "PP[CONTENSOR]<F> -> phi(1020)0 > {K+ K-} phi(1020)0 > {K+ K-}" \
--w true -l false -n $N -o "phiphi_tensor" -f "hepmc3"
+-w true -l false -n $EVENTS -o "phiphi_tensor" -f "hepmc3"
 
 fi
 

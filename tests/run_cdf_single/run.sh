@@ -15,10 +15,14 @@ echo # New line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
-N=100000
+# Not set
+if [ -z "$EVENTS" ]
+then
+	EVENTS=10000
+fi
 
 # Generate
-make -j4 && ./bin/gr -i ./tests/processes/CDF14_2pi.json -n $N -l $POMLOOP -w true
+make -j4 && ./bin/gr -i ./tests/processes/CDF14_2pi.json -n $EVENTS -l $POMLOOP -w true
 
 fi
 

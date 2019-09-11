@@ -10,11 +10,15 @@ echo # New line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
-N=10000
+# Not set
+if [ -z "$EVENTS" ]
+then
+	EVENTS=10000
+fi
 
-./bin/minbias 900   $N
-./bin/minbias 7000  $N
-./bin/minbias 13000 $N
+./bin/minbias 900   $EVENTS
+./bin/minbias 7000  $EVENTS
+./bin/minbias 13000 $EVENTS
 
 fi
 
