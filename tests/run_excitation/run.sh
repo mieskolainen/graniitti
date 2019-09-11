@@ -10,7 +10,7 @@ echo # New line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
-N=10000000
+N=100000
 
 # Generate
 ./bin/gr -i ./tests/processes/ALICE_2pi.json -w true -l false -n $N -s 0 -o "2pi_excite_0" -f "hepmc3"
