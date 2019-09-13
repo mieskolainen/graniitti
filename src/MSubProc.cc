@@ -157,7 +157,7 @@ void MSubProc::SetTechnicalBoundaries(gra::GENCUT &gcuts, unsigned int EXCITATIO
     }
 
     else if   (EXCITATION == 1) {  // Single excitation
-      gcuts.forward_pt_max = 10.0;
+      gcuts.forward_pt_max = 50.0;
     } else if (EXCITATION == 2) {  // Double excitation
       gcuts.forward_pt_max = 100.0;
     }
