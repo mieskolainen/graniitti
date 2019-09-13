@@ -13,11 +13,49 @@
 #include "Graniitti/MKinematics.h"
 #include "Graniitti/M4Vec.h"
 #include "Graniitti/MDirac.h"
+#include "Graniitti/MTensorPomeron.h"
+#include "Graniitti/MForm.h"
+
 
 using namespace gra;
 
 using gra::aux::indices;
 using gra::math::pow2;
+
+TEST_CASE("form:: Form factors", "[gra::form]") {
+
+	const double EPS_DIPOLE = 1e-5;
+	const double EPS_KELLY  = 0.4;
+
+	MTensorPomeron tensor;
+
+	std::cout << "F1(0): " << form::F1(0)  << std::endl;
+	std::cout << "F2(0): " << form::F2(0)  << std::endl;
+	std::cout << "F1_(0): " << tensor.F1_(0) << std::endl;
+	std::cout << "F2_(0): " << tensor.F2_(0) << std::endl;
+
+	gra::PARAM_STRUCTURE::EM = "DIPOLE";
+	REQUIRE( form::F1(0) == Approx( tensor.F1_(0) ).epsilon(1e-5) );
+	REQUIRE( form::F2(0) == Approx( tensor.F2_(0) ).epsilon(1e-5) );
+	
+	gra::PARAM_STRUCTURE::EM = "KELLY";
+	REQUIRE( form::F1(0) == Approx( tensor.F1_(0) ).epsilon(1e-5) );
+	REQUIRE( form::F2(0) == Approx( tensor.F2_(0) ).epsilon(1e-5) );	
+
+	MRandom rng;
+	
+	for (std::size_t i = 0; i < 1e2; ++i) {
+		const double t = rng.U(-5,0);
+
+		gra::PARAM_STRUCTURE::EM = "DIPOLE";
+		REQUIRE( form::F1(t) == Approx( tensor.F1_(t) ).epsilon(EPS_DIPOLE) );
+		REQUIRE( form::F2(t) == Approx( tensor.F2_(t) ).epsilon(EPS_DIPOLE) );
+
+		gra::PARAM_STRUCTURE::EM = "KELLY";
+		REQUIRE( form::F1(t) == Approx( tensor.F1_(t) ).epsilon(EPS_KELLY) );
+		REQUIRE( form::F2(t) == Approx( tensor.F2_(t) ).epsilon(EPS_KELLY) );
+	}
+}
 
 
 TEST_CASE("MMatrix:: Dagger and Trace", "[MMatrix]") {

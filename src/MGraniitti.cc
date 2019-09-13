@@ -429,6 +429,10 @@ void MGraniitti::ReadModelParam(const std::string &inputfile) {
     const double sum_rc = std::accumulate(rc.begin(), rc.end(), 0);
     for (std::size_t i = 0; i < PARAM_NSTAR::rc.size(); ++i) { PARAM_NSTAR::rc[i] /= sum_rc; }
 
+    // Proton structure functions
+    PARAM_STRUCTURE::F2 = j.at("PARAM_STRUCTURE").at("F2");
+    PARAM_STRUCTURE::EM = j.at("PARAM_STRUCTURE").at("EM");
+    
     PARAM_SOFT::PrintParam();
   } catch (nlohmann::json::exception &e) {
     throw std::invalid_argument("MGraniitti::ReadModelParam: Missing parameter in '" + inputfile +

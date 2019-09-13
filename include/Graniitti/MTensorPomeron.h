@@ -139,6 +139,10 @@ class MTensorPomeron : public MDirac {
   // Form factors
   double F1(double t) const;
   double F2(double t) const;
+
+  double F1_(double t) const;
+  double F2_(double t) const;
+  
   double GD(double t) const;
   double FM(double q2, double LAMBDA) const;
   double  F(double q2, double M0, double LAMBDA) const;
@@ -159,8 +163,8 @@ class MTensorPomeron : public MDirac {
   // Mass scales
   static constexpr double M_O      = 1.00;    // GeV
   static constexpr double M_1R     = 1.41;    // GeV
-  static constexpr double mp       = 0.938;   // GeV
-  static constexpr double mu_ratio = 2.7928;  // mu_p / mu_N
+  static constexpr double mp       = 0.938272081;  // GeV
+  static constexpr double mu_ratio = 2.792847337;  // mu_p / mu_N
 
   // Couplings
   static constexpr double betaPNN = 1.87;  // GeV^{-1}

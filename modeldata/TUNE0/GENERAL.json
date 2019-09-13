@@ -128,17 +128,19 @@
     "c" : [15.0, 0, 0],
     "n" : [true, false, false]
   },
-  
+
   // -----------------------------------------------------------------------
-  // Good-Walker proton excitation parametrization
-  // (IMPLEMENTATION UNDER CONSTRUCTION)
+  // Proton structure functions and form factors
 
-  "PARAM_NSTAR" : {
+  "PARAM_STRUCTURE" : {
 
-    // Relative (N*, N**, N***) couplings (are normalized to one)
-    "rc" : [0.5, 0.3, 0.2]
+    // Proton structure functions (DL, CKMT)
+    "F2" : "CKMT",
+
+    // Coherent proton EM-form factors (DIPOLE, KELLY)
+    "EM" : "DIPOLE",
   },
-
+  
   // -----------------------------------------------------------------------
   // Durham QCD parameters
 
@@ -160,6 +162,16 @@
 
     // Angular |cos(theta*)| < MAXCOS cutoff for meson amplitudes [0,1]
     "MAXCOS" : 0.9,
-  }
+  },
   
+  // -----------------------------------------------------------------------
+  // Good-Walker proton excitation parametrization
+  // (IMPLEMENTATION UNDER CONSTRUCTION)
+
+  "PARAM_NSTAR" : {
+
+    // Relative (N*, N**, N***) couplings (are normalized to one)
+    "rc" : [0.5, 0.3, 0.2]
+  },
+
 }

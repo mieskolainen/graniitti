@@ -2465,13 +2465,23 @@ double MTensorPomeron::alpha_2R(double t) const { return 1.0 + delta_2R + ap_2R 
 // ----------------------------------------------------------------------
 // Form factors
 
-// Proton electromagnetic Dirac form FACTOR (electric)
+// Proton electromagnetic Dirac form FACTOR
 double MTensorPomeron::F1(double t) const {
+  return form::F1(t);
+}
+
+// Proton electromagnetic Pauli form FACTOR
+double MTensorPomeron::F2(double t) const {
+  return form::F2(t);
+}
+
+// Proton electromagnetic Dirac form FACTOR
+double MTensorPomeron::F1_(double t) const {
   return (1 - (t / (4 * pow2(mp))) * mu_ratio) / (1 - t / (4 * pow2(mp))) * GD(t);
 }
 
-// Proton electromagnetic Pauli form FACTOR (magnetic)
-double MTensorPomeron::F2(double t) const {
+// Proton electromagnetic Pauli form FACTOR
+double MTensorPomeron::F2_(double t) const {
   return (mu_ratio - 1) / (1 - t / (4 * pow2(mp))) * GD(t);
 }
 

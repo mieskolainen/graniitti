@@ -43,6 +43,11 @@ void        PrintParam();
 std::string GetHashString();
 }
 
+namespace PARAM_STRUCTURE {
+extern std::string F2;
+extern std::string EM;
+}
+
 // Flat (DEBUG) amplitude parameters
 namespace PARAM_FLAT {
 extern double b;
@@ -96,10 +101,17 @@ double DZFlux(double x);
 
 // Coherent gamma flux
 double alpha_EM(double Q2);
-double F_E(double Q2);
-double F_M(double Q2);
+double F1(double Q2);
+double F2(double Q2);
 double G_M(double Q2);
 double G_E(double Q2);
+
+double G_M_DIPOLE(double Q2);
+double G_E_DIPOLE(double Q2);
+
+double G_M_KELLY(double Q2);
+double G_E_KELLY(double Q2);
+
 double CohFlux(double x, double t, double pt);
 double IncohFlux(double x, double t, double pt, double M2);
 

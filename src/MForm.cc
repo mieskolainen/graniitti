@@ -33,6 +33,15 @@ using gra::PDG::mp;
 using gra::PDG::mpi;
 
 namespace gra {
+
+// Structure functions and nuclear form factors
+namespace PARAM_STRUCTURE {
+
+std::string F2 = "CKMT";
+std::string EM = "DIPOLE";
+
+}
+
 // Model parameters
 namespace PARAM_SOFT {
 // Pomeron trajectory
@@ -369,9 +378,8 @@ double S3FINEL(double t, double M2) {
 // [REFERENCE: Capella, Kaidalov, Merino, Tran Tranh Van, https://arxiv.org/abs/hep-ph/9405338v1]
 //
 double F2xQ2(double xbj, double Q2) {
-  const std::string F2TYPE = "CKMT";
 
-  if (F2TYPE == "DL") {
+  if (PARAM_STRUCTURE::F2 == "DL") {
     constexpr double A = 0.324;
     constexpr double B = 0.098;
 
@@ -387,7 +395,7 @@ double F2xQ2(double xbj, double Q2) {
     return F2;
   }
 
-  else if (F2TYPE == "CKMT") {
+  else if (PARAM_STRUCTURE::F2 == "CKMT") {
     constexpr double A       = 0.1502;
     constexpr double B_u     = 1.2064;
     constexpr double B_d     = 0.1798;
@@ -412,7 +420,7 @@ double F2xQ2(double xbj, double Q2) {
 
     return F2;
   } else {
-    throw std::invalid_argument("gra::form::F2xQ2: Unknown F2TYPE = " + F2TYPE);
+    throw std::invalid_argument("gra::form::F2xQ2: Unknown PARAM_STRUCTURE::F2 = " + PARAM_STRUCTURE::F2);
   }
 }
 
@@ -441,8 +449,7 @@ double e_EM(double Q2) {  // no running here
 double e_EM() { return msqrt(alpha_EM(0.0) * 4.0 * PI); }
 
 // kT unintegrated coherent EPA photon flux as in:
-//
-// [REFERENCE: Harland-Lang, Khoze, Ryskin, https://arxiv.org/abs/1601.03772]
+// 
 // [REFERENCE: Luszczak, Schaefer, Szczurek, https://arxiv.org/abs/1802.03244]
 //
 // Form factors:
@@ -456,44 +463,84 @@ double e_EM() { return msqrt(alpha_EM(0.0) * 4.0 * PI); }
 // <https://www.sciencedirect.com/science/article/pzi/0370157375900095>
 //
 //
-// Proton electric form factor (F_electric == F_2 == Pauli)
-double F_E(double Q2) {
-  return (4.0 * pow2(mp) * pow2(G_E(Q2)) + Q2 * pow2(G_M(Q2))) / (4.0 * pow2(mp) + Q2);
+// Proton EM form factor F1 (Dirac)
+double F1(double Q2) {
+
+  Q2 = std::abs(Q2);
+  const double tau = Q2/pow2(2*mp);
+
+  return 1.0/(tau+1) * G_E(Q2) + tau/(tau+1) * G_M(Q2);
 }
-// Proton magnetic form factor (F_magnetic == F_1  == Dirac)
-double F_M(double Q2) { return pow2(G_M(Q2)); }
+
+// Proton EM form factor F2 (Pauli)
+double F2(double Q2) {
+
+  Q2 = std::abs(Q2);
+  const double tau = Q2/pow2(2*mp);
+
+  return -1.0/(tau+1) * G_E(Q2) + 1.0/(tau+1) * G_M(Q2);
+}
+
 // Rosenbluth separation:
 // low-Q^2 dominated by G_E, high-Q^2 dominated by G_M
-
-// "Sachs" form factors:
-// <http://www.scholarpedia.org/article/Nucleon_Form_factors>
-constexpr double mup = 2.792847337;  // Proton magnetic moment
-
-/*
-// The simplest possible: Dipole parametrization
-
-double G_E(double Q2) {
-  return G_M(Q2) / mup; // Scaling assumption
-}
-const double lambda2 = 0.71;
-double G_M(double Q2) {
-  return mup / pow2(1.0 + Q2/lambda2);
-}
-*/
 
 // "Sachs Form Factor" goes as follows:
 // G_E(0) = 1 for proton, 0 for neutron
 // G_M(0) = mu_p for proton, mu_n for neutrons
 
+// <http://www.scholarpedia.org/article/Nucleon_Form_factors>
+constexpr double mu = 2.792847337;  // Proton magnetic moment in nuclear magneton units
+constexpr double lambda2 = 0.71;    // Dipole parameter GeV^2
+
+double G_E(double Q2) {
+
+  Q2 = std::abs(Q2); // For safety
+
+  if      (PARAM_STRUCTURE::EM == "DIPOLE") {
+    return G_E_DIPOLE(Q2);
+  }
+  else if (PARAM_STRUCTURE::EM == "KELLY") {
+    return G_E_KELLY(Q2);
+  }
+  else {
+    throw std::invalid_argument("gra::form::G_E: Unknown proton EM-form factor chosen = " + PARAM_STRUCTURE::EM);
+  }
+}
+
+double G_M(double Q2) {
+
+  Q2 = std::abs(Q2); // For safety
+
+  if      (PARAM_STRUCTURE::EM == "DIPOLE") {
+    return G_M_DIPOLE(Q2);
+  }
+  else if (PARAM_STRUCTURE::EM == "KELLY") {
+    return G_M_KELLY(Q2);
+  }
+  else {
+    throw std::invalid_argument("gra::form::G_M: Unknown proton EM-form factor chosen = " + PARAM_STRUCTURE::EM);
+  }
+}
+
+
+// The simplest possible: Dipole parametrization of nucleon EM-form factors
+//
+//
+double G_E_DIPOLE(double Q2) {
+  return G_M(Q2) / mu; // Scaling assumption
+}
+double G_M_DIPOLE(double Q2) {
+  return mu / pow2(1.0 + Q2/lambda2);
+}
+
 // Simple parametrization of nucleon EM-form factors
 //
-// [REFERENCE: JJ Kelly,
-// https://journals.aps.org/prc/pdf/10.1103/PhysRevC.70.068202]
-double G_E(double Q2) {
+// [REFERENCE: Kelly, journals.aps.org/prc/pdf/10.1103/PhysRevC.70.068202]
+double G_E_KELLY(double Q2) {
   static const std::vector<double> a = {1, -0.24};
   static const std::vector<double> b = {10.98, 12.82, 21.97};
 
-  const double tau = Q2 / (4.0 * mp * mp);
+  const double tau = Q2 / pow2(2 * mp);
 
   // Numerator
   double num = 0.0;   // 0
@@ -509,11 +556,11 @@ double G_E(double Q2) {
   return num / den;
 }
 
-double G_M(double Q2) {
+double G_M_KELLY(double Q2) {
   static const std::vector<double> a = {1, 0.12};
   static const std::vector<double> b = {10.97, 18.86, 6.55};
 
-  const double tau = Q2 / (4.0 * mp * mp);
+  const double tau = Q2 / pow2(2 * mp);
 
   // Numerator
   double num = 0.0;   // 0
@@ -526,7 +573,7 @@ double G_M(double Q2) {
   den += b[1] * pow2(tau);  // b_2 tau^2
   den += b[2] * pow3(tau);  // b_3 tau^3
 
-  return mup * num / den;
+  return mu * num / den;
 }
 
 // Coherent photon flux from proton
@@ -552,8 +599,11 @@ double CohFlux(double xi, double t, double pt) {
   const double mp2 = pow2(mp);
   const double Q2  = std::abs(t);
 
-  double f = alpha_EM(0) / PI * (pt2 / (pt2 + xi2 * mp2)) *
-             ((1.0 - xi) * (pt2 / (pt2 + xi2 * mp2)) * F_E(Q2) + (xi2 / 4.0) * F_M(Q2));
+  const double PART1 = (4.0 * pow2(mp) * pow2(G_E(Q2)) + Q2 * pow2(G_M(Q2))) / (4.0 * pow2(mp) + Q2);
+  const double PART2 = pow2(G_M(Q2));
+  const double DELTA = pt2 / (pt2 + xi2 * mp2);
+
+  double f = alpha_EM(0) / PI * ((1.0 - xi) * pow2(DELTA) * PART1 + (xi2 / 4.0) * DELTA * PART2);
 
   // Factors
   f /= xi;
@@ -584,11 +634,12 @@ double IncohFlux(double xi, double t, double pt, double M2) {
   const double xi2 = pow2(xi);
   const double Q2  = std::abs(t);
   const double xbj = Q2 / (Q2 + M2 - mp2);  // Bjorken-x
+  const double DELTA = pt2 / (pt2 + xi * (M2 - mp2) + xi2 * mp2);
 
   double f =
-      alpha_EM(0) / PI * (pt2 / (pt2 + xi * (M2 - mp2) + xi2 * mp2)) *
-      ((1.0 - xi) * (pt2 / (pt2 + xi * (M2 - mp2) + xi2 * mp2)) * F2xQ2(xbj, Q2) / (Q2 + M2 - mp2) +
-       (xi2 / (4.0 * pow2(xbj))) * 2.0 * xbj * F1xQ2(xbj, Q2) / (Q2 + M2 - mp2));
+      alpha_EM(0) / PI *
+      ((1.0 - xi) * pow2(DELTA) * F2xQ2(xbj, Q2) / (Q2 + M2 - mp2) +
+       (xi2 / (4.0 * pow2(xbj))) * DELTA * 2.0 * xbj * F1xQ2(xbj, Q2) / (Q2 + M2 - mp2));
 
   // Factors
   f /= xi;
