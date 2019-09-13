@@ -365,17 +365,14 @@ double S3FINEL(double t, double M2) {
 // Proton inelastic structure function F2(x,Q^2) parametrization
 //
 // The basic idea is that at low-Q^2, a fully non-perturbative description
-// (parametrization) is
-// needed.
+// (parametrization) is needed.
 // At high Q^2, DGLAP evolution could be done in log(Q^2) starting from the
 // input description.
 //
-// Now, some (very) classic ones have been implemented.
-// TBD: Can we "invert" F_2 and F_L e.g from LUXqed pdfs, or interface to other
-// library.
-//
-// [REFERENCE: Donnachie, Landshoff, https://arxiv.org/abs/hep-ph/9305319]
-// [REFERENCE: Capella, Kaidalov, Merino, Tran Tranh Van, https://arxiv.org/abs/hep-ph/9405338v1]
+// Now, some (very) classic ones have been implemented. Add new one here!
+// 
+// [REFERENCE: Donnachie, Landshoff, arxiv.org/abs/hep-ph/9305319]
+// [REFERENCE: Capella, Kaidalov, Merino, Tran Tranh Van, arxiv.org/abs/hep-ph/9405338v1]
 //
 double F2xQ2(double xbj, double Q2) {
 
@@ -429,9 +426,10 @@ double F2xQ2(double xbj, double Q2) {
 // Callan-Gross relation for spin-1/2: F_2(x) = 2xF_1(x) under Bjorken scaling
 // For spin-0, F_1(x) = 0
 //
+// Longitudinal structure function definition (e.g. QCD):
+// F_L(xbj,Q2) = (1 + 4*pow2(xbj*mp)/Q2) * F2(xbj, Q2) - 2xbj * F1(xbj,Q2)
+//
 double F1xQ2(double xbj, double Q2) {
-  // F_L(xbj,Q2) = (1 + 4*pow2(xbj*mp)/Q2) * F2(xbj, Q2) - 2xbj * F1(xbj,Q2)
-
   return F2xQ2(xbj, Q2) / (2.0 * xbj);
 }
 
@@ -450,10 +448,10 @@ double e_EM() { return msqrt(alpha_EM(0.0) * 4.0 * PI); }
 
 // kT unintegrated coherent EPA photon flux as in:
 // 
-// [REFERENCE: Luszczak, Schaefer, Szczurek, https://arxiv.org/abs/1802.03244]
+// [REFERENCE: Luszczak, Schaefer, Szczurek, arxiv.org/abs/1802.03244]
 //
 // Form factors:
-// [REFERENCE, Punjabi et al., https://arxiv.org/abs/1503.01452v4]
+// [REFERENCE, Punjabi et al., arxiv.org/abs/1503.01452v4]
 //
 // Proton electromagnetic form factors: Basic notions, present
 // achievements and future perspectives, Physics Reports, 2015
