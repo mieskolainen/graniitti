@@ -169,13 +169,12 @@ assume(pt4 > 0);
 assume(m3  > 0);
 assume(m4  > 0);
 assume(s   > 0);
-assume(pzin,'real');
 
 % Use CMS-frame
 eqs = [0       == pz3 + pz4 + pz5
-           s^(1/2) == E3 + E4 + E5
-           E3^2    == m3^2 + pz3^2 + pt3^2
-           E4^2    == m4^2 + pz4^2 + pt4^2].';
+       s^(1/2) == E3 + E4 + E5
+       E3^2    == m3^2 + pz3^2 + pt3^2
+       E4^2    == m4^2 + pz4^2 + pt4^2].';
 
 S = solve(eqs, [pz3 pz4 E3 E4]);
 
@@ -188,9 +187,11 @@ S = S(polybranch);
 
 str = 'const double';
 
+% Elastic case
 sol_A = simplify(subs(S, [m4], [m3]), 'Steps', 25);
 ccode(sol_A, 'File', 'temp.c'); readwritetext('temp.c','solution_A.c', str);
 
+% Generic inelastic case
 sol_B = simplify(S, 'Steps', 25);
 ccode(sol_B, 'File', 'temp.c'); readwritetext('temp.c','solution_B.c', str);
 */
