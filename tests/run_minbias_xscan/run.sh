@@ -11,4 +11,3 @@ E=1.995262E+01,2.241326E+01,2.517735E+01,2.828233E+01,3.177022E+01,3.568825E+01,
 # Scan
 ./bin/xscan -i $P/sd.json,$P/dd.json,$P/sd_xi_005.json,$P/dd_xi_005.json -l true -e $E
 
-
