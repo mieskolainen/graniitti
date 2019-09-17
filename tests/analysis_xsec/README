@@ -1,0 +1,10 @@
+Minimum bias x-section analysis (plots with MATLAB)
+
+1. First simulate:
+   source ./tests/run_minbias_xscan/run.sh
+
+2. Copy output tables:
+   cp scan.* ./tests/analysis_xsec/
+
+3. Then run:
+   matlab analyze_xsec.m

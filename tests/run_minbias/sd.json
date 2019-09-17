@@ -51,8 +51,8 @@
 
       "BINS" : 128,          // Maximum number of bins per dimension (NOTE: EVEN NUMBER)
       "LAMBDA" : 1.5,        // Regularization parameter
-      "NCALL" : 5000,        // Number of function calls per initialization iteration (5000 or more)
-      "ITER"  : 10,          // Number of initialization iteration (10 or more)
+      "NCALL" : 1000,        // Number of function calls per initialization iteration (5000 or more)
+      "ITER"  : 5,          // Number of initialization iteration (10 or more)
       "CHI2MAX" : 10.0,      // Maximum Chi^2 in initialization
       "PRECISION"  : 0.01,   // Integral relative precision target
       "DEBUG" : -1           // Debug output (default -1)
@@ -78,7 +78,7 @@
       "Rap" : [-9.0, 9.0]   // Rapidity boundaries of the system (<F> class)
     },
     "<Q>" : {
-      "Xi"  : [0, 0.05]     // Invariant scale M^2/s (forward excitation)
+      "Xi"  : [0, 1.0]     // Invariant scale M^2/s (forward excitation)
     }
   },
 
@@ -89,28 +89,28 @@
   "FIDCUTS" : {
 
     "active" : true,
-
+    
      // Central system final states
     "PARTICLE" : {
 
-      "Eta"  : [-10.0, 10.0],    // Pseudorapidity
-      "Rap"  : [-10.0, 10.0],    // Rapidity
-      "Pt"   : [0.0, 100000.0],  // Transverse momentum
-      "Et"   : [0.0, 100000.0]   // Transverse energy
+      "Eta"  : [-10.0, 10.0],     // Pseudorapidity
+      "Rap"  : [-10.0, 10.0],   // Rapidity
+      "Pt"   : [0.1, 100000000.0], // Transverse momentum
+      "Et"   : [0.0, 100000000.0]  // Transverse energy
     },
     
     // Central system
     "SYSTEM" : {
       
-      "M"    : [0.0, 100000.0],  // Mass
-      "Rap"  : [-10.0, 10.0],    // Rapidity
-      "Pt"   : [0.0, 100000.0]   // Transverse momentum
+      "M"    : [0.0, 100000000.0],     // Mass
+      "Rap"  : [-10.0, 10.0],   // Rapidity
+      "Pt"   : [0.0, 100000.0]  // Transverse momentum
     },
     
     // Forward system
     "FORWARD" : {
-      "M"    : [0.0, 100000.0],  // Mass
-      "t"    : [0.0, 6.0],       // Forward protons/N* Mandelstam t (absolute value) (GeV^2)
+      "M"    : [0.0, 100000000.0], // Mass
+      "t"    : [0.0, 6.0], // Forward protons/N* Mandelstam t (absolute value) (GeV^2)
     },
 
     // Custom user cuts (default false, otherwise identifier ID)

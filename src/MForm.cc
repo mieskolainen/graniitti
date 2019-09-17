@@ -356,9 +356,10 @@ double S3FINEL(double t, double M2) {
 
   double f = std::pow(std::abs(t) / (M2 * (std::abs(t) + a)), 0.5 * (1 + DELTA_P));
 
-  // Coupling ansatz
+  // Coupling ansatz, note 1/sqrt(gN_P) multiplies gN_P outside this function
+  // giving total coupling: sqrt(g3P) x sqrt(gN_P)
   f *= msqrt(PARAM_SOFT::g3P / PARAM_SOFT::gN_P);
-
+  
   return f;
 }
 

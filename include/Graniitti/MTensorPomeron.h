@@ -148,31 +148,34 @@ class MTensorPomeron : public MDirac {
   double  F(double q2, double M0, double LAMBDA) const;
 
   // Trajectory parameters
-  static constexpr double delta_P  = 0.0808;
-  static constexpr double delta_O  = 0.0808;
-  static constexpr double delta_1R = -0.5475;
-  static constexpr double delta_2R = -0.5475;
+  static constexpr double delta_P   = 0.0808;
+  static constexpr double delta_O   = 0.0808;
+  static constexpr double delta_1R  = -0.5475;
+  static constexpr double delta_2R  = -0.5475;
+  
+  static constexpr double ap_P      = 0.25; // GeV^{-2}
+  static constexpr double ap_O      = 0.25; // GeV^{-2}
+  static constexpr double ap_1R     = 0.9;  // GeV^{-2}
+  static constexpr double ap_2R     = 0.9;  // GeV^{-2}
 
-  static constexpr double ap_P  = 0.25;  // GeV^{-2}
-  static constexpr double ap_O  = 0.25;  // GeV^{-2}
-  static constexpr double ap_1R = 0.9;   // GeV^{-2}
-  static constexpr double ap_2R = 0.9;   // GeV^{-2}
+  static constexpr double eta_O     = 1.0;  // +- 1
 
-  static constexpr double eta_O = 1.0;  // +- 1
-
-  // Mass scales
-  static constexpr double M_O      = 1.00;    // GeV
-  static constexpr double M_1R     = 1.41;    // GeV
-  static constexpr double mp       = 0.938272081;  // GeV
-  static constexpr double mu_ratio = 2.792847337;  // mu_p / mu_N
+  // Scales
+  static constexpr double M_O       = 1.00;        // GeV
+  static constexpr double M_1R      = 1.41;        // GeV
+  static constexpr double mp        = 0.938272081; // GeV
+  static constexpr double mu_ratio  = 2.792847337; // Proton magnetic moment in magneton units (mu_p / mu_N)
 
   // Couplings
-  static constexpr double betaPNN = 1.87;  // GeV^{-1}
+  static constexpr double betaPNN   = 1.87;       // GeV^{-1}, Pomeron-Proton-Proton
+  static constexpr double betaPpipi = 1.76;       // GeV^{-1}, Pomeron-Pion-Pion
+  static constexpr double betaPKK   = 1.54;       // GeV^{-1}, Pomeron-Kaon-Kaon
 
   // alpha_QED at q^2 ~ 0
   static constexpr double alpha_QED = 1.0 / 137.035999139;
 
- private:
+private:
+
   // Minkowski metric tensor
   FTensor::Tensor2<double, 4, 4> gT;
 

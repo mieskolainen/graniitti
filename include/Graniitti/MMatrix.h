@@ -320,8 +320,9 @@ class MMatrix {
       for (std::size_t j = 0; j < cols; ++j) { std::cout << this->operator()(i, j) << "\t"; }
       std::cout << std::endl;
     }
+    std::cout << "Trace: " << Trace() << std::endl;
   }
-
+  
   // Size operators
   std::size_t size_row() const { return rows; }
   std::size_t size_col() const { return cols; }

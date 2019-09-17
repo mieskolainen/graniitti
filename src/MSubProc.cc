@@ -201,8 +201,8 @@ inline void MSubProc::ReggeReset(gra::LORENTZSCALAR& lts) {
 // Inclusive processes
 inline double MSubProc::GetBareAmplitude2_X(gra::LORENTZSCALAR &lts) {
 
-  ReggeReset(lts);
-
+  //ReggeReset(lts); // NOT NEEDED HERE!!
+  
   std::complex<double> A(0, 0);
   if (CHANNEL == "EL" || CHANNEL == "SD" || CHANNEL == "DD") {
     A = ME2(lts, LIPSDIM);

@@ -703,7 +703,6 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
   }
 
   // ------------------------------------------------------------------
-
   // ------------------------------------------------------------------
 
   // Full proton-Pomeron-proton spinor structure (upper and lower vertex)
@@ -719,19 +718,19 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
     double beta_P = 0.0;
     if (lts.decaytree[0].p.mass < 0.2) {  // Choose based on particle mass
       // Coupling (pion)
-      beta_P = 1.76;  // GeV^{-1}
+      beta_P = betaPpipi;
     } else {
       // Coupling (kaon)
-      beta_P = 1.54;  // GeV^{-1}
+      beta_P = betaPKK;
     }
 
     // t-channel blocks
     const Tensor2<std::complex<double>, 4, 4> iG_ta = iG_Ppsps(pt, -p3, beta_P);
     const std::complex<double> iDMES_t = iD_MES0(pt, M_);
-    const Tensor2<std::complex<double>, 4, 4> iG_tb = iG_Ppsps(p4, pt, beta_P);
+    const Tensor2<std::complex<double>, 4, 4> iG_tb = iG_Ppsps(p4,  pt, beta_P);
 
     // u-channel blocks
-    const Tensor2<std::complex<double>, 4, 4> iG_ua = iG_Ppsps(p4, pu, beta_P);
+    const Tensor2<std::complex<double>, 4, 4> iG_ua = iG_Ppsps(p4,  pu, beta_P);
     const std::complex<double> iDMES_u = iD_MES0(pu, M_);
     const Tensor2<std::complex<double>, 4, 4> iG_ub = iG_Ppsps(pu, -p3, beta_P);
 
@@ -2174,16 +2173,18 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_f2vv(const M4Vec &k
 // i\Gamma_{\mu\nu\kappa\lambda}(k1,k2)
 //
 // Input as contravariant (upper index) 4-vectors, M0 is the f2 meson on-shell mass
+// Couplings g1,g2
 //
+// Example couplings:
+// 
+// const double e = msqrt(alpha_QED * 4.0 * PI);     // ~ 0.3, no running
+// const double a_f2yy = pow2(e) / (4 * PI) * 1.45;  // GeV^{-3}
+// const double b_f2yy = pow2(e) / (4 * PI) * 2.49;  // GeV^{-1}
+
 Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_f2yy(const M4Vec &k1,
                                                                   const M4Vec &k2, double M0, double g1, double g2) const {
   // Form FACTOR
   const double LAMBDA = 1.0; // GeV
-
-  // Couplings
-  //const double e = msqrt(alpha_QED * 4.0 * PI);  // ~ 0.3, no running
-  //const double a_f2yy = pow2(e) / (4 * PI) * 1.45;  // GeV^{-3}
-  //const double b_f2yy = pow2(e) / (4 * PI) * 2.49;  // GeV^{-1}
 
   const Tensor4<std::complex<double>, 4,4,4,4> G0 = Gamma0(k1, k2);
   const Tensor4<std::complex<double>, 4,4,4,4> G2 = Gamma2(k1, k2);
@@ -2251,15 +2252,15 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_yV(double q2, int pdg) co
   double       gammaV = 0.0;
   double       mV     = 0.0;
 
-  if      (pdg == 113) {
+  if      (pdg == 113) { // rho
     gammaV = msqrt(4 * PI / 0.496);
     mV     = 0.770;
   }
-  else if (pdg == 223) {
+  else if (pdg == 223) { // omega
     gammaV = msqrt(4 * PI / 0.042);
     mV     = 0.785;
   }
-  else if (pdg == 333) {
+  else if (pdg == 333) { // phi
     gammaV = (-1.0) * msqrt(4 * PI / 0.0716);
     mV     = 1.020;
   }

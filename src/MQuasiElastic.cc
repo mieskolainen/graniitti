@@ -444,8 +444,8 @@ void MQuasiElastic::PrintInit(bool silent) const {
       std::cout << rang::style::bold << "Fiducial cuts:" << rang::style::reset << std::endl
                 << std::endl;
       if (fcuts.active) {
-        printf("- |t| [min, max]   = [%0.2f, %0.2f] GeV^2 \n", fcuts.forward_t_min,
-               fcuts.forward_t_max);
+        printf("- M   [min, max]   = [%0.2f, %0.2f] GeV^2 \n", fcuts.forward_M_min, fcuts.forward_M_max);
+        printf("- |t| [min, max]   = [%0.2f, %0.2f] GeV^2 \n", fcuts.forward_t_min, fcuts.forward_t_max);
         std::cout << std::endl;
       } else {
         std::cout << "- Not active" << std::endl;
@@ -768,11 +768,11 @@ bool MQuasiElastic::B3BuildKin(double s3, double s4, double t) {
   // Forward/backward solution flip (skip these, rare)
   if (std::cos(theta) < 0) { return false; }
   // theta = (std::cos(theta) < 0) ? gra::math::PI - theta : theta;
-
+  
   // Outgoing 4-momentum by Kallen (triangle) function in the center-of-momentum
   // frame
   const double pnorm = kinematics::DecayMomentum(lts.sqrt_s, msqrt(s3), msqrt(s4));
-  M4Vec        p3(0, 0, pnorm, 0.5 * (lts.s + s3 - s4) / lts.sqrt_s);
+  M4Vec        p3(0, 0,  pnorm, 0.5 * (lts.s + s3 - s4) / lts.sqrt_s);
   M4Vec        p4(0, 0, -pnorm, 0.5 * (lts.s + s4 - s3) / lts.sqrt_s);
 
   // Transverse momentum by orienting with random rotation (theta,phi)
@@ -800,6 +800,7 @@ bool MQuasiElastic::B3BuildKin(double s3, double s4, double t) {
 
 // Build and check scalars
 bool MQuasiElastic::B3GetLorentzScalars() {
+
   // Calculate Lorentz scalars
   lts.ss[1][1] = lts.pfinal[1].M2();
   lts.ss[2][2] = lts.pfinal[2].M2();
