@@ -3,7 +3,6 @@
 *.csv
 *.pdf
 *.tex
-*.m
 *.ascii
 *.out
 callgrind*
