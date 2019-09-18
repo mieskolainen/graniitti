@@ -41,8 +41,8 @@
     "g_FF"  : true,
     
     // Lorentz frame of spin polarization density
-    // (SR ~ no rotation [DEFAULT], HE ~ helicity)
-    "FRAME" : "SR",
+    // (CM ~ no rotation [DEFAULT], HX ~ helicity)
+    "FRAME" : "CM",
     
     // Resonance spin-density (von Neumann) matrix (Re and Im parts)
     // Transverse

@@ -131,7 +131,8 @@ TEST_CASE("gra::kinematics::LorentzFrame versus PGframe, HEframe, CSframe", "[Lo
 		std::vector<M4Vec> pfboost;   // particles boosted
 		gra::kinematics::LorentFramePrepare(pf, X, p1, p2, pb1boost, pb2boost, pfboost);
 
-		std::vector<std::string> frametype = {"CS", "HE", "AH", "PG", "SR"};
+		std::vector<std::string> frametype = {"CS", "HX", "AH", "PG", "CM"};
+		
 		for (const auto &k : indices(frametype)) {
 
 			// Transform using the generic routine
@@ -154,18 +155,18 @@ TEST_CASE("gra::kinematics::LorentzFrame versus PGframe, HEframe, CSframe", "[Lo
 			}
 
 			// Helicity frame test
-			if (frametype[k] == "HE") {
-				//printf("HE[0]:      "); pfout[0].Print();
-				//printf("HE[1]:      "); pfout[1].Print();				
+			if (frametype[k] == "HX") {
+				//printf("HX[0]:      "); pfout[0].Print();
+				//printf("HX[1]:      "); pfout[1].Print();				
 
-		  		std::vector<M4Vec> pfHE = pf;
-		  		gra::kinematics::HEframe(pfHE, X, DEBUG);
-				//printf("HEframe[0]: "); pfHE[0].Print();
-				//printf("HEframe[1]: "); pfHE[1].Print();				
+		  		std::vector<M4Vec> pfHX = pf;
+		  		gra::kinematics::HXframe(pfHX, X, DEBUG);
+				//printf("HXframe[0]: "); pfHX[0].Print();
+				//printf("HXframe[1]: "); pfHX[1].Print();				
 
 				// Difference
-				REQUIRE( gra::math::CheckEMC(pfout[0] - pfHE[0], EPS) );
-				REQUIRE( gra::math::CheckEMC(pfout[1] - pfHE[1], EPS) );	
+				REQUIRE( gra::math::CheckEMC(pfout[0] - pfHX[0], EPS) );
+				REQUIRE( gra::math::CheckEMC(pfout[1] - pfHX[1], EPS) );	
 			}
 
 			// Collins-Soper frame test

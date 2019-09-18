@@ -47,7 +47,7 @@ namespace gra {
 namespace analyzer {
 
 // Different Lorentz frame labels
-const std::vector<std::string> FRAMES = {"SR", "HE", "CS", "GJ", "PG", "LAB"};
+const std::vector<std::string> FRAMES = {"CM", "HX", "CS", "PG", "GJ", "LAB"};
 
 }
 
@@ -57,7 +57,7 @@ class MAnalyzer {
   MAnalyzer(const std::string &ID);
   ~MAnalyzer();
 
-  // Default particle name string
+  // Default daughter particle name string
   std::string pstr = "daughter";
 
   // ----------------------------------------------------------

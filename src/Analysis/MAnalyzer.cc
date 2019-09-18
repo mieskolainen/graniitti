@@ -84,9 +84,9 @@ MAnalyzer::MAnalyzer(const std::string &ID) {
   hEta_Pions =
       std::make_shared<TH1D>(Form("%s_%s", "#eta pi", ID.c_str()), ";#eta;Events", NBINS, -12, 12);
   hEta_Gamma =
-      std::make_shared<TH1D>(Form("%s_%s", "#eta y", ID.c_str()), ";#eta;Events", NBINS, -12, 12);
+      std::make_shared<TH1D>(Form("%s_%s", "#eta y", ID.c_str()),  ";#eta;Events", NBINS, -12, 12);
   hEta_Neutron =
-      std::make_shared<TH1D>(Form("%s_%s", "#eta n", ID.c_str()), ";#eta;Events", NBINS, -12, 12);
+      std::make_shared<TH1D>(Form("%s_%s", "#eta n", ID.c_str()),  ";#eta;Events", NBINS, -12, 12);
   hM_NSTAR =
       std::make_shared<TH1D>(Form("%s_%s", "M (GeV)", ID.c_str()), ";M (GeV);Events", NBINS, 0, 10);
 
@@ -96,7 +96,7 @@ MAnalyzer::MAnalyzer(const std::string &ID) {
         std::make_shared<TProfile>(Form("hPl%lu_%s", i + 1, ID.c_str()), "", 100, 0.0, 4.0, -1, 1);
     hPl[i]->Sumw2();  // Error saving on
     hPl[i]->SetXTitle(Form("System M (GeV)"));
-    hPl[i]->SetYTitle(Form("Legendre #LTP_{l}(cos #theta)#GT | r.f."));
+    hPl[i]->SetYTitle(Form("Legendre #LTP_{l}(cos #theta)#GT [CM frame]"));
   }
 
   // Costheta correlations between different frames
@@ -369,11 +369,11 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 
         const M4Vec X = a + b;
 
-        std::vector<M4Vec> SR = {a, b};
-        gra::kinematics::SRframe(SR, X);
-
-        std::vector<M4Vec> HE = {a, b};
-        gra::kinematics::HEframe(HE, X);
+        std::vector<M4Vec> CM = {a, b};
+        gra::kinematics::CMframe(CM, X);
+        
+        std::vector<M4Vec> HX = {a, b};
+        gra::kinematics::HXframe(HX, X);
 
         std::vector<M4Vec> CS = {a, b};
         gra::kinematics::CSframe(CS, X, p_beam_plus, p_beam_minus);
@@ -384,40 +384,40 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
         std::vector<M4Vec> PG = {a, b};
         gra::kinematics::PGframe(PG, X, direction, p_beam_plus, p_beam_minus);
 
-        h1["h1_costheta_SR"]->h[SID]->Fill(SR[0].CosTheta(), W);
-        h1["h1_costheta_HE"]->h[SID]->Fill(HE[0].CosTheta(), W);
+        h1["h1_costheta_CM"]->h[SID]->Fill(CM[0].CosTheta(), W);
+        h1["h1_costheta_HX"]->h[SID]->Fill(HX[0].CosTheta(), W);
         h1["h1_costheta_CS"]->h[SID]->Fill(CS[0].CosTheta(), W);
         h1["h1_costheta_GJ"]->h[SID]->Fill(GJ[0].CosTheta(), W);
         h1["h1_costheta_PG"]->h[SID]->Fill(PG[0].CosTheta(), W);
         h1["h1_costheta_LAB"]->h[SID]->Fill(a.CosTheta(), W);
 
 
-        h1["h1_phi_SR"]->h[SID]->Fill(SR[0].Phi(), W);
-        h1["h1_phi_HE"]->h[SID]->Fill(HE[0].Phi(), W);
+        h1["h1_phi_CM"]->h[SID]->Fill(CM[0].Phi(), W);
+        h1["h1_phi_HX"]->h[SID]->Fill(HX[0].Phi(), W);
         h1["h1_phi_CS"]->h[SID]->Fill(CS[0].Phi(), W);
         h1["h1_phi_GJ"]->h[SID]->Fill(GJ[0].Phi(), W);
         h1["h1_phi_PG"]->h[SID]->Fill(PG[0].Phi(), W);        
         h1["h1_phi_LAB"]->h[SID]->Fill(a.Phi(), W);        
         
         
-        h2["h2_2B_costheta_phi_SR"]->h[SID]->Fill(SR[0].CosTheta(), SR[0].Phi(), W);
-        h2["h2_2B_costheta_phi_HE"]->h[SID]->Fill(HE[0].CosTheta(), HE[0].Phi(), W);
+        h2["h2_2B_costheta_phi_CM"]->h[SID]->Fill(CM[0].CosTheta(), CM[0].Phi(), W);
+        h2["h2_2B_costheta_phi_HX"]->h[SID]->Fill(HX[0].CosTheta(), HX[0].Phi(), W);
         h2["h2_2B_costheta_phi_CS"]->h[SID]->Fill(CS[0].CosTheta(), CS[0].Phi(), W);
         h2["h2_2B_costheta_phi_GJ"]->h[SID]->Fill(GJ[0].CosTheta(), GJ[0].Phi(), W);
         h2["h2_2B_costheta_phi_PG"]->h[SID]->Fill(PG[0].CosTheta(), PG[0].Phi(), W);
         h2["h2_2B_costheta_phi_LAB"]->h[SID]->Fill(a.CosTheta(), a.Phi(), W);
         
         
-        h2["h2_2B_M_costheta_SR"]->h[SID]->Fill(M, SR[0].CosTheta(), W);
-        h2["h2_2B_M_costheta_HE"]->h[SID]->Fill(M, HE[0].CosTheta(), W);
+        h2["h2_2B_M_costheta_CM"]->h[SID]->Fill(M, CM[0].CosTheta(), W);
+        h2["h2_2B_M_costheta_HX"]->h[SID]->Fill(M, HX[0].CosTheta(), W);
         h2["h2_2B_M_costheta_CS"]->h[SID]->Fill(M, CS[0].CosTheta(), W);
         h2["h2_2B_M_costheta_GJ"]->h[SID]->Fill(M, GJ[0].CosTheta(), W);
         h2["h2_2B_M_costheta_PG"]->h[SID]->Fill(M, PG[0].CosTheta(), W);
         h2["h2_2B_M_costheta_LAB"]->h[SID]->Fill(M, a.CosTheta(), W);
         
         
-        h2["h2_2B_M_phi_SR"]->h[SID]->Fill(M, SR[0].Phi(), W);
-        h2["h2_2B_M_phi_HE"]->h[SID]->Fill(M, HE[0].Phi(), W);
+        h2["h2_2B_M_phi_CM"]->h[SID]->Fill(M, CM[0].Phi(), W);
+        h2["h2_2B_M_phi_HX"]->h[SID]->Fill(M, HX[0].Phi(), W);
         h2["h2_2B_M_phi_CS"]->h[SID]->Fill(M, CS[0].Phi(), W);
         h2["h2_2B_M_phi_GJ"]->h[SID]->Fill(M, GJ[0].Phi(), W);
         h2["h2_2B_M_phi_PG"]->h[SID]->Fill(M, PG[0].Phi(), W);
@@ -426,8 +426,8 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
         
         // ---------------------------------------------------------------------------
         
-        hP["hP_S_M_PL2_SR"]->h[SID]->Fill(M, math::LegendrePl(2, SR[0].CosTheta()), W);
-        hP["hP_S_M_PL4_SR"]->h[SID]->Fill(M, math::LegendrePl(4, SR[0].CosTheta()), W);
+        hP["hP_S_M_PL2_CM"]->h[SID]->Fill(M, math::LegendrePl(2, CM[0].CosTheta()), W);
+        hP["hP_S_M_PL4_CM"]->h[SID]->Fill(M, math::LegendrePl(4, CM[0].CosTheta()), W);
         h2["h2_2B_eta1_eta2"]->h[SID]->Fill(a.Eta(), b.Eta(), W);
 
         // ---------------------------------------------------------------------------
@@ -523,8 +523,8 @@ void MAnalyzer::FrameObservables(double W, HepMC3::GenEvent &evt, const M4Vec &p
   // Frame transformations
   const M4Vec X = twopions[0] + twopions[1];
   
-  gra::kinematics::SRframe(pions[0], X);
-  gra::kinematics::HEframe(pions[1], X);
+  gra::kinematics::CMframe(pions[0], X);
+  gra::kinematics::HXframe(pions[1], X);
   gra::kinematics::CSframe(pions[3], X, p_beam_plus, p_beam_minus);
   gra::kinematics::GJframe(pions[4], X, direction, p_beam_plus - p_final_plus, p_beam_minus - p_final_minus);
   gra::kinematics::PGframe(pions[5], X, direction, p_beam_plus, p_beam_minus);

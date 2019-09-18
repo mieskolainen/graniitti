@@ -41,19 +41,20 @@ void MUserHistograms::InitHistograms() {
   Nbins = 40;
 
   h2["costhetaphi_CS"] =
-      MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [Collins-Soper frame]");
-  h2["costhetaphi_HE"] =
-      MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [Helicity frame]");
+      MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos theta, phi) [CS] [Collins-Soper frame]");
+  h2["costhetaphi_HX"] =
+      MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos theta, phi) [HX] [Helicity frame]");
   h2["costhetaphi_AH"] =
-      MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [Anti-Helicity frame]");
+      MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos theta, phi) [AH] [Anti-Helicity frame]");
   h2["costhetaphi_PG"] =
-      MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [Pseudo-GJ frame]");
+      MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos theta, phi) [PG] [Pseudo-GJ frame]");
   h2["costhetaphi_GJ"] =
-      MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [Gottfried-Jackson frame]");
-  h2["costhetaphi_SR"] =
-      MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [Non-Rotated rest frame]");
-  h2["costhetaphi_LA"] = MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [LAB frame]");
+      MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos theta, phi) [GJ] [Gottfried-Jackson frame]");
+  h2["costhetaphi_CM"] =
+      MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos theta, phi) [CM] [Direct system rest frame]");
 
+  h2["costhetaphi_LA"] = MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos theta, phi) [LAB] [Laboratory frame]");
+  
 /*
   h2["costhetaphi_G1"] =
       MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [G1 frame]");
@@ -66,25 +67,8 @@ void MUserHistograms::InitHistograms() {
 */
   // Level 3
   /*
-  h2["Mphi_CS"]        = MH2(Nbins,  1.0, 1.5, Nbins, -PI, PI, "(M, phi)
-  [Collins-Soper
-  frame]");
-  h2["Mphi_HE"]        = MH2(Nbins,  1.0, 1.5, Nbins, -PI, PI, "(M, phi)
-  [Helicity frame]");
-  h2["Mphi_AH"]        = MH2(Nbins,  1.0, 1.5, Nbins, -PI, PI, "(M, phi)
-  [Anti-Helicity
-  frame]");
-  h2["Mphi_PG"]        = MH2(Nbins,  1.0, 1.5, Nbins, -PI, PI, "(M, phi)
-  [Pseudo-GJ frame]");
-  //h2["Mphi_GJ"]      = MH2(Nbins,  1.0, 1.5, Nbins, -PI, PI, "(M, phi)
-  [Gottfried-Jackson
-  frame]");
-  h2["Mphi_SR"]        = MH2(Nbins,  1.0, 1.5, Nbins, -PI, PI, "(M, phi)
-  [Non-Rotated rest
-  frame]");
-  //h2["Mphi_LA"]      = MH2(Nbins,  1.0, 1.5, Nbins, -PI, PI, "(M, phi) [LAB
-  frame]");
-  */
+  h2["Mphi_CS"]        = MH2(Nbins,  1.0, 1.5, Nbins, -PI, PI, "(M, phi) [Collins-Soper frame]");
+*/
 }
 
 // Input as the total event weight
@@ -134,9 +118,9 @@ void MUserHistograms::FillCosThetaPhi(double totalweight, const gra::LORENTZSCAL
   M4Vec              pb2boost;  // beam2 particle boosted
   std::vector<M4Vec> pfboost;   // central particles boosted
   gra::kinematics::LorentFramePrepare(pf, X, lts.pbeam1, lts.pbeam2, pb1boost, pb2boost, pfboost);
-
+  
   // ** TRANSFORM TO DIFFERENT LORENTZ FRAMES **
-  std::vector<std::string> frametype = {"CS", "HE", "AH", "PG", "SR"};
+  std::vector<std::string> frametype = {"CS", "HX", "AH", "PG", "CM"};
   for (const auto &k : indices(frametype)) {
     // Transform and histogram
     std::vector<M4Vec> pfout;

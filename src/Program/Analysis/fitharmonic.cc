@@ -108,7 +108,7 @@ int main(int argc, char *argv[]) {
         "S,scale", "Scale plots (set -1 for unit normalized)  <scale1,scale2,...>",
         cxxopts::value<std::string>())
 
-        ("f,frame", "Lorentz rest frame                        <HE|CS|GJ|PG|SR>",
+        ("f,frame", "Lorentz rest frame                        <CM|HX|CS|PG|GJ>",
          cxxopts::value<std::string>())("g,lmax",
                                         "Maximum angular order                     <1|2|3|4|...>",
                                         cxxopts::value<unsigned int>())(
@@ -444,11 +444,11 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
     const M4Vec X = pip[0] + pim[0];
 
     // Non-rotated rest frame
-    if (FRAME == "SR") {
-      gra::kinematics::SRframe(rf, X);
+    if        (FRAME == "CM") {
+      gra::kinematics::CMframe(rf, X);
       // Helicity frame
-    } else if (FRAME == "HE") {
-      gra::kinematics::HEframe(rf, X);
+    } else if (FRAME == "HX") {
+      gra::kinematics::HXframe(rf, X);
       // Pseudo GJ-frame
     } else if (FRAME == "PG") {
       gra::kinematics::PGframe(rf, X, direction, p_beam_plus, p_beam_minus);

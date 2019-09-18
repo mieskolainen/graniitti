@@ -1063,7 +1063,7 @@ inline void LorentzFrame(std::vector<T> &pfout, const T &pb1boost, const T &pb2b
   std::vector<double> xaxis;
 
   // @@ NON-ROTATED FRAME AXIS DEFINITION @@
-  if (frametype == "SR") {
+  if (frametype == "CM") {
     zaxis = {0, 0, 1};
     yaxis = {0, 1, 0};
   }
@@ -1078,7 +1078,7 @@ inline void LorentzFrame(std::vector<T> &pfout, const T &pb1boost, const T &pb2b
         gra::matoper::Plus(gra::matoper::Unit(pb1boost3), gra::matoper::Unit(pb2boost3)));
   }
   // @@ HELICITY FRAME POLARIZATION AXIS DEFINITION @@
-  else if (frametype == "HE" || frametype == "G3") {
+  else if (frametype == "HX" || frametype == "G3") {
     zaxis = gra::matoper::Unit(gra::matoper::Negat(gra::matoper::Plus(pb1boost3, pb2boost3)));
   }
   // @@ PSEUDO-GOTTFRIED-JACKSON AXIS DEFINITION: [1] or [2] @@
@@ -1096,11 +1096,11 @@ inline void LorentzFrame(std::vector<T> &pfout, const T &pb1boost, const T &pb2b
   }
 
   // y-axis
-  if (frametype != "SR") {
+  if (frametype != "CM") {
     yaxis = gra::matoper::Unit(
         gra::matoper::Cross(gra::matoper::Unit(pb1boost3), gra::matoper::Unit(pb2boost3)));
   }
-
+  
   // x-axis
   xaxis = gra::matoper::Unit(gra::matoper::Cross(yaxis, zaxis));  // x = y [cross product] z
 
@@ -1373,12 +1373,12 @@ inline void PGframe(std::vector<T> &p, const T& X, const int direction, const T 
 //         X = System 4-momentum
 //
 template <typename T>
-inline void HEframe(std::vector<T> &p, const T& X, bool DEBUG = false) {
+inline void HXframe(std::vector<T> &p, const T& X, bool DEBUG = false) {
 
   // ********************************************************************
   if (DEBUG) {
     printf("\n\n ::HELICITY FRAME:: \n");
-    printf("HEframe:: Daughters in LAB FRAME: \n");
+    printf("HXframe:: Daughters in LAB FRAME: \n");
     for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
   }
   // ********************************************************************
@@ -1399,7 +1399,7 @@ inline void HEframe(std::vector<T> &p, const T& X, bool DEBUG = false) {
 
   // ********************************************************************
   if (DEBUG) {
-    printf("HEframe:: Daughters in ROTATED LAB FRAME: \n");
+    printf("HXframe:: Daughters in ROTATED LAB FRAME: \n");
     for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
 
     T ex(1, 0, 0, 0);
@@ -1411,7 +1411,7 @@ inline void HEframe(std::vector<T> &p, const T& X, bool DEBUG = false) {
     rotate(ey);
     rotate(ez);
 
-    printf("HEframe:: AXIS vectors after rotation: \n");
+    printf("HXframe:: AXIS vectors after rotation: \n");
 
     ex.Print();
     ey.Print();
@@ -1431,13 +1431,13 @@ inline void HEframe(std::vector<T> &p, const T& X, bool DEBUG = false) {
 
   // ********************************************************************
   if (DEBUG) {
-    printf("HEframe:: Daughters after boost in HELICITY FRAME: \n");
+    printf("HXframe:: Daughters after boost in HELICITY FRAME: \n");
     for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
 
-    printf("HEframe:: Central system in LAB FRAME: \n");
+    printf("HXframe:: Central system in LAB FRAME: \n");
     X.Print();
 
-    printf("HEframe:: Central system in ROTATED LAB FRAME: \n");
+    printf("HXframe:: Central system in ROTATED LAB FRAME: \n");
     XNEW.Print();
 
     printf("\n");
@@ -1452,13 +1452,13 @@ inline void HEframe(std::vector<T> &p, const T& X, bool DEBUG = false) {
 //         X = System 4-momentum
 //
 template <typename T>
-inline void SRframe(std::vector<T> &p, const T& X, bool DEBUG = false) {
+inline void CMframe(std::vector<T> &p, const T& X, bool DEBUG = false) {
 
   // ********************************************************************
   if (DEBUG) {
-    printf("\n\n ::STANDARD REST FRAME:: \n");
+    printf("\n\n ::REST FRAME:: \n");
 
-    printf("SRframe:: Daughters in LAB FRAME: \n");
+    printf("CMframe:: Daughters in LAB FRAME: \n");
     for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
   }
   // ********************************************************************
@@ -1470,7 +1470,7 @@ inline void SRframe(std::vector<T> &p, const T& X, bool DEBUG = false) {
 
   // ********************************************************************
   if (DEBUG) {
-    printf("SRframe:: Daughters in REST FRAME: \n");
+    printf("CMframe:: Daughters in REST FRAME: \n");
     for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
   }
   // ********************************************************************

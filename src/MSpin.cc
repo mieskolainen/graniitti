@@ -291,7 +291,7 @@ MMatrix<std::complex<double>> CalculateFMatrix(const MDecayBranch& branch) {
 
   // Rotate and boost daughters to the frame where z-spanned by X-flight direction (X-helicity rest frame)
   std::vector<M4Vec> daughter = {branch.legs[A].p4, branch.legs[B].p4};
-  gra::kinematics::HEframe(daughter, branch.p4);
+  gra::kinematics::HXframe(daughter, branch.p4);
 
   return fMatrix(branch.hel.T, branch.p.spinX2 / 2.0, s1, s2, daughter[A].Theta(), daughter[A].Phi());
 }
@@ -388,13 +388,13 @@ std::complex<double> SpinAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
   // Spin polarization density matrix defined:
 
   // In direct non-rotated rest frame
-  if        (res.FRAME == "SR") {
+  if        (res.FRAME == "CM") {
     
     theta_rotation = 0;
     phi_rotation   = 0;
 
   // In helicity rest frame [quantization axis by system orientation in the lab]
-  } else if (res.FRAME == "HE") {
+  } else if (res.FRAME == "HX") {
 
     theta_rotation = lts.pfinal[0].Theta(); // +
     phi_rotation   = lts.pfinal[0].Phi();   // +
@@ -415,7 +415,7 @@ std::complex<double> SpinAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
         "gra::spin::SpinAmp2: Unknown polarization Lorentz rest FRAME chosen: "
         "\"" +
         res.FRAME +
-        "\" (valid currently are: \"SR\" (no rotation), \"HE\" (helicity)";
+        "\" (valid currently are: \"CM\" (no rotation), \"HX\" (helicity)";
     throw std::invalid_argument(str);
   }
 
