@@ -17,7 +17,9 @@
 // LHAPDF
 #include "LHAPDF/LHAPDF.h"
 
-
+// LUXqed / LHAPDF read
+//
+//
 TEST_CASE("LUXqed parton fractions", "[LUXqed]") {
 
 	const double EPS = 0.03; // Assert relative error criteria
@@ -72,7 +74,9 @@ TEST_CASE("LUXqed parton fractions", "[LUXqed]") {
 	}
 }
 
-
+// Drell-Yan test
+//
+//
 TEST_CASE("Drell-Yan u u~ -> mu+ mu- & LHAPDF test", "[Drell-Yan]") {
 
 	std::unique_ptr<LHAPDF::PDF> GlobalPdfPtr = nullptr;

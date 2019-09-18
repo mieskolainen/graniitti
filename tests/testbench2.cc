@@ -15,7 +15,9 @@
 
 using namespace gra;
 
-
+// Dirac algebra tests
+//
+//
 TEST_CASE("MDirac::TestGammaAntiCommutation", "[MDirac]") {
 	const double EPS = 1e-5;
 	MDirac dirac;
@@ -23,6 +25,9 @@ TEST_CASE("MDirac::TestGammaAntiCommutation", "[MDirac]") {
 }
 
 
+// Dirac algebra tests
+// 
+// 
 TEST_CASE("MDirac multiple tests", "[MDirac]") {
 
 	const double EPS = 1E-5;

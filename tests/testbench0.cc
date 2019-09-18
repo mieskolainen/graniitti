@@ -18,7 +18,9 @@ using gra::aux::indices;
 using gra::math::pow2;
 
 
-// Phase space functions
+// Generic phase space algorithms
+//
+//
 bool PhaseSpaceTest(uint N, double m0, double& a, double& b, double& c) {
 	
     MRandom rng;
@@ -83,7 +85,9 @@ bool PhaseSpaceTest(uint N, double m0, double& a, double& b, double& c) {
 	return true;
 }
 
-
+// Generic phase space algorithms
+//
+//
 TEST_CASE("gra::kinematics::TwoBodyPhaseSpace, ThreeBodyPhaseSpace, NBodyPhaseSpace", "[PhaseSpace]") {
 
 	double M0 = 1500;
@@ -122,7 +126,9 @@ TEST_CASE("gra::kinematics::TwoBodyPhaseSpace, ThreeBodyPhaseSpace, NBodyPhaseSp
 	}
 }
 
-
+// Basic operations of 4-vectors
+//
+//
 TEST_CASE("M4Vec: Basic kinematic operations", "[M4Vec]") {
 
 	const double EPS = 1e-5;
@@ -156,7 +162,9 @@ TEST_CASE("M4Vec: Basic kinematic operations", "[M4Vec]") {
 	}
 }
 
-
+// Factorials
+//
+//
 TEST_CASE("gra::math::factorial: with values of 0,1,2,3,10", "[gra::math::factorial]") {
 	
     REQUIRE( gra::math::factorial(0) == 1 );
@@ -166,7 +174,9 @@ TEST_CASE("gra::math::factorial: with values of 0,1,2,3,10", "[gra::math::factor
     REQUIRE( gra::math::factorial(10) == 3628800 );
 }
 
-
+// Legendre polynomials
+//
+//
 TEST_CASE("gra::math::sf_legendre: numerically l = 0 ... 8, m = 0", "[gra::math::sf_legendre]") {
 
 	const double EPS = 1e-5;
@@ -180,7 +190,9 @@ TEST_CASE("gra::math::sf_legendre: numerically l = 0 ... 8, m = 0", "[gra::math:
 	}
 }
 
-
+// Complex spherical harmonics
+//
+//
 TEST_CASE("gra::math::Y_complex_basis: numerically", "[gra::math::Y_complex_basis]") {
 
 	const double EPS = 1e-5;
@@ -203,8 +215,9 @@ TEST_CASE("gra::math::Y_complex_basis: numerically", "[gra::math::Y_complex_basi
 }
 
 
-
-
+// Matrix initialization
+//
+//
 TEMPLATE_TEST_CASE("MMatrix:: Initialization with initialization list", "[MMatrix][template]", int) {
 
 	const MMatrix<TestType> A = {{1, 2, 3},

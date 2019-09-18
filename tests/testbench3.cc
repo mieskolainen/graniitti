@@ -79,9 +79,11 @@ TEST_CASE("gra::form:: ReggeEta and ReggeEtaLinear", "[Form]") {
 		const std::complex<double> eta1 = gra::form::ReggeEtaLinear(t, alpha_t0, ap, sigma);
 		const std::complex<double> eta2 = gra::form::ReggeEta(alpha, sigma);
 
+		if (i < 2) {
 		std::cout << "Mandelstam t:   " << t    << std::endl;
 		std::cout << "ReggeEtaLinear: " << eta1 << std::endl;
 		std::cout << "ReggeEta:       " << eta2 << std::endl;
+		}
 
 		REQUIRE( std::real(eta1) == Approx(std::real(eta2)).epsilon(EPS) );
 		REQUIRE( std::imag(eta1) == Approx(std::imag(eta2)).epsilon(EPS) );
