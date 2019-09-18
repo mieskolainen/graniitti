@@ -81,6 +81,7 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng);
 
 // Regge signature
 std::complex<double> ReggeEta(double alpha_t, double sigma);
+std::complex<double> ReggeEtaLinear(double t, double alpha_t0, double ap, double sigma);
 
 // Proton form factor, elastic and inelastic
 double S3F(double t);

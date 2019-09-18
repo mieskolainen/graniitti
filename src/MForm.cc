@@ -297,14 +297,22 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
 
 // Regge signature factor, alpha_t is alpha(t), and signature sigma = +-1
 //
-// Remember, there are poles (also) at t < 0 (scattering domain) with linear
-// trajectory
-//
-// sin(pi x) = pi / (-x Gamma(x) Gamma(-x))
+// Remember that denominator hits pole at every integer PI * alpha(t)
 //
 std::complex<double> ReggeEta(double alpha_t, double sigma) {
   const double denom = std::sin(PI * alpha_t);
   return -(1.0 + sigma * std::exp(-zi * PI * alpha_t)) / denom;
+}
+
+// Regge signature factor for linear trajectories at t -> 0
+//
+//         t = Mandelstam t
+//  alpha_t0 = alpha(0)
+//        ap = alpha'
+//     sigma = +-1
+//
+std::complex<double> ReggeEtaLinear(double t, double alpha_t0, double ap, double sigma) {
+  return ReggeEta(alpha_t0, sigma) * std::exp(-zi * PI / 2.0 * ap * t);
 }
 
 // ----------------------------------------------------------------------

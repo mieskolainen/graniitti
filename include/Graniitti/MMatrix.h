@@ -298,6 +298,10 @@ class MMatrix {
 
   // Get diagonal vector
   std::vector<T> GetDiag() const {
+    if (rows != cols) {
+      throw std::invalid_argument("MMatrix::GetDiag: Only defined for square matrices, rows = "
+        + std::to_string(rows) + " , cols = " + std::to_string(cols));
+    }
     std::vector<T> d(rows);
     for (std::size_t i = 0; i < rows; ++i) { d[i] = this->operator()(i, i); }
     return d;
@@ -305,6 +309,10 @@ class MMatrix {
 
   // Get trace
   T Trace() const {
+    if (rows != cols) {
+      throw std::invalid_argument("MMatrix::Trace: Only defined for square matrices, rows = "
+        + std::to_string(rows) + " , cols = " + std::to_string(cols));
+    }
     T sum = 0.0;
     for (std::size_t i = 0; i < rows; ++i) {
       sum += this->operator()(i,i);

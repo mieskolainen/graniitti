@@ -57,14 +57,48 @@ TEST_CASE("form:: Form factors", "[gra::form]") {
 	}
 }
 
+// Regge trajectory phase
+// 
+// 
+TEST_CASE("gra::form:: ReggeEta and ReggeEtaLinear", "[Form]") {
 
+	const double EPS = 0.05;
+	MRandom rng;
+	
+	for (std::size_t i = 0; i < 1e2; ++i) {
+		
+		// Mandelstam t
+		const double t = rng.U(-1.0, 0);
+
+		// Pomeron trajectory
+		const double alpha_t0 = 1.08;
+		const double ap       = 0.25;
+		const double sigma    = 1; // even signature
+		const double alpha    = alpha_t0 + ap * t;
+
+		const std::complex<double> eta1 = gra::form::ReggeEtaLinear(t, alpha_t0, ap, sigma);
+		const std::complex<double> eta2 = gra::form::ReggeEta(alpha, sigma);
+
+		std::cout << "Mandelstam t:   " << t    << std::endl;
+		std::cout << "ReggeEtaLinear: " << eta1 << std::endl;
+		std::cout << "ReggeEta:       " << eta2 << std::endl;
+
+		REQUIRE( std::real(eta1) == Approx(std::real(eta2)).epsilon(EPS) );
+		REQUIRE( std::imag(eta1) == Approx(std::imag(eta2)).epsilon(EPS) );
+	}
+}
+
+
+// Matrix trace and dagger
+// 
+// 
 TEST_CASE("MMatrix:: Dagger and Trace", "[MMatrix]") {
 
 	const double EPS = 1e-5;
 
 	const MMatrix<std::complex<double>> A =
-		{{std::complex<double>(0.4)}, { std::complex<double>(0.0)},
-		 {std::complex<double>(0.0)}, {-std::complex<double>(0.4)}};
+		 { {std::complex<double>(0.4),  std::complex<double>(0.0)},
+		   {std::complex<double>(0.0), -std::complex<double>(0.4)}};
 	A.Print();
 
 	const MMatrix<std::complex<double>> A_dagger = A.Transpose();
@@ -74,7 +108,7 @@ TEST_CASE("MMatrix:: Dagger and Trace", "[MMatrix]") {
 	AAT.Print();
 
 	const double trace = std::real( AAT.Trace() );
-	
+
 	REQUIRE( trace == Approx(0.32).epsilon(EPS) );
 }
 

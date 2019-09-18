@@ -878,9 +878,11 @@ std::complex<double> MRegge::PhotoProp(double s, double t, double m2, bool excit
 
   // N.B. The pomeron slope (a') also affects, so all parameters need
   // to be fitted in a proper way (full MC)
-  const double alpha = PARAM_REGGE::a0[0] + t * PARAM_REGGE::ap[0];  // Pomeron trajectory
-  const std::complex<double> eta = ReggeEta(alpha, 1);               // Pomeron signature
-
+  const double alpha    = PARAM_REGGE::a0[0] + PARAM_REGGE::ap[0] * t;
+  const double alpha_t0 = PARAM_REGGE::a0[0];
+  const double ap       = PARAM_REGGE::ap[0];
+  const std::complex<double> eta = ReggeEtaLinear(t, alpha_t0, ap, PARAM_REGGE::sgn[0]);
+  
   // Proton form factor simply exponential here
   // Division by 2, because we are at amplitude level
   const double FF = excite ? gra::form::S3FINEL(t, M2_forward) : std::exp(B0 * t / 2.0);
@@ -898,21 +900,11 @@ std::complex<double> MRegge::PropOnly(double s, double t) const {
   for (std::size_t k = 0; k < PARAM_REGGE::a0.size(); ++k) {
     if (PARAM_REGGE::n[k] == true) {  // Trajectory active
 
-      double alpha = 0.0;
-
-      if (k == 0) {  // Pomeron
-        // alpha = S3PomAlpha(t); // Non-Linear trajectory
-        alpha = PARAM_REGGE::a0[k] + t * PARAM_REGGE::ap[k];
-      } else {  // Reggeons
-        alpha = PARAM_REGGE::a0[k] + t * PARAM_REGGE::ap[k];
-      }
-
-      // Complex Regge signature
-      // (cannot be used with linear trajectory due to poles)
-      // const std::complex<double> eta = ReggeEta(alpha, PARAM_REGGE::sgn[k]);
-
-      // Evaluate at t = 0 to avoid poles (for linear trajectory)
-      const std::complex<double> eta = ReggeEta(PARAM_REGGE::a0[k], PARAM_REGGE::sgn[k]);
+      // Trajectory signature
+      const double alpha    = PARAM_REGGE::a0[k] + PARAM_REGGE::ap[k] * t;
+      const double alpha_t0 = PARAM_REGGE::a0[k];
+      const double ap       = PARAM_REGGE::ap[k];
+      const std::complex<double> eta = ReggeEtaLinear(t, alpha_t0, ap, PARAM_REGGE::sgn[k]);
 
       // Add to the sum
       M += eta * std::pow(s / PARAM_REGGE::s0, alpha);
@@ -926,15 +918,11 @@ std::complex<double> MRegge::PropOnly(double s, double t) const {
 //
 std::complex<double> MRegge::OdderonProp(double s, double t) const {
 
-  // Use Pomeron parameters
-  const double alpha = PARAM_REGGE::a0[0] + t * PARAM_REGGE::ap[0];
-
-  // Complex Regge signature
-  // (cannot be used with linear trajectory due to poles)
-  // const std::complex<double> eta = ReggeEta(alpha, PARAM_REGGE::sgn[k]);
-
-  // Evaluate at t = 0 to avoid poles (for linear trajectory) [NEGATIVE SIGNATURE HERE!]
-  const std::complex<double> eta = ReggeEta(PARAM_REGGE::a0[0], (-1) * PARAM_REGGE::sgn[0]);
+  // Use Pomeron trajectory with odd signature
+  const double alpha    = PARAM_REGGE::a0[0] + PARAM_REGGE::ap[0] * t;
+  const double alpha_t0 = PARAM_REGGE::a0[0];
+  const double ap       = PARAM_REGGE::ap[0];
+  const std::complex<double> eta = ReggeEtaLinear(t, alpha_t0, ap, (-1) * PARAM_REGGE::sgn[0]);
   
   return eta * std::pow(s / PARAM_REGGE::s0, alpha);
 }
