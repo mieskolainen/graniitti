@@ -238,12 +238,12 @@ void InitPrHistogram(std::map<std::string, std::shared_ptr<hProfMultiplet>> &h,
       std::make_shared<hProfMultiplet>(name, title + ";System M  (GeV); System #LTP_{T}#GT (GeV)",
                                        bM.N, bM.min, bM.max, bP.min, bP.max, legendtext);
 
-  name    = "hP_S_M_PL2_SR";
+  name    = "hP_S_M_PL2_CM";
   h[name] = std::make_shared<hProfMultiplet>(
       name, title + ";System M  (GeV); Legendre #LTP_{l=2}(cos #theta)#GT [SR frame]", bM.N, bM.min,
       bM.max, -0.4, 0.4, legendtext);
 
-  name    = "hP_S_M_PL4_SR";
+  name    = "hP_S_M_PL4_CM";
   h[name] = std::make_shared<hProfMultiplet>(
       name, title + ";System M  (GeV); Legendre #LTP_{l=4}(cos #theta)#GT [SR frame]", bM.N, bM.min,
       bM.max, -0.4, 0.4, legendtext);

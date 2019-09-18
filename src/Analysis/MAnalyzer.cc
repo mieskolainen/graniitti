@@ -356,22 +356,21 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 
       // 2-Body only
       if (multiplicity == 2) {
+
         hP["hP_2B_M_dphi"]->h[SID]->Fill(M, a.DeltaPhi(b), W);
         h1["h1_2B_acop"]->h[SID]->Fill(1.0 - a.DeltaPhi(b) / gra::math::PI, W);
         h1["h1_2B_diffrap"]->h[SID]->Fill(b.Rap() - a.Rap(), W);
-
         h2["h2_2B_M_dphi"]->h[SID]->Fill(M, a.DeltaPhi(b), W);
-
         h2["h2_2B_eta1_eta2"]->h[SID]->Fill(a.Eta(), b.Eta(), W);
 
+        
         // Frame transform
         const int direction = 1;
-
         const M4Vec X = a + b;
 
         std::vector<M4Vec> CM = {a, b};
         gra::kinematics::CMframe(CM, X);
-        
+
         std::vector<M4Vec> HX = {a, b};
         gra::kinematics::HXframe(HX, X);
 
@@ -384,14 +383,15 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
         std::vector<M4Vec> PG = {a, b};
         gra::kinematics::PGframe(PG, X, direction, p_beam_plus, p_beam_minus);
 
+
         h1["h1_costheta_CM"]->h[SID]->Fill(CM[0].CosTheta(), W);
         h1["h1_costheta_HX"]->h[SID]->Fill(HX[0].CosTheta(), W);
         h1["h1_costheta_CS"]->h[SID]->Fill(CS[0].CosTheta(), W);
         h1["h1_costheta_GJ"]->h[SID]->Fill(GJ[0].CosTheta(), W);
         h1["h1_costheta_PG"]->h[SID]->Fill(PG[0].CosTheta(), W);
         h1["h1_costheta_LAB"]->h[SID]->Fill(a.CosTheta(), W);
-
-
+        
+        
         h1["h1_phi_CM"]->h[SID]->Fill(CM[0].Phi(), W);
         h1["h1_phi_HX"]->h[SID]->Fill(HX[0].Phi(), W);
         h1["h1_phi_CS"]->h[SID]->Fill(CS[0].Phi(), W);
@@ -425,11 +425,9 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
         
         
         // ---------------------------------------------------------------------------
-        
         hP["hP_S_M_PL2_CM"]->h[SID]->Fill(M, math::LegendrePl(2, CM[0].CosTheta()), W);
         hP["hP_S_M_PL4_CM"]->h[SID]->Fill(M, math::LegendrePl(4, CM[0].CosTheta()), W);
         h2["h2_2B_eta1_eta2"]->h[SID]->Fill(a.Eta(), b.Eta(), W);
-
         // ---------------------------------------------------------------------------
       }
 
@@ -505,44 +503,55 @@ void MAnalyzer::FrameObservables(double W, HepMC3::GenEvent &evt, const M4Vec &p
                                  const M4Vec &p_beam_minus, const M4Vec &p_final_plus,
                                  const M4Vec &p_final_minus, const std::vector<M4Vec> &pip,
                                  const std::vector<M4Vec> &pim) {
-  const int direction = 1; // PG and GJ
-  
-  std::vector<M4Vec> twopions;
+  // Find index
+  const auto ind = [&](const std::string str) {
+    for (const auto & i : indices(analyzer::FRAMES)) {
+      if (analyzer::FRAMES[i] == str) { return i; }
+    }
+    throw std::invalid_argument("MAnalyzer::FrameObservables: Unknown Lorentz frame: " + str);
+  };
+
+  std::vector<M4Vec> pf;
 
   if (pip.size() != 0 && pim.size() != 0) {  // Charged pair
-    twopions = {pip[0], pim[0]};
+    pf = {pip[0], pim[0]};
   }
   if (pip.size() == 2 && pim.size() == 0) {  // Neutral pair
-    twopions = {pip[0], pip[1]};
+    pf = {pip[0], pip[1]};
   }
-  
+
+  // ---------------------------------------------------------------------
+  // Lorentz frame transformations
+
   // Make copies
   std::vector<std::vector<M4Vec>> pions;
-  for (std::size_t i = 0; i < analyzer::FRAMES.size(); ++i) { pions.push_back(twopions); }
+  for (std::size_t i = 0; i < analyzer::FRAMES.size(); ++i) {
+    pions.push_back(pf);
+  }
 
-  // Frame transformations
-  const M4Vec X = twopions[0] + twopions[1];
-  
-  gra::kinematics::CMframe(pions[0], X);
-  gra::kinematics::HXframe(pions[1], X);
-  gra::kinematics::CSframe(pions[3], X, p_beam_plus, p_beam_minus);
-  gra::kinematics::GJframe(pions[4], X, direction, p_beam_plus - p_final_plus, p_beam_minus - p_final_minus);
-  gra::kinematics::PGframe(pions[5], X, direction, p_beam_plus, p_beam_minus);
-  // LABframe(pions[6]), already there, do nothing
+  // System
+  const M4Vec X = pf[0] + pf[1];
+  const int direction = 1;                   // PG and GJ
+
+  gra::kinematics::CMframe(pions[ind("CM")], X);
+  gra::kinematics::HXframe(pions[ind("HX")], X);
+  gra::kinematics::CSframe(pions[ind("CS")], X, p_beam_plus, p_beam_minus);
+  gra::kinematics::GJframe(pions[ind("GJ")], X, direction, p_beam_plus - p_final_plus, p_beam_minus - p_final_minus);
+  gra::kinematics::PGframe(pions[ind("PG")], X, direction, p_beam_plus, p_beam_minus);
+  pions[ind("LAB")] = pions[ind("LAB")]; // already there, do nothing
   
   // No forward protons -> set zero
-  if (p_final_plus.M() < 0.5) { pions[3] = {M4Vec(0, 0, 0, 0), M4Vec(0, 0, 0, 0)}; }
+  if (p_final_plus.M() < 0.5) { pions[ind("GJ")] = {M4Vec(0, 0, 0, 0), M4Vec(0, 0, 0, 0)}; }
+
+  // ---------------------------------------------------------------------
 
   // FILL HISTOGRAMS -->
 
   // Legendre polynomials P_l cos(theta)
-  const M4Vec        system      = twopions[0] + twopions[1];
-  const unsigned int FRAMENUMBER = 5;    // Non-rotated (SR) frame
   for (std::size_t l = 0; l < 8; ++l) {  // note l+1
-
     // Take first daughter [0]
-    double value = gra::math::LegendrePl((l + 1), pions[FRAMENUMBER][0].CosTheta());
-    hPl[l]->Fill(system.M(), value, W);
+    double value = gra::math::LegendrePl((l + 1), pions[ind("CM")][0].CosTheta());
+    hPl[l]->Fill(X.M(), value, W);
   }
 
   // FRAME correlations
@@ -561,13 +570,13 @@ void MAnalyzer::NStarObservables(double W, HepMC3::GenEvent &evt) {
       HepMC3::applyFilter(HepMC3::Selector::PDG_ID == PDG::PDG_gamma, evt.particles());
 
   std::vector<HepMC3::GenParticlePtr> search_neutrons =
-      HepMC3::applyFilter(HepMC3::Selector::PDG_ID == PDG::PDG_n, evt.particles());
+      HepMC3::applyFilter(HepMC3::Selector::PDG_ID == PDG::PDG_n,     evt.particles());
 
   std::vector<HepMC3::GenParticlePtr> search_pip =
-      HepMC3::applyFilter(HepMC3::Selector::PDG_ID == PDG::PDG_pip, evt.particles());
+      HepMC3::applyFilter(HepMC3::Selector::PDG_ID == PDG::PDG_pip,   evt.particles());
 
   std::vector<HepMC3::GenParticlePtr> search_pim =
-      HepMC3::applyFilter(HepMC3::Selector::PDG_ID == PDG::PDG_pim, evt.particles());
+      HepMC3::applyFilter(HepMC3::Selector::PDG_ID == PDG::PDG_pim,   evt.particles());
 
   std::vector<HepMC3::GenParticlePtr> search_nstar =
       HepMC3::applyFilter(HepMC3::Selector::PDG_ID == PDG::PDG_NSTAR, evt.particles());

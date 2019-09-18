@@ -22,12 +22,12 @@ then
 fi
 
 # Generate
-make -j4 && ./bin/gr -i ./tests/processes/CDF14_2pi.json -n $EVENTS -l $POMLOOP -w true
+./bin/gr -i ./tests/processes/CDF14_2pi.json -n $EVENTS -l $POMLOOP -w true
 
 fi
 
 # Analyze
-make -j4 && ./bin/analyze \
+./bin/analyze \
 -i CDF14_2pi \
 -g 211 \
 -n 2 \

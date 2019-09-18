@@ -4,7 +4,7 @@
 #
 # Run with: source ./tests/run_elastic/run.sh
 
-# Screening loop must be on!
+# Screening loop must be on, set with -l true !
 
 read -p "run: Generate events (or only analyze)? [y/n] " -n 1 -r
 echo # New line
