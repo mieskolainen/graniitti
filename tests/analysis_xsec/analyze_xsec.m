@@ -23,7 +23,7 @@ fprintf('\n\n');
 
 % Indices
 tot_id = 2;
-in_id = 3;
+inel_id = 3;
 el_id = 4;
 sd_id = 7; % 7
 dd_id = 8; % 8
@@ -46,7 +46,7 @@ colors = {'k-','r-','k--'};
 kk = 1;
 
 h = {};
-for i = [tot_id in_id el_id]
+for i = [tot_id inel_id el_id]
     h{end+1} = plot(MC(:,1), MC(:,i), colors{kk}); hold on;
     kk = kk + 1;
 end
@@ -93,14 +93,18 @@ set(gca,'xscale','log');
 
 %l = legend('$\sigma_{tot}$','$\sigma_{in}$','$\sigma_{el}$','$\sigma_{sd}$','$\sigma_{dd}$');
 %set(l,'interpreter','latex','location','northwest'); legend('boxoff');
-axis tight; axis square;
+axis tight;
+%axis square;
 
 xlabel('$\sqrt{s}$ (GeV)','interpreter','latex');
 ylabel('$\sigma$ (mb)','interpreter','latex');
 
 axis([10 max(MC(:,1)) 0 110]);
 
-print -dpdf ./figs/total.pdf
+% PRINT OUT
+filename = sprintf('./figs/total.pdf');
+print(gcf, '-dpdf', filename);
+system(sprintf('pdfcrop --margins ''10 10 10 10'' %s %s', filename, filename));
 
 
 %% SD Measurements
@@ -167,7 +171,7 @@ XDD{4} = [7000 5.17 sqrt(0.08^2 + 0.57^2 + 1.62^2)];
 
 %% 3P coupling fit
 
-figure;
+fig0 = figure;
 chi2_values = zeros(length(P3values),1);
 
 for k = 1:length(P3values)    
@@ -252,7 +256,10 @@ fprintf('g3P = %0.3f (%0.3f ... %0.3f) \n', P3values(ind), P3values(lowind), P3v
 l = legend('$\chi^2_{min} + 1$');
 set(l,'interpreter','latex');
 
-print -dpdf ./figs/g3p_chi2fit.pdf
+% PRINT OUT
+filename = sprintf('./figs/g3p_chi2fit.pdf');
+print(fig0, '-dpdf', filename);
+system(sprintf('pdfcrop --margins ''10 10 10 10'' %s %s', filename, filename));
 
 
 %% RATIOPLOT
@@ -269,42 +276,48 @@ DD_low = (MC(:,dd_id) / g3P_orig^2) * g3P_down^2;
 
 % Ratioplots
 
-figure;
+fig0 = figure;
 
+% DIFF/TOT
 plotfill(MC(:,1), sum(MC(:,el_id) + SD_up + DD_up, 2) ./ MC(:,tot_id), ...
          sum(MC(:,el_id) + SD_low + DD_low, 2) ./ MC(:,tot_id), [1 1 1]*0.7, [1 1 1]*0.5, 0.1); hold on;
 
-h{1} = plot(MC(:,1), sum(MC(:,el_id) + SD + DD,2) ./ MC(:,tot_id), 'k-','linewidth',1.1); hold on; % el+sd+dd / sigma_tot
+h{1} = plot(MC(:,1), sum(MC(:,el_id) + SD + DD,2) ./ MC(:,tot_id), 'k-','linewidth',1.1); hold on;
 
-plotfill(MC(:,1), SD_up ./ DD_up, SD_low ./ DD_low, [1 1 1]*0.7, [1 1 1]*0.5, 0.1); hold on;
-h{2} = plot(MC(:,1), SD ./ DD, 'k--'); % SD / DD
+% SD/INEL
+plotfill(MC(:,1), SD_up ./ MC(:,inel_id), SD_low ./ MC(:,inel_id), [1 1 1]*0.7, [1 1 1]*0.5, 0.1); hold on;
+h{2} = plot(MC(:,1), SD ./ MC(:,inel_id), 'r--');
 
-plotfill(MC(:,1), SD_up ./ MC(:,in_id), SD_low ./ MC(:,in_id), [1 1 1]*0.7, [1 1 1]*0.5, 0.1); hold on;
-h{3} = plot(MC(:,1), SD ./ MC(:,in_id), 'r--'); % SD / inel
+% DD/INEL
+plotfill(MC(:,1), DD_up ./ MC(:,inel_id), DD_low ./ MC(:,inel_id), [1 1 1]*0.7, [1 1 1]*0.5, 0.1); hold on;
+h{3} = plot(MC(:,1), DD ./ MC(:,inel_id), 'k-.');
 
-plotfill(MC(:,1), DD_up ./ MC(:,in_id), DD_low ./ MC(:,in_id), [1 1 1]*0.7, [1 1 1]*0.5, 0.1); hold on;
-h{4} = plot(MC(:,1), DD ./ MC(:,in_id), 'k-.'); % DD / inel
+% EL/INEL
+h{4} = plot(MC(:,1), MC(:,el_id) ./ MC(:,inel_id), 'k:');
 
-plot(MC(:,1), ones(length(MC(:,1)), 1)*0.5, 'r-','linewidth',1.1); % Pumplin bound
-
+% Pumplin bound
+plot(MC(:,1), ones(length(MC(:,1)), 1)*0.5, 'r-','linewidth',1.1);
 set(gca,'xscale','log');
 set(gca,'yscale','log');
 
-l = legend([h{1:4}], '$\sigma_{el+sd+dd}/\sigma_{tot}$', ...
-           '$\sigma_{sd}/\sigma_{dd}$', '$\sigma_{sd}/\sigma_{in}$', '$\sigma_{dd}/\sigma_{in}$','MP bound');
+l = legend([h{1:4}], '$\sigma_{EL+SD+DD}/\sigma_{TOT}$', ...
+    '$\sigma_{SD}/\sigma_{INEL}$', '$\sigma_{DD}/\sigma_{INEL}$', '$\sigma_{EL}/\sigma_{INEL}$', 'MP bound');
 set(l,'interpreter','latex','location','southwest'); legend('boxoff');
 
 xlabel('$\sqrt{s}$ (GeV)','interpreter','latex');
 ylabel('','interpreter','latex');
 
-axis([10 max(MC(:,1)) 0 10]);
+axis([10 max(MC(:,1)) 1e-2 1]);
 
-print -dpdf ./figs/ratio.pdf
+% PRINT OUT
+filename = sprintf('./figs/ratio.pdf');
+print(fig0, '-dpdf', filename);
+system(sprintf('pdfcrop --margins ''10 10 10 10'' %s %s', filename, filename));
 
 
 %% SD PLOT
 
-figure;
+fig0 = figure;
 
 plotfill(MC(:,1), SD_up, SD_low, [1 1 1]*0.7, [1 1 1]*0.5, 0.1); hold on;
 h0 = plot(MC(:,1), SD, 'k-');
@@ -327,12 +340,15 @@ ylabel('$\sigma_{SD}$ (mb)','interpreter','latex');
 set(gca,'xscale','log');
 axis([10 max(MC(:,1)) 0 22]);
 
-print -dpdf ./figs/sd.pdf
+% PRINT OUT
+filename = sprintf('./figs/sd.pdf');
+print(fig0, '-dpdf', filename);
+system(sprintf('pdfcrop --margins ''10 10 10 10'' %s %s', filename, filename));
 
 
 %% DD PLOT
 
-figure;
+fig0 = figure;
 
 h0 = ...
 plotfill(MC(:,1), DD_up, DD_low, [1 1 1]*0.7, [1 1 1]*0.5, 0.1); hold on;
@@ -354,5 +370,7 @@ ylabel('$\sigma_{DD}$ (mb)','interpreter','latex');
 set(gca,'xscale','log');
 axis([10 max(MC(:,1)) 0 14]);
 
-print -dpdf ./figs/dd.pdf
-
+% PRINT OUT
+filename = sprintf('./figs/dd.pdf');
+print(fig0, '-dpdf', filename);
+system(sprintf('pdfcrop --margins ''10 10 10 10'' %s %s', filename, filename));
