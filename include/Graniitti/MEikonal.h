@@ -17,6 +17,8 @@
 #include "Graniitti/MMatrix.h"
 #include "Graniitti/MPDG.h"
 
+// External
+#include "rang.hpp"
 
 namespace gra {
 
@@ -47,6 +49,12 @@ struct MEikonalNumerics {
   void SetLoopDiscretization(int ND) {
     NumberLoopKT  = std::max(3, 3 * ND + (int)NumberLoopKT);
     NumberLoopPHI = std::max(3, 3 * ND + (int)NumberLoopPHI);
+  
+    if (ND < 0) { std::cout << rang::fg::red; }
+    std::cout << "MEikonalNumerics::SetLoopDiscretization: ND = " << ND << std::endl;
+    std::cout << "-> NumberLoopKT  = " << NumberLoopKT  << std::endl;
+    std::cout << "-> NumberLoopPHI = " << NumberLoopPHI << std::endl;
+    std::cout << rang::fg::reset;
   }
 
   // Unique hash

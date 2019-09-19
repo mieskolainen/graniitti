@@ -689,7 +689,7 @@ void MGraniitti::ReadIntegralParam(const std::string &inputfile) {
   const int ND = j.at(XID).at("POMLOOP").at("ND");
   AssertRange(ND, {-10, 10}, "POMLOOP::ND", true);
   proc->Eikonal.Numerics.SetLoopDiscretization(ND);
-
+  
   // FLAT (naive) MC parameters
   MCPARAM mpam;
   mpam.PRECISION  = j.at(XID).at("FLAT").at("PRECISION");

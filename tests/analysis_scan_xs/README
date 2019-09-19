@@ -1,0 +1,10 @@
+x-section analysis (plots with MATLAB)
+
+1. First simulate:
+   source ./tests/run_scan_xs/run.sh
+
+2. Copy output tables:
+   cp scan.* ./tests/analysis_scan_xs/
+
+3. Then run:
+   matlab analyze.m
