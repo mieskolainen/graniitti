@@ -4,7 +4,8 @@
 clear; close all;
 
 sqrts = 13000;
-pdf = {'MSTW2008lo68cl', 'MMHT2014lo68cl'};
+pdf = {'MSTW2008lo68cl'};
+%pdf = {'MMHT2014lo68cl'};
 
 legends = {};
 for i = 1:length(pdf)
@@ -36,8 +37,8 @@ Hmatrix = zeros(Nq2, Nlnx);
 q2val   = zeros(Nq2,1);
 
 for z = 1:Nq2
-    start    = (z-1)*(Nq2+1) + 1;
-    stop     = start + Nq2 - 1;
+    start    = (z-1)*(Nlnx+1) + 1;
+    stop     = start + Nlnx - 1;
     
     Hval = X(start:stop, 3);
     
@@ -47,6 +48,7 @@ for z = 1:Nq2
     k = k + 1;
 end
 lnxval = X(1:Nlnx,2);
+Hmatrix = Hmatrix';
 
 imagesc(q2val, exp(lnxval), Hmatrix);
 set(gca,'YDir','Normal');
@@ -55,6 +57,7 @@ ylabel('$x$',    'interpreter','latex');
 title('log$_{10} \, H(Q^2, x)$',    'interpreter','latex');
 colorbar;
 %caxis([0 1]);
+axis([0 max(q2val) 0 1]);
 axis square;
 
 %colormap bone
@@ -73,11 +76,11 @@ NlnM = 3000;
 legs = {};
 k = 1;
 Tmatrix = zeros(Nq2, NlnM);
-q2val  = zeros(Nq2,1);
+q2val   = zeros(Nq2,1);
 
 for z = 1:Nq2
-    start    = (z-1)*(Nq2+1) + 1;
-    stop     = start + Nq2 - 1;
+    start    = (z-1)*(NlnM+1) + 1;
+    stop     = start + NlnM - 1;
     
     Tval = X(start:stop, 3);
     
@@ -88,6 +91,9 @@ for z = 1:Nq2
 end
 lnMval = X(1:NlnM,2);
 
+Tmatrix = Tmatrix';
+size(Tmatrix)
+
 imagesc(q2val, exp(lnMval), Tmatrix);
 set(gca,'YDir','Normal');
 xlabel('$Q^2$ (GeV$^2$)','interpreter','latex');
@@ -95,9 +101,8 @@ ylabel('$\mu$ (GeV)',    'interpreter','latex');
 title('log$_{10} \, T(Q^2,\mu)$',    'interpreter','latex');
 colorbar;
 caxis([0 1]);
-axis([0 20 0 100]);
 axis square;
 
-%colormap bone
+colormap summer(100)
 shading interp
 

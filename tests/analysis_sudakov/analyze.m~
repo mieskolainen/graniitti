@@ -3,9 +3,9 @@
 % mikael.mieskolainen@cern.ch, 2019
 clear; close all;
 
-
 sqrts = 13000;
-pdf = {'MSTW2008lo68cl', 'MMHT2014lo68cl'};
+pdf = {'MSTW2008lo68cl'};
+%pdf = {'MMHT2014lo68cl'};
 
 legends = {};
 for i = 1:length(pdf)
@@ -23,9 +23,6 @@ for i = 1:length(pdf)
 end
 
 
-%%
-close all;
-
 %% Shuvaev pdf array H(q2, log(x))
 
 X = H{1};
@@ -33,15 +30,15 @@ X = H{1};
 close all;
 
 Nq2  = 300;
-Nlnx = 300;
+Nlnx = 3000;
 
 k = 1;
 Hmatrix = zeros(Nq2, Nlnx);
 q2val   = zeros(Nq2,1);
 
 for z = 1:Nq2
-    start    = (z-1)*(Nq2+1) + 1;
-    stop     = start + Nq2 - 1;
+    start    = (z-1)*(Nlnx+1) + 1;
+    stop     = start + Nlnx - 1;
     
     Hval = X(start:stop, 3);
     
@@ -52,13 +49,15 @@ for z = 1:Nq2
 end
 lnxval = X(1:Nlnx,2);
 
-imagesc(q2val, exp(lnxval), Tmatrix);
+Hmatrix = Hmatrix'
+
+imagesc(q2val, exp(lnxval), Hmatrix);
 set(gca,'YDir','Normal');
 xlabel('$Q^2$ (GeV$^2$)','interpreter','latex');
-ylabel('$\mu$ (GeV)',    'interpreter','latex');
-title('log$_{10} \, T(Q^2,\mu)$',    'interpreter','latex');
+ylabel('$x$',    'interpreter','latex');
+title('log$_{10} \, H(Q^2, x)$',    'interpreter','latex');
 colorbar;
-caxis([0 1]);
+%caxis([0 1]);
 axis square;
 
 %colormap bone
@@ -72,16 +71,16 @@ X = T{1};
 close all;
 
 Nq2  = 300;
-NlnM = 300;
+NlnM = 3000;
 
 legs = {};
 k = 1;
 Tmatrix = zeros(Nq2, NlnM);
-q2val  = zeros(Nq2,1);
+q2val   = zeros(Nq2,1);
 
 for z = 1:Nq2
-    start    = (z-1)*(Nq2+1) + 1;
-    stop     = start + Nq2 - 1;
+    start    = (z-1)*(NlnM+1) + 1;
+    stop     = start + NlnM - 1;
     
     Tval = X(start:stop, 3);
     
@@ -92,14 +91,18 @@ for z = 1:Nq2
 end
 lnMval = X(1:NlnM,2);
 
+Tmatrix = Tmatrix';
+
 imagesc(q2val, exp(lnMval), Tmatrix);
 set(gca,'YDir','Normal');
-xlabel('$Q^2$ (GeV$^2$)','interpreter','latex');
-ylabel('$\mu$ (GeV)',    'interpreter','latex');
+ylabel('$Q^2$ (GeV$^2$)','interpreter','latex');
+xlabel('$\mu$ (GeV)',    'interpreter','latex');
 title('log$_{10} \, T(Q^2,\mu)$',    'interpreter','latex');
 colorbar;
 caxis([0 1]);
+%axis([0 20 0 100]);
 axis square;
 
 %colormap bone
 shading interp
+
