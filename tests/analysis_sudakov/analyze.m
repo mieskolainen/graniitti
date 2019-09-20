@@ -54,7 +54,7 @@ imagesc(q2val, exp(lnxval), Hmatrix);
 set(gca,'YDir','Normal');
 xlabel('$Q^2$ (GeV$^2$)','interpreter','latex');
 ylabel('$x$',    'interpreter','latex');
-title('log$_{10} \, H(Q^2, x)$',    'interpreter','latex');
+title('$H(Q^2,x)$',    'interpreter','latex');
 colorbar;
 %caxis([0 1]);
 axis([0 max(q2val) 0 1]);
@@ -94,15 +94,46 @@ lnMval = X(1:NlnM,2);
 Tmatrix = Tmatrix';
 size(Tmatrix)
 
+% 2D
+figure;
 imagesc(q2val, exp(lnMval), Tmatrix);
 set(gca,'YDir','Normal');
 xlabel('$Q^2$ (GeV$^2$)','interpreter','latex');
 ylabel('$\mu$ (GeV)',    'interpreter','latex');
-title('log$_{10} \, T(Q^2,\mu)$',    'interpreter','latex');
+title('$T(Q^2,\mu)$',    'interpreter','latex');
 colorbar;
 caxis([0 1]);
 axis square;
 
-colormap summer(100)
+colormap bone(1000)
 shading interp
 
+% PRINT OUT
+filename = sprintf('./figs/sudakov_2D.pdf');
+print(gcf, '-dpdf', filename);
+system(sprintf('pdfcrop --margins ''10 10 10 10'' %s %s', filename, filename));
+
+% 1D
+figure;
+legs = {};
+steps = round(logspace(log10(1.5), log10(299), 6));
+
+for k = steps
+plot(exp(lnMval), Tmatrix(:,k)); hold on;
+set(gca,'yscale','log');
+set(gca,'xscale','log');
+
+legs{end+1} = sprintf('$Q^2 = %.2g$ GeV$^2$', q2val(k));
+end
+
+axis([0 1000 0.99e-5 1.5]); axis square;
+
+l = legend(legs); set(l,'interpreter','latex','location','southeast');
+xlabel('$\mu$ (GeV)', 'interpreter','latex');
+ylabel('$T(Q^2, \mu)$', 'interpreter','latex');
+
+
+% PRINT OUT
+filename = sprintf('./figs/sudakov_1D.pdf');
+print(gcf, '-dpdf', filename);
+system(sprintf('pdfcrop --margins ''10 10 10 10'' %s %s', filename, filename));
