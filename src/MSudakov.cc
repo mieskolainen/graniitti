@@ -246,7 +246,7 @@ double MSudakov::diff_xg_xQ2_wrt_Q2(double x, double q2) const {
 // ~ Shuvaev transformed gluon pdf x Sudakov suppression
 //
 // f_g(x,x',qt^2,\mu)
-// = \frac{\partial}{\partial \ln Q_t^2} [H_g(x/2,x/2,Q_t^2)\sqrt{T(Q_t,\mu^2)}]
+// = \frac{\partial}{\partial \ln Q_t^2} [H_g(x/2,x/2,Q_t^2)\sqrt{T(Q_t^2,\mu)}]
 //
 double MSudakov::fg_xQ2M(double x, double q2, double M) const {
   // Calculate Shuvaev transformation
