@@ -21,13 +21,13 @@
     // Sudakov array T(q2,M)
     "SUDA" : {
       "log_ON" : [false, true], // Logarithmic grid
-      "N"      : [300, 900]     // Number of discretization intervals
+      "N"      : [800, 800]     // Number of discretization intervals
     },
     
     // Shuvaev pdf array H(q2,x)
     "SHUV" : {
       "log_ON" : [false, true],
-      "N"      : [300, 900]
+      "N"      : [800, 800]
     },
     
     "M_MIN"  : 1.5,        // GeV

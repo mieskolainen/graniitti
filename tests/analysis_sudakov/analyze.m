@@ -96,13 +96,20 @@ size(Tmatrix)
 
 % 2D
 figure;
-imagesc(q2val, exp(lnMval), Tmatrix);
+imagesc(q2val, exp(lnMval), log10(Tmatrix)); hold on;
+
+%[X,Y] = meshgrid(q2val, exp(lnMval));
+%contour(X,Y,log10(Tmatrix + 1), 5);
+
 set(gca,'YDir','Normal');
-xlabel('$Q^2$ (GeV$^2$)','interpreter','latex');
+xlabel('$Q_t^2$ (GeV$^2$)','interpreter','latex');
 ylabel('$\mu$ (GeV)',    'interpreter','latex');
-title('$T(Q^2,\mu)$',    'interpreter','latex');
+%title('$T_g(Q_t^2,\mu^2)$',    'interpreter','latex');
 colorbar;
-caxis([0 1]);
+h = colorbar;
+ylabel(h, '$T_g(Q_t^2,\mu^2)$','interpreter','latex');
+
+caxis([-3 0]);
 axis square;
 
 colormap bone(1000)
@@ -113,25 +120,25 @@ filename = sprintf('./figs/sudakov_2D.pdf');
 print(gcf, '-dpdf', filename);
 system(sprintf('pdfcrop --margins ''10 10 10 10'' %s %s', filename, filename));
 
-% 1D
+
+%% 1D
 figure;
 legs = {};
-steps = round(logspace(log10(1.5), log10(299), 6));
+steps = [1 3 10 31 96 299]
 
 for k = steps
 plot(exp(lnMval), Tmatrix(:,k)); hold on;
 set(gca,'yscale','log');
 set(gca,'xscale','log');
 
-legs{end+1} = sprintf('$Q^2 = %.2g$ GeV$^2$', q2val(k));
+legs{end+1} = sprintf('$Q_t^2 = %0.2g$ GeV$^2$', q2val(k));
 end
 
-axis([0 1000 0.99e-5 1.5]); axis square;
+axis([0 1000 0.99e-4 1.5]); axis square;
 
 l = legend(legs); set(l,'interpreter','latex','location','southeast');
 xlabel('$\mu$ (GeV)', 'interpreter','latex');
-ylabel('$T(Q^2, \mu)$', 'interpreter','latex');
-
+ylabel('$T_g(Q_t^2, \mu^2)$', 'interpreter','latex');
 
 % PRINT OUT
 filename = sprintf('./figs/sudakov_1D.pdf');
