@@ -29,8 +29,8 @@ X = H{1};
 
 close all;
 
-Nq2  = 300;
-Nlnx = 3000;
+Nq2  = 800;
+Nlnx = 800;
 
 k = 1;
 Hmatrix = zeros(Nq2, Nlnx);
@@ -70,8 +70,8 @@ X = T{1};
 
 close all;
 
-Nq2  = 300;
-NlnM = 3000;
+Nq2  = 800;
+NlnM = 800;
 
 legs = {};
 k = 1;
@@ -107,7 +107,7 @@ ylabel('$\mu$ (GeV)',    'interpreter','latex');
 %title('$T_g(Q_t^2,\mu^2)$',    'interpreter','latex');
 colorbar;
 h = colorbar;
-ylabel(h, '$T_g(Q_t^2,\mu^2)$','interpreter','latex');
+ylabel(h, '$T(Q_t^2,\mu^2)$','interpreter','latex');
 
 caxis([-3 0]);
 axis square;
@@ -121,26 +121,63 @@ print(gcf, '-dpdf', filename);
 system(sprintf('pdfcrop --margins ''10 10 10 10'' %s %s', filename, filename));
 
 
-%% 1D
-figure;
+%% Sudakov 1D over mu
+fig2 = figure;
 legs = {};
-steps = [1 3 10 31 96 299]
+steps = [1 3 10 31 96 295 800];
 
 for k = steps
 plot(exp(lnMval), Tmatrix(:,k)); hold on;
 set(gca,'yscale','log');
 set(gca,'xscale','log');
 
-legs{end+1} = sprintf('$Q_t^2 = %0.2g$ GeV$^2$', q2val(k));
+Q2 = q2val(k);
+if (Q2 < 100)
+legs{end+1} = sprintf('$Q_t^2 = %0.2g$ GeV$^2$', Q2);
+else
+legs{end+1} = sprintf('$Q_t^2 = %0.0f$ GeV$^2$', Q2);    
 end
-
-axis([0 1000 0.99e-4 1.5]); axis square;
+end
+axis([0 1200 0.99e-4 1.5]); axis square;
 
 l = legend(legs); set(l,'interpreter','latex','location','southeast');
 xlabel('$\mu$ (GeV)', 'interpreter','latex');
-ylabel('$T_g(Q_t^2, \mu^2)$', 'interpreter','latex');
+ylabel('$T(Q_t^2, \mu^2)$', 'interpreter','latex');
 
 % PRINT OUT
-filename = sprintf('./figs/sudakov_1D.pdf');
-print(gcf, '-dpdf', filename);
-system(sprintf('pdfcrop --margins ''10 10 10 10'' %s %s', filename, filename));
+filename = sprintf('./figs/sudakov_1D_mu.pdf');
+print(fig2, '-dpdf', filename);
+system(sprintf('pdfcrop --margins ''2 2 2 2'' %s %s', filename, filename));
+
+
+%% Sudakov 1D over Q^2
+close all;
+
+fig3 = figure;
+legs = {};
+steps = [1, 75, 168, 250, 334, 410, 501];
+
+for k = steps
+plot(q2val, Tmatrix(k,:)); hold on;
+set(gca,'yscale','log');
+set(gca,'xscale','log');
+
+mu = exp(lnMval(k));
+if (mu < 100)
+legs{end+1} = sprintf('$\\mu = %0.2g$ GeV', mu);
+else
+legs{end+1} = sprintf('$\\mu = %0.0f$ GeV', mu);
+end
+
+end
+axis([0 max(q2val) 0.99e-4 1.5]);
+axis square;
+
+l = legend(legs); set(l,'interpreter','latex','location','southeast');
+xlabel('$Q_t^2$ (GeV$^2$)', 'interpreter','latex');
+ylabel('$T(Q_t^2, \mu^2)$', 'interpreter','latex');
+
+% PRINT OUT
+filename = sprintf('./figs/sudakov_1D_Q2.pdf');
+print(fig3, '-dpdf', filename);
+system(sprintf('pdfcrop --margins ''2 2 2 2'' %s %s', filename, filename));

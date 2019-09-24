@@ -146,10 +146,10 @@
 
   "PARAM_DURHAM_QCD" : {
 
-    // Gluon loop momentum bounds (keep inside MSudakov class bounds)
+    // Gluon loop momentum bounds (keep inside bounds set in NUMERICS.json)
     "qt2_MIN" : 0.4,   // GeV^2
     "qt2_MAX" : 100.0, // GeV^2
-
+    
     // Gluon skewed PDF scale choise scheme [MIN (default), MAX, IN, EX, AVG]
     "PDF_scale" : "MIN",
     

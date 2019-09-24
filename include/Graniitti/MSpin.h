@@ -22,15 +22,16 @@ MMatrix<std::complex<double>> CalculateFMatrix(const MDecayBranch& branch);
 void TreeRecursion(MDecayBranch& branch);
 void TensorTree(const MDecayBranch& branch, MMatrix<std::complex<double>>& out);
 
-std::complex<double> ProdAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &res);
-std::complex<double> SpinAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res);
+std::complex<double>  ProdAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &res);
+std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res);
+void GetRhoRotation(const gra::LORENTZSCALAR& lts, const PARAM_RES& res, double& theta_R, double& phi_R);
 
 MMatrix<std::complex<double>> DMatrix(double J, double theta_mother, double phi_mother);
-MMatrix<std::complex<double>> fMatrix(const MMatrix<std::complex<double>> &T, double J, double s1,
-                                      double s2, double theta, double phi);
+MMatrix<std::complex<double>> fMatrix(const MMatrix<std::complex<double>> &T, double J,
+									  double s1, double s2, double theta, double phi);
+
 std::vector<double> SpinProjections(double J);
-void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MParticle &p1,
-                 const gra::MParticle &p2);
+void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MParticle &p1, const gra::MParticle &p2);
 
 // Spin-Statistics
 bool BoseSymmetry(int l, int s);

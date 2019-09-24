@@ -308,7 +308,7 @@ double MGamma::yyX(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const {
       PARAM_REGGE::ResonanceFormFactor(lts.m2, pow2(resonance.p.mass), resonance.g_FF);
   
   // Production and Decay amplitude
-  const std::complex<double> A_spin = spin::ProdAmp(lts, resonance) * spin::SpinAmp(lts, resonance);
+  const std::complex<double> A_spin = spin::ProdAmp(lts, resonance) * spin::DecayAmp(lts, resonance);
 
   // Total
   const std::complex<double> A = A_prod * A_spin;

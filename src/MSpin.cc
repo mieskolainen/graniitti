@@ -296,7 +296,9 @@ MMatrix<std::complex<double>> CalculateFMatrix(const MDecayBranch& branch) {
   return fMatrix(branch.hel.T, branch.p.spinX2 / 2.0, s1, s2, daughter[A].Theta(), daughter[A].Phi());
 }
 
-// Forward traverse
+// Forward traverse the decay tree
+//
+//
 void TreeRecursion(MDecayBranch& branch) {
 
   if (branch.legs.size() == 2) {
@@ -308,7 +310,9 @@ void TreeRecursion(MDecayBranch& branch) {
   }
 }
 
-// Reverse traverse
+// Reverse traverse the sequential decay tree
+//
+//
 void TensorTree(const MDecayBranch& branch, MMatrix<std::complex<double>>& out) {
 
   if (branch.legs.size() == 2) {
@@ -335,7 +339,7 @@ void TensorTree(const MDecayBranch& branch, MMatrix<std::complex<double>>& out) 
 // Recursive decay chain with spin correlations:
 // X -> A > {A1 + A2} B > {B1 > {C1 + C2} + B2} ...
 //
-std::complex<double> SpinAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
+std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
 
   // This function handles only 2-body decays
   if (lts.decaytree.size() != 2) {
@@ -382,48 +386,15 @@ std::complex<double> SpinAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
   // ------------------------------------------------------------------
   // Construct the D-matrix for an event-by-event spin space density operator
   // rotation
-  double theta_rotation = 0.0;
-  double phi_rotation   = 0.0;
-
-  // Spin polarization density matrix defined:
-
-  // In direct non-rotated rest frame
-  if        (res.FRAME == "CM") {
-    
-    theta_rotation = 0;
-    phi_rotation   = 0;
-
-  // In helicity rest frame [quantization axis by system orientation in the lab]
-  } else if (res.FRAME == "HX") {
-
-    theta_rotation = lts.pfinal[0].Theta(); // +
-    phi_rotation   = lts.pfinal[0].Phi();   // +
-
-  // In Gottfried-Jackson frame [quantization axis by the momentum transfer vector]
-  } else if (res.FRAME == "GJ") {
-
-    // Propagator
-    M4Vec q1boost = lts.q1;
-    gra::kinematics::LorentzBoost(lts.pfinal[0], lts.pfinal[0].M(), q1boost, -1);  // Note the minus sign
-
-    theta_rotation = q1boost.Theta(); // +
-    phi_rotation   = q1boost.Phi();   // +
-
-  } else {
-    // Throw exception
-    const std::string str =
-        "gra::spin::SpinAmp2: Unknown polarization Lorentz rest FRAME chosen: "
-        "\"" +
-        res.FRAME +
-        "\" (valid currently are: \"CM\" (no rotation), \"HX\" (helicity)";
-    throw std::invalid_argument(str);
-  }
+  double theta_R = 0.0;
+  double phi_R   = 0.0;
+  GetRhoRotation(lts, res, theta_R, phi_R);
 
   // ------------------------------------------------------------------
   // Rotation does mixing of spin states. N.B. Eigenvalues do not change in
   // rotation.
   const MMatrix<std::complex<double>> D =
-      gra::spin::DMatrix(res.p.spinX2 / 2.0, theta_rotation, phi_rotation);
+      gra::spin::DMatrix(res.p.spinX2 / 2.0, theta_R, phi_R);
 
   // rho_rot = D^\dagger*rho*D [keep this sandwich order!]
   const MMatrix<std::complex<double>> rho_ROT = D.Dagger() * res.rho * D;
@@ -440,6 +411,72 @@ std::complex<double> SpinAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
   const double NORM = msqrt(res.p.spinX2 + 1.0);
 
   return NORM * A * res.hel.g_decay;
+}
+
+
+// Rotation angles to rotate the density matrix
+//
+void GetRhoRotation(const gra::LORENTZSCALAR& lts, const PARAM_RES& res, double& theta_R, double& phi_R) {
+
+  // Spin polarization density matrix defined:
+  // In direct non-rotated rest frame
+  if        (res.FRAME == "CM") {
+    
+    theta_R = 0;
+    phi_R   = 0;
+
+  // In Helicity rest frame [quantization axis by system orientation in the lab]
+  } else if (res.FRAME == "HX") {
+
+    theta_R = lts.pfinal[0].Theta(); // +
+    phi_R   = lts.pfinal[0].Phi();   // +
+
+
+  // In Collins-Soper rest frame [quantization axis by the beam bijector frame] 
+  } else if (res.FRAME == "CS") {
+
+    M4Vec p1b = lts.pbeam1;
+    M4Vec p2b = lts.pbeam2;
+
+    // Boost the beam particles
+    gra::kinematics::LorentzBoost(lts.pfinal[0], lts.pfinal[0].M(), p1b, -1);  // Note the minus sign
+    gra::kinematics::LorentzBoost(lts.pfinal[0], lts.pfinal[0].M(), p2b, -1);  // Note the minus sign  
+
+    // Now get the 3-momentum
+    const std::vector<double> pb1boost3 = p1b.P3();
+    const std::vector<double> pb2boost3 = p2b.P3();
+
+    // Collins-Soper bisector vector
+    const std::vector<double> zaxis
+      = gra::matoper::Unit(
+        gra::matoper::Minus(gra::matoper::Unit(pb1boost3), gra::matoper::Unit(pb2boost3)));
+
+    M4Vec bijector;
+    bijector.SetP3(zaxis);
+    
+    // Now get the rotation angles
+    theta_R = bijector.Theta(); // +
+    phi_R   = bijector.Phi();   // +
+
+  // In Gottfried-Jackson frame [quantization axis by the momentum transfer vector]
+  } else if (res.FRAME == "GJ") {
+
+    // Propagator
+    M4Vec q1boost = lts.q1;
+    gra::kinematics::LorentzBoost(lts.pfinal[0], lts.pfinal[0].M(), q1boost, -1);  // Note the minus sign
+
+    theta_R = q1boost.Theta(); // +
+    phi_R   = q1boost.Phi();   // +
+
+  } else {
+    // Throw exception
+    const std::string str =
+        "gra::spin::GetRotation: Unknown polarization Lorentz rest FRAME chosen: "
+        + res.FRAME +
+        "(valid currently are: CM (no rotation), HX (helicity), CS (Collins-Soper)";
+    throw std::invalid_argument(str);
+  }
+
 }
 
 
@@ -533,7 +570,7 @@ MMatrix<std::complex<double>> fMatrix(const MMatrix<std::complex<double>> &T, do
 }
 
 // Construct Wigner D-matrix for a spin-space operator rotation
-MMatrix<std::complex<double>> DMatrix(double J, double theta_rotation, double phi_rotation) {
+MMatrix<std::complex<double>> DMatrix(double J, double theta_R, double phi_R) {
   // Create spin projections
   const std::vector<double> M = SpinProjections(J);
 
@@ -542,7 +579,7 @@ MMatrix<std::complex<double>> DMatrix(double J, double theta_rotation, double ph
   MMatrix<std::complex<double>> D(n, n, 0.0);
   for (std::size_t i = 0; i < n; ++i) {
     for (std::size_t j = 0; j < n; ++j) {
-      D[i][j] = WignerD(theta_rotation, phi_rotation, M[i], M[j], J);
+      D[i][j] = WignerD(theta_R, phi_R, M[i], M[j], J);
     }
   }
   return D;

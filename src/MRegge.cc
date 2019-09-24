@@ -714,7 +714,7 @@ std::complex<double> MRegge::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resona
       PropOnly(lts.s2, lts.t2) * FF_B * PARAM_SOFT::gN_P;
 
   // Production and Decay amplitude
-  const std::complex<double> A_spin = spin::ProdAmp(lts, resonance) * spin::SpinAmp(lts, resonance);
+  const std::complex<double> A_spin = spin::ProdAmp(lts, resonance) * spin::DecayAmp(lts, resonance);
 
   // Flux
   // const double V = msqrt(lts.s / lts.s1 / lts.s2);
@@ -761,7 +761,7 @@ std::complex<double> MRegge::ME3ODD(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res
       PropOnly(lts.s2, lts.t2) * FF_B * PARAM_SOFT::gN_P;
 
   // Production and Decay amplitude
-  const std::complex<double> A_spin = spin::ProdAmp(lts, resonance) * spin::SpinAmp(lts, resonance);
+  const std::complex<double> A_spin = spin::ProdAmp(lts, resonance) * spin::DecayAmp(lts, resonance);
 
   // Flux
   // const double V = msqrt(lts.s / lts.s1 / lts.s2);
@@ -826,7 +826,7 @@ std::complex<double> MRegge::PhotoME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &r
   const std::complex<double> A_prod = (lts.beam1.pdg == lts.beam2.pdg) ? (M1 + M2) : (M1 - M2);
   
   // Production and Decay amplitude
-  const std::complex<double> A_spin = spin::ProdAmp(lts, resonance) * spin::SpinAmp(lts, resonance);
+  const std::complex<double> A_spin = spin::ProdAmp(lts, resonance) * spin::DecayAmp(lts, resonance);
 
   // Full amplitude
   const std::complex<double> A = A_prod * A_spin;
