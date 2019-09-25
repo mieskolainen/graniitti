@@ -4,7 +4,8 @@
 clear; close all;
 
 sqrts = 13000;
-pdf = {'MSTW2008lo68cl'};
+pdf = {'CT10nlo'};
+%pdf = {'MSTW2008lo68cl'};
 %pdf = {'MMHT2014lo68cl'};
 
 legends = {};
@@ -22,6 +23,7 @@ for i = 1:length(pdf)
     %legends{i} = sprintf('$\\sqrt{s} = %0.0f$ GeV', sqrts(i));
 end
 
+PRINT_ON = true;
 
 %% Shuvaev pdf array H(q2, log(x))
 
@@ -116,10 +118,11 @@ colormap bone(1000)
 shading interp
 
 % PRINT OUT
+if (PRINT_ON)
 filename = sprintf('./figs/sudakov_2D.pdf');
 print(gcf, '-dpdf', filename);
 system(sprintf('pdfcrop --margins ''10 10 10 10'' %s %s', filename, filename));
-
+end
 
 %% Sudakov 1D over mu
 fig2 = figure;
@@ -145,10 +148,11 @@ xlabel('$\mu$ (GeV)', 'interpreter','latex');
 ylabel('$T(Q_t^2, \mu^2)$', 'interpreter','latex');
 
 % PRINT OUT
+if (PRINT_ON)
 filename = sprintf('./figs/sudakov_1D_mu.pdf');
 print(fig2, '-dpdf', filename);
 system(sprintf('pdfcrop --margins ''2 2 2 2'' %s %s', filename, filename));
-
+end
 
 %% Sudakov 1D over Q^2
 close all;
@@ -178,6 +182,9 @@ xlabel('$Q_t^2$ (GeV$^2$)', 'interpreter','latex');
 ylabel('$T(Q_t^2, \mu^2)$', 'interpreter','latex');
 
 % PRINT OUT
+if (PRINT_ON)
 filename = sprintf('./figs/sudakov_1D_Q2.pdf');
 print(fig3, '-dpdf', filename);
 system(sprintf('pdfcrop --margins ''2 2 2 2'' %s %s', filename, filename));
+end
+

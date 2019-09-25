@@ -9,6 +9,10 @@
 // Own
 #include "Graniitti/MPDG.h"
 
+// Libraries
+#include "rang.hpp"
+
+
 namespace gra {
 // Read PDG particle data in
 // Input as the full path to PDG .mcd file
@@ -435,7 +439,7 @@ void MPDG::ReadParticleData(const std::string &filepath) {
   }  // PDG file line while loop
 
   // Process now here fast variable setup >>
-  std::cout << " [DONE] " << std::endl;
+  std::cout << rang::fg::green << "[DONE]" << rang::fg::reset << std::endl;
 }
 
 // Recursive function to read the decay process string

@@ -411,11 +411,20 @@ bool IArray1D::WriteArray(const std::string &filename, bool overwrite) const {
 
   MTimer timer(true);
   std::cout << "IArray1D::WriteArray: ";
+  unsigned int line_number = 0;
+  
+  try {
   for (std::size_t i = 0; i < F.size_row(); ++i) {
     // Write to file
     file << std::setprecision(15) << std::real(F[i][X]) << "," << std::real(F[i][Y]) << ","
          << std::imag(F[i][Y]) << std::endl;
+    ++line_number;
   }
+  } catch (...) {
+    throw std::invalid_argument("IArray1D:WriteArray: Error in file " +
+      filename + " at line " + std::to_string(line_number));
+  }
+  
   printf("Time elapsed %0.1f sec \n", timer.ElapsedSec());
   file.close();
   return true;
@@ -432,7 +441,9 @@ bool IArray1D::ReadArray(const std::string &filename) {
   std::string  line;
   unsigned int fills = 0;
   std::cout << "IArray1D::ReadArray: ";
+  unsigned line_number = 0;
 
+  try {
   for (std::size_t i = 0; i < F.size_row(); ++i) {
     // Read every line from the stream
     getline(file, line);
@@ -450,15 +461,21 @@ bool IArray1D::ReadArray(const std::string &filename) {
     }
     F[i][X] = columns[0];
     F[i][Y] = std::complex<double>(columns[1], columns[2]);
+
+    ++line_number;
+  }
+  } catch (...) {
+    throw std::invalid_argument("IArray1D:ReadArray: Error in file " +
+      filename + " at line " + std::to_string(line_number));
   }
   file.close();
-
+  
   if (fills != 3 * (N + 1)) {
     std::string str = "Corrupted file: " + filename;
     std::cout << str << std::endl;
     return false;
   }
-  std::cout << "[DONE]" << std::endl;
+  std::cout << rang::fg::green << "[DONE]" << rang::fg::reset << std::endl;
   return true;
 }
 

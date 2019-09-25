@@ -461,8 +461,8 @@ void MSudakov::CalculateArray(IArray2D &arr,
 
       arr.F[i][j][0] = a;
       arr.F[i][j][1] = b;
-      arr.F[i][j][2] = output.first;
-      arr.F[i][j][3] = output.second;
+      arr.F[i][j][2] = std::abs(output.first)  < 1e-64 ? 0 : output.first;  // Underflow protection
+      arr.F[i][j][3] = std::abs(output.second) < 1e-64 ? 0 : output.second; // 
     }
   }
   // Progressbar clearing
@@ -487,14 +487,23 @@ bool IArray2D::WriteArray(const std::string &filename, bool overwrite) const {
   }
 
   std::cout << "IArray2D::WriteArray: ";
+  unsigned int line_number = 0;
 
+  try {
   for (const auto &i : indices(F)) {
     for (const auto &j : indices(F[i])) {
       // Write to file
       file << std::setprecision(15) << F[i][j][0] << "," << F[i][j][1] << "," << F[i][j][2] << ","
            << F[i][j][3] << std::endl;
+
+      ++line_number;
     }
   }
+  } catch (...) {
+    throw std::invalid_argument("IArray2D:WriteArray: Error in file " +
+      filename + " at line " + std::to_string(line_number));
+  } 
+
   file.close();
   return true;
 }
@@ -510,7 +519,10 @@ bool IArray2D::ReadArray(const std::string &filename) {
 
   std::string  line;
   unsigned int fills = 0;
+  unsigned int line_number = 0;
   std::cout << "IArray2D::ReadArray: ";
+
+  try {
 
   for (const auto &i : indices(F)) {
     for (const auto &j : indices(F[i])) {
@@ -528,8 +540,15 @@ bool IArray2D::ReadArray(const std::string &filename) {
         ++k;
         ++fills;
       }
+      ++line_number;
     }
   }
+
+  } catch (...) {
+    throw std::invalid_argument("IArray2D:ReadArray: Error in file " +
+      filename + " at line " + std::to_string(line_number));
+  }
+
   file.close();
 
   if (fills != 4 * (N[0] + 1) * (N[1] + 1)) {
@@ -537,7 +556,7 @@ bool IArray2D::ReadArray(const std::string &filename) {
     std::cout << str << std::endl;
     return false;
   }
-  std::cout << "[DONE]" << std::endl;
+  std::cout << rang::fg::green << "[DONE]" << rang::fg::reset << std::endl;
   return true;
 }
 
