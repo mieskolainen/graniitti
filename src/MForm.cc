@@ -286,7 +286,7 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
       }
       res.rho = rho;
     }
-    std::cout << " [DONE]" << std::endl;
+    std::cout << rang::fg::green << "[DONE]" << rang::fg::reset << std::endl;
   } catch (nlohmann::json::exception &e) {
     throw std::invalid_argument("form::ReadResonance: Missing parameter in '" + resparam_str +
                                 "' : " + e.what());

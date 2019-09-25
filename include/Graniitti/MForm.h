@@ -11,7 +11,7 @@
 #include <map>
 #include <vector>
 
-// JSON library
+// Libraries
 #include "json.hpp"
 
 // Keep this here to avoid backward/forward declaration problem
