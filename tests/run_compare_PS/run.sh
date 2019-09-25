@@ -1,6 +1,7 @@
 #!/bin/sh
 #
-# Simulation pi+pi-, K+K-, ppbar and analysis with ALICE cuts
+# Simulation of 2pi, 4pi, 6pi with different phase space constructions.
+# With these cuts, <F> and <C> should match one to one!
 #
 # Run with: source ./tests/run_xxx/run.sh
 
