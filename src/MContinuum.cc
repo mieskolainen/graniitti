@@ -1,5 +1,5 @@
-// Continuum type phase space class
-//
+// "Continuum" type phase space class
+// 
 // (c) 2017-2019 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
@@ -455,16 +455,16 @@ void MContinuum::BLinearSystem(std::vector<M4Vec> &p, const std::vector<M4Vec> &
                                const M4Vec &p2f) const {
   /*
 
-  kk = p1f+p2f
-
+  w = p1f + p2f
+  
   -------------------------------
   KF = 4
 
-  2p0 = ( q0 - kk - p2 - p3)
-  2p1 = (-q0 - kk - p2 - p3)
-  2p2 = (-q1 - kk - p0 - p3)
-  2p3 = (-q2 - kk - p0 - p1)
-
+  2p0 = ( q0 - w - p2 - p3)
+  2p1 = (-q0 - w - p2 - p3)
+  2p2 = (-q1 - w - p0 - p3)
+  2p3 = (-q2 - w - p0 - p1)
+  
   [2 0 1 1
    0 2 1 1
    1 0 2 1
@@ -473,9 +473,9 @@ void MContinuum::BLinearSystem(std::vector<M4Vec> &p, const std::vector<M4Vec> &
   -------------------------------
   KF = 3
 
-  2p0 = ( q0 - kk - p2)
-  2p1 = (-q0 - kk - p2)
-  2p2 = (-q1 - kk - p0)
+  2p0 = ( q0 - w - p2)
+  2p1 = (-q0 - w - p2)
+  2p2 = (-q1 - w - p0)
 
   [2 0 1
    0 2 1
@@ -484,8 +484,8 @@ void MContinuum::BLinearSystem(std::vector<M4Vec> &p, const std::vector<M4Vec> &
   -------------------------------
   KF = 2
 
-  2p0 = ( q0 - kk)
-  2p1 = (-q0 - kk)
+  2p0 = ( q0 - w)
+  2p1 = (-q0 - w)
 
   [2 0
    0 2]
@@ -635,7 +635,7 @@ fprintf('};\n');
 double MContinuum::BNIntegralVolume() const {
   
   // Number of central states
-  const unsigned int Kf = pkt_.size() + 1;
+  const unsigned int Kf = lts.decaytree.size();
 
   // Forward leg integration
   const double forward_volume = ForwardVolume();
@@ -666,14 +666,13 @@ double MContinuum::BNPhaseSpaceWeight() const {
   double PROD = 1.0;
   for (const auto &i : indices(pkt_)) { PROD *= pkt_[i].Pt(); }
 
-  const double factor = pow4(2.0 * PI) * (1.0 / std::pow(2.0 * pow3(2.0 * PI), Nf)) *
-                        (1.0 / (2.0 * lts.pfinal[1].E())) *
-                        (1.0 / (2.0 * lts.pfinal[2].E())) *
-                        PROD * (1.0 / std::pow(2, Nf - 4));
-  
-  const double factor2 = lts.pfinal[1].Pt() * lts.pfinal[2].Pt();
-
-  return J * factor * factor2;
+  const double factor = (1.0 / std::pow(2, 2*(Nf-2))) *
+                        (1.0 / std::pow(2.0 * PI, 3*Nf - 4))  *
+                        (lts.pfinal[1].Pt() / (2.0 * lts.pfinal[1].E())) *
+                        (lts.pfinal[2].Pt() / (2.0 * lts.pfinal[2].E())) *
+                        J *
+                        PROD;
+  return factor;
 }
 
 }  // gra namespace ends

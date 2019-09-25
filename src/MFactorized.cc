@@ -459,13 +459,13 @@ double MFactorized::B51PhaseSpaceWeight() const {
       1.0 / std::abs(lts.pfinal[1].Pz() / lts.pfinal[1].E() -
                      lts.pfinal[2].Pz() / lts.pfinal[2].E());  // Jacobian, close to 0.5
 
-  const double factor = (1.0 / 2.0) * (1.0 / pow5(2.0 * gra::math::PI)) *
-                        (1.0 / (2.0 * lts.pfinal[1].E())) *
-                        (1.0 / (2.0 * lts.pfinal[2].E()));
+  const double factor = (1.0 / 2.0) *
+                        (1.0 / pow5(2.0 * gra::math::PI)) *
+                        (lts.pfinal[1].Pt() / (2.0 * lts.pfinal[1].E())) *
+                        (lts.pfinal[2].Pt() / (2.0 * lts.pfinal[2].E())) *
+                        J;
   
-  const double factor2 = lts.pfinal[1].Pt() * lts.pfinal[2].Pt();
-
-  return J * factor * factor2;
+  return factor;
 }
 
 // For high mass limit kinematics, see e.g. [arxiv.org/pdf/hep-ph/9903279.pdf]

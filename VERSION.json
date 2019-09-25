@@ -1,7 +1,7 @@
 {
  "name": "GRANIITTI",
- "version": 0.89,
+ "version": 0.90,
  "type": "pre-release",
- "date": "17.09.2019",
+ "date": "25.09.2019",
  "update": "unit tests"
 }
