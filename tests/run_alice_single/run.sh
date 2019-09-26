@@ -32,7 +32,7 @@ fi
 -g "211, 211" \
 -n "2, 2" \
 -l "GRANIITTI, ALICE (arb.norm)" \
--t "#sqrt{s} = 7 TeV, #pi^{+}#pi^{-}, |#eta| < 0.9 #wedge p_{T} > 0.1 GeV" \
+-t "#sqrt{s} = 7 TeV, #pi^{+}#pi^{-}, |#eta| < 0.9 #wedge p_{T} > 0.15 GeV" \
 -M "95, 0.0, 2.5" \
 -Y "95, -1.25, 1.25" \
 -P "95, 0.0, 2.0" \

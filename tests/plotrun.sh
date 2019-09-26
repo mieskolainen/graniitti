@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# GLOBAL benchmark test of the program, output Quality Assurance done by human
+# Generate simulations and analysis plots
 #
 # Run with: source ./tests/megarun.sh > megarun.out
 
@@ -22,24 +22,30 @@ fi
 # Not set
 #if [ -z "$EVENTS" ]
 #then
-EVENTS=1000000
 #fi
 
-# Processes and plotting
+EVENTS=200000
+
+# Fast processes
 yes $CMD | source ./tests/run_screening/run.sh
-yes $CMD | source ./tests/run_alice_single/run.sh
+yes $CMD | source ./tests/run_alice_multi/run.sh
 yes $CMD | source ./tests/run_cms_multi/run.sh
 yes $CMD | source ./tests/run_excitation/run.sh
-
-# Spin density generation and control
-yes $CMD | source ./tests/run_JW_polarizations/run.sh
+yes $CMD | source ./tests/run_JW_polarization/run.sh
 yes $CMD | source ./tests/run_JW_frames/run.sh
 
-# Tensor Pomeron
-yes $CMD | source ./tests/run_tensor0_multi/run.sh
-yes $CMD | source ./tests/run_tensor2_multi/run.sh
-yes $CMD | source ./tests/run_tensor_spectrum/run.sh
 
 # Spherical harmonic expansion
+EVENTS=1000000
+
 yes $CMD | source ./tests/run_cms_harmonic/run.sh
-yes $CMD | source ./tests/run_alice_harmonic/run.sh
+#yes $CMD | source ./tests/run_alice_harmonic/run.sh
+
+# Tensor Pomeron (slowest)
+EVENTS=100000
+
+#yes $CMD | source ./tests/run_tensor0_multi/run.sh
+yes $CMD | source ./tests/run_tensor2_multi/run.sh
+#yes $CMD | source ./tests/run_tensor_spectrum/run.sh
+
+echo "plotrun.sh [Done]"

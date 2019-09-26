@@ -36,7 +36,7 @@ yes $CMD | source ./tests/run_rhorho_phiphi/run.sh
 yes $CMD | source ./tests/run_odderon_phi/run.sh
 
 # Spin density generation and control
-yes $CMD | source ./tests/run_JW_polarizations/run.sh
+yes $CMD | source ./tests/run_JW_polarization/run.sh
 yes $CMD | source ./tests/run_JW_frames/run.sh
 
 # tensor Pomeron

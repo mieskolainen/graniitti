@@ -43,7 +43,7 @@ SCALE=0.0003
 -Y "95,-1.0, 1.0" \
 -P "95, 0.0, 3.0" \
 -u pb \
--t '#sqrt{s} = 13 TeV, |#eta| < 0.9, p_{T} > 0.1 GeV | #chi_{c0}#rightarrow#pi^{+}#pi^{-} (BR~(2/3) #times 8E-3, S^{2}~0.05)' \
+-t '#sqrt{s} = 13 TeV, |#eta| < 0.9, p_{T} > 0.15 GeV | #chi_{c0}#rightarrow#pi^{+}#pi^{-} (BR~(2/3) #times 8E-3, S^{2}~0.05)' \
 -S "$SCALE, $SCALE, $SCALE" #-X 1000
 
 #convert -density 600 -trim .h1_S_M_logy.pdf -quality 100 output.jpg

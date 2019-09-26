@@ -99,7 +99,7 @@
 
             "Eta"  : [-0.9, 0.9],   // Pseudorapidity
             "Rap"  : [-10.0, 10.0],   // Rapidity
-            "Pt"   : [0.1, 100000.0], // Transverse momentum
+            "Pt"   : [0.15, 100000.0], // Transverse momentum
             "Et"   : [0.0, 100000.0]  // Transverse energy
         },
         
