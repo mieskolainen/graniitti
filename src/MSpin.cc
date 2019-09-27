@@ -83,6 +83,10 @@ void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MPartic
             << " Particle 1: " << (is_boson1 ? "boson" : "fermion")
             << " , Particle 2: " << (is_boson2 ? "boson" : "fermion") << std::endl;
 
+  if (hc.P_conservation) {
+  std::cout << "Parity conservation: P = P1 x P2 x (-1)^l  [P = " << P << ", P1 = " << P1 << ", P2 = " << P2 << "]" << std::endl;
+  }
+  std::cout << std::endl;
   std::cout << "gra::spin::InitTMatrix: Calculating SU(2) decomposition [lambda = lambda1 - lambda2]: " << std::endl;
   
   for (int s = 0; s <= static_cast<int>(s1 + s2); ++s) {
@@ -163,7 +167,8 @@ void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MPartic
                             (hc.P_conservation ? std::string("true]") : std::string("false]"));
     throw std::invalid_argument(str0 + str);
   }
-  std::cout << "T matrix:" << std::endl;
+  std::cout << std::endl;
+  std::cout << "T matrix (2s1 + 1) x (2s2 + 1):" << std::endl;
   gra::matoper::PrintMatrixSeparate(hc.T);
 
   // Do we have missing values?
@@ -240,7 +245,7 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &res)
     */
     // Forward proton pair deltaphi
     const double dphi = lts.pfinal[1].DeltaPhiAbs(lts.pfinal[2]);
-
+    
     //  ^  WA102 data (not fully sin(phi) symmetric after MC, due to kinematics)
     //  |   .---.
     //  |  .     .
@@ -248,7 +253,16 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &res)
     //  ------------->
     //  0           180 deg
     //
-    return A0 * msqrt(std::abs(lts.t1)) * msqrt(std::abs(lts.t2)) * std::sin(dphi);
+    // Two cases m1=m2=-1 and m1=m2=-1 
+    const double m1 = 1;
+    const double m2 = 1;
+    
+    // See Kaidalov et al.
+    auto ReggeTheory = [](double t1, double t2, double m1, double m2) {
+      return std::pow(std::abs(t1), std::abs(m1)/2.0) * std::pow(std::abs(t2), std::abs(m2)/2.0);
+    };
+    
+    return A0 * ReggeTheory(lts.t1, lts.t2, m1, m2) * std::sin(dphi);
   }
   // Axial vector J^P = 1+ [e.g. f1_1420]
   if (res.p.spinX2 == 2 && res.p.P == 1) {
