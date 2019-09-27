@@ -404,21 +404,21 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
     M4Vec p_final_plus;
     M4Vec p_final_minus;
 
-    // Beam protons
-    if (FRAME == "GJ" || FRAME == "PG") {
+    // Beam protons needed
+    if (FRAME == "GJ" || FRAME == "PG" || FRAME == "CS") {
       for (HepMC3::ConstGenParticlePtr p1 : HepMC3::applyFilter(
                HepMC3::Selector::STATUS == PDG::PDG_BEAM && HepMC3::Selector::PDG_ID == PDG::PDG_p,
                evt.particles())) {
         // Print::line(p1);
         pvec = gra::aux::HepMC2M4Vec(p1->momentum());
         if (pvec.Pz() > 0) {
-          p_beam_plus = pvec;
+          p_beam_plus  = pvec;
         } else {
           p_beam_minus = pvec;
         }
       }
     }
-
+    
     // Final state protons
     if (FRAME == "GJ") {
       for (HepMC3::ConstGenParticlePtr p1 :
@@ -428,7 +428,7 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
         // Print::line(p1);
         pvec = gra::aux::HepMC2M4Vec(p1->momentum());
         if (pvec.Pz() > 0) {
-          p_final_plus = pvec;
+          p_final_plus  = pvec;
         } else {
           p_final_minus = pvec;
         }

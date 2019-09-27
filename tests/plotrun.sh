@@ -24,7 +24,7 @@ fi
 #then
 #fi
 
-EVENTS=200000
+EVENTS=500000
 
 # Fast processes
 yes $CMD | source ./tests/run_screening/run.sh
@@ -42,7 +42,7 @@ yes $CMD | source ./tests/run_cms_harmonic/run.sh
 #yes $CMD | source ./tests/run_alice_harmonic/run.sh
 
 # Tensor Pomeron (slowest)
-EVENTS=100000
+EVENTS=1000000
 
 #yes $CMD | source ./tests/run_tensor0_multi/run.sh
 yes $CMD | source ./tests/run_tensor2_multi/run.sh
