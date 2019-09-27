@@ -31,7 +31,7 @@
     
     // Set 0 for density matrix below, or an integer > 0 for a random sampled
     // Different integers give different matrices.
-    "random_rho" : 1,
+    "random_rho" : 0,
 
     // Production coupling constant at amplitude level
     "g_A"   :  0.2,
