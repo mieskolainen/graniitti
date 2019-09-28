@@ -206,7 +206,7 @@ std::complex<double> MRegge::ME2(gra::LORENTZSCALAR &lts, int mode) const {
 //   ==========>
 //        *
 //        *
-//        x----> lambda5
+//        x----> lambda_h (5)
 //        *
 //        *
 //   ==========>
@@ -239,7 +239,7 @@ std::complex<double> MRegge::ME3HEL(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res
       }
     }
   }
-
+  
   // --------------------------------------------------------------------------
   // Proton form factors
   const double FF_A =
@@ -248,18 +248,26 @@ std::complex<double> MRegge::ME3HEL(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res
       lts.excite2 ? gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : gra::form::S3F(lts.t2);
 
   // Forward proton deltaphi
-  const double phi = lts.pfinal[1].DeltaPhi(lts.pfinal[2]);
+  //const double dphi = lts.pfinal[1].DeltaPhi(lts.pfinal[2]);
+  //const double dphi = lts.pfinal[1].Phi();
+
+  // Boost propagator to the system rest frame
+  M4Vec q1 = lts.q1;
+  gra::kinematics::LorentzBoost(lts.pfinal[0], lts.pfinal[0].M(), q1, -1);
+  const double dphi = q1.Phi();
 
   // Now loop over all helicity amplitudes
   // Common factor all amplitudes
-  std::complex<double> common = PropOnly(lts.s1, lts.t1) * PARAM_SOFT::gN_P * FF_A *
-                                CBW(lts, resonance) * resonance.g * PropOnly(lts.s2, lts.t2) *
+  std::complex<double> common = PARAM_SOFT::gN_P * FF_A *
+                                PropOnly(lts.s1, lts.t1) *
+                                CBW(lts, resonance) * resonance.g *
+                                PARAM_REGGE::ResonanceFormFactor(lts.m2, pow2(resonance.p.mass), resonance.g_FF) *
+                                PropOnly(lts.s2, lts.t2) *
                                 PARAM_SOFT::gN_P * FF_B;
 
   lts.hamp.clear();
-  unsigned int ok = 0;
   for (std::size_t i = 0; i < N; ++i) {
-    /*
+    
     // Apply upper vertex helicity conservation
     if (g_Vertex(lts.t1, lambda[i][0],  lambda[i][2])
                      != std::pow(-1, lambda[i][0] - lambda[i][2]) * g_Vertex(lts.t1,
@@ -272,30 +280,21 @@ std::complex<double> MRegge::ME3HEL(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res
     g_Vertex(lts.t2,-lambda[i][1],-lambda[i][3])) {
                     continue;
     }
-    */
-    // printf("i = %d :: lambda0 = %0.1f, lambda2 = %0.1f, lambda1 = %0.1f,
-    // lambda3 =
-    // %0.1f \n",
-    //		i, lambda[i][0], lambda[i][2], lambda[i][1], lambda[i][3]);
+
+    // Spin density matrix weight for this helicity
+    const int index = lambda[i][4] + resonance.p.spinX2; // Index the diagonal
+    const std::complex<double> rhoweight = resonance.p.spinX2 != 0 ? resonance.rho[index][index]: 1.0;
 
     // Calculate amplitude
     const std::complex<double> amp =
+        rhoweight *
         g_Vertex(lts.t1, lambda[i][0], lambda[i][2]) *
-        gik_Vertex(lts.t1, lts.t2, phi, lambda[i][4], resonance.p.spinX2 / 2.0, resonance.p.P) *
+        gik_Vertex(lts.t1, lts.t2, dphi, lambda[i][4], resonance.p.spinX2 / 2.0, resonance.p.P) *
         common;
-    g_Vertex(lts.t2, lambda[i][1], lambda[i][3]);
+        g_Vertex(lts.t2, lambda[i][1], lambda[i][3]);
 
     // std::cout << amp << " :: " << gra::math::abs2(amp) << std::endl;
-
-    // Is non-zero
-    if (gra::math::abs2(amp) > 0) {
-      lts.hamp.push_back(amp);
-      ++ok;
-    }
-  }
-  if (ok == 0) {
-    throw std::invalid_argument("MRegge::ME3HEL: All " + std::to_string(N) +
-                                " helicity amplitudes are zero! \n");
+    lts.hamp.push_back(amp);
   }
 
   // 1/4 {|H1|^2 + |H2|^2 + ... + |HN|^2}
@@ -342,27 +341,28 @@ double MRegge::g_Vertex(double t, double lambda_i, double lambda_f) const {
 // Central vertex subfunction: For small |t1|, |t2|
 //
 // Selection rules:
-// 1. m1 + m2 = lambda_h (angular momentum)
+// 1. m1 - m2 = lambda_h (angular momentum)
 // 2. parity conservation
 //
 double MRegge::gammaLambda(double t1, double t2, double m1, double m2) const {
-  return std::pow(-t1, std::abs(m1) / 2) * std::pow(-t2, std::abs(m2) / 2);
+  
+  // Parity sign flip under (m1,m2) <-> (-m1,-m2)
+  const int P = std::pow(-1, math::sign(m1 - std::abs(m1))*math::sign(m2 - std::abs(m2)));
+  return P * std::pow(-t1, std::abs(m1) / 2) * std::pow(-t2, std::abs(m2) / 2);
 }
 
 // Central vertex g_ik(t1,t2,\phi)^{\lambda_h} (central resonance J, P)
 //
 // Selection rules:
-// 1. lambda_h = m1 + m2 (angular momentum)
+// 1. lambda_h = m1 - m2 (angular momentum)
 // 2. parity conservation
 //
-// Naturality: intrinsic parity x (-1)^J (bosons)
+// Naturality: intrinsic parity x (-1)^J       (bosons)
 //             intrinsic parity x (-1)^(J-1/2) (fermions)
 //
 //
-std::complex<double> MRegge::gik_Vertex(double t1, double t2, double phi, int lambda_h, int J,
+std::complex<double> MRegge::gik_Vertex(double t1, double t2, double dphi, int lambda_h, int J,
                                         int P) const {
-  // Loop over Pomeron helicity m2, implicitly loop over m1 (see below)
-  const int MAX_m = 1;
 
   // (we handle only Pomerons here for now, no secondary Reggeons - trivial
   // extension)
@@ -374,22 +374,19 @@ std::complex<double> MRegge::gik_Vertex(double t1, double t2, double phi, int la
   const int            xi3val = xi3(J, P, pom1_P, pom1_sigma, pom2_P, pom2_sigma);
   std::complex<double> sum    = 0.0;
 
-  for (int m2 = -MAX_m; m2 <= MAX_m; ++m2) {  // -\inf < m_2 < inf
+  for (int m1 = -PARAM_REGGE::JMAX; m1 <= PARAM_REGGE::JMAX; ++m1) {  // -\inf < m_1 < inf
 
-    // Helicity relation lambda_h = m1 + m2
-    const int m1 = lambda_h - m2;
+    // Helicity relation lambda_h = m1 - m2
+    const int m2 = m1 - lambda_h;
 
     // Parity conservation
-    const int lhs = 1;
-    const int rhs = std::pow(-1, lambda_h) * xi3val;
+    const double gamma_L = gammaLambda(t1, t2, m1, m2);
+    const double gamma_R = std::pow(-1, lambda_h) * xi3val * gammaLambda(t1, t2, -m1, -m2);
 
-    if (lhs != rhs) continue;
+    if (math::sign(gamma_L) != math::sign(gamma_R)) continue;
 
     // Analytical continuation
-    std::complex<double> val = gra::math::sign(m1 * m2) *
-                               std::exp(gra::math::zi * static_cast<double>(m2) * phi) *
-                               gammaLambda(t1, t2, m1, m2);
-    sum += val;
+    sum += std::exp(gra::math::zi * static_cast<double>(m1) * dphi) * gamma_L;
   }
   // std::cout << std::endl;
   return sum;
@@ -946,6 +943,7 @@ double b_OREAR    = 0.0;
 double b_POW      = 0.0;
 
 bool reggeize = false;
+int JMAX = 0;
 
 std::vector<double> c;  // coupling
 std::vector<bool>   n;  // on/off

@@ -389,7 +389,7 @@ std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
 
   // Total transition amplitude matrix as a tensor product
   MMatrix<std::complex<double>> f;
-  if (fA.size_row() > 0 && fB.size_row() > 0) {
+  if (lts.decaytree[0].legs.size() > 0 || lts.decaytree[1].legs.size() > 0) {
     f = gra::matoper::TensorProd(fA, fB) * fX;  // Matrix x Matrix product
   } else {
     f = fX;  // No recursion

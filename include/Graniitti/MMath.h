@@ -223,7 +223,21 @@ constexpr double csgn(std::complex<double> z) {
 }
 
 // Sign function
-constexpr double sign(double x) { return (x >= 0) ? 1.0 : -1.0; }
+//
+// Sign for x=0 is 0
+//
+constexpr double sign(double x) { 
+
+  const double EPS = 1e-9;
+  if (std::abs(x) < EPS) {
+    return  0.0;
+  }
+  else if (x > 0) {
+    return  1.0;
+  } else {
+    return -1.0;
+  }
+}
 
 // Sgn function
 constexpr double sign(double X, double Y) {
@@ -235,10 +249,10 @@ constexpr double sign(double X, double Y) {
 }
 
 // Sign function
-template <typename T>
-constexpr int sgn(T val) {
-  return (T(0) < val) - (val < T(0));
-}
+//template <typename T>
+//constexpr int sgn(T val) {
+//  return (T(0) < val) - (val < T(0));
+//}
 
 // Floating point rounding safe square root
 inline double msqrt(double x) { return std::sqrt(std::max(0.0, x)); }

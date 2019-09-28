@@ -74,7 +74,10 @@
       
       // Intermediate off-shell meson M* propagator "Reggeization"
       // (NOT IMPLEMENTED CURRENTLY)
-      "reggeize" : false
+      "reggeize" : false,
+
+      // Maximum angular momentum value for sliding Pomeron helicity trajectories
+      "JMAX" : 5,
   },
 
   // ---------------------------------------------------------------------

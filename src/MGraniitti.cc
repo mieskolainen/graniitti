@@ -420,6 +420,7 @@ void MGraniitti::ReadModelParam(const std::string &inputfile) {
     PARAM_REGGE::b_OREAR    = j.at("PARAM_REGGE").at("b_OREAR");
     PARAM_REGGE::b_POW      = j.at("PARAM_REGGE").at("b_POW");
     PARAM_REGGE::reggeize   = j.at("PARAM_REGGE").at("reggeize");
+    PARAM_REGGE::JMAX       = j.at("PARAM_REGGE").at("JMAX");
 
     // Proton (Good-Walker) resonances
     std::vector<double> rc = j.at("PARAM_NSTAR").at("rc");
@@ -653,6 +654,7 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
     if (syntax[i].id == "FLATMASS2") { proc->SetFLATMASS2(syntax[i].arg["_SINGLET_"] == "true"); }
     if (syntax[i].id == "OFFSHELL") { proc->SetOFFSHELL(std::stod(syntax[i].arg["_SINGLET_"])); }
     if (syntax[i].id == "FRAME") { proc->SetFRAME(syntax[i].arg["_SINGLET_"]); }
+    if (syntax[i].id == "JMAX") { PARAM_REGGE::JMAX = std::stod(syntax[i].arg["_SINGLET_"]); }
   }
 
   // ...
