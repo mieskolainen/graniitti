@@ -284,7 +284,7 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &res)
   // Boost propagator to the system rest frame
   M4Vec q1 = lts.q1;
   gra::kinematics::LorentzBoost(lts.pfinal[0], lts.pfinal[0].M(), q1, -1);
-  
+
   const MMatrix<std::complex<double>> f0 = spin::fMatrix(T0, res.p.spinX2 / 2.0, s1, s2, q1.Theta(), q1.Phi());
   const MMatrix<std::complex<double>> f0Rfd0 = f0 * res.rho * f0.Dagger();
 
@@ -344,9 +344,9 @@ void TensorTree(const MDecayBranch& branch, MMatrix<std::complex<double>>& out) 
       out = matoper::TensorProd(f0, f1) * branch.f;
     }
 
-  // Last leg
+  // Last leg unit vector
   } else {
-    out = MMatrix<std::complex<double>>(1,1, 1.0);
+    out = MMatrix<std::complex<double>>(1, branch.p.spinX2 + 1, 1.0);
   }
 }
 
@@ -387,14 +387,16 @@ std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
   MMatrix<std::complex<double>> fB;
   TensorTree(lts.decaytree[1], fB);
 
+  // f matrices have dimensions: [(2s1 + 1)x(2s2 + 1)] x (2J + 1)
+    
   // Total transition amplitude matrix as a tensor product
   MMatrix<std::complex<double>> f;
-  if (lts.decaytree[0].legs.size() > 0 || lts.decaytree[1].legs.size() > 0) {
-    f = gra::matoper::TensorProd(fA, fB) * fX;  // Matrix x Matrix product
+  if (lts.decaytree[0].legs.size() == 0 && lts.decaytree[1].legs.size() == 0) {
+    f = fX;      // No recursion
   } else {
-    f = fX;  // No recursion
+    f = gra::matoper::TensorProd(fA, fB) * fX;  // Matrix x Matrix product
   }
-
+  
   MMatrix<std::complex<double>> fA_D = fA.Dagger();
 
   // ------------------------------------------------------------------
@@ -425,6 +427,8 @@ std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
   const double NORM = msqrt(res.p.spinX2 + 1.0);
 
   return NORM * A * res.hel.g_decay;
+
+  return 1.0;
 }
 
 

@@ -322,15 +322,14 @@ class MMatrix {
   T Tr() const { return Trace(); }
   
   void Print(const std::string &name = "") const {
-    std::cout << "MMatrix::Print: " << name << std::endl;
+    std::cout << "MMatrix::Print: " << name << " [" << rows << " x " << cols << "]" << std::endl;
     std::cout << std::setprecision(4);
     for (std::size_t i = 0; i < rows; ++i) {
       for (std::size_t j = 0; j < cols; ++j) { std::cout << this->operator()(i, j) << "\t"; }
       std::cout << std::endl;
     }
-    std::cout << "Trace: " << Trace() << std::endl;
   }
-  
+
   // Size operators
   std::size_t size_row() const { return rows; }
   std::size_t size_col() const { return cols; }
