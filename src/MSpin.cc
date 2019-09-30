@@ -74,6 +74,8 @@ void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MPartic
                                        static_cast<unsigned int>(2 * s2 + 1), 0.0);
 
   MMatrix<bool> need_to_set(20, 20, false);
+  MMatrix<bool> active(20, 20, false);
+  
   bool          tag_set = false;
   unsigned int  nonzero = 0;
 
@@ -88,7 +90,11 @@ void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MPartic
   }
   std::cout << std::endl;
   std::cout << "gra::spin::InitTMatrix: Calculating SU(2) decomposition [lambda = lambda1 - lambda2]: " << std::endl;
-  
+
+  // Two loops, first check that sum |alpha_ls|^2 == 1 for active ls values
+
+  for (int MODE = 0; MODE < 2; ++MODE) {
+
   for (int s = 0; s <= static_cast<int>(s1 + s2); ++s) {
     for (int l = 0; l <= static_cast<int>(J + s); ++l) {
       for (int i = 0; i < static_cast<int>(2 * s1 + 1); ++i) {
@@ -100,9 +106,14 @@ void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MPartic
           const double lambda = lambda1 - lambda2;
 
           // Check angular momentum conservation for z-axis {
-          if (!(abs(lambda1 - lambda2) <= J)) {
-            continue;  // Not conserved
-          }
+          if (!(abs(lambda1 - lambda2) <= J)) { continue; } // Not conserved
+
+          // -------------------------------------------------------------
+          // Re-coupling coefficients << ... >>
+
+          // Normalization
+          const double NORM = msqrt((2.0*l + 1.0)/(2.0*J + 1.0));
+
           // <J \lambda | ls0\lambda>
           const double cg1 = gra::spin::ClebschGordan(
               static_cast<double>(l), static_cast<double>(s), 0.0, lambda, J, lambda);
@@ -111,8 +122,9 @@ void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MPartic
           const double cg2 =
               gra::spin::ClebschGordan(s1, s2, lambda1, -lambda2, static_cast<double>(s), lambda);
 
-          // Angular momentum conserved (should be, by construction
-          // here)
+          // -------------------------------------------------------------
+
+          // Angular momentum conserved (should be, by construction here)
           if (!(std::abs(lambda) <= J)) { continue; }  // not conserved
 
           // If parity conserving decay
@@ -136,25 +148,63 @@ void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MPartic
           }
 
           // CG-coupling product is non-zero
-          if (std::abs(cg1 * cg2) > 1e-15) {
-            // Sum
-            hc.T[i][j] += hc.alpha[l][s] * cg1 * cg2;
+          if (std::abs(cg1 * cg2) < 1e-6) { continue; }
+
+          // ** This coefficient is active **
+          active[l][s] = true;
+
+          // INITIALIZATION MODE
+          if (MODE == 0) {
 
             // Has not been set, throw error next
             if (hc.alpha_set[l][s] == false) {
               need_to_set[l][s] = true;
               tag_set           = true;
             }
-            printf(
-                "[l=%d,s=%d] :: lambda1 = %4.1f, lambda2 = "
-                "%4.1f : cg1*cg2 = %6.3f \n",
-                l, s, lambda1, lambda2, cg1 * cg2);
             ++nonzero;
           }
+
+          // FINAL MODE
+          else if (MODE == 1) {
+
+            // T matrix element
+            hc.T[i][j] += hc.alpha[l][s] * NORM * cg1 * cg2;
+            printf("[l=%d,s=%d] lambda1 = %4.1f, lambda2 = %4.1f : cg1*cg2 = %6.3f  <alpha_ls = (%0.3f, %0.3f)>\n",
+              l, s, lambda1, lambda2, cg1*cg2, std::real(hc.alpha[l][s]), std::imag(hc.alpha[l][s]));
+          }
+
+        } // lambda2
+      } // lambda1
+    } // l
+  } // s
+
+
+  // Check normalization
+  double sum_alphasq = 0;
+  if (MODE == 0) {
+    for (std::size_t l = 0; l < hc.alpha.size_row(); ++l) {
+      for (std::size_t s = 0; s < hc.alpha.size_col(); ++s) {
+        if (active[l][s] == true) {
+          sum_alphasq += math::abs2(hc.alpha[l][s]);
         }
       }
     }
   }
+
+  // Now normalize the user alpha_ls input if needed such that: sum_{ls} |alpha_ls|^2 = 1
+  if (MODE == 0 && std::abs(sum_alphasq - 1.0) > 1e-6) {
+
+    std::cout << "Renormalizing input: sum_{ls} |alpha_{ls}|^2 = "
+              << sum_alphasq << " => 1" << std::endl << std::endl;
+
+    for (std::size_t l = 0; l < hc.alpha.size_row(); ++l) {
+      for (std::size_t s = 0; s < hc.alpha.size_col(); ++s) {
+        if (active[l][s]) { hc.alpha[l][s] /= msqrt(sum_alphasq); }
+      }
+    }
+  }
+
+  } // MODE 0,1
 
   const std::string str0 = "gra::spin::InitTMatrix:: [" + gra::aux::Spin2XtoString(2 * J) + "^" +
                            gra::aux::ParityToString(P) + " -> " + gra::aux::Spin2XtoString(2 * s1) +
@@ -170,6 +220,19 @@ void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MPartic
   std::cout << std::endl;
   std::cout << "T matrix (2s1 + 1) x (2s2 + 1):" << std::endl;
   gra::matoper::PrintMatrixSeparate(hc.T);
+
+  // Nullify all inactive
+  for (std::size_t l = 0; l < hc.alpha.size_row(); ++l) {
+    for (std::size_t s = 0; s < hc.alpha.size_col(); ++s) {
+      if (active[l][s] == false) {
+        hc.alpha[l][s] = 0.0;
+      }
+    }
+  }
+
+  std::cout << "Normalization:" << std::endl;
+  std::cout << "sum |alpha_{ls}|^2 = "                << hc.alpha.FrobNorm2() <<
+               "  <=> sum |T_{lambda1,lambda2}|^2 = " << hc.T.FrobNorm2() << std::endl << std::endl;
 
   // Do we have missing values?
   if (tag_set) {
@@ -224,6 +287,10 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &res)
   // "Pomeron effective spins"
   double s1 = 0;
   double s2 = 0;
+
+  // SU(2) decomposition as given by InitTMatrix
+  //
+  // only one alpha_(ls) = 1.0 needed
   MMatrix<std::complex<double>> T0 = {{std::complex<double>(1.0)}};
   
   // ---------------------------------------------------------------------
@@ -239,10 +306,16 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &res)
     s1 = 1;
     s2 = 1;
     // SU(2) decomposition as given by InitTMatrix
-    T0 = {{std::complex<double>(0.408), std::complex<double>(0.000), std::complex<double>( 0.000)},
+    //
+    // only one alpha_(ls = 11) = 1.0
+    //
+    T0 = {{std::complex<double>(0.707), std::complex<double>(0.000), std::complex<double>( 0.000)},
           {std::complex<double>(0.000), std::complex<double>(0.000), std::complex<double>( 0.000)},
-          {std::complex<double>(0.000), std::complex<double>(0.000), std::complex<double>(-0.408)}};
+          {std::complex<double>(0.000), std::complex<double>(0.000), std::complex<double>(-0.707)}};
     */
+    
+    // This should be recursively connected with protons, instead use simplification below:
+
     // Forward proton pair deltaphi
     const double dphi = lts.pfinal[1].DeltaPhiAbs(lts.pfinal[2]);
     
@@ -261,24 +334,30 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &res)
     auto ReggeTheory = [](double t1, double t2, double m1, double m2) {
       return std::pow(std::abs(t1), std::abs(m1)/2.0) * std::pow(std::abs(t2), std::abs(m2)/2.0);
     };
-    
+
     return A0 * ReggeTheory(lts.t1, lts.t2, m1, m2) * std::sin(dphi);
   }
+
   // Axial vector J^P = 1+ [e.g. f1_1420]
   if (res.p.spinX2 == 2 && res.p.P == 1) {
     s1 = 1;
     s2 = 1;
     // SU(2) decomposition as given by InitTMatrix
-    T0 = {{std::complex<double>(0.000), std::complex<double>(-0.387), std::complex<double>( 0.000)},
-          {std::complex<double>(0.387), std::complex<double>( 0.000), std::complex<double>(-0.387)},
-          {std::complex<double>(0.000), std::complex<double>( 0.387), std::complex<double>( 0.000)}};
+    // only one alpha_(ls = 22) = 1
+    //
+    T0 = {{std::complex<double>(0.000), std::complex<double>(-0.500), std::complex<double>( 0.000)},
+          {std::complex<double>(0.500), std::complex<double>( 0.000), std::complex<double>(-0.500)},
+          {std::complex<double>(0.000), std::complex<double>( 0.500), std::complex<double>( 0.000)}};
   }
+
   // Vector photoproduction J^P = 1- [e.g. rho770]
   if (res.p.spinX2 == 2 && res.p.P == -1) {
     s1 = 0;
     s2 = 1;
     // SU(2) decomposition as given by InitTMatrix
-    T0 = {{std::complex<double>(-0.707), std::complex<double>(0.0), std::complex<double>(0.707)}};
+    // assuming alpha_(ls = 01) = 1/sqrt(2)
+    //          alpha_(ls = 21) = 1/sqrt(2)
+    T0 = {{std::complex<double>(-0.697), std::complex<double>(-0.169), std::complex<double>(0.697)}};
   }
   
   // Boost propagator to the system rest frame
@@ -288,80 +367,31 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &res)
   const MMatrix<std::complex<double>> f0 = spin::fMatrix(T0, res.p.spinX2 / 2.0, s1, s2, q1.Theta(), q1.Phi());
   const MMatrix<std::complex<double>> f0Rfd0 = f0 * res.rho * f0.Dagger();
 
-  return A0 * msqrt(std::real(f0Rfd0.Trace()));
+  // Normalization as in DecayAmp
+  const double NORM = msqrt(res.p.spinX2 + 1.0);
+
+  // Apply final amplitude level weight
+  A0 *= NORM * msqrt(std::real(f0Rfd0.Trace()));
+  
+  return A0;
 }
 
-
-// Decay amplitude matrix X -> A + B
-//
-MMatrix<std::complex<double>> CalculateFMatrix(const MDecayBranch& branch) {
-
-  const unsigned int A = 0;
-  const unsigned int B = 1;
-
-  // Get daughter spins
-  const double s1 = branch.legs[A].p.spinX2 / 2.0;
-  const double s2 = branch.legs[B].p.spinX2 / 2.0;
-
-  // Rotate and boost daughters to the frame where z-spanned by X-flight direction (X-helicity rest frame)
-  std::vector<M4Vec> daughter = {branch.legs[A].p4, branch.legs[B].p4};
-  gra::kinematics::HXframe(daughter, branch.p4);
-
-  return fMatrix(branch.hel.T, branch.p.spinX2 / 2.0, s1, s2, daughter[A].Theta(), daughter[A].Phi());
-}
-
-// Forward traverse the decay tree
-//
-//
-void TreeRecursion(MDecayBranch& branch) {
-
-  if (branch.legs.size() == 2) {
-    branch.f = CalculateFMatrix(branch);
-    // Infinite recursion
-    for (const auto& i : aux::indices(branch.legs)) {
-      TreeRecursion(branch.legs[i]);
-    }
-  }
-}
-
-// Reverse traverse the sequential decay tree
-//
-//
-void TensorTree(const MDecayBranch& branch, MMatrix<std::complex<double>>& out) {
-
-  if (branch.legs.size() == 2) {
-    
-    MMatrix<std::complex<double>> f0;
-    MMatrix<std::complex<double>> f1;
-    
-    TensorTree(branch.legs[0], f0);
-    TensorTree(branch.legs[1], f1);
-
-    // Now we are traversing backwards the binary tree at branch points
-    if (branch.legs[0].legs.size() == 0 && branch.legs[1].legs.size() == 0) {
-      out = branch.f;
-    } else {
-      out = matoper::TensorProd(f0, f1) * branch.f;
-    }
-
-  // Last leg unit vector
-  } else {
-    out = MMatrix<std::complex<double>>(1, branch.p.spinX2 + 1, 1.0);
-  }
-}
 
 // Recursive decay chain with spin correlations:
 // X -> A > {A1 + A2} B > {B1 > {C1 + C2} + B2} ...
 //
 std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
 
+  // Apply coupling first
+  double A0 = res.hel.g_decay;
+
   // This function handles only 2-body decays
   if (lts.decaytree.size() != 2) {
-    return res.hel.g_decay;
+    return A0;
   }
   // No spin, no need
   if (res.p.spinX2 == 0) {
-    return res.hel.T[0][0] * res.hel.g_decay;  // (l,s) = (0,0)
+    return res.hel.T[0][0] * A0;  // (l,s) = (0,0)
   }
 
   // Transition amplitude matrix f for X -> A + B in the X rest frame
@@ -419,16 +449,75 @@ std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
   // Tr[f*rho*f^dagger]
   const MMatrix<std::complex<double>> fRfd = f * rho_ROT * f.Dagger();
 
-  const double A = msqrt(std::real(fRfd.Trace()));
-
   // (2J+1) is normalization to match production coupling with spin-0
-  // (same cross section obtained as with spin-0 if density matrix == I ==
-  //  totally unpolarized)
+  // (same cross section obtained as with spin-0 if density
+  //  matrix == I/(2J+1) == totally unpolarized)
   const double NORM = msqrt(res.p.spinX2 + 1.0);
 
-  return NORM * A * res.hel.g_decay;
+  // Final weight at amplitude level
+  A0 *= NORM * msqrt(std::real(fRfd.Trace()));
 
-  return 1.0;
+  return A0;
+}
+
+
+// Decay amplitude matrix X -> A + B
+//
+MMatrix<std::complex<double>> CalculateFMatrix(const MDecayBranch& branch) {
+
+  const unsigned int A = 0;
+  const unsigned int B = 1;
+
+  // Get daughter spins
+  const double s1 = branch.legs[A].p.spinX2 / 2.0;
+  const double s2 = branch.legs[B].p.spinX2 / 2.0;
+
+  // Rotate and boost daughters to the frame where z-spanned by X-flight direction (X-helicity rest frame)
+  std::vector<M4Vec> daughter = {branch.legs[A].p4, branch.legs[B].p4};
+  gra::kinematics::HXframe(daughter, branch.p4);
+
+  return fMatrix(branch.hel.T, branch.p.spinX2 / 2.0, s1, s2, daughter[A].Theta(), daughter[A].Phi());
+}
+
+// Forward traverse the decay tree
+//
+//
+void TreeRecursion(MDecayBranch& branch) {
+
+  if (branch.legs.size() == 2) {
+    branch.f = CalculateFMatrix(branch);
+    // Infinite recursion
+    for (const auto& i : aux::indices(branch.legs)) {
+      TreeRecursion(branch.legs[i]);
+    }
+  }
+}
+
+
+// Reverse traverse the sequential decay tree
+//
+//
+void TensorTree(const MDecayBranch& branch, MMatrix<std::complex<double>>& out) {
+
+  if (branch.legs.size() == 2) {
+    
+    MMatrix<std::complex<double>> f0;
+    MMatrix<std::complex<double>> f1;
+    
+    TensorTree(branch.legs[0], f0);
+    TensorTree(branch.legs[1], f1);
+
+    // Now we are traversing backwards the binary tree at branch points
+    if (branch.legs[0].legs.size() == 0 && branch.legs[1].legs.size() == 0) {
+      out = branch.f;
+    } else {
+      out = matoper::TensorProd(f0, f1) * branch.f;
+    }
+
+  // Last leg unit vector
+  } else {
+    out = MMatrix<std::complex<double>>(1, branch.p.spinX2 + 1, 1.0);
+  }
 }
 
 

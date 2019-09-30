@@ -22,7 +22,7 @@
     // 2 = running width relativistic
     // 3 = spin barrier relativistic
     "BW" : 2,
- 
+    
     // ------------------------------------------------------------------
     // Tensor Pomeron model production couplings
     // (2 for scalar/pseudoscalar, 2 for vectors, 7 for tensors)

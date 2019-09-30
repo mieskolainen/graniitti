@@ -265,9 +265,14 @@ class MMatrix {
     }
     return sum;
   }
-
+  
   // Frobenius norm
   double FrobNorm() const {
+    return std::sqrt(FrobNorm2());
+  }
+
+  // Frobenius norm squared
+  double FrobNorm2() const {
     double sum = 0.0;
     for (std::size_t i = 0; i < rows; ++i) {
       for (std::size_t j = 0; j < cols; ++j) {
