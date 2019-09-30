@@ -1,7 +1,7 @@
 {
  "name": "GRANIITTI",
- "version": 0.91,
+ "version": 0.92,
  "type": "pre-release",
- "date": "28.09.2019",
- "update": "unit tests & logic"
+ "date": "30.09.2019",
+ "update": "Jacob/Wick amplitude normalizations"
 }
