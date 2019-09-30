@@ -331,6 +331,7 @@ void MGraniitti::ReadInput(const std::string &inputfile, const std::string cmd_P
 
   ReadGeneralParam(inputfile);
   ReadProcessParam(inputfile, cmd_PROCESS);
+  ReadModelParam(gra::MODELPARAM);
 }
 
 // General parameter initialization
@@ -357,18 +358,16 @@ void MGraniitti::ReadGeneralParam(const std::string &inputfile) {
   SetIntegrator(j.at(XID).at("INTEGRATOR"));
   SetCores(j.at(XID).at("CORES"));
 
-  // Model parameter file
-  ReadModelParam(j.at(XID).at("MODELPARAM"));
+  // Save for later use
+  gra::MODELPARAM = j.at(XID).at("MODELPARAM");
 }
 
 // Soft model parameter initialization
 void MGraniitti::ReadModelParam(const std::string &inputfile) {
-  // Setup for later use
-  gra::MODELPARAM = inputfile;
 
   // Read and parse
   const std::string fullpath =
-      gra::aux::GetBasePath(2) + "/modeldata/" + gra::MODELPARAM + "/GENERAL.json";
+      gra::aux::GetBasePath(2) + "/modeldata/" + inputfile + "/GENERAL.json";
   const std::string data = gra::aux::GetInputData(fullpath);
 
   json j;
@@ -420,7 +419,6 @@ void MGraniitti::ReadModelParam(const std::string &inputfile) {
     PARAM_REGGE::b_OREAR    = j.at("PARAM_REGGE").at("b_OREAR");
     PARAM_REGGE::b_POW      = j.at("PARAM_REGGE").at("b_POW");
     PARAM_REGGE::reggeize   = j.at("PARAM_REGGE").at("reggeize");
-    PARAM_REGGE::JMAX       = j.at("PARAM_REGGE").at("JMAX");
 
     // Proton (Good-Walker) resonances
     std::vector<double> rc = j.at("PARAM_NSTAR").at("rc");
@@ -654,10 +652,8 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
     if (syntax[i].id == "FLATMASS2") { proc->SetFLATMASS2(syntax[i].arg["_SINGLET_"] == "true"); }
     if (syntax[i].id == "OFFSHELL") { proc->SetOFFSHELL(std::stod(syntax[i].arg["_SINGLET_"])); }
     if (syntax[i].id == "FRAME") { proc->SetFRAME(syntax[i].arg["_SINGLET_"]); }
-    if (syntax[i].id == "JMAX") { PARAM_REGGE::JMAX = std::stod(syntax[i].arg["_SINGLET_"]); }
+    if (syntax[i].id == "JMAX") { proc->SetJMAX(std::stoi(syntax[i].arg["_SINGLET_"])); }
   }
-
-  // ...
 
   // Always last (we need PDG tables)
   std::vector<std::string> beam   = j.at(XID).at("BEAM");

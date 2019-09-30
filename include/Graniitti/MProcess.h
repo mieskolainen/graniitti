@@ -130,6 +130,14 @@ class MProcess : public MUserHistograms {
     for (const auto &x : lts.RESONANCES) { lts.RESONANCES[x.first].FRAME = FRAME; }
   }
 
+  // Set maximum sliding pomeron helicity for all resonances
+  void SetJMAX(const int& JMAX) {
+    std::cout << rang::fg::red << "MProcess::SetJMAX: Set common maximum Pomeron helicity "
+                                  "for all the resonances: "
+              << JMAX << rang::fg::reset << std::endl;
+    for (const auto &x : lts.RESONANCES) { lts.RESONANCES[x.first].JMAX = JMAX; }
+  }
+  
   // Get initial state
   std::vector<gra::MParticle> GetInitialState() {
     std::vector<gra::MParticle> beams = {lts.beam1, lts.beam2};

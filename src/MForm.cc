@@ -165,8 +165,38 @@ std::vector<double> rc = {0.0, 0.0, 0.0};
 }
 
 namespace form {
+
 // Read resonance parameters
 gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
+
+  // =====================================================================  
+  // Find global resonance parameters
+
+  std::string FRAME = "null";
+  int JMAX = 0;
+
+  {
+    // Read and parse
+    const std::string fullpath =
+        gra::aux::GetBasePath(2) + "/modeldata/" + gra::MODELPARAM + "/GENERAL.json";
+    
+    const std::string data = gra::aux::GetInputData(fullpath);
+    nlohmann::json j;
+    
+    try {
+      j = nlohmann::json::parse(data);
+    } catch (...) {
+      std::string str = "form::ReadResonance: Error parsing " + fullpath +
+                        " (Check for extra/missing commas)";
+      throw std::invalid_argument(str);
+    }
+
+    FRAME = j.at("PARAM_SPIN").at("FRAME");
+    JMAX  = j.at("PARAM_SPIN").at("JMAX");
+  }
+
+  // =====================================================================
+
   std::cout << "gra::form::ReadResonance: Reading " + resparam_str + " ";
 
   // Create a JSON object from file
@@ -183,11 +213,18 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
   } catch (...) {
     throw std::invalid_argument("form::ReadResonance: Error parsing '" + resparam_str + "'");
   }
-  
+
   // Resonance parameters
   gra::PARAM_RES res;
 
   try {
+
+    // -------------------------------------------------------------------
+    // Collect global variables
+    res.FRAME = FRAME;
+    res.JMAX  = JMAX;
+    // -------------------------------------------------------------------
+
     // Complex coupling
     double               g_A   = j.at("PARAM_RES").at("g_A");
     double               g_phi = j.at("PARAM_RES").at("g_phi");
@@ -199,23 +236,21 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
     // PDG code
     res.p.pdg = j.at("PARAM_RES").at("PDG");
 
-    // "Glueball state"
-    res.p.glue = j.at("PARAM_RES").at("glue");
-
-    // mass
+    // Mass
     res.p.mass = j.at("PARAM_RES").at("M");
     if (res.p.mass < 0) {
       std::string str = "MAux:ReadResonance:: <" + resparam_str + "> Invalid M < 0 !";
       throw std::invalid_argument(str);
     }
 
-    // width
+    // Width
     res.p.width = j.at("PARAM_RES").at("W");
     if (res.p.width < 0) {
       std::string str = "MAux:ReadResonance:: <" + resparam_str + "> Invalid W < 0 !";
       throw std::invalid_argument(str);
     }
 
+    // Spin
     const double J = j.at("PARAM_RES").at("J");
     res.p.spinX2   = J * 2;
     if (res.p.spinX2 < 0) {
@@ -223,7 +258,7 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
       throw std::invalid_argument(str);
     }
 
-    // parity
+    // Parity
     res.p.P = j.at("PARAM_RES").at("P");
     if (!(res.p.P == -1 || res.p.P == 1)) {
       std::string str = "MAux:ReadResonance:: <" + resparam_str + "> Invalid P (not -1 or 1) !";
@@ -252,8 +287,6 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
     // Validity of these is taken care of in the functions
     res.BW = j.at("PARAM_RES").at("BW");
 
-    // Spin dependent
-    res.FRAME              = j.at("PARAM_RES").at("FRAME");
     const bool P_conservation = true;
 
     const int            n = res.p.spinX2 + 1;  // n = 2J + 1

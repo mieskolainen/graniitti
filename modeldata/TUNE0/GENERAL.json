@@ -20,13 +20,24 @@
     // Form factor parameters
     "fc1"      : 0.35,          // Proton form factor param 1 (GeV^2)
     "fc2"      : 3.6,           // Proton form factor param 2 (GeV^2)
-    "fc3"      : 5.0            // Pion loop (GeV^2)
+    "fc3"      : 5.0,           // Pion loop (GeV^2)
   },
   
   // ----------------------------------------------------------------------
+  // Jacob-Wick helicity amplitudes etc.
+  "PARAM_SPIN" : {
+
+    // Lorentz frame of the spin polarization ("CM","HX","CS")
+    "FRAME" : "CM",
+
+    // Maximum angular momentum value for sliding Pomeron helicity trajectories
+    "JMAX" : 5,
+  },
+
+  // ----------------------------------------------------------------------
   // Parameters for flat (DEBUG/ANALYSIS) amplitudes
   "PARAM_FLAT" : {
-    "b" : 6                     // t-slope [GeV^{-2}], |M|^2 ~ exp(bt_1)exp(b_t2)
+    "b" : 6,                     // t-slope [GeV^{-2}], |M|^2 ~ exp(bt_1)exp(b_t2)
   },
   
   // ----------------------------------------------------------------------
@@ -75,9 +86,6 @@
       // Intermediate off-shell meson M* propagator "Reggeization"
       // (NOT IMPLEMENTED CURRENTLY)
       "reggeize" : false,
-
-      // Maximum angular momentum value for sliding Pomeron helicity trajectories
-      "JMAX" : 5,
   },
 
   // ---------------------------------------------------------------------
@@ -99,7 +107,7 @@
   // pion
   "PARAM_PI" : {
     "c" : [35.00184, 81.63672, 10.86264],
-    "n" : [true, false, false]  // Which Reggeons are exchanged (pomeron, f2, a2) 
+    "n" : [true, false, false],  // Which Reggeons are exchanged (pomeron, f2, a2) 
   },
   
   // kaon

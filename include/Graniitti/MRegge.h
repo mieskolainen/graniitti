@@ -35,7 +35,6 @@ extern double b_OREAR;
 extern double b_POW;
 
 extern bool reggeize;
-extern int JMAX;
 
 // Meson/Baryon Couplings and Pomeron, Reggeon, Reggeon exchanges
 extern std::vector<double> c;  // coupling
@@ -89,14 +88,13 @@ class MRegge {
   std::complex<double> OdderonProp(double s, double t) const;
   std::complex<double> PhotoProp(double s, double t, double m2, bool excite,
                                  double M2_forward) const;
-
+  
   // Helicity functions
   double g_Vertex(double t, double lambda_i, double lambda_f) const;
-  std::complex<double> gik_Vertex(double t1, double t2, double dphi, int lambda_h, int J,
-                                  int P) const;
+  std::complex<double> gik_Vertex(double t1, double t2, double dphi, int lambda_h, int J, int P, int JMAX) const;
   double gammaLambda(double t1, double t2, double m1, double m2) const;
   int xi3(int J, int P, int P_i, int sigma_i, int P_k, int sigma_k) const;
-
+  
  private:
   // Nothing
 };

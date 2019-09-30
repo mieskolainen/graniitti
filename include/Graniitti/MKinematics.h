@@ -1496,7 +1496,7 @@ struct MParticle {
   int          C    = 0;      // Default zero C-parity (e.g. fermions do not have)
   unsigned int L    = 0;      // For Mesons/Baryons
   bool         glue = false;  // Glueball state
-
+  
   void setPCL(int _P, int _C, unsigned int _L) {
     P = _P;
     C = _C;
@@ -1613,8 +1613,11 @@ class PARAM_RES {
   int BW = 0;
 
   // Lorentz frame of the spin distribution
-  std::string FRAME = "";
+  std::string FRAME = "null";
 
+  // Maximum sliding pomeron helicity 
+  int JMAX = 0;
+  
   // Spin-density matrix (constant)
   MMatrix<std::complex<double>> rho;
 

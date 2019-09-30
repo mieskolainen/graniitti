@@ -365,7 +365,27 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &res)
   gra::kinematics::LorentzBoost(lts.pfinal[0], lts.pfinal[0].M(), q1, -1);
 
   const MMatrix<std::complex<double>> f0 = spin::fMatrix(T0, res.p.spinX2 / 2.0, s1, s2, q1.Theta(), q1.Phi());
-  const MMatrix<std::complex<double>> f0Rfd0 = f0 * res.rho * f0.Dagger();
+
+  // ------------------------------------------------------------------
+  // Construct the D-matrix for an event-by-event spin space density operator
+  // rotation
+  double theta_R = 0.0;
+  double phi_R   = 0.0;
+
+  // Fix the frame here
+  const std::string FRAME = res.FRAME;
+  GetRhoRotation(lts, FRAME, theta_R, phi_R);
+  
+  // ------------------------------------------------------------------
+  // Rotation does mixing of spin states. N.B. Eigenvalues do not change in
+  // rotation.
+  const MMatrix<std::complex<double>> D = gra::spin::DMatrix(res.p.spinX2 / 2.0, theta_R, phi_R);
+  
+  // rho_rot = D^\dagger*rho*D [keep this sandwich order!]
+  const MMatrix<std::complex<double>> rho_ROT = D.Dagger() * res.rho * D;
+  
+  // Krauss operator map
+  const MMatrix<std::complex<double>> f0Rfd0 = f0 * rho_ROT * f0.Dagger();
 
   // Normalization as in DecayAmp
   const double NORM = msqrt(res.p.spinX2 + 1.0);
@@ -434,13 +454,12 @@ std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
   // rotation
   double theta_R = 0.0;
   double phi_R   = 0.0;
-  GetRhoRotation(lts, res, theta_R, phi_R);
+  GetRhoRotation(lts, res.FRAME, theta_R, phi_R);
 
   // ------------------------------------------------------------------
   // Rotation does mixing of spin states. N.B. Eigenvalues do not change in
   // rotation.
-  const MMatrix<std::complex<double>> D =
-      gra::spin::DMatrix(res.p.spinX2 / 2.0, theta_R, phi_R);
+  const MMatrix<std::complex<double>> D = gra::spin::DMatrix(res.p.spinX2 / 2.0, theta_R, phi_R);
 
   // rho_rot = D^\dagger*rho*D [keep this sandwich order!]
   const MMatrix<std::complex<double>> rho_ROT = D.Dagger() * res.rho * D;
@@ -523,24 +542,24 @@ void TensorTree(const MDecayBranch& branch, MMatrix<std::complex<double>>& out) 
 
 // Rotation angles to rotate the density matrix
 //
-void GetRhoRotation(const gra::LORENTZSCALAR& lts, const PARAM_RES& res, double& theta_R, double& phi_R) {
+void GetRhoRotation(const gra::LORENTZSCALAR& lts, const std::string& FRAME, double& theta_R, double& phi_R) {
 
   // Spin polarization density matrix defined:
   // In direct non-rotated rest frame
-  if        (res.FRAME == "CM") {
+  if        (FRAME == "CM") {
     
     theta_R = 0;
     phi_R   = 0;
 
   // In Helicity rest frame [quantization axis by system orientation in the lab]
-  } else if (res.FRAME == "HX") {
+  } else if (FRAME == "HX") {
 
     theta_R = lts.pfinal[0].Theta(); // +
     phi_R   = lts.pfinal[0].Phi();   // +
 
 
   // In Collins-Soper rest frame [quantization axis by the beam bijector frame] 
-  } else if (res.FRAME == "CS") {
+  } else if (FRAME == "CS") {
 
     M4Vec p1b = lts.pbeam1;
     M4Vec p2b = lts.pbeam2;
@@ -566,7 +585,7 @@ void GetRhoRotation(const gra::LORENTZSCALAR& lts, const PARAM_RES& res, double&
     phi_R   = bijector.Phi();   // +
 
   // In Gottfried-Jackson frame [quantization axis by the momentum transfer vector]
-  } else if (res.FRAME == "GJ") {
+  } else if (FRAME == "GJ") {
 
     // Propagator
     M4Vec q1boost = lts.q1;
@@ -579,7 +598,7 @@ void GetRhoRotation(const gra::LORENTZSCALAR& lts, const PARAM_RES& res, double&
     // Throw exception
     const std::string str =
         "gra::spin::GetRotation: Unknown polarization Lorentz rest FRAME chosen: "
-        + res.FRAME +
+        + FRAME +
         "(valid currently are: CM (no rotation), HX (helicity), CS (Collins-Soper)";
     throw std::invalid_argument(str);
   }

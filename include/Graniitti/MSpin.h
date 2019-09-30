@@ -24,7 +24,7 @@ void TensorTree(const MDecayBranch& branch, MMatrix<std::complex<double>>& out);
 
 std::complex<double>  ProdAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &res);
 std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res);
-void GetRhoRotation(const gra::LORENTZSCALAR& lts, const PARAM_RES& res, double& theta_R, double& phi_R);
+void GetRhoRotation(const gra::LORENTZSCALAR& lts, const std::string& FRAME, double& theta_R, double& phi_R);
 
 MMatrix<std::complex<double>> DMatrix(double J, double theta_mother, double phi_mother);
 MMatrix<std::complex<double>> fMatrix(const MMatrix<std::complex<double>> &T, double J,

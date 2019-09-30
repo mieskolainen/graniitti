@@ -14,9 +14,6 @@
     "J"  : 0,
     "P"  : -1,
 
-    // "Glueball state" (orthogonal transverse geometry) [NOT ACTIVE]
-    "glue" : false,
-
     // Breit-Wigner propagator type
     // 1 = fixed width relativistic
     // 2 = running width relativistic
@@ -39,10 +36,6 @@
 
     // Production form factor on
     "g_FF"  : true,
-
-    // Lorentz frame of spin polarization density
-    // (CM ~ no rotation [DEFAULT], HX ~ helicity)
-    "FRAME" : "CM",
     
     // Resonance spin-density (von Neumann) matrix (Re and Im parts)
     "rho_real" : [ [ 0.0,  0,  0] ,

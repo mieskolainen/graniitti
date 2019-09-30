@@ -289,7 +289,7 @@ std::complex<double> MRegge::ME3HEL(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res
     const std::complex<double> amp =
         rhoweight *
         g_Vertex(lts.t1, lambda[i][0], lambda[i][2]) *
-        gik_Vertex(lts.t1, lts.t2, dphi, lambda[i][4], resonance.p.spinX2 / 2.0, resonance.p.P) *
+        gik_Vertex(lts.t1, lts.t2, dphi, lambda[i][4], resonance.p.spinX2 / 2.0, resonance.p.P, resonance.JMAX) *
         common;
         g_Vertex(lts.t2, lambda[i][1], lambda[i][3]);
 
@@ -361,8 +361,7 @@ double MRegge::gammaLambda(double t1, double t2, double m1, double m2) const {
 //             intrinsic parity x (-1)^(J-1/2) (fermions)
 //
 //
-std::complex<double> MRegge::gik_Vertex(double t1, double t2, double dphi, int lambda_h, int J,
-                                        int P) const {
+std::complex<double> MRegge::gik_Vertex(double t1, double t2, double dphi, int lambda_h, int J, int P, int JMAX) const {
 
   // (we handle only Pomerons here for now, no secondary Reggeons - trivial
   // extension)
@@ -374,7 +373,7 @@ std::complex<double> MRegge::gik_Vertex(double t1, double t2, double dphi, int l
   const int            xi3val = xi3(J, P, pom1_P, pom1_sigma, pom2_P, pom2_sigma);
   std::complex<double> sum    = 0.0;
 
-  for (int m1 = -PARAM_REGGE::JMAX; m1 <= PARAM_REGGE::JMAX; ++m1) {  // -\inf < m_1 < inf
+  for (int m1 = -JMAX; m1 <= JMAX; ++m1) {  // -\inf < m_1 < inf
 
     // Helicity relation lambda_h = m1 - m2
     const int m2 = m1 - lambda_h;
@@ -943,7 +942,6 @@ double b_OREAR    = 0.0;
 double b_POW      = 0.0;
 
 bool reggeize = false;
-int JMAX = 0;
 
 std::vector<double> c;  // coupling
 std::vector<bool>   n;  // on/off

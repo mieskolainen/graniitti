@@ -201,7 +201,7 @@ class MGraniitti {
   void ReadGenCuts(const std::string &inputfile);
   void ReadFidCuts(const std::string &inputfile);
   void ReadVetoCuts(const std::string &inputfile);
-
+  
   void Generate();
 
   std::string PROCESS = "null";     // Physics process identifier
