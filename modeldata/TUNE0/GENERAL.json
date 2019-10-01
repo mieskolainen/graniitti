@@ -29,7 +29,7 @@
 
     // Lorentz frame of the spin polarization ("CM","HX","CS")
     "FRAME" : "CM",
-
+    
     // Maximum angular momentum value for sliding Pomeron helicity trajectories
     "JMAX" : 5,
   },
