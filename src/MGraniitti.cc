@@ -1909,7 +1909,7 @@ void MGraniitti::PrintStatistics(unsigned int N) {
       // = mother mass, S = final state symmetry factor
 
       if (!proc->GetISOLATE() && proc->GetdLIPSDim() != 2) {  // Special cases
-        printf("\n\n{2->3 cross section ~=~ [2->%u / (1->%lu LIPS) x 2PI]}:       %0.3E barn \n",
+        printf("\n\n{2->3 cross section ~=~ [2->%u / (1->%lu LIPS) x 2PI]}:       %0.3E \n",
             N_leg, proc->lts.decaytree.size(), stat.sigma / proc->lts.DW_sum.Integral() * (2 * PI));
         std::cout << std::endl;
         printf("** Remember to use &> operator instead of -> for phase space isolation ** \n\n");

@@ -35,26 +35,26 @@ int main(int argc, char *argv[]) {
   try {
     cxxopts::Options options(argv[0], "");
 
-    options.add_options("")("i,INPUT", "Input card", cxxopts::value<std::string>())("H,help",
-                                                                                    "Help");
-
+    options.add_options("")("i,INPUT", "Input card", cxxopts::value<std::string>())
+        ("H,help", "Help");
+        
     options.add_options("GENERALPARAM")
 
-        ("o,OUTPUT",     "Output name            <string>",               cxxopts::value<std::string>())(
-         "f,FORMAT",     "Output format          <hepmc3|hepmc2|hepevt>", cxxopts::value<std::string>())(
-         "n,NEVENT",     "Number of events       <integer32>",            cxxopts::value<unsigned int>())(
-         "g,INTEGRATOR", "Integrator             <VEGAS|FLAT>",           cxxopts::value<std::string>())(
-         "w,WEIGHTED",   "Weighted events        <true|false>",           cxxopts::value<std::string>())(
-         "c,CORES",      "Number of CPU threads  <integer>",              cxxopts::value<unsigned int>());
+        ("o,OUTPUT",     "Output name            <string>",               cxxopts::value<std::string>())
+        ("f,FORMAT",     "Output format          <hepmc3|hepmc2|hepevt>", cxxopts::value<std::string>())
+        ("n,NEVENT",     "Number of events       <integer32>",            cxxopts::value<unsigned int>())
+        ("g,INTEGRATOR", "Integrator             <VEGAS|FLAT>",           cxxopts::value<std::string>())
+        ("w,WEIGHTED",   "Weighted events        <true|false>",           cxxopts::value<std::string>())
+        ("c,CORES",      "Number of CPU threads  <integer>",              cxxopts::value<unsigned int>());
 
-    options.add_options("PROCESSPARAM")(
-        "p,PROCESS", "Process                 <string>",        cxxopts::value<std::string>())(
-        "e,ENERGY",  "CMS energy              <double>",        cxxopts::value<double>())(
-        "l,POMLOOP", "Screening Pomeron loop  <true|false>",    cxxopts::value<std::string>())(
-        "s,NSTARS",  "Excite protons          <0|1|2>",         cxxopts::value<unsigned int>())(
-        "q,LHAPDF",  "Set LHAPDF              <string>",        cxxopts::value<std::string>())(
-        "h,HIST",    "Histogramming           <0|1|2>",         cxxopts::value<unsigned int>())(
-        "r,RNDSEED", "Random seed             <integer32>",     cxxopts::value<unsigned int>());
+    options.add_options("PROCESSPARAM")
+        ("p,PROCESS", "Process                 <string>",        cxxopts::value<std::string>())
+        ("e,ENERGY",  "CMS energy              <double>",        cxxopts::value<double>())
+        ("l,POMLOOP", "Screening Pomeron loop  <true|false>",    cxxopts::value<std::string>())
+        ("s,NSTARS",  "Excite protons          <0|1|2>",         cxxopts::value<unsigned int>())
+        ("q,LHAPDF",  "Set LHAPDF              <string>",        cxxopts::value<std::string>())
+        ("h,HIST",    "Histogramming           <0|1|2>",         cxxopts::value<unsigned int>())
+        ("r,RNDSEED", "Random seed             <integer32>",     cxxopts::value<unsigned int>());
 
     auto r = options.parse(argc, argv);
 
@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
       
       std::cout << std::endl;
       std::cout << rang::style::bold << "  [Pomeron amplitudes]" << rang::style::reset << std::endl;
-      
+
       std::cout << "  @FRAME:X                                set Lorentz frame definition for the spin density matrix (X = CM, HX, CS)" << std::endl;
       std::cout << "  @R[f2_1270]{JZ0:0.5, JZ1:0.0, JZ2:0.5}  set new diagonal spin density matrix elements for resonances" << std::endl;
       std::cout << "  @JMAX:X                                 set maximum Pomeron helicity for the sliding helicity amplitudes" << std::endl;

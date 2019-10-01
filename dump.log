@@ -1,0 +1,205 @@
+
+
+--------------------------------------------------------------------------
+.``````````````````````     ````   ``                        ``   ```   ``
+.```..````````````    ` ``          `                             ``    ``
+.``..:``````````` ```.``````.`.```                                 `    ``
+.``.`.```````   ````     ``-.```.````                               ``` ``
+..-.`-.``    `.`   `..``---/--.......``                      `````````````
+..:..-.`````.`   `.--oys+ohms:..-.`..```                   ```````````````
+.-:.-...`..     .ooshydddddddh+::...``...               ``````````````````
+..-......       `yhhdhhmhddddmdy-...-...`                   ``````````````
+::::::.`    `    `--/ohdhdhddyo-`   `..`..                               `
+so/-.`  `.`.-````-...++/syhdho`        `..                               `
+``..--.:o-..--..-/-::-.-:/ohh/           `                            `` `
+`.-::-.:yyh/`--.`s+ohso:/shhd:                                      ``  `-
+.:/-s+o+syhs--:/-..-oydyshhhho`                                 ````` ``./
+.-+:-+shhhys+ysyh//sshyy/:oohyo.```````` `````` ````````````...::..  `.-oh
+-..-..:/+shhhyhhhyhysso.   ``:ys:----............------:::::++oo-  `.-:ohd
+--+:--//:::/+oyyshhs+`   ``   .+so+++++++++++/-://+++++++++o+/-```-/yhhys+
+`/dysyhs/:::-:o+/-.`   `...    `..::+oooooo+:-``.:+oooo+/:-.```.:/ssso/.``
+``:oossso-.--.-.    ..`...`..`.``...`-/ossys+ssoso+ys:--..::/:/--.-//:```.
+```````` `   `-.` `....```...:++.`./o:+-:/-:://----...--.`-::::+ys/.`.:/sy
+```...-...`/...... ` `..`...`yo+:/o.:oshssy/.  ``  `.--.--:+sys+-` -+ossss
+``.//-/++-sh+-.-..`-`.-.--.- :hhho/+//:/yyyhhs+::+o+/++ssssso:.`-::oyssyyy
+`/yhoshhhh////++:.....`:yy+/...sddhs/:////:-/++ooo+oyssyoo:.`:/+oosssshddd
+`dddyhydhdyyddhddo``.+.`+/oyoh-..+yddho/-......--:----://+osyyhho++/--::/+
+/hddhmhmhmdmddhdds:+s+:+/-:++hhh//.-/++osssso++/-.````.-://::-.....`......
+
+
+GRANIITTI - Monte Carlo event generator for high energy diffraction
+
+Version 0.93 (pre-release) 30.09.2019
+<github.com/mieskolainen/GRANIITTI>
+
+References: arXiv:1811.01730 [hep-ph]
+
+(c) 2017-2019 Mikael Mieskolainen
+<mikael.mieskolainen@cern.ch>
+
+<opensource.org/licenses/GPL-3.0>
+<opensource.org/licenses/MIT>
+--------------------------------------------------------------------------
+Running on core-i7 (4 CORE / 11.44 GB RAM) at 2019-10-01 13:19:10 
+Path '/': size | used | free = 226.1 | 203.2 | 23.0 GB 
+Program path: /home/user/cernbox/graniitticopy/lenovo/graniitti
+Linux 4.15.0-64-generic #73-Ubuntu SMP Thu Sep 12 13:16:13 UTC 2019 x86_64
+--------------------------------------------------------------------------
+MGraniitti::ReadInput: ./tests/LHC_TEVATRON_RHIC/ATLAS17_mumu.json
+
+MPDG::ReadParticleData: Reading in PDG tables: [DONE]
+MContinuum:: [Constructor done]
+MProcess::SetLHAPDF: CT10nlo
+MProcess::SetBeamEnergies: beam: [p+, p+], energy = [6500.0, 6500.0] 
+MEikonalNumerics::SetLoopDiscretization: ND = 3
+-> NumberLoopKT  = 24
+-> NumberLoopPHI = 21
+PARAM_SOFT:: Soft model parameters: 
+
+- DELTA_P = 0.0980 
+- ALPHA_P = 0.0650 [GeV^{-2}] 
+- gN_P    = 8.2000 [GeV^{-1}] 
+- gN_O    = 0.1000 [GeV^{-1}] 
+- g3P     = 0.1800 
+- gamma   = 0.4500 
+- fc1     = 0.3500 [GeV^2] 
+- fc2     = 3.6000 [GeV^2] 
+- fc3     = 5.0000 [GeV^2] 
+
+
+MContinuum::post_Constructor: 0
+
+General setup:
+
+Output file:            ATLAS17_mumu
+Output format:          hepmc3
+Multithreading:         6
+Integrator:             VEGAS
+Number of events:       0
+Parameter setup:        TUNE0
+Generation mode:        weighted
+
+
+Process setup:
+
+- Random seed:      12345678
+- Initial state:    p+ p+
+- Beam energies:   [6500.0 6500.0] GeV 
+- CMS energy:       13000.0 GeV
+- Process:          yy[CON]<C>  <2xGamma to l+l-, qqbar, W+W-, monopolepair  [kt-EPA]>
+
+Subprocess parameters:
+
+- Pomeron loop screening:  false
+- Final state:             mu+ mu-
+- Proton N* excitation:    0  <elastic>
+
+
+-----------EL--------->
+           ||         
+           x---------> -13 (mu+) [Q= 1, J=1/2]
+           |          
+           x---------> 13 (mu-) [Q=-1, J=1/2]
+           ||         
+-----------EL--------->
+
+
+Generation cuts:
+
+- Rap : Final state rapidity [min, max] = [-2.40, 2.40]     	(user)       
+- Kt  : Intermediate         [min, max] = [0.00, 6500.00] GeV 	(fixed/user) 
+- Pt  : Forward leg          [min, max] = [0.00, 2.50] GeV 	(fixed/user) 
+--------------------------------------------------------------------------
+
+Fiducial cuts:
+
+Central final states
+- Eta   [min, max] = [-2.40, 2.40] 
+- Pt    [min, max] = [0.10, 100000.00] GeV 
+- Et    [min, max] = [0.00, 100000.00] GeV 
+- Rap   [min, max] = [-10.00, 10.00] 
+
+Central system
+- M     [min, max] = [12.00, 70.00] GeV 
+- Pt    [min, max] = [0.00, 1.50] GeV 
+- Rap   [min, max] = [-10.00, 10.00] 
+
+Forward kinematics
+- M     [min, max] = [0.00, 100000.00] GeV 
+- |t_i| [min, max] = [0.00, 100000.00] GeV^2 
+--------------------------------------------------------------------------
+
+Extra custom fiducial cuts:
+
+- Active ID = 170804053 (see MUserCuts.cc) 
+--------------------------------------------------------------------------
+
+VETO cuts:
+
+- Not active
+--------------------------------------------------------------------------
+
+Central system decay tree:
+
+└──>  M = 1.06E-01, W = 3.00E-19 (GeV) [<tau> = 2.2E-06 s] PDG = [-13 | mu+] [Q= 1, J=1/2] 
+└──>  M = 1.06E-01, W = 3.00E-19 (GeV) [<tau> = 2.2E-06 s] PDG = [ 13 | mu-] [Q=-1, J=1/2] 
+
+Final state symmetry factor (1/S = 1/1) applied at cross section level 
+--------------------------------------------------------------------------
+
+[2KVEGAS burn-in iterations: 
+
+[2K[10.7 MB] xs: 6.019E-12, er: 0.77743 [chi2 = 0.0],  0.0 min ~ 3.1E+05 Hz 
+[2K[10.7 MB] xs: 2.786E-12, er: 0.64630 [chi2 = 0.6],  0.0 min ~ 2.9E+05 Hz 
+[2K[10.7 MB] xs: 1.799E-12, er: 0.31641 [chi2 = 0.4],  0.0 min ~ 2.4E+05 Hz 
+[2KVEGAS burn-in iterations: 
+
+[2K[11.1 MB] xs: 4.189E-12, er: 0.59531 [chi2 = 0.0],  0.0 min ~ 3.0E+05 Hz 
+[2K[11.1 MB] xs: 2.016E-12, er: 0.35580 [chi2 = 0.8],  0.0 min ~ 2.9E+05 Hz 
+[2K[11.1 MB] xs: 2.871E-12, er: 0.13123 [chi2 = 1.4],  0.0 min ~ 2.6E+05 Hz 
+[2K--------------------------------------------------------------------------
+VEGAS importance sampling:
+
+<Multithreading CORES = 6> 
+
+- dimension = 8 
+ 
+- itermin   = 5 
+- calls     = 43478 
+- BINS      = 128 
+- PRECISION = 0.0100 
+- CHI2MAX   = 10.0000 
+- LAMBDA    = 1.5000 
+- DEBUG     = -1 
+--------------------------------------------------------------------------
+[2K==========================================================================
+Monte Carlo integration: 
+
+
+{2->4 cross section}:             3.555E-12 +- 1.329E-14 barn 
+Sampling uncertainty:             0.374 % 
+
+--------------------------------------------------------------------------
+
+Integration runtime:              1.73 sec 
+Integrand sampling frequency:     2.19E+05 Hz 
+
+<Statistics> 
+MAX raw integrand weight:         1.955E-07 
+MAX weight (vegas x integrand):   5.979E-09 
+
+Amplitude passing rate:           1.000E+00 
+Kinematics passing rate:          9.317E-01 
+Fiducial cuts passing rate:       6.066E-01 
+Veto cuts passing rate:           1.000E+00 
+
+
+** All values include phase space generation and fiducial (+ veto) cuts ** 
+==========================================================================
+[gr: done]
+
+--------------------------------------------------------------------------------
+This version 0.93 (30.09.2019) is up to date with online version
+--------------------------------------------------------------------------------
+
+~MGraniitti [DONE]

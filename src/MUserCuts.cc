@@ -72,28 +72,24 @@ bool UserCut(int id, const gra::LORENTZSCALAR &lts) {
 
   // --------------------------------------------------------------------
   // STAR/RHIC \sqrt{s} = 200 GeV pi+pi- (+ other cuts needed in .json file)
+  // https://indico.cern.ch/event/713101/contributions/3102315/attachments/1705771/2748440/Diffraction2018_RafalSikora.pdf
   else if (id == 280818) {
-    // Forward protons py and phi
-    std::vector<double> px = {std::abs(lts.pfinal[1].Px()), std::abs(lts.pfinal[2].Px())};
-    std::vector<double> py = {std::abs(lts.pfinal[1].Py()), std::abs(lts.pfinal[2].Py())};
-
-    //    std::vector<double> phi = {std::abs(lts.pfinal[1].Phi()),
-    //    std::abs(lts.pfinal[2].Phi()) };
-
+    
+    // Loop over forward protons
     for (std::size_t i = 0; i < 2; ++i) {
-      if ((gra::math::pow2(px[i] + 0.3) + gra::math::pow2(py[i])) < 0.25) {  // GeV^2
+      if (gra::math::pow2(lts.pfinal[i].Px() + 0.3) + gra::math::pow2(lts.pfinal[i].Py()) < 0.25) {  // GeV^2
                                                                              // fine
       } else {
         return false;  // not passed
       }
 
-      if (0.2 < std::abs(py[i]) && std::abs(py[i]) < 0.4) {  // GeV
+      if (0.2 < std::abs(lts.pfinal[i].Py()) && std::abs(lts.pfinal[i].Py()) < 0.4) {  // GeV
                                                              // fine
       } else {
         return false;  // not passed
       }
 
-      if (px[i] > -0.2) {  // GeV
+      if (lts.pfinal[i].Px() > -0.2) {  // GeV
                            // fine
       } else {
         return false;  // not passed

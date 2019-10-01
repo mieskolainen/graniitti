@@ -61,7 +61,6 @@ PROGRAMS
 
 ./bin/gr             Main simulation program
 ./bin/xscan          Process cross section energy dependence scanner
-./bin/exloop         Loop over pre-coded LHC/Tevatron fiducial measurements versus simulation [test tool]
 ./bin/minbias        Minimum bias processes (SD,DD,ND) combined simulation
 ./bin/hepmc3tolhe    Convert .hepmc3 to .lhe event output format
 
@@ -81,7 +80,7 @@ Compile with 'make -j4 TEST=TRUE'
 
 ./bin/testbench*     Test cases using catch2 framework
 ./tests/megarun.sh   Will run all the global and unit tests, runtime 1 hour+
-
+./tests/exloop.sh    Loops over pre-defined fiducial measurements
 
 
 INSTALLATION
