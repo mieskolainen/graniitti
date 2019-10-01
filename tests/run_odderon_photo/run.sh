@@ -18,16 +18,16 @@ fi
 
 # Generate
 
-./bin/gr -i ./tests/processes/CMS13.json \
+./bin/gr -i ./tests/processes/CMSCUTS.json \
 -p "yP[RES]<F> -> K+ K- @RES{phi_1020:1}" -w true -l false -n $EVENTS -o "photo_phi"        -f "hepmc3"
 
-./bin/gr -i ./tests/processes/CMS13POTS.json \
+./bin/gr -i ./tests/processes/CMSCUTSPOTS.json \
 -p "yP[RES]<F> -> K+ K- @RES{phi_1020:1}" -w true -l false -n $EVENTS -o "photo_phi_pots"   -f "hepmc3"
 
-./bin/gr -i ./tests/processes/CMS13.json \
+./bin/gr -i ./tests/processes/CMSCUTS.json \
 -p "OP[RES]<F> -> K+ K- @RES{phi_1020:1}" -w true -l false -n $EVENTS -o "odderon_phi"      -f "hepmc3"
 
-./bin/gr -i ./tests/processes/CMS13POTS.json \
+./bin/gr -i ./tests/processes/CMSCUTSPOTS.json \
 -p "OP[RES]<F> -> K+ K- @RES{phi_1020:1}" -w true -l false -n $EVENTS -o "odderon_phi_pots" -f "hepmc3"
 
 fi

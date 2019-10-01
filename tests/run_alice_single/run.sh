@@ -22,7 +22,8 @@ then
 fi
 
 # Generate
-./bin/gr -i ./tests/processes/ALICE7_2pi.json -n $EVENTS -l $POMLOOP -w true
+./bin/gr -i ./tests/processes/ALICECUTS.json -p "PP[RES+CON]<F> -> pi+ pi-" \
+-e 7000 -n $EVENTS -l $POMLOOP -w true -o "ALICE7_2pi" -f "hepmc3"
 
 fi
 

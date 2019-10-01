@@ -17,10 +17,10 @@ then
 fi
 
 # Generate
-./bin/gr -i ./tests/processes/ALICE_2K.json \
+./bin/gr -i ./tests/processes/ALICECUTS.json -p "PP[CON]<F> -> K+ K-" \
 -p "PP[CON]<F> -> K+ K-" -w true -l false -n $EVENTS -o "continuum" -f "hepmc3"
 
-./bin/gr -i ./tests/processes/ALICE_2K.json \
+./bin/gr -i ./tests/processes/ALICECUTS.json -p "PP[CON]<F> -> K+ K-" \
 -p "PP[CON]<F> -> K+ K-" -w true -l true  -n $EVENTS -o "continuum_screened" -f "hepmc3"
 
 fi

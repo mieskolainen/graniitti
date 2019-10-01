@@ -22,7 +22,7 @@ then
 fi
 
 # Generate
-./bin/gr -i ./tests/processes/CDF14_2pi.json -n $EVENTS -l $POMLOOP -w true
+./bin/gr -i ./tests/LHC_TEVATRON_RHIC/CDF14_2pi.json -n $EVENTS -l $POMLOOP -w true
 
 fi
 

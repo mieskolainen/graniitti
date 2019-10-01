@@ -17,9 +17,9 @@ then
 fi
 
 # Generate
-./bin/gr -i ./tests/processes/ALICE_2pi.json -p "PP[RES+CON]<F> -> pi+ pi-" -w true -l false -n $EVENTS
-./bin/gr -i ./tests/processes/ALICE_2pi.json -p "PP[RES+CON]<F> -> K+ K-"   -w true -l false -n $EVENTS
-./bin/gr -i ./tests/processes/ALICE_2pi.json -p "PP[RES+CON]<F> -> p+ p-"   -w true -l false -n $EVENTS
+./bin/gr -i ./tests/processes/ALICECUTS.json -p "PP[RES+CON]<F> -> pi+ pi-" -w true -l false -n $EVENTS -o "ALICE_2pi"   -f "hepmc3"
+./bin/gr -i ./tests/processes/ALICECUTS.json -p "PP[RES+CON]<F> -> K+ K-"   -w true -l false -n $EVENTS -o "ALICE_2K"    -f "hepmc3"
+./bin/gr -i ./tests/processes/ALICECUTS.json -p "PP[RES+CON]<F> -> p+ p-"   -w true -l false -n $EVENTS -o "ALICE_ppbar" -f "hepmc3"
 
 fi
 
