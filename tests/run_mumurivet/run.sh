@@ -11,7 +11,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
 # Generate events
-./bin/gr ./tests/processes/CMS11_mumu.json
+./bin/gr ./tests/LHC_TEVATRON_RHIC/CMS11_mumu.json
 
 fi
 
