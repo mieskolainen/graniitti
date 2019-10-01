@@ -1,16 +1,19 @@
+# Quark model compositions
+
+
 Pseudoscalars (L=0,S=0,J=0,P=-1)
 
 ID		Q 		S		qq
 ------------------------------------------------------
 K0		0		1		sdbar
-antiK0  	0		-1		dsbar
+antiK0  0		-1		dsbar
 K+		1		1		usbar
 K-		-1		-1		subar
 pi+		1		0		udbar
 pi-		-1		0		dubar
 pi0		0		0		1/sqrt(2)[uubar-ddbar]
 eta		0		0		~1/sqrt(6)[uubar+ddbar-2ssbar]
-eta'		0		0		~1/sqrt(3)[uubar+ddbar+ssbar] (singlet)
+eta'	0		0		~1/sqrt(3)[uubar+ddbar+ssbar] (singlet)
 
 
 Vectors (L=0,S=1,J=1,P=-1)
@@ -19,12 +22,12 @@ ID		Q 		S		qq
 ------------------------------------------------------
 K+*		1		1		usbar
 K*-		-1		-1		subar
-rho-		-1		0		dubar
-rho+		1		0		udbar
+rho-	-1		0		dubar
+rho+	1		0		udbar
 K0*		0		1		dsbar
-Kbar0*		0		-1		sdbar
-rho0		0		0		1/sqrt(2)[uubar-ddbar]
-omega		0		0		~1/sqrt(2)[uubar+ddbar]
+Kbar0*	0		-1		sdbar
+rho0	0		0		1/sqrt(2)[uubar-ddbar]
+omega	0		0		~1/sqrt(2)[uubar+ddbar]
 phi		0		0		~ssbar
 
 
