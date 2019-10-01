@@ -1,4 +1,4 @@
-GRANIITTI UNDERWORK: 30.08.2019
+GRANIITTI UNDERWORK: 1.10.2019
 
 mikael.mieskolainen@cern.ch
 -----------
@@ -6,24 +6,20 @@ mikael.mieskolainen@cern.ch
 
 Processes & features under validation/implementation:
 
-- tensor pomeron decay structures [f2 -> VV, 2xV -> 2x(2xPS)]
+- tensor pomeron chained decay structures [f2 -> VV, 2xV -> 2x(2xPS)]
 - perturbative (Durham QCD) meson pair (higher mass) continuum
 
 
 Processes & features under construction/feasibility inspection
 
 - "sliding" Regge helicity amplitudes (helicity trajectories)
-- in forward excitation, the "partonic beam-split" for PYTHIA could be useful
+- in forward excitation, the "partonic beam-split" for PYTHIA could be useful?
 
 
-Missing features:
+Known problems
 
-- vetocuts are not activate for minbias processes
+- ./bin/analyze may throw memory dump after exit, unknown ROOT problem probably with smart pointers
 
-
-Known problems:
-- ./bin/analyze may throw memory dump after exit, harmless ROOT problem
-- Looping processes in sequencies with different LHAPDF sets causes crash (in ./bin/exloop) 
-  -> single instances of ./bin/gr not affected, ./bin/xscan perhaps. Something to do with LHAPDF memory access.
-
-
+- Looping MGraniitti() in sequencies with different LHAPDF sets or otherwise different json input
+  causes crash in ./bin/xscan, sounds like a memory problem?
+  Single instances of ./bin/gr launched from commandline is safe from this bug.
