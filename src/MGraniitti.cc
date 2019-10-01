@@ -1865,7 +1865,7 @@ void MGraniitti::PrintStatistics(unsigned int N) {
     if (proc->GetISOLATE()) { N_leg = 3; }        // ISOLATEd 2->3 process with <F> phase space
     if (proc->GetdLIPSDim() == 2) { N_leg = 2; }  // <P> and <Q> class
 
-    printf("{2->%d cross section}:             %0.3E +- %0.3E barn \n", N_leg, stat.sigma,
+    printf("{2->%d cross section}:             [%0.3E +- %0.3E] barn \n", N_leg, stat.sigma,
            stat.sigma_err);
     printf("Sampling uncertainty:             %0.3f %% \n", 100 * stat.sigma_err / stat.sigma);
     std::cout << std::endl;
