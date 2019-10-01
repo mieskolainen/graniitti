@@ -17,9 +17,9 @@ then
 fi
 
 # Generate
-./bin/gr -i ./tests/processes/ALICE_2pi.json -w true -l false -n $EVENTS
-./bin/gr -i ./tests/processes/ALICE_2K.json -w true -l false -n $EVENTS
-./bin/gr -i ./tests/processes/ALICE_ppbar.json -w true -l false -n $EVENTS
+./bin/gr -i ./tests/processes/ALICE_2pi.json -p "PP[RES+CON]<F> -> pi+ pi-" -w true -l false -n $EVENTS
+./bin/gr -i ./tests/processes/ALICE_2pi.json -p "PP[RES+CON]<F> -> K+ K-"   -w true -l false -n $EVENTS
+./bin/gr -i ./tests/processes/ALICE_2pi.json -p "PP[RES+CON]<F> -> p+ p-"   -w true -l false -n $EVENTS
 
 fi
 

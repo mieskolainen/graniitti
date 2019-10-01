@@ -17,9 +17,9 @@ then
 fi
 
 # Generate
-./bin/gr -i ./tests/processes/CMS19_2pi.json -w true -l false -n $EVENTS
-./bin/gr -i ./tests/processes/CMS19_2K.json -w true -l false -n $EVENTS
-./bin/gr -i ./tests/processes/CMS19_ppbar.json -w true -l false -n $EVENTS
+./bin/gr -i ./tests/processes/CMS19_2pi.json -p "PP[RES+CON]<F> -> pi+ pi-" -w true -l false -n $EVENTS
+./bin/gr -i ./tests/processes/CMS19_2pi.json -p "PP[RES+CON]<F> -> K+ K-"   -w true -l false -n $EVENTS
+./bin/gr -i ./tests/processes/CMS19_2pi.json -p "PP[RES+CON]<F> -> p+ p-"   -w true -l false -n $EVENTS
 
 fi
 
@@ -36,5 +36,5 @@ S2=0.15
 -Y "95,-2.5, 2.5" \
 -P "95, 0.0, 2.0" \
 -u ub \
--t "#sqrt{s} = 13 TeV, |#eta| < 2.5, p_{T} > 0.15 GeV" \
+-t "#sqrt{s} = 13 TeV, |#eta| < 2.4, p_{T} > 0.2 GeV" \
 -S "$S2, $S2, $S2" #-X 1000

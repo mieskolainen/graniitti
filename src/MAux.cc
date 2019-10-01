@@ -494,7 +494,7 @@ void PrintGameOver() {
 
 // Check updates online
 void CheckUpdate() {
-
+  
   const std::string tmpfile = "/tmp/GRANIITTI_VERSION_" + std::to_string(time(0)) + ".json";
   const std::string cmd =  "curl -s -o " + tmpfile + 
       " https://raw.githubusercontent.com/mieskolainen/GRANIITTI/master/VERSION.json";
@@ -555,7 +555,7 @@ void CheckUpdate() {
       if (system(rmcmd.c_str()) != 1) {
         // success
       }
-
+      
     } catch (...) {
       // do nothing
     }

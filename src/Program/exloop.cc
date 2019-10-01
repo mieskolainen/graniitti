@@ -174,7 +174,9 @@ void experiment(bool screening) {
     0.3e-12));
   */
 
-
+  // http://cds.cern.ch/record/2679648/files/FSQ-16-006-pas.pdf
+  input.push_back(MEASUREMENT("CDF19_2pi.json", 19.0e-6, 0.6e-6, 3.2e-6));
+  
   // https://arxiv.org/pdf/hep-ex/0611040.pdf
   input.push_back(MEASUREMENT("CDF07_ee.json", 1.6e-12, 0.5e-12, 0.3e-12));
 

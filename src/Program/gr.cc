@@ -63,42 +63,36 @@ int main(int argc, char *argv[]) {
       std::cout << options.help({"", "GENERALPARAM", "PROCESSPARAM"}) << std::endl;
       std::cout << rang::style::bold << " Arrow operators:" << rang::style::reset << std::endl;
       std::cout << "  use -> between initial and final states" << std::endl;
-      std::cout << "  use &> (instead of ->) for a decoupled central system "
-                   "phase space (use with <F>, <P> class, e.g. for s-channel "
-                   "resonances)"
-                << std::endl;
-      std::cout << "  use  > for recursive decaytree branchings with curly "
-                   "brackets { grand daughters }"
-                << std::endl;
+      std::cout << "  use &> (instead of ->) for a decoupled central system phase space (use with <F>, <P> class, e.g. for s-channel resonances)" << std::endl;
+      std::cout << "  use  > for recursive decaytree branchings with curly brackets { grand daughters }" << std::endl;
       std::cout << std::endl;
-      std::cout << rang::style::bold << " Inline 'on-the-flight' parameters to "
-                                        "concatenate with PROCESS string:"
-                << rang::style::reset << std::endl;
-      std::cout << "  @FLATAMP:N                           flat matrix element for 'pure' "
-                   "phase space generation, set N to -1 for more info"
-                << std::endl;
-      std::cout << "  @PDG[X]{M:350.0, W:5.0}              new mass and width for pdg "
-                   "particle id X"
-                << std::endl;
-      std::cout << "  @OFFSHELL:X                          how many +- full widths "
-                   "particles can be off-shell in decay trees (X = 0 for "
-                   "on-shell, X = 5 is default)"
-                << std::endl;
-      std::cout << "  @FLATMASS2:true                      flat sampling in mass^2 instead "
-                   "of relativistic Breit-Wigner f(M^2) in decay trees"
-                << std::endl;
-      std::cout << "  @FRAME:X                             set common Lorentz frame for "
-                   "parametric spin correlated resonance decays (X = CM, HX)"
-                << std::endl;
-                
-      std::cout << "  @RES{rho_770:1, f0_980:0, f2_1270:1}    set new central resonance list (1 active, 0 inactive)" << std::endl;
-      std::cout << "  @R[f0_980]{M:0.990, W:0.065}            set new central resonance mass and width"              << std::endl;
-      std::cout << "  @R[f2_1270]{JZ0:0.5, JZ1:0.0, JZ2:0.5}  set new diagonal spin density matrix elements for Jacob-Wick amplitudes" << std::endl;
-      std::cout << "  @R[f0_980]{g0:1.0, g1:0.2, ...}         set new production couplings {g0,g1} [scalar] {g0,...,g6} [tensor] for tensor Pomeron" << std::endl;
+      std::cout << rang::style::bold << " Inline 'on-the-flight' parameters to concatenate with PROCESS string:"
+                << rang::style::reset << std::endl << std::endl;
+
+      std::cout << rang::style::bold << "  [Generic]" << rang::style::reset << std::endl;
+
+      std::cout << "  @FLATAMP:N                              flat matrix element for 'pure' phase space generation, set N to -1 for more info" << std::endl;
+      std::cout << "  @FLATMASS2:true                         flat sampling in M^2 instead of relativistic Breit-Wigner f(M^2) in decay trees" << std::endl;
+      std::cout << "  @OFFSHELL:X                             how many +- full widths particles off-shell in decay trees (X = 0 on-shell, X = 5 default)" << std::endl;
+      std::cout << "  @PDG[X]{M:350.0, W:5.0}                 new mass and width for pdg particle id X" << std::endl;
+      std::cout << "  @R[f0_980]{M:0.990, W:0.065}            set new central resonance mass and width" << std::endl;
+      std::cout << "  @RES{rho_770:1, ..., f2_1270:1}         set active resonances in the amplitude (1 active, 0 inactive)" << std::endl;
+      
+      std::cout << std::endl;
+      std::cout << rang::style::bold << "  [Pomeron amplitudes]" << rang::style::reset << std::endl;
+      
+      std::cout << "  @FRAME:X                                set Lorentz frame definition for the spin density matrix (X = CM, HX, CS)" << std::endl;
+      std::cout << "  @R[f2_1270]{JZ0:0.5, JZ1:0.0, JZ2:0.5}  set new diagonal spin density matrix elements for resonances" << std::endl;
+      std::cout << "  @JMAX:X                                 set maximum Pomeron helicity for the sliding helicity amplitudes" << std::endl;
+      
+      std::cout << std::endl;
+      std::cout << rang::style::bold << "  [Tensor Pomeron amplitudes]" << rang::style::reset << std::endl;
+
+      std::cout << "  @R[f0_980]{g0:1.0, g1:0.2, ...}         set new production couplings {g0,g1} [scalar/pseudoscalar] {g0,...,g6} [tensor]" << std::endl;
 
       std::cout << std::endl;
-      std::cout << rang::style::bold << " PROCESS string examples:" << rang::style::reset
-                << std::endl;
+      std::cout << rang::style::bold << " PROCESS string examples:" << rang::style::reset << std::endl;
+
       std::cout << "  yy[CON]<C> -> mu+ mu-" << std::endl;
       std::cout << "  yy[Higgs]<F> &> 22 22" << std::endl;
       std::cout << "  yy[CON]<C> -> 992 -992 @PDG[992]{M:1500,W:0}" << std::endl;
