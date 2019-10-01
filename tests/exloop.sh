@@ -5,7 +5,6 @@
 # Run with: source ./tests/exloop.sh
 
 
-
 read -p "run: Screening on? [y/n] " -n 1 -r
 echo # New line
 

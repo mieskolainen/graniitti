@@ -1,4 +1,4 @@
-// Testbench 2
+// Testbench 2 (unit tests)
 //
 // (c) 2017-2019 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
