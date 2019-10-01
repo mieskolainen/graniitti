@@ -21,7 +21,7 @@ echo ''
 echo ''
 
 echo '\hline \\'
-echo 'Measurement' '&' 'xs +- stat +- syst' '&' 'screened xs' '&' 'unscreened xs' '&' '<S^2>' '\\'
+echo 'Fiducial measurement' '&' '\sqrt{s} TeV' '&' 'xs +- stat +- syst' '&' 'screened xs' '&' 'bare xs' '&' '<S^2>' '\\'
 echo '\hline \\'
 echo ''
 
@@ -33,59 +33,126 @@ do
 	# Extract filename + strip of extension
 	CARD=$(basename $F)
 	CARD="${CARD%.*}"
-
-	MEASUREMENT=(0.0 0.0 0.0)
 	
 	# ====================================================================
+	NAME=$CARD
+	BIBTEX="-"
+	MEASUREMENT=(0.0 0.0 0.0)
+	UNIT=6
+	SQRTS="-"
+	# ====================================================================
 
+	# https://arxiv.org/abs/1502.01391
+	if [ "$CARD" == "CDF14_2pi" ]
+	then
+	NAME="CDF $\pi^+\pi^-$"
+	BIBTEX="aaltonen2015measurement"
+	MEASUREMENT=(0 0 0)
+	SQRTS="1.96"
+	fi
 	# http://cds.cern.ch/record/2679648/files/FSQ-16-006-pas.pdf
 	if [ "$CARD" == "CMS19_2pi" ]
 	then
-	MEASUREMENT=(19.0E-6 0.6E-6 3.2E-6)
+	NAME="CMS $\pi^+\pi^-$"
+	BIBTEX="CMS-PAS-FSQ-16-006"
+	MEASUREMENT=(19.0 0.6 3.2)
+	UNIT=6
+	SQRTS="13"
 	fi
 	#  <ALICE 7 TeV PWA |y(pi+pi-)| < 0.9
 	if [ "$CARD" == "ALICE19_2pi_PWA" ]
 	then
-	MEASUREMENT=(31E-6 0.5E-6 2E-6)
+	NAME="ALICE $\pi^+\pi^-$"
+	BIBTEX="-"
+	MEASUREMENT=(31 0.5 2)
+	UNIT=6
+	SQRTS="7"
 	fi
 	# https://discoverycenter.nbi.ku.dk/teaching/thesis_page/MasterEmilBolsFinal.pdf
 	if [ "$CARD" == "ATLAS17_2pi" ]
 	then
-	MEASUREMENT=(18.75E-6 0.048E-6 0.770E-6)
+	NAME="ATLAS $\pi^+\pi^-$"
+	BIBTEX="Bols:2288372"
+	MEASUREMENT=(18.75 0.048 0.770)
+	UNIT=6
+	SQRTS="13"
 	fi
 	# https://arxiv.org/pdf/hep-ex/0611040.pdf
 	if [ "$CARD" == "CDF07_ee" ]
 	then
-	MEASUREMENT=(1.6E-12 0.5E-12 0.3E-12)
+	NAME="CDF \$e^+e^-$"
+	BIBTEX="abulencia2007observation"
+	MEASUREMENT=(1.6 0.5 0.3)
+	UNIT=12
+	SQRTS="1.96"
 	fi
 	# https://arxiv.org/pdf/1112.0858.pdf
 	if [ "$CARD" == "CDF11_ee" ]
 	then
-	MEASUREMENT=(2.88E-12 0.57E-12 0.63E-12)
+	NAME="CDF \$e^+e^-$"
+	BIBTEX="aaltonen2012observation"
+	MEASUREMENT=(2.88 0.57 0.63)
+	UNIT=12
+	SQRTS="1.96"
 	fi
 	# https://arxiv.org/abs/1111.5536
 	if [ "$CARD" == "CMS11_mumu" ]
 	then
-	MEASUREMENT=(3.38E-12 0.58E-12 0.21E-12)
+	NAME="CMS $\mu^+\mu^-$"
+	BIBTEX="cms2011exclusive"
+	MEASUREMENT=(3.38 0.58 0.21)
+	UNIT=12
+	SQRTS="7"
 	fi
 	# https://arxiv.org/abs/1506.07098
 	if [ "$CARD" == "ATLAS15_ee" ]
 	then
-	MEASUREMENT=(0.428E-12 0.035E-12 0.018E-12)
+	NAME="ATLAS \$e^+e^-$"
+	BIBTEX="atlas2015measurement"
+	MEASUREMENT=(0.428 0.035 0.018)
+	UNIT=12
+	SQRTS="7"
 	fi
 	# https://arxiv.org/abs/1506.07098
 	if [ "$CARD" == "ATLAS15_mumu" ]
 	then
-	MEASUREMENT=(0.628E-12 0.032E-12 0.021E-12)
+	NAME="ATLAS $\mu^+\mu^-$"	
+	BIBTEX="atlas2015measurement"
+	MEASUREMENT=(0.628 0.032 0.021)
+	UNIT=12
+	SQRTS="7"
 	fi
 	# https://arxiv.org/abs/1708.04053
 	if [ "$CARD" == "ATLAS17_mumu" ]
 	then
-	MEASUREMENT=(3.12E-12 0.07E-12 0.14E-12)
+	NAME="ATLAS $\mu^+\mu^-$"
+	BIBTEX="aaboud2018measurement"
+	MEASUREMENT=(3.12 0.07 0.14)
+	UNIT=12
+	SQRTS="13"
 	fi
 
 	# ====================================================================
-
+	if [ $UNIT == 3 ]
+	then
+	BARN="mb"
+	fi
+	if [ $UNIT == 6 ]
+	then
+	BARN="$\mu\$b"
+	fi
+	if [ $UNIT == 9 ]
+	then
+	BARN="nb"
+	fi
+	if [ $UNIT == 12 ]
+	then
+	BARN="pb"
+	fi
+	if [ $UNIT == 15 ]
+	then
+	BARN="fb"
+	fi
 
 	# Generate
 	./bin/gr -i ./tests/LHC_TEVATRON_RHIC/$CARD.json -l false -n 0 > /tmp/GRANIITTI.out
@@ -112,16 +179,18 @@ do
 	fi
 
 	# Add +- characters
-	printf -v ids_d ' +- %s' "${MEASUREMENT[@]}" # yields "value +- stat +- syst"
-	ids_d=${ids_d:3}                             # remove the leading ' +- '
+	printf -v ids_d ' $\pm$ %s' "${MEASUREMENT[@]}" # yields "value +- stat +- syst"
+	ids_d=${ids_d:6}                             # remove the leading ' +- '
 
+
+	XS_S2=$(python -c "print('%0.2g' % ($XS_S2*1E$UNIT))")	
+	XS=$(python -c "print('%0.2g'    % ($XS*1E$UNIT))")
 
 	# Calculate division
 	S2=$(python -c "print('%0.2f' % ($XS_S2/$XS))")
 
-
 	# Print out
-	echo $CARD ' & ' $ids_d ' & ' $XS_S2 ' & ' $XS ' & ' $S2 '\\'
+	echo $NAME ' ' '\cite{'$BIBTEX'}' ' & ' $SQRTS ' & ' $ids_d ' ' $BARN ' & ' $XS_S2 ' & ' $XS ' & ' $S2 '\\'
 	#printf '%s & %s & %s & %s \n' $CARD $ids_d $XS_S2 $XS
 
 done
