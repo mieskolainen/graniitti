@@ -33,7 +33,7 @@ do
 	# Extract filename + strip of extension
 	CARD=$(basename $F)
 	CARD="${CARD%.*}"
-	
+
 	# ====================================================================
 	NAME=$CARD
 	BIBTEX="-"
@@ -99,7 +99,7 @@ do
 	if [ "$CARD" == "CMS11_mumu" ]
 	then
 	NAME="CMS $\mu^+\mu^-$"
-	BIBTEX="cms2011exclusive"
+	BIBTEX="chatrchyan2012exclusive"
 	MEASUREMENT=(3.38 0.58 0.21)
 	UNIT=12
 	SQRTS="7"
