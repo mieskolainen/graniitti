@@ -149,7 +149,7 @@
     "F2" : "CKMT",
 
     // Coherent proton EM-form factors (DIPOLE, KELLY)
-    "EM" : "DIPOLE",
+    "EM" : "KELLY",
   },
   
   // -----------------------------------------------------------------------
