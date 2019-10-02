@@ -15,9 +15,9 @@
     "FORMAT"  : "hepmc3",        // hepmc3, hepmc2, hepevt
     "CORES"   : 0,               // Number of CPU threads (0 for automatic)
     "NEVENTS" : 0,               // Number of unweighted (weight = 1) events
-    "INTEGRATOR" : "VEGAS",     // "VEGAS" (default), "FLAT" (for debug),
+    "INTEGRATOR" : "VEGAS",      // "VEGAS" (default), "FLAT" (for debug),
     "WEIGHTED" : false,          // Weighted events (default false)
-    "MODELPARAM" : "TUNE0"       // General model tune
+    "MODELPARAM" : "TUNE0",      // General model tune
   },
   
   // ----------------------------------------------------------------------
@@ -31,7 +31,7 @@
     "RES" : [],
     "POMLOOP" : false,           // Eikonal Pomeron loop screening
     "NSTARS" : 0,                // N* excitation (0 = elastic, 1 = single, 2 = double)
-    "LHAPDF" : "CT10nlo",  // LHAPDF parton distribution set
+    "LHAPDF" : "CT10nlo",        // LHAPDF parton distribution set
     "HIST"    : 1,               // On-the-flight histograms (0 = off,1,2)
     "RNDSEED" : 12345678,        // Random seed (int32)
   },

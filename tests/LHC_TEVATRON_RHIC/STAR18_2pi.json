@@ -93,7 +93,7 @@
 
      // Central system final states
     "PARTICLE" : {
-
+      
       "Eta"  : [-0.7, 0.7],     // Pseudorapidity
       "Rap"  : [-10.0, 10.0],   // Rapidity
       "Pt"   : [0.2, 100000.0], // Transverse momentum
