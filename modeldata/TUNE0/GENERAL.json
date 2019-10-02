@@ -134,6 +134,12 @@
     "n" : [true, false, false]
   },
 
+  // f0(500) (ansatz)
+  "PARAM_F0500" : {
+    "c" : [35.0, 0, 0],
+    "n" : [true, false, false]
+  },
+
   // other, such as lambda(1115) (ansatz)
   "PARAM_X" : {
     "c" : [15.0, 0, 0],

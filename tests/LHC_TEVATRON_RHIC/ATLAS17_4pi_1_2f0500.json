@@ -11,7 +11,7 @@
   
   "GENERALPARAM" : {
 
-    "OUTPUT"  : "ATLAS17_2pi",             // Output filename
+    "OUTPUT"  : "ATLAS17_2rho_4pi",             // Output filename
     "FORMAT"  : "hepmc3",                // hepmc3, hepmc2, hepevt
     "CORES"   : 0,                     // Number of CPU threads (0 for automatic)
     "NEVENTS" : 1000,                     // Number of unweighted (weight = 1) events
@@ -27,7 +27,7 @@
     
     "BEAM" :   ["p+","p+"],  // Beam PDG-ID / Name
     "ENERGY" : [6500, 6500], // Beam energy in the lab (GeV)
-    "PROCESS" : "PP[RES+CON]<C> -> pi+ pi-", // Process ID
+    "PROCESS" : "PP[CON]<C> -> f(0)(500)0 > {pi+ pi-} f(0)(500)0 > {pi+ pi-} @OFFSHELL:1", // Process ID
     "RES" : ["f0_500", "rho_770", "f0_980", "phi_1020", "f2_1270", "f0_1500", "f2_1525", "f0_1710"],
     "POMLOOP" : false,      // Eikonal Pomeron loop screening
     "NSTARS" : 0,          // N* excitation (0 = elastic, 1 = single, 2 = double)
@@ -75,7 +75,8 @@
       "Rap" : [-2.5, 2.5] // Rapidity boundaries of the final states (<C> class)
     },
     "<F>" : {
-      "Rap" : [-9.0, 9.0] // Rapidity boundaries of the system (<F> class)
+      "Rap" : [-2.5, 2.5], // Rapidity boundaries of the system (<F> class)
+      "M" : [0, 6.0]
     },
     "<Q>" : {
       "Xi" : [0, 0.05]    // Invariant scale M^2/s (forward excitation)

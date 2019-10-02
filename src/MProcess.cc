@@ -932,7 +932,7 @@ void MProcess::GetOffShellMass(const gra::MDecayBranch &branch, double &mass) {
       const double W = branch.p.width;
 
       if (!FLATMASS2) {
-        mass = std::max(daughter_masses, random.RelativisticBWRandom(M, W, OFFSHELL));
+        mass = std::max(daughter_masses, random.RelativisticBWRandom(M, W, OFFSHELL, daughter_masses));
       } else {
         mass = msqrt(random.U(std::max(pow2(daughter_masses), pow2(M - OFFSHELL * W)),
                               std::min(lts.s, pow2(M + OFFSHELL * W))));

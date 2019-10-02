@@ -72,25 +72,30 @@ double MRandom::G(double mu, double sigma) {
 
 // Relativistic Breit-Wigner sampling f(s) ~ 1/[(s-m^2)^2 + m^2Gamma^2]
 //
-// Input: resonance m and Gamma
+// Input: m0     = Pole mass (GeV)
+//        Gamma  = Full width (GeV)
+//        LIMIT  = gives m0 +- LIMIT * GAMMA,
+//        M_MIN  = optional minimum bound
+//
 // Return mass (GeV)
-double MRandom::RelativisticBWRandom(double m, double Gamma, double LIMIT) {
+//
+double MRandom::RelativisticBWRandom(double m0, double Gamma, double LIMIT, double M_MIN) {
 
-  // Very special case
-  if (Gamma < 1e-40) { return m; }
+  // No width case
+  if (Gamma < 1e-40) { return m0; }
 
-  const double m2    = m * m;
-  const double m2max = gra::math::pow2(m + LIMIT * Gamma);
-  const double m2min = gra::math::pow2(m - LIMIT * Gamma);
-
+  const double m2    = math::pow2(m0);
+  const double m2max = gra::math::pow2(m0 + LIMIT * Gamma);
+  const double m2min = std::max(std::max(0.0, math::pow2(M_MIN)), gra::math::pow2(m0 - LIMIT * Gamma));
+  
   double m2val = 0.0;
   while (true) {
     const double R = U(0, 1);
     m2val =
         m2 +
-        m * Gamma *
-            std::tan(std::atan2(m2min - m2, m * Gamma) +
-                     R * (std::atan2(m2max - m2, m * Gamma) - std::atan2(m2min - m2, m * Gamma)));
+        m0 * Gamma *
+            std::tan(std::atan2(m2min - m2, m0 * Gamma) +
+                     R * (std::atan2(m2max - m2, m0 * Gamma) - std::atan2(m2min - m2, m0 * Gamma)));
     
     // Note >= handles massless case, otherwise stuck with m = 0
     if (m2val >= 0) { 
@@ -102,18 +107,21 @@ double MRandom::RelativisticBWRandom(double m, double Gamma, double LIMIT) {
 
 // Cauchy (non-relativistic Breit-Wigner) sampling
 //
-// Input: resonance m and Gamma
-// Return mass (GeV)
-double MRandom::CauchyRandom(double m0, double Gamma, double LIMIT) {
+// Input as with RelativisticBWRandom
+//
+double MRandom::CauchyRandom(double m0, double Gamma, double LIMIT, double M_MIN) {
 
   if (Gamma < 1e-40) { return m0; }
+
+  const double mmax = m0 + LIMIT * Gamma;
+  const double mmin = std::max(std::max(0.0, M_MIN), m0 - LIMIT * Gamma);
 
   double mval = 0.0;
   while (true) {
     const double R     = U(0, 1);
     const double value = (Gamma * 0.5) * std::tan(gra::math::PI * (R - 0.5)) + m0;
 
-    if (value > 0 && value < (m0 + LIMIT * Gamma) && value > (m0 - LIMIT * Gamma)) {
+    if (value < mmax && value > mmin) {
       mval = value;
       break;
     }

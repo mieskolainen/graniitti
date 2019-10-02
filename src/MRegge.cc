@@ -45,7 +45,7 @@ void MRegge::InitReggeAmplitude(int PDG, const std::string &MODELPARAM) {
   try {
     std::string data = gra::aux::GetInputData(fullpath);
     json        j    = json::parse(data);
-
+    
     // Setup the parameter string
     std::string str;
     if        (PDG == 211 || PDG == 111) {    // Charged or Neutral Pions
@@ -58,6 +58,8 @@ void MRegge::InitReggeAmplitude(int PDG, const std::string &MODELPARAM) {
       str = "PARAM_RHO";
     } else if (PDG == 331) {                  // phi(1020)
       str = "PARAM_PHI"; 
+    } else if (PDG == 9000221) {              // f0(500)
+      str = "PARAM_F0500"; 
     } else {  // The rest will use PARAM_X setup
       str = "PARAM_X";
     }
@@ -460,7 +462,7 @@ std::complex<double> MRegge::ME4(gra::LORENTZSCALAR &lts, double sign) const {
   // For screening loop
   lts.hamp = {A};
   // --------------------------------------------------------------------
-
+  
   return A;
 }
 

@@ -27,7 +27,7 @@
     
     "BEAM" :   ["p+","p+"],  // Beam PDG-ID / Name
     "ENERGY" : [6500, 6500], // Beam energy in the lab (GeV)
-    "PROCESS" : "PP[RES+CON]<C> -> pi+ pi-", // Process ID
+    "PROCESS" : "PP[CON]<F> -> pi+ pi- pi+ pi-", // Process ID
     "RES" : ["f0_500", "rho_770", "f0_980", "phi_1020", "f2_1270", "f0_1500", "f2_1525", "f0_1710"],
     "POMLOOP" : false,      // Eikonal Pomeron loop screening
     "NSTARS" : 0,          // N* excitation (0 = elastic, 1 = single, 2 = double)
@@ -66,22 +66,23 @@
     }
   },
 
- // ----------------------------------------------------------------------
+  // ----------------------------------------------------------------------
   // Generation cuts
 
   "GENCUTS" : {
 
     "<C>" : {
-      "Rap" : [-2.5, 2.5] // Rapidity boundaries of the final states (<C> class)
+      "Rap" : [-2.5, 2.5], // Rapidity boundaries of the final states (<C> class)
     },
     "<F>" : {
-      "Rap" : [-9.0, 9.0] // Rapidity boundaries of the system (<F> class)
+      "Rap" : [-2.5, 2.5], // Rapidity boundaries of the system (<F> class)
+      "M" : [0, 6.0]
     },
     "<Q>" : {
       "Xi" : [0, 0.05]    // Invariant scale M^2/s (forward excitation)
     }
   },
-
+  
   // ----------------------------------------------------------------------
   // Central system fiducial cuts
   // All central system particles need to fullfill the conditions
@@ -101,7 +102,7 @@
     
     // Central system
     "SYSTEM" : {
-      
+        
       "M"    : [0.0, 100000.0],       // Mass
       "Rap"  : [-10.0, 10.0],    // Rapidity
       "Pt"   : [0.0, 100000.0]   // Transverse momentum

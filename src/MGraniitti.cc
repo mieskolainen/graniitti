@@ -1903,7 +1903,7 @@ void MGraniitti::PrintStatistics(unsigned int N) {
       }
       // Recursion relation based (phase space factorization):
       // d^N PS(s; p_1, p2, ...p_N)
-      // = 1/(2*PI) * d^3 PS(s; p1,p2,p3) d^{N-2} PS(M^2; p4,p5,..,pN) dM^2
+      // = 1/(2*PI) * d^3 PS(s; p1,p2,pX) d^{N-2} PS(M^2; pX,p3,p4,..,pN) dM^2
       // 
       // Decaywidth = 1/(2M S) \int dPS |M_decay|^2, where M
       // = mother mass, S = final state symmetry factor

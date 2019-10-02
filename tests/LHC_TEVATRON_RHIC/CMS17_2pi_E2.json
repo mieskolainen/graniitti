@@ -11,7 +11,7 @@
   
   "GENERALPARAM" : {
     
-    "OUTPUT"     : "ALICE19_2pi", // Output filename
+    "OUTPUT"     : "CMS17_2pi", // Output filename
     "FORMAT"     : "hepmc3",    // hepmc3, hepmc2, hepevt
     "CORES"      : 0,           // Number of CPU threads (0 for automatic)
     "NEVENTS"    : 100,         // Number of events
@@ -27,7 +27,7 @@
     
     "BEAM"    : ["p+","p+"],    // Beam PDG-ID / Name
     "ENERGY"  : [3500, 3500],   // Beam energy in the lab (GeV)
-    "PROCESS" : "PP[RES+CON]<F> -> pi+ pi-", // Process mode
+    "PROCESS" : "PP[RES+CON]<C> -> pi+ pi-", // Process mode
     "RES"     : ["f0_500", "rho_770", "f0_980", "phi_1020", "f2_1270", "f0_1500", "f2_1525","f0_1710"],
     "POMLOOP" : false,          // Eikonal Pomeron loop screening
     "NSTARS"  : 2,              // N* excitation (0 = elastic, 1 = single, 2 = double)
@@ -49,14 +49,14 @@
     // VEGAS integrator
     "VEGAS" : {
 
-      "PRECISION" : 0.05,      // Integral relative precision target
-      "NCALL"     : 5000,      // Number of function calls per initialization iteration (5000 or more)
-      "ITER"      : 10,        // Number of initialization iteration (10 or more)
+      "PRECISION" : 0.05,     // Integral relative precision target
+      "NCALL"     : 5000,     // Number of function calls per initialization iteration (5000 or more)
+      "ITER"      : 10,       // Number of initialization iteration (10 or more)
 
-      "BINS"    : 128,         // Maximum number of bins per dimension (NOTE: EVEN NUMBER)
-      "LAMBDA"  : 1.5,         // Regularization parameter
-      "CHI2MAX" : 10.0,        // Maximum Chi^2 in initialization
-      "DEBUG"   : -1           // Debug output (default -1)
+      "BINS"    : 128,        // Maximum number of bins per dimension (NOTE: EVEN NUMBER)
+      "LAMBDA"  : 1.5,        // Regularization parameter
+      "CHI2MAX" : 10.0,       // Maximum Chi^2 in initialization
+      "DEBUG"   : -1          // Debug output (default -1)
     },
 
     // FLAT integrator
@@ -73,16 +73,16 @@
   "GENCUTS" : {
 
     "<C>" : {
-      "Rap" : [-0.9, 0.9],  // Rapidity boundaries of the final states (<C> class)
+      "Rap" : [-2.5, 2.5],  // Rapidity boundaries of the final states (<C> class)
       "Xi"  : [0, 0.01],
     },
     "<F>" : {
-      "Rap" : [-0.9, 0.9],  // Rapidity boundaries of the system (<F> class)
+      "Rap" : [-2.5, 2.5], // Rapidity boundaries of the system (<F> class)
       "M"   : [0, 7.0],
       "Xi"  : [0, 0.01],
     },
     "<Q>" : {
-      "Xi"  : [0, 0.05]     // Invariant scale M^2/s (forward excitation)
+      "Xi"  : [0, 0.05]    // Invariant scale M^2/s (forward excitation)
     }
   },
 
@@ -97,9 +97,9 @@
      // Central system final states
     "PARTICLE" : {
 
-      "Eta"  : [-0.9, 0.9],   // Pseudorapidity
-      "Rap"  : [-10.0, 10.0],   // Rapidity
-      "Pt"   : [0.15, 100000.0], // Transverse momentum
+      "Eta"  : [-2.4, 2.4],     // Pseudorapidity
+      "Rap"  : [-2.0, 2.0],     // Rapidity
+      "Pt"   : [0.2, 100000.0], // Transverse momentum
       "Et"   : [0.0, 100000.0]  // Transverse energy
     },
 
@@ -107,7 +107,7 @@
     "SYSTEM" : {
 
       "M"    : [0.0, 100000.0], // Mass
-      "Rap"  : [-0.9, 0.9],     // Rapidity
+      "Rap"  : [-10.0, 10.0],   // Rapidity
       "Pt"   : [0.0, 100000.0]  // Transverse momentum
     },
     

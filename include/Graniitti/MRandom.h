@@ -39,8 +39,8 @@ class MRandom {
   double U(double a, double b);
   double G(double mu, double sigma);
   double PowerRandom(double a, double b, double alpha);
-  double RelativisticBWRandom(double m, double Gamma, double LIMIT = 5.0);
-  double CauchyRandom(double m, double Gamma, double LIMIT = 5.0);
+  double RelativisticBWRandom(double m0, double Gamma, double LIMIT = 5.0, double M_MIN = 0.0);
+  double CauchyRandom(double m0, double Gamma, double LIMIT = 5.0, double M_MIN = 0.0);
   int NBDRandom(double avgN, double k, int maxvalue);
   int PoissonRandom(double lambda);
   double ExpRandom(double lambda);
