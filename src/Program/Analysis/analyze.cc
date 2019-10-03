@@ -382,8 +382,20 @@ int main(int argc, char *argv[]) {
       throw std::invalid_argument("Unknown 'units' parameter: " + units);
     }
 
-    if (inputfile.size() != finalstatePDG.size() || inputfile.size() != multiplicity.size()) {
-      throw std::invalid_argument("Commandline input length do not match!");
+    // ---------------------------------------------------------------------    
+    // Check input lengths
+    auto CheckInputLength = [](const std::vector<std::size_t>& x) {
+      for (std::size_t i = 0; i < x.size(); ++i) {
+        for (std::size_t j = 0; j < x.size(); ++j) {
+          if (x[i] != x[j]) { return false; }
+        }
+      }
+      return true;
+    };
+    const std::vector<std::size_t> lengths = {inputfile.size(), finalstatePDG.size(), labels.size(), multiplicity.size()};
+
+    if (!CheckInputLength(lengths)) {
+      throw std::invalid_argument("Commandline input lengths (|inputfile| == |PDG| == |labels| == |multiplicity|) do not match!");
     }
 
     // Scale each data source

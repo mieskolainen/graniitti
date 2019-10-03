@@ -180,6 +180,11 @@ class M4Vec {
     return Px() * rhs.Px() + Py() * rhs.Py() + Pz() * rhs.Pz();
   }
 
+  // Transverse 2-vector dot product
+  double DotPt(const M4Vec &rhs) const {
+    return Px() * rhs.Px() + Py() * rhs.Py();
+  }
+
   // 3-vector cross product (return vector with 0 energy/time)
   M4Vec Cross3(const M4Vec &rhs) const {
     M4Vec a(Py() * rhs.Pz() - Pz() * rhs.Py(), Pz() * rhs.Px() - Px() * rhs.Pz(),

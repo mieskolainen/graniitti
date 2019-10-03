@@ -50,6 +50,28 @@ bool UserCut(int id, const gra::LORENTZSCALAR &lts) {
   // -------------------------------------------------------------------
   // "Spin-filter" cut
 
+  // Forward proton pt1 dot pt2 < 0
+  else if (id == -111) {
+    if (lts.pfinal[1].DotPt(lts.pfinal[2]) < 0) {
+      // fine
+    } else {
+      return false;  // did not pass
+    }
+  }
+
+  // Forward proton pt1 dot pt2 > 0
+  else if (id == 111) {
+    if (lts.pfinal[1].DotPt(lts.pfinal[2]) > 0) {
+      // fine
+    } else {
+      return false;  // did not pass
+    }
+  }
+
+
+  // -------------------------------------------------------------------
+  // "Spin-filter" cut
+
   // Forward proton |deltaphi| in (90, 180]
   else if (id == 90180) {
     const double deltaphiabs = lts.pfinal[1].DeltaPhiAbs(lts.pfinal[2]);
@@ -76,7 +98,9 @@ bool UserCut(int id, const gra::LORENTZSCALAR &lts) {
   else if (id == 280818) {
     
     // Loop over forward protons
-    for (std::size_t i = 0; i < 2; ++i) {
+    std::vector<int> indices = {1,2};
+
+    for (const auto & i : indices) {
       if (gra::math::pow2(lts.pfinal[i].Px() + 0.3) + gra::math::pow2(lts.pfinal[i].Py()) < 0.25) {  // GeV^2
                                                                              // fine
       } else {
