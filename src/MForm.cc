@@ -389,18 +389,16 @@ double S3F(double t) {
 
 // Proton inelastic form factor / structure function
 // parametrization for Pomeron processes [THIS FUNCTION IS ANSATZ - IMPROVE!]
+// 
+// Motivated by arxiv.org/abs/hep-ph/9305319
 //
 // <apply at amplitude level>
 double S3FINEL(double t, double M2) {
+  
   constexpr double DELTA_P = 0.0808;
   constexpr double a       = 0.5616;  // GeV^{2}
-
   double f = std::pow(std::abs(t) / (M2 * (std::abs(t) + a)), 0.5 * (1 + DELTA_P));
-
-  // Coupling ansatz, note 1/sqrt(gN_P) multiplies gN_P outside this function
-  // giving total coupling: sqrt(g3P) x sqrt(gN_P)
-  f *= msqrt(PARAM_SOFT::g3P / PARAM_SOFT::gN_P);
-  
+    
   return f;
 }
 

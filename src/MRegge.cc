@@ -243,11 +243,11 @@ std::complex<double> MRegge::ME3HEL(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res
   }
   
   // --------------------------------------------------------------------------
-  // Proton form factors
-  const double FF_A =
-      lts.excite1 ? gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : gra::form::S3F(lts.t1);
-  const double FF_B =
-      lts.excite2 ? gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : gra::form::S3F(lts.t2);
+  // Proton / Dissociative system vertices
+  const double FF_A = lts.excite1 ? 
+    msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_P) * gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : PARAM_SOFT::gN_P * gra::form::S3F(lts.t1);
+  const double FF_B = lts.excite1 ? 
+    msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_P) * gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : PARAM_SOFT::gN_P * gra::form::S3F(lts.t2);
 
   // Forward proton deltaphi
   //const double dphi = lts.pfinal[1].DeltaPhi(lts.pfinal[2]);
@@ -260,12 +260,12 @@ std::complex<double> MRegge::ME3HEL(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res
 
   // Now loop over all helicity amplitudes
   // Common factor all amplitudes
-  std::complex<double> common = PARAM_SOFT::gN_P * FF_A *
+  std::complex<double> common = FF_A *
                                 PropOnly(lts.s1, lts.t1) *
                                 CBW(lts, resonance) * resonance.g *
                                 PARAM_REGGE::ResonanceFormFactor(lts.m2, pow2(resonance.p.mass), resonance.g_FF) *
                                 PropOnly(lts.s2, lts.t2) *
-                                PARAM_SOFT::gN_P * FF_B;
+                                FF_B;
 
   lts.hamp.clear();
   for (std::size_t i = 0; i < N; ++i) {
@@ -436,24 +436,25 @@ std::complex<double> MRegge::ME4(gra::LORENTZSCALAR &lts, double sign) const {
     prop = &PARAM_REGGE::Baryon_prop;
   }
 
-  const double FF_A =
-      lts.excite1 ? gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : gra::form::S3F(lts.t1);
-  const double FF_B =
-      lts.excite2 ? gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : gra::form::S3F(lts.t2);
+  // Proton / Dissociative system vertices
+  const double FF_A = lts.excite1 ? 
+    msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_P) * gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : PARAM_SOFT::gN_P * gra::form::S3F(lts.t1);
+  const double FF_B = lts.excite1 ? 
+    msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_P) * gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : PARAM_SOFT::gN_P * gra::form::S3F(lts.t2);
 
   // Particle-Particle-Pomeron coupling
   const double gpp_P = PARAM_REGGE::c[0] / PARAM_SOFT::gN_P;
 
-  const std::complex<double> A_t = PropOnly(lts.ss[1][3], lts.t1) * PARAM_SOFT::gN_P * FF_A *
+  const std::complex<double> A_t = PropOnly(lts.ss[1][3], lts.t1) * FF_A *
                                    (*ff)(lts.t_hat, M2_) * gpp_P * prop(lts.t_hat, M2_) *
                                    (*ff)(lts.t_hat, M2_) * gpp_P * PropOnly(lts.ss[2][4], lts.t2) *
-                                   PARAM_SOFT::gN_P * FF_B;
+                                   FF_B;
 
   // sign applied here
-  const std::complex<double> A_u = sign * PropOnly(lts.ss[1][4], lts.t1) * PARAM_SOFT::gN_P * FF_A *
+  const std::complex<double> A_u = sign * PropOnly(lts.ss[1][4], lts.t1) * FF_A *
                                    (*ff)(lts.u_hat, M2_) * gpp_P * prop(lts.u_hat, M2_) *
                                    (*ff)(lts.u_hat, M2_) * gpp_P * PropOnly(lts.ss[2][3], lts.t2) *
-                                   PARAM_SOFT::gN_P * FF_B;
+                                   FF_B;
 
   // Total amplitude
   const std::complex<double> A = A_t + A_u;
@@ -462,7 +463,7 @@ std::complex<double> MRegge::ME4(gra::LORENTZSCALAR &lts, double sign) const {
   // For screening loop
   lts.hamp = {A};
   // --------------------------------------------------------------------
-  
+
   return A;
 }
 
@@ -523,10 +524,12 @@ std::complex<double> MRegge::ME6(gra::LORENTZSCALAR &lts) const {
     prop = &PARAM_REGGE::Baryon_prop;
   }
 
-  const double FF_A =
-      lts.excite1 ? gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : gra::form::S3F(lts.t1);
-  const double FF_B =
-      lts.excite2 ? gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : gra::form::S3F(lts.t2);
+  // Proton / Dissociative system vertices
+  const double FF_A = lts.excite1 ? 
+    msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_P) * gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : PARAM_SOFT::gN_P * gra::form::S3F(lts.t1);
+  const double FF_B = lts.excite1 ? 
+    msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_P) * gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : PARAM_SOFT::gN_P * gra::form::S3F(lts.t2);
+
 
   // Particle-Particle-Pomeron coupling
   const double gpp_P = PARAM_REGGE::c[0] / PARAM_SOFT::gN_P;
@@ -550,10 +553,10 @@ std::complex<double> MRegge::ME6(gra::LORENTZSCALAR &lts) const {
     const double tt_cd = lts.tt_2[d];
 
     const std::complex<double> subamp =
-        PropOnly(lts.ss[1][a], lts.t1) * PARAM_SOFT::gN_P * FF_A * (*ff)(tt_ab, M2_A) * gpp_P *
+        PropOnly(lts.ss[1][a], lts.t1) * FF_A * (*ff)(tt_ab, M2_A) * gpp_P *
         prop(tt_ab, M2_A) * (*ff)(tt_bc, M2_A) * gpp_P * PropOnly(lts.ss[b][c], tt_bc) *
         (*ff)(tt_bc, M2_B) * gpp_P * prop(tt_cd, M2_B) * (*ff)(tt_cd, M2_B) * gpp_P *
-        PropOnly(lts.ss[2][d], lts.t2) * PARAM_SOFT::gN_P * FF_B;
+        PropOnly(lts.ss[2][d], lts.t2) * FF_B;
 
     A += subamp;
   }
@@ -617,10 +620,12 @@ std::complex<double> MRegge::ME8(gra::LORENTZSCALAR &lts) const {
     ff   = &PARAM_REGGE::Baryon_FF;
     prop = &PARAM_REGGE::Baryon_prop;
   }
-  const double FF_A =
-      lts.excite1 ? gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : gra::form::S3F(lts.t1);
-  const double FF_B =
-      lts.excite2 ? gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : gra::form::S3F(lts.t2);
+  
+  // Proton / Dissociative system vertices
+  const double FF_A = lts.excite1 ? 
+    msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_P) * gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : PARAM_SOFT::gN_P * gra::form::S3F(lts.t1);
+  const double FF_B = lts.excite1 ? 
+    msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_P) * gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : PARAM_SOFT::gN_P * gra::form::S3F(lts.t2);
 
   // Particle-Particle-Pomeron coupling
   const double gpp_P = PARAM_REGGE::c[0] / PARAM_SOFT::gN_P;
@@ -649,11 +654,11 @@ std::complex<double> MRegge::ME8(gra::LORENTZSCALAR &lts) const {
     const double tt_ef = lts.tt_2[f];
 
     const std::complex<double> subamp =
-        PropOnly(lts.ss[1][a], lts.t1) * PARAM_SOFT::gN_P * FF_A * (*ff)(tt_ab, M2_A) * gpp_P *
+        PropOnly(lts.ss[1][a], lts.t1) * FF_A * (*ff)(tt_ab, M2_A) * gpp_P *
         prop(tt_ab, M2_A) * (*ff)(tt_bc, M2_A) * gpp_P * PropOnly(lts.ss[b][c], tt_bc) *
         (*ff)(tt_bc, M2_B) * gpp_P * prop(tt_cd, M2_B) * (*ff)(tt_de, M2_B) * gpp_P *
         PropOnly(lts.ss[d][e], tt_de) * (*ff)(tt_de, M2_C) * gpp_P * prop(tt_ef, M2_C) *
-        (*ff)(tt_ef, M2_C) * gpp_P * PropOnly(lts.ss[2][f], lts.t2) * PARAM_SOFT::gN_P * FF_B;
+        (*ff)(tt_ef, M2_C) * gpp_P * PropOnly(lts.ss[2][f], lts.t2) * FF_B;
 
     A += subamp;
   }
@@ -698,18 +703,19 @@ std::complex<double> MRegge::ME8(gra::LORENTZSCALAR &lts) const {
 // ===========
 //
 std::complex<double> MRegge::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const {
-  // Proton form factors
-  const double FF_A =
-      lts.excite1 ? gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : gra::form::S3F(lts.t1);
-  const double FF_B =
-      lts.excite2 ? gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : gra::form::S3F(lts.t2);
+
+  // Proton / Dissociative system vertices
+  const double FF_A = lts.excite1 ? 
+    msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_P) * gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : PARAM_SOFT::gN_P * gra::form::S3F(lts.t1);
+  const double FF_B = lts.excite1 ? 
+    msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_P) * gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : PARAM_SOFT::gN_P * gra::form::S3F(lts.t2);
 
   // s-channel
   // Factor 2 x from initial state (identical boson) statistics
   const std::complex<double> A_prod =
-      2.0 * PropOnly(lts.s1, lts.t1) * FF_A * PARAM_SOFT::gN_P * CBW(lts, resonance) *
+      2.0 * PropOnly(lts.s1, lts.t1) * FF_A * CBW(lts, resonance) *
       PARAM_REGGE::ResonanceFormFactor(lts.m2, pow2(resonance.p.mass), resonance.g_FF) *
-      PropOnly(lts.s2, lts.t2) * FF_B * PARAM_SOFT::gN_P;
+      PropOnly(lts.s2, lts.t2) * FF_B;
 
   // Production and Decay amplitude
   const std::complex<double> A_spin = spin::ProdAmp(lts, resonance) * spin::DecayAmp(lts, resonance);
@@ -741,22 +747,32 @@ std::complex<double> MRegge::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resona
 // ===========
 //
 std::complex<double> MRegge::ME3ODD(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const {
-  // Proton form factors
-  const double FF_A =
-      lts.excite1 ? gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : gra::form::S3F(lts.t1);
-  const double FF_B =
-      lts.excite2 ? gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : gra::form::S3F(lts.t2);
-
-  // s-channel
-  const std::complex<double> A1 =
-      PropOnly(lts.s1, lts.t1) * FF_A * PARAM_SOFT::gN_P * CBW(lts, resonance) *
-      PARAM_REGGE::ResonanceFormFactor(lts.m2, pow2(resonance.p.mass), resonance.g_FF) *
-      OdderonProp(lts.s2, lts.t2) * FF_B * PARAM_SOFT::gN_O;
   
-  const std::complex<double> A2 =
-      OdderonProp(lts.s1, lts.t1) * FF_A * PARAM_SOFT::gN_O * CBW(lts, resonance) *
+  // Proton / Dissociative system vertices
+  double FF_A = lts.excite1 ? 
+    msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_P) * gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : PARAM_SOFT::gN_P * gra::form::S3F(lts.t1);
+  double FF_B = lts.excite1 ? 
+    msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_O) * gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : PARAM_SOFT::gN_O * gra::form::S3F(lts.t2);
+
+  const std::complex<double> A1 =
+      PropOnly(lts.s1, lts.t1) * FF_A * CBW(lts, resonance) *
       PARAM_REGGE::ResonanceFormFactor(lts.m2, pow2(resonance.p.mass), resonance.g_FF) *
-      PropOnly(lts.s2, lts.t2) * FF_B * PARAM_SOFT::gN_P;
+      OdderonProp(lts.s2, lts.t2) * FF_B;
+  
+  // ---------------------------------------------------------------------
+
+  // Proton / Dissociative system vertices
+  FF_A = lts.excite1 ? 
+    msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_O) * gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : PARAM_SOFT::gN_O * gra::form::S3F(lts.t1);
+  FF_B = lts.excite1 ? 
+    msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_P) * gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : PARAM_SOFT::gN_P * gra::form::S3F(lts.t2);
+
+  const std::complex<double> A2 =
+      OdderonProp(lts.s1, lts.t1) * FF_A * CBW(lts, resonance) *
+      PARAM_REGGE::ResonanceFormFactor(lts.m2, pow2(resonance.p.mass), resonance.g_FF) *
+      PropOnly(lts.s2, lts.t2) * FF_B;
+
+  // ---------------------------------------------------------------------
 
   // Production and Decay amplitude
   const std::complex<double> A_spin = spin::ProdAmp(lts, resonance) * spin::DecayAmp(lts, resonance);
@@ -883,9 +899,11 @@ std::complex<double> MRegge::PhotoProp(double s, double t, double m2, bool excit
   
   // Proton form factor simply exponential here
   // Division by 2, because we are at amplitude level
-  const double FF = excite ? gra::form::S3FINEL(t, M2_forward) : std::exp(B0 * t / 2.0);
 
-  return eta * std::pow(s / W02, alpha) * FF * PARAM_SOFT::gN_P;
+  // Proton / Dissociative system vertex
+  const double FF = excite ? msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_P) * gra::form::S3FINEL(t, M2_forward) : PARAM_SOFT::gN_P * std::exp(B0 * t / 2.0);
+
+  return eta * std::pow(s / W02, alpha) * FF;
 }
 
 // ============================================================================
