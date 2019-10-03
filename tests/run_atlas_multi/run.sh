@@ -13,18 +13,20 @@ then
 # Not set
 if [ -z "$EVENTS" ]
 then
-	EVENTS=400000
+	EVENTS=100000
 fi
 
-# Generate
+# Full
 ./bin/gr -i ./tests/run_atlas_multi/ATLAS.json \
-	-w true -l false -n $EVENTS -o "ATLAS"       -f "hepmc3"
+	-w true -l false -n $EVENTS -p "PP[RES+CON]<F> -> pi+ pi-" -o "ATLAS"     -f "hepmc3"
 
-./bin/gr -i ./tests/run_atlas_multi/ATLAS_POS.json \
-	-w true -l false -n $EVENTS -o "ATLAS_POS"   -f "hepmc3"
-
+# DeltaPhi < 0
 ./bin/gr -i ./tests/run_atlas_multi/ATLAS_NEG.json \
-	-w true -l false -n $EVENTS -o "ATLAS_NEG"   -f "hepmc3"
+	-w true -l false -n $EVENTS -p "PP[RES+CON]<F> -> pi+ pi-" -o "ATLAS_NEG" -f "hepmc3"
+
+# DeltaPhi > 0
+./bin/gr -i ./tests/run_atlas_multi/ATLAS_POS.json \
+	-w true -l false -n $EVENTS -p "PP[RES+CON]<F> -> pi+ pi-" -o "ATLAS_POS" -f "hepmc3"
 
 fi
 # Analyze
@@ -32,10 +34,10 @@ fi
 S2=0.15
 
 ./bin/analyze \
--i "ATLAS, ATLAS_POS, ATLAS_NEG" \
+-i "ATLAS, ATLAS_NEG, ATLAS_POS" \
 -g "211,211,211" \
 -n "2,2,2" \
--l "#pi^{+}#pi^{-}, pi^{+}#pi^{-} [#delta#phi > #pi/2],  #pi^{+}#pi^{-} [#delta#phi < #pi/2]" \
+-l "#pi^{+}#pi^{-}, #pi^{+}#pi^{-} [#delta#phi < #pi/2],  #pi^{+}#pi^{-} [#delta#phi > #pi/2]" \
 -M "95, 0.0, 3.0" \
 -Y "95,-2.5, 2.5" \
 -P "95, 0.0, 2.0" \

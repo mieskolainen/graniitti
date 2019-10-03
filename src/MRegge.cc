@@ -726,7 +726,7 @@ std::complex<double> MRegge::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resona
 
   // Full amplitude
   const std::complex<double> A = A_prod * A_spin * V;
-
+  
   // --------------------------------------------------------------------
   // For screening loop
   lts.hamp = {A};
@@ -844,7 +844,7 @@ std::complex<double> MRegge::PhotoME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &r
 
   // Full amplitude
   const std::complex<double> A = A_prod * A_spin;
-
+  
   // --------------------------------------------------------------------
   // For screening loop
   lts.hamp = {A};
