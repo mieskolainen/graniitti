@@ -13,20 +13,20 @@ then
 # Not set
 if [ -z "$EVENTS" ]
 then
-	EVENTS=100000
+	EVENTS=300000
 fi
 
 # Full
 ./bin/gr -i ./tests/run_atlas_multi/ATLAS.json \
-	-w true -l false -n $EVENTS -p "PP[RES+CON]<F> -> pi+ pi-" -o "ATLAS     @FRAME:CS" -f "hepmc3"
+	-w true -l false -n $EVENTS -p "PP[RES+CON]<F> -> pi+ pi-" -o "ATLAS" -f "hepmc3"
 
 # DeltaPhi < 0
 ./bin/gr -i ./tests/run_atlas_multi/ATLAS_NEG.json \
-	-w true -l false -n $EVENTS -p "PP[RES+CON]<F> -> pi+ pi-" -o "ATLAS_NEG @FRAME:CS" -f "hepmc3"
+	-w true -l false -n $EVENTS -p "PP[RES+CON]<F> -> pi+ pi-" -o "ATLAS_NEG" -f "hepmc3"
 
 # DeltaPhi > 0
 ./bin/gr -i ./tests/run_atlas_multi/ATLAS_POS.json \
-	-w true -l false -n $EVENTS -p "PP[RES+CON]<F> -> pi+ pi-" -o "ATLAS_POS @FRAME:CS" -f "hepmc3"
+	-w true -l false -n $EVENTS -p "PP[RES+CON]<F> -> pi+ pi-" -o "ATLAS_POS" -f "hepmc3"
 
 fi
 # Analyze
