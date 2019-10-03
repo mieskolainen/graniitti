@@ -1,4 +1,4 @@
-// Model parameters ("tune0")
+// Model parameters ("TUNE0")
 //
 // mikael.mieskolainen@cern.ch, 2019
 {
@@ -27,8 +27,8 @@
   // Jacob-Wick helicity amplitudes etc.
   "PARAM_SPIN" : {
 
-    // Lorentz frame of the spin polarization ("CM","HX","CS")
-    "FRAME" : "CM",
+    // Lorentz frame of the spin polarization ("CS","HX","CM")
+    "FRAME" : "CS", // Default Collins-Soper
     
     // Maximum angular momentum value for sliding Pomeron helicity trajectories
     "JMAX" : 5,

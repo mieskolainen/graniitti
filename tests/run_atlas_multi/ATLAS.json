@@ -96,7 +96,7 @@
 
       "Eta"  : [-2.5, 2.5],      // Pseudorapidity
       "Rap"  : [-10.0, 10.0],    // Rapidity
-      "Pt"   : [0.2, 100000.0],  // Transverse momentum
+      "Pt"   : [0.15, 100000.0],  // Transverse momentum
       "Et"   : [0.0, 100000.0]   // Transverse energy
     },
     
@@ -112,7 +112,7 @@
     "FORWARD" : {
 
       "M"    : [0.0, 100000.0],  // Mass
-      "t"    : [0.03, 100000.0],  // Forward protons/N* Mandelstam t (absolute value) (GeV^2)
+      "t"    : [0.035, 100000.0],  // Forward protons/N* Mandelstam t (absolute value) (GeV^2)
     },
     
     // Custom user cuts (default false, otherwise identifier ID)
