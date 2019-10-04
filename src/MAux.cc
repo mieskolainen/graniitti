@@ -592,7 +592,7 @@ std::string GetVersionString() {
 std::string GetVersionTLatex() {
   char buff[100];
   const double version = 1.0;
-  snprintf(buff, sizeof(buff), "#color[16]{#scale[0.6]{GRANIITTI #scale[0.8]{%0.1f}}}", version);
+  snprintf(buff, sizeof(buff), "#color[16]{#scale[0.6]{GRANIITTI #scale[0.8]{%0.2f}}}", version);
   std::string str = buff;
   return str;
 }

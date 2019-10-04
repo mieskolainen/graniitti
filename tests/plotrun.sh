@@ -24,6 +24,11 @@ fi
 #then
 #fi
 
+# Spherical harmonic expansion
+EVENTS=1000000
+yes $CMD | source ./tests/run_atlas_multi/run.sh
+
+
 EVENTS=500000
 
 # Fast processes
@@ -40,6 +45,7 @@ EVENTS=1000000
 
 yes $CMD | source ./tests/run_cms_harmonic/run.sh
 #yes $CMD | source ./tests/run_alice_harmonic/run.sh
+
 
 # Tensor Pomeron (slowest)
 EVENTS=1000000

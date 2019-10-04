@@ -6,10 +6,15 @@
 F=/home/user/Dropbox/GRANIITTI_tex/mcfigs
 
 
-## Processes and plotting
+#yes $CMD | source ./tests/run_screening/run.sh
+FOLDER=ATLAS+ATLAS_NEG+ATLAS_POS
+for FILE in hP_S_M_Pt; do
+	cp ./figs/$FOLDER/$FILE.pdf $F/$FILE\_ATLASPIPI.pdf
+done
+
 #yes $CMD | source ./tests/run_screening/run.sh
 FOLDER=continuum+continuum_screened
-for FILE in h1_PP_dpt_logy; do
+for FILE in h1_PP_dpt_logy h1_PP_t1_logy; do
 	cp ./figs/$FOLDER/$FILE.pdf $F/$FILE\_KK.pdf
 done
 
@@ -33,7 +38,7 @@ done
 
 #yes $CMD | source ./tests/run_JW_polarization/run.sh
 FOLDER=f0_980+rho_JZ0+rho_JZ1+f2_JZ0+f2_JZ1+f2_JZ2
-for FILE in h1_costheta_CM_logy h1_PP_dpt_logy; do
+for FILE in h1_costheta_CM_logy h1_PP_dpt_logy h1_2B_acop_logy h1_2B_diffrap_logy; do
 	cp ./figs/$FOLDER/$FILE.pdf $F/$FILE\_JW.pdf
 done
 
