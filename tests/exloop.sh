@@ -285,13 +285,13 @@ do
 
 	# ====================================================================
 	# Generate
-	./bin/gr -i $F -l false -n 0 > /tmp/GRANIITTI.out
+	./bin/gr -i $F -l false -h 0 -n 0 > /tmp/GRANIITTI.out
 
 	if [ $SCREENING == 1 ]
 	then
-	./bin/gr -i $F -l true -n 0 > /tmp/GRANIITTI_S2.out		
+	./bin/gr -i $F -l true  -h 0 -n 0 > /tmp/GRANIITTI_S2.out		
 	fi
-
+	
 	# ====================================================================
 	# Extract integrated cross section
 	XS=$(grep -E 'barn' /tmp/GRANIITTI.out)
