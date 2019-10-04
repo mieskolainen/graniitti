@@ -1,10 +1,7 @@
-x-section analysis (plots with MATLAB)
+x-section for elastic/SD/DD legs in CEP analysis (plots with MATLAB)
 
-1. First simulate:
+1. First simulate and copy x-section tables:
    source ./tests/run_scan_xs/run.sh
 
-2. Copy output tables:
-   cp scan.* ./tests/analysis_scan_xs/
-
-3. Then run:
+2. Then generate plots:
    matlab analyze.m
