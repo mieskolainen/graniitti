@@ -2,7 +2,10 @@
 #
 # Generate simulations and analysis plots
 #
+# Run with: time xxx.sh
+#
 # Run with: source ./tests/megarun.sh > megarun.out
+
 
 make -j4 TEST=TRUE ROOT14=TRUE
 
@@ -34,13 +37,11 @@ yes $CMD | source ./tests/run_excitation/run.sh
 yes $CMD | source ./tests/run_JW_polarization/run.sh
 yes $CMD | source ./tests/run_JW_frames/run.sh
 
-
 # Spherical harmonic expansion
 EVENTS=1000000
 
 yes $CMD | source ./tests/run_cms_harmonic/run.sh
 #yes $CMD | source ./tests/run_alice_harmonic/run.sh
-
 
 # Tensor Pomeron (slowest)
 EVENTS=1000000

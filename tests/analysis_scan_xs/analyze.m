@@ -101,3 +101,13 @@ filename = sprintf('./figs/xsecratios.pdf');
 print(gcf, '-dpdf', filename);
 system(sprintf('pdfcrop --margins ''10 10 10 10'' %s %s', filename, filename));
 
+%%
+
+% Before screening
+SD_to_EL_S  = mean(MC(:,6) ./ MC(:,5))
+DD_to_SD_S  = mean(MC(:,7) ./ MC(:,6))
+
+% After screening
+SD_to_EL_S2 = mean(MC(:,9)  ./ MC(:,8))
+DD_to_SD_S2 = mean(MC(:,10) ./ MC(:,9))
+
