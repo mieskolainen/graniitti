@@ -76,6 +76,8 @@ class MRegge {
   std::complex<double> ME3HEL(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const;
   std::complex<double> PhotoME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const;
 
+  void PomPomProtonVertex(const gra::LORENTZSCALAR& lts, double& FF_A, double& FF_B) const;
+
   // Constructor amplitude leg permutations
   void ConstructPerm(int type);
 

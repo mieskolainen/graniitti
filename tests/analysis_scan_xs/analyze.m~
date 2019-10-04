@@ -46,8 +46,8 @@ for i = 5:10
     kk = kk + 1;
 end
 
-l = legend('$\pi^+\pi^-_{EL}$','$\pi^+\pi^-_{SD}$','$\pi^+\pi^-_{DD}$', ...
-           '$\pi^+\pi^-_{EL}$ ($S^2$)','$\pi^+\pi^-_{SD}$ ($S^2$)','$\pi^+\pi^-_{DD}$ ($S^2$)');
+l = legend('$\pi^+\pi^-_{EL}$','$\pi^+\pi^-_{SD}$times$ SD','$\pi^+\pi^-$ $\times$ DD', ...
+           '$\pi^+\pi^-$ ($S^2$)','$\pi^+\pi^-$ $\times$ SD ($S^2$)','$\pi^+\pi^-$ $\times$ DD ($S^2$)');
 set(l,'interpreter','latex','location','northwest'); legend('boxoff');
 
 set(gca,'xscale','log');
@@ -58,7 +58,7 @@ axis tight;
 xlabel('$\sqrt{s}$ (GeV)','interpreter','latex');
 ylabel('$\sigma$ ($\mu$b)','interpreter','latex');
 
-axis([10 max(MC(:,1)) 1e-1 1e2]);
+axis([10 max(MC(:,1)) 1e-1 1e6]);
 
 % PRINT OUT
 filename = sprintf('./figs/xsec.pdf');

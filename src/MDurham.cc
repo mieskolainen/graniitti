@@ -360,7 +360,7 @@ double MDurham::DQtloop(gra::LORENTZSCALAR &                           lts,
         lts.excite1 ? gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : gra::form::S3F(lts.t1);
     lts.hamp[h] *=
         lts.excite2 ? gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : gra::form::S3F(lts.t2);
-
+    
     // Apply phase space factors
     lts.hamp[h] *= msqrt(16.0 * math::PIPI);
     lts.hamp[h] *= msqrt(16.0 * math::PIPI);
