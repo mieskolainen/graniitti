@@ -19,7 +19,7 @@ fi
 # Generate
 ./bin/gr -i ./tests/processes/CMSCUTS.json -p "PP[RES+CON]<F> -> pi+ pi-" -w true -l false -n $EVENTS -o "CMS19_2pi"   -f "hepmc3"
 ./bin/gr -i ./tests/processes/CMSCUTS.json -p "PP[RES+CON]<F> -> K+ K-"   -w true -l false -n $EVENTS -o "CMS19_2K"    -f "hepmc3"
-./bin/gr -i ./tests/processes/CMSCUTS.json -p "PP[RES+CON]<F> -> p+ p-"   -w true -l false -n $EVENTS -o "CMS19_ppbar" -f "hepmc3"
+./bin/gr -i ./tests/processes/CMSCUTS.json -p "PP[CON]<F> -> p+ p-"   -w true -l false -n $EVENTS -o "CMS19_ppbar" -f "hepmc3"
 
 fi
 
