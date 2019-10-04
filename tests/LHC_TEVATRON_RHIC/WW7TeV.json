@@ -57,7 +57,7 @@
       "PRECISION"  : 0.01,  // Integral relative precision target
       "DEBUG" : -1          // Debug output (default -1)
     },
-
+    
     // FLAT integrator
     "FLAT" : {
 

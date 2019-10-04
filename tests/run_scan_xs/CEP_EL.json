@@ -52,7 +52,7 @@
     // VEGAS integrator
     "VEGAS" : {
 
-      "PRECISION"  : 0.015,    // Integral relative precision target
+      "PRECISION"  : 0.01,    // Integral relative precision target
       "NCALL" : 5000,        // Number of function calls per initialization iteration (5000 or more)
       "ITER"  : 5,            // Number of initialization iteration (10 or more)
 
