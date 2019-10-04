@@ -82,7 +82,7 @@ for i = 1:3
     kk = kk + 1;
 end
 
-l = legend('CEP','CEP $\times$ SD','CEP $\times$ DD');
+l = legend('$\pi^+\pi^-_{EL}$','$\pi^+\pi^-_{SD}$','$\pi^+\pi^-_{DD}$');
 
 set(l,'interpreter','latex','location','northeast'); legend('boxoff');
 

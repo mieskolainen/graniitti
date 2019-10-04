@@ -24,17 +24,12 @@ fi
 #then
 #fi
 
-# Spherical harmonic expansion
 EVENTS=1000000
-yes $CMD | source ./tests/run_atlas_multi/run.sh
-
-
-EVENTS=500000
 
 # Fast processes
 yes $CMD | source ./tests/run_screening/run.sh
 yes $CMD | source ./tests/run_alice_multi/run.sh
-yes $CMD | source ./tests/run_cms_multi/run.sh
+yes $CMD | source ./tests/run_atlas_multi/run.sh
 yes $CMD | source ./tests/run_excitation/run.sh
 yes $CMD | source ./tests/run_JW_polarization/run.sh
 yes $CMD | source ./tests/run_JW_frames/run.sh

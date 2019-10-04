@@ -6,7 +6,7 @@
 F=/home/user/Dropbox/GRANIITTI_tex/mcfigs
 
 
-#yes $CMD | source ./tests/run_screening/run.sh
+#yes $CMD | source ./tests/run_atlas_multi/run.sh
 FOLDER=ATLAS+ATLAS_NEG+ATLAS_POS
 for FILE in hP_S_M_Pt; do
 	cp ./figs/$FOLDER/$FILE.pdf $F/$FILE\_ATLASPIPI.pdf
@@ -23,12 +23,6 @@ FOLDER=ALICE_2pi+ALICE_2K+ALICE_ppbar
 for FILE in h1_S_M_logy; do
 	cp ./figs/$FOLDER/$FILE.pdf $F/$FILE\_PIPIKKPPBAR.pdf
 done
-
-#yes $CMD | source ./tests/run_cms_multi/run.sh
-FOLDER=CMS19_2pi+CMS19_2K+CMS19_ppbar
-#for FILE in h1_S_M_logy; do
-#	cp ./figs/$FOLDER/$FILE.pdf $F/$FILE\_PIPIKKPPBAR.pdf
-#done
 
 #yes $CMD | source ./tests/run_excitation/run.sh
 FOLDER=2pi_excite_0+2pi_excite_1+2pi_excite_2
@@ -65,5 +59,9 @@ done
 done
 
 #yes $CMD | source ./tests/run_alice_harmonic/run.sh
+
+# MATLAB analysis
+cp ./tests/analysis_scan_xs/figs/*.pdf $F/
+
 
 echo "copyrun.sh [Done]"
