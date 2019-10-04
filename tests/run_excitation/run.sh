@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Simulation with forward proton excitation (0, 1 or 2)
+# Simulation of full pi+pi- spectrum with forward proton excitation (0, 1 or 2)
 #
 # Run with: source ./tests/run_xxx/run.sh
 
