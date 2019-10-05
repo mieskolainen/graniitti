@@ -444,15 +444,15 @@ inline double MSubProc::GetBareAmplitude2_yy(gra::LORENTZSCALAR &lts) {
                                 ? gra::form::IncohFlux(lts.x2, lts.t2, lts.qt2, lts.pfinal[2].M2())
                                 : form::CohFlux(lts.x2, lts.t2, lts.qt2);
 
-  //const double phasespace = lts.s / lts.s_hat;    // This gives problems at low masses
+  // const double phasespace = lts.s / lts.s_hat;    // This gives problems at low masses
   const double phasespace = 1.0 / (lts.x1 * lts.x2); // Consistent with kt-factorization
   
-  // To "amplitude level"
+  // Combine all
   const double fluxes = gammaflux1 * gammaflux2 * phasespace;
 
   // Total
   const double tot = amp2 * fluxes;
-
+  
   // --------------------------------------------------------------------
   // Apply fluxes to helicity amplitudes
   const double sqrt_fluxes = msqrt(fluxes); // to "amplitude level"

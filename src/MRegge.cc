@@ -822,17 +822,17 @@ std::complex<double> MRegge::PhotoME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &r
                                   : CohFlux(lts.x2, lts.t2, lts.qt2);
 
   // "To amplitude level"
-  gammaflux1 = msqrt(gammaflux1);
-  gammaflux2 = msqrt(gammaflux2);
+  gammaflux1 = msqrt(gammaflux1 / lts.x1);
+  gammaflux2 = msqrt(gammaflux2 / lts.x2);
 
   // Pomeron up (t1) x Photon down (t2)
   const std::complex<double> A_1 = gammaflux2 * common *
-      msqrt(lts.s/lts.s1) * PhotoProp(lts.s1, lts.t1, pow2(resonance.p.mass), lts.excite1, lts.pfinal[1].M2());
+      PhotoProp(lts.s1, lts.t1, pow2(resonance.p.mass), lts.excite1, lts.pfinal[1].M2());
 
   // Photon up (t1) x Pomeron down (t2)
   const std::complex<double> A_2 = gammaflux1 * common *
-      msqrt(lts.s/lts.s2) * PhotoProp(lts.s2, lts.t2, pow2(resonance.p.mass), lts.excite2, lts.pfinal[2].M2());
-  
+      PhotoProp(lts.s2, lts.t2, pow2(resonance.p.mass), lts.excite2, lts.pfinal[2].M2());
+
   // Should sum here with negative sign if proton-antiproton initial state (anti-symmetric)
   const std::complex<double> A_prod = (lts.beam1.pdg == lts.beam2.pdg) ? (A_1 + A_2) : (A_1 - A_2);
   
