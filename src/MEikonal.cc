@@ -31,7 +31,7 @@ using gra::math::zi;
 
 namespace gra {
 
-MEikonal::MEikonal() {}
+MEikonal::MEikonal()  {}
 MEikonal::~MEikonal() {}
 
 // Return total, elastic, inelastic cross sections
@@ -41,15 +41,18 @@ void MEikonal::GetTotXS(double &tot, double &el, double &in) const {
   in  = sigma_inel;
 }
 
-
 // Construct density and amplitude
 void MEikonal::S3Constructor(double s_in, const std::vector<gra::MParticle> &initialstate_in,
-                             bool onlyeikonal) {
+    bool onlydensity, int NumberBT, int NumberKT2) {
 
   std::cout << "MEikonal::S3Constructor:" << std::endl;
 
   // This first
   Numerics.ReadParameters();
+
+  // Override
+  if (NumberBT  > 0) { Numerics.NumberBT  = NumberBT;  }
+  if (NumberKT2 > 0) { Numerics.NumberKT2 = NumberKT2; }
 
   // Mandelstam s and initial state
   s            = s_in;
@@ -95,7 +98,7 @@ void MEikonal::S3Constructor(double s_in, const std::vector<gra::MParticle> &ini
   S3InitCutPomerons();
 
   // Amplitude
-  if (onlyeikonal == false) {
+  if (onlydensity == false) {
     std::cout << "Initializing <eikonal amplitude> array:" << std::endl;
 
     MSA.sqrts = msqrt(s);  // FIRST THIS

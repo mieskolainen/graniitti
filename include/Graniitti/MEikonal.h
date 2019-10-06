@@ -178,8 +178,8 @@ class MEikonal {
 
   // Construct outside
   void S3Constructor(double s_in, const std::vector<gra::MParticle> &initialstate_in,
-                     bool onlyeikonal);
-
+                     bool onlydensity = false, int NumberBT = 0, int NumberKT2 = 0);
+  
   // Get eikonal and amplitude values
   // std::complex<double> S3DensityInterpolator(double bt);
   // std::complex<double> S3ScreeningInterpolator(double kt2);

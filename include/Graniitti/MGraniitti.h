@@ -185,11 +185,9 @@ class MGraniitti {
   std::vector<std::string> GetProcessNumbers() const;
 
   // Initialize generator
-  void InitEikonal();
-  void InitEikonalOnly();
   void Initialize();
   void Initialize(const MEikonal &eikonal_in);
-
+  
   // Process object pointer, public so methods can be accessed
   MProcess *proc = nullptr;
 

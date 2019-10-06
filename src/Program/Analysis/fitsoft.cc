@@ -41,6 +41,11 @@ using namespace gra;
 
 // Function prototypes
 namespace fitsoft {
+
+// Speed up the calculation by crude discretization
+const int NumberBT  = 1000;
+const int NumberKT2 = 1000;
+
 const std::string INPUTFILE = gra::aux::GetBasePath(2) + "/fitcard/" + "EL.json";
 
 int iter = 0;
@@ -89,7 +94,7 @@ void SetSoftParam(double *par);
 std::vector<double> dsigma_el_dt(double *par, const double sqrts,
                                  const std::vector<std::string> &beam, std::vector<double> &x) {
   // Mandelstam s
-  const double s = sqrts * sqrts;
+  const double s = math::pow2(sqrts);
 
   // Create generator object first
   std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
@@ -111,8 +116,10 @@ std::vector<double> dsigma_el_dt(double *par, const double sqrts,
     // ** Set soft parameters here **
     fitsoft::SetSoftParam(par);
 
-    // Initialize generator, always last
-    gen->InitEikonal();
+    // Initialize eikonal part
+    const bool DENSITY_ONLY = false;
+    gen->proc->Eikonal.S3Constructor(gen->proc->GetMandelstam_s(), gen->proc->GetInitialState(),
+      DENSITY_ONLY, fitsoft::NumberBT, fitsoft::NumberKT2);
 
     // Construct dsigma_el/dt
     for (const auto &i : indices(values)) {
@@ -157,6 +164,7 @@ void SigmaXS(double *par, double &xs_tot, double &xs_el, double &xs_inel, const 
   std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
 
   try {
+
     // Read process input from file and set initial state
     gen->ReadInput(fitsoft::INPUTFILE);
     const std::vector<double> energy = {sqrts / 2, sqrts / 2};
@@ -165,8 +173,11 @@ void SigmaXS(double *par, double &xs_tot, double &xs_el, double &xs_inel, const 
     // ** Set soft parameters **
     fitsoft::SetSoftParam(par);
 
-    // Initialize generator, always last
-    gen->InitEikonalOnly();
+    // Initialize eikonal part
+    const bool DENSITY_ONLY = true;
+    gen->proc->Eikonal.S3Constructor(gen->proc->GetMandelstam_s(), gen->proc->GetInitialState(),
+      DENSITY_ONLY, fitsoft::NumberBT, fitsoft::NumberKT2);
+
     gen->proc->Eikonal.GetTotXS(xs_tot, xs_el, xs_inel);
   } catch (const std::invalid_argument &e) {
     gra::aux::PrintGameOver();
@@ -263,14 +274,47 @@ bool InitData() {
   fitsoft::PushNull();
   DIFFMEAS::sqrts[N]        = 7000;
   DIFFMEAS::initialstate[N] = {"p+", "p+"};
-  if (!fitsoft::ReadData(BASEPATH + "TOTEM_7_low_t.csv", DIFFMEAS::x[N], DIFFMEAS::y[N],
-                         DIFFMEAS::err[N])) {
+  if (!fitsoft::ReadData(BASEPATH + "TOTEM_7_low_t.csv", DIFFMEAS::x[N], DIFFMEAS::y[N], DIFFMEAS::err[N])) {
     return false;
   }
-  if (!fitsoft::ReadData(BASEPATH + "TOTEM_7.csv", DIFFMEAS::x[N], DIFFMEAS::y[N],
-                         DIFFMEAS::err[N])) {
+  if (!fitsoft::ReadData(BASEPATH + "TOTEM_7.csv", DIFFMEAS::x[N], DIFFMEAS::y[N], DIFFMEAS::err[N])) {
     return false;
   }
+
+  {
+    // Add t^{-8} based synthetic data points to constrain the tail behavior
+    const std::size_t M = DIFFMEAS::x[N].size();
+
+    const double t_MIN  = DIFFMEAS::x[N][M-1];
+    const double f      = DIFFMEAS::y[N][M-1];
+    const double rerr   = DIFFMEAS::err[N][M-1] / DIFFMEAS::y[N][M-1];
+
+    const double R      = 8;     // Triple-gluon exchange
+    const double scale  = f / (std::pow(t_MIN, -R));
+
+    const std::size_t K = 50;    // Number of steps
+    const double t_MAX = 5.0; // |t| GeV^2
+    const double t_STEP = (t_MAX - t_MIN) / K;
+    
+    // Add synthesized high-|t| data
+    std::cout << rang::fg::green;
+    printf("[ADD SYNTHETIC high-|t| DATA with t^{-%0.1f}] \n", R);
+
+    for (std::size_t k = 1; k <= K; ++k) {
+
+      const double xval  = k * t_STEP + t_MIN;
+      const double yval  = scale * std::pow(xval, -R);
+      const double error = yval * rerr;
+
+      printf("x = %0.8f, y = %0.8f, err = %0.8f, err/y = %0.8f \n", xval, yval, error, error/yval);      
+
+      DIFFMEAS::x[N].push_back(xval);
+      DIFFMEAS::y[N].push_back(yval);
+      DIFFMEAS::err[N].push_back(error);
+    }
+    std::cout << rang::fg::reset << std::endl;
+  }
+
   ++N;
 
   // 1.96 TeV DATA

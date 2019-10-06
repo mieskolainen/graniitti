@@ -41,7 +41,7 @@ L1REG=0
 EML=false
 
 # Lorentz frames
-for FRAME in CM HX CS PG GJ
+for FRAME in AH CM HX CS PG GJ
 do
 
 # Expand the data

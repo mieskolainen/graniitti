@@ -1073,20 +1073,6 @@ void MGraniitti::PrintInit() const {
   }
 }
 
-void MGraniitti::InitEikonal() {
-  // Print general and process init
-  // PrintInit();
-  const bool onlyeikonal = false;
-  proc->Eikonal.S3Constructor(proc->GetMandelstam_s(), proc->GetInitialState(), onlyeikonal);
-}
-
-void MGraniitti::InitEikonalOnly() {
-  // Print general and process init
-  // PrintInit();
-  const bool onlyeikonal = true;
-  proc->Eikonal.S3Constructor(proc->GetMandelstam_s(), proc->GetInitialState(), onlyeikonal);
-}
-
 void MGraniitti::Initialize() {
   // ** ALWAYS HERE ONLY AS LAST! **
   proc->post_Constructor();

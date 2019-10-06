@@ -1115,6 +1115,73 @@ inline void LorentzFrame(std::vector<T> &pfout, const T &pb1boost, const T &pb2b
   }
 }
 
+// From lab to Anti-Helicity frame
+// Quantization z-axis is defined as the bisector of two beams, in the rest
+// frame of the resonance
+// 
+// Input:     p  =  Set of 4-momentum to be transformed
+//            X  =  System 4-momentum
+//            p1 =  Beam 1 4-momentum
+//            p2 =  Beam 2 4-momentum
+//
+template <typename T>
+inline void AHframe(std::vector<T> &p, const T& X, const T& p1, const T& p2, bool DEBUG = false) {
+    
+  // ********************************************************************
+  if (DEBUG) {
+    printf("\n\n ::ANTI-HELICITY FRAME:: \n");
+    printf("AHframe:: Daughters in LAB FRAME: \n");
+    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
+  }
+  // ********************************************************************
+
+  // Boost particles to the central system rest frame
+  for (const auto &i : gra::aux::indices(p)) {
+    gra::kinematics::LorentzBoost(X, X.M(), p[i], -1);  // Note the minus sign
+  }
+
+  T p1b = p1;
+  T p2b = p2;
+
+  // Boost the beam particles
+  gra::kinematics::LorentzBoost(X, X.M(), p1b, -1);  // Note the minus sign
+  gra::kinematics::LorentzBoost(X, X.M(), p2b, -1);  // Note the minus sign  
+
+  // Now get the 3-momentum
+  const std::vector<double> pb1boost3 = p1b.P3();
+  const std::vector<double> pb2boost3 = p2b.P3();
+
+  // Frame rotation x-y-z-axes
+  std::vector<double> zaxis;
+  std::vector<double> yaxis;
+  std::vector<double> xaxis;
+
+  // Anti-Helicity positive bisector vector
+    zaxis = gra::matoper::Unit(
+        gra::matoper::Plus(gra::matoper::Unit(pb1boost3), gra::matoper::Unit(pb2boost3)));
+
+  yaxis = gra::matoper::Unit(
+      gra::matoper::Cross(gra::matoper::Unit(pb1boost3), gra::matoper::Unit(pb2boost3)));
+
+  xaxis = gra::matoper::Unit(gra::matoper::Cross(yaxis, zaxis));  // x = y [cross product] z
+
+  // Create SO(3) rotation matrix for the new coordinate axes
+  const MMatrix<double> R = {xaxis, yaxis, zaxis};  // Axes as rows
+
+  // Rotate all vectors
+  for (const auto &k : gra::aux::indices(p)) {
+    const std::vector<double> p3new = R * p[k].P3();   // Spatial part rotation Rp -> p'
+    p[k] = T(p3new[0], p3new[1], p3new[2], p[k].E());  // Full 4-momentum [px; py; pz; E]
+  }
+  
+  // ********************************************************************
+  if (DEBUG) {
+    printf("AHframe:: Daughters in AH FRAME: \n");
+    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
+  }
+  // ********************************************************************
+}
+
 
 // From lab to Collins-Soper frame
 // Quantization z-axis is defined as the bisector of two beams, in the rest

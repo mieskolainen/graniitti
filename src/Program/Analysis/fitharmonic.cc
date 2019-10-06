@@ -108,7 +108,7 @@ int main(int argc, char *argv[]) {
         "S,scale", "Scale plots (set -1 for unit normalized)  <scale1,scale2,...>",
         cxxopts::value<std::string>())
 
-        ("f,frame", "Lorentz rest frame                        <CM|HX|CS|PG|GJ>",
+        ("f,frame", "Lorentz rest frame                        <CM|HX|CS|AH|PG|GJ>",
          cxxopts::value<std::string>())("g,lmax",
                                         "Maximum angular order                     <1|2|3|4|...>",
                                         cxxopts::value<unsigned int>())(
@@ -405,7 +405,7 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
     M4Vec p_final_minus;
 
     // Beam protons needed
-    if (FRAME == "GJ" || FRAME == "PG" || FRAME == "CS") {
+    if (FRAME == "GJ" || FRAME == "PG" || FRAME == "CS" || FRAME == "AH") {
       for (HepMC3::ConstGenParticlePtr p1 : HepMC3::applyFilter(
                HepMC3::Selector::STATUS == PDG::PDG_BEAM && HepMC3::Selector::PDG_ID == PDG::PDG_p,
                evt.particles())) {
@@ -455,6 +455,9 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
       // Collins-Soper frame
     } else if (FRAME == "CS") {
       gra::kinematics::CSframe(rf, X, p_beam_plus, p_beam_minus);
+      // Anti-Helicity frame
+    } else if (FRAME == "AH") {
+      gra::kinematics::AHframe(rf, X, p_beam_plus, p_beam_minus);
       // Gottfried-Jackson frame
     } else if (FRAME == "GJ") {
       gra::kinematics::GJframe(rf, X, direction, p_beam_plus - p_final_plus, p_beam_minus - p_final_minus);
