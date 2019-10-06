@@ -43,8 +43,8 @@ using namespace gra;
 namespace fitsoft {
 
 // Speed up the calculation by crude discretization
-const int NumberBT  = 1000;
-const int NumberKT2 = 1000;
+const int NumberBT  = 5000;
+const int NumberKT2 = 5000;
 
 const std::string INPUTFILE = gra::aux::GetBasePath(2) + "/fitcard/" + "EL.json";
 
