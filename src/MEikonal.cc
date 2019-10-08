@@ -132,18 +132,18 @@ void MEikonal::S3Constructor(double s_in, const std::vector<gra::MParticle> &ini
   S3INIT = true;
 }
 
-// Single elastic-pp Pomeron exchange amplitude
+// Single elastic-pp Pomeron (Odderon) exchange amplitude
 //
 // This is used within eikonalization procedure
 //
 //
-std::complex<double> MEikonal::SingleAmpElastic(double s, double t) {
+std::complex<double> MEikonal::SingleAmpElastic(double s, double t, int type) {
 
   // Proton form factors (could be here extended to multichannel)
   const double F_i = gra::form::S3F(t);
   const double F_k = gra::form::S3F(t);
 
-  // Pomeron trajectory alpha(t)
+  // Pomeron trajectory alpha(t), the same for Odderon
   const double alpha_P = gra::form::S3PomAlpha(t);
 
   // Pomeron exchange amplitude:
@@ -151,13 +151,19 @@ std::complex<double> MEikonal::SingleAmpElastic(double s, double t) {
   //  Form Factor x coupling x Propagator ]
   const double s0 = 1.0;  // Typical (normalization) scale GeV^{-2}
 
-  // const std::complex<double> eta_O =
-  // std::exp(gra::math::zi*PARAM_SOFT::PHASE_O);
-
-  std::complex<double> A = gra::math::pow2(PARAM_SOFT::gN_P) * F_i * F_k *
-                           gra::form::ReggeEta(alpha_P, 1) *
-                           std::pow(s / s0, alpha_P);  // Pomeron (C-even)
-  return A;
+  if      (type ==  1) { // Pomeron (C-even)
+    return gra::math::pow2(PARAM_SOFT::gN_P) * F_i * F_k *
+           gra::form::ReggeEta(alpha_P,  1) *
+           std::pow(s / s0, alpha_P);
+  }
+  else if (type == -1) { // Odderon (C-even)
+    return gra::math::pow2(PARAM_SOFT::gN_O) * F_i * F_k *
+           gra::form::ReggeEta(alpha_P, -1) *
+           std::pow(s / s0, alpha_P);
+  }
+  else {
+    throw std::invalid_argument("MEikonal::SingleAmpElastic: Unknown input type " + std::to_string(type));
+  }
 }
 
 
@@ -181,7 +187,7 @@ std::complex<double> MEikonal::S3Density(double bt) const {
 
   // N + 1!
   std::vector<std::complex<double>> f(Numerics.FBIntegralN + 1, 0.0);
-
+  
   // Initial state configuration [NOT IMPLEMENTED = SAME FOR pp and ppbar]
   // pp
   if (INITIALSTATE[0].pdg == PDG::PDG_p && INITIALSTATE[1].pdg == PDG::PDG_p) {
@@ -199,8 +205,13 @@ std::complex<double> MEikonal::S3Density(double bt) const {
     // Negative, with Mandelstam t ~= -kt^2
     const double t = -gra::math::pow2(kt);
 
-    // Single Pomeron exchange
-    const std::complex<double> A = SingleAmpElastic(s,t);
+    // Pomeron exchange (positive signature)
+    std::complex<double> A = SingleAmpElastic(s,t,1);
+
+    // Odderon exchange (negative signature)
+    if (PARAM_SOFT::ODDERON_ON == true) {
+      A += SingleAmpElastic(s,t,-1);
+    }
 
     // Value
     f[i] = A * gra::math::BESSJ0(bt * kt) * kt;

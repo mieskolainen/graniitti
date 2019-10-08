@@ -61,24 +61,33 @@ double fc2 = 0.0;
 // Pion loop
 double fc3 = 0.0;
 
+// On/Off
+bool ODDERON_ON = false;
+
 std::string GetHashString() {
-  std::string str = std::to_string(PARAM_SOFT::DELTA_P) + std::to_string(PARAM_SOFT::ALPHA_P) +
-                    std::to_string(PARAM_SOFT::gN_P) + std::to_string(PARAM_SOFT::gN_O) + std::to_string(PARAM_SOFT::fc1) +
-                    std::to_string(PARAM_SOFT::fc2) + std::to_string(PARAM_SOFT::fc3);
+  std::string str = std::to_string(PARAM_SOFT::DELTA_P) + 
+                    std::to_string(PARAM_SOFT::ALPHA_P) +
+                    std::to_string(PARAM_SOFT::gN_P) +
+                    std::to_string(PARAM_SOFT::gN_O) +
+                    std::to_string(PARAM_SOFT::fc1)  +
+                    std::to_string(PARAM_SOFT::fc2)  +
+                    std::to_string(PARAM_SOFT::fc3)  +
+                    std::to_string(PARAM_SOFT::ODDERON_ON);
   return str;
 }
 
 void PrintParam() {
   printf("PARAM_SOFT:: Soft model parameters: \n\n");
-  printf("- DELTA_P = %0.4f \n", DELTA_P);
-  printf("- ALPHA_P = %0.4f [GeV^{-2}] \n", ALPHA_P);
-  printf("- gN_P    = %0.4f [GeV^{-1}] \n", gN_P);
-  printf("- gN_O    = %0.4f [GeV^{-1}] \n", gN_O);
-  printf("- g3P     = %0.4f \n", g3P / gN_P);  // Convention
-  printf("- gamma   = %0.4f \n", gamma);
-  printf("- fc1     = %0.4f [GeV^2] \n", fc1);
-  printf("- fc2     = %0.4f [GeV^2] \n", fc2);
-  printf("- fc3     = %0.4f [GeV^2] \n", fc3);
+  printf("- DELTA_P    = %0.5f \n", DELTA_P);
+  printf("- ALPHA_P    = %0.5f [GeV^{-2}] \n", ALPHA_P);
+  printf("- gN_P       = %0.5f [GeV^{-1}] \n", gN_P);
+  printf("- gN_O       = %0.5f [GeV^{-1}] \n", gN_O);
+  printf("- g3P        = %0.5f \n", g3P / gN_P);  // Convention
+  printf("- gamma      = %0.5f \n", gamma);
+  printf("- fc1        = %0.5f [GeV^2] \n", fc1);
+  printf("- fc2        = %0.5f [GeV^2] \n", fc2);
+  printf("- fc3        = %0.5f [GeV^2] \n", fc3);
+  printf("- ODDERON_ON = "); std::cout << (ODDERON_ON ? "true" : "false") << std::endl;
   std::cout << std::endl << std::endl;
 }
 }

@@ -31,7 +31,7 @@ dd_id = 8; % 8
 % IMPORTANT!!! Set here MANUALLY the
 % Triple Pomeron Coupling used in the calculation -> otherwise the re-fit
 % values make no sense!
-g3P_orig = 0.18;
+g3P_orig = 0.15;
 
 % Coupling grid scan values
 P3values = linspace(0.05, 0.25, 1e3);

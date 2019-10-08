@@ -39,6 +39,8 @@ extern double fc1;
 extern double fc2;
 extern double fc3;
 
+extern bool ODDERON_ON;
+
 void        PrintParam();
 std::string GetHashString();
 }

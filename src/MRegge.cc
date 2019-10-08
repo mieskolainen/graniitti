@@ -151,7 +151,7 @@ std::complex<double> MRegge::ME2(gra::LORENTZSCALAR &lts, int mode) const {
 
     // Single Pomeron exchange
     // (this calls eikonal pomeron without eikonalization, just for test, use loop on)
-    return MEikonal::SingleAmpElastic(lts.s, lts.t);
+    return MEikonal::SingleAmpElastic(lts.s, lts.t, 1);
     
   } else if (mode == 2) {  // SD triple Pomeron
 

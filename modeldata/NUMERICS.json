@@ -7,11 +7,11 @@
   "NUMERICS_EIKONAL" : {
 
     // Proton density array
-    "NumberBT" : 10000,        // Number of eikonal density discretization intervals
+    "NumberBT" : 400,        // Number of eikonal density discretization intervals
     "logBT" : false,           // Logarithmic grid
     
     // Screening amplitude array
-    "NumberKT2" : 10000,       // Number of screening amplitude discretization intervals
+    "NumberKT2" : 400,       // Number of screening amplitude discretization intervals
     "logKT2" : false           // Logarithmic grid
     
   },

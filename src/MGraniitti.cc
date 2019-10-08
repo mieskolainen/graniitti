@@ -386,13 +386,16 @@ void MGraniitti::ReadModelParam(const std::string &inputfile) {
     PARAM_SOFT::gN_P    = j.at("PARAM_SOFT").at("gN_P");
     PARAM_SOFT::gN_O    = j.at("PARAM_SOFT").at("gN_O");    
     
-    double triple3P   = j.at("PARAM_SOFT").at("g3P");
-    PARAM_SOFT::g3P   = triple3P * PARAM_SOFT::gN_P;  // Convention
-    PARAM_SOFT::gamma = j.at("PARAM_SOFT").at("gamma");
+    double triple3P     = j.at("PARAM_SOFT").at("g3P");
+    PARAM_SOFT::g3P     = triple3P * PARAM_SOFT::gN_P;  // Convention
+    PARAM_SOFT::gamma   = j.at("PARAM_SOFT").at("gamma");
 
-    PARAM_SOFT::fc1 = j.at("PARAM_SOFT").at("fc1");
-    PARAM_SOFT::fc2 = j.at("PARAM_SOFT").at("fc2");
-    PARAM_SOFT::fc3 = j.at("PARAM_SOFT").at("fc3");
+    PARAM_SOFT::fc1     = j.at("PARAM_SOFT").at("fc1");
+    PARAM_SOFT::fc2     = j.at("PARAM_SOFT").at("fc2");
+    PARAM_SOFT::fc3     = j.at("PARAM_SOFT").at("fc3");
+    
+    PARAM_SOFT::ODDERON_ON = j.at("PARAM_SOFT").at("ODDERON_ON");    
+
 
     // Flat amplitude parameters
     PARAM_FLAT::b = j.at("PARAM_FLAT").at("b");
