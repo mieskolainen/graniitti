@@ -8,7 +8,7 @@ F=/home/user/Dropbox/GRANIITTI_tex/mcfigs
 
 #yes $CMD | source ./tests/run_atlas_multi/run.sh
 FOLDER=ATLAS+ATLAS_NEG+ATLAS_POS
-for FILE in hP_S_M_Pt; do
+for FILE in h1_S_M hP_S_M_Pt; do
 	cp ./figs/$FOLDER/$FILE.pdf $F/$FILE\_ATLASPIPI.pdf
 done
 

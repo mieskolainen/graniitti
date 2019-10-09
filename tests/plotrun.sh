@@ -27,7 +27,7 @@ fi
 #then
 #fi
 
-EVENTS=3000000
+EVENTS=10000000
 
 yes $CMD | source ./tests/run_atlas_multi/run.sh
 
