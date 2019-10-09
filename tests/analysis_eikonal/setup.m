@@ -13,7 +13,7 @@ factor = [20000 400 20 1 1/20 1/1000]; % Visualization
 
 %
 sqrts  = [546 1800 7000 13000 60000];
-factor = [400 20 1 1/20 1/1000]; % Visualization
+factor = [200 20 1 1/20 1/1000]; % Visualization
 %}
 
 s      = sqrts.^2;

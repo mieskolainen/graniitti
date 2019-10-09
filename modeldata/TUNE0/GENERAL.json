@@ -6,39 +6,23 @@
   // ----------------------------------------------------------------------
   // Global soft model parameters (eikonal screening, elastic, SD, DD)
   "PARAM_SOFT" : {
-
+    
     // Pomeron trajectory
-    "DELTA_P"  : 0.100,         // Intercept
-    "ALPHA_P"  : 0.075,         // Bare slope, GeV^{-2} (+ pion loop insert)
+    "DELTA_P"  : 0.098,         // Intercept
+    "ALPHA_P"  : 0.065,         // Bare slope, GeV^{-2} (+ pion loop insert)
 
     // Couplings
-    "gN_P"     : 8.00,          // Pomeron-proton GeV^{-1}
-    "gN_O"     : 0.01,          // Odderon-proton GeV^{-1} (ANSATZ!)
-    "g3P"      : 0.15,          // Triple Pomeron coupling (/gn_P) (for SD/DD/EXCITATION)
+    "gN_P"     : 8.20,          // Pomeron-proton GeV^{-1}
+    "gN_O"     : 0.10,          // Odderon-proton GeV^{-1} (ANSATZ!)
+    "g3P"      : 0.15,          // Triple Pomeron coupling (N.B. normalized units g3P/gn_P) (for SD/DD/EXCITATION)
     "gamma"    : 0.45,          // Eikonal matrix coupling [0 ... 1] (CURRENTLY NOT USED)
-
+    
     // Form factor parameters
     "fc1"      : 0.34,          // Proton form factor param 1 (GeV^2)
-    "fc2"      : 100.0,         // Proton form factor param 2 (GeV^2)
-    "fc3"      : 9,             // Pion loop (GeV^2)
+    "fc2"      : 5.0,           // Proton form factor param 2 (GeV^2)
+    "fc3"      : 10.0,          // Pion loop form factor (GeV^2)
 
-/*    
-    // Pomeron trajectory
-    "DELTA_P"  : 0.103,         // Intercept
-    "ALPHA_P"  : 0.0593,        // Bare slope, GeV^{-2} (+ pion loop insert)
-
-    // Couplings
-    "gN_P"     : 7.98,          // Pomeron-proton GeV^{-1}
-    "gN_O"     : 0.01,          // Odderon-proton GeV^{-1} (ANSATZ!)
-    "g3P"      : 0.15,          // Triple Pomeron coupling (/gn_P) (for SD/DD/EXCITATION)
-    "gamma"    : 0.45,          // Eikonal matrix coupling [0 ... 1] (CURRENTLY NOT USED)
-
-    // Form factor parameters
-    "fc1"      : 0.34,         // Proton form factor param 1 (GeV^2)
-    "fc2"      : 3.59,          // Proton form factor param 2 (GeV^2)
-    "fc3"      : 5.00,          // Pion loop (GeV^2)
-*/
-    // Exchanges
+    // Odderon
     "ODDERON_ON" : false
   },
   

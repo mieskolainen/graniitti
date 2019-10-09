@@ -1,8 +1,7 @@
 % Read eikonal amplitudes in momentum space
 %
 % mikael.mieskolainen@cern.ch, 2019
-
-clear; close all;
+close all; clear; 
 
 fig0 = figure;
 
@@ -68,12 +67,11 @@ set(gca,'yscale','log');
 %set(gca,'xscale','log');
 %axis tight;
 
-
-% Running index
-index = 1;
-
 % ------------------------------------------------------------------------
 % Read in ISR data
+%{
+[~, index] = min(abs(sqrts - 62));
+
 if (sqrts(1) < 63)
 ISR = dlmread('../../HEPdata/EL/ISR_62.csv');
 
@@ -81,12 +79,14 @@ errorbar(ISR(:,1), ISR(:,4)*factor(index), ...
          sqrt(ISR(:,6).^2 ), ...
          sqrt(ISR(:,5).^2 ), '.', 'color', [1 1 0]*0.3, 'CapSize', 1);
 legends{length(legends)+1} = 'ISR $\sqrt{s} = 62.5$ GeV';
-%}
 index = index + 1;
 end
+%}
 
 % ------------------------------------------------------------------------
 % Read in FNAL data
+[~, index] = min(abs(sqrts - 546));
+
 FNAL = dlmread('../../HEPdata/EL/FNAL_546.csv');
 
 errorbar(FNAL(:,1), FNAL(:,4)*factor(index), ...
@@ -100,10 +100,11 @@ errorbar(SPS(:,1), SPS(:,4)*factor(index), ...
          sqrt(SPS(:,6).^2 ), ...
          sqrt(SPS(:,5).^2 ), '.', 'color', [0 0 1]*0.5, 'CapSize', 1);
 legends{length(legends)+1} = 'SPS $\sqrt{s} = 546$ GeV';
-index = index + 1;
 
 % ------------------------------------------------------------------------
 % Read in Fermilab data
+[~, index] = min(abs(sqrts - 1800));
+
 ABE = dlmread('../../HEPdata/EL/ABE_1994_1800.csv');
 
 errorbar(ABE(:,1), ABE(:,4)*factor(index), ...
@@ -115,6 +116,8 @@ index = index + 1;
 
 % ------------------------------------------------------------------------
 % Read in TOTEM data
+[~, index] = min(abs(sqrts - 7000));
+
 TOTEM_high_t = dlmread('../../HEPdata/EL/TOTEM_7.csv');
 TOTEM_low_t  = dlmread('../../HEPdata/EL/TOTEM_7_low_t.csv');
 
@@ -130,7 +133,7 @@ index = index + 1;
 % 3-gluon exchange
 
 tval = linspace(1.5,8,1000);
-scale = 0.2e-2; % Arbitrary visualization scale
+scale = 2e-4; % Arbitrary visualization scale
 plot(tval, scale*tval.^(-8), 'k-.');
 
 legends{length(legends)+1} = '$t^{-8}$';
@@ -142,7 +145,7 @@ set(l,'interpreter','latex'); legend('boxoff');
 xlabel('$-t$ (GeV$^2$)','interpreter','latex');
 ylabel('$d\sigma/dt$ (mb/GeV$^2$)','interpreter','latex');
 axis square;
-axis([0 4.0 1e-10 1e6]);
+axis([0 3.5 1e-10 1e6]);
 xticks(linspace(0, 8, 17));
 
 % FOR OPTIMIZATION LOOP
