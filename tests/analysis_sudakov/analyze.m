@@ -3,6 +3,8 @@
 % mikael.mieskolainen@cern.ch, 2019
 clear; close all;
 
+addpath ../mcodes
+
 sqrts = 13000;
 pdf = {'CT10nlo'};
 %pdf = {'MSTW2008lo68cl'};
@@ -31,6 +33,7 @@ X = H{1};
 
 close all;
 
+% These need to match the array file!
 Nq2  = 800;
 Nlnx = 800;
 
@@ -72,6 +75,7 @@ X = T{1};
 
 close all;
 
+% These need to match the array file!
 Nq2  = 800;
 NlnM = 800;
 

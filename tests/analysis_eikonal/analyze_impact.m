@@ -4,6 +4,8 @@
 
 close all; clear;
 
+addpath ../mcodes
+
 % Run this first
 setup;
 

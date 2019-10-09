@@ -3,7 +3,7 @@
 % mikael.mieskolainen@cern.ch, 2019
 clear; close all;
 
-addpath /home/user/cernbox/#matlabcodes
+addpath ../mcodes
 
 % Copy this to the bash script looping over CMS energies
 sqrts_values = logspace(1.3, 6.3, 10);
@@ -34,9 +34,15 @@ MC = [MC MC_S_true(:,5:7)];
 % Scale x-sections to ubarn
 MC(:,2:end) = MC(:,2:end) * 1e6;
 
+%% Ratioplot
+
+[fig,ax] = ratioplot();
+
 
 %% Plot cross sections
-close all;
+
+% PICK UPPER PLOT
+axes(ax{1});
 
 colors = {'k-','k--','k:', 'r-','r--','r:'};
 kk = 1;
@@ -60,14 +66,8 @@ ylabel('$\sigma$ ($\mu$b)','interpreter','latex');
 
 axis([10 max(MC(:,1)) 1e-1 1e2]);
 
-% PRINT OUT
-filename = sprintf('./figs/xsec.pdf');
-print(gcf, '-dpdf', filename);
-system(sprintf('pdfcrop --margins ''10 10 10 10'' %s %s', filename, filename));
-
 
 %% Plot ratios
-close all;
 
 colors = {'k-','k--','k:', 'r-','r--','r:'};
 kk = 1;
@@ -77,18 +77,18 @@ pairs = [5 8;
          6 9;
          7 10];
 
+% PICK LOWER PLOT
+axes(ax{2});
+
 for i = 1:3
     h{end+1} = plot(MC(:,1), MC(:,pairs(i,2)) ./ MC(:,pairs(i,1)), colors{kk}); hold on;
     kk = kk + 1;
 end
 
-l = legend('$\pi^+\pi^-_{EL}$','$\pi^+\pi^-_{SD}$','$\pi^+\pi^-_{DD}$');
-
-set(l,'interpreter','latex','location','northeast'); legend('boxoff');
-
 set(gca,'xscale','log');
 %set(gca,'yscale','log');
 
+yticks([0 0.1 0.2 0.3 0.4]);
 axis tight;
 
 xlabel('$\sqrt{s}$ (GeV)','interpreter','latex');
@@ -97,9 +97,11 @@ ylabel('$\langle S^2 \rangle$','interpreter','latex');
 axis([10 max(MC(:,1)) 0 0.5]);
 
 % PRINT OUT
-filename = sprintf('./figs/xsecratios.pdf');
+filename = sprintf('./figs/xsec.pdf');
 print(gcf, '-dpdf', filename);
-system(sprintf('pdfcrop --margins ''10 10 10 10'' %s %s', filename, filename));
+system(sprintf('pdfcrop --margins ''2 2 2 2'' %s %s', filename, filename));
+
+
 
 %%
 

@@ -3,6 +3,8 @@
 % mikael.mieskolainen@cern.ch, 2019
 close all; clear; 
 
+addpath ../mcodes
+
 fig0 = figure;
 
 %while (true)
@@ -38,11 +40,11 @@ for i = 1:length(sqrts)
     dxs{i} = abs( Xt{i}(:,Re_ind) + 1i*Xt{i}(:,Im_ind) ).^2 / (16*pi*sqrts(i)^4) * GeV2mb;
 end
 
-% Font
+% Plot visualization scale indicators
+tval = 3.5; % |t| position
 for i = 1:length(sqrts)
     
     % Find the index for suitable x coordinate
-    tval = 3.5; % |t| position
     [~, ind] = min(abs(Xt{i}(:,x_ind) - tval));
     
     if (factor(i) >= 1) 
@@ -153,6 +155,8 @@ xticks(linspace(0, 8, 17));
 %pause(3);
 %clf();
 %end
+
+%h = versioninfo('../../VERSION.json');
 
 % PRINT OUT
 filename = sprintf('./figs/t_space_dsigmadt.pdf');

@@ -3,8 +3,8 @@
 # Copy pdfs from the simulations and analysis
 
 # Copy target folder
+F0=/home/user/Dropbox/GRANIITTI_tex/figs
 F=/home/user/Dropbox/GRANIITTI_tex/mcfigs
-
 
 #yes $CMD | source ./tests/run_atlas_multi/run.sh
 FOLDER=ATLAS+ATLAS_NEG+ATLAS_POS
@@ -67,7 +67,17 @@ done
 #yes $CMD | source ./tests/run_alice_harmonic/run.sh
 
 # MATLAB analysis
-cp ./tests/analysis_scan_xs/figs/*.pdf $F/
-
+cp ./tests/analysis_eikonal/figs/t_space_dsigmadt.pdf $F0/
+#
+cp ./tests/analysis_scan_xs/figs/xsec.pdf $F0/
+cp ./tests/analysis_scan_xs/figs/xsecratios.pdf $F0/
+#
+cp ./tests/analysis_xsec/figs/sd.pdf $F0/
+cp ./tests/analysis_xsec/figs/dd.pdf $F0/
+cp ./tests/analysis_xsec/figs/total.pdf $F0/
+cp ./tests/analysis_xsec/figs/ratio.pdf $F0/
+#
+cp ./tests/analysis_sudakov/figs/sudakov_1D_mu.pdf $F0/
+cp ./tests/analysis_sudakov/figs/sudakov_1D_Q2.pdf $F0/
 
 echo "copyrun.sh [Done]"

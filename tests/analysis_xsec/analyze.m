@@ -3,7 +3,7 @@
 % mikael.mieskolainen@cern.ch, 2019
 clear; close all;
 
-addpath /home/user/cernbox/#matlabcodes
+addpath ../mcodes
 
 % Copy this to the bash script looping over CMS energies
 sqrts_values = logspace(1.3, 6.3, 100);
@@ -374,3 +374,6 @@ axis([10 max(MC(:,1)) 0 14]);
 filename = sprintf('./figs/dd.pdf');
 print(fig0, '-dpdf', filename);
 system(sprintf('pdfcrop --margins ''10 10 10 10'' %s %s', filename, filename));
+
+
+
