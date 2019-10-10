@@ -89,8 +89,11 @@
       // Intermediate off-shell meson M* propagator "Reggeization"
       // (NOT IMPLEMENTED CURRENTLY)
       "reggeize" : false,
-  },
 
+      // Pomeron-Pomeron-Resonance vertex flux [1/m^2]^{lambda} parameter
+      "omega" : 0.5,
+  },
+  
   // ---------------------------------------------------------------------
   // Continuum amplitude couplings (non-tensor Pomeron model):
   //

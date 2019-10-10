@@ -36,6 +36,8 @@ extern double b_POW;
 
 extern bool reggeize;
 
+extern double omega;
+
 // Meson/Baryon Couplings and Pomeron, Reggeon, Reggeon exchanges
 extern std::vector<double> c;  // coupling
 extern std::vector<bool>   n;  // on/off

@@ -724,9 +724,8 @@ std::complex<double> MRegge::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resona
   const std::complex<double> A_spin = spin::ProdAmp(lts, resonance) * spin::DecayAmp(lts, resonance);
 
   // Flux
-  // const double V = msqrt(lts.s / lts.s1 / lts.s2);
-  const double V = msqrt(1.0 / lts.m2);
-
+  const double V = std::pow(1.0 / lts.m2, PARAM_REGGE::omega);
+  
   // Full amplitude
   const std::complex<double> A = A_prod * A_spin * V;
   
@@ -777,8 +776,7 @@ std::complex<double> MRegge::ME3ODD(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res
   const std::complex<double> A_spin = spin::ProdAmp(lts, resonance) * spin::DecayAmp(lts, resonance);
 
   // Flux
-  // const double V = msqrt(lts.s / lts.s1 / lts.s2);
-  const double V = msqrt(1.0 / lts.m2);
+  const double V = std::pow(1.0 / lts.m2, PARAM_REGGE::omega);
 
   // Should sum here with negative sign if proton-antiproton initial state (anti-symmetric)
   const std::complex<double> A_prod = (lts.beam1.pdg == lts.beam2.pdg) ? (A1 + A2) : (A1 - A2);
@@ -824,7 +822,7 @@ std::complex<double> MRegge::PhotoME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &r
   // "To amplitude level"
   gammaflux1 = msqrt(gammaflux1 / lts.x1);
   gammaflux2 = msqrt(gammaflux2 / lts.x2);
-
+  
   // Pomeron up (t1) x Photon down (t2)
   const std::complex<double> A_1 = gammaflux2 * common *
       PhotoProp(lts.s1, lts.t1, pow2(resonance.p.mass), lts.excite1, lts.pfinal[1].M2());
@@ -960,6 +958,8 @@ double b_POW      = 0.0;
 
 bool reggeize = false;
 
+double omega = 0.0;
+
 std::vector<double> c;  // coupling
 std::vector<bool>   n;  // on/off
 
@@ -983,7 +983,7 @@ void PrintParam() {
   printf("- reggeize = %d \n", reggeize);
   printf("- s0 = %0.3f [GeV^2]", s0);
   std::cout << std::endl << std::endl;
-
+  
   std::cout << "Couplings:" << std::endl;
   for (unsigned int i = 0; i < c.size(); ++i) {
     printf("- Reggeon[%d]: c = %0.3f [GeV^{-2}]", i, c[i]);

@@ -414,18 +414,20 @@ void MGraniitti::ReadModelParam(const std::string &inputfile) {
     PARAM_REGGE::ap         = ap;
     PARAM_REGGE::sgn        = sgn;
 
-    PARAM_REGGE::s0 = j.at("PARAM_REGGE").at("s0");
-
+    PARAM_REGGE::s0         = j.at("PARAM_REGGE").at("s0");
+    
     PARAM_REGGE::offshellFF = j.at("PARAM_REGGE").at("offshellFF");
     PARAM_REGGE::b_EXP      = j.at("PARAM_REGGE").at("b_EXP");
     PARAM_REGGE::a_OREAR    = j.at("PARAM_REGGE").at("a_OREAR");
     PARAM_REGGE::b_OREAR    = j.at("PARAM_REGGE").at("b_OREAR");
     PARAM_REGGE::b_POW      = j.at("PARAM_REGGE").at("b_POW");
     PARAM_REGGE::reggeize   = j.at("PARAM_REGGE").at("reggeize");
-
+    PARAM_REGGE::omega      = j.at("PARAM_REGGE").at("omega");
+    
+    
     // Proton (Good-Walker) resonances
-    std::vector<double> rc = j.at("PARAM_NSTAR").at("rc");
-    PARAM_NSTAR::rc        = rc;
+    std::vector<double> rc  = j.at("PARAM_NSTAR").at("rc");
+    PARAM_NSTAR::rc         = rc;
 
     // Make sure they sum to one
     const double sum_rc = std::accumulate(rc.begin(), rc.end(), 0);
