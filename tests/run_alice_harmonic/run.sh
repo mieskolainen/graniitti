@@ -24,7 +24,7 @@ fi
 
 # ***********************************************************************
 # Fiducial cuts <ETAMIN,ETAMAX,PTMIN,PTMAX> (no white space!)
-FIDCUTS=-0.9,0.9,0.1,100.0
+FIDCUTS=-0.9,0.9,0.15,100.0
 # ***********************************************************************
 
 # System kinematic variables binning <bins,min,max> (no white space!)
@@ -51,7 +51,7 @@ do
 -l "GRANIITTI J=0, GRANIITTI, #pi^{+}#pi^{-} 7 TeV (DATA)" \
 -d "MC,MC,DATA" \
 -z "true,true,false"  \
--t "#Omega{Detector}: |#eta| < 0.9 #wedge p_{T} > 0.1 GeV,#Omega{Fiducial}: |#eta| < 0.9 #wedge p_{T} > 0.1 GeV,#Omega{Flat}: |Y_{x}| < 0.9" \
+-t "#Omega{Detector}: |#eta| < 0.9 #wedge p_{T} > 0.15 GeV,#Omega{Fiducial}: |#eta| < 0.9 #wedge p_{T} > 0.15 GeV,#Omega{Flat}: |Y_{x}| < 0.9" \
 -c $FIDCUTS \
 -f $FRAME -g $LMAX -o $REMOVEODD -v $REMOVENEGATIVE -a $SVDREG -b $L1REG -e $EML \
 -M $MBINS -P $PBINS -Y $YBINS \

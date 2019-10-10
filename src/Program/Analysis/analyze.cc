@@ -283,29 +283,34 @@ int main(int argc, char *argv[]) {
 
   try {
     cxxopts::Options options(argv[0], "");
-    options.add_options()("i,input",
-                          "input HepMC3 file                <input1,input2,...> (without .hepmc3)",
-                          cxxopts::value<std::string>())(
-        "g,pdg", "central final state PDG          <input1,input2,...>",
-        cxxopts::value<std::string>())("n,number",
-                                       "central final state multiplicity <input1,input2,...>",
-                                       cxxopts::value<std::string>())(
-        "l,labels", "plot legend string               <input1,input2,...>",
-        cxxopts::value<std::string>())("t,title",
-                                       "plot title string                <input>            ",
-                                       cxxopts::value<std::string>())(
-        "u,units", "plot unit                        <barn|mb|ub|nb|pb|fb>",
-        cxxopts::value<std::string>())("M,mass", "plot mass binning                <bins,min,max>",
-                                       cxxopts::value<std::string>())(
-        "Y,rapidity", "plot rapidity binning            <bins,min,max>",
-        cxxopts::value<std::string>())("P,momentum",
-                                       "plot momentum binning            <bins,min,max>",
-                                       cxxopts::value<std::string>())(
-        "L,luminosity", "integrated luminosity (opt.)     <inverse barn>",
-        cxxopts::value<double>())("X,maximum", "max number of events to process (opt.)  <value>",
-                                  cxxopts::value<int>())(
-        "S,scale", "scale plots                      <scale1,scale2,...>",
-        cxxopts::value<std::string>())("H,help", "Help");
+    options.add_options()
+        ("i,input",      "input HepMC3 file                <input1,input2,...> (without .hepmc3)",
+          cxxopts::value<std::string>())
+        ("g,pdg",        "central final state PDG          <input1,input2,...>",
+          cxxopts::value<std::string>())
+        ("n,number",     "central final state multiplicity <input1,input2,...>",
+          cxxopts::value<std::string>())
+        ("l,labels",     "plot legend string               <input1,input2,...>",
+          cxxopts::value<std::string>())
+        ("t,title",      "plot title string                <input>            ",
+          cxxopts::value<std::string>())
+        ("u,units",      "plot unit                        <barn|mb|ub|nb|pb|fb>",
+          cxxopts::value<std::string>())
+        ("M,mass",       "plot mass binning                <bins,min,max>",
+          cxxopts::value<std::string>())
+        ("Y,rapidity",   "plot rapidity binning            <bins,min,max>",
+          cxxopts::value<std::string>())
+        ("P,momentum",   "plot momentum binning            <bins,min,max>",
+          cxxopts::value<std::string>())
+        ("L,luminosity", "integrated luminosity (opt.)     <inverse barn>",
+          cxxopts::value<double>())
+        ("X,maximum",    "max number of events to process (opt.)  <value>",
+          cxxopts::value<int>())
+        ("S,scale",      "scale plots                      <scale1,scale2,...>",
+          cxxopts::value<std::string>())
+        ("r,ratio",      "ratio plotting on                <true|false>",
+          cxxopts::value<std::string>())
+        ("H,help", "Help");
 
     auto r = options.parse(argc, argv);
 
@@ -442,21 +447,27 @@ int main(int argc, char *argv[]) {
     }
     fullpath += "/";  // important
 
+    bool RATIOPLOT = true;
+    if (r.count("ratio")) { 
+      const std::string str = r["ratio"].as<std::string>();
+      RATIOPLOT = (str == "true") ? true : false;
+    }
+    
     // Iterate over all 1D-histograms
     for (const auto &x : h1) {
       x.second->NormalizeAll(cross_section, scale);
-      x.second->SaveFig(fullpath);  // Select second member of map
+      x.second->SaveFig(fullpath, RATIOPLOT);  // Select second member of map
     }
 
     // Iterate over all 2D-histograms
     for (const auto &x : h2) {
       x.second->NormalizeAll(cross_section, scale);
-      x.second->SaveFig(fullpath);
+      x.second->SaveFig(fullpath, RATIOPLOT);
     }
 
     // Iterate over all Profile-histograms
     for (const auto &x : hP) {
-      x.second->SaveFig(fullpath);
+      x.second->SaveFig(fullpath, RATIOPLOT);
     }
 
     // Merge pdfs using Ghostscript (gs)

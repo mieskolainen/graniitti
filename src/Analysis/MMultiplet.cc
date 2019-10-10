@@ -82,7 +82,7 @@ void h1Multiplet::NormalizeAll(const std::vector<double> &cross_section,
   }
 }
 
-std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
+std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath, bool RATIOPLOT) const {
   
   // New colorscheme
   std::vector<int> color;
@@ -107,13 +107,19 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
   TCanvas c0("c", "c", 750, 800);
 
   // Upper plot will be in pad1
-  std::shared_ptr<TPad> pad1 = std::make_shared<TPad>("pad1", "pad1", 0, 0.3, 1, 1.0);
+  std::shared_ptr<TPad> pad1;
 
+if (RATIOPLOT) {
+  pad1 = std::make_shared<TPad>("pad1", "pad1", 0, 0.3, 1.0, 1.0);
   pad1->SetBottomMargin(0.015);  // Upper and lower plot are joined
-  // pad1->SetGridx();          // Vertical grid
+} else {
+  pad1 = std::make_shared<TPad>("pad1", "pad1", 0, 0.0, 1.0, 1.0);
+}
+// pad1->SetGridx();          // Vertical grid
   pad1->Draw();       // Draw the upper pad: pad1
-  pad1->cd();         // pad1 becomes the current pad
+  pad1->cd();         // pad1 becomes the current pad  
   h[0]->SetStats(0);  // No statistics on upper plot
+
 
   // Find maximum value for y-range limits
   double MAXVAL = 0.0;
@@ -140,7 +146,7 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
     h[i]->SetMarkerSize(0.73);
 
     std::cout << MINVAL << std::endl;
-    h[i]->GetYaxis()->SetRangeUser(0, MAXVAL * 1.5);
+    h[i]->GetYaxis()->SetRangeUser(0, MAXVAL * 1.35);
 
     // h[i]->Draw("e2 same");   // Needs this combo to draw box-lines
     h[i]->Draw("hist same");
@@ -170,10 +176,15 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
   // Create labels
   std::shared_ptr<TLatex> l1;
   std::shared_ptr<TLatex> l2;
-  gra::rootstyle::MadeInFinland(l1, l2);
-
+  gra::rootstyle::MadeInFinland(l1, l2, 0.935, {(RATIOPLOT == true ? 0.03 : 0.16), 0.58});
+  
+  
   // -------------------------------------------------------------------
   // Ratio plots
+  std::vector<TH1D *> hR(h.size(), nullptr);
+
+if (RATIOPLOT) {
+
   c0.cd();
   std::shared_ptr<TPad> pad2 = std::make_shared<TPad>("pad2", "pad2", 0, 0.05, 1, 0.3);
   pad2->SetTopMargin(0.025);
@@ -181,9 +192,6 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
   pad2->SetGridx();  // vertical grid
   pad2->Draw();
   pad2->cd();  // pad2 becomes the current pad
-
-  // *** Ratio histograms ***
-  std::vector<TH1D *> hR(h.size(), nullptr);
 
   for (const auto &i : indices(h)) {
     hR[i] = static_cast<TH1D*>( h[i]->Clone(Form("ratio_%lu", i)) );
@@ -226,10 +234,12 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
   // Remove x-axis of UPPER PLOT
   h[0]->GetXaxis()->SetLabelOffset(999);
   h[0]->GetXaxis()->SetLabelSize(0);
+  // -------------------------------------------------------------------
+
+} // RATIOPLOT
 
   // Give y-axis title some offset to avoid overlapping with numbers
   h[0]->GetYaxis()->SetTitleOffset(1.45);
-  // -------------------------------------------------------------------
 
   // Create output directory if it does not exist
   aux::CreateDirectory(fullpath);
@@ -246,8 +256,10 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath) const {
     c0.SaveAs(fullfile.c_str());
   }
 
-  // Remove histograms
+// Remove histograms
+if (RATIOPLOT) {
   for (const auto &i : indices(hR)) { delete hR[i]; }
+}
 
   return chi2ndf;
 }
@@ -302,10 +314,12 @@ void h2Multiplet::NormalizeAll(const std::vector<double> &cross_section,
   }
 }
 
-double h2Multiplet::SaveFig(const std::string &fullpath) const {
+double h2Multiplet::SaveFig(const std::string &fullpath, bool RATIOPLOT) const {
 
-  TCanvas c0("c", "c", h.size() == 1 ? 525 : 750 / 3.0 * h.size(), 525); // scale canvas according to number of sources
-  c0.Divide(h.size(), h.size() == 1 ? 1 : 2, 0.01, 0.02);                // [columns] x [rows]
+  const double scale = (RATIOPLOT == true) ? 2.0 : 1.0;
+
+  TCanvas c0("c", "c", h.size() == 1 ? 520 : 750 / 3.0 * h.size(), 260 * scale); // scale canvas according to number of sources
+  c0.Divide(h.size(), h.size() == 1 ? 1 : scale, 0.01, 0.02);                    // [columns] x [rows]
   
   // Normalize by the first histogram
   //const double ZMAX = h[0]->GetMaximum();
@@ -325,6 +339,8 @@ double h2Multiplet::SaveFig(const std::string &fullpath) const {
   // Ratio histograms on BOTTOM ROW
   std::vector<TH2D *> hR(h.size(), nullptr);
 
+if (RATIOPLOT) {
+
   if (h.size() > 1) { // Only if we have more than 1
 
   for (const auto &i : indices(h)) {
@@ -342,6 +358,7 @@ double h2Multiplet::SaveFig(const std::string &fullpath) const {
   }
 
   }
+}
 
   // -------------------------------------------------------------------
   // Create labels
@@ -361,10 +378,13 @@ double h2Multiplet::SaveFig(const std::string &fullpath) const {
   std::string fullfile = fullpath + name_ + ".pdf";
   c0.SaveAs(fullfile.c_str());
 
+if (RATIOPLOT) {
   // Delete ratio histograms from memory
   if (h.size() > 1) {
     for (const auto &i : indices(hR)) { delete hR[i]; }
-  }  
+  }
+}
+
   return 0.0;
 }
 
@@ -394,8 +414,8 @@ hProfMultiplet::hProfMultiplet(const std::string &name, const std::string &label
   }
 }
 
-double hProfMultiplet::SaveFig(const std::string &fullpath) const {
-  
+double hProfMultiplet::SaveFig(const std::string &fullpath, bool RATIOPLOT) const {
+
   // New colorscheme
   std::vector<int> color;
   std::vector<std::shared_ptr<TColor>> rootcolor;
@@ -404,11 +424,17 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
   TCanvas c0("c", "c", 750, 800);
 
   // Upper plot will be in pad1
-  std::shared_ptr<TPad> pad1 = std::make_shared<TPad>("pad1", "pad1", 0, 0.3, 1, 1.0);
+  std::shared_ptr<TPad> pad1;
+
+if (RATIOPLOT) {
+  pad1 = std::make_shared<TPad>("pad1", "pad1", 0, 0.3, 1.0, 1.0);
   pad1->SetBottomMargin(0.015);  // Upper and lower plot are joined
-  // pad1->SetGridx();           // Vertical grid
+} else {
+  pad1 = std::make_shared<TPad>("pad1", "pad1", 0, 0.0, 1.0, 1.0);
+}
+// pad1->SetGridx();          // Vertical grid
   pad1->Draw();       // Draw the upper pad: pad1
-  pad1->cd();         // pad1 becomes the current pad
+  pad1->cd();         // pad1 becomes the current pad  
   h[0]->SetStats(0);  // No statistics on upper plot
 
   // Find maximum value for y-range limits
@@ -448,11 +474,17 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
   // GRANIITTI text
   std::shared_ptr<TLatex> l1;
   std::shared_ptr<TLatex> l2;
-  gra::rootstyle::MadeInFinland(l1, l2);
+  gra::rootstyle::MadeInFinland(l1, l2, 0.935, {(RATIOPLOT == true ? 0.03 : 0.16), 0.58});
   // -------------------------------------------------------------------
 
   // -------------------------------------------------------------------
   // Ratio plots
+  std::vector<TProfile *> hxP(h.size(), nullptr);
+  std::vector<TH1D *>     hR(h.size(),  nullptr);
+  TH1D* hx0 = nullptr;
+
+if (RATIOPLOT) {
+
   c0.cd();
   std::shared_ptr<TPad> pad2 = std::make_shared<TPad>("pad2", "pad2", 0, 0.05, 1, 0.3);
   pad2->SetTopMargin(0.025);
@@ -460,11 +492,6 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
   pad2->SetGridx();  // vertical grid
   pad2->Draw();
   pad2->cd();  // pad2 becomes the current pad
-
-  // *** Ratio histograms ***
-  std::vector<TProfile *> hxP(h.size(), nullptr);
-  std::vector<TH1D *>     hR(h.size(),  nullptr);
-  TH1D* hx0 = nullptr;
 
   for (const auto &i : indices(h)) {
     hxP[i] = static_cast<TProfile*>(h[i]->Clone(Form("ratio_%lu", i)));
@@ -525,10 +552,12 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
   // Remove x-axis of UPPER PLOT
   h[0]->GetXaxis()->SetLabelOffset(999);
   h[0]->GetXaxis()->SetLabelSize(0);
+  // -------------------------------------------------------------------
 
+} // RATIOPLOT
+  
   // Give y-axis title some offset to avoid overlapping with numbers
   h[0]->GetYaxis()->SetTitleOffset(1.45);
-  // -------------------------------------------------------------------
 
   // Create output directory if it does not exist
   aux::CreateDirectory(fullpath);
@@ -544,12 +573,14 @@ double hProfMultiplet::SaveFig(const std::string &fullpath) const {
     c0.SaveAs(fullfile.c_str());
   }
 
+if (RATIOPLOT) {
   // Remove histograms
   for (const auto &i : indices(hR)) {
     delete hxP[i];
     delete hR[i];
   }
   delete hx0;
+}
 
   return 0.0;
 }

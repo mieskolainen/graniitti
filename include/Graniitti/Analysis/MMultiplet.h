@@ -49,10 +49,10 @@ class h1Multiplet {
   }
   void NormalizeAll(const std::vector<double> &cross_section,
                     const std::vector<double> &multiplier);
-
+  
   // Plot and save 1D-histogram Multiplet
-  std::vector<double> SaveFig(const std::string &fullpath) const;
-
+  std::vector<double> SaveFig(const std::string &fullpath, bool RATIOPLOT = true) const;
+  
   int         N_;
   double      minval_;
   double      maxval_;
@@ -83,7 +83,7 @@ class h2Multiplet {
                     const std::vector<double> &multiplier);
 
   // Plot and save histogram Multiplet
-  double SaveFig(const std::string &fullpath) const;
+  double SaveFig(const std::string &fullpath, bool RATIOPLOT = true) const;
 
   int    N1_;
   double minval1_;
@@ -117,7 +117,7 @@ class hProfMultiplet {
   }
   
   // Plot and save histogram Multiplet
-  double SaveFig(const std::string &fullpath) const;
+  double SaveFig(const std::string &fullpath, bool RATIOPLOT = true) const;
 
   int    N_;
   double minval1_;
