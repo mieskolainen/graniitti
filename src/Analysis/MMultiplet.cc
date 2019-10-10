@@ -177,16 +177,17 @@ if (RATIOPLOT) {
   std::shared_ptr<TLatex> l1;
   std::shared_ptr<TLatex> l2;
   gra::rootstyle::MadeInFinland(l1, l2, 0.935, {(RATIOPLOT == true ? 0.03 : 0.16), 0.58});
-  
-  
+
   // -------------------------------------------------------------------
   // Ratio plots
   std::vector<TH1D *> hR(h.size(), nullptr);
+  std::shared_ptr<TPad> pad2;
+  std::shared_ptr<TLine> line;
 
 if (RATIOPLOT) {
 
   c0.cd();
-  std::shared_ptr<TPad> pad2 = std::make_shared<TPad>("pad2", "pad2", 0, 0.05, 1, 0.3);
+  pad2 = std::make_shared<TPad>("pad2", "pad2", 0, 0.05, 1, 0.3);
   pad2->SetTopMargin(0.025);
   pad2->SetBottomMargin(0.25);
   pad2->SetGridx();  // vertical grid
@@ -225,7 +226,7 @@ if (RATIOPLOT) {
 
   // Draw horizontal line
   const double           ymax = 1.0;
-  std::shared_ptr<TLine> line = std::make_shared<TLine>(minval_, ymax, maxval_, ymax);
+  line = std::make_shared<TLine>(minval_, ymax, maxval_, ymax);
   line->SetLineColor(15);
   line->SetLineWidth(2.0);
   line->Draw();
@@ -482,11 +483,13 @@ if (RATIOPLOT) {
   std::vector<TProfile *> hxP(h.size(), nullptr);
   std::vector<TH1D *>     hR(h.size(),  nullptr);
   TH1D* hx0 = nullptr;
+  std::shared_ptr<TPad> pad2;
+  std::shared_ptr<TLine> line;
 
 if (RATIOPLOT) {
 
   c0.cd();
-  std::shared_ptr<TPad> pad2 = std::make_shared<TPad>("pad2", "pad2", 0, 0.05, 1, 0.3);
+  pad2 = std::make_shared<TPad>("pad2", "pad2", 0, 0.05, 1, 0.3);
   pad2->SetTopMargin(0.025);
   pad2->SetBottomMargin(0.25);
   pad2->SetGridx();  // vertical grid
@@ -543,7 +546,7 @@ if (RATIOPLOT) {
 
   // Draw horizontal line
   const double           ymax = 1.0;
-  std::shared_ptr<TLine> line = std::make_shared<TLine>(minval1_, ymax, maxval1_, ymax);
+  line = std::make_shared<TLine>(minval1_, ymax, maxval1_, ymax);
   line->SetLineColor(15);
   line->SetLineWidth(2.0);
   line->Draw();
