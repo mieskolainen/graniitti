@@ -13,7 +13,7 @@
     "W"  : 0.08,
     "J"  : 0,
     "P"  : 1,
-
+    
     // Breit-Wigner propagator type
     // 1 = fixed width relativistic
     // 2 = running width relativistic
@@ -34,8 +34,8 @@
     "g_A"   :  0.065,
     "g_phi" : -3.14159,
 
-    // Production form factor on
-    "g_FF"  : true,
+    // Production form factor parameter (GeV)
+    "g_FF"  : 1.0,
     
     // Resonance spin-density (von Neumann) matrix (Re and Im parts)
     "rho_real" : [ [ 0.0,  0,  0] ,

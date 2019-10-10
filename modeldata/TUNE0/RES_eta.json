@@ -34,8 +34,8 @@
     "g_A"   :  0.2,
     "g_phi" :  0.0,
 
-    // Production form factor on
-    "g_FF"  : true,
+    // Production form factor parameter (GeV)
+    "g_FF"  : 1.0,
     
     // Resonance spin-density (von Neumann) matrix (Re and Im parts)
     "rho_real" : [ [ 0.0,  0,  0] ,

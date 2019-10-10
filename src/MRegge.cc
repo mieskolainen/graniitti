@@ -1188,13 +1188,8 @@ std::complex<double> FSI_prop(double t_hat, double M2) {
 // In general, without any interfering continuum process
 // (which would provide the same effect), this may be needed?
 //
-double ResonanceFormFactor(double s_hat, double M2, bool active) {
-  if (!active) {
-    return 1.0;
-  } else {
-    const double scale4 = 1.0;  // GeV^4
-    return std::exp(-pow2(s_hat - M2) / scale4);
-  }
+double ResonanceFormFactor(double s_hat, double M2, double S0) {
+  return std::exp(-pow2(s_hat - M2) / math::pow4(S0));
 }
 
 }  // PARAM_REGGE namespace ends

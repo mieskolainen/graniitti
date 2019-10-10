@@ -1634,7 +1634,7 @@ class PARAM_RES {
 
     printf("<Production> \n");
     printf("- Effective vertex constant g_i:  %0.1E x exp(i x %0.1f) \n", std::abs(g), std::arg(g));
-    printf("- Form factor: %s \n", g_FF == true ? "true" : "false");
+    printf("- Form factor parameter: %0.2f \n", g_FF);
 
     std::cout << std::endl;
     printf("<Decay> \n");
@@ -1673,9 +1673,9 @@ class PARAM_RES {
   // (Complex) production coupling constant
   std::complex<double> g = 0.0;
   
-  // Form factor
-  bool g_FF = false;
-
+  // Form factor parameter
+  double g_FF = 0.0;
+  
   // Breit-Wigner type
   int BW = 0;
 

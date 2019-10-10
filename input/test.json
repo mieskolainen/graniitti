@@ -19,10 +19,10 @@
     "WEIGHTED"   : false,       // Weighted events (default false)
     "MODELPARAM" : "TUNE0"      // General model tune
   },
-
+  
   // ----------------------------------------------------------------------
   // Process setup
-
+  
   "PROCESSPARAM" : {
 
     "BEAM"    : ["p+","p+"],    // Beam PDG-ID / Name

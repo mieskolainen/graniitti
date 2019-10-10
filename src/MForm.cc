@@ -239,9 +239,9 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
     double               g_phi = j.at("PARAM_RES").at("g_phi");
     res.g                      = g_A * std::exp(std::complex<double>(0, 1) * g_phi);
 
-    // Form factor
+    // Form factor parameter
     res.g_FF = j.at("PARAM_RES").at("g_FF");
-
+    
     // PDG code
     res.p.pdg = j.at("PARAM_RES").at("PDG");
 
