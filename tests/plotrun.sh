@@ -56,3 +56,5 @@ yes $CMD | source ./tests/run_cms_harmonic/run.sh
 
 
 echo "plotrun.sh [Done]"
+
+source ./tests/copyrun.sh
