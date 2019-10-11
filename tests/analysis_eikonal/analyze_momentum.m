@@ -86,7 +86,8 @@ end
 %}
 
 % ------------------------------------------------------------------------
-% Read in FNAL data
+% Read in Fermilab data
+% 
 [~, index] = min(abs(sqrts - 546));
 
 FNAL = dlmread('../../HEPdata/EL/FNAL_546.csv');
@@ -94,17 +95,20 @@ FNAL = dlmread('../../HEPdata/EL/FNAL_546.csv');
 errorbar(FNAL(:,1), FNAL(:,4)*factor(index), ...
          sqrt(FNAL(:,6).^2 ), ...
          sqrt(FNAL(:,5).^2 ), '.', 'color', [0 1 0]*0.5, 'CapSize', 1);
-legends{length(legends)+1} = 'FNAL $\sqrt{s} = 546$ GeV';
+legends{length(legends)+1} = 'CDF (E741) $\sqrt{s} = 546$ GeV';
 
+% Read in SPS data
+% 
 SPS  = dlmread('../../HEPdata/EL/SPS_546.csv');
 
 errorbar(SPS(:,1), SPS(:,4)*factor(index), ...
          sqrt(SPS(:,6).^2 ), ...
          sqrt(SPS(:,5).^2 ), '.', 'color', [0 0 1]*0.5, 'CapSize', 1);
-legends{length(legends)+1} = 'SPS $\sqrt{s} = 546$ GeV';
+legends{length(legends)+1} = 'UA4 (SPS) $\sqrt{s} = 546$ GeV';
 
 % ------------------------------------------------------------------------
 % Read in Fermilab data
+% Measurement of small angle antiproton-proton elastic scattering at√ s= 546 and 1800 GeV
 [~, index] = min(abs(sqrts - 1800));
 
 ABE = dlmread('../../HEPdata/EL/ABE_1994_1800.csv');
@@ -118,6 +122,7 @@ index = index + 1;
 
 % ------------------------------------------------------------------------
 % Read in TOTEM data
+% Proton-proton elastic scattering at the {LHC} energy of $\sqrt{s} = 7$ {TeV}
 [~, index] = min(abs(sqrts - 7000));
 
 TOTEM_high_t = dlmread('../../HEPdata/EL/TOTEM_7.csv');

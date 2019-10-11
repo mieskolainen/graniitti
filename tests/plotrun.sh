@@ -31,7 +31,7 @@ EVENTS=1000000
 yes $CMD | source ./tests/run_atlas_multi/run.sh
 
 
-EVENTS=2000000
+EVENTS=5000000
 yes $CMD | source ./tests/run_excitation/run.sh
 
 
