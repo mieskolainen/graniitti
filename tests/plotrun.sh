@@ -54,7 +54,6 @@ EVENTS=1000000
 yes $CMD | source ./tests/run_cms_harmonic/run.sh
 #yes $CMD | source ./tests/run_alice_harmonic/run.sh
 
-
 echo "plotrun.sh [Done]"
 
 source ./tests/copyrun.sh
