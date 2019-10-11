@@ -55,9 +55,8 @@ do
 -c $FIDCUTS \
 -f $FRAME -g $LMAX -o $REMOVEODD -v $REMOVENEGATIVE -a $SVDREG -b $L1REG -e $EML \
 -M $MBINS -P $PBINS -Y $YBINS \
--w ""
-
-#-S "-1.0, -1.0" # \ -X 1000
+-w "" \
+-S "-1.0, -1.0" # \ -X 1000
 
 # -S -1 for normalized plots
 
