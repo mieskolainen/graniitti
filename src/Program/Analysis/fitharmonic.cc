@@ -89,51 +89,47 @@ int main(int argc, char *argv[]) {
   const int NARGC = argc - 1;
   try {
     cxxopts::Options options(argv[0], "");
-    options.add_options()(
-        "r,ref", "Reference MC (angular flat MC sample)     <filename> without .hepmc3",
-        cxxopts::value<std::string>())("i,input",
-                                       "Input sample                              "
-                                       "<filename1,filename2,...> without .hepmc3",
-                                       cxxopts::value<std::string>())(
-        "t,titles", "Phase space titles (3 of them)            <detector,fiducial,flat>",
-        cxxopts::value<std::string>())(
-        "l,legend", "Legend text                               <title1,title2,...>",
-        cxxopts::value<std::string>())(
-        "w,yaxis", "Y-axis text                                <label>",
-        cxxopts::value<std::string>())(
-        "d,mode", "Input mode                                <MC|DATA,...>      ",
-        cxxopts::value<std::string>())(
-        "c,cuts", "Fiducial cuts                             <ETAMIN,ETAMAX,PTMIN,PTMAX>",
-        cxxopts::value<std::string>())(
-        "S,scale", "Scale plots (set -1 for unit normalized)  <scale1,scale2,...>",
+    options.add_options()
+          ("r,ref",     "Reference MC (angular flat MC sample)     <filename> without .hepmc3",
         cxxopts::value<std::string>())
-
-        ("f,frame", "Lorentz rest frame                        <CM|HX|CS|AH|PG|GJ>",
-         cxxopts::value<std::string>())("g,lmax",
-                                        "Maximum angular order                     <1|2|3|4|...>",
-                                        cxxopts::value<unsigned int>())(
-            "o,removeodd", "Remove negative M                         <true|false>",
-            cxxopts::value<std::string>())("v,removenegative",
-                                           "Remove odd M                              <true|false>",
-                                           cxxopts::value<std::string>())(
-            "e,eml", "Extended Maximum Likelihood               <true|false>",
-            cxxopts::value<std::string>())("a,svdreg",
-                                           "SVD regularization weight                 <value>",
-                                           cxxopts::value<double>())(
-            "b,l1reg", "L1 regularization weight                  <value>",
-            cxxopts::value<double>())
-
-            ("M,mass", "System mass binning                       <bins,min,max>",
-             cxxopts::value<std::string>())(
-                "P,momentum", "System momentum (pt) binning                         <bins,min,max>",
-                cxxopts::value<std::string>())(
-                "Y,rapidity", "System rapidity binning                   <bins,min,max>",
-                cxxopts::value<std::string>())
-
-                ("z,fastsim", "Fast simulation of efficiency response    <true|false,...>",
-                 cxxopts::value<std::string>())("X,maximum",
-                                                "Maximum number of events                  <value>",
-                                                cxxopts::value<unsigned int>())("H,help", "Help");
+          ("i,input",   "Input sample                              <filename1,filename2,...> without .hepmc3",
+        cxxopts::value<std::string>())
+          ("t,titles",  "Phase space titles (3 of them)            <detector,fiducial,flat>",
+        cxxopts::value<std::string>())
+          ("l,legend",  "Legend text                               <title1,title2,...>",
+        cxxopts::value<std::string>())
+          ("w,yaxis",   "Y-axis text                               <label>",
+        cxxopts::value<std::string>())
+          ("d,mode",    "Input mode                                <MC|DATA,...>      ",
+        cxxopts::value<std::string>())
+          ("c,cuts",    "Fiducial cuts                             <ETAMIN,ETAMAX,PTMIN,PTMAX>",
+        cxxopts::value<std::string>())
+          ("S,scale",   "Scale plots (set -1 for unit normalized)  <scale1,scale2,...>",
+        cxxopts::value<std::string>())
+          ("f,frame",   "Lorentz rest frame                        <CM|HX|CS|AH|PG|GJ>",
+        cxxopts::value<std::string>())
+          ("g,lmax",            "Maximum angular order                     <1|2|3|4|...>",
+        cxxopts::value<unsigned int>())
+          ("o,removeodd",       "Remove negative M                         <true|false>",
+        cxxopts::value<std::string>())
+          ("v,removenegative",  "Remove odd M                              <true|false>",
+        cxxopts::value<std::string>())
+          ("e,eml",             "Extended Maximum Likelihood               <true|false>",
+        cxxopts::value<std::string>())
+          ("a,svdreg",          "SVD regularization weight                 <value>",
+        cxxopts::value<double>())
+          ("b,l1reg",           "L1 regularization weight                  <value>",
+        cxxopts::value<double>())
+          ("M,mass",            "System mass binning                       <bins,min,max>",
+        cxxopts::value<std::string>())
+          ("P,momentum",        "System momentum (pt) binning              <bins,min,max>",
+        cxxopts::value<std::string>())
+          ("Y,rapidity",        "System rapidity binning                   <bins,min,max>",
+        cxxopts::value<std::string>())
+          ("z,fastsim",         "Fast simulation of efficiency response    <true|false,...>",
+        cxxopts::value<std::string>())
+          ("X,maximum",         "Maximum number of events                  <value>",
+        cxxopts::value<unsigned int>())("H,help", "Help");
 
     auto r = options.parse(argc, argv);
 

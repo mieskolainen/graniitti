@@ -304,11 +304,11 @@ int main(int argc, char *argv[]) {
           cxxopts::value<std::string>())
         ("L,luminosity", "integrated luminosity (opt.)     <inverse barn>",
           cxxopts::value<double>())
-        ("X,maximum",    "max number of events to process (opt.)  <value>",
+        ("X,maximum",    "max nr. events to process (opt.) <value>",
           cxxopts::value<int>())
         ("S,scale",      "scale plots                      <scale1,scale2,...>",
           cxxopts::value<std::string>())
-        ("r,ratio",      "ratio plotting on                <true|false>",
+        ("R,ratio",      "ratio plotting on                <true|false>",
           cxxopts::value<std::string>())
         ("H,help", "Help");
 

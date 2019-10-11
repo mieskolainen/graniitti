@@ -104,9 +104,9 @@ void MHarmonic::Init(const HPARAM &hp) {
                "(geometric-kinematic) "
                "final state phase space (cuts on final states)"
             << std::endl;
-  std::cout << "  {S} Selected  == Events after the detector efficiency losses" << std::endl;
+  std::cout << "  {D} Detector  == Events after the detector efficiency losses, selection AND fiducial cuts" << std::endl;
   std::cout << std::endl;
-  std::cout << "{S} subset of {F} subset of {G} (this strict hierarchy might "
+  std::cout << "{D} subset of {F} subset of {G} (this strict hierarchy might "
                "be violated in "
                "some special cases)"
             << std::endl;
