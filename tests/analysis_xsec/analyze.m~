@@ -237,16 +237,10 @@ for i = ind:1:length(chi2_values)
     end
 end
 
-% Now get values
 g3P      = P3values(ind);
-g3P_up   = P3values(upind);
-g3P_down = P3values(lowind);
+g3P_up   = P3values(upind);  % Times 2x for 2 sigma
+g3P_down = P3values(lowind) *2; % Times 2x for 2 sigma
 
-% Increase 2 x sigma CL
-g3P_up   = g3P + (g3P_up   - g3P) * 2;
-g3P_down = g3P - (g3P - g3P_down) * 2;
-
-% Plot
 plot( ones(10,1)*P3values(lowind), linspace(0.5, max(chi2_values), 10), 'r--'); hold on;
 plot( ones(10,1)*P3values(upind),  linspace(0.5, max(chi2_values), 10), 'r--');
 plot(P3values, chi2_values);
@@ -255,7 +249,7 @@ xlabel('$g_{3P}$','interpreter','latex');
 ylabel('$\chi^2$','interpreter','latex');
 set(gca,'yscale','log');
 
-axis([min(P3values) max(P3values) 0.9*min(chi2_values) max(chi2_values)]);
+axis([min(P3values) max(P3values) 0.5 100]);
 
 fprintf('g3P = %0.3f (%0.3f ... %0.3f) \n', P3values(ind), P3values(lowind), P3values(upind));
 
