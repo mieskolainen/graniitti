@@ -176,7 +176,7 @@ do
 	MEASUREMENT=(- - -)
 	UNIT=6
 	SQRTS="13"
-
+	
 	elif [ "$CARD" == "CMS19_2pi_E2" ]
 	then
 	CUTS="$|#eta| < 2.4, p_t > 0.2, M_{1,2} < 5$ GeV"
