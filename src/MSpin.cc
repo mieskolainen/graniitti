@@ -372,8 +372,8 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &res)
   double theta_R = 0.0;
   double phi_R   = 0.0;
 
-  // Fix the frame here
-  const std::string FRAME = res.FRAME;
+  // Fix the frame here, Collins-Soper is fixed for the production part
+  const std::string FRAME = "CS";
   GetRhoRotation(lts, FRAME, theta_R, phi_R);
   
   // ------------------------------------------------------------------

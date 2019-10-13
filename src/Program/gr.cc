@@ -80,8 +80,8 @@ int main(int argc, char *argv[]) {
       
       std::cout << std::endl;
       std::cout << rang::style::bold << "  [Pomeron amplitudes]" << rang::style::reset << std::endl;
-
-      std::cout << "  @FRAME:X                                set Lorentz frame definition for the spin density matrix (X = CM, HX, CS)" << std::endl;
+      
+      std::cout << "  @FRAME:X                                set Lorentz frame definition for the decay spin density matrix (X = CS, HX, CM)" << std::endl;
       std::cout << "  @R[f2_1270]{JZ0:0.5, JZ1:0.0, JZ2:0.5}  set new diagonal spin density matrix elements for resonances" << std::endl;
       std::cout << "  @JMAX:X                                 set maximum Pomeron helicity for the sliding helicity amplitudes" << std::endl;
       
