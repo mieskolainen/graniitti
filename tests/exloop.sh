@@ -159,12 +159,30 @@ do
 	SQRTS="7"
 
 	# http://cds.cern.ch/record/2679648/files/FSQ-16-006-pas.pdf
-	elif [ "$CARD" == "CMS19_2pi" ]
+	elif [ "$CARD" == "CMS19_2pi_E0" ]
 	then
 	CUTS="CMS"
-	CHANNEL="$\pi^+\pi^-$"
+	CHANNEL="$\pi^+\pi^-_{EL}$"
 	BIBTEX="CMS-PAS-FSQ-16-006"
 	MEASUREMENT=(19.0 0.6 3.2)
+	UNIT=6
+	SQRTS="13"
+	
+	elif [ "$CARD" == "CMS19_2pi_E1" ]
+	then
+	CUTS="$|#eta| < 2.4, p_t > 0.2, M_{1} < 5$ GeV"
+	CHANNEL="$\pi^+\pi^-_{SD}$"
+	BIBTEX="-"
+	MEASUREMENT=(- - -)
+	UNIT=6
+	SQRTS="13"
+
+	elif [ "$CARD" == "CMS19_2pi_E2" ]
+	then
+	CUTS="$|#eta| < 2.4, p_t > 0.2, M_{1,2} < 5$ GeV"
+	CHANNEL="$\pi^+\pi^-_{DD}$"
+	BIBTEX="-"
+	MEASUREMENT=(- - -)
 	UNIT=6
 	SQRTS="13"
 	
