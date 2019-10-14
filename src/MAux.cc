@@ -39,10 +39,10 @@ namespace aux {
 // -------------------------------------------------------
 // FIXED HERE manually
 
-double      GetVersion() {       return 0.98; }
-std::string GetVersionType() {   return "pre-release"; }
+double      GetVersion() {       return 1.00; }
+std::string GetVersionType() {   return "release"; }
 std::string GetVersionDate() {   return "14.10.2019"; }
-std::string GetVersionUpdate() { return "fixes"; }
+std::string GetVersionUpdate() { return "release version"; }
 
 // -------------------------------------------------------
 
@@ -591,7 +591,7 @@ std::string GetVersionString() {
 
 std::string GetVersionTLatex() {
   char buff[100];
-  const double version = 1.0;
+  const double version = GetVersion();
   snprintf(buff, sizeof(buff), "#color[16]{#scale[0.6]{GRANIITTI #scale[0.8]{%0.2f}}}", version);
   std::string str = buff;
   return str;

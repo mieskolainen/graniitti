@@ -1,7 +1,7 @@
 {
  "name": "GRANIITTI",
- "version": 0.98,
- "type": "pre-release",
+ "version": 1.00,
+ "type": "release",
  "date": "14.10.2019",
- "update": "fixes"
+ "update": "release version"
 }

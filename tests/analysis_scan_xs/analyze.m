@@ -64,7 +64,7 @@ axis tight;
 xlabel('$\sqrt{s}$ (GeV)','interpreter','latex');
 ylabel('$\sigma$ ($\mu$b)','interpreter','latex');
 
-axis([10 max(MC(:,1)) 0.5 1e2]);
+axis([10 max(MC(:,1)) 1e-1 1e2]);
 
 
 %% Plot ratios
