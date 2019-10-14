@@ -11,7 +11,7 @@
   
   "GENERALPARAM" : {
 
-    "OUTPUT"     : "ALICE7_2pi", // Output filename
+    "OUTPUT"     : "ALICE7_2pi_SD", // Output filename
     "FORMAT"     : "hepmc3",     // hepmc3, hepmc2, hepevt
     "CORES"      : 0,            // Number of CPU threads (0 for automatic)
     "NEVENTS"    : 10000,        // Number of events
@@ -81,7 +81,8 @@
     },
     "<F>" : {
       "Rap" : [-0.9, 0.9], // Rapidity boundaries of the system (<F> class)
-      "M"   : [0, 7.0]
+      "M"   : [0, 7.0],
+      "Xi" : [0.0, 0.05]
     },
     "<Q>" : {
       "Xi"  : [0, 0.05]    // Invariant scale M^2/s (forward excitation)

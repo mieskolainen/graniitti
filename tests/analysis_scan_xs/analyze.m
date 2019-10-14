@@ -106,10 +106,14 @@ system(sprintf('pdfcrop --margins ''2 2 2 2'' %s %s', filename, filename));
 %%
 
 % Before screening
+fprintf('Before screening: \n');
 SD_to_EL_S  = mean(MC(:,6) ./ MC(:,5))
 DD_to_SD_S  = mean(MC(:,7) ./ MC(:,6))
 
 % After screening
+fprintf('After screening: \n');
 SD_to_EL_S2 = mean(MC(:,9)  ./ MC(:,8))
 DD_to_SD_S2 = mean(MC(:,10) ./ MC(:,9))
+
+
 
