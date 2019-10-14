@@ -46,7 +46,7 @@
 
     // Loop integration
     "POMLOOP" : {
-      "ND" : -2                // Loop integral discretization
+      "ND" : 0                // Loop integral discretization
     },
     
     // VEGAS integrator
