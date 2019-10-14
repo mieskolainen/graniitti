@@ -170,7 +170,7 @@ do
 	
 	elif [ "$CARD" == "CMS19_2pi_E1" ]
 	then
-	CUTS="$|#eta| < 2.4, p_t > 0.2, M_{1} < 5$ GeV"
+	CUTS="$|\eta| < 2.4, p_t > 0.2, M_{1} < 5$ GeV"
 	CHANNEL="$\pi^+\pi^-_{SD}$"
 	BIBTEX="-"
 	MEASUREMENT=(- - -)
@@ -179,7 +179,7 @@ do
 	
 	elif [ "$CARD" == "CMS19_2pi_E2" ]
 	then
-	CUTS="$|#eta| < 2.4, p_t > 0.2, M_{1,2} < 5$ GeV"
+	CUTS="$|\eta| < 2.4, p_t > 0.2, M_{1,2} < 5$ GeV"
 	CHANNEL="$\pi^+\pi^-_{DD}$"
 	BIBTEX="-"
 	MEASUREMENT=(- - -)
