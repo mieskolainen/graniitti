@@ -27,7 +27,7 @@
 
     "BEAM" :   ["p+","p+"],    // Beam PDG-ID / Name
     "ENERGY" : [3500, 3500],   // Beam energy in the lab (GeV)
-    "PROCESS" : "PP[RES+CON]<F> -> pi+ pi-", // Process mode
+    "PROCESS" : "PP[CON]<F> -> pi+ pi-", // Process mode
     
     "RES" : ["f0_500", "rho_770", "f0_980", "phi_1020", "f2_1270","f0_1500"],
     //"RES" : ["f0_500", "rho_770", "f0_980", "phi_1020", "f2_1270", "f0_1500", "f2_1525", "f0_1710"],
@@ -37,8 +37,7 @@
     "HIST"    : 0,             // On-the-flight histograms (0 = off,1,2)
     "RNDSEED" : 12345678       // Random seed (int32)
   },
-  
-  
+
   // ----------------------------------------------------------------------
   // Monte Carlo integrator setup
 
@@ -46,7 +45,7 @@
 
     // Loop integration
     "POMLOOP" : {
-      "ND" : 0                // Loop integral discretization
+      "ND" : -1                // Loop integral discretization
     },
     
     // VEGAS integrator
