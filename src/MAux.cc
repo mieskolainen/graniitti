@@ -609,7 +609,7 @@ void PrintVersion() {
   std::cout << rang::style::bold << "<github.com/mieskolainen/GRANIITTI>"
             << rang::style::reset << std::endl
             << std::endl;
-  std::cout << "References: arXiv:1811.01730 [hep-ph]" << std::endl;
+  std::cout << "References: arXiv:1910.06300 [hep-ph]" << std::endl;
   std::cout << std::endl;
   std::cout << "(c) 2017-2019 Mikael Mieskolainen" << std::endl;
   std::cout << "<mikael.mieskolainen@cern.ch>" << std::endl;
