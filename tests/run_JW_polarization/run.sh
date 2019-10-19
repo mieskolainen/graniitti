@@ -45,7 +45,7 @@ S2_photo=0.7
 -i "f0_980, rho_JZ0, rho_JZ1, f2_JZ0, f2_JZ1, f2_JZ2" \
 -g "211, 211, 211, 211, 211, 211" \
 -n "2, 2, 2, 2, 2, 2" \
--l "f_{0}, #rho: #lambda=0, #rho: #lambda=#pm1, f_{2}: #lambda=0, f_{2}: #lambda=#pm1, f_{2}: #lambda=#pm2" \
+-l "f_{0}, #rho: J_{z}=0, #rho: J_{z}=#pm1, f_{2}: J_{z}=0, f_{2}: J_{z}=#pm1, f_{2}: J_{z}=#pm2" \
 -M "95, 0.5, 1.6" \
 -Y "95,-2.5, 2.5" \
 -P "95, 0.0, 2.0" \
@@ -53,6 +53,7 @@ S2_photo=0.7
 -R false \
 -t '#sqrt{s} = 13 TeV, |#eta| < 2.5, p_{T} > 0.15 GeV' \
 -S "$S2, $S2_photo, $S2_photo, $S2, $S2, $S2" #-X 1000
+
 
 #convert -density 600 -trim .h1_S_M_logy.pdf -quality 100 output.jpg
 
