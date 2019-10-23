@@ -30,12 +30,12 @@
   // Jacob-Wick helicity amplitudes etc.
   "PARAM_SPIN" : {
 
-    // 2 -> 1 fusion spin correlations active
+    // 2 -> 1 generation (fusion) spin correlations active
     "SPINGEN" : true,
-    
+
     // 1 -> 2 decay spin correlations active
     "SPINDEC" : true,
-    
+
     // Spin polarization frame ("CS" = Collins-Soper, "CM" = Non-Rotated Center of Momentum, "HX" = Helicity)
     "FRAME" : "CS", // Default Collins-Soper
 
