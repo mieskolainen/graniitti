@@ -282,6 +282,9 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &res)
   // Apply coupling here
   std::complex<double> A0 = res.g;
 
+  // Generation 2->1 spin correlations not active
+  if (res.SPINGEN == false) { return A0; }
+  
   // ---------------------------------------------------------------------
   // Tensors J^P = 2+, 4+, 6+,...
   // "Pomeron effective spins"
@@ -372,8 +375,8 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &res)
   double theta_R = 0.0;
   double phi_R   = 0.0;
 
-  // Fix the frame here, Collins-Soper is fixed for the production part
-  const std::string FRAME = "CS";
+  // Fix the frame here
+  const std::string FRAME = res.FRAME;
   GetRhoRotation(lts, FRAME, theta_R, phi_R);
   
   // ------------------------------------------------------------------
@@ -405,6 +408,9 @@ std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
   // Apply coupling first
   double A0 = res.hel.g_decay;
 
+  // Decay 1->2 spin correlations not active
+  if (res.SPINDEC == false) { return A0; }
+  
   // This function handles only 2-body decays
   if (lts.decaytree.size() != 2) {
     return A0;

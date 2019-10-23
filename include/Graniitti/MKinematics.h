@@ -1679,6 +1679,10 @@ class PARAM_RES {
   // Breit-Wigner type
   int BW = 0;
 
+  // 2->1 (generation spin correlation), 1->2 (decay spin correlations)
+  bool SPINGEN = true;
+  bool SPINDEC = true;
+  
   // Lorentz frame of the spin distribution
   std::string FRAME = "null";
 

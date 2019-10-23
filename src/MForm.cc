@@ -181,9 +181,11 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
   // =====================================================================  
   // Find global resonance parameters
 
+  bool SPINGEN = false;
+  bool SPINDEC = false;
   std::string FRAME = "null";
   int JMAX = 0;
-
+  
   {
     // Read and parse
     const std::string fullpath =
@@ -200,8 +202,10 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
       throw std::invalid_argument(str);
     }
 
-    FRAME = j.at("PARAM_SPIN").at("FRAME");
-    JMAX  = j.at("PARAM_SPIN").at("JMAX");
+    SPINGEN = j.at("PARAM_SPIN").at("SPINGEN");
+    SPINDEC = j.at("PARAM_SPIN").at("SPINDEC");
+    FRAME   = j.at("PARAM_SPIN").at("FRAME");
+    JMAX    = j.at("PARAM_SPIN").at("JMAX");
   }
 
   // =====================================================================
@@ -230,10 +234,12 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
 
     // -------------------------------------------------------------------
     // Collect global variables
-    res.FRAME = FRAME;
-    res.JMAX  = JMAX;
+    res.SPINGEN = SPINGEN;
+    res.SPINDEC = SPINDEC;
+    res.FRAME   = FRAME;
+    res.JMAX    = JMAX;
     // -------------------------------------------------------------------
-
+    
     // Complex coupling
     double               g_A   = j.at("PARAM_RES").at("g_A");
     double               g_phi = j.at("PARAM_RES").at("g_phi");

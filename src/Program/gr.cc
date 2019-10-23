@@ -81,12 +81,15 @@ int main(int argc, char *argv[]) {
       std::cout << std::endl;
       std::cout << rang::style::bold << "  [Pomeron amplitudes]" << rang::style::reset << std::endl;
       
-      std::cout << "  @FRAME:X                                set Lorentz frame definition for the decay spin density matrix (X = CS, HX, CM)" << std::endl;
+      std::cout << "  @SPINGEN:true                           set generation 2->1 spin correlations active (true, false)" << std::endl;
+      std::cout << "  @SPINDEC:true                           set decay 1->2 spin correlations active (true, false)" << std::endl;
+      
+      std::cout << "  @FRAME:X                                set Lorentz frame definition for the spin density matrix (X = CS, HX, CM)" << std::endl;
       std::cout << "  @R[f2_1270]{JZ0:0.5, JZ1:0.0, JZ2:0.5}  set new diagonal spin density matrix elements for resonances" << std::endl;
       std::cout << "  @JMAX:X                                 set maximum Pomeron helicity for the sliding helicity amplitudes" << std::endl;
       
       std::cout << std::endl;
-      std::cout << rang::style::bold << "  [Tensor Pomeron amplitudes]" << rang::style::reset << std::endl;
+      std::cout << rang::style::bold << "  [Tensor pomeron amplitudes]" << rang::style::reset << std::endl;
 
       std::cout << "  @R[f0_980]{g0:1.0, g1:0.2, ...}         set new production couplings {g0,g1} [scalar/pseudoscalar] {g0,...,g6} [tensor]" << std::endl;
 

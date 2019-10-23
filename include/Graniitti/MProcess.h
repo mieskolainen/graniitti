@@ -122,10 +122,22 @@ class MProcess : public MUserHistograms {
   }
   double GetOFFSHELL() { return OFFSHELL; }
 
+  // Set generation spin correlations
+  void SetSPINGEN(const bool SPINGEN) {
+    std::cout << rang::fg::red << "MProcess::SetSPINGEN: Set generation 2->1 spin correlations: "
+              << (SPINGEN ? "true" : "false") << rang::fg::reset << std::endl;
+    for (const auto &x : lts.RESONANCES) { lts.RESONANCES[x.first].SPINGEN = SPINGEN; }
+  }
+  // Set decay spin correlations
+  void SetSPINDEC(const bool SPINDEC) {
+    std::cout << rang::fg::red << "MProcess::SetSPINDEC: Set decay 1->2 spin correlations: "
+              << (SPINDEC ? "true" : "false") << rang::fg::reset << std::endl;
+    for (const auto &x : lts.RESONANCES) { lts.RESONANCES[x.first].SPINDEC = SPINDEC; }
+  }
   // Set common Lorentz frame for all resonances
   void SetFRAME(const std::string &FRAME) {
     std::cout << rang::fg::red << "MProcess::SetFRAME: Set common Lorentz "
-                                  "frame for the resonance decays: "
+                                  "frame for the resonance amplitudes: "
               << FRAME << rang::fg::reset << std::endl;
     for (const auto &x : lts.RESONANCES) { lts.RESONANCES[x.first].FRAME = FRAME; }
   }

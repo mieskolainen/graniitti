@@ -653,13 +653,17 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
 
   // Command syntax parameters
   for (const auto &i : indices(syntax)) {
-    if (syntax[i].id == "FLATAMP") { proc->SetFLATAMP(std::stoi(syntax[i].arg["_SINGLET_"])); }
+    if (syntax[i].id == "FLATAMP")   { proc->SetFLATAMP(std::stoi(syntax[i].arg["_SINGLET_"])); }
     if (syntax[i].id == "FLATMASS2") { proc->SetFLATMASS2(syntax[i].arg["_SINGLET_"] == "true"); }
-    if (syntax[i].id == "OFFSHELL") { proc->SetOFFSHELL(std::stod(syntax[i].arg["_SINGLET_"])); }
-    if (syntax[i].id == "FRAME") { proc->SetFRAME(syntax[i].arg["_SINGLET_"]); }
-    if (syntax[i].id == "JMAX") { proc->SetJMAX(std::stoi(syntax[i].arg["_SINGLET_"])); }
-  }
+    if (syntax[i].id == "OFFSHELL")  { proc->SetOFFSHELL(std::stod(syntax[i].arg["_SINGLET_"])); }
 
+    if (syntax[i].id == "SPINGEN")   { proc->SetSPINGEN(syntax[i].arg["_SINGLET_"] == "true"); }
+    if (syntax[i].id == "SPINDEC")   { proc->SetSPINDEC(syntax[i].arg["_SINGLET_"] == "true"); }
+
+    if (syntax[i].id == "FRAME")     { proc->SetFRAME(syntax[i].arg["_SINGLET_"]); }
+    if (syntax[i].id == "JMAX")      { proc->SetJMAX(std::stoi(syntax[i].arg["_SINGLET_"])); }
+  }
+  
   // Always last (we need PDG tables)
   std::vector<std::string> beam   = j.at(XID).at("BEAM");
   std::vector<double>      energy = j.at(XID).at("ENERGY");
