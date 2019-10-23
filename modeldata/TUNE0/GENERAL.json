@@ -2,11 +2,11 @@
 //
 // mikael.mieskolainen@cern.ch, 2019
 {
-  
+
   // ----------------------------------------------------------------------
   // Global soft model parameters (eikonal screening, elastic, SD, DD)
   "PARAM_SOFT" : {
-    
+
     // Pomeron trajectory
     "DELTA_P"  : 0.098,         // Intercept
     "ALPHA_P"  : 0.065,         // Bare slope, GeV^{-2} (+ pion loop insert)
@@ -16,7 +16,7 @@
     "gN_O"     : 0.10,          // Odderon-proton GeV^{-1} (ANSATZ!)
     "g3P"      : 0.15,          // Triple Pomeron coupling (N.B. normalized units g3P/gn_P) (for SD/DD/EXCITATION)
     "gamma"    : 0.45,          // Eikonal matrix coupling [0 ... 1] (CURRENTLY NOT USED)
-    
+
     // Form factor parameters
     "fc1"      : 0.34,          // Proton form factor param 1 (GeV^2)
     "fc2"      : 5.0,           // Proton form factor param 2 (GeV^2)
@@ -30,10 +30,7 @@
   // Jacob-Wick helicity amplitudes etc.
   "PARAM_SPIN" : {
 
-    // Pomeron-Pomeron-Resonance frame fixed to CS (TBD, add here possibility to change)
-    // G_FRAME : "CS",
-    //
-    // Resonance-Daughter-Daughter frame ("CS","HX","CM")
+    // Spin polarization frame ("CS" = Collins-Soper, "CM" = Non-Rotated Center of Momentum, "HX" = Helicity)
     "FRAME" : "CS", // Default Collins-Soper
 
     // Maximum angular momentum value for sliding Pomeron helicity trajectories
