@@ -25,14 +25,17 @@
     // Odderon
     "ODDERON_ON" : false
   },
-  
+
   // ----------------------------------------------------------------------
   // Jacob-Wick helicity amplitudes etc.
   "PARAM_SPIN" : {
 
-    // Lorentz frame of the spin polarization ("CS","HX","CM")
+    // Pomeron-Pomeron-Resonance frame fixed to CS (TBD, add here possibility to change)
+    // G_FRAME : "CS",
+    //
+    // Resonance-Daughter-Daughter frame ("CS","HX","CM")
     "FRAME" : "CS", // Default Collins-Soper
-    
+
     // Maximum angular momentum value for sliding Pomeron helicity trajectories
     "JMAX" : 5,
   },
@@ -42,21 +45,21 @@
   "PARAM_FLAT" : {
     "b" : 6,                     // t-slope [GeV^{-2}], |M|^2 ~ exp(bt_1)exp(b_t2)
   },
-  
+
   // ----------------------------------------------------------------------
   // Monopolium / Monopole pair process parameters
   // N.B. Monopole mass is read from PDG file
   "PARAM_MONOPOLE" : {
-    
+
     // Coupling scheme: "beta-dirac", "dirac"
     "coupling" : "beta-dirac",
-    
+
     // Dirac charge n = 1,2,3,4,...
     "gn" : 1,
 
     // Monpolium bound state energy level (>= 13) controlling bound state (negative) binding energy
     "En"  : 13,
-    
+
     // Monopolium (MMbar) bare width (GeV)
     "Gamma0" : 10.0
 
@@ -64,36 +67,36 @@
 
   // -----------------------------------------------------------------------
   // Regge amplitude parameters (used for central system)
-  
+
   "PARAM_REGGE" : {
-      
+
       // Continuum amplitude t/u channel form factor:
       // 0 = "exp", 1 = "orear", 2 = "pow" (Orear and powerlaw seems the best)
       //
       // Note that with (interfering) resonances, the continuum parameters
       // should be fitted together with the resonances.
       "offshellFF" : 2,
-      
+
       // Form factor parameters
       "b_EXP" :   0.944,            // GeV^-2
       "a_OREAR" : 0.638,            // GeV^-1
       "b_OREAR" : 1.886,            // GeV^-1
       "b_POW" :   0.500,            // GeV^2
-      
+
       // Regge-trajectory parameters (pomeron, f2, a2)
       "a0"  : [1.088, 0.55, 0.55],  // Intercept (alpha_0 = 1 + DELTA)
       "ap"  : [0.20, 0.93, 0.93],   // Slope (alpha') [GeV^{-2}]
       "sgn" : [1, -1, 1],           // Regge signature (sigma) (+-1)
       "s0"  : 1.0,                  // Normalization scale (GeV^2)
-      
+
       // Intermediate off-shell meson M* propagator "Reggeization"
       // (NOT IMPLEMENTED CURRENTLY)
       "reggeize" : false,
-      
+
       // Pomeron-Pomeron-Resonance vertex flux [1/m^2]^{lambda} parameter
       "omega" : 0.5,
   },
-  
+
   // ---------------------------------------------------------------------
   // Continuum amplitude couplings (non-tensor Pomeron model):
   //
@@ -106,22 +109,22 @@
   // linear trajectory parameters as used by Donnachie-Landshoff.
   //
   // Fixed final state couplings [in GeV^{-2}] (1 mb = 2.56819 GeV^{-2}]
-  // 
+  //
   // These DL-couplings are transformed inside the program by:
   // gpi_P = PARAM_REGGE::c[0] / PARAM_SOFT::gN_P
-  
+
   // pion
   "PARAM_PI" : {
     "c" : [35.00184, 81.63672, 10.86264],
-    "n" : [true, false, false],  // Which Reggeons are exchanged (pomeron, f2, a2) 
+    "n" : [true, false, false],  // Which Reggeons are exchanged (pomeron, f2, a2)
   },
-  
+
   // kaon
   "PARAM_K" : {
     "c" : [30.35376, 44.31084, 23.38164],
     "n" : [true, false, false]
   },
-  
+
   // proton (ansatz) (here one can compare with gN_P above)
   "PARAM_P" : {
     "c" : [27.0, 0, 0],
@@ -133,7 +136,7 @@
     "c" : [25.0, 0, 0],
     "n" : [true, false, false]
   },
-  
+
   // phi(1020) (ansatz)
   "PARAM_PHI" : {
     "c" : [18.0, 0, 0],
@@ -163,7 +166,7 @@
     // Coherent proton EM-form factors (DIPOLE, KELLY)
     "EM" : "KELLY",
   },
-  
+
   // -----------------------------------------------------------------------
   // Durham QCD parameters
 
@@ -172,10 +175,10 @@
     // Gluon loop momentum bounds (keep inside bounds set in NUMERICS.json)
     "qt2_MIN" : 0.4,   // GeV^2
     "qt2_MAX" : 100.0, // GeV^2
-    
+
     // Gluon skewed PDF scale choise scheme [MIN (default), MAX, IN, EX, AVG]
     "PDF_scale" : "MIN",
-    
+
     // Alpha_s scale choise (Q^2 = M^2/value, default = 1.0, other common 4.0)
     "alphas_scale" : 1.0,
 
@@ -186,10 +189,10 @@
     // Angular |cos(theta*)| < MAXCOS cutoff for meson amplitudes [0,1]
     "MAXCOS" : 0.9,
   },
-  
+
   // -----------------------------------------------------------------------
   // Good-Walker proton excitation parametrization
-  // (IMPLEMENTATION UNDER CONSTRUCTION)
+  // (IMPLEMENTATION UNDER CONSTRUCTION, NOT ACTIVE)
 
   "PARAM_NSTAR" : {
 
