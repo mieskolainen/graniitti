@@ -9,7 +9,7 @@ https://arxiv.org/abs/1910.06300
 
 <img width="600px" src="docs/img/dsigmadt.png">
 
-See VERSION.json for the version information and automatic build status
+See VERSION.json for the version information
 
 
 ### Installation and introduction at:
