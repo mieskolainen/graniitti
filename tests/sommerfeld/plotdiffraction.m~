@@ -34,8 +34,8 @@ for t = tlist
     M = real( squeeze(X(1,:,:,t)) );
     M = M';
     imagesc(yval, zval, M);
-    xlabel('$x$','interpreter','latex');
-    ylabel('$z$','interpreter','latex');
+    xlabel('$z$','interpreter','latex');
+    ylabel('$x$','interpreter','latex');
     
     caxis(zlimits); %colorbar;
     hold on;
@@ -50,7 +50,7 @@ for t = tlist
     xticks([-1:0.2:1]);
     
     axis square;
-    colormap hot;
+    colormap ho;
     drawnow; 
     pause(0.01);
 end
