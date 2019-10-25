@@ -4,7 +4,7 @@
 
 clear;
 
-A = csvread('3D.ascii');
+A = csvread('../../3D.ascii');
 X = zeros(max(A(:,1))+1, max(A(:,2))+1, max(A(:,3))+1, max(A(:,4))+1);
 
 for k = 1:size(A,1)
@@ -24,12 +24,19 @@ tval = linspace( 0,1,size(X,4));
 bound = max(abs(min(X(:))), abs(max(X(:))));
 zlimits = [-bound, bound];
 
-for rep = 1:1e3
-for t = 1:size(X,4)
+% t-list
+tlist = 1:size(X,4);
+tlist = 1;
+
+for rep = 1:1 % Infinite loop
+for t = tlist
     
     M = real( squeeze(X(1,:,:,t)) );
     imagesc(zval, yval, M);
-    caxis(zlimits); colorbar;
+    xlabel('$z$','interpreter','latex');
+    ylabel('$x$','interpreter','latex');
+    
+    caxis(zlimits); %colorbar;
     hold on;
     
     plot([0 0], [-1.0 -0.8], '-k', 'linewidth', 2.0);
@@ -42,10 +49,13 @@ for t = 1:size(X,4)
     yticks([-1:0.2:1]);
     
     axis square;
-    colormap(hot);
+    colormap hot;
     drawnow;
     pause(0.01);
 end
 end
 
-
+% PRINT OUT
+filename = sprintf('./figs/sommerfeld.pdf');
+print(gcf, '-dpdf', filename);
+system(sprintf('pdfcrop --margins ''2 2 2 2'' %s %s', filename, filename));
