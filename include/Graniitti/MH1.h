@@ -23,6 +23,8 @@ class MH1 {
   void Fill(double xvalue, T weight);
   void Clear();
 
+  void RawOutput() const;
+
   long long int FillCount() const { return fills; }
   long long int SumBinCounts() const;
   double        GetMean(int power) const;

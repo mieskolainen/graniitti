@@ -46,6 +46,23 @@ MH1<T>::MH1() {
 template <class T>
 MH1<T>::~MH1() {}
 
+
+// Raw output
+template <class T>
+void MH1<T>::RawOutput() const {
+
+  printf("#binlow,binhigh,value,error \n");
+
+  for (std::size_t idx = 0; idx < static_cast<unsigned int>(XBINS); ++idx) {
+
+    // This will take care of amplitude versus amplitude squared
+    const double value     = GetPositiveDefinite(idx);
+    const double value_err = GetBinError(idx);
+
+    printf("%0.5E,%0.5E,%0.5E,%0.5E\n", GetBinXVal(idx, -1), GetBinXVal(idx, 1), value, value_err);
+  }
+}
+
 template <class T>
 void MH1<T>::Print(double width) const {
   if (!(fills > 0)) {  // No fills

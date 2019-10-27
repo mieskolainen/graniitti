@@ -64,8 +64,8 @@ void printvar() {
 // Main
 int main(int argc, char *argv[]) {
   // Detector observable histogram
-  const double              XWIDTH = 18;
-  MH1<std::complex<double>> hx(50, -XWIDTH, XWIDTH, "Path Integral MC");
+  const double              XWIDTH = 30;
+  MH1<std::complex<double>> hx(100, -XWIDTH, XWIDTH, "Path Integral MC");
 
   // Seed here
   std::random_device rd;
@@ -77,10 +77,10 @@ int main(int argc, char *argv[]) {
   if (argc != 7) {  // Default
 
     N      = 4;
-    dt     = 0.8;
-    m      = 1;
+    dt     = 1.0;
+    m      = 1.5;
     k_slit = 2;
-    SLIT   = 0.03;
+    SLIT   = 0.02;
     NS     = 10000000;
 
     printf("Example input ./pathmark %d %0.3f %0.3f %d %0.3f %lu \n", N, dt, m, k_slit, SLIT, NS);
@@ -151,6 +151,8 @@ int main(int argc, char *argv[]) {
   printvar();
   std::cout << std::endl;
   
+  hx.RawOutput();
+
   std::cout << "[pathmark: done]" << std::endl;
 
   return EXIT_SUCCESS;
