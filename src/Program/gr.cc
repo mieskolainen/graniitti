@@ -115,7 +115,7 @@ int main(int argc, char *argv[]) {
       std::cout << rang::style::bold << rang::fg::red
                 << " A steering card example with commandline input override:" << rang::style::reset
                 << std::endl;
-      std::cout << "  " << argv[0] << " -i ./input/test.json -p \"yy[C]<F> -> W+ W-\"" << std::endl
+      std::cout << "  " << argv[0] << " -i ./input/test.json -p \"yy[CON]<F> -> W+ W-\"" << std::endl
                 << std::endl;
 
       aux::CheckUpdate();
