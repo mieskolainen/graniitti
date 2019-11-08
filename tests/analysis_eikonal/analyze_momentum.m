@@ -63,6 +63,12 @@ end
 % ------------------------------------------------------------------------
 % Plot simulations
 for i = 1:length(sqrts)
+    
+    % Calculate Shannon entropy
+    P = dxs{i}; P = P / sum(P);
+    fprintf('sqrts = %0.1f GeV, Shannon entropy = %0.1f (bits)\n', sqrts(i), -sum(P .* log2(P)));
+    
+    % Plot
     plot(Xt{i}(:,1), factor(i)*dxs{i}, '-', 'linewidth', 1.1); hold on;
 end
 set(gca,'yscale','log');
