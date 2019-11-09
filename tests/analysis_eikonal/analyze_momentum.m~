@@ -64,29 +64,27 @@ end
 %% Plot simulations
 for i = 1:length(sqrts)
     
+    % Discretization
+    delta = Xt{i}(2,1) - Xt{i}(1,1);
+    
     % Calculate probability normalized t-spectrum
     P = dxs{i}; P = P / sum(P);
     
     % Total xs via optical theorem: sigma_tot(s) = 1/s Im A(s,t=0)
     sigma_tot = Xt{i}(1,Im_ind) / (sqrts(i)^2) * GeV2mb;
     
-    % Elastic xs via numerical integral
-    sigma_el  = trapz(Xt{i}(:,1), dxs{i});
+    % Elastic xs via naive integral
+    sigma_el  = sum(dxs{i}) * delta;
     
-    % Shannon entropy
-    S1 = -sum(P .* log(P));
+    % Entropy via niintegral
+    S = -sum(1/sigma_el * dxs{i} .* log(1/(sigma_tot*sigma_el) * dxs{i})) * delta;
     
-    % Alternative entropy formulation via numerical integral
-    xval =  Xt{i}(:,1);
-    yval = -1/(sigma_el) * dxs{i} .* log(1/(sigma_tot*sigma_el) * dxs{i});
-    S2 = trapz(xval, yval);
-    
-    fprintf('%0.1f, tot: %0.1f mb, el: %0.1f mb, Discrete Shannon entropy: %0.3f (nats), S2: %0.3f \n', ...
+    fprintf('%0.1f, tot: %0.1f mb, el: %0.1f mb, S1: %0.2f, S2: %0.2f \n', ...
         sqrts(i), ...
         sigma_tot, ...
         sigma_el, ...
-        S1, ...
-        S2);
+        -sum(P .* log(P)), ...
+        S);
     
     % Plot
     plot(Xt{i}(:,1), factor(i)*dxs{i}, '-', 'linewidth', 1.1); hold on;
