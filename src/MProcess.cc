@@ -324,107 +324,6 @@ double MProcess::S3ScreenedAmp2() {
   }
 }
 
-/*
-std::complex<double> MProcess::S3screeningSD(double kt2) {
-
-  // Local discretization
-  const int N = 2 * Eikonal.Numerics.IntegralN; // even number
-  const double step = (Eikonal.Numerics.MaxBT-1)/(double) N;
-
-  std::vector<std::complex<double>> f(N, 0.0);
-
-  // Integral independent part
-  std::vector<std::complex<double>> A =
-        Beta_j(0)*pow2(Beta_i(0))*g_zij(0)*
-        std::pow(s/M2,  2*alpha_i(tmin)-2)*
-        std::pow(M2/s0, alpha_j(0)-1);
-
-
-  // OUTERMOST INTEGRAL b_2
-
-  // Numerical integral loop over impact parameter (b_t) space
-  for (int n1 = 1; n1 <= N; ++n1) {
-
-          const double bt1 = n*step;
-
-          f[n-1] = Fi(bt1) * gra::aux::BESSJ0(bt1*msqrt(qt2) ) * bt1;
-
-        // MIDDLE INTEGRAL b_3
-
-        // Numerical integral loop over impact parameter (b_t) space
-        for (int n2 = 1; n2 <= N; ++n2) {
-
-                const double bt2 = n2*step;
-
-                f[n-1] = Fi(bt2) * gra::aux::BESSJ0(bt2*msqrt(qt2) ) * bt2;
-
-          // INNERMOST INTEGRAL b_1
-
-          // Numerical integral loop over impact parameter (b_t) space
-          for (int n3 = 1; n3 <= N; ++n3) {
-
-                  const double bt3 = n3*step;
-
-                  f[n-1] = Fj(bt3) * gra::aux::BESSJ0(bt3*0 ) * bt3;
-          }
-        }
-  }
-
-
-  // Composite Simpson's rule
-  return A * CSIntegral(f, step) / (2*gra::math::PI * 2*gra::math::PI *
-2*gra::math::PI);
-}
-
-// Calculate here the amplitudes inside
-std::complex<double> MProcess::Fi(double bt) {
-
-// Discretization of qt
-const int    nqt     = 2*7000; // Even number
-const double qtstep  = 4.0 / (double)(nqt);
-
-std::vector<std::complex<double>> f(nqt, 0.0);
-
-// Loop over
-for (int n = 0; n < nqt; ++n) {
-
-        const double qt = n*qtstep;
-        double qt2 = qt*qt;
-        double alpha_i = PARAM_SOFT::ALPHAP; // Pomeron slope
-
-        // Amplitude_, and its Fourier-Bessel transform
-        double A = Beta_i(qt) * std::pow(s/M2, -alphap_i*qt2) * std::exp(bprime_zij
-* q2);
-        f[n] = A * gra::aux::BESSJ0(bt*qt)*qt;
-}
-return CSIntegral(f, ktstep) / (2.0*gra::math::PI) / Beta_i(0);
-}
-
-
-// Calculate here the amplitudes inside
-std::complex<double> MProcess::Fj(double bt) {
-
-// Discretization of kt
-const int    N_kt     = 2*7000; // Even number
-const double ktstep  = 4.0 / (double)(N_kt);
-
-std::vector<std::complex<double>> f(N_kt, 0.0);
-
-// Loop over
-for (int n = 0; n < N_kt; ++n) {
-
-        const double kt = n*ktstep;
-        double kt2 = kt*kt;
-        double alpha_j = PARAM_SOFT::ALPHAP; // Pomeron slope
-
-        // Amplitude_, and its Fourier-Bessel transform
-        double A = Beta_j(kt) * std::pow(M2/s0, -alphap_j*kt2) *
-std::exp(-bprime_zij * kt2);
-        f[n] = A * gra::aux::BESSJ0(bt*kt)*kt;
-}
-return CSIntegral(f, ktstep) / (2.0*gra::math::PI) / Beta_j(0);
-}
-*/
 
 // Set CMS energy and beam particle 4-vectors
 void MProcess::SetInitialState(const std::vector<std::string> &beam,
@@ -1664,37 +1563,7 @@ bool MProcess::GetLorentzScalars(unsigned int Nf) {
   lts.s_hat = lts.m2;
   lts.Y     = lts.pfinal[0].Rap();
   lts.Pt    = lts.pfinal[0].Pt();
-
-  // DEBUG
-  /*
-  std::cout << std::endl;
-  printf("sqrt[ lts.m2 ]  = %0.9f \n", msqrt(lts.m2));
-  printf("lts.Y           = %0.9f \n", lts.Y);
-  printf("lts.Pt          = %0.9f \n", lts.Pt);
-  printf("lts.t1          = %0.9f \n", lts.t1);
-  printf("lts.t2          = %0.9f \n", lts.t2);
-  printf("lts.t_hat - decaytree[0].M2() = %0.9f \n", lts.t_hat -
-  lts.decaytree[0].p4.M2());
-  printf("lts.u_hat - decaytree[0].M2() = %0.9f \n", lts.u_hat -
-  lts.decaytree[0].p4.M2());
-
-  for (std::size_t i = 0; i < randvec.size(); ++i) {
-                  printf("randvec[%d] = %0.9f \n", i, randvec[i]);
-  }
-  for (std::size_t i = 0; i <= lts.decaytree.size() + 2; ++i) {
-                  for (std::size_t j = 0; j <= lts.decaytree.size() + 2; ++j) {
-                                  printf("sqrt[ ss[%lu][%lu] ] = %0.9f \n", i, j,
-  msqrt(lts.ss[i][j]));
-                  }
-  }
-  for (std::size_t i = 0; i <= lts.decaytree.size() + 2; ++i) {
-                  for (std::size_t j = 0; j <= lts.decaytree.size() + 2; ++j) {
-                                  printf("tt_xy[%lu][%lu] = %0.9f \n", i, j, lts.tt_xy[i][j]);
-                  }
-  }
-  std::cout << std::endl;
-  */
-
+  
   return true;
 }
 
