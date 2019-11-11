@@ -15,6 +15,5 @@ See VERSION.json for the version information
 ### Installation and introduction at:
 ## https://mieskolainen.github.io
 
-
 mikael.mieskolainen@cern.ch, 2017-2019
 
