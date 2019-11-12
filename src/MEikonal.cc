@@ -21,9 +21,9 @@
 #include "Graniitti/MTimer.h"
 
 // Libraries
+#include "extmath.hpp"
 #include "json.hpp"
 #include "rang.hpp"
-#include "extmath.hpp"
 
 using gra::aux::indices;
 using gra::math::msqrt;
@@ -205,7 +205,7 @@ std::complex<double> MEikonal::S3Density(double bt) const {
 
     // Odderon exchange (negative signature)
     if (PARAM_SOFT::ODDERON_ON == true) { A += SingleAmpElastic(s, t, -1); }
-    
+
     // Value
     f[i] = A * BESSJ0(bt * kt) * kt;
     // f[i] = A * std::cyl_bessel_j(0, bt * kt) * kt; // c++17, slow

@@ -181,7 +181,7 @@ bool UserCut(int id, const gra::LORENTZSCALAR &lts) {
 
   else if (id == 1230123) {
     // Forward protons |py| and |phi|
-    std::vector<double> pyabs  = {std::abs(lts.pfinal[1].Py()),  std::abs(lts.pfinal[2].Py())};
+    std::vector<double> pyabs  = {std::abs(lts.pfinal[1].Py()), std::abs(lts.pfinal[2].Py())};
     std::vector<double> phiabs = {std::abs(lts.pfinal[1].Phi()), std::abs(lts.pfinal[2].Phi())};
     for (std::size_t i = 0; i < 2; ++i) {
       if ((0.17 < pyabs[i]) && (pyabs[i] < 0.5)) {  // GeV

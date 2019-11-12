@@ -54,7 +54,6 @@ void MUserHistograms::InitHistograms() {
 
   h2["costhetaphi_LA"] =
       MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos theta, phi) [LAB] [Laboratory frame]");
-
 }
 
 // Input as the total event weight

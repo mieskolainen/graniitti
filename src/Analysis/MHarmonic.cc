@@ -966,7 +966,6 @@ void MHarmonic::PlotFigures2D(
     const std::map<gra::spherical::Meta, MTensor<gra::spherical::SH>> &tensor,
     const std::vector<int> &OBSERVABLE2, const std::string &TYPESTRING, int barcolor,
     const std::string &outputpath) const {
-
   /* Implement here ... */
 }
 

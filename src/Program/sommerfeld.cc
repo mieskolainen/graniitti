@@ -131,7 +131,7 @@ int main(int argc, char* argv[]) {
   const std::vector<double> yval = math::linspace(-1.0, 1.0, 100);
   const std::vector<double> zval = math::linspace(-1.0, 5.0, 300);
   const std::vector<double> tval = math::linspace(0.0, 2.0 * math::PI / kmod, 20);  // One period
-  
+
   // Aperture vector
   M4Vec x(0, 0, 0, 0);
   M4Vec x0(0, 0, 0, 0);
