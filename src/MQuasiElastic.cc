@@ -9,7 +9,7 @@
 #include <random>
 #include <vector>
 
-// HepMC33
+// HepMC3
 #include "HepMC3/FourVector.h"
 #include "HepMC3/GenEvent.h"
 #include "HepMC3/GenParticle.h"
