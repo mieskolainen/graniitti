@@ -55,20 +55,6 @@ void MUserHistograms::InitHistograms() {
   h2["costhetaphi_LA"] =
       MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos theta, phi) [LAB] [Laboratory frame]");
 
-  /*
-    h2["costhetaphi_G1"] =
-        MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [G1 frame]");
-    h2["costhetaphi_G2"] =
-        MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [G2 frame]");
-    h2["costhetaphi_G3"] =
-        MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [G3 frame]");
-    h2["costhetaphi_G4"] =
-        MH2(Nbins, -1.0, 1.0, Nbins, -PI, PI, "(cos(theta), phi) [G4 frame]");
-  */
-  // Level 3
-  /*
-  h2["Mphi_CS"]        = MH2(Nbins,  1.0, 1.5, Nbins, -PI, PI, "(M, phi) [Collins-Soper frame]");
-*/
 }
 
 // Input as the total event weight
@@ -130,27 +116,6 @@ void MUserHistograms::FillCosThetaPhi(double totalweight, const gra::LORENTZSCAL
       // totalweight);
     }
   }
-
-  /*
-  {
-    M4Vec              q1boost;  // beam1 particle boosted
-    M4Vec              q2boost;  // beam2 particle boosted
-    std::vector<M4Vec> pfboost;   // central particles boosted
-    gra::kinematics::LorentFramePrepare(pf, lts.q1, lts.q2, q1boost, q2boost, pfboost);
-
-    // ** TRANSFORM TO DIFFERENT LORENTZ FRAMES **
-    std::vector<std::string> frametype = {"G1", "G2", "G3", "G4"};
-    for (const auto &k : indices(frametype)) {
-      // Transform and histogram
-      std::vector<M4Vec> pfout;
-      gra::kinematics::LorentzFrame(pfout, q1boost, q2boost, pfboost, frametype[k], direction);
-      h2["costhetaphi_" + frametype[k]].Fill(std::cos(pfout[0].Theta()), pfout[0].Phi(),
-  totalweight);
-      // h2["Mphi_"+frametype[k]].Fill(gra::math::msqrt(lts.m2), pfout[0].Phi(),
-      // totalweight);
-    }
-  }
-  */
 
   // ------------------------------------------------------------------
   // Gottfried-Jackson frame

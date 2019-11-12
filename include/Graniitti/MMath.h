@@ -942,8 +942,7 @@ inline double LegendrePl(unsigned int l, double x) {
 //
 // Algorithm from:
 //
-// [REFERENCE: S. Jemma, The Nitty Gritty Details of Spherical Harmonics,
-// SIGRAPH2003 Paper]
+// [REFERENCE: S. Jemma, The Nitty Gritty Details of Spherical Harmonics, SIGRAPH2003]
 constexpr double sf_legendre(int l, int m, double x) {
   // Associated Legendre Polynomial
   double pmm = 1.0;

@@ -176,12 +176,12 @@ bool UserCut(int id, const gra::LORENTZSCALAR &lts) {
   // file)
   // from R. Sikora, ATLAS poster, Bad Honnef QCD School 2017
   //
-  // (not sure if correct here/implemented right way
+  // (not sure if correct/implemented right way
   // c.f. cut |t| > 0.03 GeV^2 seems to give more physical results)
 
   else if (id == 1230123) {
     // Forward protons |py| and |phi|
-    std::vector<double> pyabs  = {std::abs(lts.pfinal[1].Py()), std::abs(lts.pfinal[2].Py())};
+    std::vector<double> pyabs  = {std::abs(lts.pfinal[1].Py()),  std::abs(lts.pfinal[2].Py())};
     std::vector<double> phiabs = {std::abs(lts.pfinal[1].Phi()), std::abs(lts.pfinal[2].Phi())};
     for (std::size_t i = 0; i < 2; ++i) {
       if ((0.17 < pyabs[i]) && (pyabs[i] < 0.5)) {  // GeV

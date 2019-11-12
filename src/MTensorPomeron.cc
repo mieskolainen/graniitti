@@ -5,7 +5,7 @@
 // [REFERENCE: Lebiodowicz, Nachtmann, Szczurek, arxiv.org/pdf/1601.04537.pdf]
 // [REFERENCE: LNS, arxiv.org/pdf/1801.03902.pdf]
 // [REFERENCE: LNS, arxiv.org/pdf/1901.11490.pdf]
-//
+// 
 // (c) 2017-2019 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
@@ -877,11 +877,13 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
 }
 
 
-// 2 -> 6 amplitudes [UNDER TESTING]
-//
+// [!!! THIS FUNCTION UNDER DEVELOPMENT >>>]
+// 
+// 2 -> 6 amplitudes
+// 
 // return value: matrix element squared with helicities summed over
 // lts.hamp:     individual helicity amplitudes
-//
+// 
 double MTensorPomeron::ME6(gra::LORENTZSCALAR &lts) const {
   // Free Lorentz indices [second parameter denotes the range of index]
   FTensor::Index<'a', 4> mu1;
@@ -1104,6 +1106,7 @@ double MTensorPomeron::ME6(gra::LORENTZSCALAR &lts) const {
 
   return SumAmp2;  // Amplitude squared
 }
+// [<<< THIS FUNCTION UNDER DEVELOPMENT !!!]
 
 
 // External massless spin-1 polarization sum for outgoing states
