@@ -91,7 +91,7 @@ int main(int argc, char* argv[]) {
 
   std::vector<std::future<std::complex<double>>> futures;  // std::async return values
 
-  // Simpson weight matrix (too small N will give visible artifacts at the boundary)
+  // Simpson weight matrix (too small M will give visible artifacts at the boundary)
   const int             M  = 33;
   const MMatrix<double> SW = math::Simpson38Weight2D(M, M);
 
@@ -128,10 +128,10 @@ int main(int argc, char* argv[]) {
 
   // 4D-Grid discretization
   const std::vector<double> xval = math::linspace(0.0, 0.0, 1);
-  const std::vector<double> yval = math::linspace(-1.0, 1.0, 50);
-  const std::vector<double> zval = math::linspace(-1.0, 5.0, 150);
+  const std::vector<double> yval = math::linspace(-1.0, 1.0, 100);
+  const std::vector<double> zval = math::linspace(-1.0, 5.0, 300);
   const std::vector<double> tval = math::linspace(0.0, 2.0 * math::PI / kmod, 20);  // One period
-
+  
   // Aperture vector
   M4Vec x(0, 0, 0, 0);
   M4Vec x0(0, 0, 0, 0);
