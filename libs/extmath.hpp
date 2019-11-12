@@ -121,7 +121,7 @@ inline double BESSJ(int N, double X) {
     }
     return BJ;
   } else {
-    M    = (int)(2 * ((N + std::floor(msqrt(1.0 * (IACC * N)))) / 2));
+    M    = (int)(2 * ((N + std::floor(std::sqrt(1.0 * (IACC * N)))) / 2));
     TMP  = 0.0;
     JSUM = 0;
     SUM  = 0.0;
