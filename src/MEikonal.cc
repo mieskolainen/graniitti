@@ -23,6 +23,7 @@
 // Libraries
 #include "json.hpp"
 #include "rang.hpp"
+#include "extmath.hpp"
 
 using gra::aux::indices;
 using gra::math::msqrt;
@@ -204,9 +205,9 @@ std::complex<double> MEikonal::S3Density(double bt) const {
 
     // Odderon exchange (negative signature)
     if (PARAM_SOFT::ODDERON_ON == true) { A += SingleAmpElastic(s, t, -1); }
-
+    
     // Value
-    f[i] = A * gra::math::BESSJ0(bt * kt) * kt;
+    f[i] = A * BESSJ0(bt * kt) * kt;
     // f[i] = A * std::cyl_bessel_j(0, bt * kt) * kt; // c++17, slow
   }
   // [2pi from Bessel phi-integral] / [ (2pi)^2] (2D-Fourier factor) * s ]
@@ -234,7 +235,7 @@ std::complex<double> MEikonal::S3Screening(double kt2) const {
     // I. STANDARD EIKONAL APPROXIMATION
     const std::complex<double> A = gra::math::zi * (1.0 - std::exp(gra::math::zi * Omega / 2.0));
 
-    f[i] = A * gra::math::BESSJ0(bt * kt) * bt;
+    f[i] = A * BESSJ0(bt * kt) * bt;
     // f[i] = A * std::cyl_bessel_j(0, bt * kt) * bt; // c++17, slow
   }
   // Bessel phi-integral factor
