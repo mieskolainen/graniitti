@@ -58,7 +58,7 @@ std::vector<std::vector<std::string>> initialstate;
 std::vector<std::vector<double>> x;
 std::vector<std::vector<double>> y;
 std::vector<std::vector<double>> err;
-}
+}  // namespace DIFFMEAS
 
 // Measurements and errors for each energy
 namespace INTEGMEAS {
@@ -74,7 +74,7 @@ std::vector<double> sigma_tot_e = {0.2, 0.3, 2.24, 2.8, 0.9225};
 
 std::vector<double> sigma_el   = {7.12, 7.61, 19.7, 24.3, 24.33};
 std::vector<double> sigma_el_e = {0.34, 0.22, 0.85, 1.2, 0.392};
-}
+}  // namespace INTEGMEAS
 
 std::vector<double> dsigma_el_dt(double *par, double sqrts, const std::vector<string> &beam,
                                  std::vector<double> &x);
@@ -119,7 +119,7 @@ std::vector<double> dsigma_el_dt(double *par, const double sqrts,
     // Initialize eikonal part
     const bool DENSITY_ONLY = false;
     gen->proc->Eikonal.S3Constructor(gen->proc->GetMandelstam_s(), gen->proc->GetInitialState(),
-      DENSITY_ONLY, fitsoft::NumberBT, fitsoft::NumberKT2);
+                                     DENSITY_ONLY, fitsoft::NumberBT, fitsoft::NumberKT2);
 
     // Construct dsigma_el/dt
     for (const auto &i : indices(values)) {
@@ -142,8 +142,8 @@ std::vector<double> dsigma_el_dt(double *par, const double sqrts,
     exit(0);
   } catch (const nlohmann::json::exception &e) {
     gra::aux::PrintGameOver();
-    std::cerr << rang::fg::red << "Exception catched: JSON input: " << rang::fg::reset
-              << e.what() << std::endl;
+    std::cerr << rang::fg::red << "Exception catched: JSON input: " << rang::fg::reset << e.what()
+              << std::endl;
     exit(0);
   } catch (...) {
     gra::aux::PrintGameOver();
@@ -164,7 +164,6 @@ void SigmaXS(double *par, double &xs_tot, double &xs_el, double &xs_inel, const 
   std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
 
   try {
-
     // Read process input from file and set initial state
     gen->ReadInput(fitsoft::INPUTFILE);
     const std::vector<double> energy = {sqrts / 2, sqrts / 2};
@@ -176,7 +175,7 @@ void SigmaXS(double *par, double &xs_tot, double &xs_el, double &xs_inel, const 
     // Initialize eikonal part
     const bool DENSITY_ONLY = true;
     gen->proc->Eikonal.S3Constructor(gen->proc->GetMandelstam_s(), gen->proc->GetInitialState(),
-      DENSITY_ONLY, fitsoft::NumberBT, fitsoft::NumberKT2);
+                                     DENSITY_ONLY, fitsoft::NumberBT, fitsoft::NumberKT2);
 
     gen->proc->Eikonal.GetTotXS(xs_tot, xs_el, xs_inel);
   } catch (const std::invalid_argument &e) {
@@ -185,8 +184,8 @@ void SigmaXS(double *par, double &xs_tot, double &xs_el, double &xs_inel, const 
     exit(0);
   } catch (const nlohmann::json::exception &e) {
     gra::aux::PrintGameOver();
-    std::cerr << rang::fg::red << "Exception catched: JSON input: " << rang::fg::reset
-              << e.what() << std::endl;
+    std::cerr << rang::fg::red << "Exception catched: JSON input: " << rang::fg::reset << e.what()
+              << std::endl;
     exit(0);
   } catch (const std::ios_base::failure &e) {
     gra::aux::PrintGameOver();
@@ -274,10 +273,12 @@ bool InitData() {
   fitsoft::PushNull();
   DIFFMEAS::sqrts[N]        = 7000;
   DIFFMEAS::initialstate[N] = {"p+", "p+"};
-  if (!fitsoft::ReadData(BASEPATH + "TOTEM_7_low_t.csv", DIFFMEAS::x[N], DIFFMEAS::y[N], DIFFMEAS::err[N])) {
+  if (!fitsoft::ReadData(BASEPATH + "TOTEM_7_low_t.csv", DIFFMEAS::x[N], DIFFMEAS::y[N],
+                         DIFFMEAS::err[N])) {
     return false;
   }
-  if (!fitsoft::ReadData(BASEPATH + "TOTEM_7.csv", DIFFMEAS::x[N], DIFFMEAS::y[N], DIFFMEAS::err[N])) {
+  if (!fitsoft::ReadData(BASEPATH + "TOTEM_7.csv", DIFFMEAS::x[N], DIFFMEAS::y[N],
+                         DIFFMEAS::err[N])) {
     return false;
   }
 
@@ -285,28 +286,28 @@ bool InitData() {
     // Add t^{-8} data points to constrain the tail behavior by forced boundary condition in the fit
     const std::size_t M = DIFFMEAS::x[N].size();
 
-    const double t_MIN  = DIFFMEAS::x[N][M-1];
-    const double f      = DIFFMEAS::y[N][M-1];
-    const double rerr   = DIFFMEAS::err[N][M-1] / DIFFMEAS::y[N][M-1];
+    const double t_MIN = DIFFMEAS::x[N][M - 1];
+    const double f     = DIFFMEAS::y[N][M - 1];
+    const double rerr  = DIFFMEAS::err[N][M - 1] / DIFFMEAS::y[N][M - 1];
 
-    const double R      = 8;     // Triple-gluon exchange
-    const double scale  = f / (std::pow(t_MIN, -R));
+    const double R     = 8;  // Triple-gluon exchange
+    const double scale = f / (std::pow(t_MIN, -R));
 
-    const std::size_t K = 100;    // Number of steps
-    const double t_MAX  = 7.0; // |t| GeV^2
-    const double t_STEP = (t_MAX - t_MIN) / K;
-    
+    const std::size_t K      = 100;  // Number of steps
+    const double      t_MAX  = 7.0;  // |t| GeV^2
+    const double      t_STEP = (t_MAX - t_MIN) / K;
+
     // Add synthesized high-|t| data
     std::cout << rang::fg::green;
     printf("[ADD SYNTHETIC high-|t| DATA with t^{-%0.1f}] \n", R);
 
     for (std::size_t k = 1; k <= K; ++k) {
-
       const double xval  = k * t_STEP + t_MIN;
       const double yval  = scale * std::pow(xval, -R);
       const double error = yval * rerr;
 
-      printf("x = %0.8f, y = %0.8f, err = %0.8f, err/y = %0.8f \n", xval, yval, error, error/yval);      
+      printf("x = %0.8f, y = %0.8f, err = %0.8f, err/y = %0.8f \n", xval, yval, error,
+             error / yval);
 
       DIFFMEAS::x[N].push_back(xval);
       DIFFMEAS::y[N].push_back(yval);
@@ -334,7 +335,8 @@ bool InitData() {
   fitsoft::PushNull();
   DIFFMEAS::sqrts[N]        = 1800;
   DIFFMEAS::initialstate[N] = {"p+", "p-"};
-  if (!fitsoft::ReadData(BASEPATH + "ABE_1994_1800.csv", DIFFMEAS::x[N], DIFFMEAS::y[N], DIFFMEAS::err[N])) {
+  if (!fitsoft::ReadData(BASEPATH + "ABE_1994_1800.csv", DIFFMEAS::x[N], DIFFMEAS::y[N],
+                         DIFFMEAS::err[N])) {
     return false;
   }
   ++N;
@@ -344,11 +346,11 @@ bool InitData() {
   fitsoft::PushNull();
   DIFFMEAS::sqrts[N]        = 546;
   DIFFMEAS::initialstate[N] = {"p+", "p-"};
-  if (!fitsoft::ReadData(BASEPATH + "FNAL_546.csv", DIFFMEAS::x[N], DIFFMEAS::y[N], DIFFMEAS::err[N])) {
-    return false;
+  if (!fitsoft::ReadData(BASEPATH + "FNAL_546.csv", DIFFMEAS::x[N], DIFFMEAS::y[N],
+  DIFFMEAS::err[N])) { return false;
   }
-  if (!fitsoft::ReadData(BASEPATH + "SPS_546.csv", DIFFMEAS::x[N], DIFFMEAS::y[N], DIFFMEAS::err[N])) {
-    return false;
+  if (!fitsoft::ReadData(BASEPATH + "SPS_546.csv", DIFFMEAS::x[N], DIFFMEAS::y[N],
+  DIFFMEAS::err[N])) { return false;
   }
   ++N;
   */
@@ -431,12 +433,10 @@ void SetSoftParam(double *par) {
   PARAM_SOFT::fc2 = par[6];
   PARAM_SOFT::fc3 = par[7];
 
-  if (PARAM_SOFT::ODDERON_ON) {
-    PARAM_SOFT::gN_O = par[8];
-  }
+  if (PARAM_SOFT::ODDERON_ON) { PARAM_SOFT::gN_O = par[8]; }
 }
 
-}  // Namespace fitsoft ends
+}  // namespace fitsoft
 
 
 // ===============================================================
@@ -481,18 +481,18 @@ int main(int argc, char *argv[]) {
   gMinuit->mnparm(1, "ALPHA_P", PARAM_SOFT::ALPHA_P, 0.01, 1e-9, 0.5, ierflg);
 
   // Couplings
-  gMinuit->mnparm(2, "gN_P",    PARAM_SOFT::gN_P, 0.1, 1e-9, 12.0, ierflg);
-  gMinuit->mnparm(3, "g3P",     PARAM_SOFT::g3P / PARAM_SOFT::gN_P, 0.1, 1e-9, 1.0,
+  gMinuit->mnparm(2, "gN_P", PARAM_SOFT::gN_P, 0.1, 1e-9, 12.0, ierflg);
+  gMinuit->mnparm(3, "g3P", PARAM_SOFT::g3P / PARAM_SOFT::gN_P, 0.1, 1e-9, 1.0,
                   ierflg);  // Convention
-  gMinuit->mnparm(4, "gamma",   PARAM_SOFT::gamma, 0.01, 1e-9, 1.0 - 1e-9, ierflg);
+  gMinuit->mnparm(4, "gamma", PARAM_SOFT::gamma, 0.01, 1e-9, 1.0 - 1e-9, ierflg);
 
   // Proton (+ pion loop) form factor parameters (put maximum at least 15 GeV)
-  gMinuit->mnparm(5, "fc1",     PARAM_SOFT::fc1, 0.1, 1e-9, 100.0, ierflg);
-  gMinuit->mnparm(6, "fc2",     PARAM_SOFT::fc2, 0.1, 1e-9, 100.0, ierflg);
-  gMinuit->mnparm(7, "fc3",     PARAM_SOFT::fc3, 0.1, 1e-9, 100.0, ierflg);
+  gMinuit->mnparm(5, "fc1", PARAM_SOFT::fc1, 0.1, 1e-9, 100.0, ierflg);
+  gMinuit->mnparm(6, "fc2", PARAM_SOFT::fc2, 0.1, 1e-9, 100.0, ierflg);
+  gMinuit->mnparm(7, "fc3", PARAM_SOFT::fc3, 0.1, 1e-9, 100.0, ierflg);
 
   if (PARAM_SOFT::ODDERON_ON) {
-  gMinuit->mnparm(8, "gN_O",    PARAM_SOFT::gN_O, 1e-2, 1e-9, 0.5, ierflg);
+    gMinuit->mnparm(8, "gN_O", PARAM_SOFT::gN_O, 1e-2, 1e-9, 0.5, ierflg);
   }
 
   // Fix triple Pomeron coupling and eikonal gamma (we do not fit inelastic

@@ -83,9 +83,8 @@ void h1Multiplet::NormalizeAll(const std::vector<double> &cross_section,
 }
 
 std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath, bool RATIOPLOT) const {
-  
   // New colorscheme
-  std::vector<int> color;
+  std::vector<int>                     color;
   std::vector<std::shared_ptr<TColor>> rootcolor;
   rootstyle::CreateColorMap(color, rootcolor);
 
@@ -109,15 +108,15 @@ std::vector<double> h1Multiplet::SaveFig(const std::string &fullpath, bool RATIO
   // Upper plot will be in pad1
   std::shared_ptr<TPad> pad1;
 
-if (RATIOPLOT) {
-  pad1 = std::make_shared<TPad>("pad1", "pad1", 0, 0.3, 1.0, 1.0);
-  pad1->SetBottomMargin(0.015);  // Upper and lower plot are joined
-} else {
-  pad1 = std::make_shared<TPad>("pad1", "pad1", 0, 0.0, 1.0, 1.0);
-}
-// pad1->SetGridx();          // Vertical grid
+  if (RATIOPLOT) {
+    pad1 = std::make_shared<TPad>("pad1", "pad1", 0, 0.3, 1.0, 1.0);
+    pad1->SetBottomMargin(0.015);  // Upper and lower plot are joined
+  } else {
+    pad1 = std::make_shared<TPad>("pad1", "pad1", 0, 0.0, 1.0, 1.0);
+  }
+  // pad1->SetGridx();          // Vertical grid
   pad1->Draw();       // Draw the upper pad: pad1
-  pad1->cd();         // pad1 becomes the current pad  
+  pad1->cd();         // pad1 becomes the current pad
   h[0]->SetStats(0);  // No statistics on upper plot
 
 
@@ -180,64 +179,63 @@ if (RATIOPLOT) {
 
   // -------------------------------------------------------------------
   // Ratio plots
-  std::vector<TH1D *> hR(h.size(), nullptr);
-  std::shared_ptr<TPad> pad2;
+  std::vector<TH1D *>    hR(h.size(), nullptr);
+  std::shared_ptr<TPad>  pad2;
   std::shared_ptr<TLine> line;
 
-if (RATIOPLOT) {
+  if (RATIOPLOT) {
+    c0.cd();
+    pad2 = std::make_shared<TPad>("pad2", "pad2", 0, 0.05, 1, 0.3);
+    pad2->SetTopMargin(0.025);
+    pad2->SetBottomMargin(0.25);
+    pad2->SetGridx();  // vertical grid
+    pad2->Draw();
+    pad2->cd();  // pad2 becomes the current pad
 
-  c0.cd();
-  pad2 = std::make_shared<TPad>("pad2", "pad2", 0, 0.05, 1, 0.3);
-  pad2->SetTopMargin(0.025);
-  pad2->SetBottomMargin(0.25);
-  pad2->SetGridx();  // vertical grid
-  pad2->Draw();
-  pad2->cd();  // pad2 becomes the current pad
+    for (const auto &i : indices(h)) {
+      hR[i] = static_cast<TH1D *>(h[i]->Clone(Form("ratio_%lu", i)));
+      hR[i]->Divide(h[0]);
 
-  for (const auto &i : indices(h)) {
-    hR[i] = static_cast<TH1D*>( h[i]->Clone(Form("ratio_%lu", i)) );
-    hR[i]->Divide(h[0]);
+      hR[i]->SetMinimum(0.0);  // y-axis range
+      hR[i]->SetMaximum(2.0);  //
+      hR[i]->SetStats(0);      // statistics box off
+      hR[i]->Draw("same");     // ratio plot
 
-    hR[i]->SetMinimum(0.0);  // y-axis range
-    hR[i]->SetMaximum(2.0);  //
-    hR[i]->SetStats(0);      // statistics box off
-    hR[i]->Draw("same");     // ratio plot
+      // Ratio plot (h3) settings
+      hR[i]->SetTitle("");  // Remove the ratio title
 
-    // Ratio plot (h3) settings
-    hR[i]->SetTitle("");  // Remove the ratio title
+      // Y axis ratio plot settings
+      hR[i]->GetYaxis()->SetTitle("Ratio");
+      hR[i]->GetYaxis()->CenterTitle();
+      hR[i]->GetYaxis()->SetNdivisions(505);
+      hR[i]->GetYaxis()->SetTitleSize(22);
+      hR[i]->GetYaxis()->SetTitleFont(43);
+      hR[i]->GetYaxis()->SetTitleOffset(1.55);
+      hR[i]->GetYaxis()->SetLabelFont(45);  // Absolute font size in pixel (precision 3)
+      hR[i]->GetYaxis()->SetLabelSize(15);
 
-    // Y axis ratio plot settings
-    hR[i]->GetYaxis()->SetTitle("Ratio");
-    hR[i]->GetYaxis()->CenterTitle();
-    hR[i]->GetYaxis()->SetNdivisions(505);
-    hR[i]->GetYaxis()->SetTitleSize(22);
-    hR[i]->GetYaxis()->SetTitleFont(43);
-    hR[i]->GetYaxis()->SetTitleOffset(1.55);
-    hR[i]->GetYaxis()->SetLabelFont(45);  // Absolute font size in pixel (precision 3)
-    hR[i]->GetYaxis()->SetLabelSize(15);
+      // X axis ratio plot settings
+      hR[i]->GetXaxis()->SetTitleSize(22);
+      hR[i]->GetXaxis()->SetTitleFont(43);
+      hR[i]->GetXaxis()->SetTitleOffset(4.);
+      hR[i]->GetXaxis()->SetLabelFont(45);  // Absolute font size in pixel (precision 3)
+      hR[i]->GetXaxis()->SetLabelSize(18);
+    }
 
-    // X axis ratio plot settings
-    hR[i]->GetXaxis()->SetTitleSize(22);
-    hR[i]->GetXaxis()->SetTitleFont(43);
-    hR[i]->GetXaxis()->SetTitleOffset(4.);
-    hR[i]->GetXaxis()->SetLabelFont(45);  // Absolute font size in pixel (precision 3)
-    hR[i]->GetXaxis()->SetLabelSize(18);
-  }
+    // Draw horizontal line
+    const double ymax = 1.0;
+    line              = std::make_shared<TLine>(minval_, ymax, maxval_, ymax);
+    line->SetLineColor(15);
+    line->SetLineWidth(2.0);
+    line->Draw();
 
-  // Draw horizontal line
-  const double           ymax = 1.0;
-  line = std::make_shared<TLine>(minval_, ymax, maxval_, ymax);
-  line->SetLineColor(15);
-  line->SetLineWidth(2.0);
-  line->Draw();
+    // -------------------------------------------------------------------
+    // Remove x-axis of UPPER PLOT
+    h[0]->GetXaxis()->SetLabelOffset(999);
+    h[0]->GetXaxis()->SetLabelSize(0);
+    // -------------------------------------------------------------------
 
-  // -------------------------------------------------------------------
-  // Remove x-axis of UPPER PLOT
-  h[0]->GetXaxis()->SetLabelOffset(999);
-  h[0]->GetXaxis()->SetLabelSize(0);
-  // -------------------------------------------------------------------
-
-} // RATIOPLOT
+  }  // RATIOPLOT
 
   // Give y-axis title some offset to avoid overlapping with numbers
   h[0]->GetYaxis()->SetTitleOffset(1.45);
@@ -252,15 +250,17 @@ if (RATIOPLOT) {
   // Save logscale pdf
   if (MINVAL > 0) {
     pad1->cd()->SetLogy();  // pad2 becomes the current pad
-    for (const auto &i : indices(h)) { h[i]->GetYaxis()->SetRangeUser(std::max(MINVAL, MAXVAL * 1e-8), MAXVAL * 5); }
+    for (const auto &i : indices(h)) {
+      h[i]->GetYaxis()->SetRangeUser(std::max(MINVAL, MAXVAL * 1e-8), MAXVAL * 5);
+    }
     fullfile = fullpath + name_ + "_logy" + ".pdf";
     c0.SaveAs(fullfile.c_str());
   }
 
-// Remove histograms
-if (RATIOPLOT) {
-  for (const auto &i : indices(hR)) { delete hR[i]; }
-}
+  // Remove histograms
+  if (RATIOPLOT) {
+    for (const auto &i : indices(hR)) { delete hR[i]; }
+  }
 
   return chi2ndf;
 }
@@ -316,15 +316,15 @@ void h2Multiplet::NormalizeAll(const std::vector<double> &cross_section,
 }
 
 double h2Multiplet::SaveFig(const std::string &fullpath, bool RATIOPLOT) const {
-
   const double scale = (RATIOPLOT == true) ? 2.0 : 1.0;
 
-  TCanvas c0("c", "c", h.size() == 1 ? 520 : 750 / 3.0 * h.size(), 260 * scale); // scale canvas according to number of sources
-  c0.Divide(h.size(), h.size() == 1 ? 1 : scale, 0.01, 0.02);                    // [columns] x [rows]
-  
+  TCanvas c0("c", "c", h.size() == 1 ? 520 : 750 / 3.0 * h.size(),
+             260 * scale);  // scale canvas according to number of sources
+  c0.Divide(h.size(), h.size() == 1 ? 1 : scale, 0.01, 0.02);  // [columns] x [rows]
+
   // Normalize by the first histogram
-  //const double ZMAX = h[0]->GetMaximum();
-  
+  // const double ZMAX = h[0]->GetMaximum();
+
   // Histograms on TOP ROW
   for (const auto &i : indices(h)) {
     c0.cd(i + 1);  // choose position
@@ -333,33 +333,31 @@ double h2Multiplet::SaveFig(const std::string &fullpath, bool RATIOPLOT) const {
     h[i]->SetStats(0);
     h[i]->Draw("COLZ");
     h[i]->GetYaxis()->SetTitleOffset(1.3);
-    //h[i]->GetZaxis()->SetRangeUser(0.0, ZMAX);
+    // h[i]->GetZaxis()->SetRangeUser(0.0, ZMAX);
     h[i]->SetTitle(legendtext_[i].c_str());
   }
 
   // Ratio histograms on BOTTOM ROW
   std::vector<TH2D *> hR(h.size(), nullptr);
 
-if (RATIOPLOT) {
+  if (RATIOPLOT) {
+    if (h.size() > 1) {  // Only if we have more than 1
 
-  if (h.size() > 1) { // Only if we have more than 1
+      for (const auto &i : indices(h)) {
+        c0.cd(i + 1 + h.size());  // Choose position
+        c0.cd(i + 1 + h.size())->SetRightMargin(0.13);
 
-  for (const auto &i : indices(h)) {
-    c0.cd(i + 1 + h.size()); // Choose position
-    c0.cd(i + 1 + h.size())->SetRightMargin(0.13);
+        hR[i] = static_cast<TH2D *>(h[i]->Clone(Form("h2R_%lu", i)));
 
-    hR[i] = static_cast<TH2D*>(h[i]->Clone(Form("h2R_%lu", i)));
-
-    hR[i]->Divide(h[0]);        // Divide by 0-th histogram
-    hR[i]->GetYaxis()->SetTitleOffset(1.3);
-    hR[i]->SetStats(0);         // No statistics on upper plot
-    hR[i]->Draw("COLZ");
-    hR[i]->GetZaxis()->SetRangeUser(0.0, 2.0);
-    hR[i]->SetTitle(Form("Ratio: %s / %s", legendtext_[i].c_str(), legendtext_[0].c_str()));
+        hR[i]->Divide(h[0]);  // Divide by 0-th histogram
+        hR[i]->GetYaxis()->SetTitleOffset(1.3);
+        hR[i]->SetStats(0);  // No statistics on upper plot
+        hR[i]->Draw("COLZ");
+        hR[i]->GetZaxis()->SetRangeUser(0.0, 2.0);
+        hR[i]->SetTitle(Form("Ratio: %s / %s", legendtext_[i].c_str(), legendtext_[0].c_str()));
+      }
+    }
   }
-
-  }
-}
 
   // -------------------------------------------------------------------
   // Create labels
@@ -379,12 +377,12 @@ if (RATIOPLOT) {
   std::string fullfile = fullpath + name_ + ".pdf";
   c0.SaveAs(fullfile.c_str());
 
-if (RATIOPLOT) {
-  // Delete ratio histograms from memory
-  if (h.size() > 1) {
-    for (const auto &i : indices(hR)) { delete hR[i]; }
+  if (RATIOPLOT) {
+    // Delete ratio histograms from memory
+    if (h.size() > 1) {
+      for (const auto &i : indices(hR)) { delete hR[i]; }
+    }
   }
-}
 
   return 0.0;
 }
@@ -416,9 +414,8 @@ hProfMultiplet::hProfMultiplet(const std::string &name, const std::string &label
 }
 
 double hProfMultiplet::SaveFig(const std::string &fullpath, bool RATIOPLOT) const {
-
   // New colorscheme
-  std::vector<int> color;
+  std::vector<int>                     color;
   std::vector<std::shared_ptr<TColor>> rootcolor;
   rootstyle::CreateColorMap(color, rootcolor);
 
@@ -427,15 +424,15 @@ double hProfMultiplet::SaveFig(const std::string &fullpath, bool RATIOPLOT) cons
   // Upper plot will be in pad1
   std::shared_ptr<TPad> pad1;
 
-if (RATIOPLOT) {
-  pad1 = std::make_shared<TPad>("pad1", "pad1", 0, 0.3, 1.0, 1.0);
-  pad1->SetBottomMargin(0.015);  // Upper and lower plot are joined
-} else {
-  pad1 = std::make_shared<TPad>("pad1", "pad1", 0, 0.0, 1.0, 1.0);
-}
-// pad1->SetGridx();          // Vertical grid
+  if (RATIOPLOT) {
+    pad1 = std::make_shared<TPad>("pad1", "pad1", 0, 0.3, 1.0, 1.0);
+    pad1->SetBottomMargin(0.015);  // Upper and lower plot are joined
+  } else {
+    pad1 = std::make_shared<TPad>("pad1", "pad1", 0, 0.0, 1.0, 1.0);
+  }
+  // pad1->SetGridx();          // Vertical grid
   pad1->Draw();       // Draw the upper pad: pad1
-  pad1->cd();         // pad1 becomes the current pad  
+  pad1->cd();         // pad1 becomes the current pad
   h[0]->SetStats(0);  // No statistics on upper plot
 
   // Find maximum value for y-range limits
@@ -445,7 +442,7 @@ if (RATIOPLOT) {
     if (h[i]->GetMaximum() > MAXVAL) { MAXVAL = h[i]->GetMaximum(); }
     if (h[i]->GetMinimum() < MINVAL) { MINVAL = h[i]->GetMinimum(); }
   }
-  
+
   // Loop over histograms
   for (const auto &i : indices(h)) {
     h[i]->SetLineColor(color[i]);
@@ -481,84 +478,83 @@ if (RATIOPLOT) {
   // -------------------------------------------------------------------
   // Ratio plots
   std::vector<TProfile *> hxP(h.size(), nullptr);
-  std::vector<TH1D *>     hR(h.size(),  nullptr);
-  TH1D* hx0 = nullptr;
-  std::shared_ptr<TPad> pad2;
-  std::shared_ptr<TLine> line;
+  std::vector<TH1D *>     hR(h.size(), nullptr);
+  TH1D *                  hx0 = nullptr;
+  std::shared_ptr<TPad>   pad2;
+  std::shared_ptr<TLine>  line;
 
-if (RATIOPLOT) {
+  if (RATIOPLOT) {
+    c0.cd();
+    pad2 = std::make_shared<TPad>("pad2", "pad2", 0, 0.05, 1, 0.3);
+    pad2->SetTopMargin(0.025);
+    pad2->SetBottomMargin(0.25);
+    pad2->SetGridx();  // vertical grid
+    pad2->Draw();
+    pad2->cd();  // pad2 becomes the current pad
 
-  c0.cd();
-  pad2 = std::make_shared<TPad>("pad2", "pad2", 0, 0.05, 1, 0.3);
-  pad2->SetTopMargin(0.025);
-  pad2->SetBottomMargin(0.25);
-  pad2->SetGridx();  // vertical grid
-  pad2->Draw();
-  pad2->cd();  // pad2 becomes the current pad
+    for (const auto &i : indices(h)) {
+      hxP[i] = static_cast<TProfile *>(h[i]->Clone(Form("ratio_%lu", i)));
 
-  for (const auto &i : indices(h)) {
-    hxP[i] = static_cast<TProfile*>(h[i]->Clone(Form("ratio_%lu", i)));
+      // --------------------------------------------------------------
+      // To get proper errors, we need to use TH1 instead of TProfile
+      hR[i] = hxP[i]->ProjectionX();
 
-    // --------------------------------------------------------------
-    // To get proper errors, we need to use TH1 instead of TProfile
-    hR[i] = hxP[i]->ProjectionX();
-    
-    if (i == 0) {  // this is needed as the denominator
-    hx0 = static_cast<TH1D*>(hxP[i]->Clone("denominator"));
+      if (i == 0) {  // this is needed as the denominator
+        hx0 = static_cast<TH1D *>(hxP[i]->Clone("denominator"));
+      }
+
+      // Set same colors as above
+      hR[i]->SetLineColor(color[i]);
+      hR[i]->SetMarkerColor(color[i]);
+      hR[i]->SetMarkerStyle(20);
+      hR[i]->SetMarkerSize(0.5);
+
+      // --------------------------------------------------------------
+
+      // Get ratio to 0-th histogram
+      hR[i]->Divide(hx0);
+
+      hR[i]->SetMinimum(0.0);  // y-range
+      hR[i]->SetMaximum(2.0);  //
+      hR[i]->SetStats(0);      // no statistics box
+      hR[i]->Draw("same");     // ratio plot
+
+      // Ratio plot (h3) settings
+      hR[i]->SetTitle("");  // remove title
+
+      // Y axis ratio plot settings
+      hR[i]->GetYaxis()->SetTitle("Ratio");
+      hR[i]->GetYaxis()->CenterTitle();
+      hR[i]->GetYaxis()->SetNdivisions(505);
+      hR[i]->GetYaxis()->SetTitleSize(20);
+      hR[i]->GetYaxis()->SetTitleFont(43);
+      hR[i]->GetYaxis()->SetTitleOffset(1.55);
+      hR[i]->GetYaxis()->SetLabelFont(43);  // in pixel (precision 3)
+      hR[i]->GetYaxis()->SetLabelSize(15);
+
+      // X axis ratio plot settings
+      hR[i]->GetXaxis()->SetTitleSize(20);
+      hR[i]->GetXaxis()->SetTitleFont(43);
+      hR[i]->GetXaxis()->SetTitleOffset(4.);
+      hR[i]->GetXaxis()->SetLabelFont(43);  // in pixel (precision 3)
+      hR[i]->GetXaxis()->SetLabelSize(15);
     }
 
-    // Set same colors as above
-    hR[i]->SetLineColor(color[i]);
-    hR[i]->SetMarkerColor(color[i]);
-    hR[i]->SetMarkerStyle(20);
-    hR[i]->SetMarkerSize(0.5);
+    // Draw horizontal line
+    const double ymax = 1.0;
+    line              = std::make_shared<TLine>(minval1_, ymax, maxval1_, ymax);
+    line->SetLineColor(15);
+    line->SetLineWidth(2.0);
+    line->Draw();
 
-    // --------------------------------------------------------------
+    // -------------------------------------------------------------------
+    // Remove x-axis of UPPER PLOT
+    h[0]->GetXaxis()->SetLabelOffset(999);
+    h[0]->GetXaxis()->SetLabelSize(0);
+    // -------------------------------------------------------------------
 
-    // Get ratio to 0-th histogram
-    hR[i]->Divide(hx0);
+  }  // RATIOPLOT
 
-    hR[i]->SetMinimum(0.0);  // y-range
-    hR[i]->SetMaximum(2.0);  //
-    hR[i]->SetStats(0);      // no statistics box
-    hR[i]->Draw("same");     // ratio plot
-
-    // Ratio plot (h3) settings
-    hR[i]->SetTitle("");  // remove title
-
-    // Y axis ratio plot settings
-    hR[i]->GetYaxis()->SetTitle("Ratio");
-    hR[i]->GetYaxis()->CenterTitle();
-    hR[i]->GetYaxis()->SetNdivisions(505);
-    hR[i]->GetYaxis()->SetTitleSize(20);
-    hR[i]->GetYaxis()->SetTitleFont(43);
-    hR[i]->GetYaxis()->SetTitleOffset(1.55);
-    hR[i]->GetYaxis()->SetLabelFont(43);  // in pixel (precision 3)
-    hR[i]->GetYaxis()->SetLabelSize(15);
-
-    // X axis ratio plot settings
-    hR[i]->GetXaxis()->SetTitleSize(20);
-    hR[i]->GetXaxis()->SetTitleFont(43);
-    hR[i]->GetXaxis()->SetTitleOffset(4.);
-    hR[i]->GetXaxis()->SetLabelFont(43);  // in pixel (precision 3)
-    hR[i]->GetXaxis()->SetLabelSize(15);
-  }
-
-  // Draw horizontal line
-  const double           ymax = 1.0;
-  line = std::make_shared<TLine>(minval1_, ymax, maxval1_, ymax);
-  line->SetLineColor(15);
-  line->SetLineWidth(2.0);
-  line->Draw();
-
-  // -------------------------------------------------------------------
-  // Remove x-axis of UPPER PLOT
-  h[0]->GetXaxis()->SetLabelOffset(999);
-  h[0]->GetXaxis()->SetLabelSize(0);
-  // -------------------------------------------------------------------
-
-} // RATIOPLOT
-  
   // Give y-axis title some offset to avoid overlapping with numbers
   h[0]->GetYaxis()->SetTitleOffset(1.45);
 
@@ -576,16 +572,16 @@ if (RATIOPLOT) {
     c0.SaveAs(fullfile.c_str());
   }
 
-if (RATIOPLOT) {
-  // Remove histograms
-  for (const auto &i : indices(hR)) {
-    delete hxP[i];
-    delete hR[i];
+  if (RATIOPLOT) {
+    // Remove histograms
+    for (const auto &i : indices(hR)) {
+      delete hxP[i];
+      delete hR[i];
+    }
+    delete hx0;
   }
-  delete hx0;
-}
 
   return 0.0;
 }
 
-}  // gra namespace ends
+}  // namespace gra

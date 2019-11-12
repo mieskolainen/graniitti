@@ -34,8 +34,8 @@ class MParton : public MProcess {
     return EventWeight(randvec, aux);
   }
   double EventWeight(const std::vector<double> &randvec, AuxIntData &aux);
-  bool EventRecord(HepMC3::GenEvent &evt);
-  void PrintInit(bool silent) const;
+  bool   EventRecord(HepMC3::GenEvent &evt);
+  void   PrintInit(bool silent) const;
 
  private:
   // Internal
@@ -54,6 +54,6 @@ class MParton : public MProcess {
   void DecayWidthPS(double &exact) const;
 };
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

@@ -22,12 +22,12 @@
 #include "json.hpp"
 #include "rang.hpp"
 
+using gra::math::PI;
+using gra::math::abs2;
 using gra::math::msqrt;
 using gra::math::pow2;
 using gra::math::pow3;
 using gra::math::zi;
-using gra::math::PI;
-using gra::math::abs2;
 
 using gra::PDG::mp;
 using gra::PDG::mpi;
@@ -40,7 +40,7 @@ namespace PARAM_STRUCTURE {
 std::string F2 = "CKMT";
 std::string EM = "DIPOLE";
 
-}
+}  // namespace PARAM_STRUCTURE
 
 // Model parameters
 namespace PARAM_SOFT {
@@ -65,14 +65,10 @@ double fc3 = 0.0;
 bool ODDERON_ON = false;
 
 std::string GetHashString() {
-  std::string str = std::to_string(PARAM_SOFT::DELTA_P) + 
-                    std::to_string(PARAM_SOFT::ALPHA_P) +
-                    std::to_string(PARAM_SOFT::gN_P) +
-                    std::to_string(PARAM_SOFT::gN_O) +
-                    std::to_string(PARAM_SOFT::fc1)  +
-                    std::to_string(PARAM_SOFT::fc2)  +
-                    std::to_string(PARAM_SOFT::fc3)  +
-                    std::to_string(PARAM_SOFT::ODDERON_ON);
+  std::string str = std::to_string(PARAM_SOFT::DELTA_P) + std::to_string(PARAM_SOFT::ALPHA_P) +
+                    std::to_string(PARAM_SOFT::gN_P) + std::to_string(PARAM_SOFT::gN_O) +
+                    std::to_string(PARAM_SOFT::fc1) + std::to_string(PARAM_SOFT::fc2) +
+                    std::to_string(PARAM_SOFT::fc3) + std::to_string(PARAM_SOFT::ODDERON_ON);
   return str;
 }
 
@@ -87,10 +83,11 @@ void PrintParam() {
   printf("- fc1        = %0.5f [GeV^2] \n", fc1);
   printf("- fc2        = %0.5f [GeV^2] \n", fc2);
   printf("- fc3        = %0.5f [GeV^2] \n", fc3);
-  printf("- ODDERON_ON = "); std::cout << (ODDERON_ON ? "true" : "false") << std::endl;
+  printf("- ODDERON_ON = ");
+  std::cout << (ODDERON_ON ? "true" : "false") << std::endl;
   std::cout << std::endl << std::endl;
 }
-}
+}  // namespace PARAM_SOFT
 
 // Flat amplitude parameters
 namespace PARAM_FLAT {
@@ -99,11 +96,11 @@ double b = 0.0;
 
 // Monopole parameters
 namespace PARAM_MONOPOLE {
-int         En       = 0;      // Bound state energy level
-double      M0       = 0.0;    // Monopole mass
-double      Gamma0   = 0.0;    // Monopolium width
-std::string coupling = "null"; // Coupling scenarios
-int         gn       = 0;      // Dirac charge 1,2,3,...
+int         En       = 0;       // Bound state energy level
+double      M0       = 0.0;     // Monopole mass
+double      Gamma0   = 0.0;     // Monopolium width
+std::string coupling = "null";  // Coupling scenarios
+int         gn       = 0;       // Dirac charge 1,2,3,...
 
 bool initialized = false;
 
@@ -166,7 +163,7 @@ void PrintParam(double sqrts, bool forceprint) {
 }
 
 int _printcalls = 0;
-}
+}  // namespace PARAM_MONOPOLE
 
 // N*, N**, N** excitation couplings
 namespace PARAM_NSTAR {
@@ -177,28 +174,27 @@ namespace form {
 
 // Read resonance parameters
 gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
-
-  // =====================================================================  
+  // =====================================================================
   // Find global resonance parameters
 
-  bool SPINGEN = false;
-  bool SPINDEC = false;
-  std::string FRAME = "null";
-  int JMAX = 0;
-  
+  bool        SPINGEN = false;
+  bool        SPINDEC = false;
+  std::string FRAME   = "null";
+  int         JMAX    = 0;
+
   {
     // Read and parse
     const std::string fullpath =
         gra::aux::GetBasePath(2) + "/modeldata/" + gra::MODELPARAM + "/GENERAL.json";
-    
+
     const std::string data = gra::aux::GetInputData(fullpath);
-    nlohmann::json j;
-    
+    nlohmann::json    j;
+
     try {
       j = nlohmann::json::parse(data);
     } catch (...) {
-      std::string str = "form::ReadResonance: Error parsing " + fullpath +
-                        " (Check for extra/missing commas)";
+      std::string str =
+          "form::ReadResonance: Error parsing " + fullpath + " (Check for extra/missing commas)";
       throw std::invalid_argument(str);
     }
 
@@ -231,7 +227,6 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
   gra::PARAM_RES res;
 
   try {
-
     // -------------------------------------------------------------------
     // Collect global variables
     res.SPINGEN = SPINGEN;
@@ -239,15 +234,15 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
     res.FRAME   = FRAME;
     res.JMAX    = JMAX;
     // -------------------------------------------------------------------
-    
+
     // Complex coupling
-    double               g_A   = j.at("PARAM_RES").at("g_A");
-    double               g_phi = j.at("PARAM_RES").at("g_phi");
-    res.g                      = g_A * std::exp(std::complex<double>(0, 1) * g_phi);
+    double g_A   = j.at("PARAM_RES").at("g_A");
+    double g_phi = j.at("PARAM_RES").at("g_phi");
+    res.g        = g_A * std::exp(std::complex<double>(0, 1) * g_phi);
 
     // Form factor parameter
     res.g_FF = j.at("PARAM_RES").at("g_FF");
-    
+
     // PDG code
     res.p.pdg = j.at("PARAM_RES").at("PDG");
 
@@ -298,18 +293,17 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
                                   "> Tensor Pomeron coupling array should be of size 7 for J = 2");
     }
     // ------------------------------------------------------------------
-    
+
     // Validity of these is taken care of in the functions
     res.BW = j.at("PARAM_RES").at("BW");
 
     const bool P_conservation = true;
 
-    const int            n = res.p.spinX2 + 1;  // n = 2J + 1
+    const int                     n = res.p.spinX2 + 1;  // n = 2J + 1
     MMatrix<std::complex<double>> rho(n, n);
-    
+
     // If we have spin
     if (res.p.spinX2 != 0) {
-
       // Draw random density matrices (until the number set by user)
       if (j.at("PARAM_RES").at("random_rho") > 0) {
         for (std::size_t k = 0; k < j.at("PARAM_RES").at("random_rho"); ++k) {
@@ -373,7 +367,7 @@ double S3PomAlpha(double t) {
   const double PIC    = (pow2(BETApi) * pow2(mpi)) / (32.0 * pow3(PI));
 
   // Pomeron trajectory value
-  const double h = PIC * S3HPL(4.0 * pow2(mpi) / std::abs(t),
+  const double h       = PIC * S3HPL(4.0 * pow2(mpi) / std::abs(t),
                                t);  // pion loop insert (ADD with minus sign)
   const double alpha_P = 1.0 + PARAM_SOFT::DELTA_P + PARAM_SOFT::ALPHA_P * t - h;
 
@@ -404,16 +398,15 @@ double S3F(double t) {
 
 // Proton inelastic form factor / structure function
 // parametrization for Pomeron processes [THIS FUNCTION IS ANSATZ - IMPROVE!]
-// 
+//
 // Motivated by arxiv.org/abs/hep-ph/9305319
 //
 // <apply at amplitude level>
 double S3FINEL(double t, double M2) {
-  
   constexpr double DELTA_P = 0.0808;
   constexpr double a       = 0.5616;  // GeV^{2}
-  double f = std::pow(std::abs(t) / (M2 * (std::abs(t) + a)), 0.5 * (1 + DELTA_P));
-    
+  double           f       = std::pow(std::abs(t) / (M2 * (std::abs(t) + a)), 0.5 * (1 + DELTA_P));
+
   return f;
 }
 
@@ -425,12 +418,11 @@ double S3FINEL(double t, double M2) {
 // input description.
 //
 // Now, some (very) classic ones have been implemented. Add new one here!
-// 
+//
 // [REFERENCE: Donnachie, Landshoff, arxiv.org/abs/hep-ph/9305319]
 // [REFERENCE: Capella, Kaidalov, Merino, Tran Tranh Van, arxiv.org/abs/hep-ph/9405338v1]
 //
 double F2xQ2(double xbj, double Q2) {
-
   if (PARAM_STRUCTURE::F2 == "DL") {
     constexpr double A = 0.324;
     constexpr double B = 0.098;
@@ -472,7 +464,8 @@ double F2xQ2(double xbj, double Q2) {
 
     return F2;
   } else {
-    throw std::invalid_argument("gra::form::F2xQ2: Unknown PARAM_STRUCTURE::F2 = " + PARAM_STRUCTURE::F2);
+    throw std::invalid_argument("gra::form::F2xQ2: Unknown PARAM_STRUCTURE::F2 = " +
+                                PARAM_STRUCTURE::F2);
   }
 }
 
@@ -484,9 +477,7 @@ double F2xQ2(double xbj, double Q2) {
 // Longitudinal structure function definition (e.g. QCD):
 // F_L(xbj,Q2) = (1 + 4*pow2(xbj*mp)/Q2) * F2(xbj, Q2) - 2xbj * F1(xbj,Q2)
 //
-double F1xQ2(double xbj, double Q2) {
-  return F2xQ2(xbj, Q2) / (2.0 * xbj);
-}
+double F1xQ2(double xbj, double Q2) { return F2xQ2(xbj, Q2) / (2.0 * xbj); }
 
 // ============================================================================
 // Photon flux densities and form factors, input Q^2 as positive
@@ -502,7 +493,7 @@ double e_EM(double Q2) {  // no running here
 double e_EM() { return msqrt(alpha_EM(0.0) * 4.0 * PI); }
 
 // kT unintegrated coherent EPA photon flux as in:
-// 
+//
 // [REFERENCE: Luszczak, Schaefer, Szczurek, arxiv.org/abs/1802.03244]
 //
 // Form factors:
@@ -518,20 +509,18 @@ double e_EM() { return msqrt(alpha_EM(0.0) * 4.0 * PI); }
 //
 // Proton EM form factor F1 (Dirac)
 double F1(double Q2) {
+  Q2               = std::abs(Q2);
+  const double tau = Q2 / pow2(2 * mp);
 
-  Q2 = std::abs(Q2);
-  const double tau = Q2/pow2(2*mp);
-
-  return 1.0/(tau+1) * G_E(Q2) + tau/(tau+1) * G_M(Q2);
+  return 1.0 / (tau + 1) * G_E(Q2) + tau / (tau + 1) * G_M(Q2);
 }
 
 // Proton EM form factor F2 (Pauli)
 double F2(double Q2) {
+  Q2               = std::abs(Q2);
+  const double tau = Q2 / pow2(2 * mp);
 
-  Q2 = std::abs(Q2);
-  const double tau = Q2/pow2(2*mp);
-
-  return -1.0/(tau+1) * G_E(Q2) + 1.0/(tau+1) * G_M(Q2);
+  return -1.0 / (tau + 1) * G_E(Q2) + 1.0 / (tau + 1) * G_M(Q2);
 }
 
 // Rosenbluth separation:
@@ -542,36 +531,32 @@ double F2(double Q2) {
 // G_M(0) = mu_p for proton, mu_n for neutrons
 
 // <http://www.scholarpedia.org/article/Nucleon_Form_factors>
-constexpr double mu = 2.792847337;  // Proton magnetic moment in nuclear magneton units
-constexpr double lambda2 = 0.71;    // Dipole parameter GeV^2
+constexpr double mu      = 2.792847337;  // Proton magnetic moment in nuclear magneton units
+constexpr double lambda2 = 0.71;         // Dipole parameter GeV^2
 
 double G_E(double Q2) {
+  Q2 = std::abs(Q2);  // For safety
 
-  Q2 = std::abs(Q2); // For safety
-
-  if      (PARAM_STRUCTURE::EM == "DIPOLE") {
+  if (PARAM_STRUCTURE::EM == "DIPOLE") {
     return G_E_DIPOLE(Q2);
-  }
-  else if (PARAM_STRUCTURE::EM == "KELLY") {
+  } else if (PARAM_STRUCTURE::EM == "KELLY") {
     return G_E_KELLY(Q2);
-  }
-  else {
-    throw std::invalid_argument("gra::form::G_E: Unknown proton EM-form factor chosen = " + PARAM_STRUCTURE::EM);
+  } else {
+    throw std::invalid_argument("gra::form::G_E: Unknown proton EM-form factor chosen = " +
+                                PARAM_STRUCTURE::EM);
   }
 }
 
 double G_M(double Q2) {
+  Q2 = std::abs(Q2);  // For safety
 
-  Q2 = std::abs(Q2); // For safety
-
-  if      (PARAM_STRUCTURE::EM == "DIPOLE") {
+  if (PARAM_STRUCTURE::EM == "DIPOLE") {
     return G_M_DIPOLE(Q2);
-  }
-  else if (PARAM_STRUCTURE::EM == "KELLY") {
+  } else if (PARAM_STRUCTURE::EM == "KELLY") {
     return G_M_KELLY(Q2);
-  }
-  else {
-    throw std::invalid_argument("gra::form::G_M: Unknown proton EM-form factor chosen = " + PARAM_STRUCTURE::EM);
+  } else {
+    throw std::invalid_argument("gra::form::G_M: Unknown proton EM-form factor chosen = " +
+                                PARAM_STRUCTURE::EM);
   }
 }
 
@@ -580,11 +565,9 @@ double G_M(double Q2) {
 //
 //
 double G_E_DIPOLE(double Q2) {
-  return G_M(Q2) / mu; // Scaling assumption
+  return G_M(Q2) / mu;  // Scaling assumption
 }
-double G_M_DIPOLE(double Q2) {
-  return mu / pow2(1.0 + Q2/lambda2);
-}
+double G_M_DIPOLE(double Q2) { return mu / pow2(1.0 + Q2 / lambda2); }
 
 // Simple parametrization of nucleon EM-form factors
 //
@@ -652,7 +635,8 @@ double CohFlux(double xi, double t, double pt) {
   const double mp2 = pow2(mp);
   const double Q2  = std::abs(t);
 
-  const double PART1 = (4.0 * pow2(mp) * pow2(G_E(Q2)) + Q2 * pow2(G_M(Q2))) / (4.0 * pow2(mp) + Q2);
+  const double PART1 =
+      (4.0 * pow2(mp) * pow2(G_E(Q2)) + Q2 * pow2(G_M(Q2))) / (4.0 * pow2(mp) + Q2);
   const double PART2 = pow2(G_M(Q2));
   const double DELTA = pt2 / (pt2 + xi2 * mp2);
 
@@ -683,16 +667,15 @@ double CohFlux(double xi, double t, double pt) {
 double IncohFlux(double xi, double t, double pt, double M2) {
   constexpr double mp2 = pow2(mp);
 
-  const double pt2 = pow2(pt);
-  const double xi2 = pow2(xi);
-  const double Q2  = std::abs(t);
-  const double xbj = Q2 / (Q2 + M2 - mp2);  // Bjorken-x
+  const double pt2   = pow2(pt);
+  const double xi2   = pow2(xi);
+  const double Q2    = std::abs(t);
+  const double xbj   = Q2 / (Q2 + M2 - mp2);  // Bjorken-x
   const double DELTA = pt2 / (pt2 + xi * (M2 - mp2) + xi2 * mp2);
 
-  double f =
-      alpha_EM(0) / PI *
-      ((1.0 - xi) * pow2(DELTA) * F2xQ2(xbj, Q2) / (Q2 + M2 - mp2) +
-       (xi2 / (4.0 * pow2(xbj))) * DELTA * 2.0 * xbj * F1xQ2(xbj, Q2) / (Q2 + M2 - mp2));
+  double f = alpha_EM(0) / PI *
+             ((1.0 - xi) * pow2(DELTA) * F2xQ2(xbj, Q2) / (Q2 + M2 - mp2) +
+              (xi2 / (4.0 * pow2(xbj))) * DELTA * 2.0 * xbj * F1xQ2(xbj, Q2) / (Q2 + M2 - mp2));
 
   // Factors
   f /= xi;
@@ -812,5 +795,5 @@ std::complex<double> CBW_JR(double m2, double M0, double Gamma, double J) {
   }
 }
 
-}  // form namespace ends
-}  // gra namespace ends
+}  // namespace form
+}  // namespace gra

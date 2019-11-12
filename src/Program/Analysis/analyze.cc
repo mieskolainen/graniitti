@@ -42,8 +42,8 @@
 #include "Graniitti/MMath.h"
 
 // Libraries
-#include "json.hpp"
 #include "cxxopts.hpp"
+#include "json.hpp"
 #include "rang.hpp"
 
 using gra::aux::indices;
@@ -70,8 +70,8 @@ void Init1DHistogram(std::map<std::string, std::shared_ptr<h1Multiplet>> &h,
 
   name    = "h1_S_Pt2";
   h[name] = std::make_shared<h1Multiplet>(
-      name, title + ";System P_{T}^{2} (GeV^{2});d" + U + "/dP_{T}^{2}  (" + units + "/GeV^{2})", bP.N, math::pow2(bP.min),
-      math::pow2(bP.max), legendtext);
+      name, title + ";System P_{T}^{2} (GeV^{2});d" + U + "/dP_{T}^{2}  (" + units + "/GeV^{2})",
+      bP.N, math::pow2(bP.min), math::pow2(bP.max), legendtext);
 
   name    = "h1_S_Y";
   h[name] = std::make_shared<h1Multiplet>(name, title + ";System Y;d" + U + "/dY  (" + units + ")",
@@ -90,24 +90,28 @@ void Init1DHistogram(std::map<std::string, std::shared_ptr<h1Multiplet>> &h,
 
   // 2-Body observables
   if (std::find(multiplicity.begin(), multiplicity.end(), 2) != multiplicity.end()) {
-
-    for (const auto& i : analyzer::FRAMES) {
-      name    = "h1_costheta_" + i;
-      h[name] = std::make_shared<h1Multiplet>(
-        name, title + ";Central final state cos(#theta) [" + i + " frame];d" + U + "/dcos(#theta)  (" + units + ")", bP.N, -1.0, 1.0, legendtext);
+    for (const auto &i : analyzer::FRAMES) {
+      name = "h1_costheta_" + i;
+      h[name] =
+          std::make_shared<h1Multiplet>(name,
+                                        title + ";Central final state cos(#theta) [" + i +
+                                            " frame];d" + U + "/dcos(#theta)  (" + units + ")",
+                                        bP.N, -1.0, 1.0, legendtext);
 
       name    = "h1_phi_" + i;
       h[name] = std::make_shared<h1Multiplet>(
-        name, title + ";Central final state #phi [" + i + " frame];d" + U + "/d#phi  (" + units + ")", bP.N, -math::PI, math::PI, legendtext);
+          name,
+          title + ";Central final state #phi [" + i + " frame];d" + U + "/d#phi  (" + units + ")",
+          bP.N, -math::PI, math::PI, legendtext);
     }
-    
-    name = "h1_2B_acop";
-    h[name] =
-        std::make_shared<h1Multiplet>(name, title +
+
+    name    = "h1_2B_acop";
+    h[name] = std::make_shared<h1Multiplet>(name,
+                                            title +
                                                 ";Central final state acoplanarity #rho = 1 - "
                                                 "|#delta#phi|/#pi;d" +
                                                 U + "/d#rho  (" + units + "/rad)",
-                                      100, 0.0, 1.0, legendtext);
+                                            100, 0.0, 1.0, legendtext);
 
     name    = "h1_2B_diffrap";
     h[name] = std::make_shared<h1Multiplet>(
@@ -123,8 +127,8 @@ void Init1DHistogram(std::map<std::string, std::shared_ptr<h1Multiplet>> &h,
   // Forward proton observables
   name    = "h1_PP_dphi";
   h[name] = std::make_shared<h1Multiplet>(
-      name, title + ";Proton pair #delta#phi (rad);d" + U + "/d#delta#phi  (" + units + "/rad)", 100,
-      0.0, 3.14159, legendtext);
+      name, title + ";Proton pair #delta#phi (rad);d" + U + "/d#delta#phi  (" + units + "/rad)",
+      100, 0.0, 3.14159, legendtext);
 
   name    = "h1_PP_t1";
   h[name] = std::make_shared<h1Multiplet>(
@@ -132,10 +136,11 @@ void Init1DHistogram(std::map<std::string, std::shared_ptr<h1Multiplet>> &h,
       bP.min, bP.max, legendtext);
 
   name    = "h1_PP_dpt";
-  h[name] = std::make_shared<h1Multiplet>(name, title +
-                                                    ";Proton pair |#delta#bar{p}_{T}| "
-                                                    "(GeV);d" +
-                                                    U + "/d|#delta#bar{p}_{T}|  (" + units + "/GeV)",
+  h[name] = std::make_shared<h1Multiplet>(name,
+                                          title +
+                                              ";Proton pair |#delta#bar{p}_{T}| "
+                                              "(GeV);d" +
+                                              U + "/d|#delta#bar{p}_{T}|  (" + units + "/GeV)",
                                           bP.N, bP.min, bP.max, legendtext);
 }
 
@@ -148,73 +153,80 @@ void Init2DHistogram(std::map<std::string, std::shared_ptr<h2Multiplet>> &h,
   const std::string U    = (units != "events") ? "#sigma" : "N";
 
   // Central system observables
-  name = "h2_S_M_Pt";
-  h[name] =
-      std::make_shared<h2Multiplet>(name, "d" + U + "^2/dMdP_{T}  (" + units + "/GeV/GeV) | " +
+  name    = "h2_S_M_Pt";
+  h[name] = std::make_shared<h2Multiplet>(name,
+                                          "d" + U + "^2/dMdP_{T}  (" + units + "/GeV/GeV) | " +
                                               title + ";System M (GeV); System P_{T} (GeV)",
-                                    bM.N, bM.min, bM.max, bP.N, bP.min, bP.max, legendtext);
+                                          bM.N, bM.min, bM.max, bP.N, bP.min, bP.max, legendtext);
 
   name    = "h2_S_M_t";
-  h[name] = std::make_shared<h2Multiplet>(name, "d" + U + "^2/dMd#t  (" + units +
-                                                    "/GeV/GeV) | " + title +
-                                                    ";System M (GeV); |t| (GeV^{2})",
-                                          bM.N, bM.min, bM.max, bP.N, math::pow2(bP.min), math::pow2(bP.max), legendtext);
-
-  name    = "h2_S_M_pt";
   h[name] = std::make_shared<h2Multiplet>(
-      name, "d" + U + "^2/dMdp_{T}  (" + units + "/GeV/GeV) | " + title +
-                ";System M (GeV); Central final state p_{T} (GeV)",
-      bM.N, bM.min, bM.max, bP.N, bP.min, bP.max, legendtext);
+      name,
+      "d" + U + "^2/dMd#t  (" + units + "/GeV/GeV) | " + title + ";System M (GeV); |t| (GeV^{2})",
+      bM.N, bM.min, bM.max, bP.N, math::pow2(bP.min), math::pow2(bP.max), legendtext);
 
-  name    = "h2_S_M_dphipp";
-  h[name] = std::make_shared<h2Multiplet>(
-      name, "d" + U + "^2/dMd#delta#phi_{pp}  (" + units + "/GeV/rad) | " + title +
-                ";System M (GeV); Forward proton #delta#phi_{pp}",
-      bM.N, bM.min, bM.max, 100, 0.0, gra::math::PI, legendtext);
+  name = "h2_S_M_pt";
+  h[name] =
+      std::make_shared<h2Multiplet>(name,
+                                    "d" + U + "^2/dMdp_{T}  (" + units + "/GeV/GeV) | " + title +
+                                        ";System M (GeV); Central final state p_{T} (GeV)",
+                                    bM.N, bM.min, bM.max, bP.N, bP.min, bP.max, legendtext);
+
+  name = "h2_S_M_dphipp";
+  h[name] =
+      std::make_shared<h2Multiplet>(name,
+                                    "d" + U + "^2/dMd#delta#phi_{pp}  (" + units + "/GeV/rad) | " +
+                                        title + ";System M (GeV); Forward proton #delta#phi_{pp}",
+                                    bM.N, bM.min, bM.max, 100, 0.0, gra::math::PI, legendtext);
 
   name    = "h2_S_M_dpt";
   h[name] = std::make_shared<h2Multiplet>(
-      name, "d" + U + "^2/dMd|#delta#bar{p}_{T}|  (" + units + "/GeV/GeV) | " + title +
-                ";System M (GeV); Proton pair |#delta#bar{p}_{T}| (GeV)",
+      name,
+      "d" + U + "^2/dMd|#delta#bar{p}_{T}|  (" + units + "/GeV/GeV) | " + title +
+          ";System M (GeV); Proton pair |#delta#bar{p}_{T}| (GeV)",
       bM.N, bM.min, bM.max, 100, 0.0, 2.0, legendtext);
 
   // 2-Body
   if (std::find(multiplicity.begin(), multiplicity.end(), 2) != multiplicity.end()) {
     name    = "h2_2B_M_dphi";
     h[name] = std::make_shared<h2Multiplet>(
-        name, "d" + U + "^2/dMd#delta#phi  (" + units + "/GeV/rad) | " + title +
-                  ";System M (GeV); Central final state #delta#phi (rad)",
+        name,
+        "d" + U + "^2/dMd#delta#phi  (" + units + "/GeV/rad) | " + title +
+            ";System M (GeV); Central final state #delta#phi (rad)",
         bM.N, bM.min, bM.max, 100, 0.0, gra::math::PI, legendtext);
 
     name    = "h2_2B_eta1_eta2";
     h[name] = std::make_shared<h2Multiplet>(
         name, "d" + U + "^2/d#eta_{1}d#eta_{2}  (" + units + ") | " + title + ";#eta_{1}; #eta_{2}",
         bY.N, bY.min, bY.max, bY.N, bY.min, bY.max, legendtext);
-    
-    // 2D (costheta, phi) in different rest frames
-    for (const auto& i : analyzer::FRAMES) {
 
-      name = "h2_2B_costheta_phi_" + i;
+    // 2D (costheta, phi) in different rest frames
+    for (const auto &i : analyzer::FRAMES) {
+      name    = "h2_2B_costheta_phi_" + i;
       h[name] = std::make_shared<h2Multiplet>(
-          name, "d" + U + "^2/dcos(#theta)d#phi  (" + units + ") | " + title + ";daughter cos(#theta); daughter #phi (rad) [" + i + " FRAME]",
+          name,
+          "d" + U + "^2/dcos(#theta)d#phi  (" + units + ") | " + title +
+              ";daughter cos(#theta); daughter #phi (rad) [" + i + " FRAME]",
           100, -1, 1, 100, -gra::math::PI, gra::math::PI, legendtext);
     }
-    
+
     // 2D (M, costheta) in different rest frames
-    for (const auto& i : analyzer::FRAMES) {
-      
-      name = "h2_2B_M_costheta_" + i;
+    for (const auto &i : analyzer::FRAMES) {
+      name    = "h2_2B_M_costheta_" + i;
       h[name] = std::make_shared<h2Multiplet>(
-          name, "d" + U + "^2/dMdcos(#theta)  (" + units + "/GeV) | " + title + ";M (GeV); daughter cos(#theta) [" + i + " FRAME]",
+          name,
+          "d" + U + "^2/dMdcos(#theta)  (" + units + "/GeV) | " + title +
+              ";M (GeV); daughter cos(#theta) [" + i + " FRAME]",
           bM.N, bM.min, bM.max, 100, -1, 1, legendtext);
     }
-    
+
     // 2D (M, phi) in different rest frames
-    for (const auto& i : analyzer::FRAMES) {
-      
-      name = "h2_2B_M_phi_" + i;
+    for (const auto &i : analyzer::FRAMES) {
+      name    = "h2_2B_M_phi_" + i;
       h[name] = std::make_shared<h2Multiplet>(
-          name, "d" + U + "^2/dMd#phi  (" + units + "/GeV/rad) | " + title + ";M (GeV); daughter #phi (rad) [" + i + " FRAME]",
+          name,
+          "d" + U + "^2/dMd#phi  (" + units + "/GeV/rad) | " + title +
+              ";M (GeV); daughter #phi (rad) [" + i + " FRAME]",
           bM.N, bM.min, bM.max, 100, -gra::math::PI, gra::math::PI, legendtext);
     }
   }
@@ -283,34 +295,30 @@ int main(int argc, char *argv[]) {
 
   try {
     cxxopts::Options options(argv[0], "");
-    options.add_options()
-        ("i,input",      "input HepMC3 file                <input1,input2,...> (without .hepmc3)",
-          cxxopts::value<std::string>())
-        ("g,pdg",        "central final state PDG          <input1,input2,...>",
-          cxxopts::value<std::string>())
-        ("n,number",     "central final state multiplicity <input1,input2,...>",
-          cxxopts::value<std::string>())
-        ("l,labels",     "plot legend string               <input1,input2,...>",
-          cxxopts::value<std::string>())
-        ("t,title",      "plot title string                <input>            ",
-          cxxopts::value<std::string>())
-        ("u,units",      "plot unit                        <barn|mb|ub|nb|pb|fb>",
-          cxxopts::value<std::string>())
-        ("M,mass",       "plot mass binning                <bins,min,max>",
-          cxxopts::value<std::string>())
-        ("Y,rapidity",   "plot rapidity binning            <bins,min,max>",
-          cxxopts::value<std::string>())
-        ("P,momentum",   "plot momentum binning            <bins,min,max>",
-          cxxopts::value<std::string>())
-        ("L,luminosity", "integrated luminosity (opt.)     <inverse barn>",
-          cxxopts::value<double>())
-        ("X,maximum",    "max nr. events to process (opt.) <value>",
-          cxxopts::value<int>())
-        ("S,scale",      "scale plots                      <scale1,scale2,...>",
-          cxxopts::value<std::string>())
-        ("R,ratio",      "ratio plotting on                <true|false>",
-          cxxopts::value<std::string>())
-        ("H,help", "Help");
+    options.add_options()("i,input",
+                          "input HepMC3 file                <input1,input2,...> (without .hepmc3)",
+                          cxxopts::value<std::string>())(
+        "g,pdg", "central final state PDG          <input1,input2,...>",
+        cxxopts::value<std::string>())("n,number",
+                                       "central final state multiplicity <input1,input2,...>",
+                                       cxxopts::value<std::string>())(
+        "l,labels", "plot legend string               <input1,input2,...>",
+        cxxopts::value<std::string>())("t,title",
+                                       "plot title string                <input>            ",
+                                       cxxopts::value<std::string>())(
+        "u,units", "plot unit                        <barn|mb|ub|nb|pb|fb>",
+        cxxopts::value<std::string>())("M,mass", "plot mass binning                <bins,min,max>",
+                                       cxxopts::value<std::string>())(
+        "Y,rapidity", "plot rapidity binning            <bins,min,max>",
+        cxxopts::value<std::string>())("P,momentum",
+                                       "plot momentum binning            <bins,min,max>",
+                                       cxxopts::value<std::string>())(
+        "L,luminosity", "integrated luminosity (opt.)     <inverse barn>",
+        cxxopts::value<double>())("X,maximum", "max nr. events to process (opt.) <value>",
+                                  cxxopts::value<int>())(
+        "S,scale", "scale plots                      <scale1,scale2,...>",
+        cxxopts::value<std::string>())("R,ratio", "ratio plotting on                <true|false>",
+                                       cxxopts::value<std::string>())("H,help", "Help");
 
     auto r = options.parse(argc, argv);
 
@@ -387,9 +395,9 @@ int main(int argc, char *argv[]) {
       throw std::invalid_argument("Unknown 'units' parameter: " + units);
     }
 
-    // ---------------------------------------------------------------------    
+    // ---------------------------------------------------------------------
     // Check input lengths
-    auto CheckInputLength = [](const std::vector<std::size_t>& x) {
+    auto CheckInputLength = [](const std::vector<std::size_t> &x) {
       for (std::size_t i = 0; i < x.size(); ++i) {
         for (std::size_t j = 0; j < x.size(); ++j) {
           if (x[i] != x[j]) { return false; }
@@ -397,10 +405,13 @@ int main(int argc, char *argv[]) {
       }
       return true;
     };
-    const std::vector<std::size_t> lengths = {inputfile.size(), finalstatePDG.size(), labels.size(), multiplicity.size()};
+    const std::vector<std::size_t> lengths = {inputfile.size(), finalstatePDG.size(), labels.size(),
+                                              multiplicity.size()};
 
     if (!CheckInputLength(lengths)) {
-      throw std::invalid_argument("Commandline input lengths (|inputfile| == |PDG| == |labels| == |multiplicity|) do not match!");
+      throw std::invalid_argument(
+          "Commandline input lengths (|inputfile| == |PDG| == |labels| == |multiplicity|) do not "
+          "match!");
     }
 
     // Scale each data source
@@ -432,7 +443,6 @@ int main(int argc, char *argv[]) {
     printf("Analyze:: \n");
     std::vector<double> cross_section(inputfile.size(), 0.0);
     for (const auto &i : indices(inputfile)) {
-
       std::cout << i << " :: input:" << inputfile[i] << std::endl;
 
       analysis.push_back(std::make_shared<MAnalyzer>("ID" + std::to_string(i)));
@@ -448,11 +458,11 @@ int main(int argc, char *argv[]) {
     fullpath += "/";  // important
 
     bool RATIOPLOT = true;
-    if (r.count("ratio")) { 
+    if (r.count("ratio")) {
       const std::string str = r["ratio"].as<std::string>();
-      RATIOPLOT = (str == "true") ? true : false;
+      RATIOPLOT             = (str == "true") ? true : false;
     }
-    
+
     // Iterate over all 1D-histograms
     for (const auto &x : h1) {
       x.second->NormalizeAll(cross_section, scale);
@@ -466,9 +476,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Iterate over all Profile-histograms
-    for (const auto &x : hP) {
-      x.second->SaveFig(fullpath, RATIOPLOT);
-    }
+    for (const auto &x : hP) { x.second->SaveFig(fullpath, RATIOPLOT); }
 
     // Merge pdfs using Ghostscript (gs)
     const std::string cmd = "gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=" + fullpath +
@@ -478,9 +486,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Plot all separate histograms
-    for (const auto &i : indices(analysis)) {
-      analysis[i]->PlotAll(title);
-    }
+    for (const auto &i : indices(analysis)) { analysis[i]->PlotAll(title); }
 
   } catch (const std::invalid_argument &e) {
     gra::aux::PrintGameOver();
@@ -498,8 +504,8 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   } catch (const nlohmann::json::exception &e) {
     gra::aux::PrintGameOver();
-    std::cerr << rang::fg::red << "Exception catched: JSON input: " << rang::fg::reset
-              << e.what() << std::endl;
+    std::cerr << rang::fg::red << "Exception catched: JSON input: " << rang::fg::reset << e.what()
+              << std::endl;
     return EXIT_FAILURE;
   } catch (...) {
     gra::aux::PrintGameOver();
@@ -507,7 +513,7 @@ int main(int argc, char *argv[]) {
               << rang::fg::reset << std::endl;
     return EXIT_FAILURE;
   }
-  
+
   std::cout << "[analyze: done]" << std::endl;
   aux::CheckUpdate();
 

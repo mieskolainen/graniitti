@@ -43,6 +43,6 @@ void VVV1P0_1(std::complex<double> V2[], std::complex<double> V3[], std::complex
 void VVVV3_0(std::complex<double> V1[], std::complex<double> V2[], std::complex<double> V3[],
              std::complex<double> V4[], std::complex<double> COUP, std::complex<double> &vertex);
 
-}  // end namespace MG5_sm
+}  // namespace MG5_sm_gg_gg
 
 #endif  // HelAmps_sm_H

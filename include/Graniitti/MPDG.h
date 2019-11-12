@@ -91,7 +91,7 @@ constexpr double GeV2mb   = GeV2barn * 1E3;    // 1 GeV^{-2} to mbarns
 static const std::map<int, double> fM_meson{
     {111, 0.1300}, {211, 0.1307}, {321, 0.1598}, {311, 0.1598}};
 
-}  // Namespace PDG ends
+}  // namespace PDG
 
 class MPDG {
  public:
@@ -111,6 +111,6 @@ class MPDG {
   std::map<int, gra::MParticle> PDG_table;
 };
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

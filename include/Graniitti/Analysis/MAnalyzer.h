@@ -49,7 +49,7 @@ namespace analyzer {
 // Different Lorentz frame labels
 const std::vector<std::string> FRAMES = {"CM", "HX", "CS", "PG", "GJ", "LAB"};
 
-}
+}  // namespace analyzer
 
 class MAnalyzer {
  public:
@@ -89,11 +89,11 @@ class MAnalyzer {
 
   // HepMC3 reader
   double HepMC3_OracleFill(const std::string inputfile, unsigned int multiplicity, int finalPDG,
-                           unsigned int MAXEVENTS,
+                           unsigned int                                            MAXEVENTS,
                            std::map<std::string, std::shared_ptr<h1Multiplet>> &   h1,
                            std::map<std::string, std::shared_ptr<h2Multiplet>> &   h2,
                            std::map<std::string, std::shared_ptr<hProfMultiplet>> &hP,
-                           unsigned int SID);
+                           unsigned int                                            SID);
 
   // Plot out all local histograms
   void PlotAll(const std::string &titlestr);
@@ -101,11 +101,11 @@ class MAnalyzer {
   double cross_section = 0;
 
   double CheckEnergyMomentum(HepMC3::GenEvent &evt) const;
-  void FrameObservables(double W, HepMC3::GenEvent &evt, const M4Vec &p_beam_plus,
-                        const M4Vec &p_beam_minus, const M4Vec &p_final_plus,
-                        const M4Vec &p_final_minus, const std::vector<M4Vec> &pip,
-                        const std::vector<M4Vec> &pim);
-  void NStarObservables(double W, HepMC3::GenEvent &evt);
+  void   FrameObservables(double W, HepMC3::GenEvent &evt, const M4Vec &p_beam_plus,
+                          const M4Vec &p_beam_minus, const M4Vec &p_final_plus,
+                          const M4Vec &p_final_minus, const std::vector<M4Vec> &pip,
+                          const std::vector<M4Vec> &pim);
+  void   NStarObservables(double W, HepMC3::GenEvent &evt);
 
  private:
   double sqrts = 0.0;
@@ -117,6 +117,6 @@ class MAnalyzer {
   bool N_STAR_ON = false;
 };
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

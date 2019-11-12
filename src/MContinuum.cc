@@ -1,5 +1,5 @@
 // "Continuum" type phase space class
-// 
+//
 // (c) 2017-2019 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
@@ -25,15 +25,15 @@
 // Libraries
 #include "rang.hpp"
 
-using gra::aux::indices;
 using gra::PDG::GeV2barn;
+using gra::aux::indices;
+using gra::math::PI;
 using gra::math::abs2;
 using gra::math::msqrt;
 using gra::math::pow2;
 using gra::math::pow3;
 using gra::math::pow4;
 using gra::math::zi;
-using gra::math::PI;
 
 namespace gra {
 // This is needed by construction
@@ -47,7 +47,7 @@ MContinuum::MContinuum() {
 MContinuum::MContinuum(std::string process, const std::vector<aux::OneCMD> &syntax) {
   InitHistograms();
   SetProcess(process, syntax);
-  
+
   // Init final states
   M4Vec zerovec(0, 0, 0, 0);
   for (std::size_t i = 0; i < 10; ++i) { lts.pfinal.push_back(zerovec); }
@@ -84,7 +84,7 @@ void MContinuum::post_Constructor() {
 
     // Pomeron-Pomeron continuum (low-pt guaranteed by form factors)
     gcuts.kt_max = 10.0 / lts.decaytree.size();
-    
+
     // QED/EW/Durham-QCD processes (high pt)
     if (ProcPtr.ISTATE != "PP" && ProcPtr.ISTATE != "yP" && ProcPtr.ISTATE != "OP") {
       gcuts.kt_max = lts.sqrt_s / 2.0;  // kinematic maximum
@@ -180,20 +180,19 @@ double MContinuum::EventWeight(const std::vector<double> &randvec, AuxIntData &a
   aux.vetocuts_ok   = VetoCuts();
 
   if (aux.Valid()) {
-    
     // Matrix element squared
-    const double MatESQ = GetAmp2(); 
+    const double MatESQ = GetAmp2();
 
     // --------------------------------------------------------------------
     // Cascade resonances phase-space
     const double C_space = CascadePS();
     // --------------------------------------------------------------------
-    
+
     // ** EVENT WEIGHT **
     W = C_space * (1.0 / S_factor) * BNPhaseSpaceWeight() * BNIntegralVolume() * MatESQ * GeV2barn /
         MollerFlux();
   }
-  
+
   aux.amplitude_ok = CheckInfNan(W);
 
   // As the last step: Histograms
@@ -256,7 +255,7 @@ void MContinuum::PrintInit(bool silent) const {
     }
     std::cout << proton2 << std::endl;
     std::cout << std::endl;
-    
+
     // Generation cuts
     std::cout << std::endl;
     std::cout << rang::style::bold << "Generation cuts:" << rang::style::reset << std::endl
@@ -274,7 +273,7 @@ void MContinuum::PrintInit(bool silent) const {
 
     if (EXCITATION != 0) {
       printf(
-        "- Xi  : Forward leg (M^2/s)  [min, max] = [%0.2E, %0.2E]     "
+          "- Xi  : Forward leg (M^2/s)  [min, max] = [%0.2E, %0.2E]     "
           "\t(fixed/user) \n",
           gcuts.XI_min, gcuts.XI_max);
     }
@@ -288,8 +287,12 @@ bool MContinuum::BNRandomKin(unsigned int Nf, const std::vector<double> &randvec
   const unsigned int Kf = Nf - 2;  // Central system multiplicity
 
   // log-change of variables for pt
-  const double u1 = std::log(gcuts.forward_pt_min+ZERO_EPS) + (std::log(gcuts.forward_pt_max) - std::log(gcuts.forward_pt_min+ZERO_EPS)) * randvec[0];
-  const double u2 = std::log(gcuts.forward_pt_min+ZERO_EPS) + (std::log(gcuts.forward_pt_max) - std::log(gcuts.forward_pt_min+ZERO_EPS)) * randvec[1];
+  const double u1 =
+      std::log(gcuts.forward_pt_min + ZERO_EPS) +
+      (std::log(gcuts.forward_pt_max) - std::log(gcuts.forward_pt_min + ZERO_EPS)) * randvec[0];
+  const double u2 =
+      std::log(gcuts.forward_pt_min + ZERO_EPS) +
+      (std::log(gcuts.forward_pt_max) - std::log(gcuts.forward_pt_min + ZERO_EPS)) * randvec[1];
 
   const double pt1 = std::exp(u1);
   const double pt2 = std::exp(u2);
@@ -312,14 +315,14 @@ bool MContinuum::BNRandomKin(unsigned int Nf, const std::vector<double> &randvec
     kt[i] = gcuts.kt_min + (gcuts.kt_max - gcuts.kt_min) * randvec[ind];
     ++ind;
   }
-  
+
   // Intermediate phi
   std::vector<double> phi(Kf - 1, 0.0);  // Kf-1
   for (const auto &i : indices(phi)) {
     phi[i] = 2.0 * PI * randvec[ind];
     ++ind;
   }
-  
+
   // Final state rapidity
   std::vector<double> y(Kf, 0.0);  // Kf
   for (const auto &i : indices(y)) {
@@ -406,7 +409,7 @@ bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1
   lts.pfinal[1] = p1;  // Forward systems
   lts.pfinal[2] = p2;
   lts.pfinal[0] = sumP;  // Central system
-  
+
   double             sumM   = 0;
   const unsigned int offset = 3;
   for (const auto &i : indices(p)) {
@@ -417,7 +420,7 @@ bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1
 
   // -------------------------------------------------------------------
   // Kinematic checks
-  
+
   // Check we are above mass threshold
   if (sumP.M() < sumM) { return false; }
 
@@ -435,18 +438,14 @@ bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1
 
   // Forward excitation
   if (lts.excite1) {
-    //if (!ExciteContinuum(lts.pfinal[1], lts.decayforward1, lts.pfinal[1].M2(), 1, 1, "exp")) {
-    if (!ExciteNstar(lts.pfinal[1], lts.decayforward1)) {
-      return false;
-    }
+    // if (!ExciteContinuum(lts.pfinal[1], lts.decayforward1, lts.pfinal[1].M2(), 1, 1, "exp")) {
+    if (!ExciteNstar(lts.pfinal[1], lts.decayforward1)) { return false; }
   }
   if (lts.excite2) {
-//    if (!ExciteContinuum(lts.pfinal[2], lts.decayforward2, lts.pfinal[2].M2(), 1, 1, "exp")) {
-    if (!ExciteNstar(lts.pfinal[2], lts.decayforward2)) {
-      return false;
-    }
+    //    if (!ExciteContinuum(lts.pfinal[2], lts.decayforward2, lts.pfinal[2].M2(), 1, 1, "exp")) {
+    if (!ExciteNstar(lts.pfinal[2], lts.decayforward2)) { return false; }
   }
-  
+
   return GetLorentzScalars(Nf);
 }
 
@@ -456,7 +455,7 @@ void MContinuum::BLinearSystem(std::vector<M4Vec> &p, const std::vector<M4Vec> &
   /*
 
   w = p1f + p2f
-  
+
   -------------------------------
   KF = 4
 
@@ -464,7 +463,7 @@ void MContinuum::BLinearSystem(std::vector<M4Vec> &p, const std::vector<M4Vec> &
   2p1 = (-q0 - w - p2 - p3)
   2p2 = (-q1 - w - p0 - p3)
   2p3 = (-q2 - w - p0 - p1)
-  
+
   [2 0 1 1
    0 2 1 1
    1 0 2 1
@@ -633,7 +632,6 @@ fprintf('};\n');
 // For reference, Nf = 4 special case in:
 // [REFERENCE: Lebiedowicz, Szczurek, arxiv.org/abs/0912.0190]
 double MContinuum::BNIntegralVolume() const {
-  
   // Number of central states
   const unsigned int Kf = lts.decaytree.size();
 
@@ -645,7 +643,7 @@ double MContinuum::BNIntegralVolume() const {
 
   // phi angle volume
   KT_vol *= std::pow(2.0 * PI, Kf - 1);
-  
+
   // rapidity volume
   KT_vol *= std::pow(gcuts.rap_max - gcuts.rap_min, Kf);
 
@@ -666,13 +664,10 @@ double MContinuum::BNPhaseSpaceWeight() const {
   double PROD = 1.0;
   for (const auto &i : indices(pkt_)) { PROD *= pkt_[i].Pt(); }
 
-  const double factor = (1.0 / std::pow(2, 2*(Nf-2))) *
-                        (1.0 / std::pow(2.0 * PI, 3*Nf - 4))  *
+  const double factor = (1.0 / std::pow(2, 2 * (Nf - 2))) * (1.0 / std::pow(2.0 * PI, 3 * Nf - 4)) *
                         (lts.pfinal[1].Pt() / (2.0 * lts.pfinal[1].E())) *
-                        (lts.pfinal[2].Pt() / (2.0 * lts.pfinal[2].E())) *
-                        J *
-                        PROD;
+                        (lts.pfinal[2].Pt() / (2.0 * lts.pfinal[2].E())) * J * PROD;
   return factor;
 }
 
-}  // gra namespace ends
+}  // namespace gra

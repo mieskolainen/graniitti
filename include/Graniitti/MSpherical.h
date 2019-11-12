@@ -97,7 +97,7 @@ struct SH {
 MMatrix<double> GetGMixing(const std::vector<Omega> &events, const std::vector<std::size_t> &ind,
                            int LMAX, const std::string &mode);
 
-std::pair<std::vector<double>, std::vector<double>> GetELM(const std::vector<Omega> &MC,
+std::pair<std::vector<double>, std::vector<double>> GetELM(const std::vector<Omega> &      MC,
                                                            const std::vector<std::size_t> &ind,
                                                            int LMAX, const std::string &mode);
 
@@ -116,10 +116,10 @@ void PrintOutMoments(const std::vector<double> &x, const std::vector<double> &x_
 std::vector<std::size_t> GetIndices(const std::vector<Omega> &events, const std::vector<double> &M,
                                     const std::vector<double> &Pt, const std::vector<double> &Y);
 
-void TestSphericalIntegrals(int LMAX);
-int LinearInd(int l, int m);
+void   TestSphericalIntegrals(int LMAX);
+int    LinearInd(int l, int m);
 double CalcError(double f2, double f, double N);
-void PrintMatrix(FILE *fp, const std::vector<std::vector<double>> &A);
+void   PrintMatrix(FILE *fp, const std::vector<std::vector<double>> &A);
 
 MMatrix<double> Y_real_synthesize(const std::vector<double> &c_lm, const std::vector<bool> &ACTIVE,
                                   std::size_t N, std::vector<double> &costheta,
@@ -127,7 +127,7 @@ MMatrix<double> Y_real_synthesize(const std::vector<double> &c_lm, const std::ve
 
 std::vector<double> ErrorProp(const MMatrix<double> &A, const std::vector<double> &x);
 
-}  // spherical namespace
-}  // gra namespace
+}  // namespace spherical
+}  // namespace gra
 
 #endif

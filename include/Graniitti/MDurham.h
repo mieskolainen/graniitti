@@ -17,9 +17,9 @@
 #include "Graniitti/Amplitude/MAmpMG5_gg_qqbar.h"
 
 // Own
-#include "Graniitti/MGlobals.h"
 #include "Graniitti/M4Vec.h"
 #include "Graniitti/MAux.h"
+#include "Graniitti/MGlobals.h"
 #include "Graniitti/MKinematics.h"
 #include "Graniitti/MSudakov.h"
 
@@ -27,12 +27,11 @@ namespace gra {
 
 // Durham loop integral discretization technicals
 struct MDurhamParam {
-
   unsigned int N_qt  = 0;  // (> 30)
   unsigned int N_phi = 0;  // (> 10)
 
-  double qt2_MIN     = 0;  // Loop momentum qt^2 minimum (GeV^2)
-  double qt2_MAX     = 0;  // Loop momentum qt^2 maximum (GeV^2)
+  double qt2_MIN = 0;  // Loop momentum qt^2 minimum (GeV^2)
+  double qt2_MAX = 0;  // Loop momentum qt^2 maximum (GeV^2)
 
   std::string PDF_scale    = "MIN";  // Scheme
   double      alphas_scale = 4.0;    // PDF factorization scale
@@ -56,7 +55,7 @@ struct MDurhamParam {
 
     try {
       j = json::parse(data);
-      
+
       // JSON block identifier
       const std::string XID = "PARAM_DURHAM_QCD";
       N_qt                  = j.at(XID).at("N_qt");
@@ -76,8 +75,8 @@ struct MDurhamParam {
 
       initialized = true;
     } catch (...) {
-      std::string str =
-          "Durham::ReadParameters: Error parsing " + inputfile + " (Check for extra/missing commas)";
+      std::string str = "Durham::ReadParameters: Error parsing " + inputfile +
+                        " (Check for extra/missing commas)";
       throw std::invalid_argument(str);
     }
   }
@@ -86,12 +85,11 @@ struct MDurhamParam {
 // Matrix element dimension: " GeV^" << -(2*external_legs - 8)
 class MDurham {
  public:
-  MDurham()  {}
+  MDurham() {}
   ~MDurham() {}
 
-  double DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process);
-  double DQtloop(gra::LORENTZSCALAR &lts,
-                               std::vector<std::vector<std::complex<double>>> Amp);
+  double      DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process);
+  double      DQtloop(gra::LORENTZSCALAR &lts, std::vector<std::vector<std::complex<double>>> Amp);
   inline void DScaleChoise(double qt2, double q1_2, double q2_2, double &Q1_2_scale,
                            double &Q2_2_scale) const;
 
@@ -110,9 +108,9 @@ class MDurham {
   void Dgg2qqbar(const gra::LORENTZSCALAR &                      lts,
                  std::vector<std::vector<std::complex<double>>> &Amp);
 
-  void Dgg2MMbar(const gra::LORENTZSCALAR &                      lts,
-                 std::vector<std::vector<std::complex<double>>> &Amp);
-  double phi_CZ(double x, double fM) const;
+  void                Dgg2MMbar(const gra::LORENTZSCALAR &                      lts,
+                                std::vector<std::vector<std::complex<double>>> &Amp);
+  double              phi_CZ(double x, double fM) const;
   std::vector<double> EvalPhi(int N, int pdg) const;
 
   double Asum = 0.0;
@@ -126,11 +124,10 @@ class MDurham {
 
 
  private:
-
   // Parameters
   MDurhamParam Param;
 };
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

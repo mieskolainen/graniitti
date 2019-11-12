@@ -24,23 +24,22 @@ namespace gra {
 
 // Numerical integration parameters
 struct MEikonalNumerics {
+  static constexpr double MinKT2    = 1E-6;
+  static constexpr double MaxKT2    = 25.0;
+  unsigned int            NumberKT2 = 0;
+  bool                    logKT2    = false;
 
-  static constexpr double    MinKT2 = 1E-6;
-  static constexpr double    MaxKT2 = 25.0;
-  unsigned int NumberKT2 = 0;
-  bool         logKT2    = false;
-
-  static constexpr double    MinBT  = 1E-6;
-  static constexpr double    MaxBT  = 10.0 / PDG::GeV2fm;
-  unsigned int NumberBT  = 0;
-  bool         logBT     = false;
+  static constexpr double MinBT    = 1E-6;
+  static constexpr double MaxBT    = 10.0 / PDG::GeV2fm;
+  unsigned int            NumberBT = 0;
+  bool                    logBT    = false;
 
   static constexpr double       FBIntegralMinKT = 1E-9;
   static constexpr double       FBIntegralMaxKT = 30.0;
   static constexpr unsigned int FBIntegralN     = 10000;
   static constexpr double       MinLoopKT       = 1E-4;
 
-  double          MaxLoopKT  = 1.75;
+  double MaxLoopKT = 1.75;
 
   unsigned int NumberLoopKT  = 15;  // Number of kt steps  (default minimum)
   unsigned int NumberLoopPHI = 12;  // Number of phi steps (default minimum)
@@ -49,30 +48,26 @@ struct MEikonalNumerics {
   void SetLoopDiscretization(int ND) {
     NumberLoopKT  = std::max(3, 3 * ND + (int)NumberLoopKT);
     NumberLoopPHI = std::max(3, 3 * ND + (int)NumberLoopPHI);
-  
+
     if (ND < 0) { std::cout << rang::fg::red; }
     std::cout << "MEikonalNumerics::SetLoopDiscretization: ND = " << ND << std::endl;
-    std::cout << "-> NumberLoopKT  = " << NumberLoopKT  << std::endl;
+    std::cout << "-> NumberLoopKT  = " << NumberLoopKT << std::endl;
     std::cout << "-> NumberLoopPHI = " << NumberLoopPHI << std::endl;
     std::cout << rang::fg::reset;
   }
 
   // Unique hash
   std::string GetHashString() {
-    std::string str =
-        std::to_string(MinKT2) + std::to_string(MaxKT2) +
-        std::to_string(NumberKT2) + std::to_string(logKT2) +
-        std::to_string(MinBT) + std::to_string(MaxBT) +
-        std::to_string(NumberBT) + std::to_string(logBT) +
-        std::to_string(FBIntegralMinKT) +
-        std::to_string(FBIntegralMaxKT) +
-        std::to_string(FBIntegralN);
+    std::string str = std::to_string(MinKT2) + std::to_string(MaxKT2) + std::to_string(NumberKT2) +
+                      std::to_string(logKT2) + std::to_string(MinBT) + std::to_string(MaxBT) +
+                      std::to_string(NumberBT) + std::to_string(logBT) +
+                      std::to_string(FBIntegralMinKT) + std::to_string(FBIntegralMaxKT) +
+                      std::to_string(FBIntegralN);
     return str;
   }
 
   // Read parameters from file
   void ReadParameters() {
-
     // Read and parse
     using json = nlohmann::json;
 
@@ -92,12 +87,11 @@ struct MEikonalNumerics {
       logBT     = j.at(XID).at("logBT");
 
     } catch (...) {
-      std::string str = "ReadParameters: Error parsing " + inputfile +
-                        " (Check for extra/missing commas)";
+      std::string str =
+          "ReadParameters: Error parsing " + inputfile + " (Check for extra/missing commas)";
       throw std::invalid_argument(str);
     }
   }
-
 };
 
 
@@ -129,9 +123,9 @@ class IArray1D {
 
     // Check sanity
     if (_logarithmic && _min < 1e-9) {
-      throw std::invalid_argument("IArray1D::Set: Error: Variable " + _name +
-                                  " is using logarithmic stepping with boundary MIN = " +
-                                  std::to_string(_min));
+      throw std::invalid_argument(
+          "IArray1D::Set: Error: Variable " + _name +
+          " is using logarithmic stepping with boundary MIN = " + std::to_string(_min));
     }
 
     islog = _logarithmic;
@@ -163,8 +157,8 @@ class IArray1D {
     return str;
   }
 
-  bool WriteArray(const std::string &filename, bool overwrite) const;
-  bool ReadArray(const std::string &filename);
+  bool                 WriteArray(const std::string &filename, bool overwrite) const;
+  bool                 ReadArray(const std::string &filename);
   std::complex<double> Interpolate1D(double a) const;
 
   static const unsigned int X = 0;
@@ -179,7 +173,7 @@ class MEikonal {
   // Construct outside
   void S3Constructor(double s_in, const std::vector<gra::MParticle> &initialstate_in,
                      bool onlydensity = false, int NumberBT = 0, int NumberKT2 = 0);
-  
+
   // Get eikonal and amplitude values
   // std::complex<double> S3DensityInterpolator(double bt);
   // std::complex<double> S3ScreeningInterpolator(double kt2);
@@ -194,8 +188,8 @@ class MEikonal {
   void GetTotXS(double &tot, double &el, double &in) const;
 
   static std::complex<double> SingleAmpElastic(double s, double t, int type);
-  std::complex<double> S3Density(double bt) const;
-  std::complex<double> S3Screening(double kt2) const;
+  std::complex<double>        S3Density(double bt) const;
+  std::complex<double>        S3Screening(double kt2) const;
 
   // Get random number of cut Pomerons
   template <typename T>
@@ -230,7 +224,7 @@ class MEikonal {
     // C++11, thread_local is also static
     thread_local std::uniform_real_distribution<double>      flat(0, 1);
     thread_local std::uniform_int_distribution<unsigned int> RANDI(1, P_cut.size() - 1);
-    
+
     // Acceptance-Rejection
     while (true) {
       const unsigned int m = RANDI(rng);
@@ -246,7 +240,7 @@ class MEikonal {
 
   // Parameters
   MEikonalNumerics Numerics;
-  
+
  private:
   static const unsigned int MCUT = 25;  // Maximum number of cut Pomerons
 
@@ -279,6 +273,6 @@ class MEikonal {
   static const unsigned int Y = 1;
 };
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

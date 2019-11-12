@@ -28,15 +28,15 @@
 
 using gra::aux::indices;
 
+using gra::math::CheckEMC;
+using gra::math::PI;
+using gra::math::abs2;
 using gra::math::msqrt;
 using gra::math::pow2;
 using gra::math::pow3;
 using gra::math::pow4;
 using gra::math::pow5;
-using gra::math::CheckEMC;
 using gra::math::zi;
-using gra::math::PI;
-using gra::math::abs2;
 
 using gra::PDG::GeV2barn;
 
@@ -135,7 +135,7 @@ double MParton::EventWeight(const std::vector<double> &randvec, AuxIntData &aux)
       C_space *= CascadePS();
       // --------------------------------------------------------------------
     }
-    
+
     // ** EVENT WEIGHT **
     W = C_space * (1.0 / S_factor) * MatESQ * B2IntegralVolume() * B2PhaseSpaceWeight() * GeV2barn /
         MollerFlux();
@@ -263,7 +263,7 @@ bool MParton::B2BuildKin(double x1, double x2) {
   M4Vec p1 = lts.pbeam1 - q1;  // Remnant
   M4Vec p2 = lts.pbeam2 - q2;  // Remnant
   M4Vec pX = q1 + q2;          // System
-  
+
   // Save
   lts.pfinal[1] = p1;
   lts.pfinal[2] = p2;
@@ -292,7 +292,7 @@ bool MParton::B2BuildKin(double x1, double x2) {
   // false if amplitude has dependence on the final state legs (generic),
   // true if amplitude is a function of central system kinematics only (limited)
   const bool UNWEIGHT = !lts.PS_active;
-  
+
   gra::kinematics::MCW w;
   // 2-body
   if (lts.decaytree.size() == 2) {
@@ -352,4 +352,4 @@ double MParton::B2IntegralVolume() const { return 1.0; }
 // 2-Dim phase space weight
 double MParton::B2PhaseSpaceWeight() const { return 1.0; }
 
-}  // gra namespace ends
+}  // namespace gra

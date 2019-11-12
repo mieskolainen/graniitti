@@ -43,12 +43,12 @@ extern bool ODDERON_ON;
 
 void        PrintParam();
 std::string GetHashString();
-}
+}  // namespace PARAM_SOFT
 
 namespace PARAM_STRUCTURE {
 extern std::string F2;
 extern std::string EM;
-}
+}  // namespace PARAM_STRUCTURE
 
 // Flat (DEBUG) amplitude parameters
 namespace PARAM_FLAT {
@@ -70,7 +70,7 @@ double PsiMP(double n);
 void PrintParam(double sqrts, bool forceprint = false);
 
 extern int _printcalls;
-}
+}  // namespace PARAM_MONOPOLE
 
 // N* excitation
 namespace PARAM_NSTAR {
@@ -134,7 +134,7 @@ std::complex<double> CBW_RW(double m2, double M0, double Gamma);
 std::complex<double> CBW_BF(double m2, double M0, double Gamma, int J, double mA, double mB);
 std::complex<double> CBW_JR(double m2, double M0, double Gamma, double J);
 
-}  // form namespace
-}  // gra namespace
+}  // namespace form
+}  // namespace gra
 
 #endif

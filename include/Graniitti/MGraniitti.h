@@ -20,7 +20,6 @@
 #include "HepMC3/WriterHEPEVT.h"
 
 // Own
-#include "Graniitti/MVEGAS.h"
 #include "Graniitti/M4Vec.h"
 #include "Graniitti/MAux.h"
 #include "Graniitti/MContinuum.h"
@@ -33,6 +32,7 @@
 #include "Graniitti/MQuasiElastic.h"
 #include "Graniitti/MSpin.h"
 #include "Graniitti/MTimer.h"
+#include "Graniitti/MVEGAS.h"
 
 namespace gra {
 
@@ -93,7 +93,6 @@ class Stats {
 };
 
 class MGraniitti {
-
  public:
   // Destructor & Constructor
   MGraniitti();
@@ -129,7 +128,7 @@ class MGraniitti {
   }
 
   // Maximum weight set/get
-  void SetMaxweight(double w);
+  void   SetMaxweight(double w);
   double GetMaxweight() const;
 
   // Get number of CPU cores
@@ -187,7 +186,7 @@ class MGraniitti {
   // Initialize generator
   void Initialize();
   void Initialize(const MEikonal &eikonal_in);
-  
+
   // Process object pointer, public so methods can be accessed
   MProcess *proc = nullptr;
 
@@ -199,11 +198,11 @@ class MGraniitti {
   void ReadGenCuts(const std::string &inputfile);
   void ReadFidCuts(const std::string &inputfile);
   void ReadVetoCuts(const std::string &inputfile);
-  
+
   void Generate();
 
-  std::string PROCESS = "null";     // Physics process identifier
-  
+  std::string PROCESS = "null";  // Physics process identifier
+
   bool        WEIGHTED   = false;   // Unweighted or weighted event generation
   int         NEVENTS    = 0;       // Number of events to be generated
   int         CORES      = 0;       // Number of CPU cores (threads) in use
@@ -226,7 +225,7 @@ class MGraniitti {
   bool hist_fusion_done = false;
 
   // Input string
-  std::string FULL_INPUT_STR  = "null";
+  std::string FULL_INPUT_STR = "null";
 
   // HepMC outputfile
   std::string FULL_OUTPUT_STR = "null";
@@ -276,8 +275,9 @@ class MGraniitti {
 
   void VEGASInit(unsigned int init, unsigned int calls);
   int  VEGAS(unsigned int init, unsigned int calls, unsigned int iter, unsigned int N);
-  void VEGASMultiThread(unsigned int N, unsigned int tid, unsigned int init, unsigned int LOCALcalls);
-  
+  void VEGASMultiThread(unsigned int N, unsigned int tid, unsigned int init,
+                        unsigned int LOCALcalls);
+
   // -----------------------------------------------
 
   void UnifyHistogramBounds();
@@ -295,12 +295,12 @@ class MGraniitti {
   void SampleNeuro(unsigned int N);
 
   // Helper functions
-  void PrintInit() const;
-  int SaveEvent(MProcess *pr, double W, double MAXW, const gra::AuxIntData &aux);
-  void PrintStatus(unsigned int events, unsigned int N, MTimer &tictoc, double timercut);
-  void PrintStatistics(unsigned int N);
+  void           PrintInit() const;
+  int            SaveEvent(MProcess *pr, double W, double MAXW, const gra::AuxIntData &aux);
+  void           PrintStatus(unsigned int events, unsigned int N, MTimer &tictoc, double timercut);
+  void           PrintStatistics(unsigned int N);
   gra::PARAM_RES ReadFactorized(const std::string &resparam_str);
-  void InitFileOutput();
+  void           InitFileOutput();
 
   // Interpreter commands
   std::vector<aux::OneCMD> syntax;
@@ -310,6 +310,6 @@ class MGraniitti {
 void MLaunch(MGraniitti gen, int randomseed, int tid, int events);
 void MThreader(MGraniitti &gen);
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

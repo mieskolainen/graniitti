@@ -33,8 +33,8 @@
 #include "TString.h"
 
 // Libraries
-#include "json.hpp"
 #include "cxxopts.hpp"
+#include "json.hpp"
 #include "rang.hpp"
 
 using gra::aux::indices;
@@ -327,7 +327,7 @@ void Chi2Func(int &npar, double *gin, double &f, double *par, int iflag) {
 
   f = cost;
 }
-}  // Namespace fitcentral ends
+}  // namespace fitcentral
 
 int main(int argc, char *argv[]) {
   gra::aux::PrintFlashScreen(rang::fg::red);
@@ -597,8 +597,8 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   } catch (const nlohmann::json::exception &e) {
     gra::aux::PrintGameOver();
-    std::cerr << rang::fg::red << "Exception catched: JSON input: " << rang::fg::reset
-              << e.what() << std::endl;
+    std::cerr << rang::fg::red << "Exception catched: JSON input: " << rang::fg::reset << e.what()
+              << std::endl;
     return EXIT_FAILURE;
   } catch (...) {
     gra::aux::PrintGameOver();
@@ -609,6 +609,6 @@ int main(int argc, char *argv[]) {
 
   std::cout << "[fitcentral: done]" << std::endl;
   aux::CheckUpdate();
-  
+
   return EXIT_SUCCESS;
 }

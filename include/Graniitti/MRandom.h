@@ -41,11 +41,11 @@ class MRandom {
   double PowerRandom(double a, double b, double alpha);
   double RelativisticBWRandom(double m0, double Gamma, double LIMIT = 5.0, double M_MIN = 0.0);
   double CauchyRandom(double m0, double Gamma, double LIMIT = 5.0, double M_MIN = 0.0);
-  int NBDRandom(double avgN, double k, int maxvalue);
-  int PoissonRandom(double lambda);
+  int    NBDRandom(double avgN, double k, int maxvalue);
+  int    PoissonRandom(double lambda);
   double ExpRandom(double lambda);
-  int LogRandom(double p, int maxvalue);
-  void DirRandom(const std::vector<double> &alpha, std::vector<double> &y);
+  int    LogRandom(double p, int maxvalue);
+  void   DirRandom(const std::vector<double> &alpha, std::vector<double> &y);
 
   double NBDpdf(int n, double avgN, double k);
   double Logpdf(int k, double p);
@@ -55,7 +55,7 @@ class MRandom {
   // 64-bit Mersenne Twister by Matsumoto and Nishimura, fast, basic
   // For some (possible) sources problems, see:
   // [REFERENCE: Harase, https://arxiv.org/abs/1708.06018]
-  //std::mt19937_64 rng;
+  // std::mt19937_64 rng;
 
   // 48-bit RANLUX (a bit slower)
   // [REFERENCE: Luscher, https://arxiv.org/abs/hep-lat/9309020]
@@ -70,6 +70,6 @@ class MRandom {
   // Nothing
 };
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

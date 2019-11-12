@@ -80,14 +80,14 @@ double MRandom::G(double mu, double sigma) {
 // Return mass (GeV)
 //
 double MRandom::RelativisticBWRandom(double m0, double Gamma, double LIMIT, double M_MIN) {
-
   // No width case
   if (Gamma < 1e-40) { return m0; }
 
   const double m2    = math::pow2(m0);
   const double m2max = gra::math::pow2(m0 + LIMIT * Gamma);
-  const double m2min = std::max(std::max(0.0, math::pow2(M_MIN)), gra::math::pow2(m0 - LIMIT * Gamma));
-  
+  const double m2min =
+      std::max(std::max(0.0, math::pow2(M_MIN)), gra::math::pow2(m0 - LIMIT * Gamma));
+
   double m2val = 0.0;
   while (true) {
     const double R = U(0, 1);
@@ -96,11 +96,9 @@ double MRandom::RelativisticBWRandom(double m0, double Gamma, double LIMIT, doub
         m0 * Gamma *
             std::tan(std::atan2(m2min - m2, m0 * Gamma) +
                      R * (std::atan2(m2max - m2, m0 * Gamma) - std::atan2(m2min - m2, m0 * Gamma)));
-    
+
     // Note >= handles massless case, otherwise stuck with m = 0
-    if (m2val >= 0) { 
-      break;
-    }
+    if (m2val >= 0) { break; }
   }
   return gra::math::msqrt(m2val);
 }
@@ -110,7 +108,6 @@ double MRandom::RelativisticBWRandom(double m0, double Gamma, double LIMIT, doub
 // Input as with RelativisticBWRandom
 //
 double MRandom::CauchyRandom(double m0, double Gamma, double LIMIT, double M_MIN) {
-
   if (Gamma < 1e-40) { return m0; }
 
   const double mmax = m0 + LIMIT * Gamma;
@@ -191,4 +188,4 @@ int MRandom::LogRandom(double p, int maxvalue) {
   }
 }
 
-}  // gra namespace
+}  // namespace gra

@@ -35,6 +35,6 @@ class MUserHistograms {
   unsigned int HIST = 0;  // Histogramming level
 };
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

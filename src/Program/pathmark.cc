@@ -150,7 +150,7 @@ int main(int argc, char *argv[]) {
 
   printvar();
   std::cout << std::endl;
-  
+
   hx.RawOutput();
 
   std::cout << "[pathmark: done]" << std::endl;

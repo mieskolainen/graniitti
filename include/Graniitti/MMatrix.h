@@ -12,7 +12,7 @@
 #include <iostream>
 
 namespace gra {
-  
+
 // Constant size matrix
 template <typename T>
 class MMatrix {
@@ -56,8 +56,8 @@ class MMatrix {
   void Minkowski() {
     for (std::size_t i = 0; i < rows; ++i) {
       for (std::size_t j = 0; j < cols; ++j) {
-        double sign = (i > 0 && j > 0) ? -1.0 : 1.0;
-        this->operator()(i, j) = (i == j) ? sign * 1.0 : 0.0;
+        double sign             = (i > 0 && j > 0) ? -1.0 : 1.0;
+        this-> operator()(i, j) = (i == j) ? sign * 1.0 : 0.0;
       }
     }
   }
@@ -122,7 +122,7 @@ class MMatrix {
   }
   // For indexing with [i][j]
   // Row-major order!
-  T *operator[](const std::size_t &row) { return data + cols * row; }
+  T *      operator[](const std::size_t &row) { return data + cols * row; }
   const T *operator[](const std::size_t &row) const { return data + cols * row; }
 
   // Row-major order!
@@ -259,17 +259,13 @@ class MMatrix {
   T Sum() const {
     T sum(0.0);
     for (std::size_t i = 0; i < rows; ++i) {
-      for (std::size_t j = 0; j < cols; ++j) {
-        sum += this->operator()(i, j);
-      }
+      for (std::size_t j = 0; j < cols; ++j) { sum += this->operator()(i, j); }
     }
     return sum;
   }
-  
+
   // Frobenius norm
-  double FrobNorm() const {
-    return std::sqrt(FrobNorm2());
-  }
+  double FrobNorm() const { return std::sqrt(FrobNorm2()); }
 
   // Frobenius norm squared
   double FrobNorm2() const {
@@ -304,8 +300,8 @@ class MMatrix {
   // Get diagonal vector
   std::vector<T> GetDiag() const {
     if (rows != cols) {
-      throw std::invalid_argument("MMatrix::GetDiag: Only defined for square matrices, rows = "
-        + std::to_string(rows) + " , cols = " + std::to_string(cols));
+      throw std::invalid_argument("MMatrix::GetDiag: Only defined for square matrices, rows = " +
+                                  std::to_string(rows) + " , cols = " + std::to_string(cols));
     }
     std::vector<T> d(rows);
     for (std::size_t i = 0; i < rows; ++i) { d[i] = this->operator()(i, i); }
@@ -315,17 +311,15 @@ class MMatrix {
   // Get trace
   T Trace() const {
     if (rows != cols) {
-      throw std::invalid_argument("MMatrix::Trace: Only defined for square matrices, rows = "
-        + std::to_string(rows) + " , cols = " + std::to_string(cols));
+      throw std::invalid_argument("MMatrix::Trace: Only defined for square matrices, rows = " +
+                                  std::to_string(rows) + " , cols = " + std::to_string(cols));
     }
     T sum = 0.0;
-    for (std::size_t i = 0; i < rows; ++i) {
-      sum += this->operator()(i,i);
-    }
+    for (std::size_t i = 0; i < rows; ++i) { sum += this->operator()(i, i); }
     return sum;
   }
   T Tr() const { return Trace(); }
-  
+
   void Print(const std::string &name = "") const {
     std::cout << "MMatrix::Print: " << name << " [" << rows << " x " << cols << "]" << std::endl;
     std::cout << std::setprecision(4);
@@ -360,6 +354,6 @@ class MMatrix {
   T *         data;
 };
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

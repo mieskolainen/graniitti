@@ -38,9 +38,7 @@ using math::zi;
 MSudakov::MSudakov() {}
 
 // Destructor
-MSudakov::~MSudakov() {
-  delete PdfPtr;
-}
+MSudakov::~MSudakov() { delete PdfPtr; }
 
 // Init
 void MSudakov::Init(double _sqrts, const std::string &PDFSET, bool init_arrays) {
@@ -67,10 +65,9 @@ void MSudakov::InitArrays() {
 
     // q2,M
     veto.sqrts = Numerics.sqrts;  // FIRST THIS
-    veto.Set(0, "q2", Numerics.q2_MIN, Numerics.q2_MAX,
-             Numerics.SUDA_N[0], Numerics.SUDA_log_ON[0]);
-    veto.Set(1, "M", Numerics.M_MIN, Numerics.M_MAX, Numerics.SUDA_N[1],
-             Numerics.SUDA_log_ON[1]);
+    veto.Set(0, "q2", Numerics.q2_MIN, Numerics.q2_MAX, Numerics.SUDA_N[0],
+             Numerics.SUDA_log_ON[0]);
+    veto.Set(1, "M", Numerics.M_MIN, Numerics.M_MAX, Numerics.SUDA_N[1], Numerics.SUDA_log_ON[1]);
     veto.InitArray();  // Initialize (call last!)
 
     const unsigned long hash     = gra::aux::djb2hash(veto.GetHashString());
@@ -96,10 +93,9 @@ void MSudakov::InitArrays() {
 
     // q2,x
     spdf.sqrts = Numerics.sqrts;  // FIRST THIS
-    spdf.Set(0, "q2", Numerics.q2_MIN, Numerics.q2_MAX,
-             Numerics.SHUV_N[0], Numerics.SHUV_log_ON[0]);
-    spdf.Set(1, "x", Numerics.x_MIN, Numerics.x_MAX, Numerics.SHUV_N[1],
-             Numerics.SHUV_log_ON[1]);
+    spdf.Set(0, "q2", Numerics.q2_MIN, Numerics.q2_MAX, Numerics.SHUV_N[0],
+             Numerics.SHUV_log_ON[0]);
+    spdf.Set(1, "x", Numerics.x_MIN, Numerics.x_MAX, Numerics.SHUV_N[1], Numerics.SHUV_log_ON[1]);
     spdf.InitArray();  // Initialize (call last!)
 
     const unsigned long hash     = gra::aux::djb2hash(spdf.GetHashString());
@@ -252,14 +248,14 @@ double MSudakov::fg_xQ2M(double x, double q2, double M) const {
   // Calculate Shuvaev transformation
   // std::pair<double,double> out1 = Shuvaev_H(q2, x);
   std::pair<double, double> out1 = spdf.Interpolate2D(q2, x);
-  const double Hg  = out1.first;
-  const double dHg = out1.second;
+  const double              Hg   = out1.first;
+  const double              dHg  = out1.second;
 
   // Calculate Sudakov veto
   // std::pair<double,double> out2 = Sudakov_T(q2, M);
   std::pair<double, double> out2 = veto.Interpolate2D(q2, M);
-  const double Tg  = out2.first;
-  const double dTg = out2.second;
+  const double              Tg   = out2.first;
+  const double              dTg  = out2.second;
 
   // Chain rule's: d/dln(q^2) [ ... ]
   double total = 0.0;
@@ -461,8 +457,8 @@ void MSudakov::CalculateArray(IArray2D &arr,
 
       arr.F[i][j][0] = a;
       arr.F[i][j][1] = b;
-      arr.F[i][j][2] = std::abs(output.first)  < 1e-64 ? 0 : output.first;  // Underflow protection
-      arr.F[i][j][3] = std::abs(output.second) < 1e-64 ? 0 : output.second; // 
+      arr.F[i][j][2] = std::abs(output.first) < 1e-64 ? 0 : output.first;    // Underflow protection
+      arr.F[i][j][3] = std::abs(output.second) < 1e-64 ? 0 : output.second;  //
     }
   }
   // Progressbar clearing
@@ -490,19 +486,19 @@ bool IArray2D::WriteArray(const std::string &filename, bool overwrite) const {
   unsigned int line_number = 0;
 
   try {
-  for (const auto &i : indices(F)) {
-    for (const auto &j : indices(F[i])) {
-      // Write to file
-      file << std::setprecision(15) << F[i][j][0] << "," << F[i][j][1] << "," << F[i][j][2] << ","
-           << F[i][j][3] << std::endl;
+    for (const auto &i : indices(F)) {
+      for (const auto &j : indices(F[i])) {
+        // Write to file
+        file << std::setprecision(15) << F[i][j][0] << "," << F[i][j][1] << "," << F[i][j][2] << ","
+             << F[i][j][3] << std::endl;
 
-      ++line_number;
+        ++line_number;
+      }
     }
-  }
   } catch (...) {
-    throw std::invalid_argument("IArray2D:WriteArray: Error in file " +
-      filename + " at line " + std::to_string(line_number));
-  } 
+    throw std::invalid_argument("IArray2D:WriteArray: Error in file " + filename + " at line " +
+                                std::to_string(line_number));
+  }
 
   file.close();
   return true;
@@ -518,35 +514,34 @@ bool IArray2D::ReadArray(const std::string &filename) {
   }
 
   std::string  line;
-  unsigned int fills = 0;
+  unsigned int fills       = 0;
   unsigned int line_number = 0;
   std::cout << "IArray2D::ReadArray: ";
 
   try {
+    for (const auto &i : indices(F)) {
+      for (const auto &j : indices(F[i])) {
+        // Read every line from the stream
+        getline(file, line);
 
-  for (const auto &i : indices(F)) {
-    for (const auto &j : indices(F[i])) {
-      // Read every line from the stream
-      getline(file, line);
+        std::istringstream       stream(line);
+        std::vector<std::string> columns;
+        std::string              element;
 
-      std::istringstream       stream(line);
-      std::vector<std::string> columns;
-      std::string              element;
-
-      // Get every line element (4 of them) separated by separator
-      int k = 0;
-      while (getline(stream, element, ',')) {
-        F[i][j][k] = std::stod(element);  // string to double
-        ++k;
-        ++fills;
+        // Get every line element (4 of them) separated by separator
+        int k = 0;
+        while (getline(stream, element, ',')) {
+          F[i][j][k] = std::stod(element);  // string to double
+          ++k;
+          ++fills;
+        }
+        ++line_number;
       }
-      ++line_number;
     }
-  }
 
   } catch (...) {
-    throw std::invalid_argument("IArray2D:ReadArray: Error in file " +
-      filename + " at line " + std::to_string(line_number));
+    throw std::invalid_argument("IArray2D:ReadArray: Error in file " + filename + " at line " +
+                                std::to_string(line_number));
   }
 
   file.close();
@@ -626,4 +621,4 @@ std::pair<double, double> IArray2D::Interpolate2D(double a, double b) const {
   return {values[0], values[1]};
 }
 
-}  // gra namespace ends
+}  // namespace gra

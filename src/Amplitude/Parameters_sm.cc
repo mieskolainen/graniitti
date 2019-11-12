@@ -42,9 +42,8 @@ void Parameters_sm::setIndependentParameters(SLHAReader &slha) {
   mdl_sqrt__2       = sqrt(2.);
   mdl_MH__exp__2    = ((mdl_MH) * (mdl_MH));
   mdl_aEW           = 1. / aEWM1;
-  mdl_MW =
-      sqrt(mdl_MZ__exp__2 / 2. +
-           sqrt(mdl_MZ__exp__4 / 4. - (mdl_aEW * M_PI * mdl_MZ__exp__2) / (mdl_Gf * mdl_sqrt__2)));
+  mdl_MW = sqrt(mdl_MZ__exp__2 / 2. + sqrt(mdl_MZ__exp__4 / 4. - (mdl_aEW * M_PI * mdl_MZ__exp__2) /
+                                                                     (mdl_Gf * mdl_sqrt__2)));
   mdl_sqrt__aEW   = sqrt(mdl_aEW);
   mdl_ee          = 2. * mdl_sqrt__aEW * sqrt(M_PI);
   mdl_MW__exp__2  = ((mdl_MW) * (mdl_MW));

@@ -75,9 +75,9 @@ class MHarmonic {
                  void (*fitfunc)(int &, double *, double &, double *, int));
 
   double PrintOutHyperCell(const gra::spherical::Meta &META, const std::vector<std::size_t> &cell);
-  void logLfunc(int &npar, double *gin, double &f, double *par, int iflag) const;
-  bool PrintLoop(const std::string &output) const;
-  void PlotAll(const std::string &outputpath) const;
+  void   logLfunc(int &npar, double *gin, double &f, double *par, int iflag) const;
+  bool   PrintLoop(const std::string &output) const;
+  void   PlotAll(const std::string &outputpath) const;
 
   void Plot2DExpansion(const std::map<gra::spherical::Meta, MTensor<gra::spherical::SH>> &tensor,
                        unsigned int OBSERVABLE, const std::string &TYPESTRING, int barcolor,
@@ -138,6 +138,6 @@ class MHarmonic {
   const std::vector<std::string> xlabels = {"M (GeV)", "P_{T} (GeV)", "Y"};
 };
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

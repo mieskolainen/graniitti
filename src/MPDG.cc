@@ -581,4 +581,4 @@ const gra::MParticle &MPDG::FindByPDGName(const std::string &pdgname) const {
   throw std::invalid_argument(str);
 }
 
-}  // gra namespace
+}  // namespace gra

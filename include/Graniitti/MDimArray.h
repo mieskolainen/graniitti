@@ -30,6 +30,6 @@ struct GetArray<T, D1, D2> {
 template <typename T, size_t D1, size_t D2, size_t... DN>
 using MDimArray = typename GetArray<T, D1, D2, DN...>::type;
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

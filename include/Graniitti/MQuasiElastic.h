@@ -35,8 +35,8 @@ class MQuasiElastic : public MProcess {
     return EventWeight(randvec, aux);
   }
   double EventWeight(const std::vector<double> &randvec, AuxIntData &aux);
-  bool EventRecord(HepMC3::GenEvent &evt);
-  void PrintInit(bool silent) const;
+  bool   EventRecord(HepMC3::GenEvent &evt);
+  void   PrintInit(bool silent) const;
 
  private:
   bool LoopKinematics(const std::vector<double> &p1p, const std::vector<double> &p2p);
@@ -52,7 +52,7 @@ class MQuasiElastic : public MProcess {
   bool   B3GetLorentzScalars();
   double B3IntegralVolume() const;
   double B3PhaseSpaceWeight() const;
-  
+
   // Event by event integration boundaries
   double t_max         = 0.0;
   double t_min         = 0.0;
@@ -63,6 +63,6 @@ class MQuasiElastic : public MProcess {
   std::vector<double> MAXPOMW;
 };
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

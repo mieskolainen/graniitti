@@ -19,7 +19,7 @@ class MTimer {
   // << operator
   template <typename T, typename Traits>
   friend std::basic_ostream<T, Traits> &operator<<(std::basic_ostream<T, Traits> &out,
-                                                   const MTimer &timer) {
+                                                   const MTimer &                 timer) {
     return out << timer.Elapsed().count();
   }
   // Time in sec
@@ -36,6 +36,6 @@ class MTimer {
   std::chrono::high_resolution_clock::time_point start;
 };
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

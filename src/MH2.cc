@@ -58,7 +58,7 @@ void MH2::ResetBounds(int xbins, double xmin, double xmax, int ybins, double ymi
   weights2 = weights;
   counts   = MMatrix<long long int>(XBINS, YBINS, 0);
 
-  Clear();  // Call also this!
+  Clear();           // Call also this!
   FILLBUFF = false;  // No autorange, explicit bounds provided
 }
 
@@ -120,18 +120,18 @@ void MH2::Print() const {
   std::cout << "<binned statistics> " << std::endl;
   std::pair<double, double> valerr = WeightMeanAndError();
   printf(" <W> = %0.3E +- %0.3E  [F = %lld | X: U/O = %lld/%lld, Y: U/O = %lld/%lld ]\n",
-    valerr.first, valerr.second, fills, underflow[0], overflow[0], underflow[1], overflow[1]);
+         valerr.first, valerr.second, fills, underflow[0], overflow[0], underflow[1], overflow[1]);
 
   const double X_mean   = GetMeanX(1);
   const double X_sqmean = GetMeanX(2);
 
   const double Y_mean   = GetMeanY(1);
-  const double Y_sqmean = GetMeanY(2);  
+  const double Y_sqmean = GetMeanY(2);
 
-  printf(" <X> = %0.3f, <X^2> = %0.3f, <X^2> - <X>^2 = %0.3f \n",
-    X_mean, X_sqmean, X_sqmean - std::pow(X_mean, 2));
-  printf(" <Y> = %0.3f, <Y^2> = %0.3f, <Y^2> - <Y>^2 = %0.3f \n",
-    Y_mean, Y_sqmean, Y_sqmean - std::pow(Y_mean, 2));
+  printf(" <X> = %0.3f, <X^2> = %0.3f, <X^2> - <X>^2 = %0.3f \n", X_mean, X_sqmean,
+         X_sqmean - std::pow(X_mean, 2));
+  printf(" <Y> = %0.3f, <Y^2> = %0.3f, <Y^2> - <Y>^2 = %0.3f \n", Y_mean, Y_sqmean,
+         Y_sqmean - std::pow(Y_mean, 2));
 
   std::cout << std::endl;
 }
@@ -156,9 +156,14 @@ void MH2::Fill(double xvalue, double yvalue) {
 }
 
 void MH2::Fill(double xvalue, double yvalue, double weight) {
-
-  if (std::isnan(weight)) { std::cout << "MH2:Fill: Warning: NaN weight" << std::endl; return; }
-  if (std::isinf(weight)) { std::cout << "MH2:Fill: Warning: Inf weight" << std::endl; return; }
+  if (std::isnan(weight)) {
+    std::cout << "MH2:Fill: Warning: NaN weight" << std::endl;
+    return;
+  }
+  if (std::isinf(weight)) {
+    std::cout << "MH2:Fill: Warning: Inf weight" << std::endl;
+    return;
+  }
 
   if (!FILLBUFF) {  // Normal filling
 
@@ -198,10 +203,10 @@ void MH2::Clear() {
       counts[i][j]   = 0;
     }
   }
-  fills          = 0;
-  underflow      = {0, 0};
-  overflow       = {0, 0};
-  nanflow        = 0;
+  fills     = 0;
+  underflow = {0, 0};
+  overflow  = {0, 0};
+  nanflow   = 0;
 }
 
 
@@ -219,7 +224,7 @@ void MH2::FlushBuffer() {
       double mu   = 0;
       double sumW = 0;
       for (std::size_t i = 0; i < buff_values.size(); ++i) {
-        mu   += buff_values[i][dim] * buff_weights[i];
+        mu += buff_values[i][dim] * buff_weights[i];
         sumW += buff_weights[i];
       }
       if (sumW > 0) { mu /= sumW; }
@@ -232,7 +237,7 @@ void MH2::FlushBuffer() {
       if (sumW > 0) { var /= sumW; }
 
       // Find minimum and maximum
-      double minval =  1e64;
+      double minval = 1e64;
       double maxval = -1e64;
       for (std::size_t i = 0; i < buff_values.size(); ++i) {
         if (buff_values[i][dim] < minval) { minval = buff_values[i][dim]; }
@@ -241,8 +246,8 @@ void MH2::FlushBuffer() {
 
       // Set new histogram bounds
       double std  = std::sqrt(std::abs(var));
-      double       xmin = mu - 2.5 * std;
-      double       xmax = mu + 2.5 * std;
+      double xmin = mu - 2.5 * std;
+      double xmax = mu + 2.5 * std;
 
       // A numerical failure may happen with variance calculation, then use this
       if (std::isnan(xmin) || std::isnan(xmax)) {
@@ -284,28 +289,36 @@ double MH2::GetMeanX(int power) const {
   double       norm     = 0.0;  // Normalization
   const double binwidth = (XMAX - XMIN) / XBINS;
   for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
-    const double value  = std::pow(binwidth * (i + 1) - binwidth / 2.0 + XMIN, power);
+    const double value = std::pow(binwidth * (i + 1) - binwidth / 2.0 + XMIN, power);
     for (std::size_t j = 0; j < static_cast<unsigned int>(YBINS); ++j) {
-      const double weight = GetBinWeight(i,j);
-      sum  += weight * value;
+      const double weight = GetBinWeight(i, j);
+      sum += weight * value;
       norm += weight;
     }
   }
-  if (norm > 0) { return sum / norm; } else { return 0.0; }
+  if (norm > 0) {
+    return sum / norm;
+  } else {
+    return 0.0;
+  }
 }
 double MH2::GetMeanY(int power) const {
   double       sum      = 0.0;
   double       norm     = 0.0;  // Normalization
   const double binwidth = (YMAX - YMIN) / YBINS;
   for (std::size_t j = 0; j < static_cast<unsigned int>(YBINS); ++j) {
-    const double value  = std::pow(binwidth * (j + 1) - binwidth / 2.0 + YMIN, power);
+    const double value = std::pow(binwidth * (j + 1) - binwidth / 2.0 + YMIN, power);
     for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
-      const double weight = GetBinWeight(i,j);
-      sum  += weight * value;
+      const double weight = GetBinWeight(i, j);
+      sum += weight * value;
       norm += weight;
     }
   }
-  if (norm > 0) { return sum / norm; } else { return 0.0; }
+  if (norm > 0) {
+    return sum / norm;
+  } else {
+    return 0.0;
+  }
 }
 
 
@@ -389,7 +402,6 @@ void MH2::GetBinIdx(double xvalue, double yvalue, int &xbin, int &ybin) const {
 // nan/inf   returns -3
 //
 int MH2::GetIdx(double value, double minval, double maxval, int nbins, bool logbins) const {
-
   if (std::isnan(value) || std::isinf(value)) { return -3; }
   if (value < minval) { return -1; }  // Underflow
   if (value > maxval) { return -2; }  // Overflow
@@ -429,4 +441,4 @@ double MH2::ShannonEntropy() const {
   }
 }
 
-}  // gra namespace
+}  // namespace gra

@@ -15,10 +15,9 @@ using namespace std;
 
 class Parameters_sm {
  public:
-
   Parameters_sm() {}
   ~Parameters_sm() {}
-  
+
   // Define "zero"
   double zero, ZERO;
   // Model parameters independent of aS
@@ -55,7 +54,6 @@ class Parameters_sm {
   void printDependentCouplings();
 
  private:
-
 };
 
 #endif  // Parameters_sm_H

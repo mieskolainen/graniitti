@@ -77,9 +77,9 @@ void SLHAReader::read_slha_file(std::string file_name) {
         // name
         while (line[0] == ' ') line = line.substr(1);
         // Now find end of block name
-        int space_pos                           = line.find(' ');
+        int space_pos = line.find(' ');
         if (space_pos != ((int)line.npos)) line = line.substr(0, space_pos);
-        block                                   = line;
+        block = line;
         continue;
       }
       // Look for decay

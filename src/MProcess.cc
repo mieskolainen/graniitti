@@ -17,7 +17,6 @@
 #include <vector>
 
 // Own
-#include "Graniitti/MHELMatrix.h"
 #include "Graniitti/MAux.h"
 #include "Graniitti/MFactorized.h"
 #include "Graniitti/MForm.h"
@@ -25,6 +24,7 @@
 #include "Graniitti/MGlobals.h"
 #include "Graniitti/MH1.h"
 #include "Graniitti/MH2.h"
+#include "Graniitti/MHELMatrix.h"
 #include "Graniitti/MKinematics.h"
 #include "Graniitti/MMath.h"
 #include "Graniitti/MMatrix.h"
@@ -45,10 +45,10 @@
 #include "rang.hpp"
 
 using gra::aux::indices;
+using gra::math::abs2;
 using gra::math::msqrt;
 using gra::math::pow2;
 using gra::math::zi;
-using gra::math::abs2;
 
 namespace gra {
 void MProcess::PrintSetup() const {
@@ -91,7 +91,7 @@ void MProcess::PrintSetup() const {
 // Print out process lists
 std::vector<std::string> MProcess::PrintProcesses() const {
   // Iterate through processes
-  std::vector<std::string> processes;
+  std::vector<std::string>                           processes;
   std::map<std::string, std::string>::const_iterator it = Processes.begin();
 
   while (it != Processes.end()) {
@@ -121,54 +121,53 @@ std::string MProcess::GetProcessDescriptor(std::string str) const {
 
 // Cascaded phase-space factor [VOLUME] x [MC INTEGRAL] / (2PI)
 double MProcess::CascadePS() const {
-
   // Cascade resonances phase-space
   double product    = 1.0;
   double product2pi = 1.0;
   double volume     = 1.0;
-  int N_final = 0;
-  for (const auto& i : indices(lts.decaytree)) {
+  int    N_final    = 0;
+  for (const auto &i : indices(lts.decaytree)) {
     CalculatePhaseSpace(lts.decaytree[i], product, product2pi, volume, N_final);
   }
   return volume * product / product2pi;
 }
 
 // Recursive function to calculate phasespace weights
-void MProcess::CalculatePhaseSpace(const gra::MDecayBranch &branch, double& product, double& product2pi, double& volume, int& N_final) const {
-
+void MProcess::CalculatePhaseSpace(const gra::MDecayBranch &branch, double &product,
+                                   double &product2pi, double &volume, int &N_final) const {
   // There is decay information and this is activated by the amplitude
   if (branch.PS_active == true && branch.W.Integral() > 0) {
-
-    product    *= branch.W.Integral();
-    product2pi *= (2*math::PI);
+    product *= branch.W.Integral();
+    product2pi *= (2 * math::PI);
 
     // Flat mass^2 interval
     double M_sum = 0;
-    for (const auto& i : indices(branch.legs)) { M_sum += branch.legs[i].p.mass; } // Daughters give lower limit
+    for (const auto &i : indices(branch.legs)) {
+      M_sum += branch.legs[i].p.mass;
+    }  // Daughters give lower limit
 
     const double MIN = std::max(pow2(M_sum), pow2(branch.p.mass - branch.p.width * OFFSHELL));
     const double MAX = pow2(branch.p.mass + branch.p.width * OFFSHELL);
-    volume          *= (MAX - MIN);
-    
+    volume *= (MAX - MIN);
+
     for (const auto &i : indices(branch.legs)) {
       CalculatePhaseSpace(branch.legs[i], product, product2pi, volume, N_final);
     }
   }
-  if (branch.legs.size() == 0) { ++N_final; } // Final state particle
+  if (branch.legs.size() == 0) { ++N_final; }  // Final state particle
 }
 
 // Amplitude squared
 double MProcess::GetAmp2() {
+  double amp2 = (FLATAMP == 0) ? S3ScreenedAmp2() : GetFlatAmp2(lts);
 
-    double amp2 = (FLATAMP == 0) ? S3ScreenedAmp2() : GetFlatAmp2(lts);
+  // -----------------------------------------------
+  // ** Custom sampling control initiated by amplitudes **
+  if (lts.FORCE_FLATMASS2 && !FLATMASS2_user) { FLATMASS2 = true; }
+  if (lts.FORCE_OFFSHELL >= 0 && !OFFSHELL_user) { OFFSHELL = lts.FORCE_OFFSHELL; }
+  // -----------------------------------------------
 
-    // -----------------------------------------------
-    // ** Custom sampling control initiated by amplitudes **
-    if (lts.FORCE_FLATMASS2 && !FLATMASS2_user) { FLATMASS2 = true; }
-    if (lts.FORCE_OFFSHELL >= 0 && !OFFSHELL_user) { OFFSHELL = lts.FORCE_OFFSHELL; }
-    // -----------------------------------------------
-    
-    return amp2;
+  return amp2;
 }
 
 // Pomeron Loop Screened Amplitude
@@ -184,23 +183,19 @@ double MProcess::GetAmp2() {
 // ======xxxxxxxxx======>
 
 double MProcess::S3ScreenedAmp2() {
-
   // Eikonal Loop Screening not on
-  if (SCREENING == false) {
-    return ProcPtr.GetBareAmplitude2(lts);
-  }
+  if (SCREENING == false) { return ProcPtr.GetBareAmplitude2(lts); }
 
   // Elastic scattering, return directly eikonalized amplitude squared itself
-  if (ProcPtr.CHANNEL == "EL") {
-    return abs2(Eikonal.MSA.Interpolate1D(-lts.t));
-  }
+  if (ProcPtr.CHANNEL == "EL") { return abs2(Eikonal.MSA.Interpolate1D(-lts.t)); }
 
   // --------------------------------------------------------------------
   // First evaluate bare amplitudes to lts.hamp
   ProcPtr.GetBareAmplitude2(lts);
-  
+
   if (lts.hamp.size() == 0) {
-    const std::string str = "MProcess::S3ScreenedAmp2: Amplitude does not support screening, lts.hamp.size == 0";
+    const std::string str =
+        "MProcess::S3ScreenedAmp2: Amplitude does not support screening, lts.hamp.size == 0";
     throw std::invalid_argument(str);
   }
 
@@ -301,20 +296,16 @@ double MProcess::S3ScreenedAmp2() {
 
   // Not Durham-QCD
   if (ProcPtr.ISTATE != "gg") {
-
     // Separate (incoherent) sum
     double amp2 = 0.0;
     for (const auto &h : indices(lts.hamp)) { amp2 += abs2(hamp_0[h] + hamp_loop[h]); }
-    
+
     // Initial state helicity average, if we have all helicity amplitudes
-    if (lts.hamp.size() != 1) {
-      amp2 /= 4;
-    }
+    if (lts.hamp.size() != 1) { amp2 /= 4; }
     return amp2;
 
-  // Durham-QCD
+    // Durham-QCD
   } else {
-
     // Coherent sum
     std::complex<double> A = 0.0;
     for (const auto &h : indices(lts.hamp)) { A += hamp_0[h] + hamp_loop[h]; }
@@ -328,7 +319,6 @@ double MProcess::S3ScreenedAmp2() {
 // Set CMS energy and beam particle 4-vectors
 void MProcess::SetInitialState(const std::vector<std::string> &beam,
                                const std::vector<double> &     energy) {
-
   if (beam.size() != 2) {
     throw std::invalid_argument("MProcess::SetInitialState: Input BEAM vector not dim 2!");
   }
@@ -344,18 +334,17 @@ void MProcess::SetInitialState(const std::vector<std::string> &beam,
   const double E1 = std::max(energy[0], 1.001 * lts.beam1.mass);
   const double E2 = std::max(energy[1], 1.001 * lts.beam2.mass);
 
-  SetBeamEnergies(E1,E2);
+  SetBeamEnergies(E1, E2);
 }
 
 // Beam needs to be set before this!
 void MProcess::SetBeamEnergies(double E1, double E2) {
-
   if (lts.beam1.pdg == 0 || lts.beam2.pdg == 0) {
     throw std::invalid_argument("MProcess::SetBeamEnergies: Beam PDG particles not set yet!");
   }
 
   // Beam 4-momentum (px,py,pz,E)
-  lts.pbeam1 = M4Vec(0, 0,  msqrt(pow2(E1) - pow2(lts.beam1.mass)), E1);  // positive z-axis
+  lts.pbeam1 = M4Vec(0, 0, msqrt(pow2(E1) - pow2(lts.beam1.mass)), E1);   // positive z-axis
   lts.pbeam2 = M4Vec(0, 0, -msqrt(pow2(E2) - pow2(lts.beam2.mass)), E2);  // negative z-axis
 
   // Mandelstam s
@@ -379,16 +368,18 @@ double MProcess::GetFlatAmp2(const gra::LORENTZSCALAR &lts) const {
   double W = 1.0;
 
   // Ansatz: |A|^2 ~ exp(bt1) exp(bt2)
-  if      (FLATAMP == 1) {
+  if (FLATAMP == 1) {
     W = pow2(lts.s) * std::exp(PARAM_FLAT::b * lts.t1) * std::exp(PARAM_FLAT::b * lts.t2);
   }
   // Ansatz: |A|^2 ~ exp(bt1) exp(bt2) / sqrt(shat)
   else if (FLATAMP == 2) {
-    W = pow2(lts.s) * std::exp(PARAM_FLAT::b * lts.t1) * std::exp(PARAM_FLAT::b * lts.t2) / msqrt(lts.s_hat);
+    W = pow2(lts.s) * std::exp(PARAM_FLAT::b * lts.t1) * std::exp(PARAM_FLAT::b * lts.t2) /
+        msqrt(lts.s_hat);
   }
   // Ansatz: |A|^2 ~ exp(bt1) exp(bt2) / shat
   else if (FLATAMP == 3) {
-    W = pow2(lts.s) * std::exp(PARAM_FLAT::b * lts.t1) * std::exp(PARAM_FLAT::b * lts.t2) / lts.s_hat;
+    W = pow2(lts.s) * std::exp(PARAM_FLAT::b * lts.t1) * std::exp(PARAM_FLAT::b * lts.t2) /
+        lts.s_hat;
   }
   // Constant
   else if (FLATAMP == 4) {
@@ -398,7 +389,8 @@ double MProcess::GetFlatAmp2(const gra::LORENTZSCALAR &lts) const {
     std::string str =
         "MProcess::GetFlatAmp2: Unknown FLATAMP (|A|^2 is 0 = off, 1 = "
         "exp{b(t1+t2)}, 2 = exp{b(t1+t2)}/shat^{1/2}, 3 = exp{b(t1+t2)}/shat, 4 = 1.0) "
-        ": input was " + std::to_string(FLATAMP);
+        ": input was " +
+        std::to_string(FLATAMP);
     throw std::invalid_argument(str);
   }
   return W;
@@ -520,24 +512,21 @@ void MProcess::SetupBranching() {
 
   // Loop over resonances
   for (auto const &xpoint : lts.RESONANCES) {
+    // Take the resonance
+    gra::PARAM_RES res = xpoint.second;
 
-      // Take the resonance
-      gra::PARAM_RES res = xpoint.second;
+    // Process helicity decay information
+    std::vector<MParticle> daughter;
+    for (const auto &i : indices(lts.decaytree)) { daughter.push_back(lts.decaytree[i].p); }
+    res.hel = ProcessHelicityDecay(res.p, daughter);
 
-      // Process helicity decay information
-      std::vector<MParticle> daughter;
-      for (const auto& i : indices(lts.decaytree)) {
-        daughter.push_back(lts.decaytree[i].p);
-      }
-      res.hel = ProcessHelicityDecay(res.p, daughter);
-
-      // Set the updated resonance
-      lts.RESONANCES[xpoint.first] = res;
+    // Set the updated resonance
+    lts.RESONANCES[xpoint.first] = res;
   }
 
   // Recursively over the decaytree
-  for (const auto& i : indices(lts.decaytree)) {
-    if (lts.decaytree[i].legs.size() != 0) { // Has any daughters?
+  for (const auto &i : indices(lts.decaytree)) {
+    if (lts.decaytree[i].legs.size() != 0) {  // Has any daughters?
       ProcessHelicityTree(lts.decaytree[i]);
     }
   }
@@ -545,18 +534,15 @@ void MProcess::SetupBranching() {
 
 // Recursive function
 //
-void MProcess::ProcessHelicityTree(MDecayBranch& branch) {
-
+void MProcess::ProcessHelicityTree(MDecayBranch &branch) {
   // Process decay information
   std::vector<MParticle> daughter;
-  for (const auto& i : indices(branch.legs)) {
-    daughter.push_back(branch.legs[i].p);
-  }
+  for (const auto &i : indices(branch.legs)) { daughter.push_back(branch.legs[i].p); }
   branch.hel = ProcessHelicityDecay(branch.p, daughter);
 
   // Recursion
-  for (const auto& i : indices(branch.legs)) {
-    if (branch.legs[i].legs.size() != 0) { // Has any daughters?
+  for (const auto &i : indices(branch.legs)) {
+    if (branch.legs[i].legs.size() != 0) {  // Has any daughters?
       ProcessHelicityTree(branch.legs[i]);
     }
   }
@@ -565,8 +551,8 @@ void MProcess::ProcessHelicityTree(MDecayBranch& branch) {
 // Process decay helicity amplitude by
 // reading alpha_ls and (tensor pomeron model) couplings from BRANCHING.json
 //
-HELMatrix MProcess::ProcessHelicityDecay(const MParticle& p, const std::vector<MParticle>& daughter) const {
-
+HELMatrix MProcess::ProcessHelicityDecay(const MParticle &             p,
+                                         const std::vector<MParticle> &daughter) const {
   HELMatrix hc;
 
   // Init once for speed
@@ -574,9 +560,7 @@ HELMatrix MProcess::ProcessHelicityDecay(const MParticle& p, const std::vector<M
 
   // Get decay daughter PDG ids
   std::vector<int> refdecay;
-  for (const auto &i : indices(daughter)) {
-    refdecay.push_back(daughter[i].pdg);
-  }
+  for (const auto &i : indices(daughter)) { refdecay.push_back(daughter[i].pdg); }
 
   // Setup branching fractions for resonances
   using json = nlohmann::json;
@@ -612,12 +596,11 @@ HELMatrix MProcess::ProcessHelicityDecay(const MParticle& p, const std::vector<M
     } catch (...) {
       // continue;
     }
-    std::cout << "MProcess::ProcessHelicityDecay: Resonance PDG = " + std::to_string(pdg) +
-                     " / " + resonance_name << std::endl;
+    std::cout << "MProcess::ProcessHelicityDecay: Resonance PDG = " + std::to_string(pdg) + " / " +
+                     resonance_name
+              << std::endl;
     std::cout << "Decay to ";
-    for (const auto& i : indices(daughter)) {
-      std::cout << daughter[i].pdg << " ";
-    }
+    for (const auto &i : indices(daughter)) { std::cout << daughter[i].pdg << " "; }
     std::cout << std::endl;
 
     // Try to find the decaymode
@@ -642,17 +625,17 @@ HELMatrix MProcess::ProcessHelicityDecay(const MParticle& p, const std::vector<M
 
         try {
           std::vector<double> temp = j[PDG_STR][SID]["g_decay_tensor"];
-          hc.g_decay_tensor = temp;  
+          hc.g_decay_tensor        = temp;
         } catch (...) {
           // Did not found uset set Tensor Pomeron decay coupling array, do nothing
         }
-        
+
         // ----------------------------------------------------------------------------
         // Construct helicity ls-coupling matrix (put default 1.0)
         // indexed directly by ls values
         MMatrix<std::complex<double>> alpha(20, 20, 1.0);
         MMatrix<bool>                 alpha_set(20, 20, false);
-        
+
         // Allow 50 coupling parameter (l,s) pairs (more than
         // enough)
         for (std::size_t a = 0; a < 50; ++a) {
@@ -669,7 +652,8 @@ HELMatrix MProcess::ProcessHelicityDecay(const MParticle& p, const std::vector<M
             alpha_set[l][s] = true;
 
             std::cout << "Found ls-coupling from BRANCHING.json: "
-                      << "[l=" << l << ",s=" << s << "] = " << alpha[l][s] << " (Re,Im)" << std::endl;
+                      << "[l=" << l << ",s=" << s << "] = " << alpha[l][s] << " (Re,Im)"
+                      << std::endl;
           } catch (...) { continue; }
         }
         hc.alpha     = alpha;
@@ -681,14 +665,14 @@ HELMatrix MProcess::ProcessHelicityDecay(const MParticle& p, const std::vector<M
     if (!found_decay_mode) {
       gra::aux::PrintWarning();
       std::cout << rang::fg::red
-                << "WARNING: BRANCHING.json contains no information on this decay: " + std::to_string(pdg) + " -> ";
+                << "WARNING: BRANCHING.json contains no information on this decay: " +
+                       std::to_string(pdg) + " -> ";
 
-      for (const auto& i : indices(daughter)) {
-        std::cout << daughter[i].pdg << " ";
-      }
+      for (const auto &i : indices(daughter)) { std::cout << daughter[i].pdg << " "; }
       std::cout << std::endl;
-      
-      std::cout << "(setting up BR = 1.0, alpha_ls == 1.0, P_conservation = true)" << rang::fg::reset << std::endl;
+
+      std::cout << "(setting up BR = 1.0, alpha_ls == 1.0, P_conservation = true)"
+                << rang::fg::reset << std::endl;
       hc.BR             = 1.0;
       hc.P_conservation = true;
       hc.alpha          = MMatrix<std::complex<double>>(20, 20, 1.0);
@@ -701,8 +685,8 @@ HELMatrix MProcess::ProcessHelicityDecay(const MParticle& p, const std::vector<M
       try {
         gra::spin::InitTMatrix(hc, p, daughter[0], daughter[1]);
       } catch (std::invalid_argument &e) {
-        throw std::invalid_argument("Problem with resonance PDG = " + std::to_string(pdg) +
-                                    " : " + e.what());
+        throw std::invalid_argument("Problem with resonance PDG = " + std::to_string(pdg) + " : " +
+                                    e.what());
       }
     }
     // ----------------------------------------------------------------------------
@@ -721,26 +705,29 @@ HELMatrix MProcess::ProcessHelicityDecay(const MParticle& p, const std::vector<M
       const double amp2 = 1.0;
       const double sym  = 1.0;
 
-      double PS = gra::kinematics::PDW2body(pow2(p.mass), pow2(daughter[0].mass), pow2(daughter[1].mass), amp2, sym);
+      double PS = gra::kinematics::PDW2body(pow2(p.mass), pow2(daughter[0].mass),
+                                            pow2(daughter[1].mass), amp2, sym);
 
       // ---------------------------------------------------------------
-      // Tensor Pomeron Model decay couplings for 2-body decays directly calculable from width and BR
-      if (hc.g_decay_tensor.size() == 0) { // Not set yet
+      // Tensor Pomeron Model decay couplings for 2-body decays directly calculable from width and
+      // BR
+      if (hc.g_decay_tensor.size() == 0) {  // Not set yet
 
-        hc.g_decay_tensor = {TensorPomeron.GDecay(p.spinX2 / 2, p.mass, p.width, daughter[0].mass, hc.BR)};
+        hc.g_decay_tensor = {
+            TensorPomeron.GDecay(p.spinX2 / 2, p.mass, p.width, daughter[0].mass, hc.BR)};
 
         if (std::abs(PS) < ZERO_EPS) {
           // Try again with higher mother mass as a crude approximation, we might
           // be trying purely off-shell decay (such as f0(980) -> K+K-)
           const unsigned int N_width = 3;
           for (std::size_t i = 1; i <= N_width; ++i) {
-            PS = gra::kinematics::PDW2body(pow2(p.mass + i * p.width),
-                                           pow2(daughter[0].mass),
+            PS = gra::kinematics::PDW2body(pow2(p.mass + i * p.width), pow2(daughter[0].mass),
                                            pow2(daughter[1].mass), amp2, sym);
 
             // ---------------------------------------------------------------
             // Tensor Pomeron Model decay couplings
-            hc.g_decay_tensor = {TensorPomeron.GDecay(p.spinX2 / 2, p.mass + i * p.width, p.width, daughter[0].mass, hc.BR)};
+            hc.g_decay_tensor = {TensorPomeron.GDecay(p.spinX2 / 2, p.mass + i * p.width, p.width,
+                                                      daughter[0].mass, hc.BR)};
 
             if (PS > ZERO_EPS) { break; }
           }
@@ -760,8 +747,7 @@ HELMatrix MProcess::ProcessHelicityDecay(const MParticle& p, const std::vector<M
         std::string str =
             "MProcess::ProcessHelicityDecay: Kinematic coupling problem "
             "to '" +
-            DECAYMODE + "' with resonance PDG " + p.name + "(" + std::to_string(p.pdg) +
-            ")" +
+            DECAYMODE + "' with resonance PDG " + p.name + "(" + std::to_string(p.pdg) + ")" +
             " (daughters too heavy?) (check RESONANCE, DECAYMODE "
             "and BRANCHING tables)";
         throw std::invalid_argument(str);
@@ -774,18 +760,17 @@ HELMatrix MProcess::ProcessHelicityDecay(const MParticle& p, const std::vector<M
       hc.g_decay = 1.0;  // For the rest, put 1.0
     }
 
-    printf("(Mass, Full width):                (%0.3E, %0.3E GeV) \n",  p.mass, p.width);
+    printf("(Mass, Full width):                (%0.3E, %0.3E GeV) \n", p.mass, p.width);
     printf("Branching ratio || Partial width:   %0.3E || %0.3E GeV \n", hc.BR, hc.BR * p.width);
     printf("=> Computed decay coupling:                %0.3E \n", hc.g_decay);
     printf("=> Tensor Pomeron decay couplings:       [ ");
-    for (const auto& i : indices(hc.g_decay_tensor)) {
-      printf("%0.3E ", hc.g_decay_tensor[i]);
-    }
+    for (const auto &i : indices(hc.g_decay_tensor)) { printf("%0.3E ", hc.g_decay_tensor[i]); }
     printf("] %s \n", TP_computed ? "(computed from J, width and BR)" : "");
 
   } else {
     std::string str =
-        "MProcess::ProcessHelicityDecay: Did not find any branching ratio data for resonance with PDG: " +
+        "MProcess::ProcessHelicityDecay: Did not find any branching ratio data for resonance with "
+        "PDG: " +
         std::to_string(p.pdg);
     throw std::invalid_argument(str);
   }
@@ -802,21 +787,21 @@ void MProcess::GetOffShellMass(const gra::MDecayBranch &branch, double &mass) {
     mass = branch.p.mass;
     return;
   }
-  
+
   const unsigned int OUTERMAXTRIAL = 1e4;
   const unsigned int INNERMAXTRIAL = 1e4;
 
   unsigned int outertrials = 0;
 
   while (true) {
-
     // We have decay daughters
     double daughter_masses = 0;
     if (branch.legs.size() != 0) {
       // Find random daughter offshell masses from BW
-      for (const auto& i : indices(branch.legs)) {
-        daughter_masses += std::max(0.0, random.RelativisticBWRandom(branch.legs[i].p.mass,
-          branch.legs[i].p.width, OFFSHELL));
+      for (const auto &i : indices(branch.legs)) {
+        daughter_masses += std::max(
+            0.0,
+            random.RelativisticBWRandom(branch.legs[i].p.mass, branch.legs[i].p.width, OFFSHELL));
       }
       const double safe_margin = 1e-5;  // GeV
       daughter_masses += safe_margin;
@@ -829,7 +814,8 @@ void MProcess::GetOffShellMass(const gra::MDecayBranch &branch, double &mass) {
       const double W = branch.p.width;
 
       if (!FLATMASS2) {
-        mass = std::max(daughter_masses, random.RelativisticBWRandom(M, W, OFFSHELL, daughter_masses));
+        mass =
+            std::max(daughter_masses, random.RelativisticBWRandom(M, W, OFFSHELL, daughter_masses));
       } else {
         mass = msqrt(random.U(std::max(pow2(daughter_masses), pow2(M - OFFSHELL * W)),
                               std::min(lts.s, pow2(M + OFFSHELL * W))));
@@ -863,16 +849,15 @@ void MProcess::GetOffShellMass(const gra::MDecayBranch &branch, double &mass) {
 // Return true if OK
 // Return false if FAILS
 //
-bool MProcess::ExciteContinuum(const M4Vec &nstar, gra::MDecayBranch &forward, double Q2_scale, int B, int Q,
-                               const std::string& pt_distribution) {
-
+bool MProcess::ExciteContinuum(const M4Vec &nstar, gra::MDecayBranch &forward, double Q2_scale,
+                               int B, int Q, const std::string &pt_distribution) {
   // Sanity check (2 x pion mass)
   if (msqrt(Q2_scale) < 0.3) {
     // return false; // not valid
   }
   const double QProb      = 2.0 / 3.0;  // Probability for a charged particle (isospin)
   const int    OUTERTRIAL = 100;
-  
+
   // Average multiplicity
   const double a0          = 0.0;
   double       b0          = 2.0;
@@ -917,13 +902,14 @@ bool MProcess::ExciteContinuum(const M4Vec &nstar, gra::MDecayBranch &forward, d
 
     double q = std::pow(N, 0.11 / 3);  // Powerlaw high-pt slope
     double T = 0.065;                  // Temperature
-    if (etree.size() > 0) {            // For ND soft-cuts, "Temperature" rises ~ 1/impact parameter squared
+    if (etree.size() > 0) {  // For ND soft-cuts, "Temperature" rises ~ 1/impact parameter squared
       T *= std::pow(1 / (bt * bt), 0.10);
     }
     const double maxpt  = 15.0;  // Maximum Pt per particle
     const double lambda = 2.0;   // GeV^{-2}, for exponential pt^2
-    const double W     = MFragment::TubeFragment(nstar, M, mass, p4, q, T, lambda, maxpt, random, pt_distribution);
-    
+    const double W =
+        MFragment::TubeFragment(nstar, M, mass, p4, q, T, lambda, maxpt, random, pt_distribution);
+
     if (W <= 0) {
       ++outertrials;
       if (outertrials > OUTERTRIAL) {
@@ -955,9 +941,7 @@ bool MProcess::ExciteContinuum(const M4Vec &nstar, gra::MDecayBranch &forward, d
 
       // Get corresponding PDG particles
       std::vector<gra::MParticle> p(p4.size());
-      for (const auto &i : indices(p)) {
-        p[i]    = PDG.FindByPDG(pdgcode[i]);
-      }
+      for (const auto &i : indices(p)) { p[i] = PDG.FindByPDG(pdgcode[i]); }
 
       // Create decaytree
       BranchForwardSystem(p4, p, nstar, forward);
@@ -971,10 +955,10 @@ bool MProcess::ExciteContinuum(const M4Vec &nstar, gra::MDecayBranch &forward, d
 //
 void MProcess::BranchForwardSystem(const std::vector<M4Vec> &p4, const std::vector<MParticle> &p,
                                    const M4Vec &nstar, gra::MDecayBranch &forward) {
-/*
-  std::vector<bool> isstable(N, false);
-  MFragment::GetDecayStatus(pdgcode, isstable);
-*/
+  /*
+    std::vector<bool> isstable(N, false);
+    MFragment::GetDecayStatus(pdgcode, isstable);
+  */
 
   // Construct decaytree
   forward       = gra::MDecayBranch();  // Initialize!!
@@ -995,7 +979,7 @@ void MProcess::BranchForwardSystem(const std::vector<M4Vec> &p4, const std::vect
     if (branch.p.pdg == PDG::PDG_pi0) {
       // Decay
       const std::vector<double> md = {0.0, 0.0};
-      std::vector<M4Vec>  pd;
+      std::vector<M4Vec>        pd;
       gra::kinematics::TwoBodyPhaseSpace(branch.p4, branch.p4.M(), md, pd, random);
 
       // Add gamma legs
@@ -1012,11 +996,10 @@ void MProcess::BranchForwardSystem(const std::vector<M4Vec> &p4, const std::vect
 
     // Treat rho0 -> pi+ pi- (BR ~ 100%)
     else if (branch.p.pdg == PDG::PDG_rho0) {
-
       // Decay
-      const std::vector<double> md = {PDG::mpi, PDG::mpi};
-      const std::vector<int> pdg   = {PDG::PDG_pip, PDG::PDG_pim};
-      std::vector<M4Vec>  pd;
+      const std::vector<double> md  = {PDG::mpi, PDG::mpi};
+      const std::vector<int>    pdg = {PDG::PDG_pip, PDG::PDG_pim};
+      std::vector<M4Vec>        pd;
       gra::kinematics::TwoBodyPhaseSpace(branch.p4, branch.p4.M(), md, pd, random);
 
       // Add pion legs
@@ -1032,7 +1015,7 @@ void MProcess::BranchForwardSystem(const std::vector<M4Vec> &p4, const std::vect
     }
 
     // Here, we could add other MAJOR resonant decays
-    // ...    
+    // ...
 
     // Add leg
     forward.legs[i]       = branch;
@@ -1042,12 +1025,11 @@ void MProcess::BranchForwardSystem(const std::vector<M4Vec> &p4, const std::vect
 
 
 // Proton low mass N* 2-body and 3-body excitation
-// 
+//
 // Return true  if OK
 // Return false if FAILS
-// 
+//
 bool MProcess::ExciteNstar(const M4Vec &nstar, gra::MDecayBranch &forward) {
-
   // Find random decaymode
   std::vector<int> pdgcode;
   MFragment::NstarDecayTable(nstar.M(), pdgcode, random);
@@ -1210,7 +1192,8 @@ void MProcess::PrintDecayTree(const gra::MDecayBranch &branch) const {
 }
 
 // Recursive function to plot out the decay tree
-void MProcess::PrintPhaseSpace(const gra::MDecayBranch &branch, double& product, double& product2pi, int& N_final) const {
+void MProcess::PrintPhaseSpace(const gra::MDecayBranch &branch, double &product, double &product2pi,
+                               int &N_final) const {
   std::string spaces(branch.depth * 2, ' ');  // Give empty space
   std::string lines = spaces + "|──";
 
@@ -1219,28 +1202,28 @@ void MProcess::PrintPhaseSpace(const gra::MDecayBranch &branch, double& product,
            branch.W.Integral(), branch.W.IntegralError());
 
     if (branch.PS_active) {
-      std::cout << "[" << rang::fg::green << "ACTIVE   " << rang::fg::reset << "part of integral / (2PI)]" << std::endl;
+      std::cout << "[" << rang::fg::green << "ACTIVE   " << rang::fg::reset
+                << "part of integral / (2PI)]" << std::endl;
     } else {
-      std::cout << "[" << rang::fg::red   << "INACTIVE " << rang::fg::reset << "part of integral <=> apply manual BR]" << std::endl;
+      std::cout << "[" << rang::fg::red << "INACTIVE " << rang::fg::reset
+                << "part of integral <=> apply manual BR]" << std::endl;
     }
 
-    product    *= branch.W.Integral();
-    product2pi *= (2*math::PI);
+    product *= branch.W.Integral();
+    product2pi *= (2 * math::PI);
 
     for (const auto &i : indices(branch.legs)) {
       PrintPhaseSpace(branch.legs[i], product, product2pi, N_final);
     }
   }
-  if (branch.legs.size() == 0) { ++N_final; } // Final state particle
+  if (branch.legs.size() == 0) { ++N_final; }  // Final state particle
 }
 
 // Recursive decay tree kinematics (called event by event from inhereting
 // classes)
 bool MProcess::ConstructDecayKinematics(gra::MDecayBranch &branch) {
-
   // This leg has any daughters
   if (branch.legs.size() != 0) {
-
     // Generate decay product masses
     std::vector<double> m(branch.legs.size(), 0.0);
     while (true) {
@@ -1249,11 +1232,15 @@ bool MProcess::ConstructDecayKinematics(gra::MDecayBranch &branch) {
         m[i] = branch.legs[i].m_offshell;
       }
       // Check decay products masses are not over mother mass
-      if (branch.p4.M() < std::accumulate(m.rbegin(), m.rend(), 0.0)) { continue; } else { break; }
+      if (branch.p4.M() < std::accumulate(m.rbegin(), m.rend(), 0.0)) {
+        continue;
+      } else {
+        break;
+      }
     }
 
     // For now, keep always unweighted
-    const bool UNWEIGHT = true;
+    const bool         UNWEIGHT = true;
     std::vector<M4Vec> p;
 
     // 2-body
@@ -1268,7 +1255,8 @@ bool MProcess::ConstructDecayKinematics(gra::MDecayBranch &branch) {
       w = gra::kinematics::NBodyPhaseSpace(branch.p4, branch.p4.M(), m, p, UNWEIGHT, random);
     }
     if (w.GetW() < 0) {
-      std::string str = "MProcess::ConstructDecayKinematics: Fatal error: Weight < 0 (Check your decay tree)";
+      std::string str =
+          "MProcess::ConstructDecayKinematics: Fatal error: Weight < 0 (Check your decay tree)";
       std::cout << str << std::endl;
       return false;
     }
@@ -1289,8 +1277,8 @@ bool MProcess::ConstructDecayKinematics(gra::MDecayBranch &branch) {
 
 
 // Recursively add final states to the event structure
-void MProcess::WriteDecayKinematics(const gra::MDecayBranch &branch, const HepMC3::GenParticlePtr &mother,
-                                    HepMC3::GenEvent &evt) {
+void MProcess::WriteDecayKinematics(const gra::MDecayBranch &     branch,
+                                    const HepMC3::GenParticlePtr &mother, HepMC3::GenEvent &evt) {
   // This particle has daughters
   if (branch.legs.size() > 0) {
     // Create new vertex with decay 4-position
@@ -1330,7 +1318,7 @@ void MProcess::SampleForwardMasses(std::vector<double> &mvec, const std::vector<
     M2_f_max = gcuts.XI_max * lts.s;
 
     log_M2_f_min = std::log(M2_f_min);
-    log_M2_f_max = std::log(M2_f_max);    
+    log_M2_f_max = std::log(M2_f_max);
 
     if (M2_f_max <= M2_f_min) {
       throw std::invalid_argument(
@@ -1339,13 +1327,13 @@ void MProcess::SampleForwardMasses(std::vector<double> &mvec, const std::vector<
           " GeV, below the inelastic threshold. Increase the upper (max) bound.");
     }
 
-    if        (EXCITATION == 1) {  // Single
+    if (EXCITATION == 1) {  // Single
 
       // log-change of variable
       const double u = log_M2_f_min + (log_M2_f_max - log_M2_f_min) * randvec[0];
       const double r = std::exp(u);
 
-      if (random.U(0,1) < 0.5) {  // 50-50
+      if (random.U(0, 1) < 0.5) {  // 50-50
         mvec[0]     = msqrt(r);
         lts.excite1 = true;
       } else {
@@ -1371,21 +1359,20 @@ void MProcess::SampleForwardMasses(std::vector<double> &mvec, const std::vector<
 
 // Forward leg integration volume
 double MProcess::ForwardVolume() const {
-
   // Forward leg phi1,phi2 volumes gives (2pi)^2
   const double PHI_vol = pow2(2.0 * math::PI);
 
   // Forward leg pt volume with log-change of variables
-  const double J_pt = lts.pfinal[1].Pt() * lts.pfinal[2].Pt(); 
-  const double PT_vol = J_pt * pow2(std::log(gcuts.forward_pt_max) - std::log(gcuts.forward_pt_min+ZERO_EPS));
-  
-  if         (EXCITATION == 0) {
-    
+  const double J_pt = lts.pfinal[1].Pt() * lts.pfinal[2].Pt();
+  const double PT_vol =
+      J_pt * pow2(std::log(gcuts.forward_pt_max) - std::log(gcuts.forward_pt_min + ZERO_EPS));
+
+  if (EXCITATION == 0) {
     return PHI_vol * PT_vol;
 
-  } else if  (EXCITATION == 1) {
+  } else if (EXCITATION == 1) {
     // log-change of variable jacobian
-    // \int_a^b f(M2) dM2 = \int_{ln(a)}^{ln(b)} f(exp(u)) * exp(u) du, where u = ln(M2)    
+    // \int_a^b f(M2) dM2 = \int_{ln(a)}^{ln(b)} f(exp(u)) * exp(u) du, where u = ln(M2)
     const double J_M2 = (lts.excite1) ? lts.pfinal[1].M2() : lts.pfinal[2].M2();
     return PHI_vol * PT_vol * J_M2 * (log_M2_f_max - log_M2_f_min);
 
@@ -1517,7 +1504,7 @@ bool MProcess::GetLorentzScalars(unsigned int Nf) {
   lts.s1 = lts.ss[1][0];
   lts.s2 = lts.ss[2][0];
   if (lts.s1 < 0 || lts.s2 < 0) { return false; }
-  
+
   // ------------------------------------------------------------------
 
   // t-type Lorentz scalars -->
@@ -1548,7 +1535,7 @@ bool MProcess::GetLorentzScalars(unsigned int Nf) {
   // Fractional longitudinal momentum loss [0,1]
   lts.x1 = (1 - lts.pfinal[1].Pz() / lts.pbeam1.Pz());
   lts.x2 = (1 - lts.pfinal[2].Pz() / lts.pbeam2.Pz());
-  
+
   // Bjorken-x [0,1] (this Lorentz invariant expression
   // gives 1 always for elastic central production forward leg)
   lts.xbj1 = lts.t1 / (2 * (lts.pbeam1 * lts.q1));
@@ -1563,7 +1550,7 @@ bool MProcess::GetLorentzScalars(unsigned int Nf) {
   lts.s_hat = lts.m2;
   lts.Y     = lts.pfinal[0].Rap();
   lts.Pt    = lts.pfinal[0].Pt();
-  
+
   return true;
 }
 
@@ -1669,21 +1656,17 @@ bool MProcess::CommonRecord(HepMC3::GenEvent &evt) {
 
   // ----------------------------------------------------------------
   // Upper proton excitation
-  if (lts.excite1) {
-    SaveBranch(evt, lts.decayforward1, gen_p1f);
-  }
+  if (lts.excite1) { SaveBranch(evt, lts.decayforward1, gen_p1f); }
 
   // Lower proton excitation
-  if (lts.excite2) {
-    SaveBranch(evt, lts.decayforward2, gen_p2f);
-  }
+  if (lts.excite2) { SaveBranch(evt, lts.decayforward2, gen_p2f); }
 
   return true;
 }
 
 // Save branch to event with mother pX
-void MProcess::SaveBranch(HepMC3::GenEvent &evt, const gra::MDecayBranch& branch, const HepMC3::GenParticlePtr& pX) {
-
+void MProcess::SaveBranch(HepMC3::GenEvent &evt, const gra::MDecayBranch &branch,
+                          const HepMC3::GenParticlePtr &pX) {
   // Create vertex
   HepMC3::GenVertexPtr vX = std::make_shared<HepMC3::GenVertex>();
   evt.add_vertex(vX);
@@ -1714,16 +1697,14 @@ void MProcess::SetProcess(std::string &str, const std::vector<aux::OneCMD> &synt
 
   // @SYNTAX Read and set new PDG input
   for (const auto &i : indices(syntax)) {
-
     if (syntax[i].id == "PDG") {
-
       // Take target string
       std::string pdg_;
-      if        (syntax[i].target.size() == 1) {
+      if (syntax[i].target.size() == 1) {
         pdg_ = syntax[i].target[0];
       } else if (syntax[i].target.size() == 0) {
         throw std::invalid_argument("@Syntax error: invalid PDG[] without any target []");
-      } else if (syntax[i].target.size()  > 1) {
+      } else if (syntax[i].target.size() > 1) {
         throw std::invalid_argument("@Syntax error: invalid PDG[] with multiple targets inside []");
       }
       // Conversion to integer
@@ -1732,7 +1713,8 @@ void MProcess::SetProcess(std::string &str, const std::vector<aux::OneCMD> &synt
       try {
         pdg = std::stoi(pdg_);
       } catch (...) {
-        throw std::invalid_argument("@Syntax error: invalid PDG[] target number, string to int conversion fails");
+        throw std::invalid_argument(
+            "@Syntax error: invalid PDG[] target number, string to int conversion fails");
       }
 
       // Try to find the particle from PDG table, will throw exception if fails
@@ -1765,8 +1747,9 @@ void MProcess::SetProcess(std::string &str, const std::vector<aux::OneCMD> &synt
       PDG.PDG_table[pdg] = p;
       if (found_anti) { PDG.PDG_table[-pdg] = p_anti; }
 
-      std::cout << rang::fg::red << "MProcess::SetProcess: New particle properties set "
-                                    "with @PDG[number]{key:val} syntax:"
+      std::cout << rang::fg::red
+                << "MProcess::SetProcess: New particle properties set "
+                   "with @PDG[number]{key:val} syntax:"
                 << rang::fg::reset << std::endl;
       p.print();
     }
@@ -1804,4 +1787,4 @@ void MProcess::SetProcess(std::string &str, const std::vector<aux::OneCMD> &synt
   }
 }
 
-}  // gra namespace
+}  // namespace gra

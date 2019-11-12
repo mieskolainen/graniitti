@@ -26,7 +26,7 @@ class MGamma {
  public:
   MGamma() {}
   ~MGamma() {}
-  
+
   // yy->resonance X
   double yyX(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const;
 
@@ -41,10 +41,10 @@ class MGamma {
 
  protected:
   // MADGRAPH amplitudes added here
-  MAmpMG5_yy_ll      AmpMG5_yy_ll;
-  MAmpMG5_yy_ww      AmpMG5_yy_ww;
+  MAmpMG5_yy_ll AmpMG5_yy_ll;
+  MAmpMG5_yy_ww AmpMG5_yy_ww;
 };
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

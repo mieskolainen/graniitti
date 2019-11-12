@@ -28,7 +28,7 @@ class MAmpMG5_gg_qqbar {
 
   // Private functions to calculate the matrix element for all subprocesses
   // Calculate wavefunctions
-  void calculate_wavefunctions(const int perm[], const int hel[]);
+  void                 calculate_wavefunctions(const int perm[], const int hel[]);
   static const int     nwavefuncs = 7;
   std::complex<double> w[nwavefuncs][18];
   static const int     namplitudes = 3;

@@ -31,7 +31,7 @@ using gra::math::zi;
 
 namespace gra {
 
-MEikonal::MEikonal()  {}
+MEikonal::MEikonal() {}
 MEikonal::~MEikonal() {}
 
 // Return total, elastic, inelastic cross sections
@@ -43,15 +43,14 @@ void MEikonal::GetTotXS(double &tot, double &el, double &in) const {
 
 // Construct density and amplitude
 void MEikonal::S3Constructor(double s_in, const std::vector<gra::MParticle> &initialstate_in,
-    bool onlydensity, int NumberBT, int NumberKT2) {
-
+                             bool onlydensity, int NumberBT, int NumberKT2) {
   std::cout << "MEikonal::S3Constructor:" << std::endl;
 
   // This first
   Numerics.ReadParameters();
 
   // Override
-  if (NumberBT  > 0) { Numerics.NumberBT  = NumberBT;  }
+  if (NumberBT > 0) { Numerics.NumberBT = NumberBT; }
   if (NumberKT2 > 0) { Numerics.NumberKT2 = NumberKT2; }
 
   // Mandelstam s and initial state
@@ -102,8 +101,7 @@ void MEikonal::S3Constructor(double s_in, const std::vector<gra::MParticle> &ini
     std::cout << "Initializing <eikonal amplitude> array:" << std::endl;
 
     MSA.sqrts = msqrt(s);  // FIRST THIS
-    MSA.Set("kt2", Numerics.MinKT2, Numerics.MaxKT2, Numerics.NumberKT2,
-            Numerics.logKT2);
+    MSA.Set("kt2", Numerics.MinKT2, Numerics.MaxKT2, Numerics.NumberKT2, Numerics.logKT2);
     MSA.InitArray();  // Initialize (call last!)
 
     const std::string hstr = std::to_string(s) + std::to_string(INITIALSTATE[0].pdg) +
@@ -138,7 +136,6 @@ void MEikonal::S3Constructor(double s_in, const std::vector<gra::MParticle> &ini
 //
 //
 std::complex<double> MEikonal::SingleAmpElastic(double s, double t, int type) {
-
   // Proton form factors (could be here extended to multichannel)
   const double F_i = gra::form::S3F(t);
   const double F_k = gra::form::S3F(t);
@@ -151,18 +148,15 @@ std::complex<double> MEikonal::SingleAmpElastic(double s, double t, int type) {
   //  Form Factor x coupling x Propagator ]
   const double s0 = 1.0;  // Typical (normalization) scale GeV^{-2}
 
-  if      (type ==  1) { // Pomeron (C-even)
-    return gra::math::pow2(PARAM_SOFT::gN_P) * F_i * F_k *
-           gra::form::ReggeEta(alpha_P,  1) *
+  if (type == 1) {  // Pomeron (C-even)
+    return gra::math::pow2(PARAM_SOFT::gN_P) * F_i * F_k * gra::form::ReggeEta(alpha_P, 1) *
            std::pow(s / s0, alpha_P);
-  }
-  else if (type == -1) { // Odderon (C-even)
-    return gra::math::pow2(PARAM_SOFT::gN_O) * F_i * F_k *
-           gra::form::ReggeEta(alpha_P, -1) *
+  } else if (type == -1) {  // Odderon (C-even)
+    return gra::math::pow2(PARAM_SOFT::gN_O) * F_i * F_k * gra::form::ReggeEta(alpha_P, -1) *
            std::pow(s / s0, alpha_P);
-  }
-  else {
-    throw std::invalid_argument("MEikonal::SingleAmpElastic: Unknown input type " + std::to_string(type));
+  } else {
+    throw std::invalid_argument("MEikonal::SingleAmpElastic: Unknown input type " +
+                                std::to_string(type));
   }
 }
 
@@ -182,12 +176,12 @@ std::complex<double> MEikonal::SingleAmpElastic(double s, double t, int type) {
 // [REFERENCE: Ewerz, Maniatis, Nachtmann, https://arxiv.org/abs/1309.3478]
 std::complex<double> MEikonal::S3Density(double bt) const {
   // Discretization of kt
-  const double kt_STEP = (Numerics.FBIntegralMaxKT - Numerics.FBIntegralMinKT) /
-                         Numerics.FBIntegralN;
+  const double kt_STEP =
+      (Numerics.FBIntegralMaxKT - Numerics.FBIntegralMinKT) / Numerics.FBIntegralN;
 
   // N + 1!
   std::vector<std::complex<double>> f(Numerics.FBIntegralN + 1, 0.0);
-  
+
   // Initial state configuration [NOT IMPLEMENTED = SAME FOR pp and ppbar]
   // pp
   if (INITIALSTATE[0].pdg == PDG::PDG_p && INITIALSTATE[1].pdg == PDG::PDG_p) {
@@ -206,16 +200,14 @@ std::complex<double> MEikonal::S3Density(double bt) const {
     const double t = -gra::math::pow2(kt);
 
     // Pomeron exchange (positive signature)
-    std::complex<double> A = SingleAmpElastic(s,t,1);
+    std::complex<double> A = SingleAmpElastic(s, t, 1);
 
     // Odderon exchange (negative signature)
-    if (PARAM_SOFT::ODDERON_ON == true) {
-      A += SingleAmpElastic(s,t,-1);
-    }
+    if (PARAM_SOFT::ODDERON_ON == true) { A += SingleAmpElastic(s, t, -1); }
 
     // Value
     f[i] = A * gra::math::BESSJ0(bt * kt) * kt;
-    //f[i] = A * std::cyl_bessel_j(0, bt * kt) * kt; // c++17, slow
+    // f[i] = A * std::cyl_bessel_j(0, bt * kt) * kt; // c++17, slow
   }
   // [2pi from Bessel phi-integral] / [ (2pi)^2] (2D-Fourier factor) * s ]
   const double FACTOR = 1 / (2.0 * gra::math::PI * s);
@@ -229,15 +221,14 @@ std::complex<double> MEikonal::S3Density(double bt) const {
 //
 std::complex<double> MEikonal::S3Screening(double kt2) const {
   // Local discretization
-  const double STEP =
-      (Numerics.MaxBT - Numerics.MinBT) / Numerics.FBIntegralN;
+  const double STEP = (Numerics.MaxBT - Numerics.MinBT) / Numerics.FBIntegralN;
 
   const double                      kt = gra::math::msqrt(kt2);
   std::vector<std::complex<double>> f(Numerics.FBIntegralN + 1, 0.0);
 
   // Numerical integral loop over impact parameter (b_t) space
   for (const auto &i : indices(f)) {
-    const double               bt = Numerics.MinBT + i * STEP;
+    const double               bt    = Numerics.MinBT + i * STEP;
     const std::complex<double> Omega = MBT.Interpolate1D(bt);
 
     // I. STANDARD EIKONAL APPROXIMATION
@@ -426,19 +417,19 @@ bool IArray1D::WriteArray(const std::string &filename, bool overwrite) const {
   MTimer timer(true);
   std::cout << "IArray1D::WriteArray: ";
   unsigned int line_number = 0;
-  
+
   try {
-  for (std::size_t i = 0; i < F.size_row(); ++i) {
-    // Write to file
-    file << std::setprecision(15) << std::real(F[i][X]) << "," << std::real(F[i][Y]) << ","
-         << std::imag(F[i][Y]) << std::endl;
-    ++line_number;
-  }
+    for (std::size_t i = 0; i < F.size_row(); ++i) {
+      // Write to file
+      file << std::setprecision(15) << std::real(F[i][X]) << "," << std::real(F[i][Y]) << ","
+           << std::imag(F[i][Y]) << std::endl;
+      ++line_number;
+    }
   } catch (...) {
-    throw std::invalid_argument("IArray1D:WriteArray: Error in file " +
-      filename + " at line " + std::to_string(line_number));
+    throw std::invalid_argument("IArray1D:WriteArray: Error in file " + filename + " at line " +
+                                std::to_string(line_number));
   }
-  
+
   printf("Time elapsed %0.1f sec \n", timer.ElapsedSec());
   file.close();
   return true;
@@ -458,32 +449,32 @@ bool IArray1D::ReadArray(const std::string &filename) {
   unsigned line_number = 0;
 
   try {
-  for (std::size_t i = 0; i < F.size_row(); ++i) {
-    // Read every line from the stream
-    getline(file, line);
+    for (std::size_t i = 0; i < F.size_row(); ++i) {
+      // Read every line from the stream
+      getline(file, line);
 
-    std::istringstream  stream(line);
-    std::vector<double> columns(3, 0.0);
-    std::string         element;
+      std::istringstream  stream(line);
+      std::vector<double> columns(3, 0.0);
+      std::string         element;
 
-    // Get every line element (3 of them) separated by separator
-    int k = 0;
-    while (getline(stream, element, ',')) {
-      columns[k] = std::stod(element);  // string to double
-      ++k;
-      ++fills;
+      // Get every line element (3 of them) separated by separator
+      int k = 0;
+      while (getline(stream, element, ',')) {
+        columns[k] = std::stod(element);  // string to double
+        ++k;
+        ++fills;
+      }
+      F[i][X] = columns[0];
+      F[i][Y] = std::complex<double>(columns[1], columns[2]);
+
+      ++line_number;
     }
-    F[i][X] = columns[0];
-    F[i][Y] = std::complex<double>(columns[1], columns[2]);
-
-    ++line_number;
-  }
   } catch (...) {
-    throw std::invalid_argument("IArray1D:ReadArray: Error in file " +
-      filename + " at line " + std::to_string(line_number));
+    throw std::invalid_argument("IArray1D:ReadArray: Error in file " + filename + " at line " +
+                                std::to_string(line_number));
   }
   file.close();
-  
+
   if (fills != 3 * (N + 1)) {
     std::string str = "Corrupted file: " + filename;
     std::cout << str << std::endl;
@@ -526,10 +517,8 @@ void MEikonal::S3InitCutPomerons() {
   std::cout << "MEikonal::S3InitCutPomerons: [PROTOTEST]" << std::endl;
 
   // Numerical integral loop over impact parameter (b_t) space
-  const double STEP =
-      (Numerics.MaxBT - Numerics.MinBT) / Numerics.NumberBT;
-  P_array = std::vector<std::vector<double>>(
-      MCUT, std::vector<double>(Numerics.NumberBT + 1, 0.0));
+  const double STEP = (Numerics.MaxBT - Numerics.MinBT) / Numerics.NumberBT;
+  P_array = std::vector<std::vector<double>>(MCUT, std::vector<double>(Numerics.NumberBT + 1, 0.0));
 
   for (std::size_t j = 0; j < Numerics.NumberBT + 1; ++j) {
     const double bt = Numerics.MinBT + j * STEP;
@@ -546,8 +535,7 @@ void MEikonal::S3InitCutPomerons() {
   // Impact parameter <bt> average probabilities
   P_cut.resize(MCUT, 0.0);
   for (std::size_t m = 0; m < MCUT; ++m) {
-    P_cut[m] = gra::math::CSIntegral(P_array[m], STEP) /
-               (Numerics.MaxBT - Numerics.MinBT);
+    P_cut[m] = gra::math::CSIntegral(P_array[m], STEP) / (Numerics.MaxBT - Numerics.MinBT);
     printf("P_cut[m=%2lu] = %0.5f \n", m, P_cut[m]);
   }
   std::cout << "--------------------------" << std::endl;
@@ -559,4 +547,4 @@ void MEikonal::S3InitCutPomerons() {
   printf("<P_cut[m>0]> = %0.2f \n\n", avg);
 }
 
-}  // gra namespace ends
+}  // namespace gra

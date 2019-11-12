@@ -18,7 +18,6 @@ namespace gra {
 
 // Decay helicity amplitude information
 struct HELMatrix {
-
   void InitAlphaToZero() {
     const unsigned int N = 20;
     alpha                = MMatrix<std::complex<double>>(N, N, 0.0);
@@ -43,9 +42,8 @@ struct HELMatrix {
   // Branching Ratio to a particular decay
   double BR      = 1.0;
   double g_decay = 1.0;  // Equivalent decay coupling
-
 };
 
-}  // gra namespace
+}  // namespace gra
 
 #endif

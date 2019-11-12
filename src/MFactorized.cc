@@ -27,15 +27,15 @@
 
 using gra::aux::indices;
 
+using gra::math::CheckEMC;
+using gra::math::PI;
+using gra::math::abs2;
 using gra::math::msqrt;
 using gra::math::pow2;
 using gra::math::pow3;
 using gra::math::pow4;
 using gra::math::pow5;
-using gra::math::CheckEMC;
 using gra::math::zi;
-using gra::math::PI;
-using gra::math::abs2;
 
 using gra::PDG::GeV2barn;
 
@@ -75,7 +75,6 @@ void MFactorized::ConstructProcesses() {
 
 // Initialize cut and process spesific postsetup
 void MFactorized::post_Constructor() {
-  
   // Set sampling boundaries
   ProcPtr.SetTechnicalBoundaries(gcuts, EXCITATION);
 
@@ -157,10 +156,9 @@ double MFactorized::EventWeight(const std::vector<double> &randvec, AuxIntData &
   aux.vetocuts_ok   = VetoCuts();
 
   if (aux.Valid()) {
-
     // Matrix element squared
     const double MatESQ = GetAmp2();
-    
+
     // Calculate central system Phase Space volume
     double exact = 0.0;
     DecayWidthPS(exact);
@@ -172,13 +170,13 @@ double MFactorized::EventWeight(const std::vector<double> &randvec, AuxIntData &
     double C_space = 1.0;
     if (lts.decaytree.size() != 0 && lts.PS_active) {  // We have some legs in the central system
       C_space = (lts.DW.Integral() / (2 * PI));        // /(2*PI) from phase space factorization
-      
+
       // --------------------------------------------------------------------
       // Cascade resonances phase-space
       C_space *= CascadePS();
       // --------------------------------------------------------------------
     }
-    
+
     // ** EVENT WEIGHT **
     W = C_space * (1.0 / S_factor) * B51PhaseSpaceWeight() * B51IntegralVolume() * MatESQ *
         GeV2barn / MollerFlux();
@@ -242,7 +240,7 @@ void MFactorized::PrintInit(bool silent) const {
 
     if (EXCITATION != 0) {
       printf(
-        "- Xi  : Forward leg (M^2/s) [min, max] = [%0.2E, %0.2E]     "
+          "- Xi  : Forward leg (M^2/s) [min, max] = [%0.2E, %0.2E]     "
           "\t(fixed/user) \n",
           gcuts.XI_min, gcuts.XI_max);
     }
@@ -253,11 +251,14 @@ void MFactorized::PrintInit(bool silent) const {
 
 // 5+1-dimensional phase space vector initialization
 bool MFactorized::B51RandomKin(const std::vector<double> &randvec) {
-  
   // log-change of variables for pt
-  const double u1 = std::log(gcuts.forward_pt_min+ZERO_EPS) + (std::log(gcuts.forward_pt_max) - std::log(gcuts.forward_pt_min+ZERO_EPS)) * randvec[0];
-  const double u2 = std::log(gcuts.forward_pt_min+ZERO_EPS) + (std::log(gcuts.forward_pt_max) - std::log(gcuts.forward_pt_min+ZERO_EPS)) * randvec[1];
-  
+  const double u1 =
+      std::log(gcuts.forward_pt_min + ZERO_EPS) +
+      (std::log(gcuts.forward_pt_max) - std::log(gcuts.forward_pt_min + ZERO_EPS)) * randvec[0];
+  const double u2 =
+      std::log(gcuts.forward_pt_min + ZERO_EPS) +
+      (std::log(gcuts.forward_pt_max) - std::log(gcuts.forward_pt_min + ZERO_EPS)) * randvec[1];
+
   const double pt1 = std::exp(u1);
   const double pt2 = std::exp(u2);
 
@@ -296,7 +297,7 @@ bool MFactorized::B51RandomKin(const std::vector<double> &randvec) {
           "decaymode and cuts!");
     }
   };
-  
+
   // Sample mass squared
   const double m2X = pow2(M_MIN) + (pow2(M_MAX) - pow2(M_MIN)) * randvec[5];
 
@@ -374,7 +375,7 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
   // false if amplitude has dependence on the final state legs (generic),
   // true if amplitude is a function of central system kinematics only (limited)
   const bool UNWEIGHT = !lts.PS_active;
-  
+
   gra::kinematics::MCW w;
   // 2-body
   if (lts.decaytree.size() == 2) {
@@ -393,7 +394,7 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
     return false;  // Kinematically impossible
   }
   lts.DW = w;
-  
+
   // Collect decay products
   const unsigned int offset = 3;
   for (const auto &i : indices(lts.decaytree)) {
@@ -405,21 +406,17 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
   for (const auto &i : indices(lts.decaytree)) {
     if (!ConstructDecayKinematics(lts.decaytree[i])) { return false; }
   }
-  
+
   // Forward excitation
   if (lts.excite1) {
-    //if (!ExciteContinuum(lts.pfinal[1], lts.decayforward1, lts.pfinal[1].M2(), 1, 1, "exp")) {
-    if (!ExciteNstar(lts.pfinal[1], lts.decayforward1)) {
-      return false;
-    }
+    // if (!ExciteContinuum(lts.pfinal[1], lts.decayforward1, lts.pfinal[1].M2(), 1, 1, "exp")) {
+    if (!ExciteNstar(lts.pfinal[1], lts.decayforward1)) { return false; }
   }
   if (lts.excite2) {
-//    if (!ExciteContinuum(lts.pfinal[2], lts.decayforward2, lts.pfinal[2].M2(), 1, 1, "exp")) {
-    if (!ExciteNstar(lts.pfinal[2], lts.decayforward2)) {
-      return false;
-    }
+    //    if (!ExciteContinuum(lts.pfinal[2], lts.decayforward2, lts.pfinal[2].M2(), 1, 1, "exp")) {
+    if (!ExciteNstar(lts.pfinal[2], lts.decayforward2)) { return false; }
   }
-  
+
   // ==============================================================================
   // Check that we are above mass threshold -> not necessary, this is
   // done in mass sampling function
@@ -446,7 +443,6 @@ void MFactorized::DecayWidthPS(double &exact) const {
 // Integral over central mass^2 is separate [phase-space factorization], but
 // encapsulated here (+1 dimension)
 double MFactorized::B51IntegralVolume() const {
-
   // Forward leg integration
   const double forward_volume = ForwardVolume();
 
@@ -459,15 +455,13 @@ double MFactorized::B51PhaseSpaceWeight() const {
       1.0 / std::abs(lts.pfinal[1].Pz() / lts.pfinal[1].E() -
                      lts.pfinal[2].Pz() / lts.pfinal[2].E());  // Jacobian, close to 0.5
 
-  const double factor = (1.0 / 2.0) *
-                        (1.0 / pow5(2.0 * gra::math::PI)) *
+  const double factor = (1.0 / 2.0) * (1.0 / pow5(2.0 * gra::math::PI)) *
                         (lts.pfinal[1].Pt() / (2.0 * lts.pfinal[1].E())) *
-                        (lts.pfinal[2].Pt() / (2.0 * lts.pfinal[2].E())) *
-                        J;
-  
+                        (lts.pfinal[2].Pt() / (2.0 * lts.pfinal[2].E())) * J;
+
   return factor;
 }
 
 // For high mass limit kinematics, see e.g. [arxiv.org/pdf/hep-ph/9903279.pdf]
 
-}  // gra namespace ends
+}  // namespace gra

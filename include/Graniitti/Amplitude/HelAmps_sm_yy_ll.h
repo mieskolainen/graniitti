@@ -36,6 +36,6 @@ void FFV1_2(std::complex<double> F1[], std::complex<double> V3[], std::complex<d
 
 void FFV1_1(std::complex<double> F2[], std::complex<double> V3[], std::complex<double> COUP,
             double M1, double W1, std::complex<double> F1[]);
-}
+}  // namespace MG5_sm_yy_ll
 
 #endif

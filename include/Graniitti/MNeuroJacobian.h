@@ -20,7 +20,6 @@
 #include <Graniitti/MMath.h>
 #include <Graniitti/MProcess.h>
 #include <Graniitti/MRandom.h>
-#include <Graniitti/MRandom.h>
 
 // Eigen includes
 #include <Eigen/Core>
@@ -35,9 +34,9 @@
 #include <autodiff/reverse/eigen.hpp>
 
 using namespace gra;
+using gra::aux::indices;
 using gra::math::PI;
 using gra::math::pow2;
-using gra::aux::indices;
 
 using Eigen::VectorXd;
 using namespace Eigen;
@@ -251,7 +250,7 @@ class MNeuroJacobian {
     // Evaluate integrand function
     std::vector<double> u_(u.size());
     for (std::size_t i = 0; i < (unsigned int)u.size(); ++i) { u_[i] = val(u[i]); }
-    double           fG = func(u_);
+    double fG = func(u_);
     // ==============================================================
 
     // Prior term
@@ -305,9 +304,9 @@ class MNeuroJacobian {
     for (std::size_t l = 0; l < par.L.size(); ++l) {
       for (std::size_t i = 0; i < (unsigned int)par.L[l].w.rows(); ++i) {
         for (std::size_t j = 0; j < (unsigned int)par.L[l].w.cols(); ++j) {
-          par.L[l].w(i, j) = w[k] + h;
+          par.L[l].w(i, j)   = w[k] + h;
           const double f_pos = val(loss(Z, par));
-          par.L[l].w(i, j) = w[k] - h;
+          par.L[l].w(i, j)   = w[k] - h;
           const double f_neg = val(loss(Z, par));
 
           gradv[k] = (f_pos - f_neg) / (2 * h);

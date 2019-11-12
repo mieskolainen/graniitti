@@ -22,34 +22,34 @@ class MH2 {
   MH2(int xbins, int ybins, std::string namestr = "noname");
   MH2();
   ~MH2();
-  
+
   void ResetBounds(int xbins, double xmin, double xmax, int ybins, double ymin, double ymax);
 
   // Get full histogram data
-  MMatrix<double> GetWeights() const       { return weights;  }
-  MMatrix<double> GetWeights2() const      { return weights2; }
-  MMatrix<long long int> GetCounts() const { return counts;   }
+  MMatrix<double>        GetWeights() const { return weights; }
+  MMatrix<double>        GetWeights2() const { return weights2; }
+  MMatrix<long long int> GetCounts() const { return counts; }
 
-  void Fill(double xvalue, double yvalue);
-  void Fill(double xvalue, double yvalue, double weight);
-  void Clear();
+  void                      Fill(double xvalue, double yvalue);
+  void                      Fill(double xvalue, double yvalue, double weight);
+  void                      Clear();
   std::pair<double, double> WeightMeanAndError() const;
 
-  double        GetMeanX(int power) const;
-  double        GetMeanY(int power) const;
+  double GetMeanX(int power) const;
+  double GetMeanY(int power) const;
 
   double        SumWeights() const;
   double        SumWeights2() const;
   long long int SumBinCounts() const;
   long long int FillCount() const { return fills; }
 
-  double GetBinWeight(int xbin, int ybin) const;
+  double        GetBinWeight(int xbin, int ybin) const;
   long long int GetBinCount(int xbin, int ybin) const;
-  void GetBinIdx(double xvalue, double yvalue, int &xbin, int &ybin) const;
-  double GetMaxWeight() const;
-  double GetMinWeight() const;
-  void   Print() const;
-  double ShannonEntropy() const;
+  void          GetBinIdx(double xvalue, double yvalue, int &xbin, int &ybin) const;
+  double        GetMaxWeight() const;
+  double        GetMinWeight() const;
+  void          Print() const;
+  double        ShannonEntropy() const;
 
   // Set logarithmic binning
   // (user needs to take care that XMIN and XMAX > 0)
@@ -82,7 +82,7 @@ class MH2 {
 
   // AUTOBUFFSIZE for autorange buffer size
   void SetAutoBuffSize(int n) { AUTOBUFFSIZE = n; }
-  void                     FlushBuffer();
+  void FlushBuffer();
 
   // Symmetric bounds
   void SetAutoSymmetry(const std::vector<bool> &in) {
@@ -135,13 +135,13 @@ class MH2 {
   long long int              fills     = 0;
   std::vector<long long int> overflow  = {0, 0};
   std::vector<long long int> underflow = {0, 0};
-  long long int                nanflow = 0;
+  long long int              nanflow   = 0;
 
   // Logarithmic binning
   bool LOGX = false;
   bool LOGY = false;
   bool ValidBin(int xbin, int ybin) const;
-  int GetIdx(double value, double minval, double maxval, int nbins, bool logbins) const;
+  int  GetIdx(double value, double minval, double maxval, int nbins, bool logbins) const;
 
   // Weights (in unweighted case weights = counts)
   MMatrix<double> weights;
@@ -151,6 +151,6 @@ class MH2 {
   MMatrix<long long int> counts;
 };
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

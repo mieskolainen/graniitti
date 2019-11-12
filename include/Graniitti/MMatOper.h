@@ -24,48 +24,38 @@ namespace matoper {
 // X is a matrix with each row    == x
 // Y is a matrix with each column == y
 template <typename T>
-inline void MeshGrid(const std::vector<T>& x, const std::vector<T>& y, MMatrix<T>& X, MMatrix<T>& Y) {
-  
+inline void MeshGrid(const std::vector<T> &x, const std::vector<T> &y, MMatrix<T> &X,
+                     MMatrix<T> &Y) {
   X = MMatrix<T>(y.size(), x.size());
   Y = MMatrix<T>(y.size(), x.size());
 
   for (std::size_t i = 0; i < X.size_row(); ++i) {
-    for (std::size_t j = 0; j < X.size_col(); ++j) {
-      X[i][j] = x[j];
-    }
+    for (std::size_t j = 0; j < X.size_col(); ++j) { X[i][j] = x[j]; }
   }
   for (std::size_t i = 0; i < Y.size_row(); ++i) {
-    for (std::size_t j = 0; j < Y.size_col(); ++j) {
-      Y[i][j] = y[i];
-    }
+    for (std::size_t j = 0; j < Y.size_col(); ++j) { Y[i][j] = y[i]; }
   }
 }
 
 // diag(x) * A * diag(y) product
 template <typename T>
-inline MMatrix<T> diagAdiag(const std::vector<T>& x, const MMatrix<T>& A, const std::vector<T>& y) {
-
+inline MMatrix<T> diagAdiag(const std::vector<T> &x, const MMatrix<T> &A, const std::vector<T> &y) {
   // Over [i,j] of A
   const std::size_t n = A.size_row();
   const std::size_t m = A.size_col();
-  
+
   MMatrix<T> C(n, m);
   for (std::size_t i = 0; i < n; ++i) {
-    for (std::size_t j = 0; j < m; ++j) {
-        C[i][j] = x[i] * A[i][j] * y[j];
-    }
+    for (std::size_t j = 0; j < m; ++j) { C[i][j] = x[i] * A[i][j] * y[j]; }
   }
   return C;
 }
 
 // Return diagonal matrix constructed from a vector
 template <typename T>
-inline MMatrix<T> Diag(const std::vector<T>& x) {
-
+inline MMatrix<T> Diag(const std::vector<T> &x) {
   MMatrix<T> A(x.size(), x.size(), 0.0);
-  for (std::size_t i = 0; i < x.size(); ++i) {
-    A[i][i] = x[i];
-  }
+  for (std::size_t i = 0; i < x.size(); ++i) { A[i][i] = x[i]; }
   return A;
 }
 
@@ -74,7 +64,7 @@ template <typename T>
 inline std::vector<T> Unit(const std::vector<T> &x) {
   double norm = 0.0;
   for (std::size_t k = 0; k < x.size(); ++k) { norm += gra::math::abs2(x[k]); }
-  norm               = gra::math::msqrt(norm);  // l2-norm
+  norm = gra::math::msqrt(norm);  // l2-norm
 
   std::vector<T> y = x;
   for (std::size_t k = 0; k < y.size(); ++k) {
@@ -90,9 +80,9 @@ inline std::vector<T> Normalized(const std::vector<T> &x) {
   for (std::size_t k = 0; k < x.size(); ++k) { sum += x[k]; }
   std::vector<T> y = x;
   if (sum > 0) {
-  for (std::size_t k = 0; k < y.size(); ++k) {
-    y[k] /= sum;  // normalize
-  }
+    for (std::size_t k = 0; k < y.size(); ++k) {
+      y[k] /= sum;  // normalize
+    }
   }
   return y;
 }
@@ -111,14 +101,14 @@ inline void AddConstMat(MMatrix<T> &A, T2 c) {
   }
 }
 
-// Vector-Matrix-Vector Multiplication 
+// Vector-Matrix-Vector Multiplication
 // where a is (1 x m)
 //       B is (m x n)
 //       c is (n x 1)
 template <typename T>
 inline T VecMatVecMultiply(const std::vector<T> &A, const MMatrix<T> &B, const std::vector<T> &C) {
   const std::size_t m = A.size();
-  const std::size_t n = C.size(); 
+  const std::size_t n = C.size();
 
   T value = 0.0;
   for (std::size_t i = 0; i < m; ++i) {
@@ -297,7 +287,7 @@ inline void PrintMatrixSeparate(const MMatrix<T> &A) {
   std::cout << std::endl;
 }
 
-}  // matoper namespace ends
-}  // gra namespace ends
+}  // namespace matoper
+}  // namespace gra
 
 #endif

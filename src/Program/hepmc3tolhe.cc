@@ -98,13 +98,13 @@ int main(int argc, char *argv[]) {
       // Find mother (PARENTS) ids
       std::vector<int> mother_ids;
       for (HepMC3::ConstGenParticlePtr k : HepMC3::Relatives::PARENTS(p1)) {
-        //HepMC3::Print::line(k);
+        // HepMC3::Print::line(k);
         mother_ids.push_back(k->id());
       }
-      //std::cout << "mother_ids.size() = " << mother_ids.size() << std::endl;
+      // std::cout << "mother_ids.size() = " << mother_ids.size() << std::endl;
 
       std::pair<int, int> MOTHUP_this(0, 0);
-      const int offset = 0;  // convention
+      const int           offset = 0;  // convention
       if (mother_ids.size() == 1) { MOTHUP_this.first = mother_ids.at(0) + offset; }
       if (mother_ids.size() >= 2) {
         MOTHUP_this.first  = mother_ids.at(0) + offset;
@@ -195,7 +195,7 @@ int main(int argc, char *argv[]) {
            outputfile.c_str());
     printf("Total %d events converted from HepMC3 to LHE \n", events);
   }
-  
+
   std::cout << "[hepmc3tolhe: done]" << std::endl;
   gra::aux::CheckUpdate();
 

@@ -2,7 +2,7 @@
 //
 // Future step:
 // Factorize all VEGAS functions out from MGraniitti to here (use function pointers etc.)
-// 
+//
 // (c) 2017-2019 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
@@ -34,7 +34,6 @@ struct VEGASPARAM {
 
 // Vegas MC adaptation data
 struct VEGASData {
-
   // VEGAS initialization function
   void Init(unsigned int init, const VEGASPARAM &param) {
     // First initialization: Create the grid and initial data
@@ -58,9 +57,8 @@ struct VEGASData {
 
   // Create number of calls per thread, they need to sum to calls
   std::vector<unsigned int> GetLocalCalls(int calls, int N_threads) {
-
     std::vector<unsigned int> localcalls(N_threads, 0.0);
-    int              sum = 0;
+    int                       sum = 0;
     for (int k = 0; k < N_threads; ++k) {
       localcalls[k] = std::floor(calls / N_threads);
       sum += localcalls[k];
@@ -127,16 +125,16 @@ struct VEGASData {
       f2mat[param.BINS - 1][j] = (zo + zn) / 2.0;
       dcache[j] += f2mat[param.BINS - 1][j];
     }
-    
+
     for (std::size_t j = 0; j < FDIM; ++j) {
       ac = 0.0;
       for (std::size_t i = 0; i < param.BINS; ++i) {
         f2mat[i][j] = (f2mat[i][j] < param.EPS) ? param.EPS : f2mat[i][j];
-        rvec[i]     = std::pow(
-            (1.0 - f2mat[i][j] / dcache[j]) / (std::log(dcache[j]) - std::log(f2mat[i][j]) + param.EPS),
-            param.LAMBDA);
+        rvec[i]     = std::pow((1.0 - f2mat[i][j] / dcache[j]) /
+                               (std::log(dcache[j]) - std::log(f2mat[i][j]) + param.EPS),
+                           param.LAMBDA);
         // Floating point protection (integrand close to 0)
-        if (std::isnan(rvec[i]) || std::isinf(rvec[i])) {rvec[i] = param.EPS; } 
+        if (std::isnan(rvec[i]) || std::isinf(rvec[i])) { rvec[i] = param.EPS; }
         ac += rvec[i];
       }
       Rebin(ac / param.BINS, j, param);
@@ -215,8 +213,8 @@ struct VEGASData {
   std::vector<std::vector<double>> f2mat;
   std::vector<std::vector<double>> xmat;
 
-}; // struct VEGASData
+};  // struct VEGASData
 
-} // gra namespace
+}  // namespace gra
 
 #endif

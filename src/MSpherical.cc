@@ -18,11 +18,11 @@
 // Libraries
 #include "rang.hpp"
 
+using gra::aux::indices;
+using gra::math::PI;
 using gra::math::msqrt;
 using gra::math::pow2;
-using gra::math::PI;
 using gra::math::zi;
-using gra::aux::indices;
 
 namespace gra {
 namespace spherical {
@@ -202,7 +202,7 @@ MMatrix<double> GetGMixing(const std::vector<Omega> &events, const std::vector<s
 }
 
 // Acceptance expansion coefficients using MC events
-std::pair<std::vector<double>, std::vector<double>> GetELM(const std::vector<Omega> &MC,
+std::pair<std::vector<double>, std::vector<double>> GetELM(const std::vector<Omega> &      MC,
                                                            const std::vector<std::size_t> &ind,
                                                            int LMAX, const std::string &mode) {
   const int NCOEF = (LMAX + 1) * (LMAX + 1);
@@ -581,10 +581,10 @@ std::vector<double> ErrorProp(const MMatrix<double> &A, const std::vector<double
 
   for (std::size_t m = 0; m < A.size_row(); ++m) {
     for (std::size_t n = 0; n < A.size_col(); ++n) { y[m] += pow2(A[m][n] * x[n]); }
-    y[m]               = msqrt(y[m]);
+    y[m] = msqrt(y[m]);
   }
   return y;
 }
 
-}  // spherical namespace
-}  // gra namespace
+}  // namespace spherical
+}  // namespace gra

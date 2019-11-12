@@ -46,18 +46,21 @@ class MTensorPomeron : public MDirac {
                                                                double g_PPPS) const;
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_PPPS_1(const M4Vec &q1, const M4Vec &q2,
                                                                double g_PPPS) const;
-  MTensor<std::complex<double>> iG_PPT_00() const;
-  MTensor<std::complex<double>> iG_PPT_12(const M4Vec &q1, const M4Vec &q2, double g_PPT, int mode) const;
+  MTensor<std::complex<double>>                      iG_PPT_00() const;
+  MTensor<std::complex<double>> iG_PPT_12(const M4Vec &q1, const M4Vec &q2, double g_PPT,
+                                          int mode) const;
   MTensor<std::complex<double>> iG_PPT_03(const M4Vec &q1, const M4Vec &q2, double g_PPT) const;
   MTensor<std::complex<double>> iG_PPT_04(const M4Vec &q1, const M4Vec &q2, double g_PPT) const;
   MTensor<std::complex<double>> iG_PPT_05(const M4Vec &q1, const M4Vec &q2, double g_PPT) const;
   MTensor<std::complex<double>> iG_PPT_06(const M4Vec &q1, const M4Vec &q2, double g_PPT) const;
 
   // Vertex functions
-  FTensor::Tensor2<std::complex<double>, 4, 4> iG_vv2psps(const std::vector<M4Vec>& p, int PDG) const;
-  
+  FTensor::Tensor2<std::complex<double>, 4, 4> iG_vv2psps(const std::vector<M4Vec> &p,
+                                                          int                       PDG) const;
+
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_PPS_total(
-      const M4Vec &q1, const M4Vec &q2, double M0, const std::string &mode, const std::vector<double> &g_PPS) const;
+      const M4Vec &q1, const M4Vec &q2, double M0, const std::string &mode,
+      const std::vector<double> &g_PPS) const;
   MTensor<std::complex<double>> iG_PPT_total(const M4Vec &q1, const M4Vec &q2, double M0,
                                              const std::vector<double> &g_PPT) const;
 
@@ -68,8 +71,7 @@ class MTensorPomeron : public MDirac {
       const std::vector<std::complex<double>> &u) const;
 
   FTensor::Tensor2<std::complex<double>, 4, 4> iG_yeebary(
-      const std::vector<std::complex<double>> &ubar,
-      const MMatrix<std::complex<double>> &iSF,
+      const std::vector<std::complex<double>> &ubar, const MMatrix<std::complex<double>> &iSF,
       const std::vector<std::complex<double>> &v) const;
 
   FTensor::Tensor1<std::complex<double>, 4> iG_ypp(
@@ -85,31 +87,43 @@ class MTensorPomeron : public MDirac {
       const MMatrix<std::complex<double>> &iSF, const std::vector<std::complex<double>> &v,
       const M4Vec &p) const;
 
-  FTensor::Tensor2<std::complex<double>, 4, 4>       iG_Ppsps(const M4Vec &prime, const M4Vec &p, double g1) const;
-  FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_Pvv(const M4Vec &prime, const M4Vec &p, double g1, double g2) const;
+  FTensor::Tensor2<std::complex<double>, 4, 4>       iG_Ppsps(const M4Vec &prime, const M4Vec &p,
+                                                              double g1) const;
+  FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_Pvv(const M4Vec &prime, const M4Vec &p,
+                                                            double g1, double g2) const;
 
-  std::complex<double>                               iG_f0ss(const M4Vec& p3, const M4Vec& p4, double M0, double g1) const ;
-  FTensor::Tensor2<std::complex<double>, 4, 4>       iG_f0vv(const M4Vec& p3, const M4Vec& p4, double M0, double g1, double g2) const;
+  std::complex<double> iG_f0ss(const M4Vec &p3, const M4Vec &p4, double M0, double g1) const;
+  FTensor::Tensor2<std::complex<double>, 4, 4> iG_f0vv(const M4Vec &p3, const M4Vec &p4, double M0,
+                                                       double g1, double g2) const;
 
-  FTensor::Tensor2<std::complex<double>, 4, 4>       iG_psvv(const M4Vec &p3, const M4Vec &p4, double M0, double g1) const;
-  FTensor::Tensor1<std::complex<double>, 4>          iG_vpsps(const M4Vec &k1, const M4Vec &k2, double M0, double g1) const;
+  FTensor::Tensor2<std::complex<double>, 4, 4> iG_psvv(const M4Vec &p3, const M4Vec &p4, double M0,
+                                                       double g1) const;
+  FTensor::Tensor1<std::complex<double>, 4>    iG_vpsps(const M4Vec &k1, const M4Vec &k2, double M0,
+                                                        double g1) const;
 
-  FTensor::Tensor2<std::complex<double>, 4, 4>       iG_f2psps(const M4Vec &k1, const M4Vec &k2, double M0, double g1) const;
-  FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_f2vv(const M4Vec &k1, const M4Vec &k2, double M0, double g1, double g2) const;
-  FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_f2yy(const M4Vec &k1, const M4Vec &k2, double M0, double g1, double g2) const;
+  FTensor::Tensor2<std::complex<double>, 4, 4>       iG_f2psps(const M4Vec &k1, const M4Vec &k2,
+                                                               double M0, double g1) const;
+  FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_f2vv(const M4Vec &k1, const M4Vec &k2,
+                                                             double M0, double g1, double g2) const;
+  FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iG_f2yy(const M4Vec &k1, const M4Vec &k2,
+                                                             double M0, double g1, double g2) const;
 
   FTensor::Tensor2<std::complex<double>, 4, 4> iG_yV(double q2, int pdg) const;
 
   // Polarization sums
-  std::vector<FTensor::Tensor2<std::complex<double>,4,4>> MassiveSpin1PolSum(const FTensor::Tensor4<std::complex<double>, 4,4,4,4>& M,
-                                                                     const M4Vec& p3, const M4Vec& p4) const;
-  std::vector<FTensor::Tensor2<std::complex<double>,4,4>> MasslessSpin1PolSum(const FTensor::Tensor4<std::complex<double>, 4,4,4,4>& M,
-                                                                     const M4Vec& p3, const M4Vec& p4) const;
+  std::vector<FTensor::Tensor2<std::complex<double>, 4, 4>> MassiveSpin1PolSum(
+      const FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> &M, const M4Vec &p3,
+      const M4Vec &p4) const;
+  std::vector<FTensor::Tensor2<std::complex<double>, 4, 4>> MasslessSpin1PolSum(
+      const FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> &M, const M4Vec &p3,
+      const M4Vec &p4) const;
 
-  std::vector<std::complex<double>>            MasslessSpin1PolSum(const FTensor::Tensor2<std::complex<double>, 4,4>& M,
-                                                                  const M4Vec& p3, const M4Vec& p4) const;
-  std::vector<std::complex<double>>            MassiveSpin1PolSum(const FTensor::Tensor2<std::complex<double>, 4,4>& M,
-                                                                  const M4Vec& p3, const M4Vec& p4) const;
+  std::vector<std::complex<double>> MasslessSpin1PolSum(
+      const FTensor::Tensor2<std::complex<double>, 4, 4> &M, const M4Vec &p3,
+      const M4Vec &p4) const;
+  std::vector<std::complex<double>> MassiveSpin1PolSum(
+      const FTensor::Tensor2<std::complex<double>, 4, 4> &M, const M4Vec &p3,
+      const M4Vec &p4) const;
 
   // Propagators
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iD_P(double s, double t) const;
@@ -117,18 +131,18 @@ class MTensorPomeron : public MDirac {
   FTensor::Tensor2<std::complex<double>, 4, 4>       iD_O(double s, double t) const;
   FTensor::Tensor2<std::complex<double>, 4, 4>       iD_1R(double s, double t) const;
 
-  FTensor::Tensor2<std::complex<double>, 4, 4>       iD_V(const M4Vec &p, double M0, double s34) const;
-  std::complex<double> iD_MES0(const M4Vec &p, double M0) const;
+  FTensor::Tensor2<std::complex<double>, 4, 4> iD_V(const M4Vec &p, double M0, double s34) const;
+  std::complex<double>                         iD_MES0(const M4Vec &p, double M0) const;
   std::complex<double> iD_MES(const M4Vec &p, double M0, double Gamma) const;
-  FTensor::Tensor2<std::complex<double>, 4, 4>       iD_VMES(const M4Vec &p, double M0,
-                                                       double Gamma, bool INDEX_UP) const;
+  FTensor::Tensor2<std::complex<double>, 4, 4> iD_VMES(const M4Vec &p, double M0, double Gamma,
+                                                       bool INDEX_UP) const;
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> iD_TMES(const M4Vec &p, double M0,
                                                              double Gamma, bool INDEX_UP) const;
-  
+
   // Tensor functions
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> Gamma0(const M4Vec &k1, const M4Vec &k2) const;
   FTensor::Tensor4<std::complex<double>, 4, 4, 4, 4> Gamma2(const M4Vec &k1, const M4Vec &k2) const;
-  void CalcRTensor();
+  void                                               CalcRTensor();
 
   // Trajectories
   double alpha_P(double t) const;
@@ -142,40 +156,40 @@ class MTensorPomeron : public MDirac {
 
   double F1_(double t) const;
   double F2_(double t) const;
-  
+
   double GD(double t) const;
   double FM(double q2, double LAMBDA) const;
-  double  F(double q2, double M0, double LAMBDA) const;
+  double F(double q2, double M0, double LAMBDA) const;
 
   // Trajectory parameters
-  static constexpr double delta_P   = 0.0808;
-  static constexpr double delta_O   = 0.0808;
-  static constexpr double delta_1R  = -0.5475;
-  static constexpr double delta_2R  = -0.5475;
-  
-  static constexpr double ap_P      = 0.25; // GeV^{-2}
-  static constexpr double ap_O      = 0.25; // GeV^{-2}
-  static constexpr double ap_1R     = 0.9;  // GeV^{-2}
-  static constexpr double ap_2R     = 0.9;  // GeV^{-2}
+  static constexpr double delta_P  = 0.0808;
+  static constexpr double delta_O  = 0.0808;
+  static constexpr double delta_1R = -0.5475;
+  static constexpr double delta_2R = -0.5475;
 
-  static constexpr double eta_O     = 1.0;  // +- 1
+  static constexpr double ap_P  = 0.25;  // GeV^{-2}
+  static constexpr double ap_O  = 0.25;  // GeV^{-2}
+  static constexpr double ap_1R = 0.9;   // GeV^{-2}
+  static constexpr double ap_2R = 0.9;   // GeV^{-2}
+
+  static constexpr double eta_O = 1.0;  // +- 1
 
   // Scales
-  static constexpr double M_O       = 1.00;        // GeV
-  static constexpr double M_1R      = 1.41;        // GeV
-  static constexpr double mp        = 0.938272081; // GeV
-  static constexpr double mu_ratio  = 2.792847337; // Proton magnetic moment in magneton units (mu_p / mu_N)
+  static constexpr double M_O  = 1.00;         // GeV
+  static constexpr double M_1R = 1.41;         // GeV
+  static constexpr double mp   = 0.938272081;  // GeV
+  static constexpr double mu_ratio =
+      2.792847337;  // Proton magnetic moment in magneton units (mu_p / mu_N)
 
   // Couplings
-  static constexpr double betaPNN   = 1.87;       // GeV^{-1}, Pomeron-Proton-Proton
-  static constexpr double betaPpipi = 1.76;       // GeV^{-1}, Pomeron-Pion-Pion
-  static constexpr double betaPKK   = 1.54;       // GeV^{-1}, Pomeron-Kaon-Kaon
+  static constexpr double betaPNN   = 1.87;  // GeV^{-1}, Pomeron-Proton-Proton
+  static constexpr double betaPpipi = 1.76;  // GeV^{-1}, Pomeron-Pion-Pion
+  static constexpr double betaPKK   = 1.54;  // GeV^{-1}, Pomeron-Kaon-Kaon
 
   // alpha_QED at q^2 ~ 0
   static constexpr double alpha_QED = 1.0 / 137.035999139;
 
-private:
-
+ private:
   // Minkowski metric tensor
   FTensor::Tensor2<double, 4, 4> gT;
 
@@ -194,6 +208,6 @@ private:
   MTensor<double> T3;
 };
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

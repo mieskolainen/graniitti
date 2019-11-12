@@ -33,8 +33,8 @@ class MContinuum : public MProcess {
     return EventWeight(randvec, aux);
   }
   double EventWeight(const std::vector<double> &randvec, AuxIntData &aux);
-  bool EventRecord(HepMC3::GenEvent &evt);
-  void PrintInit(bool silent) const;
+  bool   EventRecord(HepMC3::GenEvent &evt);
+  void   PrintInit(bool silent) const;
 
  private:
   bool LoopKinematics(const std::vector<double> &p1p, const std::vector<double> &p2p);
@@ -57,6 +57,6 @@ class MContinuum : public MProcess {
   std::vector<M4Vec> pkt_;
 };
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

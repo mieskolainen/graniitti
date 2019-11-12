@@ -63,20 +63,20 @@ double MAmpMG5_gg_ggg::CalcAmp2(gra::LORENTZSCALAR &lts, double alpS) {
   mME                              = masses;
 
   // *** Set particle 4-momentum: [E,px,py,pz] convention here! ***
-  gra::M4Vec p1_ = lts.q1;
-  gra::M4Vec p2_ = lts.q2;
-  std::vector<gra::M4Vec> pf = {lts.decaytree[0].p4, lts.decaytree[1].p4, lts.decaytree[2].p4};
-  
+  gra::M4Vec              p1_ = lts.q1;
+  gra::M4Vec              p2_ = lts.q2;
+  std::vector<gra::M4Vec> pf  = {lts.decaytree[0].p4, lts.decaytree[1].p4, lts.decaytree[2].p4};
+
   // Do kinematic transform
   gra::kinematics::OffShell2LightCone(p1_, p2_, pf);
-  
+
   // Set components
   double p1[] = {p1_.E(), p1_.Px(), p1_.Py(), p1_.Pz()};
   double p2[] = {p2_.E(), p2_.Px(), p2_.Py(), p2_.Pz()};
   double p3[] = {pf[0].E(), pf[0].Px(), pf[0].Py(), pf[0].Pz()};
   double p4[] = {pf[1].E(), pf[1].Px(), pf[1].Py(), pf[1].Pz()};
   double p5[] = {pf[2].E(), pf[2].Px(), pf[2].Py(), pf[2].Pz()};
-  
+
   p.clear();
   p.push_back(&p1[0]);
   p.push_back(&p2[0]);
@@ -153,8 +153,8 @@ double MAmpMG5_gg_ggg::CalcAmp2(gra::LORENTZSCALAR &lts, double alpS) {
     for (int j = 0; j < sum_hel; j++) {
       jhel++;
       if (jhel >= ngood) jhel = 0;
-      double hwgt             = double(ngood) / double(sum_hel);
-      int    ihel             = igood[jhel];
+      double hwgt = double(ngood) / double(sum_hel);
+      int    ihel = igood[jhel];
       calculate_wavefunctions(perm, helicities[ihel]);
       t[0]           = matrix_1_gg_ggg();
       lts.hamp[ihel] = 0.0;  // ** SET HELICITY AMPLITUDE: not enough, need color structure **
@@ -335,7 +335,7 @@ double MAmpMG5_gg_ggg::matrix_1_gg_ggg() {
                                              -4,  5,  -58, 14, -4, -58, 68, 14, 14, -58, -58, 455}};
 
   // Calculate color flows
-  jamp[0] = +2. * (+std::complex<double>(0, 1) * amp[0] + std::complex<double>(0, 1) * amp[2] +
+  jamp[0]  = +2. * (+std::complex<double>(0, 1) * amp[0] + std::complex<double>(0, 1) * amp[2] +
                    std::complex<double>(0, 1) * amp[3] - std::complex<double>(0, 1) * amp[5] -
                    std::complex<double>(0, 1) * amp[18] - std::complex<double>(0, 1) * amp[20] -
                    std::complex<double>(0, 1) * amp[21] + std::complex<double>(0, 1) * amp[23] +
@@ -343,7 +343,7 @@ double MAmpMG5_gg_ggg::matrix_1_gg_ggg() {
                    std::complex<double>(0, 1) * amp[27] + std::complex<double>(0, 1) * amp[35] +
                    std::complex<double>(0, 1) * amp[34] - std::complex<double>(0, 1) * amp[43] -
                    std::complex<double>(0, 1) * amp[42]);
-  jamp[1] = +2. * (+std::complex<double>(0, 1) * amp[1] - std::complex<double>(0, 1) * amp[2] +
+  jamp[1]  = +2. * (+std::complex<double>(0, 1) * amp[1] - std::complex<double>(0, 1) * amp[2] +
                    std::complex<double>(0, 1) * amp[4] + std::complex<double>(0, 1) * amp[5] -
                    std::complex<double>(0, 1) * amp[12] - std::complex<double>(0, 1) * amp[14] -
                    std::complex<double>(0, 1) * amp[15] + std::complex<double>(0, 1) * amp[17] -
@@ -351,7 +351,7 @@ double MAmpMG5_gg_ggg::matrix_1_gg_ggg() {
                    std::complex<double>(0, 1) * amp[27] + std::complex<double>(0, 1) * amp[32] +
                    std::complex<double>(0, 1) * amp[31] - std::complex<double>(0, 1) * amp[44] +
                    std::complex<double>(0, 1) * amp[42]);
-  jamp[2] = +2. * (-std::complex<double>(0, 1) * amp[0] - std::complex<double>(0, 1) * amp[1] -
+  jamp[2]  = +2. * (-std::complex<double>(0, 1) * amp[0] - std::complex<double>(0, 1) * amp[1] -
                    std::complex<double>(0, 1) * amp[4] - std::complex<double>(0, 1) * amp[3] -
                    std::complex<double>(0, 1) * amp[19] + std::complex<double>(0, 1) * amp[20] -
                    std::complex<double>(0, 1) * amp[22] - std::complex<double>(0, 1) * amp[23] +
@@ -359,7 +359,7 @@ double MAmpMG5_gg_ggg::matrix_1_gg_ggg() {
                    std::complex<double>(0, 1) * amp[30] - std::complex<double>(0, 1) * amp[35] -
                    std::complex<double>(0, 1) * amp[34] - std::complex<double>(0, 1) * amp[40] -
                    std::complex<double>(0, 1) * amp[39]);
-  jamp[3] = +2. * (+std::complex<double>(0, 1) * amp[1] - std::complex<double>(0, 1) * amp[2] +
+  jamp[3]  = +2. * (+std::complex<double>(0, 1) * amp[1] - std::complex<double>(0, 1) * amp[2] +
                    std::complex<double>(0, 1) * amp[4] + std::complex<double>(0, 1) * amp[5] -
                    std::complex<double>(0, 1) * amp[6] - std::complex<double>(0, 1) * amp[8] -
                    std::complex<double>(0, 1) * amp[9] + std::complex<double>(0, 1) * amp[11] -
@@ -367,7 +367,7 @@ double MAmpMG5_gg_ggg::matrix_1_gg_ggg() {
                    std::complex<double>(0, 1) * amp[28] + std::complex<double>(0, 1) * amp[32] -
                    std::complex<double>(0, 1) * amp[30] - std::complex<double>(0, 1) * amp[41] +
                    std::complex<double>(0, 1) * amp[39]);
-  jamp[4] = +2. * (-std::complex<double>(0, 1) * amp[0] - std::complex<double>(0, 1) * amp[1] -
+  jamp[4]  = +2. * (-std::complex<double>(0, 1) * amp[0] - std::complex<double>(0, 1) * amp[1] -
                    std::complex<double>(0, 1) * amp[4] - std::complex<double>(0, 1) * amp[3] -
                    std::complex<double>(0, 1) * amp[13] + std::complex<double>(0, 1) * amp[14] -
                    std::complex<double>(0, 1) * amp[16] - std::complex<double>(0, 1) * amp[17] +
@@ -375,7 +375,7 @@ double MAmpMG5_gg_ggg::matrix_1_gg_ggg() {
                    std::complex<double>(0, 1) * amp[31] - std::complex<double>(0, 1) * amp[35] +
                    std::complex<double>(0, 1) * amp[33] - std::complex<double>(0, 1) * amp[37] -
                    std::complex<double>(0, 1) * amp[36]);
-  jamp[5] = +2. * (+std::complex<double>(0, 1) * amp[0] + std::complex<double>(0, 1) * amp[2] +
+  jamp[5]  = +2. * (+std::complex<double>(0, 1) * amp[0] + std::complex<double>(0, 1) * amp[2] +
                    std::complex<double>(0, 1) * amp[3] - std::complex<double>(0, 1) * amp[5] -
                    std::complex<double>(0, 1) * amp[7] + std::complex<double>(0, 1) * amp[8] -
                    std::complex<double>(0, 1) * amp[10] - std::complex<double>(0, 1) * amp[11] -
@@ -383,7 +383,7 @@ double MAmpMG5_gg_ggg::matrix_1_gg_ggg() {
                    std::complex<double>(0, 1) * amp[28] + std::complex<double>(0, 1) * amp[35] -
                    std::complex<double>(0, 1) * amp[33] - std::complex<double>(0, 1) * amp[38] +
                    std::complex<double>(0, 1) * amp[36]);
-  jamp[6] = +2. * (+std::complex<double>(0, 1) * amp[6] + std::complex<double>(0, 1) * amp[8] +
+  jamp[6]  = +2. * (+std::complex<double>(0, 1) * amp[6] + std::complex<double>(0, 1) * amp[8] +
                    std::complex<double>(0, 1) * amp[9] - std::complex<double>(0, 1) * amp[11] +
                    std::complex<double>(0, 1) * amp[18] + std::complex<double>(0, 1) * amp[19] +
                    std::complex<double>(0, 1) * amp[22] + std::complex<double>(0, 1) * amp[21] -
@@ -391,7 +391,7 @@ double MAmpMG5_gg_ggg::matrix_1_gg_ggg() {
                    std::complex<double>(0, 1) * amp[27] + std::complex<double>(0, 1) * amp[41] +
                    std::complex<double>(0, 1) * amp[40] + std::complex<double>(0, 1) * amp[43] +
                    std::complex<double>(0, 1) * amp[42]);
-  jamp[7] = +2. * (+std::complex<double>(0, 1) * amp[7] - std::complex<double>(0, 1) * amp[8] +
+  jamp[7]  = +2. * (+std::complex<double>(0, 1) * amp[7] - std::complex<double>(0, 1) * amp[8] +
                    std::complex<double>(0, 1) * amp[10] + std::complex<double>(0, 1) * amp[11] +
                    std::complex<double>(0, 1) * amp[12] + std::complex<double>(0, 1) * amp[13] +
                    std::complex<double>(0, 1) * amp[16] + std::complex<double>(0, 1) * amp[15] +
@@ -399,7 +399,7 @@ double MAmpMG5_gg_ggg::matrix_1_gg_ggg() {
                    std::complex<double>(0, 1) * amp[27] + std::complex<double>(0, 1) * amp[38] +
                    std::complex<double>(0, 1) * amp[37] + std::complex<double>(0, 1) * amp[44] -
                    std::complex<double>(0, 1) * amp[42]);
-  jamp[8] = +2. * (-std::complex<double>(0, 1) * amp[6] - std::complex<double>(0, 1) * amp[7] -
+  jamp[8]  = +2. * (-std::complex<double>(0, 1) * amp[6] - std::complex<double>(0, 1) * amp[7] -
                    std::complex<double>(0, 1) * amp[10] - std::complex<double>(0, 1) * amp[9] -
                    std::complex<double>(0, 1) * amp[19] + std::complex<double>(0, 1) * amp[20] -
                    std::complex<double>(0, 1) * amp[22] - std::complex<double>(0, 1) * amp[23] -
@@ -407,7 +407,7 @@ double MAmpMG5_gg_ggg::matrix_1_gg_ggg() {
                    std::complex<double>(0, 1) * amp[33] - std::complex<double>(0, 1) * amp[38] +
                    std::complex<double>(0, 1) * amp[36] - std::complex<double>(0, 1) * amp[41] -
                    std::complex<double>(0, 1) * amp[40]);
-  jamp[9] = +2. * (-std::complex<double>(0, 1) * amp[0] - std::complex<double>(0, 1) * amp[2] -
+  jamp[9]  = +2. * (-std::complex<double>(0, 1) * amp[0] - std::complex<double>(0, 1) * amp[2] -
                    std::complex<double>(0, 1) * amp[3] + std::complex<double>(0, 1) * amp[5] +
                    std::complex<double>(0, 1) * amp[7] - std::complex<double>(0, 1) * amp[8] +
                    std::complex<double>(0, 1) * amp[10] + std::complex<double>(0, 1) * amp[11] +
@@ -534,7 +534,7 @@ double MAmpMG5_gg_ggg::matrix_1_gg_ggg() {
   for (i = 0; i < ncolor; i++) {
     ztemp = 0.;
     for (j = 0; j < ncolor; j++) ztemp = ztemp + cf[i][j] * jamp[j];
-    matrix                             = matrix + real(ztemp * conj(jamp[i])) / denom[i];
+    matrix = matrix + real(ztemp * conj(jamp[i])) / denom[i];
   }
 
   // Store the leading color flows for choice of color

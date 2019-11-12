@@ -184,7 +184,7 @@ void txxxxx(double p[4], double tmass, int nhel, int nst, complex<double> tc[18]
       }
     } else if (nhel == 0) {
       for (j = 0; j < 4; j++) {
-        for (i     = 0; i < 4; i++)
+        for (i = 0; i < 4; i++)
           ft[i][j] = sqs * (ep[i] * em[j] + em[i] * ep[j] + 2.0 * e0[i] * e0[j]);
       }
     } else if (nhel == -1) {
@@ -454,4 +454,4 @@ void VVVV3_0(std::complex<double> V1[], std::complex<double> V2[], std::complex<
   vertex = COUP * (-cI * (TMP9 * TMP11) + cI * (TMP2 * TMP3));
 }
 
-}  // end namespace $(namespace)s_sm
+}  // namespace MG5_sm_gg_gg

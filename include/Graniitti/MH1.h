@@ -34,41 +34,37 @@ class MH1 {
   // Probability density
   std::vector<double> GetProbDensity() const {
     double sum = 0;
-    for (std::size_t i = 0; i < weights.size(); ++i) {
-      sum += GetPositiveDefinite(i);
-    }
+    for (std::size_t i = 0; i < weights.size(); ++i) { sum += GetPositiveDefinite(i); }
     std::vector<double> p(weights.size(), 0.0);
-    if (sum > 0){
-    for (std::size_t i = 0; i < weights.size(); ++i) {
-      p[i] = GetPositiveDefinite(i) / sum;
-    }
+    if (sum > 0) {
+      for (std::size_t i = 0; i < weights.size(); ++i) { p[i] = GetPositiveDefinite(i) / sum; }
     }
     return p;
   }
 
   // Get full histogram data
-  std::vector<T> GetWeights() const            { return weights;  }
-  std::vector<T> GetWeights2() const           { return weights2; }
-  std::vector<long long int> GetCounts() const { return counts;   }
+  std::vector<T>             GetWeights() const { return weights; }
+  std::vector<T>             GetWeights2() const { return weights2; }
+  std::vector<long long int> GetCounts() const { return counts; }
 
   void GetXPositiveDefinite(std::valarray<double> &x, std::valarray<double> &y) const;
 
   T SumWeights() const;
   T SumWeights2() const;
 
-  T GetBinWeight(int idx) const;
-  T GetBinWeight2(int idx) const;
+  T      GetBinWeight(int idx) const;
+  T      GetBinWeight2(int idx) const;
   double GetBinError(int idx) const;
 
   double GetMaxWeight() const;
   double GetMinWeight() const;
 
   long long int GetBinCount(int idx) const;
-  double GetPositiveDefinite(int i) const;
+  double        GetPositiveDefinite(int i) const;
 
   double GetBinXVal(int idx, int boundary = 0) const;
-  void GetBinIdx(double xvalue, int &idx);
-  void Print(double width = 1.25) const;  // default argument
+  void   GetBinIdx(double xvalue, int &idx);
+  void   Print(double width = 1.25) const;  // default argument
 
   void ResetBounds(int xbins);
   void ResetBounds(int xbins, double xmin, double xmax);
@@ -76,8 +72,8 @@ class MH1 {
   // Set logarithmic binning
   void SetLogX() {
     if (XMIN < 1e-9) {
-      throw std::invalid_argument("MH1::SetLogX: Error: Minimum boundary XMIN = " +
-                                  std::to_string(XMIN) + " < 0");
+      throw std::invalid_argument(
+          "MH1::SetLogX: Error: Minimum boundary XMIN = " + std::to_string(XMIN) + " < 0");
     }
     LOGX = true;
   }
@@ -124,7 +120,7 @@ class MH1 {
     h.fills     = this->fills - rhs.fills;
     h.underflow = this->underflow - rhs.underflow;
     h.overflow  = this->overflow - rhs.overflow;
-    h.nanflow  = this->nanflow - rhs.nanflow;
+    h.nanflow   = this->nanflow - rhs.nanflow;
 
     // DATA
     h.weights  = this->weights;
@@ -190,7 +186,7 @@ class MH1 {
 
   // AUTOBUFFSIZE for autorange buffer size
   void SetAutoBuffSize(int n) { AUTOBUFFSIZE = n; }
-  void                     FlushBuffer();
+  void FlushBuffer();
 
   // Symmetric bounds
   void SetAutoSymmetry(bool in) { AUTOSYMMETRY = in; }
@@ -242,7 +238,7 @@ class MH1 {
   bool LOGX = false;
 
   bool ValidBin(int idx) const;
-  int GetIdx(double value, double minval, double maxval, int nbins, bool logbins) const;
+  int  GetIdx(double value, double minval, double maxval, int nbins, bool logbins) const;
 
   // Comparing do we have double or std::complex<double>
   constexpr bool IsReal() const { return std::is_same<T, double>::value; }
@@ -252,6 +248,6 @@ class MH1 {
 // Include the implementation
 //#include "MH1.tcc"
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

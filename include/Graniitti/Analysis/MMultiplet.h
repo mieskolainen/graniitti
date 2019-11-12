@@ -49,10 +49,10 @@ class h1Multiplet {
   }
   void NormalizeAll(const std::vector<double> &cross_section,
                     const std::vector<double> &multiplier);
-  
+
   // Plot and save 1D-histogram Multiplet
   std::vector<double> SaveFig(const std::string &fullpath, bool RATIOPLOT = true) const;
-  
+
   int         N_;
   double      minval_;
   double      maxval_;
@@ -115,7 +115,7 @@ class hProfMultiplet {
   void MultiFill(const std::vector<std::vector<double>> &x, const std::vector<double> &weight) {
     for (const auto &i : gra::aux::indices(h)) { h[i]->Fill(x[i][0], x[i][1], weight[i]); }
   }
-  
+
   // Plot and save histogram Multiplet
   double SaveFig(const std::string &fullpath, bool RATIOPLOT = true) const;
 
@@ -134,6 +134,6 @@ class hProfMultiplet {
   std::vector<std::string> legendtext_;
 };
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

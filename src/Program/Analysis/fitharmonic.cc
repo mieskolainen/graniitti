@@ -29,8 +29,8 @@
 #include "Graniitti/MPDG.h"
 
 // Libraries
-#include "json.hpp"
 #include "cxxopts.hpp"
+#include "json.hpp"
 #include "rang.hpp"
 
 // HepMC 3
@@ -89,46 +89,45 @@ int main(int argc, char *argv[]) {
   const int NARGC = argc - 1;
   try {
     cxxopts::Options options(argv[0], "");
-    options.add_options()
-          ("r,ref",     "Reference MC (angular flat MC sample)     <filename> without .hepmc3",
-        cxxopts::value<std::string>())
-          ("i,input",   "Input sample                              <filename1,filename2,...> without .hepmc3",
-        cxxopts::value<std::string>())
-          ("t,titles",  "Phase space titles (3 of them)            <detector,fiducial,flat>",
-        cxxopts::value<std::string>())
-          ("l,legend",  "Legend text                               <title1,title2,...>",
-        cxxopts::value<std::string>())
-          ("w,yaxis",   "Y-axis text                               <label>",
-        cxxopts::value<std::string>())
-          ("d,mode",    "Input mode                                <MC|DATA,...>      ",
-        cxxopts::value<std::string>())
-          ("c,cuts",    "Fiducial cuts                             <ETAMIN,ETAMAX,PTMIN,PTMAX>",
-        cxxopts::value<std::string>())
-          ("S,scale",   "Scale plots (set -1 for unit normalized)  <scale1,scale2,...>",
-        cxxopts::value<std::string>())
-          ("f,frame",   "Lorentz rest frame                        <CM|HX|CS|AH|PG|GJ>",
-        cxxopts::value<std::string>())
-          ("g,lmax",            "Maximum angular order                     <1|2|3|4|...>",
-        cxxopts::value<unsigned int>())
-          ("o,removeodd",       "Remove negative M                         <true|false>",
-        cxxopts::value<std::string>())
-          ("v,removenegative",  "Remove odd M                              <true|false>",
-        cxxopts::value<std::string>())
-          ("e,eml",             "Extended Maximum Likelihood               <true|false>",
-        cxxopts::value<std::string>())
-          ("a,svdreg",          "SVD regularization weight                 <value>",
-        cxxopts::value<double>())
-          ("b,l1reg",           "L1 regularization weight                  <value>",
-        cxxopts::value<double>())
-          ("M,mass",            "System mass binning                       <bins,min,max>",
-        cxxopts::value<std::string>())
-          ("P,momentum",        "System momentum (pt) binning              <bins,min,max>",
-        cxxopts::value<std::string>())
-          ("Y,rapidity",        "System rapidity binning                   <bins,min,max>",
-        cxxopts::value<std::string>())
-          ("z,fastsim",         "Fast simulation of efficiency response    <true|false,...>",
-        cxxopts::value<std::string>())
-          ("X,maximum",         "Maximum number of events                  <value>",
+    options.add_options()("r,ref",
+                          "Reference MC (angular flat MC sample)     <filename> without .hepmc3",
+                          cxxopts::value<std::string>())(
+        "i,input",
+        "Input sample                              <filename1,filename2,...> without .hepmc3",
+        cxxopts::value<std::string>())(
+        "t,titles", "Phase space titles (3 of them)            <detector,fiducial,flat>",
+        cxxopts::value<std::string>())(
+        "l,legend", "Legend text                               <title1,title2,...>",
+        cxxopts::value<std::string>())("w,yaxis",
+                                       "Y-axis text                               <label>",
+                                       cxxopts::value<std::string>())(
+        "d,mode", "Input mode                                <MC|DATA,...>      ",
+        cxxopts::value<std::string>())(
+        "c,cuts", "Fiducial cuts                             <ETAMIN,ETAMAX,PTMIN,PTMAX>",
+        cxxopts::value<std::string>())(
+        "S,scale", "Scale plots (set -1 for unit normalized)  <scale1,scale2,...>",
+        cxxopts::value<std::string>())(
+        "f,frame", "Lorentz rest frame                        <CM|HX|CS|AH|PG|GJ>",
+        cxxopts::value<std::string>())("g,lmax",
+                                       "Maximum angular order                     <1|2|3|4|...>",
+                                       cxxopts::value<unsigned int>())(
+        "o,removeodd", "Remove negative M                         <true|false>",
+        cxxopts::value<std::string>())("v,removenegative",
+                                       "Remove odd M                              <true|false>",
+                                       cxxopts::value<std::string>())(
+        "e,eml", "Extended Maximum Likelihood               <true|false>",
+        cxxopts::value<std::string>())(
+        "a,svdreg", "SVD regularization weight                 <value>", cxxopts::value<double>())(
+        "b,l1reg", "L1 regularization weight                  <value>", cxxopts::value<double>())(
+        "M,mass", "System mass binning                       <bins,min,max>",
+        cxxopts::value<std::string>())("P,momentum",
+                                       "System momentum (pt) binning              <bins,min,max>",
+                                       cxxopts::value<std::string>())(
+        "Y,rapidity", "System rapidity binning                   <bins,min,max>",
+        cxxopts::value<std::string>())("z,fastsim",
+                                       "Fast simulation of efficiency response    <true|false,...>",
+                                       cxxopts::value<std::string>())(
+        "X,maximum", "Maximum number of events                  <value>",
         cxxopts::value<unsigned int>())("H,help", "Help");
 
     auto r = options.parse(argc, argv);
@@ -137,7 +136,7 @@ int main(int argc, char *argv[]) {
       std::cout << options.help({""}) << std::endl;
       std::cout << rang::style::bold << "Example:" << rang::style::reset << std::endl;
       std::cout << "  " << argv[0] << " -r SH_2pi_REF -i SH_2pi ..." << std::endl << std::endl;
-    
+
       aux::CheckUpdate();
       return EXIT_FAILURE;
     }
@@ -197,7 +196,7 @@ int main(int argc, char *argv[]) {
 
     // ------------------------------------------------------------------
     // INPUT
-    const std::string ref   = r["ref"].as<std::string>();
+    const std::string ref = r["ref"].as<std::string>();
 
     // Lorentz frame
     const std::string FRAME = r["frame"].as<std::string>();
@@ -235,7 +234,8 @@ int main(int argc, char *argv[]) {
     // Scaling
     std::vector<double> scale(input.size(), 1.0);  // Default 1.0 for all
     if (r.count("scale")) {
-      const std::vector<std::string> str_vals = gra::aux::SplitStr2Str(r["scale"].as<std::string>());
+      const std::vector<std::string> str_vals =
+          gra::aux::SplitStr2Str(r["scale"].as<std::string>());
       if (str_vals.size() == input.size()) {
         for (auto const &i : indices(str_vals)) { scale[i] = std::stod(str_vals[i]); }
       } else {
@@ -255,9 +255,7 @@ int main(int argc, char *argv[]) {
 
     // yaxis
     std::string yaxis_label = "";
-    if (r.count("yaxis")) {
-      yaxis_label = r["yaxis"].as<std::string>();
-    }
+    if (r.count("yaxis")) { yaxis_label = r["yaxis"].as<std::string>(); }
 
     for (const auto &i : indices(input)) {
       // Read in data
@@ -288,7 +286,7 @@ int main(int argc, char *argv[]) {
     aux::TrimAllSpace(inputstr);
     std::string outputpath = ref + "___";
     for (std::size_t i = 0; i < input.size(); ++i) {
-      const std::string marker = (i < input.size()-1) ? "+" : "";
+      const std::string marker = (i < input.size() - 1) ? "+" : "";
       outputpath += input[i] + marker;
     }
 
@@ -310,8 +308,8 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   } catch (const nlohmann::json::exception &e) {
     gra::aux::PrintGameOver();
-    std::cerr << rang::fg::red << "Exception catched: JSON input: " << rang::fg::reset
-              << e.what() << std::endl;
+    std::cerr << rang::fg::red << "Exception catched: JSON input: " << rang::fg::reset << e.what()
+              << std::endl;
     return EXIT_FAILURE;
   } catch (...) {
     gra::aux::PrintGameOver();
@@ -319,7 +317,7 @@ int main(int argc, char *argv[]) {
               << rang::fg::reset << std::endl;
     return EXIT_FAILURE;
   }
-  
+
   std::cout << "[fitharmonic:: done]" << std::endl;
   aux::CheckUpdate();
 
@@ -408,13 +406,13 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
         // Print::line(p1);
         pvec = gra::aux::HepMC2M4Vec(p1->momentum());
         if (pvec.Pz() > 0) {
-          p_beam_plus  = pvec;
+          p_beam_plus = pvec;
         } else {
           p_beam_minus = pvec;
         }
       }
     }
-    
+
     // Final state protons
     if (FRAME == "GJ") {
       for (HepMC3::ConstGenParticlePtr p1 :
@@ -424,7 +422,7 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
         // Print::line(p1);
         pvec = gra::aux::HepMC2M4Vec(p1->momentum());
         if (pvec.Pz() > 0) {
-          p_final_plus  = pvec;
+          p_final_plus = pvec;
         } else {
           p_final_minus = pvec;
         }
@@ -435,12 +433,12 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
     // Do the frame transformations
     std::vector<M4Vec> rf = {pip[0], pim[0]};
 
-    const int direction = 1; // PG and GJ
+    const int direction = 1;  // PG and GJ
 
     const M4Vec X = pip[0] + pim[0];
 
     // Non-rotated rest frame
-    if        (FRAME == "CM") {
+    if (FRAME == "CM") {
       gra::kinematics::CMframe(rf, X);
       // Helicity frame
     } else if (FRAME == "HX") {
@@ -456,7 +454,8 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
       gra::kinematics::AHframe(rf, X, p_beam_plus, p_beam_minus);
       // Gottfried-Jackson frame
     } else if (FRAME == "GJ") {
-      gra::kinematics::GJframe(rf, X, direction, p_beam_plus - p_final_plus, p_beam_minus - p_final_minus);
+      gra::kinematics::GJframe(rf, X, direction, p_beam_plus - p_final_plus,
+                               p_beam_minus - p_final_minus);
     } else {
       throw std::invalid_argument("MHarmonic::ReadIn: Unknown Lorentz frame: " + FRAME);
     }

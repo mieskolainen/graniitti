@@ -58,16 +58,15 @@ std::exception_ptr globalExceptionPtr;
 using json = nlohmann::json;
 
 using gra::aux::indices;
+using gra::math::PI;
 using gra::math::msqrt;
 using gra::math::pow2;
 using gra::math::pow3;
 using gra::math::zi;
-using gra::math::PI;
 
 
 // Constructor
 MGraniitti::MGraniitti() {
-
   // ******************************************************************
   // Init program globals
 
@@ -81,11 +80,8 @@ MGraniitti::MGraniitti() {
 
 // Destructor
 MGraniitti::~MGraniitti() {
-
   // Destroy processes
-  for (std::size_t i = 0; i < pvec.size(); ++i) {
-    delete pvec[i];
-  }
+  for (std::size_t i = 0; i < pvec.size(); ++i) { delete pvec[i]; }
 
   std::cout << "~MGraniitti [DONE]" << std::endl;
 }
@@ -281,9 +277,7 @@ void MGraniitti::InitProcessMemory(std::string process, unsigned int seed) {
 
 void MGraniitti::InitMultiMemory() {
   // ** Init multithreading memory by making copies of the process **
-  for (std::size_t i = 0; i < pvec.size(); ++i) {
-    delete pvec[i];
-  }
+  for (std::size_t i = 0; i < pvec.size(); ++i) { delete pvec[i]; }
   pvec.resize(CORES, nullptr);
 
   // Create new process objects for each thread
@@ -364,7 +358,6 @@ void MGraniitti::ReadGeneralParam(const std::string &inputfile) {
 
 // Soft model parameter initialization
 void MGraniitti::ReadModelParam(const std::string &inputfile) {
-
   // Read and parse
   const std::string fullpath =
       gra::aux::GetBasePath(2) + "/modeldata/" + inputfile + "/GENERAL.json";
@@ -378,23 +371,23 @@ void MGraniitti::ReadModelParam(const std::string &inputfile) {
                       " (Check for extra/missing commas)";
     throw std::invalid_argument(str);
   }
-  
+
   try {
     // Soft model parameters
     PARAM_SOFT::DELTA_P = j.at("PARAM_SOFT").at("DELTA_P");
     PARAM_SOFT::ALPHA_P = j.at("PARAM_SOFT").at("ALPHA_P");
     PARAM_SOFT::gN_P    = j.at("PARAM_SOFT").at("gN_P");
-    PARAM_SOFT::gN_O    = j.at("PARAM_SOFT").at("gN_O");    
-    
-    double triple3P     = j.at("PARAM_SOFT").at("g3P");
-    PARAM_SOFT::g3P     = triple3P * PARAM_SOFT::gN_P;  // Convention
-    PARAM_SOFT::gamma   = j.at("PARAM_SOFT").at("gamma");
+    PARAM_SOFT::gN_O    = j.at("PARAM_SOFT").at("gN_O");
 
-    PARAM_SOFT::fc1     = j.at("PARAM_SOFT").at("fc1");
-    PARAM_SOFT::fc2     = j.at("PARAM_SOFT").at("fc2");
-    PARAM_SOFT::fc3     = j.at("PARAM_SOFT").at("fc3");
-    
-    PARAM_SOFT::ODDERON_ON = j.at("PARAM_SOFT").at("ODDERON_ON");    
+    double triple3P   = j.at("PARAM_SOFT").at("g3P");
+    PARAM_SOFT::g3P   = triple3P * PARAM_SOFT::gN_P;  // Convention
+    PARAM_SOFT::gamma = j.at("PARAM_SOFT").at("gamma");
+
+    PARAM_SOFT::fc1 = j.at("PARAM_SOFT").at("fc1");
+    PARAM_SOFT::fc2 = j.at("PARAM_SOFT").at("fc2");
+    PARAM_SOFT::fc3 = j.at("PARAM_SOFT").at("fc3");
+
+    PARAM_SOFT::ODDERON_ON = j.at("PARAM_SOFT").at("ODDERON_ON");
 
 
     // Flat amplitude parameters
@@ -414,8 +407,8 @@ void MGraniitti::ReadModelParam(const std::string &inputfile) {
     PARAM_REGGE::ap         = ap;
     PARAM_REGGE::sgn        = sgn;
 
-    PARAM_REGGE::s0         = j.at("PARAM_REGGE").at("s0");
-    
+    PARAM_REGGE::s0 = j.at("PARAM_REGGE").at("s0");
+
     PARAM_REGGE::offshellFF = j.at("PARAM_REGGE").at("offshellFF");
     PARAM_REGGE::b_EXP      = j.at("PARAM_REGGE").at("b_EXP");
     PARAM_REGGE::a_OREAR    = j.at("PARAM_REGGE").at("a_OREAR");
@@ -423,11 +416,11 @@ void MGraniitti::ReadModelParam(const std::string &inputfile) {
     PARAM_REGGE::b_POW      = j.at("PARAM_REGGE").at("b_POW");
     PARAM_REGGE::reggeize   = j.at("PARAM_REGGE").at("reggeize");
     PARAM_REGGE::omega      = j.at("PARAM_REGGE").at("omega");
-    
-    
+
+
     // Proton (Good-Walker) resonances
-    std::vector<double> rc  = j.at("PARAM_NSTAR").at("rc");
-    PARAM_NSTAR::rc         = rc;
+    std::vector<double> rc = j.at("PARAM_NSTAR").at("rc");
+    PARAM_NSTAR::rc        = rc;
 
     // Make sure they sum to one
     const double sum_rc = std::accumulate(rc.begin(), rc.end(), 0);
@@ -436,7 +429,7 @@ void MGraniitti::ReadModelParam(const std::string &inputfile) {
     // Proton structure functions
     PARAM_STRUCTURE::F2 = j.at("PARAM_STRUCTURE").at("F2");
     PARAM_STRUCTURE::EM = j.at("PARAM_STRUCTURE").at("EM");
-    
+
     PARAM_SOFT::PrintParam();
   } catch (nlohmann::json::exception &e) {
     throw std::invalid_argument("MGraniitti::ReadModelParam: Missing parameter in '" + inputfile +
@@ -529,17 +522,16 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
   // Read free resonance parameters (only if needed)
   std::map<std::string, gra::PARAM_RES> RESONANCES;
   if (PROCESS_PART.find("RES") != std::string::npos) {
-    
     // From .json input
     std::vector<std::string> RES = j.at(XID).at("RES");
 
     // @ Command syntax override
-    for (const auto& i : indices(syntax)) {
+    for (const auto &i : indices(syntax)) {
       if (syntax[i].id == "RES") {
         std::vector<std::string> temp;
         for (const auto &x : syntax[i].arg) {
-          if (x.second == "true" || x.second == "1"){
-            temp.push_back(x.first); // f0_980, ...
+          if (x.second == "true" || x.second == "1") {
+            temp.push_back(x.first);  // f0_980, ...
           }
         }
         RES = temp;
@@ -554,66 +546,67 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
 
     // @ Command syntax override "on-the-flight parameters"
     for (const auto &i : indices(syntax)) {
-
       if (syntax[i].id == "R") {
-
         // Take target string
         std::string RESNAME;
-        if        (syntax[i].target.size() == 1) {
+        if (syntax[i].target.size() == 1) {
           RESNAME = syntax[i].target[0];
         } else if (syntax[i].target.size() == 0) {
           throw std::invalid_argument("@Syntax error: invalid R[] without any target []");
-        } else if (syntax[i].target.size()  > 1) {
+        } else if (syntax[i].target.size() > 1) {
           throw std::invalid_argument("@Syntax error: invalid R[] with multiple targets inside []");
         }
-        
+
         // Do we find target
-        if ( RESONANCES.find(RESNAME) == RESONANCES.end() ) {
+        if (RESONANCES.find(RESNAME) == RESONANCES.end()) {
           throw std::invalid_argument("@Syntax error: invalid R[" + RESNAME + "] not found");
         }
         bool couplings_touched = false;
         bool density_touched   = false;
 
-        MMatrix<std::complex<double>> newrho(1,1, 0.0);
+        MMatrix<std::complex<double>> newrho(1, 1, 0.0);
         if (RESONANCES[RESNAME].p.spinX2 != 0) {
           const int N = RESONANCES[RESNAME].rho.size_row();
-          newrho = MMatrix<std::complex<double>>(N,N, 0.0);
+          newrho      = MMatrix<std::complex<double>>(N, N, 0.0);
         }
 
         // Loop over key:val arguments
         for (const auto &x : syntax[i].arg) {
-
           if (x.first == "M") {
-            RESONANCES[RESNAME].p.mass  = std::stod(x.second);
-            std::cout << rang::fg::green << "@R[" << RESNAME << "] new mass: "
-              << RESONANCES[RESNAME].p.mass << rang::fg::reset << std::endl;
+            RESONANCES[RESNAME].p.mass = std::stod(x.second);
+            std::cout << rang::fg::green << "@R[" << RESNAME
+                      << "] new mass: " << RESONANCES[RESNAME].p.mass << rang::fg::reset
+                      << std::endl;
           }
           if (x.first == "W") {
             RESONANCES[RESNAME].p.width = std::stod(x.second);
-            std::cout << rang::fg::green << "@R[" << RESNAME << "] new width: "
-              << RESONANCES[RESNAME].p.width << rang::fg::reset << std::endl;
+            std::cout << rang::fg::green << "@R[" << RESNAME
+                      << "] new width: " << RESONANCES[RESNAME].p.width << rang::fg::reset
+                      << std::endl;
           }
 
           // Set couplings
           for (std::size_t n = 0; n < RESONANCES[RESNAME].g_Tensor.size(); ++n) {
-            if (x.first == ("g" + std::to_string(n)) ) {
+            if (x.first == ("g" + std::to_string(n))) {
               RESONANCES[RESNAME].g_Tensor[n] = std::stod(x.second);
-              couplings_touched = true;
+              couplings_touched               = true;
             }
           }
 
           // Set diagonal spin density elements
-          for (std::size_t n = 0; n <= (newrho.size_row()-1)/2; ++n) {
-            const int J = (newrho.size_row()-1)/2;
+          for (std::size_t n = 0; n <= (newrho.size_row() - 1) / 2; ++n) {
+            const int J = (newrho.size_row() - 1) / 2;
             if (x.first == ("JZ" + std::to_string(n))) {
               const double value = std::stod(x.second);
 
-              if (value < 0) { throw std::invalid_argument("MGraniitti::ReadProcessParam: @R[] JZ value < 0"); }
+              if (value < 0) {
+                throw std::invalid_argument("MGraniitti::ReadProcessParam: @R[] JZ value < 0");
+              }
 
-              newrho[newrho.size_row()-1-J-n][newrho.size_row()-1-J-n] = value;
-              
-              newrho[newrho.size_row()-1-J+n][newrho.size_row()-1-J+n] = value;
-              density_touched = true;
+              newrho[newrho.size_row() - 1 - J - n][newrho.size_row() - 1 - J - n] = value;
+
+              newrho[newrho.size_row() - 1 - J + n][newrho.size_row() - 1 - J + n] = value;
+              density_touched                                                      = true;
             }
           }
         }
@@ -622,20 +615,23 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
         if (density_touched) {
           const std::complex<double> trace = newrho.Trace();
           if (std::abs(trace) > 0) {
-            newrho = newrho * (1.0/trace);
+            newrho = newrho * (1.0 / trace);
           } else {
-            throw std::invalid_argument("MGraniitti::ReadProcessParam: @R[] Spin density error with <= 0 trace");
+            throw std::invalid_argument(
+                "MGraniitti::ReadProcessParam: @R[] Spin density error with <= 0 trace");
           }
           RESONANCES[RESNAME].rho = newrho;
 
-          std::cout << rang::fg::green << "@R[" << RESNAME << "] new spin density set:" << std::endl;
+          std::cout << rang::fg::green << "@R[" << RESNAME
+                    << "] new spin density set:" << std::endl;
           RESONANCES[RESNAME].rho.Print();
           std::cout << rang::fg::reset << std::endl;
         }
-        
+
         // Print new coupling array
         if (couplings_touched) {
-          std::cout << rang::fg::green << "@R[" << RESNAME << "] new production couplings set: g_Tensor = [";
+          std::cout << rang::fg::green << "@R[" << RESNAME
+                    << "] new production couplings set: g_Tensor = [";
           for (std::size_t k = 0; k < RESONANCES[RESNAME].g_Tensor.size(); ++k) {
             printf("%0.3E", RESONANCES[RESNAME].g_Tensor[k]);
             if (k < RESONANCES[RESNAME].g_Tensor.size() - 1) { std::cout << ", "; }
@@ -653,17 +649,17 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
 
   // Command syntax parameters
   for (const auto &i : indices(syntax)) {
-    if (syntax[i].id == "FLATAMP")   { proc->SetFLATAMP(std::stoi(syntax[i].arg["_SINGLET_"])); }
+    if (syntax[i].id == "FLATAMP") { proc->SetFLATAMP(std::stoi(syntax[i].arg["_SINGLET_"])); }
     if (syntax[i].id == "FLATMASS2") { proc->SetFLATMASS2(syntax[i].arg["_SINGLET_"] == "true"); }
-    if (syntax[i].id == "OFFSHELL")  { proc->SetOFFSHELL(std::stod(syntax[i].arg["_SINGLET_"])); }
+    if (syntax[i].id == "OFFSHELL") { proc->SetOFFSHELL(std::stod(syntax[i].arg["_SINGLET_"])); }
 
-    if (syntax[i].id == "SPINGEN")   { proc->SetSPINGEN(syntax[i].arg["_SINGLET_"] == "true"); }
-    if (syntax[i].id == "SPINDEC")   { proc->SetSPINDEC(syntax[i].arg["_SINGLET_"] == "true"); }
+    if (syntax[i].id == "SPINGEN") { proc->SetSPINGEN(syntax[i].arg["_SINGLET_"] == "true"); }
+    if (syntax[i].id == "SPINDEC") { proc->SetSPINDEC(syntax[i].arg["_SINGLET_"] == "true"); }
 
-    if (syntax[i].id == "FRAME")     { proc->SetFRAME(syntax[i].arg["_SINGLET_"]); }
-    if (syntax[i].id == "JMAX")      { proc->SetJMAX(std::stoi(syntax[i].arg["_SINGLET_"])); }
+    if (syntax[i].id == "FRAME") { proc->SetFRAME(syntax[i].arg["_SINGLET_"]); }
+    if (syntax[i].id == "JMAX") { proc->SetJMAX(std::stoi(syntax[i].arg["_SINGLET_"])); }
   }
-  
+
   // Always last (we need PDG tables)
   std::vector<std::string> beam   = j.at(XID).at("BEAM");
   std::vector<double>      energy = j.at(XID).at("ENERGY");
@@ -696,10 +692,10 @@ void MGraniitti::ReadIntegralParam(const std::string &inputfile) {
   const int ND = j.at(XID).at("POMLOOP").at("ND");
   AssertRange(ND, {-10, 10}, "POMLOOP::ND", true);
   proc->Eikonal.Numerics.SetLoopDiscretization(ND);
-  
+
   // FLAT (naive) MC parameters
   MCPARAM mpam;
-  mpam.PRECISION  = j.at(XID).at("FLAT").at("PRECISION");
+  mpam.PRECISION = j.at(XID).at("FLAT").at("PRECISION");
   AssertRange(mpam.PRECISION, {0.0, 1.0}, "FLAT::PRECISION", true);
   mpam.MIN_EVENTS = j.at(XID).at("FLAT").at("MIN_EVENTS");
   AssertRange(mpam.MIN_EVENTS, {10, (unsigned int)1e9}, "FLAT::MIN_EVENTS", true);
@@ -770,7 +766,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
     gcuts.rap_min = rap[0];
     gcuts.rap_max = rap[1];
     gra::aux::AssertCut(rap, "GENCUTS::<C>::Rap", true);
-      
+
     // This is optional, intermediate kt
     std::vector<double> kt;
     try {
@@ -1059,8 +1055,9 @@ void MGraniitti::SetMaxweight(double weight) {
 void MGraniitti::PrintInit() const {
   if (!HILJAA) {
     gra::aux::PrintFlashScreen(rang::fg::yellow);
-    std::cout << rang::style::bold << "GRANIITTI - Monte Carlo event generator for "
-                                      "high energy diffraction"
+    std::cout << rang::style::bold
+              << "GRANIITTI - Monte Carlo event generator for "
+                 "high energy diffraction"
               << rang::style::reset << std::endl
               << std::endl;
     gra::aux::PrintVersion();
@@ -1085,7 +1082,7 @@ void MGraniitti::PrintInit() const {
 void MGraniitti::Initialize() {
   // ** ALWAYS HERE ONLY AS LAST! **
   proc->post_Constructor();
-  
+
   // Print out basic information
   std::cout << std::endl;
   std::cout << rang::style::bold << "General setup:" << rang::style::reset << std::endl
@@ -1339,7 +1336,8 @@ int MGraniitti::VEGAS(unsigned int init, unsigned int calls, unsigned int itermi
       }
       if (stat.chi2 > 50) {
         gra::aux::ClearProgress();
-        printf("VEGAS:: chi2 = %0.1f > 50: Convergence problem, increasing 10 x calls. \n", stat.chi2);
+        printf("VEGAS:: chi2 = %0.1f > 50: Convergence problem, increasing 10 x calls. \n",
+               stat.chi2);
         printf("Try <F> phase space class if not in use. \n");
         return 10;  // 10 times more calls
       }
@@ -1646,7 +1644,7 @@ void MGraniitti::SampleNeuro(unsigned int N) {
     // Prior p(z) distribution sampling
     VectorXdual z(u.size());
     for (std::size_t i = 0; i < D; ++i) { z[i] = proc->random.G(0, 1); }
-    const double     p = val(gra::neurojac::gaussprob(z, 0, 1));
+    const double p = val(gra::neurojac::gaussprob(z, 0, 1));
 
     // Evaluate network map
     VectorXdual u_ = gra::neurojac::G_net(z);
@@ -1850,11 +1848,11 @@ void MGraniitti::PrintStatistics(unsigned int N) {
     double prod    = 1.0;
     double prod2pi = 1.0;
     double volume  = 1.0;
-    int Nf = 0;
-    for (const auto& i : indices(proc->lts.decaytree)) {
+    int    Nf      = 0;
+    for (const auto &i : indices(proc->lts.decaytree)) {
       proc->CalculatePhaseSpace(proc->lts.decaytree[i], prod, prod2pi, volume, Nf);
     }
-    unsigned int N_leg = std::max((int)proc->lts.decaytree.size(), Nf) + 2; // +2 forward legs
+    unsigned int N_leg = std::max((int)proc->lts.decaytree.size(), Nf) + 2;  // +2 forward legs
 
     // Special cases
     if (proc->GetISOLATE()) { N_leg = 3; }        // ISOLATEd 2->3 process with <F> phase space
@@ -1881,8 +1879,8 @@ void MGraniitti::PrintStatistics(unsigned int N) {
       }
       // only 2-body exact or massless case
       if (proc->lts.decaytree.size() == 2 || MSUM < 1e-6) {
-        printf("Analytic phase space volume:      %0.3E +- %0.3E \n",
-            PSvolume_exact, PSvolume_exact_error);
+        printf("Analytic phase space volume:      %0.3E +- %0.3E \n", PSvolume_exact,
+               PSvolume_exact_error);
         printf("RATIO: MC/analytic:               %0.6f \n", PSvolume / PSvolume_exact);
       }
       std::cout << std::endl;
@@ -1892,30 +1890,32 @@ void MGraniitti::PrintStatistics(unsigned int N) {
              proc->lts.DW_sum.Integral(), proc->lts.DW_sum.IntegralError());
 
       if (proc->GetISOLATE()) {
-        std::cout << "[" << rang::fg::red   << "INACTIVE " << rang::fg::reset << "part of integral  <=> apply manual BR]" << std::endl;
+        std::cout << "[" << rang::fg::red << "INACTIVE " << rang::fg::reset
+                  << "part of integral  <=> apply manual BR]" << std::endl;
       } else {
-        std::cout << "[" << rang::fg::green << "ACTIVE " << rang::fg::reset << "part of integral / (2PI)]" << std::endl;
+        std::cout << "[" << rang::fg::green << "ACTIVE " << rang::fg::reset
+                  << "part of integral / (2PI)]" << std::endl;
       }
       // Recursion relation based (phase space factorization):
       // d^N PS(s; p_1, p2, ...p_N)
       // = 1/(2*PI) * d^3 PS(s; p1,p2,pX) d^{N-2} PS(M^2; pX,p3,p4,..,pN) dM^2
-      // 
+      //
       // Decaywidth = 1/(2M S) \int dPS |M_decay|^2, where M
       // = mother mass, S = final state symmetry factor
 
       if (!proc->GetISOLATE() && proc->GetdLIPSDim() != 2) {  // Special cases
-        printf("\n\n{2->3 cross section ~=~ [2->%u / (1->%lu LIPS) x 2PI]}:       %0.3E \n",
-            N_leg, proc->lts.decaytree.size(), stat.sigma / proc->lts.DW_sum.Integral() * (2 * PI));
+        printf("\n\n{2->3 cross section ~=~ [2->%u / (1->%lu LIPS) x 2PI]}:       %0.3E \n", N_leg,
+               proc->lts.decaytree.size(), stat.sigma / proc->lts.DW_sum.Integral() * (2 * PI));
         std::cout << std::endl;
         printf("** Remember to use &> operator instead of -> for phase space isolation ** \n\n");
       }
     }
 
     // Print recursively
-    double product = 1.0;
+    double product    = 1.0;
     double product2pi = 1.0;
-    int N_final = 2; // forward legs == 2
-    for (const auto& i : indices(proc->lts.decaytree)) {
+    int    N_final    = 2;  // forward legs == 2
+    for (const auto &i : indices(proc->lts.decaytree)) {
       proc->PrintPhaseSpace(proc->lts.decaytree[i], product, product2pi, N_final);
       if (proc->lts.decaytree[i].legs.size() != 0) { std::cout << std::endl; }
     }
@@ -1949,11 +1949,12 @@ void MGraniitti::PrintStatistics(unsigned int N) {
     gra::aux::PrintBar("=");
     if (WEIGHTED) {
       gra::aux::PrintNotice();
-      std::cout << rang::fg::red   << "You did WEIGHTED event generation:" << std::endl
+      std::cout << rang::fg::red << "You did WEIGHTED event generation:" << std::endl
                 << std::endl
                 << std::endl;
     } else {
-      std::cout << rang::fg::green << "You did UNWEIGHTED (acceptance-rejection) event generation:" << std::endl
+      std::cout << rang::fg::green
+                << "You did UNWEIGHTED (acceptance-rejection) event generation:" << std::endl
                 << std::endl
                 << std::endl;
     }
@@ -1974,4 +1975,4 @@ void MGraniitti::PrintStatistics(unsigned int N) {
   }
 }
 
-}  // gra namespace
+}  // namespace gra

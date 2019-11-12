@@ -75,9 +75,9 @@ void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MPartic
 
   MMatrix<bool> need_to_set(20, 20, false);
   MMatrix<bool> active(20, 20, false);
-  
-  bool          tag_set = false;
-  unsigned int  nonzero = 0;
+
+  bool         tag_set = false;
+  unsigned int nonzero = 0;
 
   // Construct T-matrix (2s1 + 1) x (2s2 + 1) elements
   std::cout << std::endl;
@@ -86,125 +86,126 @@ void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MPartic
             << " , Particle 2: " << (is_boson2 ? "boson" : "fermion") << std::endl;
 
   if (hc.P_conservation) {
-  std::cout << "Parity conservation: P = P1 x P2 x (-1)^l  [P = " << P << ", P1 = " << P1 << ", P2 = " << P2 << "]" << std::endl;
+    std::cout << "Parity conservation: P = P1 x P2 x (-1)^l  [P = " << P << ", P1 = " << P1
+              << ", P2 = " << P2 << "]" << std::endl;
   }
   std::cout << std::endl;
-  std::cout << "gra::spin::InitTMatrix: Calculating SU(2) decomposition [lambda = lambda1 - lambda2]: " << std::endl;
+  std::cout
+      << "gra::spin::InitTMatrix: Calculating SU(2) decomposition [lambda = lambda1 - lambda2]: "
+      << std::endl;
 
   // Two loops, first check that sum |alpha_ls|^2 == 1 for active ls values
 
   for (int MODE = 0; MODE < 2; ++MODE) {
+    for (int s = 0; s <= static_cast<int>(s1 + s2); ++s) {
+      for (int l = 0; l <= static_cast<int>(J + s); ++l) {
+        for (int i = 0; i < static_cast<int>(2 * s1 + 1); ++i) {
+          for (int j = 0; j < static_cast<int>(2 * s2 + 1); ++j) {
+            const double lambda1 = -s1 + static_cast<double>(i);  // From negative to positive
+            const double lambda2 = -s2 + static_cast<double>(j);  // From negative to positive
 
-  for (int s = 0; s <= static_cast<int>(s1 + s2); ++s) {
-    for (int l = 0; l <= static_cast<int>(J + s); ++l) {
-      for (int i = 0; i < static_cast<int>(2 * s1 + 1); ++i) {
-        for (int j = 0; j < static_cast<int>(2 * s2 + 1); ++j) {
-          const double lambda1 = -s1 + static_cast<double>(i);  // From negative to positive
-          const double lambda2 = -s2 + static_cast<double>(j);  // From negative to positive
+            // Jacob-Wick
+            const double lambda = lambda1 - lambda2;
 
-          // Jacob-Wick
-          const double lambda = lambda1 - lambda2;
+            // Check angular momentum conservation for z-axis {
+            if (!(abs(lambda1 - lambda2) <= J)) { continue; }  // Not conserved
 
-          // Check angular momentum conservation for z-axis {
-          if (!(abs(lambda1 - lambda2) <= J)) { continue; } // Not conserved
+            // -------------------------------------------------------------
+            // Re-coupling coefficients << ... >>
 
-          // -------------------------------------------------------------
-          // Re-coupling coefficients << ... >>
+            // Normalization
+            const double NORM = msqrt((2.0 * l + 1.0) / (2.0 * J + 1.0));
 
-          // Normalization
-          const double NORM = msqrt((2.0*l + 1.0)/(2.0*J + 1.0));
+            // <J \lambda | ls0\lambda>
+            const double cg1 = gra::spin::ClebschGordan(
+                static_cast<double>(l), static_cast<double>(s), 0.0, lambda, J, lambda);
 
-          // <J \lambda | ls0\lambda>
-          const double cg1 = gra::spin::ClebschGordan(
-              static_cast<double>(l), static_cast<double>(s), 0.0, lambda, J, lambda);
+            // <s \lambda | s1s2\lambda1,-\lambda2>
+            const double cg2 =
+                gra::spin::ClebschGordan(s1, s2, lambda1, -lambda2, static_cast<double>(s), lambda);
 
-          // <s \lambda | s1s2\lambda1,-\lambda2>
-          const double cg2 =
-              gra::spin::ClebschGordan(s1, s2, lambda1, -lambda2, static_cast<double>(s), lambda);
+            // -------------------------------------------------------------
 
-          // -------------------------------------------------------------
+            // Angular momentum conserved (should be, by construction here)
+            if (!(std::abs(lambda) <= J)) { continue; }  // not conserved
 
-          // Angular momentum conserved (should be, by construction here)
-          if (!(std::abs(lambda) <= J)) { continue; }  // not conserved
-
-          // If parity conserving decay
-          if (hc.P_conservation) {
-            // Parity of the final state (hold for both
-            // bosons/fermions)
-            const int P_tot = P1 * P2 * std::pow(-1, l);
-            if (P_tot != P) { continue; }  // not conserved
-          }
-
-          // Bose-Symmetry for identical Boson-Pairs (symmetric
-          // wavefunction)
-          if (is_boson1 && is_boson2 && identical) {
-            if (!BoseSymmetry(l, s)) { continue; }  // not right
-          }
-
-          // Fermi-Symmetry for identical Fermion-Pairs (antisymmetric
-          // wavefunction)
-          if (!is_boson1 && !is_boson2 && identical) {
-            if (!FermiSymmetry(l, s)) { continue; }  // not right
-          }
-
-          // CG-coupling product is non-zero
-          if (std::abs(cg1 * cg2) < 1e-6) { continue; }
-
-          // ** This coefficient is active **
-          active[l][s] = true;
-
-          // INITIALIZATION MODE
-          if (MODE == 0) {
-
-            // Has not been set, throw error next
-            if (hc.alpha_set[l][s] == false) {
-              need_to_set[l][s] = true;
-              tag_set           = true;
+            // If parity conserving decay
+            if (hc.P_conservation) {
+              // Parity of the final state (hold for both
+              // bosons/fermions)
+              const int P_tot = P1 * P2 * std::pow(-1, l);
+              if (P_tot != P) { continue; }  // not conserved
             }
-            ++nonzero;
-          }
 
-          // FINAL MODE
-          else if (MODE == 1) {
+            // Bose-Symmetry for identical Boson-Pairs (symmetric
+            // wavefunction)
+            if (is_boson1 && is_boson2 && identical) {
+              if (!BoseSymmetry(l, s)) { continue; }  // not right
+            }
 
-            // T matrix element
-            hc.T[i][j] += hc.alpha[l][s] * NORM * cg1 * cg2;
-            printf("[l=%d,s=%d] lambda1 = %4.1f, lambda2 = %4.1f : cg1*cg2 = %6.3f  <alpha_ls = (%0.3f, %0.3f)>\n",
-              l, s, lambda1, lambda2, cg1*cg2, std::real(hc.alpha[l][s]), std::imag(hc.alpha[l][s]));
-          }
+            // Fermi-Symmetry for identical Fermion-Pairs (antisymmetric
+            // wavefunction)
+            if (!is_boson1 && !is_boson2 && identical) {
+              if (!FermiSymmetry(l, s)) { continue; }  // not right
+            }
 
-        } // lambda2
-      } // lambda1
-    } // l
-  } // s
+            // CG-coupling product is non-zero
+            if (std::abs(cg1 * cg2) < 1e-6) { continue; }
+
+            // ** This coefficient is active **
+            active[l][s] = true;
+
+            // INITIALIZATION MODE
+            if (MODE == 0) {
+              // Has not been set, throw error next
+              if (hc.alpha_set[l][s] == false) {
+                need_to_set[l][s] = true;
+                tag_set           = true;
+              }
+              ++nonzero;
+            }
+
+            // FINAL MODE
+            else if (MODE == 1) {
+              // T matrix element
+              hc.T[i][j] += hc.alpha[l][s] * NORM * cg1 * cg2;
+              printf(
+                  "[l=%d,s=%d] lambda1 = %4.1f, lambda2 = %4.1f : cg1*cg2 = %6.3f  <alpha_ls = "
+                  "(%0.3f, %0.3f)>\n",
+                  l, s, lambda1, lambda2, cg1 * cg2, std::real(hc.alpha[l][s]),
+                  std::imag(hc.alpha[l][s]));
+            }
+
+          }  // lambda2
+        }    // lambda1
+      }      // l
+    }        // s
 
 
-  // Check normalization
-  double sum_alphasq = 0;
-  if (MODE == 0) {
-    for (std::size_t l = 0; l < hc.alpha.size_row(); ++l) {
-      for (std::size_t s = 0; s < hc.alpha.size_col(); ++s) {
-        if (active[l][s] == true) {
-          sum_alphasq += math::abs2(hc.alpha[l][s]);
+    // Check normalization
+    double sum_alphasq = 0;
+    if (MODE == 0) {
+      for (std::size_t l = 0; l < hc.alpha.size_row(); ++l) {
+        for (std::size_t s = 0; s < hc.alpha.size_col(); ++s) {
+          if (active[l][s] == true) { sum_alphasq += math::abs2(hc.alpha[l][s]); }
         }
       }
     }
-  }
 
-  // Now normalize the user alpha_ls input if needed such that: sum_{ls} |alpha_ls|^2 = 1
-  if (MODE == 0 && std::abs(sum_alphasq - 1.0) > 1e-6) {
+    // Now normalize the user alpha_ls input if needed such that: sum_{ls} |alpha_ls|^2 = 1
+    if (MODE == 0 && std::abs(sum_alphasq - 1.0) > 1e-6) {
+      std::cout << "Renormalizing input: sum_{ls} |alpha_{ls}|^2 = " << sum_alphasq << " => 1"
+                << std::endl
+                << std::endl;
 
-    std::cout << "Renormalizing input: sum_{ls} |alpha_{ls}|^2 = "
-              << sum_alphasq << " => 1" << std::endl << std::endl;
-
-    for (std::size_t l = 0; l < hc.alpha.size_row(); ++l) {
-      for (std::size_t s = 0; s < hc.alpha.size_col(); ++s) {
-        if (active[l][s]) { hc.alpha[l][s] /= msqrt(sum_alphasq); }
+      for (std::size_t l = 0; l < hc.alpha.size_row(); ++l) {
+        for (std::size_t s = 0; s < hc.alpha.size_col(); ++s) {
+          if (active[l][s]) { hc.alpha[l][s] /= msqrt(sum_alphasq); }
+        }
       }
     }
-  }
 
-  } // MODE 0,1
+  }  // MODE 0,1
 
   const std::string str0 = "gra::spin::InitTMatrix:: [" + gra::aux::Spin2XtoString(2 * J) + "^" +
                            gra::aux::ParityToString(P) + " -> " + gra::aux::Spin2XtoString(2 * s1) +
@@ -224,15 +225,14 @@ void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MPartic
   // Nullify all inactive
   for (std::size_t l = 0; l < hc.alpha.size_row(); ++l) {
     for (std::size_t s = 0; s < hc.alpha.size_col(); ++s) {
-      if (active[l][s] == false) {
-        hc.alpha[l][s] = 0.0;
-      }
+      if (active[l][s] == false) { hc.alpha[l][s] = 0.0; }
     }
   }
 
   std::cout << "Normalization:" << std::endl;
-  std::cout << "sum |alpha_{ls}|^2 = "                << hc.alpha.FrobNorm2() <<
-               "  <=> sum |T_{lambda1,lambda2}|^2 = " << hc.T.FrobNorm2() << std::endl << std::endl;
+  std::cout << "sum |alpha_{ls}|^2 = " << hc.alpha.FrobNorm2()
+            << "  <=> sum |T_{lambda1,lambda2}|^2 = " << hc.T.FrobNorm2() << std::endl
+            << std::endl;
 
   // Do we have missing values?
   if (tag_set) {
@@ -277,14 +277,13 @@ bool FermiSymmetry(int l, int s) {
 // Initial state spin treatment: Pomeron + Pomeron/Gamma -> Resonance X
 //
 //
-std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &res) {
-
+std::complex<double> ProdAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
   // Apply coupling here
   std::complex<double> A0 = res.g;
 
   // Generation 2->1 spin correlations not active
   if (res.SPINGEN == false) { return A0; }
-  
+
   // ---------------------------------------------------------------------
   // Tensors J^P = 2+, 4+, 6+,...
   // "Pomeron effective spins"
@@ -295,13 +294,11 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &res)
   //
   // only one alpha_(ls) = 1.0 needed
   MMatrix<std::complex<double>> T0 = {{std::complex<double>(1.0)}};
-  
+
   // ---------------------------------------------------------------------
 
   // Scalar
-  if (res.p.spinX2 == 0 && res.p.P == 1) {
-    return A0;
-  }
+  if (res.p.spinX2 == 0 && res.p.P == 1) { return A0; }
 
   // Pseudoscalar J^P = 0-, [e.g. eta(548), eta(958)']
   if (res.p.spinX2 == 0 && res.p.P == -1) {
@@ -316,12 +313,12 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &res)
           {std::complex<double>(0.000), std::complex<double>(0.000), std::complex<double>( 0.000)},
           {std::complex<double>(0.000), std::complex<double>(0.000), std::complex<double>(-0.707)}};
     */
-    
+
     // This should be recursively connected with protons, instead use simplification below:
 
     // Forward proton pair deltaphi
     const double dphi = lts.pfinal[1].DeltaPhiAbs(lts.pfinal[2]);
-    
+
     //  ^  WA102 data (not fully sin(phi) symmetric after MC, due to kinematics)
     //  |   .---.
     //  |  .     .
@@ -329,13 +326,14 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &res)
     //  ------------->
     //  0           180 deg
     //
-    // Two cases m1=m2=-1 and m1=m2=-1 
+    // Two cases m1=m2=-1 and m1=m2=-1
     const double m1 = 1;
     const double m2 = 1;
-    
+
     // See Kaidalov et al.
     auto ReggeTheory = [](double t1, double t2, double m1, double m2) {
-      return std::pow(std::abs(t1), std::abs(m1)/2.0) * std::pow(std::abs(t2), std::abs(m2)/2.0);
+      return std::pow(std::abs(t1), std::abs(m1) / 2.0) *
+             std::pow(std::abs(t2), std::abs(m2) / 2.0);
     };
 
     return A0 * ReggeTheory(lts.t1, lts.t2, m1, m2) * std::sin(dphi);
@@ -348,9 +346,9 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &res)
     // SU(2) decomposition as given by InitTMatrix
     // only one alpha_(ls = 22) = 1
     //
-    T0 = {{std::complex<double>(0.000), std::complex<double>(-0.500), std::complex<double>( 0.000)},
-          {std::complex<double>(0.500), std::complex<double>( 0.000), std::complex<double>(-0.500)},
-          {std::complex<double>(0.000), std::complex<double>( 0.500), std::complex<double>( 0.000)}};
+    T0 = {{std::complex<double>(0.000), std::complex<double>(-0.500), std::complex<double>(0.000)},
+          {std::complex<double>(0.500), std::complex<double>(0.000), std::complex<double>(-0.500)},
+          {std::complex<double>(0.000), std::complex<double>(0.500), std::complex<double>(0.000)}};
   }
 
   // Vector photoproduction J^P = 1- [e.g. rho770]
@@ -360,14 +358,16 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &res)
     // SU(2) decomposition as given by InitTMatrix
     // assuming alpha_(ls = 01) = 1/sqrt(2)
     //          alpha_(ls = 21) = 1/sqrt(2)
-    T0 = {{std::complex<double>(-0.697), std::complex<double>(-0.169), std::complex<double>(0.697)}};
+    T0 = {
+        {std::complex<double>(-0.697), std::complex<double>(-0.169), std::complex<double>(0.697)}};
   }
-  
+
   // Boost propagator to the system rest frame
   M4Vec q1 = lts.q1;
   gra::kinematics::LorentzBoost(lts.pfinal[0], lts.pfinal[0].M(), q1, -1);
 
-  const MMatrix<std::complex<double>> f0 = spin::fMatrix(T0, res.p.spinX2 / 2.0, s1, s2, q1.Theta(), q1.Phi());
+  const MMatrix<std::complex<double>> f0 =
+      spin::fMatrix(T0, res.p.spinX2 / 2.0, s1, s2, q1.Theta(), q1.Phi());
 
   // ------------------------------------------------------------------
   // Construct the D-matrix for an event-by-event spin space density operator
@@ -378,15 +378,15 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &res)
   // Fix the frame here
   const std::string FRAME = res.FRAME;
   GetRhoRotation(lts, FRAME, theta_R, phi_R);
-  
+
   // ------------------------------------------------------------------
   // Rotation does mixing of spin states. N.B. Eigenvalues do not change in
   // rotation.
   const MMatrix<std::complex<double>> D = gra::spin::DMatrix(res.p.spinX2 / 2.0, theta_R, phi_R);
-  
+
   // rho_rot = D^\dagger*rho*D [keep this sandwich order!]
   const MMatrix<std::complex<double>> rho_ROT = D.Dagger() * res.rho * D;
-  
+
   // Krauss operator map
   const MMatrix<std::complex<double>> f0Rfd0 = f0 * rho_ROT * f0.Dagger();
 
@@ -395,7 +395,7 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &res)
 
   // Apply final amplitude level weight
   A0 *= NORM * msqrt(std::real(f0Rfd0.Trace()));
-  
+
   return A0;
 }
 
@@ -404,17 +404,14 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR& lts, gra::PARAM_RES &res)
 // X -> A > {A1 + A2} B > {B1 > {C1 + C2} + B2} ...
 //
 std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
-
   // Apply coupling first
   double A0 = res.hel.g_decay;
 
   // Decay 1->2 spin correlations not active
   if (res.SPINDEC == false) { return A0; }
-  
+
   // This function handles only 2-body decays
-  if (lts.decaytree.size() != 2) {
-    return A0;
-  }
+  if (lts.decaytree.size() != 2) { return A0; }
   // No spin, no need
   if (res.p.spinX2 == 0) {
     return res.hel.T[0][0] * A0;  // (l,s) = (0,0)
@@ -429,8 +426,8 @@ std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
   M4Vec boosted_daughter = lts.decaytree[0].p4;
   gra::kinematics::LorentzBoost(lts.pfinal[0], lts.pfinal[0].M(), boosted_daughter, -1);
 
-  MMatrix<std::complex<double>> fX =
-    fMatrix(res.hel.T, res.p.spinX2 / 2.0, s1, s2, boosted_daughter.Theta(), boosted_daughter.Phi());
+  MMatrix<std::complex<double>> fX = fMatrix(res.hel.T, res.p.spinX2 / 2.0, s1, s2,
+                                             boosted_daughter.Theta(), boosted_daughter.Phi());
 
   // Now go through the decay tree leaves recursively
   TreeRecursion(lts.decaytree[0]);
@@ -444,15 +441,15 @@ std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
   TensorTree(lts.decaytree[1], fB);
 
   // f matrices have dimensions: [(2s1 + 1)x(2s2 + 1)] x (2J + 1)
-    
+
   // Total transition amplitude matrix as a tensor product
   MMatrix<std::complex<double>> f;
   if (lts.decaytree[0].legs.size() == 0 && lts.decaytree[1].legs.size() == 0) {
-    f = fX;      // No recursion
+    f = fX;  // No recursion
   } else {
     f = gra::matoper::TensorProd(fA, fB) * fX;  // Matrix x Matrix product
   }
-  
+
   MMatrix<std::complex<double>> fA_D = fA.Dagger();
 
   // ------------------------------------------------------------------
@@ -488,8 +485,7 @@ std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
 
 // Decay amplitude matrix X -> A + B
 //
-MMatrix<std::complex<double>> CalculateFMatrix(const MDecayBranch& branch) {
-
+MMatrix<std::complex<double>> CalculateFMatrix(const MDecayBranch &branch) {
   const unsigned int A = 0;
   const unsigned int B = 1;
 
@@ -497,24 +493,23 @@ MMatrix<std::complex<double>> CalculateFMatrix(const MDecayBranch& branch) {
   const double s1 = branch.legs[A].p.spinX2 / 2.0;
   const double s2 = branch.legs[B].p.spinX2 / 2.0;
 
-  // Rotate and boost daughters to the frame where z-spanned by X-flight direction (X-helicity rest frame)
+  // Rotate and boost daughters to the frame where z-spanned by X-flight direction (X-helicity rest
+  // frame)
   std::vector<M4Vec> daughter = {branch.legs[A].p4, branch.legs[B].p4};
   gra::kinematics::HXframe(daughter, branch.p4);
 
-  return fMatrix(branch.hel.T, branch.p.spinX2 / 2.0, s1, s2, daughter[A].Theta(), daughter[A].Phi());
+  return fMatrix(branch.hel.T, branch.p.spinX2 / 2.0, s1, s2, daughter[A].Theta(),
+                 daughter[A].Phi());
 }
 
 // Forward traverse the decay tree
 //
 //
-void TreeRecursion(MDecayBranch& branch) {
-
+void TreeRecursion(MDecayBranch &branch) {
   if (branch.legs.size() == 2) {
     branch.f = CalculateFMatrix(branch);
     // Infinite recursion
-    for (const auto& i : aux::indices(branch.legs)) {
-      TreeRecursion(branch.legs[i]);
-    }
+    for (const auto &i : aux::indices(branch.legs)) { TreeRecursion(branch.legs[i]); }
   }
 }
 
@@ -522,13 +517,11 @@ void TreeRecursion(MDecayBranch& branch) {
 // Reverse traverse the sequential decay tree
 //
 //
-void TensorTree(const MDecayBranch& branch, MMatrix<std::complex<double>>& out) {
-
+void TensorTree(const MDecayBranch &branch, MMatrix<std::complex<double>> &out) {
   if (branch.legs.size() == 2) {
-    
     MMatrix<std::complex<double>> f0;
     MMatrix<std::complex<double>> f1;
-    
+
     TensorTree(branch.legs[0], f0);
     TensorTree(branch.legs[1], f1);
 
@@ -539,7 +532,7 @@ void TensorTree(const MDecayBranch& branch, MMatrix<std::complex<double>>& out) 
       out = matoper::TensorProd(f0, f1) * branch.f;
     }
 
-  // Last leg unit vector
+    // Last leg unit vector
   } else {
     out = MMatrix<std::complex<double>>(1, branch.p.spinX2 + 1, 1.0);
   }
@@ -548,67 +541,63 @@ void TensorTree(const MDecayBranch& branch, MMatrix<std::complex<double>>& out) 
 
 // Rotation angles to rotate the density matrix
 //
-void GetRhoRotation(const gra::LORENTZSCALAR& lts, const std::string& FRAME, double& theta_R, double& phi_R) {
-
+void GetRhoRotation(const gra::LORENTZSCALAR &lts, const std::string &FRAME, double &theta_R,
+                    double &phi_R) {
   // Spin polarization density matrix defined:
   // In direct non-rotated rest frame
-  if        (FRAME == "CM") {
-    
+  if (FRAME == "CM") {
     theta_R = 0;
     phi_R   = 0;
 
-  // In Helicity rest frame [quantization axis by system orientation in the lab]
+    // In Helicity rest frame [quantization axis by system orientation in the lab]
   } else if (FRAME == "HX") {
+    theta_R = lts.pfinal[0].Theta();  // +
+    phi_R   = lts.pfinal[0].Phi();    // +
 
-    theta_R = lts.pfinal[0].Theta(); // +
-    phi_R   = lts.pfinal[0].Phi();   // +
 
-
-  // In Collins-Soper rest frame [quantization axis by the beam bijector frame] 
+    // In Collins-Soper rest frame [quantization axis by the beam bijector frame]
   } else if (FRAME == "CS") {
-
     M4Vec p1b = lts.pbeam1;
     M4Vec p2b = lts.pbeam2;
 
     // Boost the beam particles
-    gra::kinematics::LorentzBoost(lts.pfinal[0], lts.pfinal[0].M(), p1b, -1);  // Note the minus sign
-    gra::kinematics::LorentzBoost(lts.pfinal[0], lts.pfinal[0].M(), p2b, -1);  // Note the minus sign  
+    gra::kinematics::LorentzBoost(lts.pfinal[0], lts.pfinal[0].M(), p1b,
+                                  -1);  // Note the minus sign
+    gra::kinematics::LorentzBoost(lts.pfinal[0], lts.pfinal[0].M(), p2b,
+                                  -1);  // Note the minus sign
 
     // Now get the 3-momentum
     const std::vector<double> pb1boost3 = p1b.P3();
     const std::vector<double> pb2boost3 = p2b.P3();
 
     // Collins-Soper bisector vector
-    const std::vector<double> zaxis
-      = gra::matoper::Unit(
+    const std::vector<double> zaxis = gra::matoper::Unit(
         gra::matoper::Minus(gra::matoper::Unit(pb1boost3), gra::matoper::Unit(pb2boost3)));
 
     M4Vec bijector;
     bijector.SetP3(zaxis);
-    
+
     // Now get the rotation angles
-    theta_R = bijector.Theta(); // +
-    phi_R   = bijector.Phi();   // +
+    theta_R = bijector.Theta();  // +
+    phi_R   = bijector.Phi();    // +
 
-  // In Gottfried-Jackson frame [quantization axis by the momentum transfer vector]
+    // In Gottfried-Jackson frame [quantization axis by the momentum transfer vector]
   } else if (FRAME == "GJ") {
-
     // Propagator
     M4Vec q1boost = lts.q1;
-    gra::kinematics::LorentzBoost(lts.pfinal[0], lts.pfinal[0].M(), q1boost, -1);  // Note the minus sign
+    gra::kinematics::LorentzBoost(lts.pfinal[0], lts.pfinal[0].M(), q1boost,
+                                  -1);  // Note the minus sign
 
-    theta_R = q1boost.Theta(); // +
-    phi_R   = q1boost.Phi();   // +
+    theta_R = q1boost.Theta();  // +
+    phi_R   = q1boost.Phi();    // +
 
   } else {
     // Throw exception
     const std::string str =
-        "gra::spin::GetRotation: Unknown polarization Lorentz rest FRAME chosen: "
-        + FRAME +
+        "gra::spin::GetRotation: Unknown polarization Lorentz rest FRAME chosen: " + FRAME +
         "(valid currently are: CM (no rotation), HX (helicity), CS (Collins-Soper)";
     throw std::invalid_argument(str);
   }
-
 }
 
 
@@ -694,8 +683,8 @@ MMatrix<std::complex<double>> fMatrix(const MMatrix<std::complex<double>> &T, do
       f[i][j] = WignerD(theta, phi, lambda, M[j], J) * T[lambda_index[i][0]][lambda_index[i][1]];
     }
   }
-  //std::cout << "f::" << std::endl;
-  //gra::matoper::PrintMatrixSeparate(f);
+  // std::cout << "f::" << std::endl;
+  // gra::matoper::PrintMatrixSeparate(f);
   // exit(1);
 
   return f;
@@ -710,9 +699,7 @@ MMatrix<std::complex<double>> DMatrix(double J, double theta_R, double phi_R) {
 
   MMatrix<std::complex<double>> D(n, n, 0.0);
   for (std::size_t i = 0; i < n; ++i) {
-    for (std::size_t j = 0; j < n; ++j) {
-      D[i][j] = WignerD(theta_R, phi_R, M[i], M[j], J);
-    }
+    for (std::size_t j = 0; j < n; ++j) { D[i][j] = WignerD(theta_R, phi_R, M[i], M[j], J); }
   }
   return D;
 }
@@ -964,9 +951,9 @@ double WignerSmalld(double theta, double m, double mp, double J) {
   }
   // Fatal error
   if (std::isnan(s)) {
-    std::string str = "gra::spin::WignerSmalld: NaN value with (theta,m,mp,J) = " +
-                      std::to_string(theta) + " " + std::to_string(m) + " " + std::to_string(mp) +
-                      " " + std::to_string(J);
+    std::string str =
+        "gra::spin::WignerSmalld: NaN value with (theta,m,mp,J) = " + std::to_string(theta) + " " +
+        std::to_string(m) + " " + std::to_string(mp) + " " + std::to_string(J);
     throw std::invalid_argument(str);
   }
   return factor * s;
@@ -1156,7 +1143,8 @@ bool Positivity(const MMatrix<std::complex<double>> &rho, unsigned int J) {
     }
   } else {
     std::string str =
-        "gra::spin::Positivity: Not a valid spin, only J = 1 and 2 currently tested -- check manually";
+        "gra::spin::Positivity: Not a valid spin, only J = 1 and 2 currently tested -- check "
+        "manually";
     gra::matoper::PrintMatrixSeparate(rho);
     return true;
   }
@@ -1255,5 +1243,5 @@ MMatrix<std::complex<double>> RandomRho(unsigned int J, bool parity, MRandom &rn
   return rho;
 }
 
-}  // spin namespace
-}  // gra namespace
+}  // namespace spin
+}  // namespace gra

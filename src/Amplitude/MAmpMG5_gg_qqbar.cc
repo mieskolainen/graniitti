@@ -60,16 +60,16 @@ double MAmpMG5_gg_qqbar::CalcAmp2(gra::LORENTZSCALAR &lts, double alpS) {
   // *** Set masses for HELAS ***
   const std::vector<double> masses = {mgluon, mgluon, lts.decaytree[0].p4.M(),
                                       lts.decaytree[1].p4.M()};
-  mME = masses;
+  mME                              = masses;
 
   // *** Set particle 4-momentum: [E,px,py,pz] convention here! ***
-  gra::M4Vec p1_ = lts.q1;
-  gra::M4Vec p2_ = lts.q2;
-  std::vector<gra::M4Vec> pf = {lts.decaytree[0].p4, lts.decaytree[1].p4};
-  
+  gra::M4Vec              p1_ = lts.q1;
+  gra::M4Vec              p2_ = lts.q2;
+  std::vector<gra::M4Vec> pf  = {lts.decaytree[0].p4, lts.decaytree[1].p4};
+
   // Do kinematic transform
   gra::kinematics::OffShell2LightCone(p1_, p2_, pf);
-  
+
   // Set components
   double p1[] = {p1_.E(), p1_.Px(), p1_.Py(), p1_.Pz()};
   double p2[] = {p2_.E(), p2_.Px(), p2_.Py(), p2_.Pz()};
@@ -146,8 +146,8 @@ double MAmpMG5_gg_qqbar::CalcAmp2(gra::LORENTZSCALAR &lts, double alpS) {
     for (int j = 0; j < sum_hel; j++) {
       jhel++;
       if (jhel >= ngood) jhel = 0;
-      double hwgt             = double(ngood) / double(sum_hel);
-      int    ihel             = igood[jhel];
+      double hwgt = double(ngood) / double(sum_hel);
+      int    ihel = igood[jhel];
       calculate_wavefunctions(perm, helicities[ihel]);
       t[0]           = matrix_1_gg_uux();
       lts.hamp[ihel] = 0.0;  // ** SET HELICITY AMPLITUDE: not enough, need color structure **
@@ -207,7 +207,7 @@ double MAmpMG5_gg_qqbar::matrix_1_gg_uux() {
   for (i = 0; i < ncolor; i++) {
     ztemp = 0.;
     for (j = 0; j < ncolor; j++) ztemp = ztemp + cf[i][j] * jamp[j];
-    matrix                             = matrix + real(ztemp * conj(jamp[i])) / denom[i];
+    matrix = matrix + real(ztemp * conj(jamp[i])) / denom[i];
   }
 
   // Store the leading color flows for choice of color

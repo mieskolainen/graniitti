@@ -14,9 +14,9 @@
 #include <vector>
 
 // Own
-#include "Graniitti/MHELMatrix.h"
 #include "Graniitti/M4Vec.h"
 #include "Graniitti/MAux.h"
+#include "Graniitti/MHELMatrix.h"
 #include "Graniitti/MMatOper.h"
 #include "Graniitti/MMath.h"
 #include "Graniitti/MMatrix.h"
@@ -53,10 +53,9 @@ inline double SolvePz3_A(double m3, double pt3, double pt4, double pz5, double E
                      t2 * t3 * 2.0 - t2 * t4 * 2.0 - t2 * t5 * 2.0 - t3 * t4 * 2.0 - t2 * t6 * 4.0 -
                      E5 * t2 * t7 * 4.0;
   const double t23 = std::sqrt(t22);
-  const double t0  = pz5 * (-1.0 / 2.0) -
-                    (E5 * t23 * (1.0 / 2.0) - t7 * t23 * (1.0 / 2.0) +
-                     pz5 * (t3 * (1.0 / 2.0) - t4 * (1.0 / 2.0))) /
-                        (s + t2 - t5 - E5 * t7 * 2.0);
+  const double t0  = pz5 * (-1.0 / 2.0) - (E5 * t23 * (1.0 / 2.0) - t7 * t23 * (1.0 / 2.0) +
+                                          pz5 * (t3 * (1.0 / 2.0) - t4 * (1.0 / 2.0))) /
+                                             (s + t2 - t5 - E5 * t7 * 2.0);
 
   return t0;
 }
@@ -423,9 +422,9 @@ class MCW {
   double GetW() const { return W; }
   double GetW2() const { return W2; }
   double GetN() const { return N; }
-  void SetW(double w) { W = w; }
-  void SetW2(double w2) { W2 = w2; }
-  void SetN(double n) { N = n; }
+  void   SetW(double w) { W = w; }
+  void   SetW2(double w2) { W2 = w2; }
+  void   SetN(double n) { N = n; }
 
  private:
   double W;   // sum of weights
@@ -506,8 +505,8 @@ inline void FlatIsotropic(double &costheta, double &sintheta, double &phi, T2 &r
 // Isotropic decay 0 -> 1 + 2 in spherical coordinates with flat cos(theta),phi
 template <typename T1, typename T2>
 inline void Isotropic(double pnorm, T1 &p1, T1 &p2, double m1, double m2, T2 &rng) {
-  using gra::math::pow2;
   using gra::math::msqrt;
+  using gra::math::pow2;
 
   double costheta, sintheta, phi;
   FlatIsotropic(costheta, sintheta, phi, rng);
@@ -737,8 +736,8 @@ inline MCW NBodySetup(const T1 &mother, double M0, const std::vector<double> &m,
 template <typename T1, typename T2>
 inline MCW NBodyPhaseSpace(const T1 &mother, double M0, const std::vector<double> &m,
                            std::vector<T1> &p, bool unweight, T2 &rng) {
-  using gra::math::pow2;
   using gra::math::msqrt;
+  using gra::math::pow2;
 
   const int N = m.size();
 
@@ -778,26 +777,23 @@ inline MCW NBodyPhaseSpace(const T1 &mother, double M0, const std::vector<double
 
 // Rotation matrix from 3-vector a to 3-vector b (both need to be unit vectors with ||x|| = 1)
 //
-inline MMatrix<double> RotOnetoOne(const std::vector<double>& a, const std::vector<double>& b) {
-
+inline MMatrix<double> RotOnetoOne(const std::vector<double> &a, const std::vector<double> &b) {
   if (a.size() != 3 || b.size() != 3) {
     throw std::invalid_argument("kinematics::RotOnetoOne: Input should be 3-vectors");
   }
   // Dot product
-  const double c = matoper::VecVecMultiply(a,b);
+  const double c = matoper::VecVecMultiply(a, b);
 
   // Cross product
-  const std::vector<double> v = matoper::Cross(a,b);
+  const std::vector<double> v = matoper::Cross(a, b);
 
   // Skew symmetric cross product matrix
-  const MMatrix<double> Vx = {{ 0,    -v[2],  v[1]},
-                              { v[2],     0, -v[0]},
-                              {-v[1],  v[0],    0}};
-  // Identity 
-  const MMatrix<double> I(3,3,"eye");
+  const MMatrix<double> Vx = {{0, -v[2], v[1]}, {v[2], 0, -v[0]}, {-v[1], v[0], 0}};
+  // Identity
+  const MMatrix<double> I(3, 3, "eye");
 
   // Rotation matrix, with singularity at c = -1 (a and b back-to-back)
-  const MMatrix<double> R = I + Vx + (Vx*Vx) * (1.0/(1.0 + c));
+  const MMatrix<double> R = I + Vx + (Vx * Vx) * (1.0 / (1.0 + c));
 
   return R;
 }
@@ -864,7 +860,7 @@ inline void RotateZ(T &p, double angle) {
 
 
 // Find the closest 4-vector on lightcone
-// 
+//
 // Solution by Lagrange multipliers \Nabla f = \lambda \Nabla g
 //
 // eq(1) = 2*(px-px0) == -2*lambda*px
@@ -872,21 +868,20 @@ inline void RotateZ(T &p, double angle) {
 // eq(3) = 2*(pz-pz0) == -2*lambda*pz
 // eq(4) = 2*(E-E0)   ==  2*lambda*E
 // eq(5) = E^2        == (px^2 + py^2 + pz^2)
-// 
+//
 // S = solve(eq, [E,px,py,pz,lambda])
 //
-inline M4Vec LagrangeLightCone(const M4Vec& p0) {
-
+inline M4Vec LagrangeLightCone(const M4Vec &p0) {
   // Spacelike (q^2 < 0) or timelike (q^2 > 0) input
-  const double sign   = p0.M2() <= 0 ? 1.0 : -1.0;
+  const double sign = p0.M2() <= 0 ? 1.0 : -1.0;
 
   const double p3mod2 = p0.P3mod2();
   const double p3mod  = math::msqrt(p3mod2);
 
-  const double E      = p0.E()/2 + sign * p3mod/2;
-  const double alpha  = (p3mod2 + sign * p0.E()*p3mod) / (2*p3mod2);
+  const double E     = p0.E() / 2 + sign * p3mod / 2;
+  const double alpha = (p3mod2 + sign * p0.E() * p3mod) / (2 * p3mod2);
 
-  return M4Vec(alpha*p0.Px(), alpha*p0.Py(), alpha*p0.Pz(), E);
+  return M4Vec(alpha * p0.Px(), alpha * p0.Py(), alpha * p0.Pz(), E);
 }
 
 
@@ -895,35 +890,34 @@ inline M4Vec LagrangeLightCone(const M4Vec& p0) {
 // p1, p2 are massless spacelike q^2 < 0 => transformed to lightlike q^2 = 0
 // {p} massive/massless final states with q^2 = m^2
 //
-inline void OffShell2LightCone(M4Vec& p1, M4Vec& p2, std::vector<M4Vec>& p) {
-  
-  const int N = p.size();  
-  const int MAXITER = 15;
+inline void OffShell2LightCone(M4Vec &p1, M4Vec &p2, std::vector<M4Vec> &p) {
+  const int    N       = p.size();
+  const int    MAXITER = 15;
   const double STOPEPS = 1e-10;
-  
+
   // 4-momentum sum
-  auto psumfunc = [&] () {
-    M4Vec sum(0,0,0,0);
-    for (const auto& i : aux::indices(p)) { sum += p[i]; }
+  auto psumfunc = [&]() {
+    M4Vec sum(0, 0, 0, 0);
+    for (const auto &i : aux::indices(p)) { sum += p[i]; }
     return sum;
   };
 
   // Energy sum
-  auto Esumfunc = [&] () {
+  auto Esumfunc = [&]() {
     double sum = 0.0;
-    for (const auto& i : aux::indices(p)) { sum += p[i].E(); }
+    for (const auto &i : aux::indices(p)) { sum += p[i].E(); }
     return sum;
   };
-  
-/*
-  // Fractions
-  auto Efrac = [&] () {
-    const double Esum = Esumfunc();
-    std::vector<double> f(p.size());
-    for (const auto& i : aux::indices(p)) { f[i] = p[i].E() / Esum; }
-    return f;
-  };
-*/
+
+  /*
+    // Fractions
+    auto Efrac = [&] () {
+      const double Esum = Esumfunc();
+      std::vector<double> f(p.size());
+      for (const auto& i : aux::indices(p)) { f[i] = p[i].E() / Esum; }
+      return f;
+    };
+  */
 
   // -------------------------------------------------------------------------
   // Set initial state spacelike (q^2 < 0) particles to lightcone by
@@ -934,21 +928,20 @@ inline void OffShell2LightCone(M4Vec& p1, M4Vec& p2, std::vector<M4Vec>& p) {
 
   // Get sum
   const M4Vec q = p1 + p2;
-  
+
   // Normalize \vec{q} to unit length
   const std::vector<double> qvec = gra::matoper::Unit(q.P3());
 
   // Final state masses
   std::vector<double> m(p.size());
-  for (const auto& i : aux::indices(p)) { m[i] = p[i].M(); }
+  for (const auto &i : aux::indices(p)) { m[i] = p[i].M(); }
 
   int iter = 0;
-  
-  //for (const auto& i : aux::indices(p)) { p[i].Print(); }
-  //std::cout << "iter =" << iter << "  " << (q - psumfunc()).M2() << std::endl;
-  
-  while (true) {
 
+  // for (const auto& i : aux::indices(p)) { p[i].Print(); }
+  // std::cout << "iter =" << iter << "  " << (q - psumfunc()).M2() << std::endl;
+
+  while (true) {
     // --------------------------------------------------
     // 3-Momentum scaling and energy subtraction step
 
@@ -956,14 +949,14 @@ inline void OffShell2LightCone(M4Vec& p1, M4Vec& p2, std::vector<M4Vec>& p) {
     const double dE = Esumfunc() - q.E();
 
     // Current energy fractions
-    //std::vector<double> f = Efrac();
+    // std::vector<double> f = Efrac();
 
-    for (const auto& i : aux::indices(p)) {
-      const double E = p[i].E() - dE / N; // Scaling distributed by simple 1/N
-      //const double E = p[i].E() - dE * f[i]; // Scaling distributed by fractions
+    for (const auto &i : aux::indices(p)) {
+      const double E = p[i].E() - dE / N;  // Scaling distributed by simple 1/N
+      // const double E = p[i].E() - dE * f[i]; // Scaling distributed by fractions
 
-      const double a = gra::math::msqrt(E*E - m[i]*m[i]) / p[i].P3mod();
-      p[i].Set(a*p[i].Px(), a*p[i].Py(), a*p[i].Pz(), E);
+      const double a = gra::math::msqrt(E * E - m[i] * m[i]) / p[i].P3mod();
+      p[i].Set(a * p[i].Px(), a * p[i].Py(), a * p[i].Pz(), E);
     }
 
     // --------------------------------------------------
@@ -973,17 +966,17 @@ inline void OffShell2LightCone(M4Vec& p1, M4Vec& p2, std::vector<M4Vec>& p) {
     const std::vector<double> D3 = (psumfunc() - q).P3();
 
     // Current energy fractions
-    //f = Efrac();
+    // f = Efrac();
 
-    for (const auto& i : aux::indices(p)) {
+    for (const auto &i : aux::indices(p)) {
       std::vector<double> D3_this = D3;
-      gra::matoper::ScaleVector(D3_this, 1.0/N); // Scaling distributed by simple 1/N
-      //gra::matoper::ScaleVector(D3_this, f[i]); // Scaling distributed by fractions
+      gra::matoper::ScaleVector(D3_this, 1.0 / N);  // Scaling distributed by simple 1/N
+      // gra::matoper::ScaleVector(D3_this, f[i]); // Scaling distributed by fractions
 
       p[i].SetP3(gra::matoper::Minus(p[i].P3(), D3_this));
-      p[i].SetE(gra::math::msqrt(p[i].P3mod2() + m[i]*m[i]));
+      p[i].SetE(gra::math::msqrt(p[i].P3mod2() + m[i] * m[i]));
     }
-    
+
     // --------------------------------------------------
     // 3-Momentum rotation step
     /*
@@ -997,14 +990,14 @@ inline void OffShell2LightCone(M4Vec& p1, M4Vec& p2, std::vector<M4Vec>& p) {
     // --------------------------------------------------
 
     ++iter;
-    const double IVM = std::abs( (q - (psumfunc())).M2() );
-    if (iter > MAXITER || IVM < STOPEPS ) { break; }
+    const double IVM = std::abs((q - (psumfunc())).M2());
+    if (iter > MAXITER || IVM < STOPEPS) { break; }
 
-    //std::cout << "iter =" << iter << "  " << IVM << std::endl;
+    // std::cout << "iter =" << iter << "  " << IVM << std::endl;
   }
-  
-  //for (const auto& i : aux::indices(p)) { p[i].Print(); }
-  //std::cout << " --------------------------------------------------- " << std::endl;
+
+  // for (const auto& i : aux::indices(p)) { p[i].Print(); }
+  // std::cout << " --------------------------------------------------- " << std::endl;
 }
 
 
@@ -1022,18 +1015,18 @@ inline void OffShell2LightCone(M4Vec& p1, M4Vec& p2, std::vector<M4Vec>& p) {
 // Anti-Helicity: Quantization z-axis defined by the bisector vector between
 // initial state p1 and (p2) (POSITIVE) directions in the (resonance) system rest frame,
 // where p1 and p2 are the initial state proton 3-momentum.
-// 
+//
 // Helicity: Quantization axis defined by the resonance system
 // 3-momentum vector in the colliding beams frame (lab frame).
-// 
+//
 // Pseudo-Gottfried-Jackson: Quantization axis defined by the initial state
 // proton p1 (or p2) 3-momentum vector in the (resonance) system rest frame.
 //
 
 template <typename T>
-inline void LorentFramePrepare(const std::vector<T> &p, const T& X, const T &pbeam1, const T &pbeam2,
-                               T &pb1boost, T &pb2boost, std::vector<T> &pboost) {
-  const double     M = X.M();
+inline void LorentFramePrepare(const std::vector<T> &p, const T &X, const T &pbeam1,
+                               const T &pbeam2, T &pb1boost, T &pb2boost, std::vector<T> &pboost) {
+  const double M = X.M();
 
   // 2. Boost each particle to the system rest frame
   pboost = p;
@@ -1053,7 +1046,6 @@ template <typename T>
 inline void LorentzFrame(std::vector<T> &pfout, const T &pb1boost, const T &pb2boost,
                          const std::vector<T> &pfboost, const std::string &frametype,
                          int direction) {
-
   const std::vector<double> pb1boost3 = pb1boost.P3();
   const std::vector<double> pb2boost3 = pb2boost.P3();
 
@@ -1100,7 +1092,7 @@ inline void LorentzFrame(std::vector<T> &pfout, const T &pb1boost, const T &pb2b
     yaxis = gra::matoper::Unit(
         gra::matoper::Cross(gra::matoper::Unit(pb1boost3), gra::matoper::Unit(pb2boost3)));
   }
-  
+
   // x-axis
   xaxis = gra::matoper::Unit(gra::matoper::Cross(yaxis, zaxis));  // x = y [cross product] z
 
@@ -1118,20 +1110,19 @@ inline void LorentzFrame(std::vector<T> &pfout, const T &pb1boost, const T &pb2b
 // From lab to Anti-Helicity frame
 // Quantization z-axis is defined as the bisector of two beams, in the rest
 // frame of the resonance
-// 
+//
 // Input:     p  =  Set of 4-momentum to be transformed
 //            X  =  System 4-momentum
 //            p1 =  Beam 1 4-momentum
 //            p2 =  Beam 2 4-momentum
 //
 template <typename T>
-inline void AHframe(std::vector<T> &p, const T& X, const T& p1, const T& p2, bool DEBUG = false) {
-    
+inline void AHframe(std::vector<T> &p, const T &X, const T &p1, const T &p2, bool DEBUG = false) {
   // ********************************************************************
   if (DEBUG) {
     printf("\n\n ::ANTI-HELICITY FRAME:: \n");
     printf("AHframe:: Daughters in LAB FRAME: \n");
-    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
+    for (const auto &i : gra::aux::indices(p)) { p[i].Print(); }
   }
   // ********************************************************************
 
@@ -1145,7 +1136,7 @@ inline void AHframe(std::vector<T> &p, const T& X, const T& p1, const T& p2, boo
 
   // Boost the beam particles
   gra::kinematics::LorentzBoost(X, X.M(), p1b, -1);  // Note the minus sign
-  gra::kinematics::LorentzBoost(X, X.M(), p2b, -1);  // Note the minus sign  
+  gra::kinematics::LorentzBoost(X, X.M(), p2b, -1);  // Note the minus sign
 
   // Now get the 3-momentum
   const std::vector<double> pb1boost3 = p1b.P3();
@@ -1157,8 +1148,8 @@ inline void AHframe(std::vector<T> &p, const T& X, const T& p1, const T& p2, boo
   std::vector<double> xaxis;
 
   // Anti-Helicity positive bisector vector
-    zaxis = gra::matoper::Unit(
-        gra::matoper::Plus(gra::matoper::Unit(pb1boost3), gra::matoper::Unit(pb2boost3)));
+  zaxis = gra::matoper::Unit(
+      gra::matoper::Plus(gra::matoper::Unit(pb1boost3), gra::matoper::Unit(pb2boost3)));
 
   yaxis = gra::matoper::Unit(
       gra::matoper::Cross(gra::matoper::Unit(pb1boost3), gra::matoper::Unit(pb2boost3)));
@@ -1173,11 +1164,11 @@ inline void AHframe(std::vector<T> &p, const T& X, const T& p1, const T& p2, boo
     const std::vector<double> p3new = R * p[k].P3();   // Spatial part rotation Rp -> p'
     p[k] = T(p3new[0], p3new[1], p3new[2], p[k].E());  // Full 4-momentum [px; py; pz; E]
   }
-  
+
   // ********************************************************************
   if (DEBUG) {
     printf("AHframe:: Daughters in AH FRAME: \n");
-    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
+    for (const auto &i : gra::aux::indices(p)) { p[i].Print(); }
   }
   // ********************************************************************
 }
@@ -1186,20 +1177,19 @@ inline void AHframe(std::vector<T> &p, const T& X, const T& p1, const T& p2, boo
 // From lab to Collins-Soper frame
 // Quantization z-axis is defined as the bisector of two beams, in the rest
 // frame of the resonance
-// 
+//
 // Input:     p  =  Set of 4-momentum to be transformed
 //            X  =  System 4-momentum
 //            p1 =  Beam 1 4-momentum
 //            p2 =  Beam 2 4-momentum
 //
 template <typename T>
-inline void CSframe(std::vector<T> &p, const T& X, const T& p1, const T& p2, bool DEBUG = false) {
-    
+inline void CSframe(std::vector<T> &p, const T &X, const T &p1, const T &p2, bool DEBUG = false) {
   // ********************************************************************
   if (DEBUG) {
     printf("\n\n ::COLLINS-SOPER FRAME:: \n");
     printf("CSframe:: Daughters in LAB FRAME: \n");
-    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
+    for (const auto &i : gra::aux::indices(p)) { p[i].Print(); }
   }
   // ********************************************************************
 
@@ -1213,7 +1203,7 @@ inline void CSframe(std::vector<T> &p, const T& X, const T& p1, const T& p2, boo
 
   // Boost the beam particles
   gra::kinematics::LorentzBoost(X, X.M(), p1b, -1);  // Note the minus sign
-  gra::kinematics::LorentzBoost(X, X.M(), p2b, -1);  // Note the minus sign  
+  gra::kinematics::LorentzBoost(X, X.M(), p2b, -1);  // Note the minus sign
 
   // Now get the 3-momentum
   const std::vector<double> pb1boost3 = p1b.P3();
@@ -1229,14 +1219,14 @@ inline void CSframe(std::vector<T> &p, const T& X, const T& p1, const T& p2, boo
       gra::matoper::Minus(gra::matoper::Unit(pb1boost3), gra::matoper::Unit(pb2boost3)));
 
   /* ALTERNATIVE WAY, but gives random reflection (rotation around Z by PI)
-  
+
   M4Vec bijector;
   bijector.SetP3(zaxis);
-  
+
   // Now get the rotation angle, note the minus
   const double Z_angle = -bijector.Phi();
   const double Y_angle = -bijector.Theta();
-  
+
   // Rotate final states
   for (const auto &i : gra::aux::indices(p)) {
     gra::kinematics::RotateZ(p[i], Z_angle);
@@ -1258,11 +1248,11 @@ inline void CSframe(std::vector<T> &p, const T& X, const T& p1, const T& p2, boo
     const std::vector<double> p3new = R * p[k].P3();   // Spatial part rotation Rp -> p'
     p[k] = T(p3new[0], p3new[1], p3new[2], p[k].E());  // Full 4-momentum [px; py; pz; E]
   }
-  
+
   // ********************************************************************
   if (DEBUG) {
     printf("CSframe:: Daughters in CS FRAME: \n");
-    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
+    for (const auto &i : gra::aux::indices(p)) { p[i].Print(); }
   }
   // ********************************************************************
 }
@@ -1271,22 +1261,22 @@ inline void CSframe(std::vector<T> &p, const T& X, const T& p1, const T& p2, boo
 // From lab to Gottfried-Jackson frame
 // Quantization z-axis spanned by the propagator (momentum transfer vector)
 // momentum in the rest frame of the central system
-// 
+//
 // Input:  p         = Set of 4-momentum to be transformed
 //         X         = System 4-momentum
 //         direction = -1 or 1
 //         q1        = 4-momentum transfer vector 1
 //         q2        = 4-momentum transfer vector 2
-// 
+//
 template <typename T>
-inline void GJframe(std::vector<T> &p, const T& X, int direction, const T &q1, const T &q2, bool DEBUG = false) {
-
+inline void GJframe(std::vector<T> &p, const T &X, int direction, const T &q1, const T &q2,
+                    bool DEBUG = false) {
   // ********************************************************************
   if (DEBUG) {
     printf("\n\n ::GOTTFRIED-JACKSON FRAME:: \n");
 
     printf("GJframe:: Daughters in LAB FRAME: \n");
-    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
+    for (const auto &i : gra::aux::indices(p)) { p[i].Print(); }
   }
   // ********************************************************************
 
@@ -1297,38 +1287,36 @@ inline void GJframe(std::vector<T> &p, const T& X, int direction, const T &q1, c
 
   // Boost the propagators
   T q1boost = q1;
-  T q2boost = q2;  
+  T q2boost = q2;
   gra::kinematics::LorentzBoost(X, X.M(), q1boost, -1);  // Note the minus sign
   gra::kinematics::LorentzBoost(X, X.M(), q2boost, -1);  // Note the minus sign
 
   // Now get the rotation angle, note the minus
   double Z_angle = 0;
   double Y_angle = 0;
-  if        (direction == -1) {
+  if (direction == -1) {
     Z_angle = -q1boost.Phi();
     Y_angle = -q1boost.Theta();
-  } else if (direction ==  1) {
+  } else if (direction == 1) {
     Z_angle = -q2boost.Phi();
     Y_angle = -q2boost.Theta();
   } else {
     throw std::invalid_argument("GJframe: direction not -1 or 1");
   }
 
-  const auto rotate = [&](T& p) {
+  const auto rotate = [&](T &p) {
     gra::kinematics::RotateZ(p, Z_angle);
     gra::kinematics::RotateY(p, Y_angle);
-    //gra::kinematics::RotateZ(p, math::PI); // Reflection
+    // gra::kinematics::RotateZ(p, math::PI); // Reflection
   };
 
   // Rotate final states
-  for (const auto &i : gra::aux::indices(p)) {
-    rotate(p[i]);
-  }
+  for (const auto &i : gra::aux::indices(p)) { rotate(p[i]); }
 
   // ********************************************************************
   if (DEBUG) {
     printf("GJframe:: Daughters in Gottfried-Jackson FRAME: \n");
-    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
+    for (const auto &i : gra::aux::indices(p)) { p[i].Print(); }
 
     // Rotate propagator
     rotate(q1boost);
@@ -1348,7 +1336,7 @@ inline void GJframe(std::vector<T> &p, const T& X, int direction, const T &q1, c
 // From lab to Pseudo-Gottfried-Jackson frame
 // Quantization z-axis spanned by the beam proton +z (or -z) momentum
 // in the rest frame of the central system
-// 
+//
 // Input:  p            = Set of 4-momentum to be transformed
 //         X            = System 4-momentum
 //         direction    = -1 or 1
@@ -1356,15 +1344,14 @@ inline void GJframe(std::vector<T> &p, const T& X, int direction, const T &q1, c
 //         p_beam_minus = 4-momentum of beam2
 //
 template <typename T>
-inline void PGframe(std::vector<T> &p, const T& X, const int direction, const T &p_beam_plus,
+inline void PGframe(std::vector<T> &p, const T &X, const int direction, const T &p_beam_plus,
                     const T &p_beam_minus, bool DEBUG = false) {
-
   // ********************************************************************
   if (DEBUG) {
     printf("\n\n ::PSEUDO-GOTTFRIED-JACKSON FRAME:: \n");
 
     printf("PGframe:: Daughters in LAB FRAME: \n");
-    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
+    for (const auto &i : gra::aux::indices(p)) { p[i].Print(); }
   }
   // ********************************************************************
 
@@ -1384,10 +1371,10 @@ inline void PGframe(std::vector<T> &p, const T& X, const int direction, const T 
   double Z_angle = 0;
   double Y_angle = 0;
 
-  if        (direction == -1) {
+  if (direction == -1) {
     Z_angle = -proton_p.Phi();
     Y_angle = -proton_p.Theta();
-  } else if (direction ==  1) {
+  } else if (direction == 1) {
     Z_angle = -proton_m.Phi();
     Y_angle = -proton_m.Theta();
   } else {
@@ -1396,21 +1383,19 @@ inline void PGframe(std::vector<T> &p, const T& X, const int direction, const T 
   }
 
   // Rotation function
-  const auto rotate = [&](T& p) {
+  const auto rotate = [&](T &p) {
     gra::kinematics::RotateZ(p, Z_angle);
     gra::kinematics::RotateY(p, Y_angle);
-    //gra::kinematics::RotateZ(p, math::PI); // Reflection    
+    // gra::kinematics::RotateZ(p, math::PI); // Reflection
   };
 
   // Rotate final states
-  for (const auto &i : gra::aux::indices(p)) {
-    rotate(p[i]);
-  }
+  for (const auto &i : gra::aux::indices(p)) { rotate(p[i]); }
 
   // ********************************************************************
   if (DEBUG) {
     printf("PGframe:: Daughters in Pseudo-Gottfried-Jackson FRAME: \n");
-    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
+    for (const auto &i : gra::aux::indices(p)) { p[i].Print(); }
 
     // Rotate proton
     rotate(proton_p);
@@ -1435,39 +1420,36 @@ inline void PGframe(std::vector<T> &p, const T& X, const int direction, const T 
 
 // From lab to the Helicity frame
 // Quantization z-axis as the direction of the resonance in the lab frame
-// 
+//
 // Input:  p = Set of 4-momentum to be transformed
 //         X = System 4-momentum
 //
 template <typename T>
-inline void HXframe(std::vector<T> &p, const T& X, bool DEBUG = false) {
-
+inline void HXframe(std::vector<T> &p, const T &X, bool DEBUG = false) {
   // ********************************************************************
   if (DEBUG) {
     printf("\n\n ::HELICITY FRAME:: \n");
     printf("HXframe:: Daughters in LAB FRAME: \n");
-    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
+    for (const auto &i : gra::aux::indices(p)) { p[i].Print(); }
   }
   // ********************************************************************
-  
+
   // Rotation angles, note the minus
   const double Z_angle = -X.Phi();
   const double Y_angle = -X.Theta();
 
-  const auto rotate = [&](T& p) {
+  const auto rotate = [&](T &p) {
     gra::kinematics::RotateZ(p, Z_angle);
     gra::kinematics::RotateY(p, Y_angle);
-    gra::kinematics::RotateZ(p, math::PI); // Reflection
+    gra::kinematics::RotateZ(p, math::PI);  // Reflection
   };
 
-  for (const auto &i : gra::aux::indices(p)) {
-    rotate(p[i]);
-  }
+  for (const auto &i : gra::aux::indices(p)) { rotate(p[i]); }
 
   // ********************************************************************
   if (DEBUG) {
     printf("HXframe:: Daughters in ROTATED LAB FRAME: \n");
-    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
+    for (const auto &i : gra::aux::indices(p)) { p[i].Print(); }
 
     T ex(1, 0, 0, 0);
     T ey(0, 1, 0, 0);
@@ -1499,7 +1481,7 @@ inline void HXframe(std::vector<T> &p, const T& X, bool DEBUG = false) {
   // ********************************************************************
   if (DEBUG) {
     printf("HXframe:: Daughters after boost in HELICITY FRAME: \n");
-    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
+    for (const auto &i : gra::aux::indices(p)) { p[i].Print(); }
 
     printf("HXframe:: Central system in LAB FRAME: \n");
     X.Print();
@@ -1514,19 +1496,18 @@ inline void HXframe(std::vector<T> &p, const T& X, bool DEBUG = false) {
 
 
 // "Rest frame" (no boost, beam axis as z-axis / spin quantization axis)
-//  
+//
 // Input:  p = Set of 4-momentum to be transformed
 //         X = System 4-momentum
 //
 template <typename T>
-inline void CMframe(std::vector<T> &p, const T& X, bool DEBUG = false) {
-
+inline void CMframe(std::vector<T> &p, const T &X, bool DEBUG = false) {
   // ********************************************************************
   if (DEBUG) {
     printf("\n\n ::REST FRAME:: \n");
 
     printf("CMframe:: Daughters in LAB FRAME: \n");
-    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
+    for (const auto &i : gra::aux::indices(p)) { p[i].Print(); }
   }
   // ********************************************************************
 
@@ -1538,12 +1519,12 @@ inline void CMframe(std::vector<T> &p, const T& X, bool DEBUG = false) {
   // ********************************************************************
   if (DEBUG) {
     printf("CMframe:: Daughters in REST FRAME: \n");
-    for (const auto & i : gra::aux::indices(p)) { p[i].Print(); }
+    for (const auto &i : gra::aux::indices(p)) { p[i].Print(); }
   }
   // ********************************************************************
 }
 
-}  // Namespace MKinematics
+}  // namespace kinematics
 
 // Particle class
 struct MParticle {
@@ -1563,7 +1544,7 @@ struct MParticle {
   int          C    = 0;      // Default zero C-parity (e.g. fermions do not have)
   unsigned int L    = 0;      // For Mesons/Baryons
   bool         glue = false;  // Glueball state
-  
+
   void setPCL(int _P, int _C, unsigned int _L) {
     P = _P;
     C = _C;
@@ -1587,19 +1568,18 @@ struct MParticle {
 
 // Recursive decay tree branch
 struct MDecayBranch {
-
   MDecayBranch() {
-    f = MMatrix<std::complex<double>> (1,1, 1.0); // Unit element
+    f = MMatrix<std::complex<double>>(1, 1, 1.0);  // Unit element
   }
 
   // Offshell mass picked event by event
   double m_offshell = 0.0;
 
-  MParticle                   p;              // PDG particle
-  M4Vec                       p4;             // 4-momentum
-  std::vector<MDecayBranch>   legs;           // Daughters
-  M4Vec                       decay_position; // Decay 4-position
-  gra::HELMatrix              hel;            // Decay helicity information
+  MParticle                 p;               // PDG particle
+  M4Vec                     p4;              // 4-momentum
+  std::vector<MDecayBranch> legs;            // Daughters
+  M4Vec                     decay_position;  // Decay 4-position
+  gra::HELMatrix            hel;             // Decay helicity information
 
   // Used with helicity amplitudes
   MMatrix<std::complex<double>> f;
@@ -1651,8 +1631,7 @@ class PARAM_RES {
       for (std::size_t i = 0; i < rho.size_row(); ++i) {
         for (std::size_t j = 0; j < rho.size_col(); ++j) {
           std::string delim = (j < rho.size_col() - 1) ? ", " : "";
-          printf("%6.3f+i%6.3f%s ", std::real(rho[i][j]), std::imag(rho[i][j]),
-                 delim.c_str());
+          printf("%6.3f+i%6.3f%s ", std::real(rho[i][j]), std::imag(rho[i][j]), delim.c_str());
         }
         std::cout << std::endl;
       }
@@ -1667,28 +1646,28 @@ class PARAM_RES {
 
   // -------------------------------------------------------------------
   // Tensor Pomeron couplings
-  std::vector<double> g_Tensor;        // Production couplings
+  std::vector<double> g_Tensor;  // Production couplings
   // -------------------------------------------------------------------
-  
+
   // (Complex) production coupling constant
   std::complex<double> g = 0.0;
-  
+
   // Form factor parameter
   double g_FF = 0.0;
-  
+
   // Breit-Wigner type
   int BW = 0;
 
   // 2->1 (generation spin correlation), 1->2 (decay spin correlations)
   bool SPINGEN = true;
   bool SPINDEC = true;
-  
+
   // Lorentz frame of the spin distribution
   std::string FRAME = "null";
 
-  // Maximum sliding pomeron helicity 
+  // Maximum sliding pomeron helicity
   int JMAX = 0;
-  
+
   // Spin-density matrix (constant)
   MMatrix<std::complex<double>> rho;
 
@@ -1700,29 +1679,27 @@ class PARAM_RES {
 
 // Lorentz scalars and other common kinematic variables
 class LORENTZSCALAR {
-
-public:
-
+ public:
   LORENTZSCALAR() {}
   ~LORENTZSCALAR() {
-      delete GlobalSudakovPtr;
-      delete GlobalPdfPtr;
+    delete GlobalSudakovPtr;
+    delete GlobalPdfPtr;
   }
-  
+
   // --------------------------------------------------------------------
   // PDF access
   // Sudakov/pdf routines
-  MSudakov* GlobalSudakovPtr = nullptr;
+  MSudakov *GlobalSudakovPtr = nullptr;
 
   // Normal pdfs
-  std::string  LHAPDFSET = "null";
-  LHAPDF::PDF* GlobalPdfPtr = nullptr;
-  int pdf_trials = 0;
+  std::string  LHAPDFSET    = "null";
+  LHAPDF::PDF *GlobalPdfPtr = nullptr;
+  int          pdf_trials   = 0;
   // --------------------------------------------------------------------
 
   // Cascade sampling forced control initiated by corresponding amplitude functions
-  bool FORCE_FLATMASS2 = false;
-  double FORCE_OFFSHELL = -1;
+  bool   FORCE_FLATMASS2 = false;
+  double FORCE_OFFSHELL  = -1;
 
   // --------------------------------------------------------------------
 
@@ -1742,7 +1719,7 @@ public:
 
   // Integral weight container (central system phase space)
   gra::kinematics::MCW DW;
-  
+
   // Active in the factorized phase space product (by default, true)
   // This is controlled by the spesific amplitudes
   bool PS_active = true;
@@ -1754,7 +1731,7 @@ public:
   // Initial states
   gra::MParticle beam1;
   gra::MParticle beam2;
-  
+
   // Four momenta of initial and final states
   M4Vec              pbeam1;
   M4Vec              pbeam2;
@@ -1888,7 +1865,6 @@ struct VETOCUT {
 };
 
 
-
-}  // gra namespace
+}  // namespace gra
 
 #endif

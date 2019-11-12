@@ -54,17 +54,17 @@ double Baryon_FF(double that, double M2);
 double ResonanceFormFactor(double shat, double M2, double S0);
 
 // Propagators
-double Meson_prop(double that, double M2);
-double Baryon_prop(double that, double M2);
+double               Meson_prop(double that, double M2);
+double               Baryon_prop(double that, double M2);
 std::complex<double> FSI_prop(double t_hat, double M2);
-}
+}  // namespace PARAM_REGGE
 
 // Matrix element dimension: " GeV^" << -(2*external_legs - 8)
 class MRegge {
  public:
   MRegge() {}
   ~MRegge() {}
-  
+
   void InitReggeAmplitude(int PDG, const std::string &MODELPARAM);
 
   // Regge amplitudes
@@ -74,11 +74,11 @@ class MRegge {
   std::complex<double> ME2(gra::LORENTZSCALAR &lts, int mode) const;
   std::complex<double> ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const;
   std::complex<double> ME3ODD(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const;
-  
+
   std::complex<double> ME3HEL(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const;
   std::complex<double> PhotoME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const;
 
-  void PomPomProtonVertex(const gra::LORENTZSCALAR& lts, double& FF_A, double& FF_B) const;
+  void PomPomProtonVertex(const gra::LORENTZSCALAR &lts, double &FF_A, double &FF_B) const;
 
   // Constructor amplitude leg permutations
   void ConstructPerm(int type);
@@ -92,17 +92,18 @@ class MRegge {
   std::complex<double> OdderonProp(double s, double t) const;
   std::complex<double> PhotoProp(double s, double t, double m2, bool excite,
                                  double M2_forward) const;
-  
+
   // Helicity functions
-  double g_Vertex(double t, double lambda_i, double lambda_f) const;
-  std::complex<double> gik_Vertex(double t1, double t2, double dphi, int lambda_h, int J, int P, int JMAX) const;
-  double gammaLambda(double t1, double t2, double m1, double m2) const;
-  int xi3(int J, int P, int P_i, int sigma_i, int P_k, int sigma_k) const;
-  
+  double               g_Vertex(double t, double lambda_i, double lambda_f) const;
+  std::complex<double> gik_Vertex(double t1, double t2, double dphi, int lambda_h, int J, int P,
+                                  int JMAX) const;
+  double               gammaLambda(double t1, double t2, double m1, double m2) const;
+  int                  xi3(int J, int P, int P_i, int sigma_i, int P_k, int sigma_k) const;
+
  private:
   // Nothing
 };
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

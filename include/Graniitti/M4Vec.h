@@ -89,12 +89,12 @@ class M4Vec {
     k[E_] = e;
   }
 
-  void SetP3(const std::vector<double>& vec) {
+  void SetP3(const std::vector<double> &vec) {
     if (vec.size() != 3) { throw std::invalid_argument("M4Vec::SetP3: input should be 3-vector"); }
     k[X_] = vec[0];
     k[Y_] = vec[1];
     k[Z_] = vec[2];
-  } 
+  }
 
   // Apply metric tensor: eta_{\mu\nu} k^\nu = k_\mu
   void Flip3() {
@@ -147,8 +147,12 @@ class M4Vec {
   double Et2() const { return Mt2(); }
 
   // Angles
-  double Phi() const { return (Px() == 0.0 && Py() == 0.0) ? 0.0 : std::atan2(Py(),Px()); }    // y / x, range [-PI,PI]
-  double Theta() const { return (Px() == 0.0 && Py() == 0.0 && Pz() == 0.0) ? 0.0 : std::atan2(Pt(),Pz()); }  // |Pt| / z
+  double Phi() const {
+    return (Px() == 0.0 && Py() == 0.0) ? 0.0 : std::atan2(Py(), Px());
+  }  // y / x, range [-PI,PI]
+  double Theta() const {
+    return (Px() == 0.0 && Py() == 0.0 && Pz() == 0.0) ? 0.0 : std::atan2(Pt(), Pz());
+  }  // |Pt| / z
   double CosTheta() const { return std::cos(Theta()); }
 
   // Pseudorapidity and rapidity (boost) in z-direction
@@ -181,9 +185,7 @@ class M4Vec {
   }
 
   // Transverse 2-vector dot product
-  double DotPt(const M4Vec &rhs) const {
-    return Px() * rhs.Px() + Py() * rhs.Py();
-  }
+  double DotPt(const M4Vec &rhs) const { return Px() * rhs.Px() + Py() * rhs.Py(); }
 
   // 3-vector cross product (return vector with 0 energy/time)
   M4Vec Cross3(const M4Vec &rhs) const {
@@ -204,8 +206,8 @@ class M4Vec {
   double DeltaPhiAbs(const M4Vec &v) const { return std::abs(DeltaPhi(v)); }
 
   // OPERATORS
-  double operator[](size_t mu) const { return k[mu]; }  // for reading only
-  double &operator[](size_t mu) { return k[mu]; }       // for substituting
+  double  operator[](size_t mu) const { return k[mu]; }  // for reading only
+  double &operator[](size_t mu) { return k[mu]; }        // for substituting
 
   // Access operator in normal contravariant (upper index) indexing
   double operator^(size_t mu) const { return k[mu]; }
@@ -319,6 +321,6 @@ class M4Vec {
   std::vector<double> k;
 };
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

@@ -39,6 +39,6 @@ void VVVV2_0(std::complex<double> V1[], std::complex<double> V2[], std::complex<
 
 void VVV1_3(std::complex<double> V1[], std::complex<double> V2[], std::complex<double> COUP,
             double M3, double W3, std::complex<double> V3[]);
-}
+}  // namespace MG5_sm_yy_ww
 
 #endif

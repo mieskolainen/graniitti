@@ -26,7 +26,7 @@ class MAmpMG5_yy_ll {
   // Private functions to calculate the matrix element for all
   // subprocesses
   // Calculate wavefunctions
-  void calculate_wavefunctions(const int perm[], const int hel[]);
+  void                 calculate_wavefunctions(const int perm[], const int hel[]);
   static const int     nwavefuncs = 6;
   std::complex<double> w[nwavefuncs][18];
   static const int     namplitudes = 2;

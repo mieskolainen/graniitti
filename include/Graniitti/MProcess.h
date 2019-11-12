@@ -17,14 +17,14 @@
 #include "HepMC3/GenParticle.h"
 
 // Own
-#include "Graniitti/MHELMatrix.h"
-#include "Graniitti/MKinematics.h"
 #include "Graniitti/M4Vec.h"
 #include "Graniitti/MAux.h"
 #include "Graniitti/MEikonal.h"
 #include "Graniitti/MGlobals.h"
 #include "Graniitti/MH1.h"
 #include "Graniitti/MH2.h"
+#include "Graniitti/MHELMatrix.h"
+#include "Graniitti/MKinematics.h"
 #include "Graniitti/MPDG.h"
 #include "Graniitti/MRandom.h"
 #include "Graniitti/MSubProc.h"
@@ -83,16 +83,16 @@ class MProcess : public MUserHistograms {
 
   virtual double operator()(const std::vector<double> &randvec, AuxIntData &aux)  = 0;
   virtual double EventWeight(const std::vector<double> &randvec, AuxIntData &aux) = 0;
-  virtual bool EventRecord(HepMC3::GenEvent &evt) = 0;
+  virtual bool   EventRecord(HepMC3::GenEvent &evt)                               = 0;
 
   std::vector<std::string> PrintProcesses() const;
-  std::string GetProcessDescriptor(std::string process) const;
+  std::string              GetProcessDescriptor(std::string process) const;
 
   // Set central system decay structure
-  void SetDecayMode(std::string str);
-  void SetupBranching();
-  void ProcessHelicityTree(MDecayBranch& branch);
-  HELMatrix ProcessHelicityDecay(const MParticle& p, const std::vector<MParticle>& daughter) const;
+  void      SetDecayMode(std::string str);
+  void      SetupBranching();
+  void      ProcessHelicityTree(MDecayBranch &branch);
+  HELMatrix ProcessHelicityDecay(const MParticle &p, const std::vector<MParticle> &daughter) const;
 
   // Set initial state
   void SetInitialState(const std::vector<std::string> &beam, const std::vector<double> &energy);
@@ -102,23 +102,25 @@ class MProcess : public MUserHistograms {
 
   // ISOLATE phase space in <F> class processes
   void SetISOLATE(bool in) { lts.PS_active = !in; }
-  bool                 GetISOLATE() { return !lts.PS_active; }
+  bool GetISOLATE() { return !lts.PS_active; }
   void SetFLATMASS2(bool in) {
     aux::PrintNotice();
-    std::cout << rang::fg::red << "MProcess::SetFLATMASS2: Set flat in mass^2 "
-                                  "sampling in decay trees: "
-              << rang::fg::reset << std::endl;    
-    FLATMASS2 = in;
-    FLATMASS2_user = true; // user has tagged it
+    std::cout << rang::fg::red
+              << "MProcess::SetFLATMASS2: Set flat in mass^2 "
+                 "sampling in decay trees: "
+              << rang::fg::reset << std::endl;
+    FLATMASS2      = in;
+    FLATMASS2_user = true;  // user has tagged it
   }
   bool GetFLATMASS2() { return FLATMASS2; }
   void SetOFFSHELL(double in) {
     aux::PrintNotice();
-    std::cout << rang::fg::red << "MProcess::SetOFFSHELL: Set number of "
-                                  "decay widths in decay trees: "
+    std::cout << rang::fg::red
+              << "MProcess::SetOFFSHELL: Set number of "
+                 "decay widths in decay trees: "
               << in << rang::fg::reset << std::endl;
-    OFFSHELL = in;
-    OFFSHELL_user = true; // user has tagged it
+    OFFSHELL      = in;
+    OFFSHELL_user = true;  // user has tagged it
   }
   double GetOFFSHELL() { return OFFSHELL; }
 
@@ -136,42 +138,44 @@ class MProcess : public MUserHistograms {
   }
   // Set common Lorentz frame for all resonances
   void SetFRAME(const std::string &FRAME) {
-    std::cout << rang::fg::red << "MProcess::SetFRAME: Set common Lorentz "
-                                  "frame for the resonance amplitudes: "
+    std::cout << rang::fg::red
+              << "MProcess::SetFRAME: Set common Lorentz "
+                 "frame for the resonance amplitudes: "
               << FRAME << rang::fg::reset << std::endl;
     for (const auto &x : lts.RESONANCES) { lts.RESONANCES[x.first].FRAME = FRAME; }
   }
 
   // Set maximum sliding pomeron helicity for all resonances
-  void SetJMAX(const int& JMAX) {
-    std::cout << rang::fg::red << "MProcess::SetJMAX: Set common maximum Pomeron helicity "
-                                  "for all the resonances: "
+  void SetJMAX(const int &JMAX) {
+    std::cout << rang::fg::red
+              << "MProcess::SetJMAX: Set common maximum Pomeron helicity "
+                 "for all the resonances: "
               << JMAX << rang::fg::reset << std::endl;
     for (const auto &x : lts.RESONANCES) { lts.RESONANCES[x.first].JMAX = JMAX; }
   }
-  
+
   // Get initial state
   std::vector<gra::MParticle> GetInitialState() {
     std::vector<gra::MParticle> beams = {lts.beam1, lts.beam2};
     return beams;
   }
-  
+
   // Phase space dimension
   unsigned int GetdLIPSDim() { return ProcPtr.LIPSDIM; }
 
   // Pomeron loop screening
   void SetScreening(bool value) { SCREENING = value; }
-  bool                   GetScreening() { return SCREENING; }
+  bool GetScreening() { return SCREENING; }
   // Set/Get input eikonal
-  void SetEikonal(const MEikonal &in) { Eikonal = in; }
-  MEikonal                        GetEikonal() const { return Eikonal; }
+  void     SetEikonal(const MEikonal &in) { Eikonal = in; }
+  MEikonal GetEikonal() const { return Eikonal; }
 
   // Set LHAPDFSET name
-  void SetLHAPDF(const std::string &in) { 
+  void SetLHAPDF(const std::string &in) {
     std::cout << "MProcess::SetLHAPDF: " << in << std::endl;
     lts.LHAPDFSET = in;
   }
-  
+
   // Set cuts
   void SetGenCuts(const gra::GENCUT &in) { gcuts = in; }
   void SetFidCuts(const gra::FIDCUT &in) { fcuts = in; }
@@ -193,8 +197,9 @@ class MProcess : public MUserHistograms {
 
     if (EXCITATION > 0) {
       aux::PrintWarning();
-      std::cout << rang::fg::red << "MProcess::SetExcitation: Proton "
-                                    "excitation is under construction / some processes contain only kinematic part: "
+      std::cout << rang::fg::red
+                << "MProcess::SetExcitation: Proton "
+                   "excitation is under construction / some processes contain only kinematic part: "
                 << in << rang::fg::reset << std::endl;
     }
   }
@@ -237,8 +242,10 @@ class MProcess : public MUserHistograms {
 
   void PrintDecayTree(const gra::MDecayBranch &branch) const;
 
-  void CalculatePhaseSpace(const gra::MDecayBranch &branch, double& product, double& product2pi, double& volume, int& N_final) const;
-  void PrintPhaseSpace(const gra::MDecayBranch &branch, double& product, double& product2pi, int& N_final) const;
+  void CalculatePhaseSpace(const gra::MDecayBranch &branch, double &product, double &product2pi,
+                           double &volume, int &N_final) const;
+  void PrintPhaseSpace(const gra::MDecayBranch &branch, double &product, double &product2pi,
+                       int &N_final) const;
 
   // Random numbers (keep it public for seeding)
   MRandom random;
@@ -249,9 +256,9 @@ class MProcess : public MUserHistograms {
   // MProcess& operator=(const MProcess& rhs);
 
   // Internal virtual functions, without definitions here
-  virtual void ConstructProcesses() = 0;
+  virtual void ConstructProcesses()                                                           = 0;
   virtual bool LoopKinematics(const std::vector<double> &p1p, const std::vector<double> &p2p) = 0;
-  virtual bool FiducialCuts() const = 0;
+  virtual bool FiducialCuts() const                                                           = 0;
 
   // Cascade phase-space factor
   double CascadePS() const;
@@ -261,7 +268,7 @@ class MProcess : public MUserHistograms {
 
   // Eikonal screening loop
   double S3ScreenedAmp2();
-  
+
   // First print
   void PrintSetup() const;
 
@@ -274,7 +281,8 @@ class MProcess : public MUserHistograms {
   // -------------------------------------------------------
   // Recursive function to treat decay trees
 
-  void SaveBranch(HepMC3::GenEvent &evt, const gra::MDecayBranch& branch, const HepMC3::GenParticlePtr& pX);
+  void SaveBranch(HepMC3::GenEvent &evt, const gra::MDecayBranch &branch,
+                  const HepMC3::GenParticlePtr &pX);
   bool CommonRecord(HepMC3::GenEvent &evt);
   bool VetoCuts() const;
   bool CommonCuts() const;
@@ -299,8 +307,8 @@ class MProcess : public MUserHistograms {
   // System fragmentation
 
   bool ExciteNstar(const M4Vec &nstar, gra::MDecayBranch &forward);
-  bool ExciteContinuum(const M4Vec &nstar, gra::MDecayBranch &forward, double Q2_scale, int B_sum, int Q_sum,
-                       const std::string& pt_distribution = "powexp");
+  bool ExciteContinuum(const M4Vec &nstar, gra::MDecayBranch &forward, double Q2_scale, int B_sum,
+                       int Q_sum, const std::string &pt_distribution = "powexp");
   void BranchForwardSystem(const std::vector<M4Vec> &p4, const std::vector<MParticle> &p,
                            const M4Vec &nstar, gra::MDecayBranch &forward);
 
@@ -334,32 +342,32 @@ class MProcess : public MUserHistograms {
   unsigned int N_inf = 0;
   unsigned int N_nan = 0;
 
-  double         S_factor = 0.0;  // Cross section statistical 1/S symmetry factor
+  double S_factor = 0.0;  // Cross section statistical 1/S symmetry factor
   // (for identical final states)
   // ----------------------------------------------------------------------
   // Subprocesses
 
   // Process ID lists
   std::map<std::string, std::string> Processes;
-  MSubProc ProcPtr;
+  MSubProc                           ProcPtr;
 
   // ----------------------------------------------------------------------
   // Steering parameters
 
-  std::string  PROCESS;             // Process identifier string
-  std::string  CID;                 // Phase space sampler identifier <F>,<C>,...
-  std::string  DECAYMODE;           // Decaymode identifier string
-  bool         SCREENING  = false;  // Pomeron loop on/off
-  int EXCITATION = 0;               // Forward proton excitation (0 = off, 1 = single, 2 = double)
-  int USERCUTS   = 0;               // User custom cuts identifier
-  int FLATAMP    = 0;               // Flat matrix element mode
-  
+  std::string PROCESS;             // Process identifier string
+  std::string CID;                 // Phase space sampler identifier <F>,<C>,...
+  std::string DECAYMODE;           // Decaymode identifier string
+  bool        SCREENING  = false;  // Pomeron loop on/off
+  int         EXCITATION = 0;      // Forward proton excitation (0 = off, 1 = single, 2 = double)
+  int         USERCUTS   = 0;      // User custom cuts identifier
+  int         FLATAMP    = 0;      // Flat matrix element mode
+
   // ----------------------------------------------------------------------
   // Phase-space control
-  
-  bool   FLATMASS2 = false;  // Flat in M^2 instead of Breit-Wigner sampling
+
+  bool   FLATMASS2      = false;  // Flat in M^2 instead of Breit-Wigner sampling
   bool   FLATMASS2_user = false;
-  double OFFSHELL  = 5;      // How many full widths to sample particles in cascades
+  double OFFSHELL       = 5;  // How many full widths to sample particles in cascades
   bool   OFFSHELL_user  = false;
 
   // Forward excitation minimum/maximum M^2 boundaries
@@ -367,8 +375,8 @@ class MProcess : public MUserHistograms {
   double M2_f_max     = 0.0;
   double log_M2_f_min = 0.0;
   double log_M2_f_max = 0.0;
-  
-  static constexpr double ZERO_EPS = 1e-12; // To use with log(0+ZERO_EPS)
+
+  static constexpr double ZERO_EPS = 1e-12;  // To use with log(0+ZERO_EPS)
   // ----------------------------------------------------------------------
 
   // Non-Diffractive
@@ -379,6 +387,6 @@ class MProcess : public MUserHistograms {
   MPDG PDG;
 };
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

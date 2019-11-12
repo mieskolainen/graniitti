@@ -184,7 +184,7 @@ void txxxxx(double p[4], double tmass, int nhel, int nst, complex<double> tc[18]
       }
     } else if (nhel == 0) {
       for (j = 0; j < 4; j++) {
-        for (i     = 0; i < 4; i++)
+        for (i = 0; i < 4; i++)
           ft[i][j] = sqs * (ep[i] * em[j] + em[i] * ep[j] + 2.0 * e0[i] * e0[j]);
       }
     } else if (nhel == -1) {
@@ -333,7 +333,7 @@ void FFV1_0(std::complex<double> F1[], std::complex<double> F2[], std::complex<d
             std::complex<double> COUP, std::complex<double> &vertex) {
   static std::complex<double> cI = std::complex<double>(0., 1.);
   std::complex<double>        TMP0;
-  TMP0 = (F1[2] * (F2[4] * (V3[2] + V3[5]) + F2[5] * (V3[3] + cI * (V3[4]))) +
+  TMP0   = (F1[2] * (F2[4] * (V3[2] + V3[5]) + F2[5] * (V3[3] + cI * (V3[4]))) +
           (F1[3] * (F2[4] * (V3[3] - cI * (V3[4])) + F2[5] * (V3[2] - V3[5])) +
            (F1[4] * (F2[2] * (V3[2] - V3[5]) - F2[3] * (V3[3] + cI * (V3[4]))) +
             F1[5] * (F2[2] * (+cI * (V3[4]) - V3[3]) + F2[3] * (V3[2] + V3[5])))));
@@ -361,13 +361,14 @@ void FFV1_2(std::complex<double> F1[], std::complex<double> V3[], std::complex<d
                      (P2[1] * (V3[5] - V3[2]) +
                       (P2[2] * (-cI * (V3[5]) + cI * (V3[2])) + P2[3] * (+cI * (V3[4]) - V3[3])))) +
             M2 * (F1[4] * (V3[2] - V3[5]) + F1[5] * (+cI * (V3[4]) - V3[3]))));
-  F2[3] = denom * (-cI) * (F1[2] * (P2[0] * (-1.) * (V3[3] + cI * (V3[4])) +
-                                    (P2[1] * (V3[2] + V3[5]) + (P2[2] * (+cI * (V3[2] + V3[5])) -
-                                                                P2[3] * (V3[3] + cI * (V3[4]))))) +
-                           (F1[3] * (P2[0] * (V3[5] - V3[2]) +
-                                     (P2[1] * (V3[3] - cI * (V3[4])) +
-                                      (P2[2] * (V3[4] + cI * (V3[3])) + P2[3] * (V3[5] - V3[2])))) +
-                            M2 * (F1[4] * (V3[3] + cI * (V3[4])) - F1[5] * (V3[2] + V3[5]))));
+  F2[3] = denom * (-cI) *
+          (F1[2] * (P2[0] * (-1.) * (V3[3] + cI * (V3[4])) +
+                    (P2[1] * (V3[2] + V3[5]) +
+                     (P2[2] * (+cI * (V3[2] + V3[5])) - P2[3] * (V3[3] + cI * (V3[4]))))) +
+           (F1[3] * (P2[0] * (V3[5] - V3[2]) +
+                     (P2[1] * (V3[3] - cI * (V3[4])) +
+                      (P2[2] * (V3[4] + cI * (V3[3])) + P2[3] * (V3[5] - V3[2])))) +
+            M2 * (F1[4] * (V3[3] + cI * (V3[4])) - F1[5] * (V3[2] + V3[5]))));
   F2[4] = denom * (-cI) *
           (F1[4] * (P2[0] * (V3[5] - V3[2]) +
                     (P2[1] * (V3[3] + cI * (V3[4])) +
@@ -476,4 +477,4 @@ void VVV1P0_1(std::complex<double> V2[], std::complex<double> V3[], std::complex
                    (V2[5] * (-cI * (TMP1) + cI * (TMP2)) + V3[5] * (-cI * (TMP4) + cI * (TMP3))));
 }
 
-}  // end namespace $(namespace)s_sm
+}  // namespace MG5_sm_gg_qqbar

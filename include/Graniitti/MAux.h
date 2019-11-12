@@ -42,18 +42,17 @@ namespace aux {
 // @PDG[992]{M:300, W:0}
 
 // Format options:
-// 
+//
 // @id:value is represented with map<"_SINGLET_", value>
-// 
+//
 // @id:value
 // @id{arg}
 // @id[]{arg}
 // @id[target1,target2,...]{arg}
 
 struct OneCMD {
-
-  std::string id;
-  std::vector<std::string> target;
+  std::string                        id;
+  std::vector<std::string>           target;
   std::map<std::string, std::string> arg;
 
   void Print() {
@@ -62,10 +61,10 @@ struct OneCMD {
     std::cout << "[target] : [";
     for (std::size_t i = 0; i < target.size(); ++i) {
       std::cout << target[i];
-      if (i < target.size()-1) { std::cout << ","; }
+      if (i < target.size() - 1) { std::cout << ","; }
     }
     std::cout << "] " << std::endl;
-    
+
     std::cout << "{arg} : " << std::endl;
     for (const auto &x : arg) { std::cout << x.first << ":" << x.second << std::endl; }
     std::cout << std::endl;
@@ -105,7 +104,7 @@ inline Eigen::MatrixXd Matrix2Eigen(const MMatrix<T> &M) {
 }
 
 // System information
-void AutoDownloadLHAPDF(const std::string pdfname);
+void        AutoDownloadLHAPDF(const std::string pdfname);
 std::string ExecCommand(const std::string &cmd);
 std::string GetExecutablePath();
 std::string GetBasePath(std::size_t level);
@@ -118,8 +117,8 @@ std::experimental::filesystem::file_status{});
 */
 
 std::uintmax_t GetFileSize(const std::string &filename);
-void GetProcessMemory(double &peak_use, double &resident_use);
-void GetDiskUsage(const std::string &path, int64_t &size, int64_t &free, int64_t &used);
+void           GetProcessMemory(double &peak_use, double &resident_use);
+void           GetDiskUsage(const std::string &path, int64_t &size, int64_t &free, int64_t &used);
 unsigned long long TotalSystemMemory();
 std::string        SystemName();
 std::string        HostName();
@@ -163,8 +162,9 @@ std::string Charge3XtoString(int q3);
 std::string Spin2XtoString(int J2);
 
 // String splitting
-std::vector<std::string> SplitStr2Str(std::string input, const char delim = ',', bool trimextraspace = true);
-std::vector<int> SplitStr2Int(std::string input, const char delim = ',');
+std::vector<std::string> SplitStr2Str(std::string input, const char delim = ',',
+                                      bool trimextraspace = true);
+std::vector<int>         SplitStr2Int(std::string input, const char delim = ',');
 std::vector<std::string> Extract(const std::string &str);
 
 // Split string to int or double
@@ -209,8 +209,8 @@ void PrintBar(std::string str, unsigned int N = 74);
 void CreateDirectory(std::string fullpath);
 
 // Version information
-void        CheckUpdate();
-void  CreateVersionJSON();
+void CheckUpdate();
+void CreateVersionJSON();
 
 double      GetVersion();
 std::string GetVersionType();
@@ -230,12 +230,13 @@ bool AssertCut(std::vector<T> cut, const std::string &name = "", bool dothrow = 
     throw std::invalid_argument("AssertCut: Input '" + name + "' vector size not 2");
   }
   if (cut[1] <= cut[0]) {
-  if (dothrow) {
-    std::string message = "AssertCut: Input '" + name + "' with [" + std::to_string(cut[0]) +
-                          "," + std::to_string(cut[1]) + "] (maximum value smaller than minimum value)";
-    throw std::invalid_argument(message);
-  }
-  return false;
+    if (dothrow) {
+      std::string message = "AssertCut: Input '" + name + "' with [" + std::to_string(cut[0]) +
+                            "," + std::to_string(cut[1]) +
+                            "] (maximum value smaller than minimum value)";
+      throw std::invalid_argument(message);
+    }
+    return false;
   }
   return true;
 }
@@ -243,22 +244,21 @@ bool AssertCut(std::vector<T> cut, const std::string &name = "", bool dothrow = 
 
 // Check cut obeys given boundaries
 template <typename T>
-bool AssertCutRange(std::vector<T> cut, std::vector<T> bounds, const std::string &name = "", bool dothrow = false) {
+bool AssertCutRange(std::vector<T> cut, std::vector<T> bounds, const std::string &name = "",
+                    bool dothrow = false) {
   if (cut.size() != 2) {
     throw std::invalid_argument("AssertCutRange: Input '" + name + "' vector size not 2");
   }
-  if (!AssertCut(cut, name, dothrow)) {
-    return false;
-  }
+  if (!AssertCut(cut, name, dothrow)) { return false; }
 
   if (cut[0] < bounds[0] || cut[1] > bounds[1]) {
-  if (dothrow) {
-    std::string message = "AssertCutRange: Input '" + name + "' with [" + std::to_string(cut[0]) +
-                          "," + std::to_string(cut[1]) + "]" + " invalid given bounds: ["
-                              + std::to_string(bounds[0]) + "," + std::to_string(bounds[1]) + "]";
-    throw std::invalid_argument(message);
-  }
-  return false;
+    if (dothrow) {
+      std::string message = "AssertCutRange: Input '" + name + "' with [" + std::to_string(cut[0]) +
+                            "," + std::to_string(cut[1]) + "]" + " invalid given bounds: [" +
+                            std::to_string(bounds[0]) + "," + std::to_string(bounds[1]) + "]";
+      throw std::invalid_argument(message);
+    }
+    return false;
   }
   return true;
 }
@@ -319,7 +319,7 @@ bool AssertSet(T value, std::vector<T> set, const std::string &name = "", bool d
 template <typename T>
 struct index_range {
   struct iterator {
-    bool operator!=(iterator x) const { return index != x.index; }
+    bool     operator!=(iterator x) const { return index != x.index; }
     iterator operator++() {
       ++index;
       return *this;
@@ -341,10 +341,10 @@ index_range<Index> indices(const T &container) {
 }
 // ----------------------------------------------------------------------
 
-std::vector<OneCMD> SplitCommands(const std::string &fullstr);
+std::vector<OneCMD>      SplitCommands(const std::string &fullstr);
 std::vector<std::size_t> FindOccurance(const std::string &str, const std::string &sub);
 
-}  // aux namespace
-}  // gra namespace
+}  // namespace aux
+}  // namespace gra
 
 #endif

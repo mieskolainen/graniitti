@@ -44,10 +44,10 @@
 #include <Eigen/Dense>
 
 using gra::aux::indices;
-using gra::math::msqrt;
-using gra::math::zi;
 using gra::math::PI;
+using gra::math::msqrt;
 using gra::math::pow2;
+using gra::math::zi;
 
 namespace gra {
 // Constructor
@@ -91,8 +91,9 @@ void MHarmonic::Init(const HPARAM &hp) {
   // Test functions
   gra::spherical::TestSphericalIntegrals(param.LMAX);
 
-  std::cout << rang::fg::yellow << "<Spherical Harmonic Based (costheta,phi)_r.f. "
-                                   "Decomposition and Efficiency inversion>"
+  std::cout << rang::fg::yellow
+            << "<Spherical Harmonic Based (costheta,phi)_r.f. "
+               "Decomposition and Efficiency inversion>"
             << std::endl
             << std::endl;
   std::cout << "TERMINOLOGY:" << rang::fg::reset << std::endl;
@@ -104,7 +105,9 @@ void MHarmonic::Init(const HPARAM &hp) {
                "(geometric-kinematic) "
                "final state phase space (cuts on final states)"
             << std::endl;
-  std::cout << "  {D} Detector  == Events after the detector efficiency losses, selection AND fiducial cuts" << std::endl;
+  std::cout << "  {D} Detector  == Events after the detector efficiency losses, selection AND "
+               "fiducial cuts"
+            << std::endl;
   std::cout << std::endl;
   std::cout << "{D} subset of {F} subset of {G} (this strict hierarchy might "
                "be violated in "
@@ -295,9 +298,8 @@ void MHarmonic::Plot2DExpansion(
     // Loop over observable
 
     for (std::size_t bin = 0; bin < BINS; ++bin) {
-
       // Get x-axis point
-      //const double value = grid[OBSERVABLE][bin].center();
+      // const double value = grid[OBSERVABLE][bin].center();
 
       // Set indices {0,0,0, ..., 0}
       std::vector<std::size_t> cell(grid.size(), 0);
@@ -473,12 +475,8 @@ void MHarmonic::PlotFigures(
 
     double SCALE = source.first.SCALE;
 
-    if (SCALE < 0 && source.first.YAXIS == "") {
-      yaxis_label = "Normalized to 1";
-    }
-    if (source.first.YAXIS != "") {
-      yaxis_label  = source.first.YAXIS;
-    }
+    if (SCALE < 0 && source.first.YAXIS == "") { yaxis_label = "Normalized to 1"; }
+    if (source.first.YAXIS != "") { yaxis_label = source.first.YAXIS; }
 
     for (int l = 0; l <= param.LMAX; ++l) {
       for (int m = -l; m <= l; ++m) {
@@ -496,7 +494,6 @@ void MHarmonic::PlotFigures(
         double y_err[BINS] = {0.0};
 
         for (std::size_t bin = 0; bin < BINS; ++bin) {
-        
           // Get x-axis point
           x[bin] = grid[OBSERVABLE][bin].center();
 
@@ -505,7 +502,7 @@ void MHarmonic::PlotFigures(
           cell[OBSERVABLE] = bin;
 
           // CHOOSE DATAMODE
-          if        (ALGO == "MPP") {
+          if (ALGO == "MPP") {
             y[bin]     = source.second(cell).t_lm_MPP[index];
             y_err[bin] = source.second(cell).t_lm_MPP_error[index];
           } else if (ALGO == "EML") {
@@ -569,7 +566,7 @@ void MHarmonic::PlotFigures(
   unsigned int k = 0;
 
   // Aux variables
-  std::shared_ptr<TPad> tpad;
+  std::shared_ptr<TPad>   tpad;
   std::shared_ptr<TLatex> l1;
   std::shared_ptr<TLatex> l2;
 
@@ -587,7 +584,6 @@ void MHarmonic::PlotFigures(
 
       // Title and y-axis
       if (k == 0) {
-
         // Title
         if (SPACE == "det") {
           mg[k]->SetTitle(Form("%s | #it{lm} = <%d,%d>", TITLES[0].c_str(), l, m));
@@ -601,7 +597,7 @@ void MHarmonic::PlotFigures(
 
         // y-axis (for some ROOT reason, this needs to be always after SetTitle)
         mg[k]->GetYaxis()->SetTitle(yaxis_label.c_str());
-        gPad->SetLeftMargin(0.15); // 15 per cent of pad for left margin, default is 10%
+        gPad->SetLeftMargin(0.15);  // 15 per cent of pad for left margin, default is 10%
         mg[k]->GetYaxis()->SetTitleOffset(1.25);
 
       } else {
@@ -835,9 +831,9 @@ void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string &out
   // Draw multigraph
   unsigned int k = 0;
 
-  std::shared_ptr<TPad> tpad;
-  std::shared_ptr<TLatex>  l1;
-  std::shared_ptr<TLatex>  l2;
+  std::shared_ptr<TPad>   tpad;
+  std::shared_ptr<TLatex> l1;
+  std::shared_ptr<TLatex> l2;
 
   for (int l = 0; l <= param.LMAX; ++l) {
     for (int m = -l; m <= l; ++m) {
@@ -1420,7 +1416,7 @@ double MHarmonic::PrintOutHyperCell(const gra::spherical::Meta &    META,
         "EML: Estimate of events in this hyperbin in the flat phase space = "
         "%0.1f +- %0.1f "
         "\n",
-        sum_fla, msqrt(sum_fla)); // Poisson error
+        sum_fla, msqrt(sum_fla));  // Poisson error
 
     const double sum_FID = gra::spherical::HarmDotProd(fid_DET(cell).E_lm, fla[META](cell).t_lm_EML,
                                                        ACTIVE, param.LMAX);
@@ -1428,7 +1424,7 @@ double MHarmonic::PrintOutHyperCell(const gra::spherical::Meta &    META,
         "EML: Estimate of events in this hyperbin in the fiducial  phase "
         "space = %0.1f "
         "+- %0.1f \n",
-        sum_FID, msqrt(sum_FID)); // Poisson error
+        sum_FID, msqrt(sum_FID));  // Poisson error
 
     const double sum_DET = gra::spherical::HarmDotProd(det_DET(cell).E_lm, fla[META](cell).t_lm_EML,
                                                        ACTIVE, param.LMAX);
@@ -1436,7 +1432,7 @@ double MHarmonic::PrintOutHyperCell(const gra::spherical::Meta &    META,
         "EML: Estimate of events in this hyperbin in the detector        "
         "space = %0.1f "
         "+- %0.1f \n",
-        sum_DET, msqrt(sum_DET)); // Poisson error
+        sum_DET, msqrt(sum_DET));  // Poisson error
   }
   std::cout << std::endl;
 
@@ -1445,7 +1441,7 @@ double MHarmonic::PrintOutHyperCell(const gra::spherical::Meta &    META,
   printf(
       "MPP: Estimate of events in this hyperbin in the flat phase space = %0.1f "
       "+- %0.1f \n",
-      sum_fla, msqrt(sum_fla)); // Poisson error
+      sum_fla, msqrt(sum_fla));  // Poisson error
 
   const double sum_FID =
       gra::spherical::HarmDotProd(fid_DET(cell).E_lm, fla[META](cell).t_lm_MPP, ACTIVE, param.LMAX);
@@ -1453,7 +1449,7 @@ double MHarmonic::PrintOutHyperCell(const gra::spherical::Meta &    META,
       "MPP: Estimate of events in this hyperbin in the fiducial  phase "
       "space = %0.1f +- "
       "%0.1f \n",
-      sum_FID, msqrt(sum_FID)); // Poisson error
+      sum_FID, msqrt(sum_FID));  // Poisson error
 
   const double sum_DET =
       gra::spherical::HarmDotProd(det_DET(cell).E_lm, fla[META](cell).t_lm_MPP, ACTIVE, param.LMAX);
@@ -1461,7 +1457,7 @@ double MHarmonic::PrintOutHyperCell(const gra::spherical::Meta &    META,
       "MPP: Estimate of events in this hyperbin in the detector        "
       "space = %0.1f +- "
       "%0.1f \n",
-      sum_DET, msqrt(sum_DET)); // Poisson error
+      sum_DET, msqrt(sum_DET));  // Poisson error
 
   return chi2;
 }
@@ -1693,4 +1689,4 @@ void MHarmonic::logLfunc(int &npar, double *gin, double &f, double *par, int ifl
   // printf("MHarmonic:: cost-functional = %0.4E, nhat = %0.1f \n", f, nhat);
 }
 
-}  // gra namespace ends
+}  // namespace gra

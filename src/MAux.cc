@@ -20,8 +20,8 @@
 #include <unistd.h>
 
 // Libraries
-#include "LHAPDF/LHAPDF.h"
 #include "HepMC3/FourVector.h"
+#include "LHAPDF/LHAPDF.h"
 
 // Own
 #include "Graniitti/M4Vec.h"
@@ -39,9 +39,9 @@ namespace aux {
 // -------------------------------------------------------
 // FIXED HERE manually
 
-double      GetVersion() {       return 1.01; }
-std::string GetVersionType() {   return "release"; }
-std::string GetVersionDate() {   return "23.10.2019"; }
+double      GetVersion() { return 1.01; }
+std::string GetVersionType() { return "release"; }
+std::string GetVersionDate() { return "23.10.2019"; }
 std::string GetVersionUpdate() { return "more custom spin options"; }
 
 // -------------------------------------------------------
@@ -73,8 +73,8 @@ void AutoDownloadLHAPDF(const std::string pdfname) {
 
 // Run terminal command, get output to std::string
 std::string ExecCommand(const std::string &cmd) {
-  std::array<char, 128> buffer;
-  std::string result;
+  std::array<char, 128>                    buffer;
+  std::string                              result;
   std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
   if (!pipe) { throw std::runtime_error("aux::ExecCommand:: popen() failed!"); }
   while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) { result += buffer.data(); }
@@ -414,7 +414,7 @@ std::vector<int> SplitStr2Int(std::string input, const char delim) {
   while (ss.good()) {
     std::string substr;
     std::getline(ss, substr, delim);
-    
+
     TrimExtraSpace(substr);
     output.push_back(std::stoi(substr));
   }
@@ -426,11 +426,11 @@ void TrimExtraSpace(std::string &value) {
   value = std::regex_replace(value, std::regex(R"(^ +| +$|( ) +)"), "$1");
 }
 
-void TrimLeadSpace(std::string& value) {
+void TrimLeadSpace(std::string &value) {
   value = std::regex_replace(value, std::regex(R"(^ +)"), "$1");
 }
 
-void TrimTrailSpace(std::string& value) {
+void TrimTrailSpace(std::string &value) {
   value = std::regex_replace(value, std::regex(R"( +$)"), "$1");
 }
 
@@ -460,92 +460,96 @@ bool FileExist(const std::string &name) {
 }
 
 void PrintNotice() {
-  std::cout << rang::fg::red << 
-  "███╗   ██╗ ██████╗ ████████╗██╗ ██████╗███████╗\n"
-  "████╗  ██║██╔═══██╗╚══██╔══╝██║██╔════╝██╔════╝\n"
-  "██╔██╗ ██║██║   ██║   ██║   ██║██║     █████╗  \n"
-  "██║╚██╗██║██║   ██║   ██║   ██║██║     ██╔══╝  \n"
-  "██║ ╚████║╚██████╔╝   ██║   ██║╚██████╗███████╗\n"
-  "╚═╝  ╚═══╝ ╚═════╝    ╚═╝   ╚═╝ ╚═════╝╚══════╝\n"
-  << rang::fg::reset << std::endl;
+  std::cout << rang::fg::red
+            << "███╗   ██╗ ██████╗ ████████╗██╗ ██████╗███████╗\n"
+               "████╗  ██║██╔═══██╗╚══██╔══╝██║██╔════╝██╔════╝\n"
+               "██╔██╗ ██║██║   ██║   ██║   ██║██║     █████╗  \n"
+               "██║╚██╗██║██║   ██║   ██║   ██║██║     ██╔══╝  \n"
+               "██║ ╚████║╚██████╔╝   ██║   ██║╚██████╗███████╗\n"
+               "╚═╝  ╚═══╝ ╚═════╝    ╚═╝   ╚═╝ ╚═════╝╚══════╝\n"
+            << rang::fg::reset << std::endl;
 }
 
 void PrintWarning() {
-  std::cout << rang::fg::red <<
-  "██╗    ██╗ █████╗ ██████╗ ███╗   ██╗██╗███╗   ██╗ ██████╗ \n"
-  "██║    ██║██╔══██╗██╔══██╗████╗  ██║██║████╗  ██║██╔════╝ \n"
-  "██║ █╗ ██║███████║██████╔╝██╔██╗ ██║██║██╔██╗ ██║██║  ███╗\n"
-  "██║███╗██║██╔══██║██╔══██╗██║╚██╗██║██║██║╚██╗██║██║   ██║\n"
-  "╚███╔███╔╝██║  ██║██║  ██║██║ ╚████║██║██║ ╚████║╚██████╔╝\n"
-  " ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝╚═╝  ╚═══╝ ╚═════╝ \n"
-  << rang::fg::reset << std::endl;
+  std::cout << rang::fg::red
+            << "██╗    ██╗ █████╗ ██████╗ ███╗   ██╗██╗███╗   ██╗ ██████╗ \n"
+               "██║    ██║██╔══██╗██╔══██╗████╗  ██║██║████╗  ██║██╔════╝ \n"
+               "██║ █╗ ██║███████║██████╔╝██╔██╗ ██║██║██╔██╗ ██║██║  ███╗\n"
+               "██║███╗██║██╔══██║██╔══██╗██║╚██╗██║██║██║╚██╗██║██║   ██║\n"
+               "╚███╔███╔╝██║  ██║██║  ██║██║ ╚████║██║██║ ╚████║╚██████╔╝\n"
+               " ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝╚═╝  ╚═══╝ ╚═════╝ \n"
+            << rang::fg::reset << std::endl;
 }
 
 void PrintGameOver() {
-  std::cout <<
-  " ██████╗  █████╗ ███╗   ███╗███████╗     ██████╗ ██╗   ██╗███████╗██████╗ \n"
-  "██╔════╝ ██╔══██╗████╗ ████║██╔════╝    ██╔═══██╗██║   ██║██╔════╝██╔══██╗\n"
-  "██║  ███╗███████║██╔████╔██║█████╗      ██║   ██║██║   ██║█████╗  ██████╔╝\n"
-  "██║   ██║██╔══██║██║╚██╔╝██║██╔══╝      ██║   ██║╚██╗ ██╔╝██╔══╝  ██╔══██╗\n"
-  "╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗    ╚██████╔╝ ╚████╔╝ ███████╗██║  ██║\n"
-  " ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝     ╚═════╝   ╚═══╝  ╚══════╝╚═╝  ╚═╝\n"
-  << std::endl;
+  std::cout << " ██████╗  █████╗ ███╗   ███╗███████╗     ██████╗ ██╗   ██╗███████╗██████╗ \n"
+               "██╔════╝ ██╔══██╗████╗ ████║██╔════╝    ██╔═══██╗██║   ██║██╔════╝██╔══██╗\n"
+               "██║  ███╗███████║██╔████╔██║█████╗      ██║   ██║██║   ██║█████╗  ██████╔╝\n"
+               "██║   ██║██╔══██║██║╚██╔╝██║██╔══╝      ██║   ██║╚██╗ ██╔╝██╔══╝  ██╔══██╗\n"
+               "╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗    ╚██████╔╝ ╚████╔╝ ███████╗██║  ██║\n"
+               " ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝     ╚═════╝   ╚═══╝  ╚══════╝╚═╝  ╚═╝\n"
+            << std::endl;
 }
 
 // Check updates online
 void CheckUpdate() {
-  
   const std::string tmpfile = "/tmp/GRANIITTI_VERSION_" + std::to_string(time(0)) + ".json";
-  const std::string cmd =  "curl -s -o " + tmpfile + 
+  const std::string cmd =
+      "curl -s -o " + tmpfile +
       " https://raw.githubusercontent.com/mieskolainen/GRANIITTI/master/VERSION.json";
-  
+
   // Execute curl
   const int ret = system(cmd.c_str());
 
-  if (ret != -1) { // Success
+  if (ret != -1) {  // Success
 
     // Read and parse
-    std::string data;
+    std::string    data;
     nlohmann::json j;
 
     try {
       data = gra::aux::GetInputData(tmpfile);
       j    = nlohmann::json::parse(data);
     } catch (...) {
-        std::cout << std::endl;
-        PrintBar("-", 80);
-        std::cout << "Check your internet access -- could not update version information" << std::endl;
-        PrintBar("-", 80);
-        std::cout << std::endl;
+      std::cout << std::endl;
+      PrintBar("-", 80);
+      std::cout << "Check your internet access -- could not update version information"
+                << std::endl;
+      PrintBar("-", 80);
+      std::cout << std::endl;
     }
 
     try {
-      const double online_version   = j.at("version");
-      const std::string online_date = j.at("date");
+      const double      online_version = j.at("version");
+      const std::string online_date    = j.at("date");
 
-      if (GetVersion() < online_version) { // Older version than online
+      if (GetVersion() < online_version) {  // Older version than online
         std::cout << std::endl;
         PrintBar("-", 80);
-        std::cout << rang::style::bold << rang::fg::green << "New version " <<
-                     online_version << " (" << online_date << ") available at <github.com/mieskolainen/GRANIITTI>" << rang::fg::reset << rang::style::reset << std::endl;
+        std::cout << rang::style::bold << rang::fg::green << "New version " << online_version
+                  << " (" << online_date << ") available at <github.com/mieskolainen/GRANIITTI>"
+                  << rang::fg::reset << rang::style::reset << std::endl;
         std::cout << std::endl;
         std::cout << "To update, copy-and-run: " << std::endl;
-        std::cout << "git pull origin master && source ./install/setenv.sh && make superclean && make -j4" << std::endl;
+        std::cout
+            << "git pull origin master && source ./install/setenv.sh && make superclean && make -j4"
+            << std::endl;
         PrintBar("-", 80);
         std::cout << std::endl;
-      } else if ( std::abs(GetVersion() - online_version) < 1e-6 ) { // Same as online
+      } else if (std::abs(GetVersion() - online_version) < 1e-6) {  // Same as online
         std::cout << std::endl;
         PrintBar("-", 80);
-        std::cout << rang::style::bold << "This version " <<
-                     GetVersion() << " (" << GetVersionDate() << ") is up to date with online version" << rang::style::reset << std::endl;
+        std::cout << rang::style::bold << "This version " << GetVersion() << " ("
+                  << GetVersionDate() << ") is up to date with online version" << rang::style::reset
+                  << std::endl;
         PrintBar("-", 80);
         std::cout << std::endl;
-      } else { // This version is newer than oline
+      } else {  // This version is newer than oline
         std::cout << std::endl;
         PrintBar("-", 80);
-        std::cout << rang::style::bold << rang::fg::green << "This version " <<
-                     GetVersion() << " (" << GetVersionDate() << ") is newer than online version " <<
-                     online_version << " (" << online_date << ")" << rang::style::reset << std::endl;
+        std::cout << rang::style::bold << rang::fg::green << "This version " << GetVersion() << " ("
+                  << GetVersionDate() << ") is newer than online version " << online_version << " ("
+                  << online_date << ")" << rang::style::reset << std::endl;
         PrintBar("-", 80);
         std::cout << std::endl;
       }
@@ -555,7 +559,7 @@ void CheckUpdate() {
       if (system(rmcmd.c_str()) != 1) {
         // success
       }
-      
+
     } catch (...) {
       // do nothing
     }
@@ -566,31 +570,29 @@ void CheckUpdate() {
 }
 
 void CreateVersionJSON() {
-
   // Get program path and output this VERSION.json
   const std::string output = GetBasePath(2) + "/VERSION.json";
-  const std::string MSG = "{\n \"name\": \"%s\",\n \"version\": %0.2f,\n \"type\": \"%s\",\n \"date\": \"%s\",\n \"update\": \"%s\"\n}\n";
+  const std::string MSG =
+      "{\n \"name\": \"%s\",\n \"version\": %0.2f,\n \"type\": \"%s\",\n \"date\": \"%s\",\n "
+      "\"update\": \"%s\"\n}\n";
 
-  FILE* file = fopen(output.c_str(), "w");
-  fprintf(file, MSG.c_str(),
-          "GRANIITTI",
-          GetVersion(),
-          GetVersionType().c_str(),
-          GetVersionDate().c_str(),
-          GetVersionUpdate().c_str());
+  FILE *file = fopen(output.c_str(), "w");
+  fprintf(file, MSG.c_str(), "GRANIITTI", GetVersion(), GetVersionType().c_str(),
+          GetVersionDate().c_str(), GetVersionUpdate().c_str());
   fclose(file);
 }
 
 
 std::string GetVersionString() {
   char buff[100];
-  snprintf(buff, sizeof(buff), "Version %0.2f (%s) %s", GetVersion(), GetVersionType().c_str(), GetVersionDate().c_str());
+  snprintf(buff, sizeof(buff), "Version %0.2f (%s) %s", GetVersion(), GetVersionType().c_str(),
+           GetVersionDate().c_str());
   std::string str = buff;
   return str;
 }
 
 std::string GetVersionTLatex() {
-  char buff[100];
+  char         buff[100];
   const double version = GetVersion();
   snprintf(buff, sizeof(buff), "#color[16]{#scale[0.6]{GRANIITTI #scale[0.8]{%0.2f}}}", version);
   std::string str = buff;
@@ -606,8 +608,8 @@ std::string GetWebTLatex() {
 
 void PrintVersion() {
   std::cout << GetVersionString() << std::endl;
-  std::cout << rang::style::bold << "<github.com/mieskolainen/GRANIITTI>"
-            << rang::style::reset << std::endl
+  std::cout << rang::style::bold << "<github.com/mieskolainen/GRANIITTI>" << rang::style::reset
+            << std::endl
             << std::endl;
   std::cout << "References: arXiv:1910.06300 [hep-ph]" << std::endl;
   std::cout << std::endl;
@@ -691,9 +693,9 @@ std::vector<OneCMD> SplitCommands(const std::string &fullstr) {
   for (std::size_t i = 0; i < subcmd.size(); ++i) {
     // ** Remove whitespace **
     TrimExtraSpace(subcmd[i]);
-    
-    std::string id;
-    std::vector<std::string> target;
+
+    std::string                        id;
+    std::vector<std::string>           target;
     std::map<std::string, std::string> arg;
 
     // ------------------------------------------------------------------
@@ -702,7 +704,7 @@ std::vector<OneCMD> SplitCommands(const std::string &fullstr) {
     std::size_t right = subcmd[i].find("]");
 
     // Incomplete brackets
-    if      (left == std::string::npos && right != std::string::npos) {
+    if (left == std::string::npos && right != std::string::npos) {
       throw std::invalid_argument("SplitCommands: Incomplete @R[]{} syntax with missing [");
     }
     // Incomplete brackets
@@ -713,8 +715,8 @@ std::vector<OneCMD> SplitCommands(const std::string &fullstr) {
     else if (left != std::string::npos && right != std::string::npos) {
       // Read (multiple) targets out
       const std::string TARGET_str = subcmd[i].substr(left + 1, right - left - 1);
-      if (TARGET_str != "") { // do not process empty
-      target = SplitStr2Str(TARGET_str, ',');
+      if (TARGET_str != "") {  // do not process empty
+        target = SplitStr2Str(TARGET_str, ',');
       }
 
       // Remove [...] block including brackets
@@ -727,7 +729,7 @@ std::vector<OneCMD> SplitCommands(const std::string &fullstr) {
     std::size_t Rpos = subcmd[i].find("}", 0);
 
     // Incomplete brackets
-    if      (Lpos == std::string::npos && Rpos != std::string::npos) {
+    if (Lpos == std::string::npos && Rpos != std::string::npos) {
       throw std::invalid_argument("SplitCommands: Incomplete @R[]{} syntax with missing {");
     }
     // Incomplete brackets
@@ -767,7 +769,8 @@ std::vector<OneCMD> SplitCommands(const std::string &fullstr) {
         // Split using syntax definition: key:val
         std::vector<std::string> strip = SplitStr2Str(keyvals[i], ':');
         if (strip.size() != 2) {
-          throw std::invalid_argument("gra::SplitCommands: @Syntax not good with brackets {" + keyvals[i] + "}");
+          throw std::invalid_argument("gra::SplitCommands: @Syntax not good with brackets {" +
+                                      keyvals[i] + "}");
         }
 
         // Strip spaces from the key
@@ -801,5 +804,5 @@ std::vector<std::size_t> FindOccurance(const std::string &str, const std::string
   return positions;
 }
 
-}  // aux namespace ends
-}  // gra namespace ends
+}  // namespace aux
+}  // namespace gra

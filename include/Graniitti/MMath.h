@@ -50,18 +50,16 @@ constexpr const double PIPI = PI * PI;
 // }
 // -----------------------------------------------------------------------
 template <typename T>
-void IndexComb(const std::vector<std::vector<T>>& allind, std::size_t index,
-               std::vector<T> current, std::vector<std::vector<T>>& output) {
-
+void IndexComb(const std::vector<std::vector<T>> &allind, std::size_t index, std::vector<T> current,
+               std::vector<std::vector<T>> &output) {
   if (index >= allind.size()) {
-      output.push_back(current);
-      return;
+    output.push_back(current);
+    return;
   }
   for (std::size_t i = 0; i < allind[index].size(); ++i) {
-
     std::vector<T> b = current;
     b.push_back(allind[index][i]);
-    IndexComb(allind, index+1, b, output);
+    IndexComb(allind, index + 1, b, output);
   }
 }
 
@@ -126,7 +124,6 @@ inline std::vector<T> vabs(const std::vector<T> &x) {
 //
 template <typename T>
 inline std::vector<T> linspace(T start, T stop, std::size_t size) {
-
   if (size == 0) { throw std::invalid_argument("linspace: argument size == 0"); }
   if (size == 1) { return {stop}; }
 
@@ -137,7 +134,6 @@ inline std::vector<T> linspace(T start, T stop, std::size_t size) {
 
 template <template <typename T> class container_type, class value_type>
 inline container_type<value_type> linspace(value_type start, value_type stop, std::size_t size) {
-
   if (size == 0) { throw std::invalid_argument("linspace: argument size == 0"); }
   if (size == 1) { return {stop}; }
 
@@ -147,7 +143,6 @@ inline container_type<value_type> linspace(value_type start, value_type stop, st
 }
 template <template <typename T> class container_type, class value_type>
 inline container_type<value_type> arange(value_type start, value_type step, value_type stop) {
-
   std::size_t                size = (stop - start) / step;
   container_type<value_type> v(size);
   for (std::size_t i = 0; i < size; ++i) { v[i] = start + step * i; }
@@ -226,14 +221,12 @@ constexpr double csgn(std::complex<double> z) {
 //
 // Sign for x=0 is 0
 //
-constexpr double sign(double x) { 
-
+constexpr double sign(double x) {
   const double EPS = 1e-9;
   if (std::abs(x) < EPS) {
-    return  0.0;
-  }
-  else if (x > 0) {
-    return  1.0;
+    return 0.0;
+  } else if (x > 0) {
+    return 1.0;
   } else {
     return -1.0;
   }
@@ -249,8 +242,8 @@ constexpr double sign(double X, double Y) {
 }
 
 // Sign function
-//template <typename T>
-//constexpr int sgn(T val) {
+// template <typename T>
+// constexpr int sgn(T val) {
 //  return (T(0) < val) - (val < T(0));
 //}
 
@@ -372,7 +365,7 @@ inline T CTrapIntegral(const std::vector<T> &f, double hstep) {
   T                 I_sum = 0.0;
 
   for (std::size_t j = 1; j <= N - 1; ++j) { I_sum += f[j]; }
-  T                I = hstep * (f[0] + 2 * I_sum + f[N]) / 2;
+  T I = hstep * (f[0] + 2 * I_sum + f[N]) / 2;
 
   return I;
 }
@@ -396,7 +389,7 @@ inline T CSIntegral(const std::vector<T> &f, double hstep) {
 
   for (std::size_t j = 1; j <= N / 2 - 1; ++j) { I_even += f[2 * j]; }
   for (std::size_t j = 1; j <= N / 2; ++j) { I_odd += f[2 * j - 1]; }
-  T                I = hstep * (f[0] + 2.0 * I_even + 4.0 * I_odd + f[N]) / 3.0;
+  T I = hstep * (f[0] + 2.0 * I_even + 4.0 * I_odd + f[N]) / 3.0;
 
   return I;
 }
@@ -421,7 +414,7 @@ inline T CS38Integral(const std::vector<T> &f, double hstep) {
 
   for (std::size_t j = 1; j <= N; ++j) { I_first += (f[3 * j - 2] + f[3 * j - 1]); }
   for (std::size_t j = 1; j <= N - 1; ++j) { I_second += f[3 * j]; }
-  T                I = 3 * hstep * (f[0] + 3 * I_first + 2 * I_second + f[3 * N]) / 8;
+  T I = 3 * hstep * (f[0] + 3 * I_first + 2 * I_second + f[3 * N]) / 8;
 
   return I;
 }
@@ -1049,13 +1042,15 @@ inline double Y_real_basis(double costheta, double phi, int l, int m) {
 // Complex Basis Laplace Spherical Harmonics
 inline std::complex<double> Y_complex_basis(double costheta, double phi, int l, int m) {
   if (m < 0) {
-    return 1.0 / msqrt(2.0) * (Y_real_basis(costheta, phi, l, std::abs(m)) -
-                               zi * Y_real_basis(costheta, phi, l, -std::abs(m)));
+    return 1.0 / msqrt(2.0) *
+           (Y_real_basis(costheta, phi, l, std::abs(m)) -
+            zi * Y_real_basis(costheta, phi, l, -std::abs(m)));
   } else if (m == 0) {
     return Y_real_basis(costheta, phi, l, 0);
   } else {  // m > 0
-    return std::pow(-1, m) / msqrt(2.0) * (Y_real_basis(costheta, phi, l, std::abs(m)) +
-                                           zi * Y_real_basis(costheta, phi, l, -std::abs(m)));
+    return std::pow(-1, m) / msqrt(2.0) *
+           (Y_real_basis(costheta, phi, l, std::abs(m)) +
+            zi * Y_real_basis(costheta, phi, l, -std::abs(m)));
   }
 }
 
@@ -1165,7 +1160,7 @@ inline std::complex<double> Y_complex_basis_ref(double costheta, double phi, int
                               ", m = " + std::to_string(m));
 }
 
-}  // math namespace ends
-}  // gra namespace ends
+}  // namespace math
+}  // namespace gra
 
 #endif

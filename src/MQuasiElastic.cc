@@ -24,13 +24,13 @@
 #include "Graniitti/MQuasiElastic.h"
 #include "Graniitti/MUserCuts.h"
 
-using gra::aux::indices;
 using gra::PDG::GeV2barn;
 using gra::PDG::mp;
+using gra::aux::indices;
+using gra::math::PI;
 using gra::math::abs2;
 using gra::math::msqrt;
 using gra::math::pow2;
-using gra::math::PI;
 using gra::math::zi;
 
 namespace gra {
@@ -176,11 +176,11 @@ double MQuasiElastic::EventWeight(const std::vector<double> &randvec, AuxIntData
 
     if (aux.Valid()) {
       // ** EVENT WEIGHT **
-      const double LIPS   = B3PhaseSpaceWeight();   // Phase-space weight
-      const double MatESQ = GetAmp2();              // Matrix element squared
-      
+      const double LIPS   = B3PhaseSpaceWeight();  // Phase-space weight
+      const double MatESQ = GetAmp2();             // Matrix element squared
+
       // Total weight: phase-space x |M|^2 x barn units
-      W                   = LIPS * B3IntegralVolume() * MatESQ * GeV2barn;
+      W = LIPS * B3IntegralVolume() * MatESQ * GeV2barn;
     }
 
     aux.amplitude_ok = CheckInfNan(W);
@@ -199,7 +199,7 @@ double MQuasiElastic::EventWeight(const std::vector<double> &randvec, AuxIntData
     const double LIPS   = B3PhaseSpaceWeight();     // Phase-space weight
     const double MatESQ = abs2(PolySoft(randvec));  // Matrix element squared
 
-    //W = LIPS * MatESQ * GeV2barn;  // Total weight: phase-space x |M|^2 x barn units
+    // W = LIPS * MatESQ * GeV2barn;  // Total weight: phase-space x |M|^2 x barn units
     W = LIPS * MatESQ;  // Total weight:
 
     aux.amplitude_ok = CheckInfNan(W);
@@ -252,7 +252,7 @@ bool MQuasiElastic::EventRecord(HepMC3::GenEvent &evt) {
             gra::aux::M4Vec2HepMC3(etree[i].q2), PDG::PDG_gluon, PDG::PDG_INTERMEDIATE);
 
         // Virtual state
-        M4Vec pomeron4vec(etree[i].k.Px() / NCHAIN, etree[i].k.Py() / NCHAIN,
+        M4Vec                  pomeron4vec(etree[i].k.Px() / NCHAIN, etree[i].k.Py() / NCHAIN,
                           etree[i].k.Pz() / NCHAIN, etree[i].k.E() / NCHAIN);
         HepMC3::GenParticlePtr gen_X = std::make_shared<HepMC3::GenParticle>(
             gra::aux::M4Vec2HepMC3(pomeron4vec), 999, PDG::PDG_INTERMEDIATE);
@@ -301,14 +301,14 @@ bool MQuasiElastic::EventRecord(HepMC3::GenEvent &evt) {
           B_sum = 1;
           Q_sum = 1;
         }
-        
+
         // Excite it
         MDecayBranch branch;
         if (!ExciteContinuum(pomeron4vec, branch, Q2_scale, B_sum, Q_sum)) {
           std::cout << "ND failed with ExciteContinuum" << std::endl;
           return false;  // failed
         }
-        
+
         // Save it
         SaveBranch(evt, branch, gen_X);
       }
@@ -402,7 +402,7 @@ bool MQuasiElastic::EventRecord(HepMC3::GenEvent &evt) {
 void MQuasiElastic::PrintInit(bool silent) const {
   if (!silent) {
     PrintSetup();
-    
+
     // Diffractive processes
     if (ProcPtr.CHANNEL != "ND") {
       std::string proton1 = "-----------EL--------->";
@@ -435,26 +435,27 @@ void MQuasiElastic::PrintInit(bool silent) const {
                 << std::endl;
 
       if (ProcPtr.CHANNEL != "EL") {
-      printf("- Xi  [min, max]   = [%0.3E, %0.3E] (Xi == M^2/s) \n", gcuts.XI_min, gcuts.XI_max);
+        printf("- Xi  [min, max]   = [%0.3E, %0.3E] (Xi == M^2/s) \n", gcuts.XI_min, gcuts.XI_max);
       }
       printf("- |t| [max]        = %0.3f GeV^2 \n", pow2(Eikonal.Numerics.MaxLoopKT));
       std::cout << std::endl;
-      
+
       // Fiducial cuts
       std::cout << rang::style::bold << "Fiducial cuts:" << rang::style::reset << std::endl
                 << std::endl;
       if (fcuts.active) {
-        printf("- M   [min, max]   = [%0.2f, %0.2f] GeV^2 \n", fcuts.forward_M_min, fcuts.forward_M_max);
-        printf("- |t| [min, max]   = [%0.2f, %0.2f] GeV^2 \n", fcuts.forward_t_min, fcuts.forward_t_max);
+        printf("- M   [min, max]   = [%0.2f, %0.2f] GeV^2 \n", fcuts.forward_M_min,
+               fcuts.forward_M_max);
+        printf("- |t| [min, max]   = [%0.2f, %0.2f] GeV^2 \n", fcuts.forward_t_min,
+               fcuts.forward_t_max);
         std::cout << std::endl;
       } else {
         std::cout << "- Not active" << std::endl;
       }
 
-    // Non-Diffractive
+      // Non-Diffractive
     } else {
-
-      for (std::size_t i = 0; i < 7; ++i) { 
+      for (std::size_t i = 0; i < 7; ++i) {
         if (i > 0 && i < 6) {
           if (SCREENING) {
             std::cout << rang::fg::red << "     **    " << rang::style::reset;
@@ -715,8 +716,8 @@ bool MQuasiElastic::B3RandomKin(const std::vector<double> &randvec) {
     const double u1 = log_M2_f_min + (log_M2_f_max - log_M2_f_min) * randvec[1];
     const double r1 = std::exp(u1);
 
-    DD_M2_max       = gcuts.XI_max * (pow2(mp) * lts.s) / r1;
-    log_DD_M2_max   = std::log(DD_M2_max);
+    DD_M2_max     = gcuts.XI_max * (pow2(mp) * lts.s) / r1;
+    log_DD_M2_max = std::log(DD_M2_max);
 
     // Log-change of variable
     const double u2 = log_M2_f_min + (log_DD_M2_max - log_M2_f_min) * randvec[2];
@@ -750,7 +751,8 @@ bool MQuasiElastic::B3RandomKin(const std::vector<double> &randvec) {
   const double A = std::abs(t_max);
   const double B = std::abs(t_min);
 
-  const double r = std::log(A + ZERO_EPS) + (std::log(B+ZERO_EPS) - std::log(A+ZERO_EPS)) * randvec[0];
+  const double r =
+      std::log(A + ZERO_EPS) + (std::log(B + ZERO_EPS) - std::log(A + ZERO_EPS)) * randvec[0];
   const double t = -std::exp(r);
 
   return B3BuildKin(s3, s4, t);
@@ -768,11 +770,11 @@ bool MQuasiElastic::B3BuildKin(double s3, double s4, double t) {
   // Forward/backward solution flip (skip these, rare)
   if (std::cos(theta) < 0) { return false; }
   // theta = (std::cos(theta) < 0) ? gra::math::PI - theta : theta;
-  
+
   // Outgoing 4-momentum by Kallen (triangle) function in the center-of-momentum
   // frame
   const double pnorm = kinematics::DecayMomentum(lts.sqrt_s, msqrt(s3), msqrt(s4));
-  M4Vec        p3(0, 0,  pnorm, 0.5 * (lts.s + s3 - s4) / lts.sqrt_s);
+  M4Vec        p3(0, 0, pnorm, 0.5 * (lts.s + s3 - s4) / lts.sqrt_s);
   M4Vec        p4(0, 0, -pnorm, 0.5 * (lts.s + s4 - s3) / lts.sqrt_s);
 
   // Transverse momentum by orienting with random rotation (theta,phi)
@@ -800,7 +802,6 @@ bool MQuasiElastic::B3BuildKin(double s3, double s4, double t) {
 
 // Build and check scalars
 bool MQuasiElastic::B3GetLorentzScalars() {
-
   // Calculate Lorentz scalars
   lts.ss[1][1] = lts.pfinal[1].M2();
   lts.ss[2][2] = lts.pfinal[2].M2();
@@ -825,27 +826,24 @@ bool MQuasiElastic::B3GetLorentzScalars() {
 // 1/2/3-Dim Integral Volume [t] x [M^2] x [M^2]
 //
 double MQuasiElastic::B3IntegralVolume() const {
-
   // Mandelstam t, log change of variable, volume times jacobian
-  const double A = std::abs(t_max);
-  const double B = std::abs(t_min);
-  const double t_VOL = (std::log(B+ZERO_EPS) - std::log(A+ZERO_EPS)) * std::abs(lts.t);
-  
+  const double A     = std::abs(t_max);
+  const double B     = std::abs(t_min);
+  const double t_VOL = (std::log(B + ZERO_EPS) - std::log(A + ZERO_EPS)) * std::abs(lts.t);
+
   if (ProcPtr.CHANNEL == "EL") {
     return t_VOL;
 
   } else if (ProcPtr.CHANNEL == "SD") {
-    
     // Jacobian from log-change of variable:
     // \int_a^b f(M2) dM2 = \int_{ln(a)}^{ln(b)} f(exp(u)) * exp(u) du, where u = ln(M2)
-    const double J = (lts.excite1) ? lts.ss[1][1] : lts.ss[2][2];
+    const double J      = (lts.excite1) ? lts.ss[1][1] : lts.ss[2][2];
     const double M2_VOL = (log_M2_f_max - log_M2_f_min) * J;
     return t_VOL * M2_VOL;
 
   } else if (ProcPtr.CHANNEL == "DD") {
-
     // Jacobian from log-change of variables
-    const double J = lts.ss[1][1] * lts.ss[2][2];
+    const double J      = lts.ss[1][1] * lts.ss[2][2];
     const double M2_VOL = (log_M2_f_max - log_M2_f_min) * (log_DD_M2_max - log_M2_f_min) * J;
     return t_VOL * M2_VOL;
 
@@ -858,8 +856,8 @@ double MQuasiElastic::B3IntegralVolume() const {
 //
 double MQuasiElastic::B3PhaseSpaceWeight() const {
   // expression -> 16 * pi * s^2 (if s >> m1,m2)
-  const double norm =
-      16.0 * gra::math::PI * pow2(lts.s * gra::kinematics::beta12(lts.s, lts.beam1.mass, lts.beam2.mass));
+  const double norm = 16.0 * gra::math::PI *
+                      pow2(lts.s * gra::kinematics::beta12(lts.s, lts.beam1.mass, lts.beam2.mass));
 
   if (ProcPtr.CHANNEL == "EL") {
     return 1.0 / norm;
@@ -876,4 +874,4 @@ double MQuasiElastic::B3PhaseSpaceWeight() const {
   }
 }
 
-}  // gra namespace
+}  // namespace gra

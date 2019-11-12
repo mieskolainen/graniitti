@@ -50,21 +50,19 @@ class MSubProc : public MDurham, public MRegge, public MGamma {
   double GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts);
   double GetBareAmplitude2_yP(gra::LORENTZSCALAR &lts);
   double GetBareAmplitude2_OP(gra::LORENTZSCALAR &lts);
-  
+
   double GetBareAmplitude2_yy(gra::LORENTZSCALAR &lts);
   double GetBareAmplitude2_gg(gra::LORENTZSCALAR &lts);
   double GetBareAmplitude2_yy_DZ(gra::LORENTZSCALAR &lts);
   double GetBareAmplitude2_yy_LUX(gra::LORENTZSCALAR &lts);
-  
+
   // Particle database
   MPDG PDG;
 
  private:
-  
-  void ReggeReset(gra::LORENTZSCALAR& lts);
-
+  void ReggeReset(gra::LORENTZSCALAR &lts);
 };
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

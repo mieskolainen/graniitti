@@ -15,7 +15,6 @@
 #include <iomanip>
 #include <iostream>
 #include <memory>
-#include <memory>
 #include <mutex>
 #include <random>
 #include <stdexcept>
@@ -27,9 +26,9 @@
 #include "HepMC3/WriterAsciiHepMC2.h"
 
 // Own
+#include "Graniitti/MAux.h"
 #include "Graniitti/MGraniitti.h"
 #include "Graniitti/MTimer.h"
-#include "Graniitti/MAux.h"
 
 // Libraries
 #include "json.hpp"
@@ -39,7 +38,6 @@ using namespace gra;
 
 // Main
 int main(int argc, char *argv[]) {
-
   MTimer timer(true);
 
   try {
@@ -63,33 +61,32 @@ int main(int argc, char *argv[]) {
 
     std::cout << "EVENTS: " << EVENTS << std::endl;
 
-    std::vector<std::string> json_in = {"./tests/run_minbias/sd.json", "./tests/run_minbias/dd.json",
+    std::vector<std::string> json_in = {"./tests/run_minbias/sd.json",
+                                        "./tests/run_minbias/dd.json",
                                         "./tests/run_minbias/nd.json"};
 
     const std::vector<std::string> beam = {"p+", "p+"};
 
     // Loop over energies
     for (const auto &e : indices(sqrtsvec)) {
-
       std::vector<double> xs0     = {0, 0};
       std::vector<double> xs0_err = {0, 0};
 
       double xs_tot = 0.0;
       double xs_el  = 0.0;
       double xs_in  = 0.0;
-      
+
       // Beam and energy
       const std::vector<double> energy = {sqrtsvec[e] / 2, sqrtsvec[e] / 2};
 
       // Then calculate screened SD and DD integrated cross section
-      for (const auto& p : indices(json_in)) {
-
+      for (const auto &p : indices(json_in)) {
         // Create generator object first
         std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
 
         // Read process input from file
         gen->ReadInput(json_in[p]);
-        //gen->SetNumberOfEvents(0);
+        // gen->SetNumberOfEvents(0);
 
         gen->proc->SetInitialState(beam, energy);
         gen->proc->SetScreening(true);
@@ -101,9 +98,7 @@ int main(int argc, char *argv[]) {
         gen->GetXS(xs0[p], xs0_err[p]);
 
         // Total inelastic
-        if (p == 0) {
-          gen->proc->Eikonal.GetTotXS(xs_tot, xs_el, xs_in);
-        }
+        if (p == 0) { gen->proc->Eikonal.GetTotXS(xs_tot, xs_el, xs_in); }
       }
 
       // Non-diffractive = Total_inelastic - (screened_SD + screened_DD);
@@ -136,7 +131,6 @@ int main(int argc, char *argv[]) {
 
       // Loop over processes
       for (std::size_t i = 0; i < NEVT.size(); ++i) {
-        
         // Create generator object first
         std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
 
@@ -161,7 +155,7 @@ int main(int argc, char *argv[]) {
         // Generate events
         gen->Generate();
       }
-      
+
       // Finalize
       outputHepMC2->close();
 
@@ -170,15 +164,16 @@ int main(int argc, char *argv[]) {
       std::cout << std::endl;
       std::cout << "Screened Cross Sections within space phase applied:" << std::endl << std::endl;
 
-      printf(" Single Diffractive (forward+backward): %0.3f mb\n", xs0[0]*1e3);
-      printf(" Double Diffractive:                    %0.3f mb\n", xs0[1]*1e3);
-      printf(" Non-Diffractive:                       %0.3f mb\n",  xs_nd*1e3);
-      printf(" Total inelastic:                       %0.3f mb\n",  xs_in*1e3);
-      
-      std::cout << std::endl;
-      std::cout << "Generated in total " << EVENTS << " minimum bias events according to xs above" << std::endl << std::endl;
-      aux::PrintBar("=");
+      printf(" Single Diffractive (forward+backward): %0.3f mb\n", xs0[0] * 1e3);
+      printf(" Double Diffractive:                    %0.3f mb\n", xs0[1] * 1e3);
+      printf(" Non-Diffractive:                       %0.3f mb\n", xs_nd * 1e3);
+      printf(" Total inelastic:                       %0.3f mb\n", xs_in * 1e3);
 
+      std::cout << std::endl;
+      std::cout << "Generated in total " << EVENTS << " minimum bias events according to xs above"
+                << std::endl
+                << std::endl;
+      aux::PrintBar("=");
     }
   } catch (const std::invalid_argument &e) {
     gra::aux::PrintGameOver();
@@ -191,8 +186,8 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   } catch (const nlohmann::json::exception &e) {
     gra::aux::PrintGameOver();
-    std::cerr << rang::fg::red << "Exception catched: JSON input: " << rang::fg::reset
-              << e.what() << std::endl;
+    std::cerr << rang::fg::red << "Exception catched: JSON input: " << rang::fg::reset << e.what()
+              << std::endl;
     return EXIT_FAILURE;
   } catch (...) {
     gra::aux::PrintGameOver();
@@ -200,7 +195,7 @@ int main(int argc, char *argv[]) {
               << rang::fg::reset << std::endl;
     return EXIT_FAILURE;
   }
-  
+
   std::cout << "[minbias: done]" << std::endl;
   aux::CheckUpdate();
 

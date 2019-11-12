@@ -50,11 +50,9 @@ MH1<T>::~MH1() {}
 // Raw output
 template <class T>
 void MH1<T>::RawOutput() const {
-
   printf("#binlow,binhigh,value,error \n");
 
   for (std::size_t idx = 0; idx < static_cast<unsigned int>(XBINS); ++idx) {
-
     // This will take care of amplitude versus amplitude squared
     const double value     = GetPositiveDefinite(idx);
     const double value_err = GetBinError(idx);
@@ -129,13 +127,13 @@ void MH1<T>::Print(double width) const {
   // Print statistics
   std::cout << "<binned statistics>" << std::endl;
   std::pair<double, double> valerr = WeightMeanAndError();
-  printf(" <W> = %0.3E +- %0.3E  [F = %lld | U/O = %lld/%lld]\n",
-    valerr.first, valerr.second, fills, underflow, overflow);
+  printf(" <W> = %0.3E +- %0.3E  [F = %lld | U/O = %lld/%lld]\n", valerr.first, valerr.second,
+         fills, underflow, overflow);
 
   const double mean   = GetMean(1);
   const double sqmean = GetMean(2);
-  printf(" <X> = %0.3f, <X^2> = %0.3f, <X^2> - <X>^2 = %0.3f\n",
-      mean, sqmean, sqmean - std::pow(mean, 2));
+  printf(" <X> = %0.3f, <X^2> = %0.3f, <X^2> - <X>^2 = %0.3f\n", mean, sqmean,
+         sqmean - std::pow(mean, 2));
 
   std::cout << std::endl;
 }
@@ -174,7 +172,11 @@ double MH1<T>::GetMean(int power) const {
     sum += weight * value;
     norm += weight;
   }
-  if (norm > 0) { return sum / norm; } else { return 0.0; }
+  if (norm > 0) {
+    return sum / norm;
+  } else {
+    return 0.0;
+  }
 }
 
 template <class T>
@@ -193,7 +195,6 @@ void MH1<T>::Fill(double xvalue) {
 // Weighted fill
 template <class T>
 void MH1<T>::Fill(double xvalue, T weight) {
-
   if (!FILLBUFF) {  // Normal filling
 
     fills += 1;
@@ -241,16 +242,16 @@ void MH1<T>::FlushBuffer() {
     if (sumW > 0) { var /= sumW; }
 
     // Minimum and maximum
-    auto         it1     = std::min_element(buff_values.begin(), buff_values.end());
-    auto         it2     = std::max_element(buff_values.begin(), buff_values.end());
+    auto         it1    = std::min_element(buff_values.begin(), buff_values.end());
+    auto         it2    = std::max_element(buff_values.begin(), buff_values.end());
     const double minval = *it1;
     const double maxval = *it2;
 
     // Set new histogram bounds
-    const double std  = std::sqrt(std::abs(var));
+    const double std = std::sqrt(std::abs(var));
 
-    double       xmin = mu - 2.5 * std;
-    double       xmax = mu + 2.5 * std;
+    double xmin = mu - 2.5 * std;
+    double xmax = mu + 2.5 * std;
 
     // A numerical failure may happen with variance calculation, then use this
     if (std::isnan(xmin) || std::isnan(xmax)) {
@@ -299,7 +300,7 @@ void MH1<T>::ResetBounds(int xbins, double xmin, double xmax) {
   weights2 = null;
   counts   = std::vector<long long int>(XBINS, 0);
 
-  Clear();  // Call also this!
+  Clear();           // Call also this!
   FILLBUFF = false;  // No autorange, explicit bounds provided
 }
 
@@ -429,8 +430,8 @@ void MH1<T>::GetBinIdx(double xvalue, int &idx) {
 template <class T>
 double MH1<T>::GetBinXVal(int idx, int boundary) const {
   if (idx > XBINS - 1) {
-    throw std::invalid_argument("MH1::GetBinXVal: idx = " + std::to_string(idx) + " > XBINS-1 = " +
-                                std::to_string(XBINS - 1));
+    throw std::invalid_argument("MH1::GetBinXVal: idx = " + std::to_string(idx) +
+                                " > XBINS-1 = " + std::to_string(XBINS - 1));
   }
   if (LOGX) {
     const double log10step = (std::log10(XMAX) - std::log10(XMIN)) / XBINS;
@@ -471,7 +472,6 @@ double MH1<T>::GetBinXVal(int idx, int boundary) const {
 // Overflow  returns -2
 template <class T>
 int MH1<T>::GetIdx(double value, double minval, double maxval, int nbins, bool logbins) const {
-
   if (std::isnan(value) || std::isinf(value)) { return -3; }
   if (value < minval) { return -1; }  // underflow
   if (value > maxval) { return -2; }  // overflow
@@ -495,4 +495,4 @@ int MH1<T>::GetIdx(double value, double minval, double maxval, int nbins, bool l
 template class MH1<double>;
 template class MH1<std::complex<double>>;
 
-}  // gra namespace
+}  // namespace gra

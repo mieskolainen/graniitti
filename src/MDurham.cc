@@ -21,11 +21,11 @@
 #include "rang.hpp"
 
 namespace gra {
+using PDG::mp;
+using math::PI;
 using math::msqrt;
 using math::pow2;
 using math::zi;
-using math::PI;
-using PDG::mp;
 
 // 2-body incoming or outgoing helicity combinations
 // (keep it algebraic order to match with MadGraph)
@@ -52,15 +52,12 @@ enum SPINPARITY { P0, M0, P2, M2 };  // Implicit conversion to int
 // [REFERENCE: Harland-Lang, Khoze, Ryskin, https://arxiv.org/abs/1409.4785]
 //
 double MDurham::DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process) {
-  
   // First run, init parameters
   // @@ MULTITHREADING LOCK NEEDED FOR THE INITIALIZATION @@
   gra::g_mutex.lock();
-  
+
   // Not created yet
-  if (lts.GlobalSudakovPtr == nullptr) {
-    lts.GlobalSudakovPtr   = new MSudakov();
-  }
+  if (lts.GlobalSudakovPtr == nullptr) { lts.GlobalSudakovPtr = new MSudakov(); }
 
   // Not initialized yet
   if (lts.GlobalSudakovPtr->initialized == false) {
@@ -227,7 +224,7 @@ const static int helicities[ncomb][nexternal] =
 // Alternative (semi-ad-hoc) scenarios for the scale choise
 inline void MDurham::DScaleChoise(double qt2, double q1_2, double q2_2, double &Q1_2_scale,
                                   double &Q2_2_scale) const {
-  if        (Param.PDF_scale == "MIN") {
+  if (Param.PDF_scale == "MIN") {
     Q1_2_scale = std::min(qt2, q1_2);
     Q2_2_scale = std::min(qt2, q2_2);
   } else if (Param.PDF_scale == "MAX") {
@@ -261,7 +258,7 @@ inline void MDurham::DScaleChoise(double qt2, double q1_2, double q2_2, double &
 //               f_g(x_2,x_2',Q_2^2,\mu_2;t_2)
 //
 double MDurham::DQtloop(gra::LORENTZSCALAR &                           lts,
-                                      std::vector<std::vector<std::complex<double>>> Amp) {
+                        std::vector<std::vector<std::complex<double>>> Amp) {
   // Forward (proton) system pt-vectors
   const std::vector<double> pt1 = {lts.pfinal[1].Px(), lts.pfinal[1].Py()};
   const std::vector<double> pt2 = {lts.pfinal[2].Px(), lts.pfinal[2].Py()};
@@ -360,7 +357,7 @@ double MDurham::DQtloop(gra::LORENTZSCALAR &                           lts,
         lts.excite1 ? gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : gra::form::S3F(lts.t1);
     lts.hamp[h] *=
         lts.excite2 ? gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : gra::form::S3F(lts.t2);
-    
+
     // Apply phase space factors
     lts.hamp[h] *= msqrt(16.0 * math::PIPI);
     lts.hamp[h] *= msqrt(16.0 * math::PIPI);
@@ -374,11 +371,11 @@ double MDurham::DQtloop(gra::LORENTZSCALAR &                           lts,
   // --------------------------------------------------------------------
   // Amplitude cutoff (hard perturbative limit)
   if (gra::math::msqrt(lts.m2) < 2.0) {
-    A2 = 0.0;
+    A2       = 0.0;
     lts.hamp = std::vector<std::complex<double>>(f.size(), 0.0);
   }
   // --------------------------------------------------------------------
-  
+
   return A2;
 }
 
@@ -392,7 +389,6 @@ double MDurham::DQtloop(gra::LORENTZSCALAR &                           lts,
 void MDurham::Dgg2chic0(const gra::LORENTZSCALAR &                      lts,
                         std::vector<std::vector<std::complex<double>>> &Amp,
                         const std::vector<double> &qt1, const std::vector<double> &qt2) const {
-
   const double alpha_s = lts.GlobalSudakovPtr->AlphaS_Q2(lts.s_hat / Param.alphas_scale);
 
   const double gs2   = 4.0 * PI * alpha_s;  // coupling
@@ -400,7 +396,7 @@ void MDurham::Dgg2chic0(const gra::LORENTZSCALAR &                      lts,
   const double M0    = 3.41475;             // chi_c(0+) mass (GeV)
   const double W0    = 0.0108;              // chi_c(0+) width (GeV)
   const double NC    = 3.0;                 // #colors
-  
+
   // Gluonic width \Gamma(\chi_c(0+) -> gg), see references
   std::complex<double> A = K_NLO * 8.0 * math::zi * gs2 / M0 * msqrt(0.075) / msqrt(PI * M0 * NC);
 
@@ -414,7 +410,7 @@ void MDurham::Dgg2chic0(const gra::LORENTZSCALAR &                      lts,
   is[MP] = 0;
   is[PM] = 0;
   is[PP] = A;
-  
+
   // No polarization for the final state to loop over, only one index
   Amp[0] = is;
 }
@@ -436,7 +432,6 @@ void MDurham::Dgg2chic0(const gra::LORENTZSCALAR &                      lts,
 //
 void MDurham::Dgg2gg(const gra::LORENTZSCALAR &                      lts,
                      std::vector<std::vector<std::complex<double>>> &Amp) {
-
   const double alpha_s = lts.GlobalSudakovPtr->AlphaS_Q2(lts.s_hat / Param.alphas_scale);
 
   // Vertex factor coupling, gs^2 = 4 pi alpha_s
@@ -657,11 +652,11 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR &                      lts,
   // Evaluate only once the meson wave functions
   static const std::vector<double> wfphi0 = EvalPhi(Nx, pdg0);
   static const std::vector<double> wfphi1 = EvalPhi(Nx, pdg1);
-  
+
   // -------------------------------------------------------------------
   const double                     CUTOFF = 1e-15;  // To avoid singularity at x = 0, x = 1
-  static const std::vector<double> xval = math::linspace(CUTOFF, 1.0 - CUTOFF, Nx + 1);
-  
+  static const std::vector<double> xval   = math::linspace(CUTOFF, 1.0 - CUTOFF, Nx + 1);
+
   // ------------------------------------------------------------------
   // Integral over meson wave functions:
   // M\int_0^1 dx dy \phi_M(x) \phi_\bar{M}(y) T_{\lambda\lambda'}
@@ -725,4 +720,4 @@ void MDurham::Dgg2qqbar(const gra::LORENTZSCALAR &                      lts,
   throw std::invalid_argument("MDurham::DurhamQCD: qqbar amplitude in the next version");
 }
 
-}  // gra namespace ends
+}  // namespace gra

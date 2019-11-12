@@ -28,6 +28,6 @@ extern std::exception_ptr globalExceptionPtr;
 
 // ======================================================================
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

@@ -109,11 +109,10 @@ double MGamma::yyffbar(gra::LORENTZSCALAR &lts) {
 
     // QED tree level amplitude squared |M|^2, spin averaged and
     // summed
-    amp2 =
-        2.0 * COUPL *
-        ((lts.u_hat - mass2) / (lts.t_hat - mass2) + (lts.t_hat - mass2) / (lts.u_hat - mass2) +
-         1.0 -
-         pow2(1.0 + (2.0 * mass2) / (lts.t_hat - mass2) + (2.0 * mass2) / (lts.u_hat - mass2)));
+    amp2 = 2.0 * COUPL *
+           ((lts.u_hat - mass2) / (lts.t_hat - mass2) + (lts.t_hat - mass2) / (lts.u_hat - mass2) +
+            1.0 -
+            pow2(1.0 + (2.0 * mass2) / (lts.t_hat - mass2) + (2.0 * mass2) / (lts.u_hat - mass2)));
 
     /*
       // FeynCalc result, less simplified, but exactly same result
@@ -141,20 +140,18 @@ double MGamma::yyffbar(gra::LORENTZSCALAR &lts) {
   // quark pair (charge 1/3 or 2/3), apply charge and color factors
   if (std::abs(lts.decaytree[0].p.pdg) <= 6) {  // we have a quark
 
-    const double Q  = lts.decaytree[0].p.chargeX3 / 3.0;
-    const double NC = 3.0;  // quarks come in three colors
-    const double factor = pow4(Q) * NC;
+    const double Q           = lts.decaytree[0].p.chargeX3 / 3.0;
+    const double NC          = 3.0;  // quarks come in three colors
+    const double factor      = pow4(Q) * NC;
     const double sqrt_factor = msqrt(factor);  // sqrt to "amplitude level"
 
     // amplitude squared
     amp2 *= factor;
 
     // helicity amplitudes
-    for (const auto &i : aux::indices(lts.hamp)) {
-      lts.hamp[i] *= sqrt_factor;
-    }
+    for (const auto &i : aux::indices(lts.hamp)) { lts.hamp[i] *= sqrt_factor; }
   }
-  
+
   // --------------------------------------------------------------------
   // For screening loop (approximation)
   lts.hamp = {msqrt(amp2)};
@@ -246,20 +243,20 @@ double MGamma::yyMP(gra::LORENTZSCALAR &lts) const {
 
 // --------------------------------------------------------------------------------------------
 // Gamma-Gamma to SM-Higgs 0++ helicity amplitudes
-// 
+//
 // Generic narrow width yy -> X cross section in terms of partial decay widths:
-// 
+//
 // \sigma(yy -> X) = 8\pi^2/M_X (2J+1) \Gamma(X -> yy) \delta(shat - M_X^2) (1 + h1h2)
 //                 = (8 * \pi)  (2J+1) \Gamma(X -> yy) \Gamma_X (1 + h1h2) /
 //                   ((shat - M_X^2)^2 + M_X^2\Gamma_X^2),
-// 
+//
 // where h1,h2 = +- gamma helicities
-// 
+//
 // [REFERENCE: Khoze, Martin, Ryskin, https://arxiv.org/abs/hep-ph/0111078]
 // [REFERENCE: Bernal, Lopez-Val, Sola, https://arxiv.org/pdf/0903.4978.pdf]
 // [REFERENCE: Enterria, Lansberg,
 // https://www.slac.stanford.edu/pubs/slacpubs/13750/slac-pub-13786.pdf]
-// 
+//
 double MGamma::yyHiggs(gra::LORENTZSCALAR &lts) const {
   lts.hamp.resize(4);
 
@@ -306,9 +303,10 @@ double MGamma::yyX(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const {
   std::complex<double> A_prod =
       2.0 * gra::form::CBW(lts, resonance) *
       PARAM_REGGE::ResonanceFormFactor(lts.m2, pow2(resonance.p.mass), resonance.g_FF);
-  
+
   // Production and Decay amplitude
-  const std::complex<double> A_spin = spin::ProdAmp(lts, resonance) * spin::DecayAmp(lts, resonance);
+  const std::complex<double> A_spin =
+      spin::ProdAmp(lts, resonance) * spin::DecayAmp(lts, resonance);
 
   // Total
   const std::complex<double> A = A_prod * A_spin;
@@ -321,4 +319,4 @@ double MGamma::yyX(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const {
   return abs2(A);
 }
 
-}  // gra namespace
+}  // namespace gra

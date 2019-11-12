@@ -10,12 +10,12 @@
 
 // Own
 #include "Graniitti/MAux.h"
+#include "Graniitti/MEikonal.h"
 #include "Graniitti/MForm.h"
 #include "Graniitti/MKinematics.h"
 #include "Graniitti/MMath.h"
 #include "Graniitti/MRegge.h"
 #include "Graniitti/MSpin.h"
-#include "Graniitti/MEikonal.h"
 
 // Libraries
 #include "json.hpp"
@@ -45,25 +45,25 @@ void MRegge::InitReggeAmplitude(int PDG, const std::string &MODELPARAM) {
   try {
     std::string data = gra::aux::GetInputData(fullpath);
     json        j    = json::parse(data);
-    
+
     // Setup the parameter string
     std::string str;
-    if        (PDG == 211 || PDG == 111) {    // Charged or Neutral Pions
+    if (PDG == 211 || PDG == 111) {  // Charged or Neutral Pions
       str = "PARAM_PI";
-    } else if (PDG == 321 || PDG == 311) {    // Charged or Neutral Kaons
+    } else if (PDG == 321 || PDG == 311) {  // Charged or Neutral Kaons
       str = "PARAM_K";
     } else if (PDG == 2212 || PDG == 2112) {  // Protons or Neutrons
       str = "PARAM_P";
-    } else if (PDG == 113 || PDG == 213) {    // Neutral or charged rho(770)
+    } else if (PDG == 113 || PDG == 213) {  // Neutral or charged rho(770)
       str = "PARAM_RHO";
-    } else if (PDG == 331) {                  // phi(1020)
-      str = "PARAM_PHI"; 
-    } else if (PDG == 9000221) {              // f0(500)
-      str = "PARAM_F0500"; 
+    } else if (PDG == 331) {  // phi(1020)
+      str = "PARAM_PHI";
+    } else if (PDG == 9000221) {  // f0(500)
+      str = "PARAM_F0500";
     } else {  // The rest will use PARAM_X setup
       str = "PARAM_X";
     }
-    
+
     // Reggeon couplings
     std::vector<double> c = j.at(str).at("c");
     std::vector<bool>   n = j.at(str).at("n");
@@ -145,27 +145,27 @@ std::complex<double> MRegge::ME2(gra::LORENTZSCALAR &lts, int mode) const {
   const double alpha_t_i = S3PomAlpha(lts.t);
   const double alpha_t_j = alpha_t_i;
 
-  std::complex<double> A(0,0);
+  std::complex<double> A(0, 0);
 
   if (mode == 1) {  // Elastic
 
     // Single Pomeron exchange
     // (this calls eikonal pomeron without eikonalization, just for test, use loop on)
     return MEikonal::SingleAmpElastic(lts.s, lts.t, 1);
-    
+
   } else if (mode == 2) {  // SD triple Pomeron
 
     // Which proton is excited
     const double MX_2 = (lts.ss[1][1] > 1.0) ? lts.ss[1][1] : lts.ss[2][2];
 
     const double amp2 = pow3(PARAM_SOFT::gN_P)  // Proton-Pomeron coupling ^ 3
-                     * pow2(S3F(lts.t))         // Proton form factor ^ 2
-                     * PARAM_SOFT::g3P          // Triple-Pomeron coupling
+                        * pow2(S3F(lts.t))      // Proton form factor ^ 2
+                        * PARAM_SOFT::g3P       // Triple-Pomeron coupling
 
-                     * std::pow(lts.s / MX_2,
-                                alpha_t_i + alpha_t_j)  // LEFT + RIGHT LEG
+                        * std::pow(lts.s / MX_2,
+                                   alpha_t_i + alpha_t_j)  // LEFT + RIGHT LEG
 
-                     * std::pow(MX_2 / s0, alpha_0);    // DISCONTINUITY PART
+                        * std::pow(MX_2 / s0, alpha_0);  // DISCONTINUITY PART
 
     // recover amplitude, we had the expression at cross section level
     A = gra::form::ReggeEta(alpha_t_i, 1) * msqrt(amp2);
@@ -177,13 +177,13 @@ std::complex<double> MRegge::ME2(gra::LORENTZSCALAR &lts, int mode) const {
     const double MY_2 = lts.ss[2][2];
 
     const double amp2 = pow2(PARAM_SOFT::gN_P)   // Proton-Pomeron ^ 2
-                     * pow2(PARAM_SOFT::g3P)     // Triple-Pomeron coupling ^ 2
+                        * pow2(PARAM_SOFT::g3P)  // Triple-Pomeron coupling ^ 2
 
-                     * std::pow((lts.s * s0) / (MX_2 * MY_2),
-                                alpha_t_i + alpha_t_j)  // LEFT + RIGHT LEG
+                        * std::pow((lts.s * s0) / (MX_2 * MY_2),
+                                   alpha_t_i + alpha_t_j)  // LEFT + RIGHT LEG
 
-                     * std::pow(MX_2 / s0, alpha_0)     // DISCONTINUITY PART
-                     * std::pow(MY_2 / s0, alpha_0);    // DISCONTINUITY PART
+                        * std::pow(MX_2 / s0, alpha_0)   // DISCONTINUITY PART
+                        * std::pow(MY_2 / s0, alpha_0);  // DISCONTINUITY PART
 
     // recover amplitude, we had the expression at cross section level
     A = gra::form::ReggeEta(alpha_t_i, 1) * msqrt(amp2);
@@ -241,7 +241,7 @@ std::complex<double> MRegge::ME3HEL(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res
       }
     }
   }
-  
+
   // --------------------------------------------------------------------------
   // Proton / Dissociative system vertices
   double FF_A = 0.0;
@@ -249,8 +249,8 @@ std::complex<double> MRegge::ME3HEL(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res
   PomPomProtonVertex(lts, FF_A, FF_B);
 
   // Forward proton deltaphi
-  //const double dphi = lts.pfinal[1].DeltaPhi(lts.pfinal[2]);
-  //const double dphi = lts.pfinal[1].Phi();
+  // const double dphi = lts.pfinal[1].DeltaPhi(lts.pfinal[2]);
+  // const double dphi = lts.pfinal[1].Phi();
 
   // Boost propagator to the system rest frame
   M4Vec q1 = lts.q1;
@@ -259,40 +259,37 @@ std::complex<double> MRegge::ME3HEL(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res
 
   // Now loop over all helicity amplitudes
   // Common factor all amplitudes
-  std::complex<double> common = FF_A *
-                                PropOnly(lts.s1, lts.t1) *
-                                CBW(lts, resonance) * resonance.g *
-                                PARAM_REGGE::ResonanceFormFactor(lts.m2, pow2(resonance.p.mass), resonance.g_FF) *
-                                PropOnly(lts.s2, lts.t2) *
-                                FF_B;
+  std::complex<double> common =
+      FF_A * PropOnly(lts.s1, lts.t1) * CBW(lts, resonance) * resonance.g *
+      PARAM_REGGE::ResonanceFormFactor(lts.m2, pow2(resonance.p.mass), resonance.g_FF) *
+      PropOnly(lts.s2, lts.t2) * FF_B;
 
   lts.hamp.clear();
   for (std::size_t i = 0; i < N; ++i) {
-    
     // Apply upper vertex helicity conservation
-    if (g_Vertex(lts.t1, lambda[i][0],  lambda[i][2])
-                     != std::pow(-1, lambda[i][0] - lambda[i][2]) * g_Vertex(lts.t1,
-    lambda[i][0], lambda[i][2]) ) {
-                    continue;
+    if (g_Vertex(lts.t1, lambda[i][0], lambda[i][2]) !=
+        std::pow(-1, lambda[i][0] - lambda[i][2]) * g_Vertex(lts.t1, lambda[i][0], lambda[i][2])) {
+      continue;
     }
     // Apply lower vertex helicity conservation
-    if (g_Vertex(lts.t2, lambda[i][1],  lambda[i][3])
-                     != std::pow(-1, lambda[i][1] - lambda[i][3]) *
-    g_Vertex(lts.t2,-lambda[i][1],-lambda[i][3])) {
-                    continue;
+    if (g_Vertex(lts.t2, lambda[i][1], lambda[i][3]) !=
+        std::pow(-1, lambda[i][1] - lambda[i][3]) *
+            g_Vertex(lts.t2, -lambda[i][1], -lambda[i][3])) {
+      continue;
     }
 
     // Spin density matrix weight for this helicity
-    const int index = lambda[i][4] + resonance.p.spinX2; // Index the diagonal
-    const std::complex<double> rhoweight = resonance.p.spinX2 != 0 ? resonance.rho[index][index]: 1.0;
+    const int                  index = lambda[i][4] + resonance.p.spinX2;  // Index the diagonal
+    const std::complex<double> rhoweight =
+        resonance.p.spinX2 != 0 ? resonance.rho[index][index] : 1.0;
 
     // Calculate amplitude
     const std::complex<double> amp =
-        rhoweight *
-        g_Vertex(lts.t1, lambda[i][0], lambda[i][2]) *
-        gik_Vertex(lts.t1, lts.t2, dphi, lambda[i][4], resonance.p.spinX2 / 2.0, resonance.p.P, resonance.JMAX) *
+        rhoweight * g_Vertex(lts.t1, lambda[i][0], lambda[i][2]) *
+        gik_Vertex(lts.t1, lts.t2, dphi, lambda[i][4], resonance.p.spinX2 / 2.0, resonance.p.P,
+                   resonance.JMAX) *
         common;
-        g_Vertex(lts.t2, lambda[i][1], lambda[i][3]);
+    g_Vertex(lts.t2, lambda[i][1], lambda[i][3]);
 
     // std::cout << amp << " :: " << gra::math::abs2(amp) << std::endl;
     lts.hamp.push_back(amp);
@@ -303,7 +300,7 @@ std::complex<double> MRegge::ME3HEL(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res
   for (std::size_t i = 0; i < lts.hamp.size(); ++i) { amp2 += gra::math::abs2(lts.hamp[i]); }
   amp2 /= 4;  // Initial state average
 
-  return msqrt(amp2); // we expect amplitude
+  return msqrt(amp2);  // we expect amplitude
 }
 
 // This function is used for parity conservation check:
@@ -346,9 +343,8 @@ double MRegge::g_Vertex(double t, double lambda_i, double lambda_f) const {
 // 2. parity conservation
 //
 double MRegge::gammaLambda(double t1, double t2, double m1, double m2) const {
-  
   // Parity sign flip under (m1,m2) <-> (-m1,-m2)
-  const int P = std::pow(-1, math::sign(m1 - std::abs(m1))*math::sign(m2 - std::abs(m2)));
+  const int P = std::pow(-1, math::sign(m1 - std::abs(m1)) * math::sign(m2 - std::abs(m2)));
   return P * std::pow(-t1, std::abs(m1) / 2) * std::pow(-t2, std::abs(m2) / 2);
 }
 
@@ -362,8 +358,8 @@ double MRegge::gammaLambda(double t1, double t2, double m1, double m2) const {
 //             intrinsic parity x (-1)^(J-1/2) (fermions)
 //
 //
-std::complex<double> MRegge::gik_Vertex(double t1, double t2, double dphi, int lambda_h, int J, int P, int JMAX) const {
-
+std::complex<double> MRegge::gik_Vertex(double t1, double t2, double dphi, int lambda_h, int J,
+                                        int P, int JMAX) const {
   // (we handle only Pomerons here for now, no secondary Reggeons - trivial
   // extension)
   const int pom1_P     = 1;  // Pomeron 1 parity +
@@ -443,16 +439,14 @@ std::complex<double> MRegge::ME4(gra::LORENTZSCALAR &lts, double sign) const {
   // Particle-Particle-Pomeron coupling
   const double gpp_P = PARAM_REGGE::c[0] / PARAM_SOFT::gN_P;
 
-  const std::complex<double> A_t = PropOnly(lts.ss[1][3], lts.t1) * FF_A *
-                                   (*ff)(lts.t_hat, M2_) * gpp_P * prop(lts.t_hat, M2_) *
-                                   (*ff)(lts.t_hat, M2_) * gpp_P * PropOnly(lts.ss[2][4], lts.t2) *
-                                   FF_B;
+  const std::complex<double> A_t = PropOnly(lts.ss[1][3], lts.t1) * FF_A * (*ff)(lts.t_hat, M2_) *
+                                   gpp_P * prop(lts.t_hat, M2_) * (*ff)(lts.t_hat, M2_) * gpp_P *
+                                   PropOnly(lts.ss[2][4], lts.t2) * FF_B;
 
   // sign applied here
-  const std::complex<double> A_u = sign * PropOnly(lts.ss[1][4], lts.t1) * FF_A *
-                                   (*ff)(lts.u_hat, M2_) * gpp_P * prop(lts.u_hat, M2_) *
-                                   (*ff)(lts.u_hat, M2_) * gpp_P * PropOnly(lts.ss[2][3], lts.t2) *
-                                   FF_B;
+  const std::complex<double> A_u =
+      sign * PropOnly(lts.ss[1][4], lts.t1) * FF_A * (*ff)(lts.u_hat, M2_) * gpp_P *
+      prop(lts.u_hat, M2_) * (*ff)(lts.u_hat, M2_) * gpp_P * PropOnly(lts.ss[2][3], lts.t2) * FF_B;
 
   // Total amplitude
   const std::complex<double> A = A_t + A_u;
@@ -498,7 +492,6 @@ std::complex<double> MRegge::ME4(gra::LORENTZSCALAR &lts, double sign) const {
 //
 //
 std::complex<double> MRegge::ME6(gra::LORENTZSCALAR &lts) const {
-
   // Amplitude_
   std::complex<double> A(0, 0);
 
@@ -549,10 +542,9 @@ std::complex<double> MRegge::ME6(gra::LORENTZSCALAR &lts) const {
     const double tt_cd = lts.tt_2[d];
 
     const std::complex<double> subamp =
-        PropOnly(lts.ss[1][a], lts.t1) * FF_A * (*ff)(tt_ab, M2_A) * gpp_P *
-        prop(tt_ab, M2_A) * (*ff)(tt_bc, M2_A) * gpp_P * PropOnly(lts.ss[b][c], tt_bc) *
-        (*ff)(tt_bc, M2_B) * gpp_P * prop(tt_cd, M2_B) * (*ff)(tt_cd, M2_B) * gpp_P *
-        PropOnly(lts.ss[2][d], lts.t2) * FF_B;
+        PropOnly(lts.ss[1][a], lts.t1) * FF_A * (*ff)(tt_ab, M2_A) * gpp_P * prop(tt_ab, M2_A) *
+        (*ff)(tt_bc, M2_A) * gpp_P * PropOnly(lts.ss[b][c], tt_bc) * (*ff)(tt_bc, M2_B) * gpp_P *
+        prop(tt_cd, M2_B) * (*ff)(tt_cd, M2_B) * gpp_P * PropOnly(lts.ss[2][d], lts.t2) * FF_B;
 
     A += subamp;
   }
@@ -616,7 +608,7 @@ std::complex<double> MRegge::ME8(gra::LORENTZSCALAR &lts) const {
     ff   = &PARAM_REGGE::Baryon_FF;
     prop = &PARAM_REGGE::Baryon_prop;
   }
-  
+
   // Proton / Dissociative system vertices
   double FF_A = 0.0;
   double FF_B = 0.0;
@@ -649,11 +641,11 @@ std::complex<double> MRegge::ME8(gra::LORENTZSCALAR &lts) const {
     const double tt_ef = lts.tt_2[f];
 
     const std::complex<double> subamp =
-        PropOnly(lts.ss[1][a], lts.t1) * FF_A * (*ff)(tt_ab, M2_A) * gpp_P *
-        prop(tt_ab, M2_A) * (*ff)(tt_bc, M2_A) * gpp_P * PropOnly(lts.ss[b][c], tt_bc) *
-        (*ff)(tt_bc, M2_B) * gpp_P * prop(tt_cd, M2_B) * (*ff)(tt_de, M2_B) * gpp_P *
-        PropOnly(lts.ss[d][e], tt_de) * (*ff)(tt_de, M2_C) * gpp_P * prop(tt_ef, M2_C) *
-        (*ff)(tt_ef, M2_C) * gpp_P * PropOnly(lts.ss[2][f], lts.t2) * FF_B;
+        PropOnly(lts.ss[1][a], lts.t1) * FF_A * (*ff)(tt_ab, M2_A) * gpp_P * prop(tt_ab, M2_A) *
+        (*ff)(tt_bc, M2_A) * gpp_P * PropOnly(lts.ss[b][c], tt_bc) * (*ff)(tt_bc, M2_B) * gpp_P *
+        prop(tt_cd, M2_B) * (*ff)(tt_de, M2_B) * gpp_P * PropOnly(lts.ss[d][e], tt_de) *
+        (*ff)(tt_de, M2_C) * gpp_P * prop(tt_ef, M2_C) * (*ff)(tt_ef, M2_C) * gpp_P *
+        PropOnly(lts.ss[2][f], lts.t2) * FF_B;
 
     A += subamp;
   }
@@ -668,11 +660,13 @@ std::complex<double> MRegge::ME8(gra::LORENTZSCALAR &lts) const {
 
 // Proton-Proton-Pomeron elastic / inelastic vertex
 //
-void MRegge::PomPomProtonVertex(const gra::LORENTZSCALAR& lts, double& FF_A, double& FF_B) const {
-
-  FF_A = lts.excite1 ? msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_P) * gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : PARAM_SOFT::gN_P * gra::form::S3F(lts.t1);
-  FF_B = lts.excite2 ? msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_P) * gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : PARAM_SOFT::gN_P * gra::form::S3F(lts.t2);
-
+void MRegge::PomPomProtonVertex(const gra::LORENTZSCALAR &lts, double &FF_A, double &FF_B) const {
+  FF_A = lts.excite1 ? msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_P) *
+                           gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2())
+                     : PARAM_SOFT::gN_P * gra::form::S3F(lts.t1);
+  FF_B = lts.excite2 ? msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_P) *
+                           gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2())
+                     : PARAM_SOFT::gN_P * gra::form::S3F(lts.t2);
 }
 
 // ----------------------------------------------------------------------------
@@ -707,7 +701,6 @@ void MRegge::PomPomProtonVertex(const gra::LORENTZSCALAR& lts, double& FF_A, dou
 // ===========
 //
 std::complex<double> MRegge::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const {
-
   // Proton / Dissociative system vertices
   double FF_A = 0.0;
   double FF_B = 0.0;
@@ -721,14 +714,15 @@ std::complex<double> MRegge::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resona
       PropOnly(lts.s2, lts.t2) * FF_B;
 
   // Production and Decay amplitude
-  const std::complex<double> A_spin = spin::ProdAmp(lts, resonance) * spin::DecayAmp(lts, resonance);
+  const std::complex<double> A_spin =
+      spin::ProdAmp(lts, resonance) * spin::DecayAmp(lts, resonance);
 
   // Flux
   const double V = std::pow(1.0 / lts.m2, PARAM_REGGE::omega);
-  
+
   // Full amplitude
   const std::complex<double> A = A_prod * A_spin * V;
-  
+
   // --------------------------------------------------------------------
   // For screening loop
   lts.hamp = {A};
@@ -749,21 +743,28 @@ std::complex<double> MRegge::ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resona
 // ===========
 //
 std::complex<double> MRegge::ME3ODD(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const {
-  
   // Proton / Dissociative system vertices
-  double FF_A = lts.excite1 ? msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_P) * gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : PARAM_SOFT::gN_P * gra::form::S3F(lts.t1);
-  double FF_B = lts.excite2 ? msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_O) * gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : PARAM_SOFT::gN_O * gra::form::S3F(lts.t2);
+  double FF_A = lts.excite1 ? msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_P) *
+                                  gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2())
+                            : PARAM_SOFT::gN_P * gra::form::S3F(lts.t1);
+  double FF_B = lts.excite2 ? msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_O) *
+                                  gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2())
+                            : PARAM_SOFT::gN_O * gra::form::S3F(lts.t2);
 
   const std::complex<double> A1 =
       PropOnly(lts.s1, lts.t1) * FF_A * CBW(lts, resonance) *
       PARAM_REGGE::ResonanceFormFactor(lts.m2, pow2(resonance.p.mass), resonance.g_FF) *
       OdderonProp(lts.s2, lts.t2) * FF_B;
-  
+
   // ---------------------------------------------------------------------
 
   // Proton / Dissociative system vertices
-  FF_A = lts.excite1 ? msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_O) * gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2()) : PARAM_SOFT::gN_O * gra::form::S3F(lts.t1);
-  FF_B = lts.excite2 ? msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_P) * gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2()) : PARAM_SOFT::gN_P * gra::form::S3F(lts.t2);
+  FF_A = lts.excite1 ? msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_O) *
+                           gra::form::S3FINEL(lts.t1, lts.pfinal[1].M2())
+                     : PARAM_SOFT::gN_O * gra::form::S3F(lts.t1);
+  FF_B = lts.excite2 ? msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_P) *
+                           gra::form::S3FINEL(lts.t2, lts.pfinal[2].M2())
+                     : PARAM_SOFT::gN_P * gra::form::S3F(lts.t2);
 
   const std::complex<double> A2 =
       OdderonProp(lts.s1, lts.t1) * FF_A * CBW(lts, resonance) *
@@ -773,14 +774,15 @@ std::complex<double> MRegge::ME3ODD(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res
   // ---------------------------------------------------------------------
 
   // Production and Decay amplitude
-  const std::complex<double> A_spin = spin::ProdAmp(lts, resonance) * spin::DecayAmp(lts, resonance);
+  const std::complex<double> A_spin =
+      spin::ProdAmp(lts, resonance) * spin::DecayAmp(lts, resonance);
 
   // Flux
   const double V = std::pow(1.0 / lts.m2, PARAM_REGGE::omega);
 
   // Should sum here with negative sign if proton-antiproton initial state (anti-symmetric)
   const std::complex<double> A_prod = (lts.beam1.pdg == lts.beam2.pdg) ? (A1 + A2) : (A1 - A2);
-  const std::complex<double> A = A_prod * A_spin * V;
+  const std::complex<double> A      = A_prod * A_spin * V;
 
   // --------------------------------------------------------------------
   // For screening loop
@@ -822,24 +824,27 @@ std::complex<double> MRegge::PhotoME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &r
   // "To amplitude level"
   gammaflux1 = msqrt(gammaflux1 / lts.x1);
   gammaflux2 = msqrt(gammaflux2 / lts.x2);
-  
+
   // Pomeron up (t1) x Photon down (t2)
-  const std::complex<double> A_1 = gammaflux2 * common *
+  const std::complex<double> A_1 =
+      gammaflux2 * common *
       PhotoProp(lts.s1, lts.t1, pow2(resonance.p.mass), lts.excite1, lts.pfinal[1].M2());
 
   // Photon up (t1) x Pomeron down (t2)
-  const std::complex<double> A_2 = gammaflux1 * common *
+  const std::complex<double> A_2 =
+      gammaflux1 * common *
       PhotoProp(lts.s2, lts.t2, pow2(resonance.p.mass), lts.excite2, lts.pfinal[2].M2());
 
   // Should sum here with negative sign if proton-antiproton initial state (anti-symmetric)
   const std::complex<double> A_prod = (lts.beam1.pdg == lts.beam2.pdg) ? (A_1 + A_2) : (A_1 - A_2);
-  
+
   // Production and Decay amplitude
-  const std::complex<double> A_spin = spin::ProdAmp(lts, resonance) * spin::DecayAmp(lts, resonance);
+  const std::complex<double> A_spin =
+      spin::ProdAmp(lts, resonance) * spin::DecayAmp(lts, resonance);
 
   // Full amplitude
   const std::complex<double> A = A_prod * A_spin;
-  
+
   // --------------------------------------------------------------------
   // For screening loop
   lts.hamp = {A};
@@ -887,16 +892,18 @@ std::complex<double> MRegge::PhotoProp(double s, double t, double m2, bool excit
 
   // N.B. The pomeron slope (a') also affects, so all parameters need
   // to be fitted in a proper way (full MC)
-  const double alpha    = PARAM_REGGE::a0[0] + PARAM_REGGE::ap[0] * t;
-  const double alpha_t0 = PARAM_REGGE::a0[0];
-  const double ap       = PARAM_REGGE::ap[0];
-  const std::complex<double> eta = ReggeEtaLinear(t, alpha_t0, ap, PARAM_REGGE::sgn[0]);
-  
+  const double               alpha    = PARAM_REGGE::a0[0] + PARAM_REGGE::ap[0] * t;
+  const double               alpha_t0 = PARAM_REGGE::a0[0];
+  const double               ap       = PARAM_REGGE::ap[0];
+  const std::complex<double> eta      = ReggeEtaLinear(t, alpha_t0, ap, PARAM_REGGE::sgn[0]);
+
   // Proton form factor simply exponential here
   // Division by 2, because we are at amplitude level
 
   // Proton / Dissociative system vertex
-  const double FF = excite ? msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_P) * gra::form::S3FINEL(t, M2_forward) : PARAM_SOFT::gN_P * std::exp(B0 * t / 2.0);
+  const double FF =
+      excite ? msqrt(PARAM_SOFT::g3P * PARAM_SOFT::gN_P) * gra::form::S3FINEL(t, M2_forward)
+             : PARAM_SOFT::gN_P * std::exp(B0 * t / 2.0);
 
   return eta * std::pow(s / W02, alpha) * FF;
 }
@@ -912,10 +919,10 @@ std::complex<double> MRegge::PropOnly(double s, double t) const {
     if (PARAM_REGGE::n[k] == true) {  // Trajectory active
 
       // Trajectory signature
-      const double alpha    = PARAM_REGGE::a0[k] + PARAM_REGGE::ap[k] * t;
-      const double alpha_t0 = PARAM_REGGE::a0[k];
-      const double ap       = PARAM_REGGE::ap[k];
-      const std::complex<double> eta = ReggeEtaLinear(t, alpha_t0, ap, PARAM_REGGE::sgn[k]);
+      const double               alpha    = PARAM_REGGE::a0[k] + PARAM_REGGE::ap[k] * t;
+      const double               alpha_t0 = PARAM_REGGE::a0[k];
+      const double               ap       = PARAM_REGGE::ap[k];
+      const std::complex<double> eta      = ReggeEtaLinear(t, alpha_t0, ap, PARAM_REGGE::sgn[k]);
 
       // Add to the sum
       M += eta * std::pow(s / PARAM_REGGE::s0, alpha);
@@ -928,13 +935,12 @@ std::complex<double> MRegge::PropOnly(double s, double t) const {
 // Odderon propagators in the form (s/s0)^alpha(t)
 //
 std::complex<double> MRegge::OdderonProp(double s, double t) const {
-
   // Use Pomeron trajectory with odd signature
-  const double alpha    = PARAM_REGGE::a0[0] + PARAM_REGGE::ap[0] * t;
-  const double alpha_t0 = PARAM_REGGE::a0[0];
-  const double ap       = PARAM_REGGE::ap[0];
-  const std::complex<double> eta = ReggeEtaLinear(t, alpha_t0, ap, (-1) * PARAM_REGGE::sgn[0]);
-  
+  const double               alpha    = PARAM_REGGE::a0[0] + PARAM_REGGE::ap[0] * t;
+  const double               alpha_t0 = PARAM_REGGE::a0[0];
+  const double               ap       = PARAM_REGGE::ap[0];
+  const std::complex<double> eta      = ReggeEtaLinear(t, alpha_t0, ap, (-1) * PARAM_REGGE::sgn[0]);
+
   return eta * std::pow(s / PARAM_REGGE::s0, alpha);
 }
 
@@ -983,7 +989,7 @@ void PrintParam() {
   printf("- reggeize = %d \n", reggeize);
   printf("- s0 = %0.3f [GeV^2]", s0);
   std::cout << std::endl << std::endl;
-  
+
   std::cout << "Couplings:" << std::endl;
   for (unsigned int i = 0; i < c.size(); ++i) {
     printf("- Reggeon[%d]: c = %0.3f [GeV^{-2}]", i, c[i]);
@@ -1192,5 +1198,5 @@ double ResonanceFormFactor(double s_hat, double M2, double S0) {
   return std::exp(-pow2(s_hat - M2) / math::pow4(S0));
 }
 
-}  // PARAM_REGGE namespace ends
-}  // gra namespace ends
+}  // namespace PARAM_REGGE
+}  // namespace gra

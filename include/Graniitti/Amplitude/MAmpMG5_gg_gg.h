@@ -28,7 +28,7 @@ class MAmpMG5_gg_gg {
 
   // Private functions to calculate the matrix element for all subprocesses
   // Calculate wavefunctions
-  void calculate_wavefunctions(const int perm[], const int hel[]);
+  void                 calculate_wavefunctions(const int perm[], const int hel[]);
   static const int     nwavefuncs = 7;
   std::complex<double> w[nwavefuncs][18];
   static const int     namplitudes = 6;
@@ -43,7 +43,7 @@ class MAmpMG5_gg_gg {
 
   // Model parameters
   Parameters_sm pars;
-  
+
   // vector with external particle masses
   vector<double> mME;
 

@@ -15,7 +15,6 @@
 #include <iomanip>
 #include <iostream>
 #include <memory>
-#include <memory>
 #include <mutex>
 #include <random>
 #include <stdexcept>
@@ -28,8 +27,8 @@
 #include "Graniitti/MTimer.h"
 
 // Libraries
-#include "json.hpp"
 #include "cxxopts.hpp"
+#include "json.hpp"
 
 using gra::aux::indices;
 using namespace gra;
@@ -44,16 +43,15 @@ int main(int argc, char *argv[]) {
   try {
     cxxopts::Options options(argv[0], "");
 
-    options.add_options("")(
-        "i,input",   "Input cards            <card1.json,card2.json,...>",cxxopts::value<std::string>())(
-        "e,energy",  "CMS energies           <energy0,energy1,...>",      cxxopts::value<std::string>())(
-        "l,pomloop", "Pomeron loop screening <true|false>",               cxxopts::value<std::string>())(
-        "H,help",    "Help");
-    
+    options.add_options("")("i,input", "Input cards            <card1.json,card2.json,...>",
+                            cxxopts::value<std::string>())(
+        "e,energy", "CMS energies           <energy0,energy1,...>", cxxopts::value<std::string>())(
+        "l,pomloop", "Pomeron loop screening <true|false>", cxxopts::value<std::string>())("H,help",
+                                                                                           "Help");
+
     auto r = options.parse(argc, argv);
 
     if (r.count("help") || NARGC == 0) {
-      
       std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
       gen->GetProcessNumbers();
 
@@ -109,7 +107,6 @@ int main(int argc, char *argv[]) {
       std::vector<double> xs0(jsinput.size(), 0.0);
       std::vector<double> xs0_err(jsinput.size(), 0.0);
       for (const auto &k : indices(jsinput)) {
-
         // Create generator object first
         std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
 
@@ -170,23 +167,23 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   } catch (const nlohmann::json::exception &e) {
     gra::aux::PrintGameOver();
-    std::cerr << rang::fg::red << "Exception catched: JSON input: " << rang::fg::reset
-              << e.what() << std::endl;
+    std::cerr << rang::fg::red << "Exception catched: JSON input: " << rang::fg::reset << e.what()
+              << std::endl;
     return EXIT_FAILURE;
   } catch (...) {
     std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
     gen->GetProcessNumbers();
-      
+
     gra::aux::PrintGameOver();
     std::cerr << rang::fg::red << "Exception catched: Unspecified (...) (Probably JSON input)"
               << rang::fg::reset << std::endl;
     return EXIT_FAILURE;
   }
-  
+
   printf("\n");
   printf("scan:: Finished in %0.1f sec \n", timer.ElapsedSec());
   printf("scan:: Output created to scan{.csv,.tex} \n\n");
-  
+
   std::cout << "[xscan: done]" << std::endl;
   aux::CheckUpdate();
 

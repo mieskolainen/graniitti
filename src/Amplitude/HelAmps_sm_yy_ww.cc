@@ -184,7 +184,7 @@ void txxxxx(double p[4], double tmass, int nhel, int nst, complex<double> tc[18]
       }
     } else if (nhel == 0) {
       for (j = 0; j < 4; j++) {
-        for (i     = 0; i < 4; i++)
+        for (i = 0; i < 4; i++)
           ft[i][j] = sqs * (ep[i] * em[j] + em[i] * ep[j] + 2.0 * e0[i] * e0[j]);
       }
     } else if (nhel == -1) {
@@ -390,41 +390,45 @@ void VVV1_2(std::complex<double> V1[], std::complex<double> V3[], std::complex<d
   P1[3] = V1[0].imag();
   OM2   = 0.;
   if (M2 != 0.) { OM2 = 1. / (M2 * M2); }
-  P3[0]               = V3[0].real();
-  P3[1]               = V3[1].real();
-  P3[2]               = V3[1].imag();
-  P3[3]               = V3[0].imag();
-  V2[0]               = +V1[0] + V3[0];
-  V2[1]               = +V1[1] + V3[1];
-  P2[0]               = -V2[0].real();
-  P2[1]               = -V2[1].real();
-  P2[2]               = -V2[1].imag();
-  P2[3]               = -V2[0].imag();
-  TMP0                = (V3[2] * P1[0] - V3[3] * P1[1] - V3[4] * P1[2] - V3[5] * P1[3]);
-  TMP9                = (P1[0] * P2[0] - P1[1] * P2[1] - P1[2] * P2[2] - P1[3] * P2[3]);
-  TMP8                = (V1[2] * P3[0] - V1[3] * P3[1] - V1[4] * P3[2] - V1[5] * P3[3]);
-  TMP7                = (V1[2] * P2[0] - V1[3] * P2[1] - V1[4] * P2[2] - V1[5] * P2[3]);
-  TMP10               = (P2[0] * P3[0] - P2[1] * P3[1] - P2[2] * P3[2] - P2[3] * P3[3]);
-  TMP3                = (V3[2] * V1[2] - V3[3] * V1[3] - V3[4] * V1[4] - V3[5] * V1[5]);
-  TMP2                = (V3[2] * P2[0] - V3[3] * P2[1] - V3[4] * P2[2] - V3[5] * P2[3]);
+  P3[0] = V3[0].real();
+  P3[1] = V3[1].real();
+  P3[2] = V3[1].imag();
+  P3[3] = V3[0].imag();
+  V2[0] = +V1[0] + V3[0];
+  V2[1] = +V1[1] + V3[1];
+  P2[0] = -V2[0].real();
+  P2[1] = -V2[1].real();
+  P2[2] = -V2[1].imag();
+  P2[3] = -V2[0].imag();
+  TMP0  = (V3[2] * P1[0] - V3[3] * P1[1] - V3[4] * P1[2] - V3[5] * P1[3]);
+  TMP9  = (P1[0] * P2[0] - P1[1] * P2[1] - P1[2] * P2[2] - P1[3] * P2[3]);
+  TMP8  = (V1[2] * P3[0] - V1[3] * P3[1] - V1[4] * P3[2] - V1[5] * P3[3]);
+  TMP7  = (V1[2] * P2[0] - V1[3] * P2[1] - V1[4] * P2[2] - V1[5] * P2[3]);
+  TMP10 = (P2[0] * P3[0] - P2[1] * P3[1] - P2[2] * P3[2] - P2[3] * P3[3]);
+  TMP3  = (V3[2] * V1[2] - V3[3] * V1[3] - V3[4] * V1[4] - V3[5] * V1[5]);
+  TMP2  = (V3[2] * P2[0] - V3[3] * P2[1] - V3[4] * P2[2] - V3[5] * P2[3]);
   denom = COUP / ((P2[0] * P2[0]) - (P2[1] * P2[1]) - (P2[2] * P2[2]) - (P2[3] * P2[3]) -
                   M2 * (M2 - cI * W2));
-  V2[2] = denom * (OM2 * P2[0] * (TMP3 * (-cI * (TMP9) + cI * (TMP10)) +
-                                  (-cI * (TMP2 * TMP8) + cI * (TMP0 * TMP7))) +
-                   (TMP3 * (-cI * (P3[0]) + cI * (P1[0])) +
-                    (V1[2] * (-cI * (TMP0) + cI * (TMP2)) + V3[2] * (-cI * (TMP7) + cI * (TMP8)))));
-  V2[3] = denom * (OM2 * P2[1] * (TMP3 * (-cI * (TMP9) + cI * (TMP10)) +
-                                  (-cI * (TMP2 * TMP8) + cI * (TMP0 * TMP7))) +
-                   (TMP3 * (-cI * (P3[1]) + cI * (P1[1])) +
-                    (V1[3] * (-cI * (TMP0) + cI * (TMP2)) + V3[3] * (-cI * (TMP7) + cI * (TMP8)))));
-  V2[4] = denom * (OM2 * P2[2] * (TMP3 * (-cI * (TMP9) + cI * (TMP10)) +
-                                  (-cI * (TMP2 * TMP8) + cI * (TMP0 * TMP7))) +
-                   (TMP3 * (-cI * (P3[2]) + cI * (P1[2])) +
-                    (V1[4] * (-cI * (TMP0) + cI * (TMP2)) + V3[4] * (-cI * (TMP7) + cI * (TMP8)))));
-  V2[5] = denom * (OM2 * P2[3] * (TMP3 * (-cI * (TMP9) + cI * (TMP10)) +
-                                  (-cI * (TMP2 * TMP8) + cI * (TMP0 * TMP7))) +
-                   (TMP3 * (-cI * (P3[3]) + cI * (P1[3])) +
-                    (V1[5] * (-cI * (TMP0) + cI * (TMP2)) + V3[5] * (-cI * (TMP7) + cI * (TMP8)))));
+  V2[2] = denom *
+          (OM2 * P2[0] *
+               (TMP3 * (-cI * (TMP9) + cI * (TMP10)) + (-cI * (TMP2 * TMP8) + cI * (TMP0 * TMP7))) +
+           (TMP3 * (-cI * (P3[0]) + cI * (P1[0])) +
+            (V1[2] * (-cI * (TMP0) + cI * (TMP2)) + V3[2] * (-cI * (TMP7) + cI * (TMP8)))));
+  V2[3] = denom *
+          (OM2 * P2[1] *
+               (TMP3 * (-cI * (TMP9) + cI * (TMP10)) + (-cI * (TMP2 * TMP8) + cI * (TMP0 * TMP7))) +
+           (TMP3 * (-cI * (P3[1]) + cI * (P1[1])) +
+            (V1[3] * (-cI * (TMP0) + cI * (TMP2)) + V3[3] * (-cI * (TMP7) + cI * (TMP8)))));
+  V2[4] = denom *
+          (OM2 * P2[2] *
+               (TMP3 * (-cI * (TMP9) + cI * (TMP10)) + (-cI * (TMP2 * TMP8) + cI * (TMP0 * TMP7))) +
+           (TMP3 * (-cI * (P3[2]) + cI * (P1[2])) +
+            (V1[4] * (-cI * (TMP0) + cI * (TMP2)) + V3[4] * (-cI * (TMP7) + cI * (TMP8)))));
+  V2[5] = denom *
+          (OM2 * P2[3] *
+               (TMP3 * (-cI * (TMP9) + cI * (TMP10)) + (-cI * (TMP2 * TMP8) + cI * (TMP0 * TMP7))) +
+           (TMP3 * (-cI * (P3[3]) + cI * (P1[3])) +
+            (V1[5] * (-cI * (TMP0) + cI * (TMP2)) + V3[5] * (-cI * (TMP7) + cI * (TMP8)))));
 }
 
 void VVVV2_0(std::complex<double> V1[], std::complex<double> V2[], std::complex<double> V3[],
@@ -470,37 +474,45 @@ void VVV1_3(std::complex<double> V1[], std::complex<double> V2[], std::complex<d
   P2[3] = V2[0].imag();
   OM3   = 0.;
   if (M3 != 0.) { OM3 = 1. / (M3 * M3); }
-  V3[0]               = +V1[0] + V2[0];
-  V3[1]               = +V1[1] + V2[1];
-  P3[0]               = -V3[0].real();
-  P3[1]               = -V3[1].real();
-  P3[2]               = -V3[1].imag();
-  P3[3]               = -V3[0].imag();
-  TMP1                = (V2[2] * V1[2] - V2[3] * V1[3] - V2[4] * V1[4] - V2[5] * V1[5]);
-  TMP8                = (V1[2] * P3[0] - V1[3] * P3[1] - V1[4] * P3[2] - V1[5] * P3[3]);
-  TMP5                = (V2[2] * P3[0] - V2[3] * P3[1] - V2[4] * P3[2] - V2[5] * P3[3]);
-  TMP4                = (P1[0] * V2[2] - P1[1] * V2[3] - P1[2] * V2[4] - P1[3] * V2[5]);
-  TMP7                = (V1[2] * P2[0] - V1[3] * P2[1] - V1[4] * P2[2] - V1[5] * P2[3]);
-  TMP11               = (P1[0] * P3[0] - P1[1] * P3[1] - P1[2] * P3[2] - P1[3] * P3[3]);
-  TMP10               = (P2[0] * P3[0] - P2[1] * P3[1] - P2[2] * P3[2] - P2[3] * P3[3]);
+  V3[0] = +V1[0] + V2[0];
+  V3[1] = +V1[1] + V2[1];
+  P3[0] = -V3[0].real();
+  P3[1] = -V3[1].real();
+  P3[2] = -V3[1].imag();
+  P3[3] = -V3[0].imag();
+  TMP1  = (V2[2] * V1[2] - V2[3] * V1[3] - V2[4] * V1[4] - V2[5] * V1[5]);
+  TMP8  = (V1[2] * P3[0] - V1[3] * P3[1] - V1[4] * P3[2] - V1[5] * P3[3]);
+  TMP5  = (V2[2] * P3[0] - V2[3] * P3[1] - V2[4] * P3[2] - V2[5] * P3[3]);
+  TMP4  = (P1[0] * V2[2] - P1[1] * V2[3] - P1[2] * V2[4] - P1[3] * V2[5]);
+  TMP7  = (V1[2] * P2[0] - V1[3] * P2[1] - V1[4] * P2[2] - V1[5] * P2[3]);
+  TMP11 = (P1[0] * P3[0] - P1[1] * P3[1] - P1[2] * P3[2] - P1[3] * P3[3]);
+  TMP10 = (P2[0] * P3[0] - P2[1] * P3[1] - P2[2] * P3[2] - P2[3] * P3[3]);
   denom = COUP / ((P3[0] * P3[0]) - (P3[1] * P3[1]) - (P3[2] * P3[2]) - (P3[3] * P3[3]) -
                   M3 * (M3 - cI * W3));
-  V3[2] = denom * (OM3 * P3[0] * (TMP1 * (-cI * (TMP10) + cI * (TMP11)) +
-                                  (-cI * (TMP4 * TMP8) + cI * (TMP5 * TMP7))) +
-                   (TMP1 * (-cI * (P1[0]) + cI * (P2[0])) +
-                    (V1[2] * (-cI * (TMP5) + cI * (TMP4)) + V2[2] * (-cI * (TMP7) + cI * (TMP8)))));
-  V3[3] = denom * (OM3 * P3[1] * (TMP1 * (-cI * (TMP10) + cI * (TMP11)) +
-                                  (-cI * (TMP4 * TMP8) + cI * (TMP5 * TMP7))) +
-                   (TMP1 * (-cI * (P1[1]) + cI * (P2[1])) +
-                    (V1[3] * (-cI * (TMP5) + cI * (TMP4)) + V2[3] * (-cI * (TMP7) + cI * (TMP8)))));
-  V3[4] = denom * (OM3 * P3[2] * (TMP1 * (-cI * (TMP10) + cI * (TMP11)) +
-                                  (-cI * (TMP4 * TMP8) + cI * (TMP5 * TMP7))) +
-                   (TMP1 * (-cI * (P1[2]) + cI * (P2[2])) +
-                    (V1[4] * (-cI * (TMP5) + cI * (TMP4)) + V2[4] * (-cI * (TMP7) + cI * (TMP8)))));
-  V3[5] = denom * (OM3 * P3[3] * (TMP1 * (-cI * (TMP10) + cI * (TMP11)) +
-                                  (-cI * (TMP4 * TMP8) + cI * (TMP5 * TMP7))) +
-                   (TMP1 * (-cI * (P1[3]) + cI * (P2[3])) +
-                    (V1[5] * (-cI * (TMP5) + cI * (TMP4)) + V2[5] * (-cI * (TMP7) + cI * (TMP8)))));
+  V3[2] =
+      denom *
+      (OM3 * P3[0] *
+           (TMP1 * (-cI * (TMP10) + cI * (TMP11)) + (-cI * (TMP4 * TMP8) + cI * (TMP5 * TMP7))) +
+       (TMP1 * (-cI * (P1[0]) + cI * (P2[0])) +
+        (V1[2] * (-cI * (TMP5) + cI * (TMP4)) + V2[2] * (-cI * (TMP7) + cI * (TMP8)))));
+  V3[3] =
+      denom *
+      (OM3 * P3[1] *
+           (TMP1 * (-cI * (TMP10) + cI * (TMP11)) + (-cI * (TMP4 * TMP8) + cI * (TMP5 * TMP7))) +
+       (TMP1 * (-cI * (P1[1]) + cI * (P2[1])) +
+        (V1[3] * (-cI * (TMP5) + cI * (TMP4)) + V2[3] * (-cI * (TMP7) + cI * (TMP8)))));
+  V3[4] =
+      denom *
+      (OM3 * P3[2] *
+           (TMP1 * (-cI * (TMP10) + cI * (TMP11)) + (-cI * (TMP4 * TMP8) + cI * (TMP5 * TMP7))) +
+       (TMP1 * (-cI * (P1[2]) + cI * (P2[2])) +
+        (V1[4] * (-cI * (TMP5) + cI * (TMP4)) + V2[4] * (-cI * (TMP7) + cI * (TMP8)))));
+  V3[5] =
+      denom *
+      (OM3 * P3[3] *
+           (TMP1 * (-cI * (TMP10) + cI * (TMP11)) + (-cI * (TMP4 * TMP8) + cI * (TMP5 * TMP7))) +
+       (TMP1 * (-cI * (P1[3]) + cI * (P2[3])) +
+        (V1[5] * (-cI * (TMP5) + cI * (TMP4)) + V2[5] * (-cI * (TMP7) + cI * (TMP8)))));
 }
 
-}  // end namespace $(namespace)s_sm
+}  // namespace MG5_sm_yy_ww

@@ -96,25 +96,25 @@ bool UserCut(int id, const gra::LORENTZSCALAR &lts) {
   // STAR/RHIC \sqrt{s} = 200 GeV pi+pi- (+ other cuts needed in .json file)
   // https://indico.cern.ch/event/713101/contributions/3102315/attachments/1705771/2748440/Diffraction2018_RafalSikora.pdf
   else if (id == 280818) {
-    
     // Loop over forward protons
-    std::vector<int> indices = {1,2};
+    std::vector<int> indices = {1, 2};
 
-    for (const auto & i : indices) {
-      if (gra::math::pow2(lts.pfinal[i].Px() + 0.3) + gra::math::pow2(lts.pfinal[i].Py()) < 0.25) {  // GeV^2
-                                                                             // fine
+    for (const auto &i : indices) {
+      if (gra::math::pow2(lts.pfinal[i].Px() + 0.3) + gra::math::pow2(lts.pfinal[i].Py()) <
+          0.25) {  // GeV^2
+                   // fine
       } else {
         return false;  // not passed
       }
 
       if (0.2 < std::abs(lts.pfinal[i].Py()) && std::abs(lts.pfinal[i].Py()) < 0.4) {  // GeV
-                                                             // fine
+                                                                                       // fine
       } else {
         return false;  // not passed
       }
 
       if (lts.pfinal[i].Px() > -0.2) {  // GeV
-                           // fine
+                                        // fine
       } else {
         return false;  // not passed
       }
@@ -211,4 +211,4 @@ bool UserCut(int id, const gra::LORENTZSCALAR &lts) {
   return true;
 }
 
-}  // gra namespace ends
+}  // namespace gra

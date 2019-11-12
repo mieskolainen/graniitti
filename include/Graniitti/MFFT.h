@@ -52,7 +52,7 @@ void ifft(std::valarray<std::complex<T>> &x) {
   x = x.apply(std::conj);  // Conjugate
   x /= x.size();           // Normalize
 }
-}
+}  // namespace MFFT
 
 }  // gra namespace ends
 

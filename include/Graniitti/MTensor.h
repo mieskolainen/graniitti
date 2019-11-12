@@ -62,44 +62,44 @@ class MTensor {
   // Size operators
   std::size_t size(std::size_t ind) const { return dim[ind]; }
 
-/*
-  // Print full tensor
-  void Print() {
+  /*
+    // Print full tensor
+    void Print() {
 
-    X(:,:,1,1,1) =
-    std::vector<std::size_t> state(dim.size()-2, 0);
+      X(:,:,1,1,1) =
+      std::vector<std::size_t> state(dim.size()-2, 0);
 
-    while (true) {
-      for (std::size_t k = 2; k < dim.size(); ++k) {
+      while (true) {
+        for (std::size_t k = 2; k < dim.size(); ++k) {
+        }
       }
-    }
 
-    for (std::size_t i = 0; i < dim[0]; ++i) {
-      for (std::size_t j = 0; j < dim[1]; ++j) {
+      for (std::size_t i = 0; i < dim[0]; ++i) {
+        for (std::size_t j = 0; j < dim[1]; ++j) {
 
-        const std::size_t ind = Index({i,j,})
-        std::cout <<
+          const std::size_t ind = Index({i,j,})
+          std::cout <<
+        }
       }
-    }
-    std::cout << data[i]
- }
-*/
+      std::cout << data[i]
+   }
+  */
 
  private:
   // Multidimensional indexing algorithm
   // Row-major order
   std::size_t Index(const std::vector<size_t> &ind) const {
     if (ind.size() != dim.size()) {
-      throw std::invalid_argument("MTensor:: Error: Index vector with rank = " +
-                                  std::to_string(ind.size()) + " c.f. Tensor has rank " +
-                                  std::to_string(dim.size()));
+      throw std::invalid_argument(
+          "MTensor:: Error: Index vector with rank = " + std::to_string(ind.size()) +
+          " c.f. Tensor has rank " + std::to_string(dim.size()));
     }
     std::size_t sum = 0;
     for (std::size_t i = 0; i < ind.size(); ++i) {
       if (ind[i] >= dim[i]) {
         throw std::invalid_argument("MTensor:: Error: Input index " + std::to_string(i) +
-                                    " over bounds: " + std::to_string(ind[i]) + " >= " +
-                                    std::to_string(dim[i]));
+                                    " over bounds: " + std::to_string(ind[i]) +
+                                    " >= " + std::to_string(dim[i]));
       }
       std::size_t product = 1;
       for (std::size_t j = i + 1; j < ind.size(); ++j) { product *= dim[j]; }
@@ -132,6 +132,6 @@ class MTensor {
   T *data;
 };
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

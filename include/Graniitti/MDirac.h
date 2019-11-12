@@ -24,24 +24,24 @@ namespace gra {
 class MDirac {
  public:
   MDirac();
-  MDirac(const std::string& basis);
+  MDirac(const std::string &basis);
   ~MDirac() {}
 
   void InitGammaMatrices(const std::string &basis);
-  
+
   // Polarization vectors/tensors
-  FTensor::Tensor1<std::complex<double>, 4> EpsSpin1(const M4Vec &k, int m) const;
-  FTensor::Tensor1<std::complex<double>, 4> EpsMassiveSpin1(const M4Vec &k, int m) const;
+  FTensor::Tensor1<std::complex<double>, 4>    EpsSpin1(const M4Vec &k, int m) const;
+  FTensor::Tensor1<std::complex<double>, 4>    EpsMassiveSpin1(const M4Vec &k, int m) const;
   FTensor::Tensor2<std::complex<double>, 4, 4> EpsMassiveSpin2(const M4Vec &k, int m) const;
 
   // Spin/spinor state collectors
-  std::array<std::vector<std::complex<double>>, 2> SpinorStates(const M4Vec &p,
-                                                                const std::string& type) const;
-  std::array<FTensor::Tensor1<std::complex<double>, 4>, 2> MasslessSpin1States(const M4Vec &p,
-                                                                       const std::string& type, bool INDEX_UP = true) const;  
-  std::array<FTensor::Tensor1<std::complex<double>, 4>, 3> MassiveSpin1States(const M4Vec &p,
-                                                                       const std::string& type, bool INDEX_UP = true) const;
-  
+  std::array<std::vector<std::complex<double>>, 2>         SpinorStates(const M4Vec &      p,
+                                                                        const std::string &type) const;
+  std::array<FTensor::Tensor1<std::complex<double>, 4>, 2> MasslessSpin1States(
+      const M4Vec &p, const std::string &type, bool INDEX_UP = true) const;
+  std::array<FTensor::Tensor1<std::complex<double>, 4>, 3> MassiveSpin1States(
+      const M4Vec &p, const std::string &type, bool INDEX_UP = true) const;
+
   // Helicity spinors
   std::vector<std::complex<double>> XiSpinor(const M4Vec &p, int helicity) const;
   std::vector<std::complex<double>> uHelChiral(const M4Vec &p, int helicity) const;
@@ -58,14 +58,14 @@ class MDirac {
 
   // Propagators
   FTensor::Tensor2<std::complex<double>, 4, 4> iD_y(const double q2) const;
-  MMatrix<std::complex<double>> iD_F(const M4Vec &q, double m) const;
-  
+  MMatrix<std::complex<double>>                iD_F(const M4Vec &q, double m) const;
+
   // Dirac spinors
   std::vector<std::complex<double>> uDirac(const M4Vec &p, int spin) const;
   std::vector<std::complex<double>> vDirac(const M4Vec &p, int spin) const;
 
   // Spinor-Helicity style methods
-  std::complex<double> sProd(const M4Vec &p1, const M4Vec &p2, int helicity) const;
+  std::complex<double>              sProd(const M4Vec &p1, const M4Vec &p2, int helicity) const;
   std::vector<std::complex<double>> uGauge(const M4Vec &p, int helicity) const;
   std::vector<std::complex<double>> vGauge(const M4Vec &p, int helicity) const;
 
@@ -82,7 +82,7 @@ class MDirac {
   // Test functions
   double TestGammaAntiCommutation() const;
   double TestSpinorHELimit(const M4Vec &p1, const M4Vec &p2) const;
-  double TestSpinorComplete(const M4Vec &p, const std::string &type, const std::string& mode) const;
+  double TestSpinorComplete(const M4Vec &p, const std::string &type, const std::string &mode) const;
   double TestMassiveSpin1Complete(const M4Vec &k) const;
   double TestFSlashFSlash(const M4Vec &p) const;
 
@@ -140,6 +140,6 @@ class MDirac {
   std::string BASIS = "";  // D for Dirac, C for Chiral
 };
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

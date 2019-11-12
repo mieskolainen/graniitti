@@ -25,7 +25,6 @@
 namespace gra {
 
 struct MSudakovNumerics {
-
   double       q2_MIN = 0.0;
   double       q2_MAX = 0.0;
   double       M_MIN  = 0.0;
@@ -51,12 +50,11 @@ struct MSudakovNumerics {
   bool DEBUG = false;
 
   void ReadParameters() {
-
     // Read and parse
     using json                  = nlohmann::json;
     const std::string inputfile = gra::aux::GetBasePath(2) + "/modeldata/" + "NUMERICS.json";
     const std::string data      = gra::aux::GetInputData(inputfile);
-    json  j;
+    json              j;
 
     try {
       j = json::parse(data);
@@ -94,7 +92,6 @@ struct MSudakovNumerics {
       throw std::invalid_argument(str);
     }
   }
-
 };
 
 
@@ -132,9 +129,9 @@ class IArray2D {
 
     // Sanity
     if (_logarithmic && _min < 1e-9) {
-      throw std::invalid_argument("IArray2D::Set: Error: Variable " + _name +
-                                  " is using logarithmic stepping with boundary MIN = " +
-                                  std::to_string(_min));
+      throw std::invalid_argument(
+          "IArray2D::Set: Error: Variable " + _name +
+          " is using logarithmic stepping with boundary MIN = " + std::to_string(_min));
     }
     islog[VAR] = _logarithmic;
 
@@ -167,8 +164,8 @@ class IArray2D {
     return str;
   }
 
-  bool WriteArray(const std::string &filename, bool overwrite) const;
-  bool ReadArray(const std::string &filename);
+  bool                      WriteArray(const std::string &filename, bool overwrite) const;
+  bool                      ReadArray(const std::string &filename);
   std::pair<double, double> Interpolate2D(double A, double B) const;
 };
 
@@ -189,7 +186,7 @@ class MSudakov {
   double AlphaS_Q2(double q2) const;
   double NumFlavor(double q2) const;
   double xg_xQ2(double x, double Q2) const;
-  void TestPDF() const;
+  void   TestPDF() const;
 
   bool initialized = false;
 
@@ -200,7 +197,7 @@ class MSudakov {
   double diff_xg_xQ2_wrt_Q2(double x, double q2) const;
   double AP_gg(double delta) const;
   double AP_qg(double delta, double qt2) const;
-  void CalculateArray(IArray2D &arr, std::pair<double, double> (MSudakov::*f)(double, double));
+  void   CalculateArray(IArray2D &arr, std::pair<double, double> (MSudakov::*f)(double, double));
 
   std::string  PDFSETNAME;
   LHAPDF::PDF *PdfPtr = nullptr;
@@ -208,9 +205,9 @@ class MSudakov {
   IArray2D veto;  // Sudakov veto
   IArray2D spdf;  // Shuvaev pdf
 
-  MSudakovNumerics Numerics; // Numerics
+  MSudakovNumerics Numerics;  // Numerics
 };
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

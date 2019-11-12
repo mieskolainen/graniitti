@@ -26,7 +26,7 @@ class MAmpMG5_yy_ww {
   // Private functions to calculate the matrix element for all
   // subprocesses
   // Calculate wavefunctions
-  void calculate_wavefunctions(const int perm[], const int hel[]);
+  void                 calculate_wavefunctions(const int perm[], const int hel[]);
   static const int     nwavefuncs = 6;
   std::complex<double> w[nwavefuncs][18];
   static const int     namplitudes = 3;
@@ -38,7 +38,7 @@ class MAmpMG5_yy_ww {
 
   // Color flows, used when selecting color
   std::vector<std::vector<double>> jamp2;
-  
+
   // Model parameters
   Parameters_sm pars;
 
