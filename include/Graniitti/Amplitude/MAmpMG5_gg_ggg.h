@@ -18,8 +18,8 @@ class MAmpMG5_gg_ggg {
   double CalcAmp2(gra::LORENTZSCALAR &lts, double alpS);
 
  private:
-  double calls    = 0;
-  double ratiosum = 0;
+//  double calls    = 0;
+//  double ratiosum = 0;
 
   // Constants for array limits
   static const int ninitial   = 2;
@@ -51,7 +51,7 @@ class MAmpMG5_gg_ggg {
   vector<double *> p;
 
   // Initial particle ids
-  int id1, id2;
+//  int id1, id2;
 };
 
 #endif

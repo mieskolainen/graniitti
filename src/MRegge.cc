@@ -582,8 +582,7 @@ std::complex<double> MRegge::ME6(gra::LORENTZSCALAR &lts) const {
 //  ======F======>
 //
 std::complex<double> MRegge::ME8(gra::LORENTZSCALAR &lts) const {
-  const std::complex<double> nullc(0, 0);
-
+  
   // Amplitude
   std::complex<double> A(0, 0);
 
@@ -596,7 +595,7 @@ std::complex<double> MRegge::ME8(gra::LORENTZSCALAR &lts) const {
   // Create function pointers
   double (*ff)(double, double);
   double (*prop)(double, double);
-
+  
   const double sign = 1;
 
   if (sign > 0) {  // positive sign amplitudes

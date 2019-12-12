@@ -34,7 +34,7 @@ class MAmpMG5_yy_ll {
   double               matrix_1_aa_epem();
 
   // Store the matrix element value from sigmaKin
-  double matrix_element[nprocesses];
+//  double matrix_element[nprocesses];
 
   // Color flows, used when selecting color
   std::vector<std::vector<double>> jamp2;
@@ -49,7 +49,7 @@ class MAmpMG5_yy_ll {
   vector<double *> p;
 
   // Initial particle ids
-  int id1, id2;
+//  int id1, id2;
 };
 
 #endif
