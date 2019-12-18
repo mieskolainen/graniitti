@@ -11,21 +11,17 @@
 #include <random>
 #include <vector>
 
-// MadGraph
-#include "Graniitti/Amplitude/MAmpMG5_yy_ll.h"
-#include "Graniitti/Amplitude/MAmpMG5_yy_ww.h"
-
 // Own
 #include "Graniitti/M4Vec.h"
 #include "Graniitti/MKinematics.h"
+#include "Graniitti/MAmplitudes.h"
 
 namespace gra {
-// "Functionoid class"
-// Matrix element dimension: " GeV^" << -(2*external_legs - 8)
-class MGamma {
+
+class MGamma : public MAmplitudes {
  public:
-  MGamma() {}
-  ~MGamma() {}
+  MGamma();
+  ~MGamma();
 
   // yy->resonance X
   double yyX(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const;
@@ -40,9 +36,7 @@ class MGamma {
   double yyMP(gra::LORENTZSCALAR &lts) const;
 
  protected:
-  // MADGRAPH amplitudes added here
-  MAmpMG5_yy_ll AmpMG5_yy_ll;
-  MAmpMG5_yy_ww AmpMG5_yy_ww;
+
 };
 
 }  // namespace gra

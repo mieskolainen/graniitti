@@ -43,17 +43,14 @@ MSubProc::MSubProc(const std::string &_ISTATE, const std::string &_CHANNEL, cons
 
   ConstructDescriptions(ISTATE);
 
-  // Construct 4 and 6 body Regge Ladder leg combinatorial permutations
-  const int mode = 1;  // charged permutations +-
-  permutations4_ = gra::math::GetAmpPerm(4, mode);
-  permutations6_ = gra::math::GetAmpPerm(6, mode);
-
-  // ** Read in monopole mass (needed by monopolium process) **
+  // ** Read in global monopole mass (needed by monopolium process) **
   PARAM_MONOPOLE::M0 = _PDG.FindByPDG(PDG::PDG_monopole).mass;
 }
 
 MSubProc::MSubProc(const std::vector<std::string> &first) {
-  for (std::size_t i = 0; i < first.size(); ++i) { ConstructDescriptions(first[i]); }
+  for (std::size_t i = 0; i < first.size(); ++i) {
+    ConstructDescriptions(first[i]);
+  }
 }
 
 void MSubProc::ConstructDescriptions(const std::string &first) {
@@ -179,6 +176,7 @@ void MSubProc::SetTechnicalBoundaries(gra::GENCUT &gcuts, unsigned int EXCITATIO
   }
 }
 
+// Wrapper function
 double MSubProc::GetBareAmplitude2(gra::LORENTZSCALAR &lts) {
   if (ISTATE == "X") {
     return GetBareAmplitude2_X(lts);
@@ -206,7 +204,7 @@ inline void MSubProc::ReggeReset(gra::LORENTZSCALAR &lts) {
   gra::g_mutex.lock();
   if (!PARAM_REGGE::initialized) {
     const int PDG = std::abs(lts.decaytree[0].p.pdg);
-    InitReggeAmplitude(PDG, gra::MODELPARAM);
+    Regge.InitReggeAmplitude(PDG, gra::MODELPARAM);
     PARAM_REGGE::initialized = true;
   }
   gra::g_mutex.unlock();
@@ -218,7 +216,7 @@ inline double MSubProc::GetBareAmplitude2_X(gra::LORENTZSCALAR &lts) {
 
   std::complex<double> A(0, 0);
   if (CHANNEL == "EL" || CHANNEL == "SD" || CHANNEL == "DD") {
-    A = ME2(lts, LIPSDIM);
+    A = Regge.ME2(lts, LIPSDIM);
   } else if (CHANNEL == "ND") {
     A = 1.0;
   } else {
@@ -237,7 +235,9 @@ inline double MSubProc::GetBareAmplitude2_OP(gra::LORENTZSCALAR &lts) {
     for (auto &x : lts.RESONANCES) {
       const int J = static_cast<int>(x.second.p.spinX2 / 2.0);
       // Vectors only
-      if (J == 1 && x.second.p.P == -1) { A += ME3ODD(lts, x.second); }
+      if (J == 1 && x.second.p.P == -1) {
+        A += Regge.ME3ODD(lts, x.second);
+      }
     }
     return abs2(A);  // amplitude squared
 
@@ -260,11 +260,11 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
 
       // Gamma-Pomeron for vectors (could be Pomeron-Odderon too)
       if (J == 1 && x.second.p.P == -1) {
-        A += PhotoME3(lts, x.second);
+        A += Regge.PhotoME3(lts, x.second);
       }
       // Pomeron-Pomeron, J = 0,1,2,... all ok
       else {
-        A += ME3(lts, x.second);
+        A += Regge.ME3(lts, x.second);
       }
     }
 
@@ -274,11 +274,10 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
     // ------------------------------------------------------------------
 
   } else if (CHANNEL == "RESHEL") {
-    A = ME3HEL(lts, lts.RESONANCES.begin()->second);
+    A = Regge.ME3HEL(lts, lts.RESONANCES.begin()->second);
 
   } else if (CHANNEL == "RESTENSOR") {
     if (lts.decaytree.size() == 2) {
-      static MTensorPomeron TensorPomeron;
       return TensorPomeron.ME3(lts);
 
     } else {
@@ -287,7 +286,6 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
     }
   } else if (CHANNEL == "CONTENSOR") {
     if (lts.decaytree.size() == 2) {
-      static MTensorPomeron TensorPomeron;
       return TensorPomeron.ME4(lts);
 
     } else {
@@ -297,7 +295,6 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
     if (lts.decaytree.size() == 4 ||
         (lts.decaytree.size() == 2 && lts.decaytree[0].legs.size() == 2 &&
          lts.decaytree[1].legs.size() == 2)) {
-      static MTensorPomeron TensorPomeron;
       return TensorPomeron.ME6(lts);
 
     } else {
@@ -305,7 +302,6 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
     }
   } else if (CHANNEL == "RES+CONTENSOR") {
     if (lts.decaytree.size() == 2) {
-      static MTensorPomeron TensorPomeron;
 
       // 1. Evaluate continuum matrix element -> helicity amplitudes to lts.hamp
       TensorPomeron.ME4(lts);
@@ -340,24 +336,24 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
     }
   } else if (CHANNEL == "CON") {
     if (lts.decaytree.size() == 2) {
-      A = ME4(lts, 1);
+      A = Regge.ME4(lts, 1);
     } else if (lts.decaytree.size() == 4) {
-      A = ME6(lts);
+      A = Regge.ME6(lts);
     } else if (lts.decaytree.size() == 6) {
-      A = ME8(lts);
+      A = Regge.ME8(lts);
     } else {
       throw std::invalid_argument(
           "MSubProc: Only 2/4/6-body + sequential final states for [CON] process");
     }
   } else if (CHANNEL == "CON-") {
     if (lts.decaytree.size() == 2) {
-      A = ME4(lts, -1);
+      A = Regge.ME4(lts, -1);
     } else {
       throw std::invalid_argument("MSubProc: Only 2-body final states for [CON-] process");
     }
   } else if (CHANNEL == "RES+CON") {
     // 1. Continuum matrix element
-    A = ME4(lts, 1);
+    A = Regge.ME4(lts, 1);
 
     // 2. Coherent sum of Resonances (loop over)
     for (auto &x : lts.RESONANCES) {
@@ -365,11 +361,11 @@ inline double MSubProc::GetBareAmplitude2_PP(gra::LORENTZSCALAR &lts) {
 
       // Gamma-Pomeron for vectors
       if (J == 1 && x.second.p.P == -1) {
-        A += PhotoME3(lts, x.second);
+        A += Regge.PhotoME3(lts, x.second);
       }
       // Pomeron-Pomeron, J = 0,1,2,... all ok
       else {
-        A += ME3(lts, x.second);
+        A += Regge.ME3(lts, x.second);
       }
     }
 
@@ -396,12 +392,13 @@ inline double MSubProc::GetBareAmplitude2_yP(gra::LORENTZSCALAR &lts) {
     for (auto &x : lts.RESONANCES) {
       const int J = static_cast<int>(x.second.p.spinX2 / 2.0);
       // Vectors only
-      if (J == 1 && x.second.p.P == -1) { A += PhotoME3(lts, lts.RESONANCES.begin()->second); }
+      if (J == 1 && x.second.p.P == -1) {
+        A += Regge.PhotoME3(lts, lts.RESONANCES.begin()->second);
+      }
     }
     return abs2(A);  // amplitude squared
 
   } else if (CHANNEL == "RESTENSOR") {
-    static MTensorPomeron TensorPomeron;
     return TensorPomeron.ME3(lts);
 
   } else {
@@ -414,19 +411,21 @@ inline double MSubProc::GetBareAmplitude2_yy(gra::LORENTZSCALAR &lts) {
   double amp2 = 0.0;
 
   if (CHANNEL == "RES") {
-    amp2 = yyX(lts, lts.RESONANCES.begin()->second);
+    amp2 = Gamma.yyX(lts, lts.RESONANCES.begin()->second);
   } else if (CHANNEL == "Higgs") {
-    amp2 = yyHiggs(lts);
+    amp2 = Gamma.yyHiggs(lts);
   } else if (CHANNEL == "monopolium(0)") {
-    amp2 = yyMP(lts);
+    amp2 = Gamma.yyMP(lts);
   } else if (CHANNEL == "CON") {
     if (std::abs(lts.decaytree[0].p.pdg) == 24 && std::abs(lts.decaytree[1].p.pdg) == 24) {  // W+W-
-      amp2 = AmpMG5_yy_ww.CalcAmp2(lts);
+      amp2 = Gamma.AmpMG5_yy_ww.CalcAmp2(lts, 0.0);
+    }
+    else if (lts.decaytree.size() == 4) { // e+ v e- v~
+      amp2 = Gamma.AmpMG5_yy_ww_evev.CalcAmp2(lts, 0.0);
     } else {  // ffbar
-      amp2 = yyffbar(lts);
+      amp2 = Gamma.yyffbar(lts);
     }
   } else if (CHANNEL == "QED") {
-    static MTensorPomeron TensorPomeron;
     return TensorPomeron.ME4(lts);
 
   } else {
@@ -462,7 +461,7 @@ inline double MSubProc::GetBareAmplitude2_yy(gra::LORENTZSCALAR &lts) {
 // Gamma-Gamma collinear Drees-Zeppenfeld (coherent flux)
 inline double MSubProc::GetBareAmplitude2_yy_DZ(gra::LORENTZSCALAR &lts) {
   // Amplitude squared
-  double amp2 = yyffbar(lts);
+  double amp2 = Gamma.yyffbar(lts);
 
   // Evaluate gamma pdfs
   const double f1         = form::DZFlux(lts.x1);
@@ -505,9 +504,9 @@ inline double MSubProc::GetBareAmplitude2_yy_LUX(gra::LORENTZSCALAR &lts) {
   double amp2 = 0.0;
   if (CHANNEL == "CON") {
     if (std::abs(lts.decaytree[0].p.pdg) == 24 && std::abs(lts.decaytree[1].p.pdg) == 24) {  // W+W-
-      amp2 = AmpMG5_yy_ww.CalcAmp2(lts);
+      amp2 = Gamma.AmpMG5_yy_ww.CalcAmp2(lts, 0.0);
     } else {  // ffbar
-      amp2 = yyffbar(lts);
+      amp2 = Gamma.yyffbar(lts);
     }
   } else {
     throw std::invalid_argument("MSubProc::GetBareAmplitude2_yy_LUX: Unknown CHANNEL = " + CHANNEL);
@@ -531,16 +530,15 @@ inline double MSubProc::GetBareAmplitude2_yy_LUX(gra::LORENTZSCALAR &lts) {
   return tot;  // amplitude squared
 }
 
-
 // Durham gg
 inline double MSubProc::GetBareAmplitude2_gg(gra::LORENTZSCALAR &lts) {
   if (CHANNEL == "chic(0)") {
-    return DurhamQCD(lts, CHANNEL);
+    return Durham.DurhamQCD(lts, CHANNEL);
   } else if (CHANNEL == "CON") {
     if (std::abs(lts.decaytree[0].p.pdg) == 21 && std::abs(lts.decaytree[1].p.pdg) == 21) {
-      return DurhamQCD(lts, "gg");
+    return Durham.DurhamQCD(lts, "gg");
     } else {
-      return DurhamQCD(lts, "MMbar");
+    return Durham.DurhamQCD(lts, "MMbar");
     }
   } else {
     throw std::invalid_argument("MSubProc::GetBareAmplitude2_gg: Unknown CHANNEL = " + CHANNEL);

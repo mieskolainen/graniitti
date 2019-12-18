@@ -32,12 +32,28 @@ using gra::aux::indices;
 using namespace gra::form;
 
 namespace gra {
+
+// Constructor
+MRegge::MRegge() {}
+
+// Destructor
+MRegge::~MRegge() {}
+
+
 // Generic Regge amplitude initialization
 // PDG is the pion/kaon/proton
 // TODO: we read couplings based on the first particle,
 // generalize to pairs such as pi+pi-K+K- (4-body) (easy extension)
 //
 void MRegge::InitReggeAmplitude(int PDG, const std::string &MODELPARAM) {
+
+  // Construct 4 and 6 body Regge Ladder leg combinatorial permutations
+  const int mode = 1;  // charged permutations +- (FIXED FOR NOW)
+  permutations4 = gra::math::GetAmpPerm(4, mode);
+  permutations6 = gra::math::GetAmpPerm(6, mode);
+
+  // ---------------------------------------------------------------------
+
   using json           = nlohmann::json;
   std::string fullpath = gra::aux::GetBasePath(2) + "/modeldata/" + MODELPARAM + "/GENERAL.json";
 
@@ -48,17 +64,17 @@ void MRegge::InitReggeAmplitude(int PDG, const std::string &MODELPARAM) {
 
     // Setup the parameter string
     std::string str;
-    if (PDG == 211 || PDG == 111) {  // Charged or Neutral Pions
+    if        (PDG == 211 || PDG == 111) {    // Charged or Neutral Pions
       str = "PARAM_PI";
-    } else if (PDG == 321 || PDG == 311) {  // Charged or Neutral Kaons
+    } else if (PDG == 321 || PDG == 311) {    // Charged or Neutral Kaons
       str = "PARAM_K";
     } else if (PDG == 2212 || PDG == 2112) {  // Protons or Neutrons
       str = "PARAM_P";
-    } else if (PDG == 113 || PDG == 213) {  // Neutral or charged rho(770)
+    } else if (PDG == 113 || PDG == 213) {    // Neutral or charged rho(770)
       str = "PARAM_RHO";
-    } else if (PDG == 331) {  // phi(1020)
+    } else if (PDG == 331) {                  // phi(1020)
       str = "PARAM_PHI";
-    } else if (PDG == 9000221) {  // f0(500)
+    } else if (PDG == 9000221) {              // f0(500)
       str = "PARAM_F0500";
     } else {  // The rest will use PARAM_X setup
       str = "PARAM_X";
@@ -524,11 +540,11 @@ std::complex<double> MRegge::ME6(gra::LORENTZSCALAR &lts) const {
   const double gpp_P = PARAM_REGGE::c[0] / PARAM_SOFT::gN_P;
 
   // Loop over different final state permutations (max #16)
-  for (const auto &i : indices(permutations4_)) {
-    const unsigned int a = permutations4_[i][0];
-    const unsigned int b = permutations4_[i][1];
-    const unsigned int c = permutations4_[i][2];
-    const unsigned int d = permutations4_[i][3];
+  for (const auto &i : indices(permutations4)) {
+    const unsigned int a = permutations4[i][0];
+    const unsigned int b = permutations4[i][1];
+    const unsigned int c = permutations4[i][2];
+    const unsigned int d = permutations4[i][3];
 
     // Calculate t-type Lorentz scalars here [no need, done already]
     // const double tt_ab = (pbeam1_pfinal1 - pfinal[a]).M2();
@@ -617,13 +633,13 @@ std::complex<double> MRegge::ME8(gra::LORENTZSCALAR &lts) const {
   const double gpp_P = PARAM_REGGE::c[0] / PARAM_SOFT::gN_P;
 
   // Loop over different permutations (max #288)
-  for (const auto &i : indices(permutations6_)) {
-    const unsigned int a = permutations6_[i][0];
-    const unsigned int b = permutations6_[i][1];
-    const unsigned int c = permutations6_[i][2];
-    const unsigned int d = permutations6_[i][3];
-    const unsigned int e = permutations6_[i][4];
-    const unsigned int f = permutations6_[i][5];
+  for (const auto &i : indices(permutations6)) {
+    const unsigned int a = permutations6[i][0];
+    const unsigned int b = permutations6[i][1];
+    const unsigned int c = permutations6[i][2];
+    const unsigned int d = permutations6[i][3];
+    const unsigned int e = permutations6[i][4];
+    const unsigned int f = permutations6[i][5];
 
     // t-type Lorentz scalars [no need here, already calculated]
     // const double tt_ab = (pbeam1_pfinal1 - pfinal[a]).M2();

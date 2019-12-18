@@ -62,8 +62,8 @@ std::complex<double> FSI_prop(double t_hat, double M2);
 // Matrix element dimension: " GeV^" << -(2*external_legs - 8)
 class MRegge {
  public:
-  MRegge() {}
-  ~MRegge() {}
+  MRegge();
+  ~MRegge();
 
   void InitReggeAmplitude(int PDG, const std::string &MODELPARAM);
 
@@ -84,8 +84,8 @@ class MRegge {
   void ConstructPerm(int type);
 
   // Amplitude_ permutations
-  std::vector<std::vector<int>> permutations4_;
-  std::vector<std::vector<int>> permutations6_;
+  std::vector<std::vector<int>> permutations4;
+  std::vector<std::vector<int>> permutations6;
 
   // Regge propagators
   std::complex<double> PropOnly(double s, double t) const;

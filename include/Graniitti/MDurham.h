@@ -11,17 +11,14 @@
 #include <random>
 #include <vector>
 
-// MADGRAPH
-#include "Graniitti/Amplitude/MAmpMG5_gg_gg.h"
-#include "Graniitti/Amplitude/MAmpMG5_gg_ggg.h"
-#include "Graniitti/Amplitude/MAmpMG5_gg_qqbar.h"
-
 // Own
 #include "Graniitti/M4Vec.h"
 #include "Graniitti/MAux.h"
 #include "Graniitti/MGlobals.h"
 #include "Graniitti/MKinematics.h"
 #include "Graniitti/MSudakov.h"
+#include "Graniitti/MAmplitudes.h"
+
 
 namespace gra {
 
@@ -82,12 +79,12 @@ struct MDurhamParam {
   }
 };
 
-// Matrix element dimension: " GeV^" << -(2*external_legs - 8)
-class MDurham {
+class MDurham : public MAmplitudes {
+
  public:
   MDurham() {}
   ~MDurham() {}
-
+  
   double      DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process);
   double      DQtloop(gra::LORENTZSCALAR &lts, std::vector<std::vector<std::complex<double>>> Amp);
   inline void DScaleChoise(double qt2, double q1_2, double q2_2, double &Q1_2_scale,
@@ -115,15 +112,9 @@ class MDurham {
 
   double Asum = 0.0;
   double Nsum = 0.0;
-
-  // ------------------------------------------------------------------
-  // MadGraph amplitudes here
-  MAmpMG5_gg_gg    AmpMG5_gg_gg;
-  MAmpMG5_gg_ggg   AmpMG5_gg_ggg;
-  MAmpMG5_gg_qqbar AmpMG5_gg_qqbar;
-
-
+  
  private:
+
   // Parameters
   MDurhamParam Param;
 };

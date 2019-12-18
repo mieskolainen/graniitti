@@ -28,6 +28,14 @@ using gra::math::zi;
 using namespace gra::form;
 
 namespace gra {
+
+// Constructor
+MGamma::MGamma() {}
+
+// Destructor
+MGamma::~MGamma() {}
+
+
 // ============================================================================
 // (yy -> fermion-antifermion pair)
 // yy -> e+e-, mu+mu-, tau+tau-, qqbar or Monopole-Antimonopole (spin-1/2
@@ -133,9 +141,9 @@ double MGamma::yyffbar(gra::LORENTZSCALAR &lts) {
   } else {  // MADGRAPH/HELAS, all helicity amplitudes individually -> for
     // the screening loop
 
-    return AmpMG5_yy_ll.CalcAmp2(lts);
+    return AmpMG5_yy_ll.CalcAmp2(lts, 0.0);
   }
-
+  
   // ------------------------------------------------------------------
   // quark pair (charge 1/3 or 2/3), apply charge and color factors
   if (std::abs(lts.decaytree[0].p.pdg) <= 6) {  // we have a quark

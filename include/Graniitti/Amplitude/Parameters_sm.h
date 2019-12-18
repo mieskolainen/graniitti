@@ -31,10 +31,10 @@ class Parameters_sm {
   // Model parameters dependent on aS
   double mdl_sqrt__aS, G, mdl_G__exp__2;
   // Model couplings independent of aS
-  std::complex<double> GC_3, GC_4, GC_5;
+  std::complex<double> GC_3, GC_4, GC_5, GC_100;
   // Model couplings dependent on aS
   std::complex<double> GC_12, GC_11, GC_10;
-
+  
   // Set parameters that are unchanged during the run
   void setIndependentParameters(SLHAReader &slha);
   // Set couplings that are unchanged during the run
@@ -43,6 +43,8 @@ class Parameters_sm {
   void setDependentParameters(double alpS);
   // Set couplings that are changed event by event
   void setDependentCouplings();
+  // Set alphaqed at Q2 = 0 GeV^2
+  void setAlphaQEDZero();
 
   // Print parameters that are unchanged during the run
   void printIndependentParameters();

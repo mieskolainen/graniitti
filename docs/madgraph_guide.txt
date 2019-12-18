@@ -1,0 +1,21 @@
+Matrix elements from MADGRAPH to GRANIITTI
+Mikael Mieskolainen, 17.12.2019
+
+STEP 1: Generate process in MadGraph, for example:
+> generate a a > e+ ve e- ve~
+OR
+> generate a a > w+ w-, (w+ > e+ ve), (w- > e- ve~)
+
+STEP 2: Check that all matrix elements (sub-amplitudes) needed are truly included
+> display diagrams ./
+
+STEP 3: Output the matrix elements in C++
+> output standalone_cpp
+
+STEP 4: Make it thread safe
+- Remove all static keywords from CPPProcess.cc files
+- Remove static pointers from the Parameter_sm class -> just create normal objects
+
+STEP 5: 
+
+

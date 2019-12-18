@@ -1,0 +1,17 @@
+# This folder holds the MadGraph C++ to GRANIITTI C++ conversion script
+#
+# mikael.mieskolainen@cern.ch
+
+
+A. AUTOMATIC conversion script for MadGraph 'standalone_cpp'
+
+ 1. python MG2GRA.py
+
+
+B. ADDITIONAL MANUAL labour is (currently) required after running the conversion
+
+ 1. Check that you have all necessary HELAS routines under HelAmps_sm.cc / h
+ 2. Check that you have all necessary parameters under Parameters_sm.cc / h
+ 3. Add the amplitude under MAmplitudes.h
+ 4. Add the process handle under MSubProc.cc
+

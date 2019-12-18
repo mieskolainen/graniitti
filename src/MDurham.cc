@@ -93,19 +93,23 @@ double MDurham::DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process) {
     // Run loop
     return DQtloop(lts, Amp);
   } else if (process == "qqbar") {
+    
     // [Final state helicities/polarizations x 4 initial state helicities]
     std::vector<std::vector<std::complex<double>>> Amp(4,
                                                        std::vector<std::complex<double>>(4, 0.0));
 
+    /*
     // Madgraph
     const double alpha_s = lts.GlobalSudakovPtr->AlphaS_Q2(lts.s_hat);
-    AmpMG5_gg_qqbar.CalcAmp2(lts, alpha_s);
+    AmpMG5_gg_uubar.CalcAmp2(lts, alpha_s);
+    */
 
     // Amplitude evaluated outside the Qt-loop (approximation)
     Dgg2qqbar(lts, Amp);
 
     // Run loop
     return DQtloop(lts, Amp);
+
   } else if (process == "MMbar") {
     // [Final state helicities/polarizations x 4 initial state helicities]
     std::vector<std::vector<std::complex<double>>> Amp(1,

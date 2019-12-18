@@ -22,9 +22,9 @@
 #include "Graniitti/MTensorPomeron.h"
 
 namespace gra {
-// "Functionoid class"
 
-class MSubProc : public MDurham, public MRegge, public MGamma {
+class MSubProc {
+
  public:
   MSubProc(const std::string &_ISTATE, const std::string &_CHANNEL, const MPDG &_PDG);
   MSubProc(const std::vector<std::string> &first);
@@ -42,7 +42,7 @@ class MSubProc : public MDurham, public MRegge, public MGamma {
   bool         UW      = false;
 
   // -------------------------------------------------------------------
-
+  
   // Available channels and their descriptions
   std::map<std::string, std::map<std::string, std::string>> descriptions;
 
@@ -61,6 +61,13 @@ class MSubProc : public MDurham, public MRegge, public MGamma {
 
  private:
   void ReggeReset(gra::LORENTZSCALAR &lts);
+
+  // Process class containers
+  MGamma Gamma;
+  MDurham Durham;
+  MRegge Regge;
+  MTensorPomeron TensorPomeron;
+  
 };
 
 }  // namespace gra
