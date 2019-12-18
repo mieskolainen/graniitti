@@ -1,4 +1,4 @@
-GRANIITTI FAQ: 15.10.2019
+GRANIITTI FAQ: 18.12.2019
 
 mikael.mieskolainen@cern.ch
 -----------
@@ -12,7 +12,8 @@ source ./install/setenv.sh
 make -j4 CXX=g++ 
 
 
-Above, you may use also CXX=clang-5.0. Note that you need GCC > 7 or newer.
+Above, you may use also CXX=clang-6.0, but there can be problems with ROOT.
+Note that you need GCC > 7 or newer.
 
 
 FIRST RUN
@@ -307,6 +308,10 @@ A:  Yes you can, the kinematics is constructed to be fully generic and obey stan
     QFT normalization rules. What you need is some knowledge of C++ and then you need
     to study a little bit how the existing amplitudes are implemented in the machinery.
     Basically, you can add them under MSubProc 'umbrella' class.
+
+
+Q:  How to add new MadGraph based amplitudes / matrix elements?
+A:  See the automatic import script and manual procedures README under ./develop/MG2GRA/
 
 
 Q:  Are the soft central production parameters independent of the screening loop?
