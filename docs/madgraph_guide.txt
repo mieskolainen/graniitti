@@ -12,10 +12,4 @@ STEP 2: Check that all matrix elements (sub-amplitudes) needed are truly include
 STEP 3: Output the matrix elements in C++
 > output standalone_cpp
 
-STEP 4: Make it thread safe
-- Remove all static keywords from CPPProcess.cc files
-- Remove static pointers from the Parameter_sm class -> just create normal objects
-
-STEP 5: 
-
-
+STEP 4: See ./develop/MG2GRA/README
