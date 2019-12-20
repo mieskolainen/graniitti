@@ -13,5 +13,5 @@ B. ADDITIONAL MANUAL labour is (currently) required after running the conversion
  1. Check that you have all necessary HELAS routines under HelAmps_sm.cc / h
  2. Check that you have all necessary parameters under Parameters_sm.cc / h
  3. Add the amplitude under MAmplitudes.h
- 4. Add the process handle under MSubProc.cc
+ 4. Add the process handles under MSubProc.cc/h
 

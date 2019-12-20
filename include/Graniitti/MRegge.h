@@ -62,7 +62,7 @@ std::complex<double> FSI_prop(double t_hat, double M2);
 // Matrix element dimension: " GeV^" << -(2*external_legs - 8)
 class MRegge {
  public:
-  MRegge();
+  MRegge(const gra::LORENTZSCALAR& lts);
   ~MRegge();
 
   void InitReggeAmplitude(int PDG, const std::string &MODELPARAM);

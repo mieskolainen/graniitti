@@ -30,7 +30,12 @@ using namespace gra::form;
 namespace gra {
 
 // Constructor
-MGamma::MGamma() {}
+MGamma::MGamma(gra::LORENTZSCALAR& lts) {
+
+  // ** Read in global monopole mass (needed by monopolium process) **
+  PARAM_MONOPOLE::M0 = lts.PDG.FindByPDG(PDG::PDG_monopole).mass;
+  
+}
 
 // Destructor
 MGamma::~MGamma() {}

@@ -75,8 +75,9 @@ void MFactorized::ConstructProcesses() {
 
 // Initialize cut and process spesific postsetup
 void MFactorized::post_Constructor() {
+  
   // Set sampling boundaries
-  ProcPtr.SetTechnicalBoundaries(gcuts, EXCITATION);
+  SetTechnicalBoundaries(gcuts, EXCITATION);
 
   // Initialize phase space dimension
   ProcPtr.LIPSDIM = 5 + 1;  // All processes, +1 from central system mass

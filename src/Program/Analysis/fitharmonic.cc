@@ -25,6 +25,7 @@
 // Own
 #include "Graniitti/Analysis/MHarmonic.h"
 #include "Graniitti/Analysis/MROOT.h"
+#include "Graniitti/MKinematics.h"
 #include "Graniitti/MAux.h"
 #include "Graniitti/MPDG.h"
 
@@ -45,15 +46,14 @@
 #include "HepMC3/WriterAscii.h"
 
 using gra::aux::indices;
-
 using namespace gra;
 
 // Create Harmonic moment expansion object (needs to be global for TMinuit
 // reasons)
-MHarmonic ha;
+gra::MHarmonic ha;
 
 // Random numbers for fast detector simulation
-MRandom rrand;
+gra::MRandom rrand;
 
 // Final state fiducial cuts
 struct FIDCUTS {
@@ -137,7 +137,7 @@ int main(int argc, char *argv[]) {
       std::cout << rang::style::bold << "Example:" << rang::style::reset << std::endl;
       std::cout << "  " << argv[0] << " -r SH_2pi_REF -i SH_2pi ..." << std::endl << std::endl;
 
-      aux::CheckUpdate();
+      gra::aux::CheckUpdate();
       return EXIT_FAILURE;
     }
 
@@ -283,7 +283,7 @@ int main(int argc, char *argv[]) {
 
     // Plot all
     std::string inputstr = r["input"].as<std::string>();
-    aux::TrimAllSpace(inputstr);
+    gra::aux::TrimAllSpace(inputstr);
     std::string outputpath = ref + "___";
     for (std::size_t i = 0; i < input.size(); ++i) {
       const std::string marker = (i < input.size() - 1) ? "+" : "";

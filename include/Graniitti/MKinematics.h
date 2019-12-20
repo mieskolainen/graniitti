@@ -14,17 +14,104 @@
 #include <vector>
 
 // Own
+#include "Graniitti/MCW.h"
+#include "Graniitti/MHELMatrix.h"
+#include "Graniitti/MParticle.h"
+#include "Graniitti/MPDG.h"
 #include "Graniitti/M4Vec.h"
 #include "Graniitti/MAux.h"
-#include "Graniitti/MHELMatrix.h"
 #include "Graniitti/MMatOper.h"
 #include "Graniitti/MMath.h"
 #include "Graniitti/MMatrix.h"
 #include "Graniitti/MSudakov.h"
 
-namespace gra {
-namespace kinematics {
 
+namespace gra {
+
+
+// Resonance parameters
+class PARAM_RES {
+ public:
+  PARAM_RES() {}
+  void PrintParam(double sqrts) const {
+    std::cout << rang::style::bold << "Custom resonance parameters:" << rang::style::reset
+              << std::endl
+              << std::endl;
+
+    printf("- PDG ID:      %d \n", p.pdg);
+    printf("- Mass M0:     %0.5f GeV \n", p.mass);
+    printf("- Width W:     %0.5f GeV \n", p.width);
+    printf("- Spin Jx2:    %d \n", p.spinX2);
+    printf("- Parity P:    %d \n", p.P);
+    std::cout << std::endl;
+
+    printf("<Production> \n");
+    printf("- Effective vertex constant g_i:  %0.1E x exp(i x %0.1f) \n", std::abs(g), std::arg(g));
+    printf("- Form factor parameter: %0.2f \n", g_FF);
+
+    std::cout << std::endl;
+    printf("<Decay> \n");
+    printf("- BR:          %0.3E\n", hel.BR);
+    printf("- Effective vertex constant g_f:  %0.3E", hel.g_decay);
+    std::cout << std::endl << std::endl;
+
+    if (p.spinX2 != 0) {
+      std::cout << "- Polarization Lorentz frame: " << FRAME << std::endl;
+      std::cout << std::endl;
+      std::cout << "- Spin polarization density matrix [rho]:" << std::endl << std::endl;
+
+      // Print elements
+      for (std::size_t i = 0; i < rho.size_row(); ++i) {
+        for (std::size_t j = 0; j < rho.size_col(); ++j) {
+          std::string delim = (j < rho.size_col() - 1) ? ", " : "";
+          printf("%6.3f+i%6.3f%s ", std::real(rho[i][j]), std::imag(rho[i][j]), delim.c_str());
+        }
+        std::cout << std::endl;
+      }
+      std::cout << std::endl << std::endl;
+      // printf("Density matrix von Neumann entropy S = %0.3f
+      // \n\n", MSpin::VonNeumannEntropy(rho));
+    }
+  }
+
+  // Particle class
+  MParticle p;
+  
+  // -------------------------------------------------------------------
+  // Tensor Pomeron couplings
+  std::vector<double> g_Tensor;  // Production couplings
+  // -------------------------------------------------------------------
+
+  // (Complex) production coupling constant
+  std::complex<double> g = 0.0;
+
+  // Form factor parameter
+  double g_FF = 0.0;
+
+  // Breit-Wigner type
+  int BW = 0;
+
+  // 2->1 (generation spin correlation), 1->2 (decay spin correlations)
+  bool SPINGEN = true;
+  bool SPINDEC = true;
+
+  // Lorentz frame of the spin distribution
+  std::string FRAME = "null";
+
+  // Maximum sliding pomeron helicity
+  int JMAX = 0;
+
+  // Spin-density matrix (constant)
+  MMatrix<std::complex<double>> rho;
+
+  // --------------------------------------------------------------------
+  // Helicity and decay amplitude information
+  HELMatrix hel;
+  // --------------------------------------------------------------------
+};
+
+
+namespace kinematics {
 
 // Case m3 = m4
 inline double SolvePz3_A(double m3, double pt3, double pt4, double pz5, double E5, double s) {
@@ -371,103 +458,6 @@ inline void Two2TwoLimit(double s, double E1, double E2, double E3, double E4, d
 //   dy / (2E(2\pi)^3) = p_t^3 d_pt d\phi dy / (2E^2(2\pi)^3)
 //
 
-// A simple Monte Carlo weight (container)
-class MCW {
- public:
-  MCW() {
-    W  = 0.0;
-    W2 = 0.0;
-    N  = 0.0;
-  }
-  MCW(double w, double w2, double n) {
-    W  = w;
-    W2 = w2;
-    N  = n;
-  }
-  // + operator
-  MCW operator+(const MCW &obj) {
-    MCW res;
-    res.W  = W + obj.W;
-    res.W2 = W2 + obj.W2;
-    res.N  = N + obj.N;
-    return res;
-  }
-  // += operator
-  MCW &operator+=(const MCW &obj) {
-    this->W += obj.W;
-    this->W2 += obj.W2;
-    this->N += obj.N;
-    return *this;  // return by reference
-  }
-  // * operator (does scale W and W^2 but not N)
-  MCW operator*(double scale) { return MCW(GetW() * scale, GetW2() * scale * scale, GetN()); }
-
-  // Push new weight
-  void Push(double w) {
-    W += w;
-    W2 += w * w;
-    N += 1.0;
-  }
-  // MC estimate of the integral
-  double Integral() const { return (N > 0.0) ? W / N : 0.0; }
-  // MC estimate of the integral error squared (standard error of the mean)
-  double IntegralError2() const {
-    if (N > 0.0) {
-      return (W2 / N - gra::math::pow2(W / N)) / N;
-    } else {
-      return 0.0;
-    }
-  }
-  double IntegralError() const { return gra::math::msqrt(IntegralError2()); }
-  double GetW() const { return W; }
-  double GetW2() const { return W2; }
-  double GetN() const { return N; }
-  void   SetW(double w) { W = w; }
-  void   SetW2(double w2) { W2 = w2; }
-  void   SetN(double n) { N = n; }
-
- private:
-  double W;   // sum of weights
-  double W2;  // sum of weights^2
-  double N;   // trials
-};
-
-// A weighted sum of MCW container integral values (use with VEGAS, for example)
-class MCWSUM {
- public:
-  MCWSUM() {}
-
-  void Add(const MCW &x, double weight) {
-    wsum += weight;
-    wintsum += weight * x.Integral();
-    error2sum += (weight * weight) * x.IntegralError2();
-  }
-  double Integral() const {
-    if (wsum > 0.0) {
-      return wintsum / wsum;
-    } else {
-      return 0.0;
-    }
-  }
-  double IntegralError2() const {
-    if (wsum > 0.0) {
-      return error2sum / gra::math::pow2(wsum);
-    } else {
-      return 0.0;
-    }
-  }
-  double IntegralError() const { return gra::math::msqrt(IntegralError2()); }
-
- private:
-  // \sum_i weight_i
-  double wsum = 0.0;
-
-  // \sum_i weight_i integral_i
-  double wintsum = 0.0;
-
-  // \sum_i weight_i^2 error_i^2
-  double error2sum = 0.0;
-};
 
 // Generic Lorentz boost into the direction given by 4-momentum of "boost"
 //
@@ -1526,156 +1516,6 @@ inline void CMframe(std::vector<T> &p, const T &X, bool DEBUG = false) {
 
 }  // namespace kinematics
 
-// Particle class
-struct MParticle {
-  // These values are read from the PDG-file
-  std::string name;
-  int         pdg      = 0;  // PDG code
-  int         chargeX3 = 0;  // Q x 3
-  int         spinX2   = 0;  // J x 2
-  int         color    = 0;  // QCD color code
-
-  double mass  = 0.0;
-  double width = 0.0;
-  double tau   = 0.0;  // hbar / width
-
-  // J^PC
-  int          P    = 1;      // Default even P-parity
-  int          C    = 0;      // Default zero C-parity (e.g. fermions do not have)
-  unsigned int L    = 0;      // For Mesons/Baryons
-  bool         glue = false;  // Glueball state
-
-  void setPCL(int _P, int _C, unsigned int _L) {
-    P = _P;
-    C = _C;
-    L = _L;
-  }
-
-  // Width cut (in Breit-Wigner sampling)
-  double wcut = 0.0;
-
-  void print() const {
-    std::cout << " NAME:   " << name << std::endl;
-    std::cout << " ID:     " << pdg << std::endl;
-    std::cout << " M:      " << mass << std::endl;
-    std::cout << " W:      " << width << std::endl;
-    std::cout << " J^PC:   " << aux::Spin2XtoString(spinX2) << "^" << aux::ParityToString(P)
-              << aux::ParityToString(C) << std::endl
-              << std::endl;
-  }
-};
-
-
-// Recursive decay tree branch
-struct MDecayBranch {
-  MDecayBranch() {
-    f = MMatrix<std::complex<double>>(1, 1, 1.0);  // Unit element
-  }
-
-  // Offshell mass picked event by event
-  double m_offshell = 0.0;
-
-  MParticle                 p;               // PDG particle
-  M4Vec                     p4;              // 4-momentum
-  std::vector<MDecayBranch> legs;            // Daughters
-  M4Vec                     decay_position;  // Decay 4-position
-  gra::HELMatrix            hel;             // Decay helicity information
-
-  // Used with helicity amplitudes
-  MMatrix<std::complex<double>> f;
-
-  // MC weight container
-  gra::kinematics::MCW W;
-
-  // Active in the factorized phase space product (by default, no)
-  // This is controlled by the spesific amplitudes
-  bool PS_active = false;
-
-  // Decay tree current level
-  int depth = 0;
-};
-
-
-// Resonance parameters
-class PARAM_RES {
- public:
-  PARAM_RES() {}
-  void PrintParam(double sqrts) const {
-    std::cout << rang::style::bold << "Custom resonance parameters:" << rang::style::reset
-              << std::endl
-              << std::endl;
-
-    printf("- PDG ID:      %d \n", p.pdg);
-    printf("- Mass M0:     %0.5f GeV \n", p.mass);
-    printf("- Width W:     %0.5f GeV \n", p.width);
-    printf("- Spin Jx2:    %d \n", p.spinX2);
-    printf("- Parity P:    %d \n", p.P);
-    std::cout << std::endl;
-
-    printf("<Production> \n");
-    printf("- Effective vertex constant g_i:  %0.1E x exp(i x %0.1f) \n", std::abs(g), std::arg(g));
-    printf("- Form factor parameter: %0.2f \n", g_FF);
-
-    std::cout << std::endl;
-    printf("<Decay> \n");
-    printf("- BR:          %0.3E\n", hel.BR);
-    printf("- Effective vertex constant g_f:  %0.3E", hel.g_decay);
-    std::cout << std::endl << std::endl;
-
-    if (p.spinX2 != 0) {
-      std::cout << "- Polarization Lorentz frame: " << FRAME << std::endl;
-      std::cout << std::endl;
-      std::cout << "- Spin polarization density matrix [rho]:" << std::endl << std::endl;
-
-      // Print elements
-      for (std::size_t i = 0; i < rho.size_row(); ++i) {
-        for (std::size_t j = 0; j < rho.size_col(); ++j) {
-          std::string delim = (j < rho.size_col() - 1) ? ", " : "";
-          printf("%6.3f+i%6.3f%s ", std::real(rho[i][j]), std::imag(rho[i][j]), delim.c_str());
-        }
-        std::cout << std::endl;
-      }
-      std::cout << std::endl << std::endl;
-      // printf("Density matrix von Neumann entropy S = %0.3f
-      // \n\n", MSpin::VonNeumannEntropy(rho));
-    }
-  }
-
-  // Particle class
-  MParticle p;
-
-  // -------------------------------------------------------------------
-  // Tensor Pomeron couplings
-  std::vector<double> g_Tensor;  // Production couplings
-  // -------------------------------------------------------------------
-
-  // (Complex) production coupling constant
-  std::complex<double> g = 0.0;
-
-  // Form factor parameter
-  double g_FF = 0.0;
-
-  // Breit-Wigner type
-  int BW = 0;
-
-  // 2->1 (generation spin correlation), 1->2 (decay spin correlations)
-  bool SPINGEN = true;
-  bool SPINDEC = true;
-
-  // Lorentz frame of the spin distribution
-  std::string FRAME = "null";
-
-  // Maximum sliding pomeron helicity
-  int JMAX = 0;
-
-  // Spin-density matrix (constant)
-  MMatrix<std::complex<double>> rho;
-
-  // --------------------------------------------------------------------
-  // Helicity and decay amplitude information
-  HELMatrix hel;
-  // --------------------------------------------------------------------
-};
 
 // Lorentz scalars and other common kinematic variables
 class LORENTZSCALAR {
@@ -1685,6 +1525,10 @@ class LORENTZSCALAR {
     delete GlobalSudakovPtr;
     delete GlobalPdfPtr;
   }
+
+  // --------------------------------------------------------------------
+  // Particle Database
+  MPDG PDG;
 
   // --------------------------------------------------------------------
   // PDF access

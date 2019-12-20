@@ -16,6 +16,8 @@
 #include "Graniitti/MMath.h"
 #include "Graniitti/MRegge.h"
 #include "Graniitti/MSpin.h"
+#include "Graniitti/MGlobals.h"
+
 
 // Libraries
 #include "json.hpp"
@@ -34,7 +36,17 @@ using namespace gra::form;
 namespace gra {
 
 // Constructor
-MRegge::MRegge() {}
+MRegge::MRegge(const gra::LORENTZSCALAR& lts) {
+
+  // Initialization
+  gra::g_mutex.lock();
+  if (!PARAM_REGGE::initialized && lts.decaytree.size() != 0) {
+    const int PDG = std::abs(lts.decaytree[0].p.pdg);
+    InitReggeAmplitude(PDG, gra::MODELPARAM);
+    PARAM_REGGE::initialized = true;
+  }
+  gra::g_mutex.unlock();
+}
 
 // Destructor
 MRegge::~MRegge() {}

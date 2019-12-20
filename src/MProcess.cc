@@ -326,8 +326,8 @@ void MProcess::SetInitialState(const std::vector<std::string> &beam,
     throw std::invalid_argument("MProcess::SetInitialState: Input ENERGY vector not dim 2!");
   }
 
-  lts.beam1 = PDG.FindByPDGName(beam[0]);
-  lts.beam2 = PDG.FindByPDGName(beam[1]);
+  lts.beam1 = lts.PDG.FindByPDGName(beam[0]);
+  lts.beam2 = lts.PDG.FindByPDGName(beam[1]);
 
   // Beam particle 4-momenta re-setup with safety threshold if fixed target
   // setup
@@ -444,7 +444,7 @@ void MProcess::SetDecayMode(std::string str) {
 
   // ===================================================================
   // ** Read decay by recursion **
-  PDG.TokenizeProcess(str, 0, lts.decaytree);
+  lts.PDG.TokenizeProcess(str, 0, lts.decaytree);
   // ===================================================================
 
   // Save decaymode string
@@ -591,7 +591,7 @@ HELMatrix MProcess::ProcessHelicityDecay(const MParticle &             p,
     // Do we find it from PDG database
     std::string resonance_name = "not-found-from-PDG";
     try {
-      MParticle part = PDG.FindByPDG(pdg);
+      MParticle part = lts.PDG.FindByPDG(pdg);
       resonance_name = part.name;
     } catch (...) {
       // continue;
@@ -890,7 +890,7 @@ bool MProcess::ExciteContinuum(const M4Vec &nstar, gra::MDecayBranch &forward, d
 
     std::vector<double> mass;
     std::vector<int>    pdgcode;
-    if (!MFragment::PickParticles(M, N, B, 0, Q, mass, pdgcode, PDG, random)) {
+    if (!MFragment::PickParticles(M, N, B, 0, Q, mass, pdgcode, lts.PDG, random)) {
       ++outertrials;
       continue;
     }
@@ -941,7 +941,7 @@ bool MProcess::ExciteContinuum(const M4Vec &nstar, gra::MDecayBranch &forward, d
 
       // Get corresponding PDG particles
       std::vector<gra::MParticle> p(p4.size());
-      for (const auto &i : indices(p)) { p[i] = PDG.FindByPDG(pdgcode[i]); }
+      for (const auto &i : indices(p)) { p[i] = lts.PDG.FindByPDG(pdgcode[i]); }
 
       // Create decaytree
       BranchForwardSystem(p4, p, nstar, forward);
@@ -986,7 +986,7 @@ void MProcess::BranchForwardSystem(const std::vector<M4Vec> &p4, const std::vect
       branch.legs.resize(2);
       for (std::size_t k = 0; k < 2; ++k) {
         gra::MDecayBranch decaybranch;
-        decaybranch.p  = PDG.FindByPDG(PDG::PDG_gamma);
+        decaybranch.p  = lts.PDG.FindByPDG(PDG::PDG_gamma);
         decaybranch.p4 = pd[k];
 
         branch.legs[k]       = decaybranch;
@@ -1006,7 +1006,7 @@ void MProcess::BranchForwardSystem(const std::vector<M4Vec> &p4, const std::vect
       branch.legs.resize(2);
       for (std::size_t k = 0; k < 2; ++k) {
         gra::MDecayBranch decaybranch;
-        decaybranch.p  = PDG.FindByPDG(pdg[k]);
+        decaybranch.p  = lts.PDG.FindByPDG(pdg[k]);
         decaybranch.p4 = pd[k];
 
         branch.legs[k]       = decaybranch;
@@ -1038,7 +1038,7 @@ bool MProcess::ExciteNstar(const M4Vec &nstar, gra::MDecayBranch &forward) {
   std::vector<gra::MParticle> p(pdgcode.size());
   std::vector<double>         mass(pdgcode.size(), 0.0);
   for (const auto &i : indices(pdgcode)) {
-    p[i]    = PDG.FindByPDG(pdgcode[i]);
+    p[i]    = lts.PDG.FindByPDG(pdgcode[i]);
     mass[i] = p[i].mass;
   }
 
@@ -1356,6 +1356,28 @@ void MProcess::SampleForwardMasses(std::vector<double> &mvec, const std::vector<
     }
   }
 }
+
+// This is called last by the initialization routines
+// as the last step before event generation.
+void MProcess::SetTechnicalBoundaries(gra::GENCUT &gcuts, unsigned int EXCITATION) {
+  if (gcuts.forward_pt_min < 0.0) {  // Not set yet by the USER
+    gcuts.forward_pt_min = 0.0;
+  }
+
+  if (gcuts.forward_pt_max < 0.0) {  // Not set yet by the USER
+
+    if (EXCITATION == 0) {  // Elastic forward protons, default values
+      gcuts.forward_pt_max = 2.5;
+    }
+
+    else if (EXCITATION == 1) {  // Single excitation
+      gcuts.forward_pt_max = 50.0;
+    } else if (EXCITATION == 2) {  // Double excitation
+      gcuts.forward_pt_max = 100.0;
+    }
+  }
+}
+
 
 // Forward leg integration volume
 double MProcess::ForwardVolume() const {
@@ -1689,11 +1711,12 @@ void MProcess::SaveBranch(HepMC3::GenEvent &evt, const gra::MDecayBranch &branch
 
 // Set process
 void MProcess::SetProcess(std::string &str, const std::vector<aux::OneCMD> &syntax) {
+  
   // SET IT HERE!
   PROCESS = str;
 
   // Call this always first
-  PDG.ReadParticleData(gra::aux::GetBasePath(2) + "/modeldata/mass_width_2018.mcd");
+  lts.PDG.ReadParticleData(gra::aux::GetBasePath(2) + "/modeldata/mass_width_2018.mcd");
 
   // @SYNTAX Read and set new PDG input
   for (const auto &i : indices(syntax)) {
@@ -1718,13 +1741,13 @@ void MProcess::SetProcess(std::string &str, const std::vector<aux::OneCMD> &synt
       }
 
       // Try to find the particle from PDG table, will throw exception if fails
-      MParticle p = PDG.FindByPDG(pdg);
+      MParticle p = lts.PDG.FindByPDG(pdg);
 
       // Check if it has an anti-particle
       MParticle p_anti;
       bool      found_anti = false;
       try {
-        p_anti     = PDG.FindByPDG(-pdg);
+        p_anti     = lts.PDG.FindByPDG(-pdg);
         found_anti = true;
       } catch (...) {}  // do nothing,
 
@@ -1744,8 +1767,8 @@ void MProcess::SetProcess(std::string &str, const std::vector<aux::OneCMD> &synt
         }
       }
       // Set new modified to the PDG table
-      PDG.PDG_table[pdg] = p;
-      if (found_anti) { PDG.PDG_table[-pdg] = p_anti; }
+      lts.PDG.PDG_table[pdg] = p;
+      if (found_anti) { lts.PDG.PDG_table[-pdg] = p_anti; }
 
       std::cout << rang::fg::red
                 << "MProcess::SetProcess: New particle properties set "
@@ -1776,7 +1799,7 @@ void MProcess::SetProcess(std::string &str, const std::vector<aux::OneCMD> &synt
     if (found_first && str[i] == ']') { break; }
   }
   // Setup subprocess
-  ProcPtr = MSubProc(first, second, PDG);
+  ProcPtr = MSubProc(first, second);
   ConstructProcesses();
 
   // Check do we find the process

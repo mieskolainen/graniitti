@@ -87,7 +87,7 @@ void MParton::post_Constructor() {
   }
 
   // Set sampling boundaries
-  ProcPtr.SetTechnicalBoundaries(gcuts, EXCITATION);
+  SetTechnicalBoundaries(gcuts, EXCITATION);
 
   // Initialize phase space dimension
   ProcPtr.LIPSDIM = 2;  // All processes

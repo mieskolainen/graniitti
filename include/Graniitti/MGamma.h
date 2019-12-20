@@ -20,7 +20,7 @@ namespace gra {
 
 class MGamma : public MAmplitudes {
  public:
-  MGamma();
+  MGamma(gra::LORENTZSCALAR& lts);
   ~MGamma();
 
   // yy->resonance X

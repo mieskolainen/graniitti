@@ -11,11 +11,17 @@
 #include <map>
 #include <random>
 #include <vector>
+#include <fstream>
 
-#include "Graniitti/MKinematics.h"
+// Own
+#include "Graniitti/MParticle.h"
+#include "Graniitti/MAux.h"
+
 
 namespace gra {
 namespace PDG {
+
+
 // Common PDG ids, http://pdg.lbl.gov/2007/reviews/montecarlorpp.pdf
 // For MC internal, use 81-100
 constexpr int PDG_p     = 2212;  // Proton

@@ -12,8 +12,8 @@
 // Libraries
 #include "rang.hpp"
 
-
 namespace gra {
+
 // Read PDG particle data in
 // Input as the full path to PDG .mcd file
 void MPDG::ReadParticleData(const std::string &filepath) {

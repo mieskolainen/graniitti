@@ -1,4 +1,4 @@
-// Helicity coupling structures [HEADER ONLY file]
+// Kinematic objects and helicity coupling structures [HEADER ONLY file]
 //
 // (c) 2017-2019 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
@@ -8,13 +8,12 @@
 
 // C++
 #include <complex>
-#include <random>
-#include <valarray>
 #include <vector>
 
 #include "Graniitti/MMatrix.h"
 
 namespace gra {
+
 
 // Decay helicity amplitude information
 struct HELMatrix {
@@ -43,6 +42,7 @@ struct HELMatrix {
   double BR      = 1.0;
   double g_decay = 1.0;  // Equivalent decay coupling
 };
+
 
 }  // namespace gra
 

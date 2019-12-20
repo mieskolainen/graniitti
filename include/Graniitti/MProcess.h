@@ -293,11 +293,10 @@ class MProcess : public MUserHistograms {
                             HepMC3::GenEvent &evt);
   void PrintFiducialCuts() const;
 
-  // Offshell mass pick
   void GetOffShellMass(const gra::MDecayBranch &branch, double &mass);
-
+  void SetTechnicalBoundaries(gra::GENCUT &gcuts, unsigned int EXCITATION);
   double ForwardVolume() const;
-
+  
   // Lorentz scalars
   bool GetLorentzScalars(unsigned int Nf);
 
@@ -382,9 +381,7 @@ class MProcess : public MUserHistograms {
   // Non-Diffractive
   std::vector<MPI> etree;
   double           bt = 0.0;
-
-  // Particle database
-  MPDG PDG;
+  
 };
 
 }  // namespace gra

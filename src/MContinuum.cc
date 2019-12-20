@@ -75,8 +75,8 @@ void MContinuum::post_Constructor() {
   std::cout << "MContinuum::post_Constructor: " << EXCITATION << std::endl;
 
   // Set sampling boundaries
-  ProcPtr.SetTechnicalBoundaries(gcuts, EXCITATION);
-
+  SetTechnicalBoundaries(gcuts, EXCITATION);
+  
   // Technical cuts here
   if (gcuts.kt_max < 0.0) {  // not set by user
 
