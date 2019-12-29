@@ -38,10 +38,9 @@ class MFactorized : public MProcess {
   void   PrintInit(bool silent) const;
 
  private:
-  // Internal
+  void Initialize();
   bool LoopKinematics(const std::vector<double> &p1p, const std::vector<double> &p2p);
   bool FiducialCuts() const;
-  void ConstructProcesses();
 
   // 5+1-Dim phase space, 2->3
   bool B51RandomKin(const std::vector<double> &randvec);

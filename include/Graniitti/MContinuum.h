@@ -37,9 +37,9 @@ class MContinuum : public MProcess {
   void   PrintInit(bool silent) const;
 
  private:
+  void Initialize();
   bool LoopKinematics(const std::vector<double> &p1p, const std::vector<double> &p2p);
   bool FiducialCuts() const;
-  void ConstructProcesses();
 
   // 3*N-4 dimensional phase space, 2->N
   bool BNRandomKin(unsigned int Nf, const std::vector<double> &randvec);

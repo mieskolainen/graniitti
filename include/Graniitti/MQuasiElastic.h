@@ -39,9 +39,9 @@ class MQuasiElastic : public MProcess {
   void   PrintInit(bool silent) const;
 
  private:
+  void Initialize();
   bool LoopKinematics(const std::vector<double> &p1p, const std::vector<double> &p2p);
   bool FiducialCuts() const;
-  void ConstructProcesses();
 
   // Non-Diffractive
   std::complex<double> PolySoft(const std::vector<double> &randvec);

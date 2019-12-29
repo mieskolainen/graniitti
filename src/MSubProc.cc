@@ -51,19 +51,18 @@ void MSubProc::CreateProcesses() {
 
 }
 
-// Proper constructor
-MSubProc::MSubProc(const std::string &_ISTATE, const std::string &_CHANNEL) {
-  ISTATE  = _ISTATE;
-  CHANNEL = _CHANNEL;
-
-  ConstructDescriptions(ISTATE);
+// Generic constructor, used for the first initialization
+MSubProc::MSubProc(const std::vector<std::string> &istate, const std::string& mc) {
+  for (const auto& i : aux::indices(istate)) {
+    ConstructDescriptions(istate[i], mc);
+  }
 }
 
-// Constructor
-MSubProc::MSubProc(const std::vector<std::string> &first) {
-  for (const auto& i : aux::indices(first)) {
-    ConstructDescriptions(first[i]);
-  }
+// Set spesific initial state and channel
+void MSubProc::Initialize(const std::string &istate, const std::string &channel) {
+  ISTATE  = istate;
+  CHANNEL = channel;
+  DeleteProcesses();
 }
 
 // Destructor
@@ -79,28 +78,27 @@ void MSubProc::DeleteProcesses() {
   pr.clear(); // Finally empty
 }
 
-void MSubProc::ConstructDescriptions(const std::string &first) {
+void MSubProc::ConstructDescriptions(const std::string &istate, const std::string& mc) {
 
   CreateProcesses();
 
-  std::map<std::string, std::string> channels;
+  // Construct labels
   for (const auto & i : aux::indices(pr)) {
-    if (pr[i]->ISTATE == first) {
-      channels.insert(std::pair<std::string, std::string>(pr[i]->CHANNEL, pr[i]->DESCRIPTION));
+    if (pr[i]->ISTATE == istate) {
+      Processes.insert(std::make_pair(pr[i]->ISTATE + "[" + pr[i]->CHANNEL + "]<" + mc + ">", pr[i]->DESCRIPTION));
     }
   }
-  descriptions.insert(std::pair<std::string, std::map<std::string, std::string>>(first, channels));
 
   DeleteProcesses(); // Important!
 }
 
-// Construct process
+// Activate spesific process
 void MSubProc::ActivateProcess() {
 
   CreateProcesses();
 
   while (true) {
-    for (std::size_t i = 0; i < pr.size(); ++i) {
+    for (const auto& i : aux::indices(pr)) {
       if (pr[i]->ISTATE == ISTATE && pr[i]->CHANNEL == CHANNEL) {
         // Fine
       } else {
@@ -114,6 +112,49 @@ void MSubProc::ActivateProcess() {
   if (pr.size() == 0) {
     throw std::invalid_argument("MSubProc::ActivateProcess: Unknown ISTATE = " + ISTATE + " or CHANNEL = " + CHANNEL);
   }
+}
+
+// Print out process lists
+std::vector<std::string> MSubProc::PrintProcesses() const {
+
+  // Iterate through processes
+  std::vector<std::string> procstr;
+  std::map<std::string, std::vector<std::string>>::const_iterator it = Processes.begin();
+
+  while (it != Processes.end()) {
+    procstr.push_back(it->first);
+
+    if      (it->second.size() == 0) {
+      printf("%25s  =      ", it->first.c_str());    
+    }
+    else if (it->second.size() == 1) {
+      printf("%25s  =  %-43s", it->first.c_str(), it->second[0].c_str());    
+    }
+    else if (it->second.size() == 2) {
+      printf("%25s  =  %-43s  |  %-20s", it->first.c_str(), it->second[0].c_str(), it->second[1].c_str());    
+    }
+    else if (it->second.size() >= 3) {
+      printf("%25s  =  %-43s  |  %-20s  | %-10s", it->first.c_str(), it->second[0].c_str(), it->second[1].c_str(), it->second[2].c_str());    
+    }
+    std::cout << "\n";
+    ++it;
+  }
+  return procstr;
+}
+
+// Check if process exists
+bool MSubProc::ProcessExist(std::string str) const {
+  if (Processes.find(str) != Processes.end()) { return true; }
+  return false;
+}
+
+// Return process description string
+std::vector<std::string> MSubProc::GetProcessDescriptor(std::string str) const {
+  if (!ProcessExist(str)) {
+    throw std::invalid_argument("MSubProc::GetProcessDescriptor: Process by name " + str +
+                                " does not exist");
+  }
+  return Processes.find(str)->second;
 }
 
 // Wrapper function

@@ -59,9 +59,12 @@ void MProcess::PrintSetup() const {
   std::cout << "- Initial state:    " << lts.beam1.name << " " << lts.beam2.name << std::endl;
   printf("- Beam energies:   [%0.1f %0.1f] GeV \n", lts.pbeam1.E(), lts.pbeam2.E());
   printf("- CMS energy:       %0.1f GeV\n", lts.sqrt_s);
-  std::cout << "- Process:          " << PROCESS << rang::fg::green << "  <"
-            << GetProcessDescriptor(PROCESS) << ">" << rang::fg::reset << std::endl
-            << std::endl;
+  std::cout << "- Process:          " << PROCESS << rang::fg::green << " [";
+
+  for (const auto & str : ProcPtr.GetProcessDescriptor(PROCESS)) {
+    std::cout << str << " | ";
+  }
+  std::cout << "]" << rang::fg::reset << std::endl << std::endl;
 
   // Subprocess
   std::cout << rang::style::bold << "Subprocess parameters:" << rang::style::reset << std::endl
@@ -88,39 +91,10 @@ void MProcess::PrintSetup() const {
   std::cout << std::endl << std::endl;
 }
 
-// Print out process lists
-std::vector<std::string> MProcess::PrintProcesses() const {
-  // Iterate through processes
-  std::vector<std::string>                           processes;
-  std::map<std::string, std::string>::const_iterator it = Processes.begin();
-
-  while (it != Processes.end()) {
-    processes.push_back(it->first);
-    printf("%25s  =  ", it->first.c_str());
-    std::cout << it->second << std::endl;
-    ++it;
-  }
-  return processes;
-}
-
-// Check if process exists
-bool MProcess::ProcessExist(std::string str) const {
-  if (Processes.find(str) != Processes.end()) { return true; }
-  return false;
-}
-
-// Return process description string
-std::string MProcess::GetProcessDescriptor(std::string str) const {
-  if (!ProcessExist(str)) {
-    throw std::invalid_argument("MProcess::GetProcessDescriptor: Process by name " + str +
-                                " does not exist");
-  }
-  return Processes.find(str)->second;
-}
-
 
 // Cascaded phase-space factor [VOLUME] x [MC INTEGRAL] / (2PI)
 double MProcess::CascadePS() const {
+
   // Cascade resonances phase-space
   double product    = 1.0;
   double product2pi = 1.0;
@@ -1782,32 +1756,57 @@ void MProcess::SetProcess(std::string &str, const std::vector<aux::OneCMD> &synt
   std::string::iterator end_pos = std::remove(str.begin(), str.end(), ' ');
   str.erase(end_pos, str.end());
 
-  // ID = "PP[RES]<C>"; // EXAMPLE of valid
-  std::string first       = "";
-  std::string second      = "";
-  bool        found_first = false;
+  // Parse commandline string
+  std::string istate  = "";
+  std::string channel = "";
+  std::string mc      = "";
+  ParseCMD(str, istate, channel, mc);
 
-  for (const auto &i : indices(str)) {
-    if (str[i] != '[' && !found_first) {
-      first += str[i];
-      continue;
-    } else if (str[i] == '[' && !found_first) {
-      found_first = true;
-      continue;
-    }
-    if (found_first && str[i] != ']') { second += str[i]; }
-    if (found_first && str[i] == ']') { break; }
-  }
   // Setup subprocess
-  ProcPtr = MSubProc(first, second);
-  ConstructProcesses();
+  ProcPtr.Initialize(istate, channel);
 
   // Check do we find the process
-  if (Processes.count(str)) {
+  if (ProcPtr.Processes.count(str)) {
     // fine
   } else {
     throw std::invalid_argument("MProcess::SetProcess: Unknown PROCESS: " + str);
   }
 }
+
+// "PP[RES]<C>" is an example of valid string to be parsed
+//
+void MProcess::ParseCMD(const std::string& str, std::string& first, std::string& second, std::string& third) const {
+
+
+  // First and Second
+  bool        found  = false;;
+  for (const auto &i : indices(str)) {
+    if (str[i] != '[' && !found) {
+      first += str[i];
+      continue;
+    } else if (str[i] == '[' && !found) {
+      found = true;
+      continue;
+    }
+    if (found && str[i] != ']') { second += str[i]; }
+    if (found && str[i] == ']') { break; }
+  }
+
+  // Third
+  int mark1 = 0;
+  int mark2 = 0;
+  for (const auto &i : indices(str)) {
+    if (str[i] == '<') {
+      mark1 = i;
+      continue;
+    }
+    if (str[i] == '>') {
+      mark2 = i;
+      break; // First >, then break
+    }
+  }
+  third = str.substr(mark1+1, mark2-mark1-1);
+}
+
 
 }  // namespace gra

@@ -43,13 +43,12 @@ using gra::PDG::GeV2barn;
 namespace gra {
 // This is needed by construction
 MParton::MParton() {
-  std::vector<std::string> supported = {"yy_LUX", "yy_DZ"};
-  ProcPtr                            = MSubProc(supported);
-  ConstructProcesses();
+  Initialize();
 }
 
 // Constructor
 MParton::MParton(std::string process, const std::vector<aux::OneCMD> &syntax) {
+  Initialize();
   InitHistograms();
   SetProcess(process, syntax);
 
@@ -59,20 +58,14 @@ MParton::MParton(std::string process, const std::vector<aux::OneCMD> &syntax) {
   std::cout << "MParton:: [Constructor done]" << std::endl;
 }
 
+void MParton::Initialize() {
+  const std::vector<std::string> supported = {"yy_LUX", "yy_DZ"};
+  CID = "P";
+  ProcPtr = MSubProc(supported, CID);
+}
+
 // Destructor
 MParton::~MParton() {}
-
-// This is manually constructed and updated here
-void MParton::ConstructProcesses() {
-  Processes.clear();
-  CID = "P";
-  for (auto const &x : ProcPtr.descriptions) {
-    std::map<std::string, std::string> value = x.second;
-    for (auto const &y : value) {
-      Processes.insert(std::make_pair(x.first + "[" + y.first + "]<" + CID + ">", y.second));
-    }
-  }
-}
 
 // Initialize cut and process spesific postsetup
 void MParton::post_Constructor() {
@@ -92,6 +85,7 @@ void MParton::post_Constructor() {
   // Initialize phase space dimension
   ProcPtr.LIPSDIM = 2;  // All processes
 
+  // Not applicable here
   // if (EXCITATION == 1) { ProcPtr.LIPSDIM += 1; }
   // if (EXCITATION == 2) { ProcPtr.LIPSDIM += 2; }
 }

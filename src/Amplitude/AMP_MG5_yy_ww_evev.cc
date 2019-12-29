@@ -46,6 +46,7 @@ double AMP_MG5_yy_ww_evev::CalcAmp2(gra::LORENTZSCALAR &lts, double alphas)
 {
   // Set the parameters which change event by event
   pars.setDependentParameters(alphas); 
+if (gra::PARAM_STRUCTURE::QED_alpha == "ZERO") 
 pars.setAlphaQEDZero(); // GRANIITTI: Set at scale alpha_QED(Q2=0) 
 
   pars.setDependentCouplings(); 

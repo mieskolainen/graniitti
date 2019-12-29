@@ -39,6 +39,7 @@ namespace PARAM_STRUCTURE {
 
 std::string F2 = "CKMT";
 std::string EM = "DIPOLE";
+std::string QED_alpha = "ZERO";
 
 }  // namespace PARAM_STRUCTURE
 

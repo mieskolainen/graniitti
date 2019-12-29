@@ -74,9 +74,11 @@ for line in fin:
 
 	s = line.find('setDependentCouplings()')
 	if s != -1:
+		extra = 'if (gra::PARAM_STRUCTURE::QED_alpha == "ZERO") \n'
+		fout.write(extra)
 		extra = 'pars.setAlphaQEDZero(); // GRANIITTI: Set at scale alpha_QED(Q2=0) \n\n'
 		fout.write(extra)
-
+		
 	s = line.find('if (sum_hel == 0')
 	if s != -1:
 		extra = 'goto SKIPLABEL; // GRANIITTI: Skip this block \n'

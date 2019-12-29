@@ -36,38 +36,32 @@ using gra::math::zi;
 namespace gra {
 // This is needed by construction
 MQuasiElastic::MQuasiElastic() {
-  std::vector<std::string> supported = {"X"};
-  ProcPtr                            = MSubProc(supported);
-  ConstructProcesses();
+  Initialize();
 }
 
 // Constructor
 MQuasiElastic::MQuasiElastic(std::string process, const std::vector<aux::OneCMD> &syntax) {
+  Initialize();
   InitHistograms();
   SetProcess(process, syntax);
 
   // Init final states
   M4Vec zerovec(0, 0, 0, 0);
   for (std::size_t i = 0; i < 10; ++i) { lts.pfinal.push_back(zerovec); }
+
   // Pomeron weights
   MAXPOMW = std::vector<double>(100, 0.0);
   std::cout << "MQuasiElastic:: [Constructor done]" << std::endl;
 }
 
+void MQuasiElastic::Initialize() {
+  const std::vector<std::string> supported = {"X"};
+  CID = "Q";
+  ProcPtr = MSubProc(supported, CID);
+}
+
 // Destructor
 MQuasiElastic::~MQuasiElastic() {}
-
-// This is manually constructed and updated here
-void MQuasiElastic::ConstructProcesses() {
-  Processes.clear();
-  const std::string CID = "Q";
-  for (auto const &x : ProcPtr.descriptions) {
-    std::map<std::string, std::string> value = x.second;
-    for (auto const &y : value) {
-      Processes.insert(std::make_pair(x.first + "[" + y.first + "]<" + CID + ">", y.second));
-    }
-  }
-}
 
 // Initialize cut and process spesific postsetup
 void MQuasiElastic::post_Constructor() {

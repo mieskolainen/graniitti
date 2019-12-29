@@ -158,6 +158,7 @@
     "n" : [true, false, false]
   },
 
+
   // -----------------------------------------------------------------------
   // Proton structure functions and form factors
 
@@ -168,8 +169,14 @@
 
     // Coherent proton EM-form factors (DIPOLE, KELLY)
     "EM" : "KELLY",
-  },
 
+    // QED coupling fixed scale (ZERO, MG) (in MadGraph yy -> X amplitudes)
+    // ZERO means alpha(Q = 0 GeV) (Default)
+    // MG   means MadGraph C++ default value (typically Q = Z mass)
+    "QED_alpha" : "ZERO"
+  },
+  
+  
   // -----------------------------------------------------------------------
   // Durham QCD parameters
 

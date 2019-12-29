@@ -218,19 +218,19 @@ std::vector<std::string> MGraniitti::GetProcessNumbers() const {
   std::cout << std::endl;
 
   std::cout << rang::style::bold << "2->3 x 1->(N-2) LIPS:" << rang::style::reset << std::endl;
-  std::vector<std::string> list1 = proc_F.PrintProcesses();
+  std::vector<std::string> list1 = proc_F.ProcPtr.PrintProcesses();
   std::cout << std::endl;
 
   std::cout << rang::style::bold << "2->N LIPS:" << rang::style::reset << std::endl;
-  std::vector<std::string> list2 = proc_C.PrintProcesses();
+  std::vector<std::string> list2 = proc_C.ProcPtr.PrintProcesses();
   std::cout << std::endl;
 
   std::cout << rang::style::bold << "Quasielastic:" << rang::style::reset << std::endl;
-  std::vector<std::string> list3 = proc_Q.PrintProcesses();
+  std::vector<std::string> list3 = proc_Q.ProcPtr.PrintProcesses();
   std::cout << std::endl;
 
   std::cout << rang::style::bold << "2->1 x (1->M) collinear:" << rang::style::reset << std::endl;
-  std::vector<std::string> list4 = proc_P.PrintProcesses();
+  std::vector<std::string> list4 = proc_P.ProcPtr.PrintProcesses();
   std::cout << std::endl;
 
   // Concatenate all
@@ -247,22 +247,22 @@ void MGraniitti::InitProcessMemory(std::string process, unsigned int seed) {
   PROCESS = process;
 
   // <Q> process
-  if (proc_Q.ProcessExist(process)) {
+  if        (proc_Q.ProcPtr.ProcessExist(process)) {
     proc_Q = MQuasiElastic(process, syntax);
     proc   = &proc_Q;
 
     // <F> processes
-  } else if (proc_F.ProcessExist(process)) {
+  } else if (proc_F.ProcPtr.ProcessExist(process)) {
     proc_F = MFactorized(process, syntax);
     proc   = &proc_F;
 
     // <C> processes
-  } else if (proc_C.ProcessExist(process)) {
+  } else if (proc_C.ProcPtr.ProcessExist(process)) {
     proc_C = MContinuum(process, syntax);
     proc   = &proc_C;
 
     // <P> processes
-  } else if (proc_P.ProcessExist(process)) {
+  } else if (proc_P.ProcPtr.ProcessExist(process)) {
     proc_P = MParton(process, syntax);
     proc   = &proc_P;
   } else {
@@ -282,13 +282,13 @@ void MGraniitti::InitMultiMemory() {
 
   // Create new process objects for each thread
   for (int i = 0; i < CORES; ++i) {
-    if (proc_Q.ProcessExist(PROCESS)) {
+    if        (proc_Q.ProcPtr.ProcessExist(PROCESS)) {
       pvec[i] = new MQuasiElastic(proc_Q);
-    } else if (proc_F.ProcessExist(PROCESS)) {
+    } else if (proc_F.ProcPtr.ProcessExist(PROCESS)) {
       pvec[i] = new MFactorized(proc_F);
-    } else if (proc_C.ProcessExist(PROCESS)) {
+    } else if (proc_C.ProcPtr.ProcessExist(PROCESS)) {
       pvec[i] = new MContinuum(proc_C);
-    } else if (proc_P.ProcessExist(PROCESS)) {
+    } else if (proc_P.ProcPtr.ProcessExist(PROCESS)) {
       pvec[i] = new MParton(proc_P);
     }
   }
@@ -429,7 +429,8 @@ void MGraniitti::ReadModelParam(const std::string &inputfile) {
     // Proton structure functions
     PARAM_STRUCTURE::F2 = j.at("PARAM_STRUCTURE").at("F2");
     PARAM_STRUCTURE::EM = j.at("PARAM_STRUCTURE").at("EM");
-
+    PARAM_STRUCTURE::QED_alpha = j.at("PARAM_STRUCTURE").at("QED_alpha");
+    
     PARAM_SOFT::PrintParam();
   } catch (nlohmann::json::exception &e) {
     throw std::invalid_argument("MGraniitti::ReadModelParam: Missing parameter in '" + inputfile +

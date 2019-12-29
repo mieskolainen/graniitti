@@ -33,7 +33,7 @@
 
 namespace gra {
 
-// Event-by-event auxialary data for integration
+// Event-by-event auxiliary data for integration
 struct AuxIntData {
   // Aux weight
   double vegasweight  = 1.0;
@@ -44,7 +44,7 @@ struct AuxIntData {
   bool kinematics_ok = true;
   bool fidcuts_ok    = true;
   bool vetocuts_ok   = true;
-
+  
   // Forced acceptance of the event
   bool forced_accept = false;
 
@@ -71,9 +71,9 @@ struct MPI {
 // Abstract process class
 class MProcess : public MUserHistograms {
  public:
+
   // Of polymorphic type
-  MProcess(){};
-  virtual ~MProcess(){};  // MUST HAVE IT HERE as virtual
+  virtual ~MProcess() {}  // MUST HAVE IT HERE as virtual
 
   // Pure virtual functions, without definitions here
   // WITHOUT =0, undefined reference to vtable for MProcess will occur in
@@ -84,9 +84,6 @@ class MProcess : public MUserHistograms {
   virtual double operator()(const std::vector<double> &randvec, AuxIntData &aux)  = 0;
   virtual double EventWeight(const std::vector<double> &randvec, AuxIntData &aux) = 0;
   virtual bool   EventRecord(HepMC3::GenEvent &evt)                               = 0;
-
-  std::vector<std::string> PrintProcesses() const;
-  std::string              GetProcessDescriptor(std::string process) const;
 
   // Set central system decay structure
   void      SetDecayMode(std::string str);
@@ -229,9 +226,6 @@ class MProcess : public MUserHistograms {
   // Eikonal (screening) functions
   MEikonal Eikonal;
 
-  // Check processes
-  bool ProcessExist(std::string process) const;
-
   // Lets keep these public for easy access
   gra::LORENTZSCALAR lts;  // Lorentz scalars and others for kinematics
 
@@ -250,13 +244,17 @@ class MProcess : public MUserHistograms {
   // Random numbers (keep it public for seeding)
   MRandom random;
 
+  // Subprocess (amplitudes)
+  MSubProc                           ProcPtr;
+
  protected:
+
   // Copy and assignment made private
   // MProcess(const MProcess& other);
   // MProcess& operator=(const MProcess& rhs);
 
   // Internal virtual functions, without definitions here
-  virtual void ConstructProcesses()                                                           = 0;
+  virtual void Initialize() = 0;
   virtual bool LoopKinematics(const std::vector<double> &p1p, const std::vector<double> &p2p) = 0;
   virtual bool FiducialCuts() const                                                           = 0;
 
@@ -313,6 +311,8 @@ class MProcess : public MUserHistograms {
 
   // ---------------------------------------------------------
 
+  void ParseCMD(const std::string& str, std::string& first, std::string& second, std::string& third) const;
+
   // Check std::nan/std::inf
   bool CheckInfNan(double &W) {
     if (std::isnan(W)) {
@@ -341,20 +341,14 @@ class MProcess : public MUserHistograms {
   unsigned int N_inf = 0;
   unsigned int N_nan = 0;
 
-  double S_factor = 0.0;  // Cross section statistical 1/S symmetry factor
-  // (for identical final states)
-  // ----------------------------------------------------------------------
-  // Subprocesses
-
-  // Process ID lists
-  std::map<std::string, std::string> Processes;
-  MSubProc                           ProcPtr;
+  // Cross section statistical 1/S symmetry factor (for identical final states)
+  double S_factor = 0.0;
 
   // ----------------------------------------------------------------------
   // Steering parameters
 
   std::string PROCESS;             // Process identifier string
-  std::string CID;                 // Phase space sampler identifier <F>,<C>,...
+  std::string CID;                 // Phase space sampler identifier such as "F" or "C"
   std::string DECAYMODE;           // Decaymode identifier string
   bool        SCREENING  = false;  // Pomeron loop on/off
   int         EXCITATION = 0;      // Forward proton excitation (0 = off, 1 = single, 2 = double)

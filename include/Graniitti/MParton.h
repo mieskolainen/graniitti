@@ -38,10 +38,9 @@ class MParton : public MProcess {
   void   PrintInit(bool silent) const;
 
  private:
-  // Internal
+  void Initialize();
   bool LoopKinematics(const std::vector<double> &p1p, const std::vector<double> &p2p);
   bool FiducialCuts() const;
-  void ConstructProcesses();
 
   // 2->2 dim phase space
   bool B2RandomKin(const std::vector<double> &randvec);

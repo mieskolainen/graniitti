@@ -48,6 +48,8 @@ std::string GetHashString();
 namespace PARAM_STRUCTURE {
 extern std::string F2;
 extern std::string EM;
+extern std::string QED_alpha;
+
 }  // namespace PARAM_STRUCTURE
 
 // Flat (DEBUG) amplitude parameters

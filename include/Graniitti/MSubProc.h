@@ -31,21 +31,21 @@ using math::msqrt;
 // Abstract process base class
 //
 // BASIC DESIGN:
-// Use "late construction", that is, objects are pointers and initialized only
+// Use "late (lazy) construction", that is, objects are pointers and initialized only
 // just before the event generation.
 //
 //
 class MProc {
 
 public:
-  MProc(const std::string& i, const std::string& j, const std::string& k) {
+  MProc(const std::string& i, const std::string& j, const std::vector<std::string>& k) {
     ISTATE      = i;
     CHANNEL     = j;
     DESCRIPTION = k;
   };
   std::string ISTATE;
   std::string CHANNEL;
-  std::string DESCRIPTION;
+  std::vector<std::string> DESCRIPTION;
 
   virtual ~MProc() {} // Needs to be virtual
 
@@ -148,7 +148,7 @@ public:
 
     if        (AssertN({24,-24}, PDGlist(lts))) {
       amp2 = Gamma->AmpMG5_yy_ww.CalcAmp2(lts, 0.0);
-    } else if (AssertLeptonOrQuarkPair(PDGlist(lts))) {
+    } else if (AssertLeptonQuarkMonopolePair(PDGlist(lts))) {
       amp2 = Gamma->yyffbar(lts);
     } else {
       ThrowUnknownFinalState();
@@ -181,17 +181,17 @@ public:
   }
 
   // Assert lepton or quark pair
-  bool AssertLeptonOrQuarkPair(const std::vector<int>& input) const {
+  bool AssertLeptonQuarkMonopolePair(const std::vector<int>& input) const {
 
     // PDG identifiers
-    static const MMatrix<int> X = {{11, -11}, {13, -13}, {15, -15}, {1, -1}, {2, -2}, {3, -3}, {4, -4}, {5, -5}, {6, -6}};
-
+    static const MMatrix<int> X = {{11, -11}, {13, -13}, {15, -15}, {1, -1}, {2, -2}, {3, -3}, {4, -4}, {5, -5}, {6, -6}, {992, -992}};
+    
     for (std::size_t i = 0; i < X.size_row(); ++i) {
       if (AssertN({X[i][0], X[i][1]}, input)) { return true; }
     }
     return false;
   }
-
+  
   // Get PDG list
   std::vector<int> PDGlist(const LORENTZSCALAR& lts) const {
     std::vector<int> L(lts.decaytree.size(), 0);
@@ -214,7 +214,7 @@ public:
 
 class PROC_0 : public MProc {
 public:
-  PROC_0() : MProc("yy", "RES", "2xGamma to parametric resonance             [kt-EPA]") {}
+  PROC_0() : MProc("yy", "RES", {"2xGamma to parametric resonance", "kt-EPA"}) {}
   ~PROC_0() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallGamma(lts);
@@ -224,7 +224,7 @@ public:
 };
 class PROC_1 : public MProc {
 public:
-  PROC_1() : MProc("yy", "Higgs", "2xGamma to SM Higgs                         [kt-EPA]") {}
+  PROC_1() : MProc("yy", "Higgs", {"2xGamma to SM Higgs", "kt-EPA"}) {}
   ~PROC_1() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallGamma(lts);
@@ -234,7 +234,7 @@ public:
 };
 class PROC_2 : public MProc {
 public:
-  PROC_2() : MProc("yy", "monopolium(0)", "2xGamma to Monopolium (J=0)                 [kt-EPA]") {}
+  PROC_2() : MProc("yy", "monopolium(0)", {"2xGamma to Monopolium (J=0)", "kt-EPA"}) {}
   ~PROC_2() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallGamma(lts);
@@ -244,7 +244,7 @@ public:
 };
 class PROC_3 : public MProc {
 public:
-  PROC_3() : MProc("yy", "CON", "2xGamma to l+l-, qqbar, W+W-, monopolepair  [kt-EPA]") {}
+  PROC_3() : MProc("yy", "CON", {"2xGamma to l+l-, qqbar, W+W-, monopolepair", "kt-EPA"}) {}
   ~PROC_3() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallGamma(lts);
@@ -254,7 +254,7 @@ public:
 };
 class PROC_4 : public MProc {
 public:
-  PROC_4() : MProc("yy", "QED", "2xGamma to l+l-, qqbar                      [FULL QED]") {}
+  PROC_4() : MProc("yy", "QED", {"2xGamma to l+l-, qqbar", "FULL QED"}) {}
   ~PROC_4() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallTensor(lts);
@@ -273,7 +273,7 @@ public:
 
 class PROC_5 : public MProc {
 public:
-  PROC_5() : MProc("X", "EL", "Elastic                                     [Eikonal Pomeron]     (Use with screening loop on)") {}
+  PROC_5() : MProc("X", "EL", {"Elastic", "Eikonal Pomeron", "Use with screening loop on"}) {}
   ~PROC_5() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallRegge(lts);
@@ -282,7 +282,7 @@ public:
 };
 class PROC_6 : public MProc {
 public:
-  PROC_6() : MProc("X", "SD", "Single Diffractive                          [Triple Pomeron]      (With TOY fragmentation)") {}
+  PROC_6() : MProc("X", "SD", {"Single Diffractive", "Triple Pomeron", "With TOY fragmentation"}) {}
   ~PROC_6() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallRegge(lts);
@@ -291,7 +291,7 @@ public:
 };
 class PROC_7 : public MProc {
 public:
-  PROC_7() : MProc("X", "DD", "Double Diffractive                          [Triple Pomeron]      (With TOY fragmentation)") {}
+  PROC_7() : MProc("X", "DD", {"Double Diffractive", "Triple Pomeron", "With TOY fragmentation"}) {}
   ~PROC_7() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallRegge(lts);
@@ -300,7 +300,7 @@ public:
 };
 class PROC_8 : public MProc {
 public:
-  PROC_8() : MProc("X", "ND", "Non-Diffractive                             [N-cut soft Pomerons] (With TOY fragmentation)") {}
+  PROC_8() : MProc("X", "ND", {"Non-Diffractive", "N-cut soft Pomerons", "With TOY fragmentation"}) {}
   ~PROC_8() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     return 1.0;
@@ -313,7 +313,7 @@ public:
 
 class PROC_9 : public MProc {
 public:
-  PROC_9() : MProc("PP", "RES", "Regge parametric resonance                  [Pomeron]") {}
+  PROC_9() : MProc("PP", "RES", {"Regge parametric resonance", "Pomeron"}) {}
   ~PROC_9() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallRegge(lts);
@@ -344,7 +344,7 @@ public:
 
 class PROC_10 : public MProc {
 public:
-  PROC_10() : MProc("PP", "RESHEL", "Regge sliding helicity amplitudes           [Pomeron]             <-- DEVELOPER ONLY PROCESS!") {}
+  PROC_10() : MProc("PP", "RESHEL", {"Regge sliding helicity amplitudes", "Pomeron", "<-- DEVELOPER ONLY PROCESS!"}) {}
   ~PROC_10() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallRegge(lts);
@@ -356,7 +356,7 @@ public:
 
 class PROC_11 : public MProc {
 public:
-  PROC_11() : MProc("PP", "RESTENSOR", "Regge resonance                             [Tensor Pomeron]") {}
+  PROC_11() : MProc("PP", "RESTENSOR", {"Regge resonance", "Tensor Pomeron"}) {}
   ~PROC_11() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallTensor(lts);
@@ -366,7 +366,7 @@ public:
 
 class PROC_12 : public MProc {
 public:
-  PROC_12() : MProc("PP", "CONTENSOR", "Regge continuum 2-body                      [Tensor Pomeron]") {}
+  PROC_12() : MProc("PP", "CONTENSOR", {"Regge continuum 2-body", "Tensor Pomeron"}) {}
   ~PROC_12() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallTensor(lts);
@@ -380,7 +380,7 @@ public:
 
 class PROC_13 : public MProc {
 public:
-  PROC_13() : MProc("PP", "CONTENSOR24", "Regge continuum 2-body > 4-body             [Tensor Pomeron]      <-- DEVELOPER ONLY PROCESS!") {}
+  PROC_13() : MProc("PP", "CONTENSOR24", {"Regge continuum 2-body > 4-body", "Tensor Pomeron", "<-- DEVELOPER ONLY PROCESS!"}) {}
   ~PROC_13() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallTensor(lts);
@@ -394,7 +394,7 @@ public:
 
 class PROC_14 : public MProc {
 public:
-  PROC_14() : MProc("PP", "RES+CONTENSOR", "Regge resonances + continuum 2-body         [Tensor Pomeron / yP]") {}
+  PROC_14() : MProc("PP", "RES+CONTENSOR", {"Regge resonances + continuum 2-body", "Tensor Pomeron / yP"}) {}
   ~PROC_14() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallTensor(lts);
@@ -434,7 +434,7 @@ public:
 
 class PROC_15 : public MProc {
 public:
-  PROC_15() : MProc("PP", "CON", "Regge continuum 2/4/6-body                  [Pomeron]") {}
+  PROC_15() : MProc("PP", "CON", {"Regge continuum 2/4/6-body", "Pomeron"}) {}
   ~PROC_15() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallRegge(lts);
@@ -456,7 +456,7 @@ public:
 
 class PROC_16 : public MProc {
 public:
-  PROC_16() : MProc("PP", "CON-", "Regge continuum 2-body with [t-u] amplitude [Pomeron]") {}
+  PROC_16() : MProc("PP", "CON-", {"Regge continuum 2-body with [t-u] amplitude", "Pomeron"}) {}
   ~PROC_16() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallRegge(lts);
@@ -472,7 +472,7 @@ public:
 
 class PROC_17 : public MProc {
 public:
-  PROC_17() : MProc("PP", "RES+CON", "Regge resonances + continuum 2-body         [Pomeron / yP]") {}
+  PROC_17() : MProc("PP", "RES+CON", {"Regge resonances + continuum 2-body", "Pomeron / yP"}) {}
   ~PROC_17() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallRegge(lts);
@@ -514,7 +514,7 @@ public:
 
 class PROC_18 : public MProc {
 public:
-  PROC_18() : MProc("yP", "RES", "Photoproduced parametric resonance          [kt-EPA] x [Pomeron]") {}
+  PROC_18() : MProc("yP", "RES", {"Photoproduced parametric resonance", "kt-EPA x Pomeron"}) {}
   ~PROC_18() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallRegge(lts);
@@ -535,7 +535,7 @@ public:
 
 class PROC_19 : public MProc {
 public:
-  PROC_19() : MProc("yP", "RESTENSOR", "Photoproduced resonance                     [QED] x [Tensor Pomeron]") {}
+  PROC_19() : MProc("yP", "RESTENSOR", {"Photoproduced resonance", "QED x Tensor Pomeron"}) {}
   ~PROC_19() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallRegge(lts);
@@ -546,7 +546,7 @@ public:
 
 class PROC_20 : public MProc {
 public:
-  PROC_20() : MProc("OP", "RES", "Regge parametric vector resonance           [Odderon] x [Pomeron]") {}
+  PROC_20() : MProc("OP", "RES", {"Regge parametric vector resonance", "Odderon x Pomeron"}) {}
   ~PROC_20() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallRegge(lts);
@@ -570,7 +570,7 @@ public:
 
 class PROC_21 : public MProc {
 public:
-  PROC_21() : MProc("gg", "chic(0)", "QCD resonance chic(0)                       [Durham QCD]") {}
+  PROC_21() : MProc("gg", "chic(0)", {"QCD resonance chic(0)", "Durham QCD"}) {}
   ~PROC_21() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallDurham(lts);
@@ -582,7 +582,7 @@ public:
 
 class PROC_22 : public MProc {
 public:
-  PROC_22() : MProc("gg", "CON", "QCD continuum to gg, 2 x pseudoscalar       [Durham QCD]          <-- UNDER VALIDATION!") {}
+  PROC_22() : MProc("gg", "CON", {"QCD continuum to gg, 2 x pseudoscalar", "Durham QCD", "<-- UNDER VALIDATION!"}) {}
   ~PROC_22() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallDurham(lts);
@@ -606,7 +606,7 @@ public:
 
 class PROC_23 : public MProc {
 public:
-  PROC_23() : MProc("yy_LUX", "CON", "Collinear yy to l+l, qqbar, W+W- or monopolepair   [LUX-PDF]") {}
+  PROC_23() : MProc("yy_LUX", "CON", {"2xGamma to l+l, qqbar, W+W- or monopolepair", "Collinear LUX-PDF"}) {}
   ~PROC_23() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallGamma(lts);
@@ -617,7 +617,7 @@ public:
 
 class PROC_24 : public MProc {
 public:
-  PROC_24() : MProc("yy_DZ", "CON", "Collinear yy to l+l, qqbar, W+W- or monopolepair   [Drees-Zeppenfeld EPA]") {}
+  PROC_24() : MProc("yy_DZ", "CON", {"2xGamma to l+l, qqbar, W+W- or monopolepair", "Collinear Drees-Zeppenfeld EPA"}) {}
   ~PROC_24() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallGamma(lts);
@@ -628,7 +628,7 @@ public:
 
 class PROC_25 : public MProc {
 public:
-  PROC_25() : MProc("yy", "FLUX", "2xGamma with constant matrix element        [kt-EPA]") {}
+  PROC_25() : MProc("yy", "FLUX", {"2xGamma with constant matrix element", "kt-EPA"}) {}
   ~PROC_25() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallGamma(lts);
@@ -642,11 +642,10 @@ public:
 class MSubProc {
 
  public:
-  MSubProc(const std::string &_ISTATE, const std::string &_CHANNEL);
-  MSubProc(const std::vector<std::string> &first);
-  void ConstructDescriptions(const std::string &first);
+  MSubProc(const std::vector<std::string> &istate, const std::string& mc);
+  void Initialize(const std::string &istate, const std::string &channel);
 
-  MSubProc()  {}
+  MSubProc() {}
   ~MSubProc();
 
   double GetBareAmplitude2(gra::LORENTZSCALAR &lts);
@@ -655,17 +654,20 @@ class MSubProc {
   std::string  CHANNEL;     // "CON", "RES" etc.
   unsigned int LIPSDIM = 0; // Lorentz Invariant Phase Space Dimension
   
-  // Available channels and their descriptions
-  std::map<std::string, std::map<std::string, std::string>> descriptions;
+  // Process descriptions
+  std::map<std::string, std::vector<std::string>> Processes;
+
+  bool ProcessExist(std::string process) const;
+  std::vector<std::string> PrintProcesses() const;
+  std::vector<std::string> GetProcessDescriptor(std::string process) const;
 
  private:
-
+  void ConstructDescriptions(const std::string &istate, const std::string& mc);
   void CreateProcesses();
   void DeleteProcesses();
   void ActivateProcess();
 
   std::vector<MProc*> pr;
-
 };
 
 }  // namespace gra

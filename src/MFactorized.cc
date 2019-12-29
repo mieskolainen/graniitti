@@ -40,15 +40,15 @@ using gra::math::zi;
 using gra::PDG::GeV2barn;
 
 namespace gra {
+
 // This is needed by construction
 MFactorized::MFactorized() {
-  std::vector<std::string> supported = {"PP", "yP", "OP", "yy", "gg"};
-  ProcPtr                            = MSubProc(supported);
-  ConstructProcesses();
+  Initialize();
 }
 
 // Constructor
 MFactorized::MFactorized(std::string process, const std::vector<aux::OneCMD> &syntax) {
+  Initialize();
   InitHistograms();
   SetProcess(process, syntax);
 
@@ -58,20 +58,14 @@ MFactorized::MFactorized(std::string process, const std::vector<aux::OneCMD> &sy
   std::cout << "MFactorized:: [Constructor done]" << std::endl;
 }
 
+void MFactorized::Initialize() {
+  const std::vector<std::string> supported = {"PP", "yP", "OP", "yy", "gg"};
+  CID = "F";
+  ProcPtr = MSubProc(supported, CID);
+}
+
 // Destructor
 MFactorized::~MFactorized() {}
-
-// This is manually constructed and updated here
-void MFactorized::ConstructProcesses() {
-  Processes.clear();
-  CID = "F";
-  for (auto const &x : ProcPtr.descriptions) {
-    std::map<std::string, std::string> value = x.second;
-    for (auto const &y : value) {
-      Processes.insert(std::make_pair(x.first + "[" + y.first + "]<" + CID + ">", y.second));
-    }
-  }
-}
 
 // Initialize cut and process spesific postsetup
 void MFactorized::post_Constructor() {
