@@ -11,16 +11,19 @@
 #include <map>
 #include <vector>
 
-// Libraries
-#include "json.hpp"
-
-// Keep this here to avoid backward/forward declaration problem
+// Own
 #include "Graniitti/M4Vec.h"
 #include "Graniitti/MAux.h"
 #include "Graniitti/MKinematics.h"
 #include "Graniitti/MRandom.h"
+#include "Graniitti/MParticle.h"
+#include "Graniitti/MResonance.h"
+
+// Libraries
+#include "json.hpp"
 
 namespace gra {
+
 // Model parameters
 namespace PARAM_SOFT {
 // Pomeron trajectory

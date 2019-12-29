@@ -624,7 +624,7 @@ double G_M_KELLY(double Q2) {
 //                $
 //                 $
 //
-// Factors applied here:
+// Factors applied here, compatible with 2 -> N phase space sampling:
 //
 //  1/xi    [~ sub Moller flux]
 //  1/pt2   [~ kt-factorization] (cancels with pt2 from numerator)
