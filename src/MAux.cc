@@ -613,11 +613,11 @@ void PrintVersion() {
             << std::endl;
   std::cout << "References: arXiv:1910.06300 [hep-ph]" << std::endl;
   std::cout << std::endl;
-  std::cout << "(c) 2017-2019 Mikael Mieskolainen" << std::endl;
-  std::cout << "<mikael.mieskolainen@cern.ch>" << std::endl;
+  std::cout << "(c) 2017-2020 Mikael Mieskolainen" << std::endl;
+  std::cout << "<m.mieskolainen@imperial.ac.uk>"   << std::endl;
   std::cout << std::endl;
   std::cout << "<opensource.org/licenses/GPL-3.0>" << std::endl;
-  std::cout << "<opensource.org/licenses/MIT>" << std::endl;
+  std::cout << "<opensource.org/licenses/MIT>"     << std::endl;
 }
 
 void PrintFlashScreen(rang::fg pcolor) {
