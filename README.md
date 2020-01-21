@@ -15,3 +15,17 @@ See VERSION.json for the version information
 ### Installation and introduction at:
 ## https://mieskolainen.github.io
 
+### Citation
+
+If you find this work useful, you may cite the paper:
+```
+@article{mieskolainen2019graniitti,
+    title={GRANIITTI: A Monte Carlo Event Generator for High Energy Diffraction},
+    author={Mikael Mieskolainen},
+    year={2019},
+    journal={arXiv:1910.06300},
+    eprint={1910.06300},
+    archivePrefix={arXiv},
+    primaryClass={hep-ph}
+}
+```
