@@ -15,6 +15,8 @@ See VERSION.json for the version information
 ### Installation and introduction at:
 ## https://mieskolainen.github.io
 
+</br>
+
 ### Citation
 
 If you find this work useful, you may cite the paper:
