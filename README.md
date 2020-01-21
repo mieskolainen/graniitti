@@ -12,12 +12,12 @@ https://arxiv.org/abs/1910.06300
 See VERSION.json for the version information
 
 
-### Installation and introduction at:
+## Installation and introduction at:
 ## https://mieskolainen.github.io
 
 </br>
 
-### Citation
+## Citation
 
 If you find this work useful, you may cite the paper:
 ```
