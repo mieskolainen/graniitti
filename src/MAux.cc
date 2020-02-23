@@ -1,6 +1,6 @@
 // I/O aux functions
 //
-// (c) 2017-2019 Mikael Mieskolainen
+// (c) 2017-2020 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -39,10 +39,10 @@ namespace aux {
 // -------------------------------------------------------
 // FIXED HERE manually
 
-double      GetVersion() { return 1.03; }
+double      GetVersion() { return 1.04; }
 std::string GetVersionType() { return "release"; }
-std::string GetVersionDate() { return "28.12.2019"; }
-std::string GetVersionUpdate() { return "input-output update"; }
+std::string GetVersionDate() { return "22.02.2020"; }
+std::string GetVersionUpdate() { return "tensorpom parameters & forward excitation"; }
 
 // -------------------------------------------------------
 

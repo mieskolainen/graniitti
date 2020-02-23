@@ -1,8 +1,8 @@
 // Model parameters ("TUNE0")
 //
-// mikael.mieskolainen@cern.ch, 2019
+// mikael.mieskolainen@cern.ch, 2020
 {
-
+  
   // ----------------------------------------------------------------------
   // Global soft model parameters (eikonal screening, elastic, SD, DD)
   "PARAM_SOFT" : {
@@ -60,7 +60,7 @@
     // Dirac charge n = 1,2,3,4,...
     "gn" : 1,
 
-    // Monpolium bound state energy level (>= 13) controlling bound state (negative) binding energy
+    // Monopolium bound state energy level (>= 13) controlling bound state (negative) binding energy
     "En"  : 13,
 
     // Monopolium (MMbar) bare width (GeV)
@@ -176,6 +176,38 @@
     "QED_alpha" : "ZERO"
   },
   
+  // -----------------------------------------------------------------------
+  // Tensor Pomeron parameters (resonance parameters are under resonance files)
+  "PARAM_TENSOR_POMERON" : {
+    
+    // Trajectory parameters
+    "delta_P"   : 0.0808,
+    "delta_O"   : 0.0808,
+    "delta_1R"  : -0.5475,
+    "delta_2R"  : -0.5475,
+    
+    "ap_P"      : 0.25,         // GeV^{-2}
+    "ap_O"      : 0.25,         // GeV^{-2}
+    "ap_1R"     : 0.9,          // GeV^{-2}
+    "ap_2R"     : 0.9,          // GeV^{-2}
+    "eta_O"     : 1.0,          // +- 1
+
+    // Scales
+    "M_O"       : 1.00,         // GeV
+    "M_1R"      : 1.41,         // GeV
+    
+    // Couplings
+    "gPNN"      : 1.87,         // GeV^{-1}, Pomeron-Proton-Proton
+    "gPpipi"    : 1.76,         // GeV^{-1}, Pomeron-Pion-Pion
+    "gPKK"      : 1.54,         // GeV^{-1}, Pomeron-Kaon-Kaon
+    "gPrhorho"  : [0.70, 6.20], // [GeV^{-3}, GeV^{-1}], Pomeron-Rho-Rho
+    "gPphiphi"  : [0.49, 4.27], // [GeV^{-3}, GeV^{-1}], Pomeron-Phi-Phi
+    
+    
+    // QED
+    "alpha_QED" : 0.007297352566354976, // alpha_QED at q^2 ~ 0
+    "mu_ratio"  : 2.792847337,          // Proton magnetic moment in magneton units (mu_p / mu_N)
+  },
   
   // -----------------------------------------------------------------------
   // Durham QCD parameters

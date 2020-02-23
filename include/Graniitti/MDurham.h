@@ -1,6 +1,6 @@
 // "Durham QCD" Processes and Amplitudes
 //
-// (c) 2017-2019 Mikael Mieskolainen
+// (c) 2017-2020 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 #ifndef MDURHAM_H
@@ -22,7 +22,7 @@
 
 namespace gra {
 
-// Durham loop integral discretization technicals
+// Durham loop integral discretization technical parameters
 struct MDurhamParam {
   unsigned int N_qt  = 0;  // (> 30)
   unsigned int N_phi = 0;  // (> 10)
@@ -42,14 +42,12 @@ struct MDurhamParam {
   bool   initialized = false;
 
   // Read parameters from file
-  void ReadParameters() {
+  void ReadParameters(const std::string& modelfile) {
+
     using json = nlohmann::json;
-
-    const std::string inputfile =
-        gra::aux::GetBasePath(2) + "/modeldata/" + gra::MODELPARAM + "/GENERAL.json";
-    const std::string data = gra::aux::GetInputData(inputfile);
-    json              j;
-
+    const std::string data = gra::aux::GetInputData(modelfile);
+    json j;
+    
     try {
       j = json::parse(data);
 
@@ -72,7 +70,7 @@ struct MDurhamParam {
 
       initialized = true;
     } catch (...) {
-      std::string str = "Durham::ReadParameters: Error parsing " + inputfile +
+      std::string str = "MDurhamParam::ReadParameters: Error parsing " + modelfile +
                         " (Check for extra/missing commas)";
       throw std::invalid_argument(str);
     }
@@ -82,9 +80,9 @@ struct MDurhamParam {
 class MDurham : public MAmplitudes {
 
  public:
-  MDurham() {}
+  MDurham(gra::LORENTZSCALAR& lts, const std::string& modelfile);
   ~MDurham() {}
-  
+
   double      DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process);
   double      DQtloop(gra::LORENTZSCALAR &lts, std::vector<std::vector<std::complex<double>>> Amp);
   inline void DScaleChoise(double qt2, double q1_2, double q2_2, double &Q1_2_scale,

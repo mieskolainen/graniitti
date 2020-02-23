@@ -1,6 +1,6 @@
 // Templated 1D-histogram class with real or complex weights
 //
-// (c) 2017-2019 Mikael Mieskolainen
+// (c) 2017-2020 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++

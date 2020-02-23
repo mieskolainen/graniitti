@@ -1,6 +1,6 @@
 // Regge Amplitudes
 //
-// (c) 2017-2019 Mikael Mieskolainen
+// (c) 2017-2020 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 #ifndef MREGGE_H
@@ -20,6 +20,7 @@ namespace gra {
 
 // Regge amplitude parameters
 namespace PARAM_REGGE {
+
 extern bool initialized;
 
 extern std::vector<double> a0;
@@ -43,11 +44,12 @@ extern std::vector<double> c;  // coupling
 extern std::vector<bool>   n;  // on/off
 
 void PrintParam();
+void ReadParameters(int PDG, const std::string& modelfile);
 
 std::complex<double> JPC_CS_coupling(const gra::LORENTZSCALAR &lts,
                                      const gra::PARAM_RES &    resonance);
 
-// Amplitude_ form factors
+// Amplitude form factors
 double Proton_FF(double tprime, double b);
 double Meson_FF(double that, double M2);
 double Baryon_FF(double that, double M2);
@@ -61,11 +63,10 @@ std::complex<double> FSI_prop(double t_hat, double M2);
 
 // Matrix element dimension: " GeV^" << -(2*external_legs - 8)
 class MRegge {
- public:
-  MRegge(const gra::LORENTZSCALAR& lts);
-  ~MRegge();
 
-  void InitReggeAmplitude(int PDG, const std::string &MODELPARAM);
+public:
+  MRegge(gra::LORENTZSCALAR& lts, const std::string& modelfile);
+  ~MRegge() {}
 
   // Regge amplitudes
   std::complex<double> ME8(gra::LORENTZSCALAR &lts) const;
@@ -83,10 +84,6 @@ class MRegge {
   // Constructor amplitude leg permutations
   void ConstructPerm(int type);
 
-  // Amplitude_ permutations
-  std::vector<std::vector<int>> permutations4;
-  std::vector<std::vector<int>> permutations6;
-
   // Regge propagators
   std::complex<double> PropOnly(double s, double t) const;
   std::complex<double> OdderonProp(double s, double t) const;
@@ -100,8 +97,12 @@ class MRegge {
   double               gammaLambda(double t1, double t2, double m1, double m2) const;
   int                  xi3(int J, int P, int P_i, int sigma_i, int P_k, int sigma_k) const;
 
- private:
-  // Nothing
+private:
+
+  // Amplitude permutations
+  std::vector<std::vector<int>> permutations4;
+  std::vector<std::vector<int>> permutations6;
+
 };
 
 }  // namespace gra

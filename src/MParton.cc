@@ -1,7 +1,7 @@
 // Collinear parton model 2->2 or (2->N) type phase space class
 // for calculations without proton (remnant) considerations
 //
-// (c) 2017-2019 Mikael Mieskolainen
+// (c) 2017-2020 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++

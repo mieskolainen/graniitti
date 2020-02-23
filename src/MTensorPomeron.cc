@@ -6,7 +6,7 @@
 // [REFERENCE: LNS, arxiv.org/pdf/1801.03902.pdf]
 // [REFERENCE: LNS, arxiv.org/pdf/1901.11490.pdf]
 //
-// (c) 2017-2019 Mikael Mieskolainen
+// (c) 2017-2020 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -108,13 +108,32 @@ using FTensor::Tensor4;
 
 namespace gra {
 
+// Constructor
+MTensorPomeron::MTensorPomeron(gra::LORENTZSCALAR& lts, const std::string& modelfile) {
+
+  CalcRTensor();  // Pre-Calculate tensors
+
+  // @@ MULTITHREADING LOCK NEEDED FOR THE INITIALIZATION @@
+  gra::g_mutex.lock();
+
+  if (!Param.initialized) {
+    try {
+      Param.ReadParameters(modelfile);
+    } catch (...) {
+      gra::g_mutex.unlock();  // need to release here, otherwise get infinite lock
+      throw;
+    }
+  }
+  gra::g_mutex.unlock();
+}
+
 
 // Return decay coupling constant for resonance (M,Gamma) with decay daughter mass mf
 // BR being the branching ratio BR = Width_partial / Width_total
 //
 // Decay: Mother (spin = 0/1/2) -> scalar or pseudoscalar daughters
 //
-double MTensorPomeron::GDecay(int J, double M, double Gamma, double mf, double BR) const {
+double MTensorPomeron::GDecay(int J, double M, double Gamma, double mf, double BR) {
   const double S0           = 1.0;  // Should be set as the same scale as in decay amplitudes iG[]
   const double partialWidth = Gamma * BR;
 
@@ -134,12 +153,14 @@ double MTensorPomeron::GDecay(int J, double M, double Gamma, double mf, double B
   }
 }
 
+
 // 2 -> 3 amplitudes
 //
 // return value: matrix element squared with helicities summed and averaged over
 // lts.hamp:     individual complex helicity amplitudes
 //
 double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts) const {
+
   // Free Lorentz indices [second parameter denotes the range of index]
   FTensor::Index<'a', 4> mu1;
   FTensor::Index<'b', 4> nu1;
@@ -548,6 +569,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts) const {
 // lts.hamp:     individual helicity amplitudes
 //
 double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
+
   // Kinematics
   const M4Vec pa = lts.pbeam1;
   const M4Vec pb = lts.pbeam2;
@@ -702,24 +724,20 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
   // ==============================================================
   // 2 x pseudoscalar (pion pair, kaon pair ...)
   if (SPINMODE == "2xS") {
-    double beta_P = 0.0;
-    if (lts.decaytree[0].p.mass < 0.2) {  // Choose based on particle mass
-      // Coupling (pion)
-      beta_P = betaPpipi;
-    } else {
-      // Coupling (kaon)
-      beta_P = betaPKK;
-    }
+    double gP = 0.0;
+
+    // Pion or Kaon coupling
+    gP = (lts.decaytree[0].p.mass < 0.2) ? Param.gPpipi : Param.gPKK;
 
     // t-channel blocks
-    const Tensor2<std::complex<double>, 4, 4> iG_ta   = iG_Ppsps(pt, -p3, beta_P);
+    const Tensor2<std::complex<double>, 4, 4> iG_ta   = iG_Ppsps(pt, -p3, gP);
     const std::complex<double>                iDMES_t = iD_MES0(pt, M_);
-    const Tensor2<std::complex<double>, 4, 4> iG_tb   = iG_Ppsps(p4, pt, beta_P);
+    const Tensor2<std::complex<double>, 4, 4> iG_tb   = iG_Ppsps(p4, pt, gP);
 
     // u-channel blocks
-    const Tensor2<std::complex<double>, 4, 4> iG_ua   = iG_Ppsps(p4, pu, beta_P);
+    const Tensor2<std::complex<double>, 4, 4> iG_ua   = iG_Ppsps(p4, pu, gP);
     const std::complex<double>                iDMES_u = iD_MES0(pu, M_);
-    const Tensor2<std::complex<double>, 4, 4> iG_ub   = iG_Ppsps(pu, -p3, beta_P);
+    const Tensor2<std::complex<double>, 4, 4> iG_ub   = iG_Ppsps(pu, -p3, gP);
 
     std::complex<double> M_t;
     std::complex<double> M_u;
@@ -789,16 +807,19 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
   // 2 x vector meson (rho pair, phi pair ...)
   else if (SPINMODE == "2xV") {
     const int pdg = lts.decaytree[0].p.pdg;
+
     double    g1  = 0.0;
     double    g2  = 0.0;
-    if (pdg == 113) {  // rho(770)0
-      g1 = 0.70;       // GeV^{-3}
-      g2 = 6.20;       // GeV^{-1}
+
+    // Couplings (rho770 meson)
+    if      (pdg == 113) {
+      g1 = Param.gPrhorho[0];
+      g2 = Param.gPrhorho[1];
     }
-    // Couplings (phi meson)
-    else if (pdg == 333) {  // phi(1020)0
-      g1 = 0.49;            // GeV^{-3}
-      g2 = 4.27;            // GeV^{-1}
+    // Couplings (phi1020 meson)
+    else if (pdg == 333) {
+      g1 = Param.gPphiphi[0];
+      g2 = Param.gPphiphi[1];
     }
 
     FTensor::Index<'e', 4> rho3;
@@ -885,6 +906,7 @@ double MTensorPomeron::ME4(gra::LORENTZSCALAR &lts) const {
 // lts.hamp:     individual helicity amplitudes
 //
 double MTensorPomeron::ME6(gra::LORENTZSCALAR &lts) const {
+
   // Free Lorentz indices [second parameter denotes the range of index]
   FTensor::Index<'a', 4> mu1;
   FTensor::Index<'b', 4> nu1;
@@ -945,28 +967,28 @@ double MTensorPomeron::ME6(gra::LORENTZSCALAR &lts) const {
   const Tensor2<std::complex<double>, 4, 4> iG_2b = iG_PppHE(p2, pb);
 
   int PDG = 0;
-
-  if (lts.decaytree.size() == 2) { PDG = lts.decaytree[0].p.pdg; }
+  if (lts.decaytree.size() == 2) {
+    PDG = lts.decaytree[0].p.pdg;
+  }
   if (lts.decaytree.size() == 4) {
-    if (lts.decaytree[0].p.mass < 0.2) {
-      PDG = 113;  // rho -> pi+pi-
-    } else {
-      PDG = 333;  // phi -> K+K-
-    }
+    // rho->pipi or phi->KK, based on daughters
+    PDG = (lts.decaytree[0].p.mass) < 0.2 ? 113 : 333;
   }
 
   double g1 = 0.0;
   double g2 = 0.0;
-  if (PDG == 113) {  // rho(770)0
-    g1 = 0.70;       // GeV^{-3}
-    g2 = 6.20;       // GeV^{-1}
-  }
-  // Couplings (phi meson)
-  else if (PDG == 333) {  // phi(1020)0
-    g1 = 0.49;            // GeV^{-3}
-    g2 = 4.27;            // GeV^{-1}
-  }
 
+  // Couplings (rho770 meson)
+  if      (PDG == 113) {
+    g1 = Param.gPrhorho[0];
+    g2 = Param.gPrhorho[1];
+  }
+  // Couplings (phi1020 meson)
+  else if (PDG == 333) {
+    g1 = Param.gPphiphi[0];
+    g2 = Param.gPphiphi[1];
+  }
+  
   FTensor::Index<'e', 4> rho3;
   FTensor::Index<'f', 4> rho4;
 
@@ -1042,7 +1064,6 @@ double MTensorPomeron::ME6(gra::LORENTZSCALAR &lts) const {
     // TENSOR LORENTZ INDEX CONTRACTION BLOCK
     // This is done in pieces, due to template <>
     // argument deduction constraints
-
     Tensor2<std::complex<double>, 4, 4> M_t;
     Tensor2<std::complex<double>, 4, 4> M_u;
 
@@ -1086,15 +1107,13 @@ double MTensorPomeron::ME6(gra::LORENTZSCALAR &lts) const {
   }  // Permutations
 
   lts.hamp.push_back(amp);
-
   FOR_PP_HELICITY_END;
 
   // Get total amplitude squared 1/4 \sum_h |A_h|^2
   double SumAmp2 = 0.0;
   for (const auto &i : indices(lts.hamp)) { SumAmp2 += math::abs2(lts.hamp[i]); }
   SumAmp2 /= 4;  // Initial state helicity average
-
-
+  
   // --------------------------------------------------------------------
   // *** CONTROL CASCADE SAMPLING ***
   lts.FORCE_FLATMASS2 = true;
@@ -1308,7 +1327,7 @@ Tensor1<std::complex<double>, 4> MTensorPomeron::iG_yee(
     const M4Vec &prime, const M4Vec &p, const std::vector<std::complex<double>> &ubar,
     const std::vector<std::complex<double>> &u) const {
   // const double q2 = (prime-p).M2();
-  const double e = msqrt(alpha_QED * 4.0 * PI);  // ~ 0.3, no running
+  const double e = msqrt(Param.alpha_QED * 4.0 * PI);  // ~ 0.3, no running
 
   Tensor1<std::complex<double>, 4> T;
   for (const auto &mu : LI) {
@@ -1327,7 +1346,7 @@ Tensor1<std::complex<double>, 4> MTensorPomeron::iG_ypp(
     const M4Vec &prime, const M4Vec &p, const std::vector<std::complex<double>> &ubar,
     const std::vector<std::complex<double>> &u) const {
   const double t    = (prime - p).M2();
-  const double e    = msqrt(alpha_QED * 4.0 * PI);  // ~ 0.3, no running
+  const double e    = msqrt(Param.alpha_QED * 4.0 * PI);  // ~ 0.3, no running
   const M4Vec  psum = prime - p;
 
   Tensor1<std::complex<double>, 4> T;
@@ -1335,7 +1354,7 @@ Tensor1<std::complex<double>, 4> MTensorPomeron::iG_ypp(
     MMatrix<std::complex<double>> SUM(4, 4, 0.0);
     for (const auto &nu : LI) { SUM += sigma_lo[mu][nu] * psum[nu]; }
     const MMatrix<std::complex<double>> A = gamma_lo[mu] * F1(t);
-    const MMatrix<std::complex<double>> B = SUM * zi / (2 * mp) * F2(t);
+    const MMatrix<std::complex<double>> B = SUM * zi / (2 * PDG::mp) * F2(t);
     const MMatrix<std::complex<double>> G = (A + B) * (-zi * e);
 
     // \bar{spinor} [Gamma Matrix] \spinor product
@@ -1351,7 +1370,7 @@ Tensor1<std::complex<double>, 4> MTensorPomeron::iG_ypp(
 Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_yeebary(
     const std::vector<std::complex<double>> &ubar, const MMatrix<std::complex<double>> &iSF,
     const std::vector<std::complex<double>> &v) const {
-  const double               e      = msqrt(alpha_QED * 4.0 * PI);  // ~ 0.3, no running
+  const double               e      = msqrt(Param.alpha_QED * 4.0 * PI);  // ~ 0.3, no running
   const std::complex<double> vertex = zi * e;
 
   Tensor2<std::complex<double>, 4, 4> T;
@@ -1372,7 +1391,7 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_yeebary(
 Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_PppHE(const M4Vec &prime,
                                                              const M4Vec  p) const {
   const M4Vec                psum   = prime + p;
-  const std::complex<double> FACTOR = -zi * 3.0 * betaPNN * F1((prime - p).M2());
+  const std::complex<double> FACTOR = -zi * 3.0 * Param.gPNN * F1((prime - p).M2());
 
   Tensor2<std::complex<double>, 4, 4> T;
   FOR_EACH_2(LI);
@@ -1396,7 +1415,7 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_Ppp(
   const M4Vec  psum = prime + p;
 
   Tensor2<std::complex<double>, 4, 4> T;
-  const std::complex<double>          FACTOR = -zi * 3.0 * betaPNN * F1(t);
+  const std::complex<double>          FACTOR = -zi * 3.0 * Param.gPNN * F1(t);
 
   // Feynman slash
   const MMatrix<std::complex<double>> slash = FSlash(psum);
@@ -1426,8 +1445,8 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_PppbarP(
     const M4Vec &prime, const std::vector<std::complex<double>> &ubar, const M4Vec &pt,
     const MMatrix<std::complex<double>> &iSF, const std::vector<std::complex<double>> &v,
     const M4Vec &p) const {
-  const std::complex<double> lhs_FACTOR = -zi * 3.0 * betaPNN * F1((prime - pt).M2());
-  const std::complex<double> rhs_FACTOR = -zi * 3.0 * betaPNN * F1((pt - p).M2());
+  const std::complex<double> lhs_FACTOR = -zi * 3.0 * Param.gPNN * F1((prime - pt).M2());
+  const std::complex<double> rhs_FACTOR = -zi * 3.0 * Param.gPNN * F1((pt - p).M2());
 
   const M4Vec lhs_psum = prime + pt;
   const M4Vec rhs_psum = pt + p;
@@ -2155,7 +2174,7 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_f2vv(const M4Vec &k
 //
 // Example couplings:
 //
-// const double e = msqrt(alpha_QED * 4.0 * PI);     // ~ 0.3, no running
+// const double e = msqrt(Param.alpha_QED * 4.0 * PI);     // ~ 0.3, no running
 // const double a_f2yy = pow2(e) / (4 * PI) * 1.45;  // GeV^{-3}
 // const double b_f2yy = pow2(e) / (4 * PI) * 2.49;  // GeV^{-1}
 
@@ -2227,10 +2246,11 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iG_Pvv(const M4Vec &pr
 // pdg = 113 / "rho0", 223 / "omega0", 333 / "phi0"
 //
 Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_yV(double q2, int pdg) const {
-  const double e      = msqrt(alpha_QED * 4.0 * PI);  // ~ 0.3, no running
+  const double e      = msqrt(Param.alpha_QED * 4.0 * PI);  // ~ 0.3, no running
   double       gammaV = 0.0;
   double       mV     = 0.0;
 
+  // Vector Meson Dominance (VMD) type parameters
   if (pdg == 113) {  // rho
     gammaV = msqrt(4 * PI / 0.496);
     mV     = 0.770;
@@ -2269,7 +2289,7 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iG_yV(double q2, int pdg) co
 // Contraction with g^{\mu\nu} or g^{\kappa\lambda} gives 0
 //
 Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iD_P(double s, double t) const {
-  const std::complex<double> FACTOR = 1.0 / (4.0 * s) * std::pow(-zi * s * ap_P, alpha_P(t) - 1.0);
+  const std::complex<double> FACTOR = 1.0 / (4.0 * s) * std::pow(-zi * s * Param.ap_P, alpha_P(t) - 1.0);
 
   Tensor4<std::complex<double>, 4, 4, 4, 4> T;
   FOR_EACH_4(LI);
@@ -2285,7 +2305,7 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iD_P(double s, double 
 //
 Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iD_2R(double s, double t) const {
   const std::complex<double> FACTOR =
-      1.0 / (4.0 * s) * std::pow(-zi * s * ap_2R, alpha_2R(t) - 1.0);
+      1.0 / (4.0 * s) * std::pow(-zi * s * Param.ap_2R, alpha_2R(t) - 1.0);
 
   Tensor4<std::complex<double>, 4, 4, 4, 4> T;
   FOR_EACH_4(LI);
@@ -2301,7 +2321,7 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iD_2R(double s, double
 //
 Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iD_1R(double s, double t) const {
   const std::complex<double> FACTOR =
-      zi / pow2(M_1R) * std::pow(-zi * s * ap_1R, alpha_1R(t) - 1.0);
+      zi / pow2(Param.M_1R) * std::pow(-zi * s * Param.ap_1R, alpha_1R(t) - 1.0);
 
   Tensor2<std::complex<double>, 4, 4> T;
   FOR_EACH_2(LI);
@@ -2317,7 +2337,7 @@ Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iD_1R(double s, double t) co
 //
 Tensor2<std::complex<double>, 4, 4> MTensorPomeron::iD_O(double s, double t) const {
   const std::complex<double> FACTOR =
-      -zi * eta_O / pow2(M_O) * std::pow(-zi * s * ap_O, alpha_O(t) - 1.0);
+      -zi * Param.eta_O / pow2(Param.M_O) * std::pow(-zi * s * Param.ap_O, alpha_O(t) - 1.0);
 
   Tensor2<std::complex<double>, 4, 4> T;
   FOR_EACH_2(LI);
@@ -2431,13 +2451,13 @@ Tensor4<std::complex<double>, 4, 4, 4, 4> MTensorPomeron::iD_TMES(const M4Vec &p
 // Trajectories (simple linear/affine here)
 
 // Pomeron trajectory
-double MTensorPomeron::alpha_P(double t) const { return 1.0 + delta_P + ap_P * t; }
+double MTensorPomeron::alpha_P(double t) const {  return 1.0 + Param.delta_P  + Param.ap_P  * t; }
 // Odderon trajectory
-double MTensorPomeron::alpha_O(double t) const { return 1.0 + delta_O + ap_O * t; }
+double MTensorPomeron::alpha_O(double t) const {  return 1.0 + Param.delta_O  + Param.ap_O  * t; }
 // Reggeon (rho,omega) trajectory
-double MTensorPomeron::alpha_1R(double t) const { return 1.0 + delta_1R + ap_1R * t; }
+double MTensorPomeron::alpha_1R(double t) const { return 1.0 + Param.delta_1R + Param.ap_1R * t; }
 // Reggeon (f2,a2) trajectory
-double MTensorPomeron::alpha_2R(double t) const { return 1.0 + delta_2R + ap_2R * t; }
+double MTensorPomeron::alpha_2R(double t) const { return 1.0 + Param.delta_2R + Param.ap_2R * t; }
 
 // ----------------------------------------------------------------------
 // Form factors
@@ -2450,12 +2470,12 @@ double MTensorPomeron::F2(double t) const { return form::F2(t); }
 
 // Proton electromagnetic Dirac form FACTOR
 double MTensorPomeron::F1_(double t) const {
-  return (1 - (t / (4 * pow2(mp))) * mu_ratio) / (1 - t / (4 * pow2(mp))) * GD(t);
+  return (1 - (t / (4 * pow2(PDG::mp))) * Param.mu_ratio) / (1 - t / (4 * pow2(PDG::mp))) * GD(t);
 }
 
 // Proton electromagnetic Pauli form FACTOR
 double MTensorPomeron::F2_(double t) const {
-  return (mu_ratio - 1) / (1 - t / (4 * pow2(mp))) * GD(t);
+  return (Param.mu_ratio - 1) / (1 - t / (4 * pow2(PDG::mp))) * GD(t);
 }
 
 // Dipole form FACTOR

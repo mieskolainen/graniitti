@@ -1,6 +1,6 @@
 // Factorized type phase space class
 //
-// (c) 2017-2019 Mikael Mieskolainen
+// (c) 2017-2020 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -405,11 +405,11 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
   // Forward excitation
   if (lts.excite1) {
     // if (!ExciteContinuum(lts.pfinal[1], lts.decayforward1, lts.pfinal[1].M2(), 1, 1, "exp")) {
-    if (!ExciteNstar(lts.pfinal[1], lts.decayforward1)) { return false; }
+    if (!ExciteNstar(lts.pfinal[1], lts.decayforward1, lts.beam1)) { return false; }
   }
   if (lts.excite2) {
     //    if (!ExciteContinuum(lts.pfinal[2], lts.decayforward2, lts.pfinal[2].M2(), 1, 1, "exp")) {
-    if (!ExciteNstar(lts.pfinal[2], lts.decayforward2)) { return false; }
+    if (!ExciteNstar(lts.pfinal[2], lts.decayforward2, lts.beam2)) { return false; }
   }
 
   // ==============================================================================

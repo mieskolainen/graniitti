@@ -1,6 +1,6 @@
 // Gamma-Gamma Amplitudes
 //
-// (c) 2017-2019 Mikael Mieskolainen
+// (c) 2017-2020 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -30,16 +30,12 @@ using namespace gra::form;
 namespace gra {
 
 // Constructor
-MGamma::MGamma(gra::LORENTZSCALAR& lts) {
+MGamma::MGamma(gra::LORENTZSCALAR& lts, const std::string& modelfile) {
 
   // ** Read in global monopole mass (needed by monopolium process) **
   PARAM_MONOPOLE::M0 = lts.PDG.FindByPDG(PDG::PDG_monopole).mass;
   
 }
-
-// Destructor
-MGamma::~MGamma() {}
-
 
 // ============================================================================
 // (yy -> fermion-antifermion pair)

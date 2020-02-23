@@ -9,7 +9,7 @@
 // https://arxiv.org/pdf/hep-ph/0110108.pdf
 //
 //
-// (c) 2017-2019 Mikael Mieskolainen
+// (c) 2017-2020 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++

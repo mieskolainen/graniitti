@@ -1,6 +1,6 @@
 // QuasiElastic (EL,SD,DD) and soft ND (simplified) class
 //
-// (c) 2017-2019 Mikael Mieskolainen
+// (c) 2017-2020 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -212,141 +212,157 @@ double MQuasiElastic::EventWeight(const std::vector<double> &randvec, AuxIntData
 
 // Record HepMC3 event
 bool MQuasiElastic::EventRecord(HepMC3::GenEvent &evt) {
-  // ----------------------------------------------------------------------
-  // Non-Diffractive
 
+  // Non-Diffractive
   if (ProcPtr.CHANNEL == "ND") {
+    
     HepMC3::GenParticlePtr gen_p1;
     HepMC3::GenParticlePtr gen_p2;
     HepMC3::GenParticlePtr gen_p1f;
     HepMC3::GenParticlePtr gen_p2f;
 
+    // Loop over multiple "cut pomerons"
     for (const auto &i : indices(etree)) {
-      // One Pomeron is cut in N chains
-      const unsigned int NCHAIN = 1;
-      for (std::size_t c = 0; c < NCHAIN; ++c) {
+
+      if (i == 0) { // First
+
         // Initial state protons (4-momentum, pdg-id, status code)
-        gen_p1 =
-            std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(etree[i].p1i), PDG::PDG_p,
-                                                  (i == 0) ? PDG::PDG_BEAM : PDG::PDG_INTERMEDIATE);
-        gen_p2 =
-            std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(etree[i].p2i), PDG::PDG_p,
-                                                  (i == 0) ? PDG::PDG_BEAM : PDG::PDG_INTERMEDIATE);
+        gen_p1 = std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(etree[i].p1i),
+                  (i == 0) ? lts.beam1.pdg : PDG::PDG_fragment,
+                  (i == 0) ? PDG::PDG_BEAM : PDG::PDG_INTERMEDIATE);
 
-        // Final state protons
-        gen_p1f = std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(etree[i].p1f),
-                                                        PDG::PDG_p, PDG::PDG_INTERMEDIATE);
-        gen_p2f = std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(etree[i].p2f),
-                                                        PDG::PDG_p, PDG::PDG_INTERMEDIATE);
+        gen_p2 = std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(etree[i].p2i),
+                  (i == 0) ? lts.beam2.pdg : PDG::PDG_fragment,
+                  (i == 0) ? PDG::PDG_BEAM : PDG::PDG_INTERMEDIATE);
 
-        // Exchange objects
-        HepMC3::GenParticlePtr gen_q1 = std::make_shared<HepMC3::GenParticle>(
-            gra::aux::M4Vec2HepMC3(etree[i].q1), PDG::PDG_gluon, PDG::PDG_INTERMEDIATE);
-        HepMC3::GenParticlePtr gen_q2 = std::make_shared<HepMC3::GenParticle>(
-            gra::aux::M4Vec2HepMC3(etree[i].q2), PDG::PDG_gluon, PDG::PDG_INTERMEDIATE);
+      } else { // Others recursively
 
-        // Virtual state
-        M4Vec                  pomeron4vec(etree[i].k.Px() / NCHAIN, etree[i].k.Py() / NCHAIN,
-                          etree[i].k.Pz() / NCHAIN, etree[i].k.E() / NCHAIN);
-        HepMC3::GenParticlePtr gen_X = std::make_shared<HepMC3::GenParticle>(
-            gra::aux::M4Vec2HepMC3(pomeron4vec), 999, PDG::PDG_INTERMEDIATE);
-        HepMC3::GenVertexPtr vX = std::make_shared<HepMC3::GenVertex>();
-
-        if (i != etree.size() - 1) {
-          // Upper vertex
-          HepMC3::GenVertexPtr vXUP = std::make_shared<HepMC3::GenVertex>();
-          vXUP->add_particle_in(gen_p1);
-          vXUP->add_particle_out(gen_p1f);
-          vXUP->add_particle_out(gen_q1);
-
-          // Upper vertex
-          HepMC3::GenVertexPtr vXDO = std::make_shared<HepMC3::GenVertex>();
-          vXDO->add_particle_in(gen_p2);
-          vXDO->add_particle_out(gen_p2f);
-          vXDO->add_particle_out(gen_q2);
-
-          // Add vertices
-          evt.add_vertex(vXUP);
-          evt.add_vertex(vXDO);
-
-          // Pomeron-Pomeron-Virtual state vertex
-          vX->add_particle_in(gen_q1);
-          vX->add_particle_in(gen_q2);
-          vX->add_particle_out(gen_X);
-        } else {  // Last MPI
-
-          // Proton-Proton-Virtual state vertex
-          vX = std::make_shared<HepMC3::GenVertex>();
-          vX->add_particle_in(gen_p1);
-          vX->add_particle_in(gen_p2);
-          vX->add_particle_out(gen_X);
-        }
-
-        // Add vertex to the event
-        evt.add_vertex(vX);
-
-        // Try to fragment
-        int    B_sum    = 0;
-        int    Q_sum    = 0;
-        double Q2_scale = pomeron4vec.M2();
-
-        // Beam fragments carry the initial state quantum numbers
-        if (i == etree.size() - 1 || i == etree.size() - 2) {
-          B_sum = 1;
-          Q_sum = 1;
-        }
-
-        // Excite it
-        MDecayBranch branch;
-        if (!ExciteContinuum(pomeron4vec, branch, Q2_scale, B_sum, Q_sum)) {
-          std::cout << "ND failed with ExciteContinuum" << std::endl;
-          return false;  // failed
-        }
-
-        // Save it
-        SaveBranch(evt, branch, gen_X);
+        gen_p1 = gen_p1f;
+        gen_p2 = gen_p2f;
       }
+
+      // Final state (or intermediate in the chain) fragments
+      gen_p1f = std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(etree[i].p1f),
+                                                      PDG::PDG_fragment, PDG::PDG_INTERMEDIATE);
+
+      gen_p2f = std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(etree[i].p2f),
+                                                      PDG::PDG_fragment, PDG::PDG_INTERMEDIATE);
+
+      // Exchange objects
+      HepMC3::GenParticlePtr gen_q1 = std::make_shared<HepMC3::GenParticle>(
+          gra::aux::M4Vec2HepMC3(etree[i].q1), PDG::PDG_propagator, PDG::PDG_INTERMEDIATE);
+      HepMC3::GenParticlePtr gen_q2 = std::make_shared<HepMC3::GenParticle>(
+          gra::aux::M4Vec2HepMC3(etree[i].q2), PDG::PDG_propagator, PDG::PDG_INTERMEDIATE);
+
+      // Virtual state
+      M4Vec system4vec(etree[i].k.Px(), etree[i].k.Py(), etree[i].k.Pz(), etree[i].k.E());
+
+      HepMC3::GenParticlePtr gen_X = std::make_shared<HepMC3::GenParticle>(
+          gra::aux::M4Vec2HepMC3(system4vec), PDG::PDG_system, PDG::PDG_INTERMEDIATE);
+
+      HepMC3::GenVertexPtr vX = std::make_shared<HepMC3::GenVertex>();
+
+      if (i != etree.size() - 1) {
+
+        // Upper vertex
+        HepMC3::GenVertexPtr vXUP = std::make_shared<HepMC3::GenVertex>();
+        vXUP->add_particle_in(gen_p1);
+        vXUP->add_particle_out(gen_p1f);
+        vXUP->add_particle_out(gen_q1);
+
+        // Lower vertex
+        HepMC3::GenVertexPtr vXDO = std::make_shared<HepMC3::GenVertex>();
+        vXDO->add_particle_in(gen_p2);
+        vXDO->add_particle_out(gen_p2f);
+        vXDO->add_particle_out(gen_q2);
+
+        // Add vertices
+        evt.add_vertex(vXUP);
+        evt.add_vertex(vXDO);
+
+        // Pomeron-Pomeron-Virtual state vertex
+        vX->add_particle_in(gen_q1);
+        vX->add_particle_in(gen_q2);
+        vX->add_particle_out(gen_X);
+
+      } else {  // Last MPI, fuse remnant + remnant -> system
+
+        // Proton-Proton-Virtual state vertex
+        vX = std::make_shared<HepMC3::GenVertex>();
+        vX->add_particle_in(gen_p1);
+        vX->add_particle_in(gen_p2);
+        vX->add_particle_out(gen_X);
+      }
+
+      // Add vertex to the event
+      evt.add_vertex(vX);
+
+      // Try to fragment
+      int    B = 0; // Baryon number
+      int    Q = 0; // Charge
+      double Q2_scale = system4vec.M2();
+
+      // Beam fragments carry the initial state quantum numbers
+      if (i == etree.size() - 2) {
+        B = math::sign(lts.beam2.pdg); // Proton(anti) proton beams only
+        Q = B;
+      }
+      if (i == etree.size() - 1) {
+        B = math::sign(lts.beam1.pdg);
+        Q = B;
+      }
+
+      // Excite it
+      MDecayBranch branch;
+      if (!ExciteContinuum(system4vec, branch, Q2_scale, B, Q)) {
+        std::cout << "ND failed with ExciteContinuum" << std::endl;
+        return false;  // failed
+      }
+
+      // Save it
+      SaveBranch(evt, branch, gen_X);
     }
 
-    // NOW this we return
     return true;
   }
 
-  // ----------------------------------------------------------------------
   // Diffractive processes
 
-  // Initial state protons (4-momentum, pdg-id, status code)
+  // Initial states (4-momentum, pdg-id, status code)
   HepMC3::GenParticlePtr gen_p1 = std::make_shared<HepMC3::GenParticle>(
       gra::aux::M4Vec2HepMC3(lts.pbeam1), lts.beam1.pdg, PDG::PDG_BEAM);
   HepMC3::GenParticlePtr gen_p2 = std::make_shared<HepMC3::GenParticle>(
       gra::aux::M4Vec2HepMC3(lts.pbeam2), lts.beam2.pdg, PDG::PDG_BEAM);
 
-  // Pomeron 4-vector and generator particle
+  // Propagator 4-vector and generator particle
   M4Vec                  q1(lts.pbeam1 - lts.pfinal[1]);
   HepMC3::GenParticlePtr gen_q1 = std::make_shared<HepMC3::GenParticle>(
-      gra::aux::M4Vec2HepMC3(q1), PDG::PDG_pomeron, PDG::PDG_INTERMEDIATE);
+      gra::aux::M4Vec2HepMC3(q1), PDG::PDG_propagator, PDG::PDG_INTERMEDIATE);
 
-  // Final state protons/N*
+  // Final state protons/excited systems
   int PDG_ID1     = lts.beam1.pdg;
   int PDG_ID2     = lts.beam2.pdg;
   int PDG_status1 = PDG::PDG_STABLE;
   int PDG_status2 = PDG::PDG_STABLE;
 
+  // EL
+  // already fine
+
   // SD
   if (ProcPtr.CHANNEL == "SD") {
-    if (lts.ss[1][1] > 1.0) {  // proton 1 excited
-      PDG_ID1     = PDG::PDG_NSTAR;
+    if (lts.excite1) {  // proton 1 excited
+      PDG_ID1     = std::abs(PDG::PDG_NSTAR) * math::sign(lts.beam1.pdg);
       PDG_status1 = PDG::PDG_INTERMEDIATE;
     } else {
-      PDG_ID2     = PDG::PDG_NSTAR;
+      PDG_ID2     = std::abs(PDG::PDG_NSTAR) * math::sign(lts.beam2.pdg);
       PDG_status2 = PDG::PDG_INTERMEDIATE;
     }
   }
   // DD
   if (ProcPtr.CHANNEL == "DD") {
-    PDG_ID1     = PDG::PDG_NSTAR;
+    PDG_ID1     = std::abs(PDG::PDG_NSTAR) * math::sign(lts.beam1.pdg);
     PDG_status1 = PDG::PDG_INTERMEDIATE;
-    PDG_ID2     = PDG::PDG_NSTAR;
+    PDG_ID2     = std::abs(PDG::PDG_NSTAR) * math::sign(lts.beam2.pdg);
     PDG_status2 = PDG::PDG_INTERMEDIATE;
   }
 
@@ -372,25 +388,31 @@ bool MQuasiElastic::EventRecord(HepMC3::GenEvent &evt) {
   // Finally add all vertices
   evt.add_vertex(v1);
   evt.add_vertex(v2);
-
-  // ----------------------------------------------------------------
-
+  
   // Upper proton excitation
-  if (lts.excite1 == true) {
-    if (!ExciteContinuum(lts.pfinal[1], lts.decayforward1, lts.pfinal[1].M2(), 1, 1)) {
+  if (lts.excite1) {
+    const int B = math::sign(lts.beam1.pdg); // baryon number the same as charge
+    const int Q = B;
+
+    if (!ExciteContinuum(lts.pfinal[1], lts.decayforward1, lts.pfinal[1].M2(), B, Q)) {
       return false;  // failed
     }
     SaveBranch(evt, lts.decayforward1, gen_p1f);
   }
   // Lower proton excitation
-  if (lts.excite2 == true) {
-    if (!ExciteContinuum(lts.pfinal[2], lts.decayforward2, lts.pfinal[2].M2(), 1, 1)) {
+  if (lts.excite2) {
+
+    const int B = math::sign(lts.beam2.pdg); // baryon number the same as charge
+    const int Q = B;
+
+    if (!ExciteContinuum(lts.pfinal[2], lts.decayforward2, lts.pfinal[2].M2(), B, Q)) {
       return false;  // failed
     }
     SaveBranch(evt, lts.decayforward2, gen_p2f);
   }
   return true;
 }
+
 
 // Print out setup
 void MQuasiElastic::PrintInit(bool silent) const {
@@ -728,8 +750,6 @@ bool MQuasiElastic::B3RandomKin(const std::vector<double> &randvec) {
     lts.excite1 = true;
     lts.excite2 = true;
   }
-
-  // -------------------------------------------------------------------------
 
   // Calculate kinematically valid t-range
   const double s1 = lts.pbeam1.M2();

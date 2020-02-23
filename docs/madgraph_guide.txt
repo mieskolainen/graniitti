@@ -1,4 +1,4 @@
-Matrix elements from MADGRAPH to GRANIITTI
+Matrix elements from MadGraph to GRANIITTI
 Mikael Mieskolainen, 17.12.2019
 
 STEP 1: Generate process in MadGraph, for example:

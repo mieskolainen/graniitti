@@ -1,7 +1,7 @@
 {
  "name": "GRANIITTI",
- "version": 1.03,
+ "version": 1.04,
  "type": "release",
- "date": "28.12.2019",
- "update": "input-output update"
+ "date": "22.02.2020",
+ "update": "tensorpom parameters & forward excitation"
 }

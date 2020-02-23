@@ -15,3 +15,6 @@ B. ADDITIONAL MANUAL labour is (currently) required after running the conversion
  3. Add the amplitude under MAmplitudes.h
  4. Add the process handles under MSubProc.cc/h
 
+
+C. REMEMBER to have exactly the same order of the final states in MadGraph and GRANIITTI
+   running scripts, otherwise wrong masses can be assigned during the event & kinematics generation

@@ -1,6 +1,6 @@
 // KISS fragmentation class
 //
-// (c) 2017-2019 Mikael Mieskolainen
+// (c) 2017-2020 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -294,18 +294,23 @@ bool MFragment::SolveAlpha(double &alpha, double M0, const std::vector<double> &
 }
 
 // N* decay table [set manually according to experimental data]
+//
+// Q is the proton / antiproton charge (1,-1)
 // M0 is the N* mass
-void MFragment::NstarDecayTable(double M0, std::vector<int> &pdgcode, MRandom &rng) {
+//
+void MFragment::NstarDecayTable(int Q, double M0, std::vector<int> &pdgcodes, MRandom &rng) {
   int decaymode = 0;
-
+  
+  // Only 2-body decay possible, mass below 3-body threshold
   if (M0 < (PDG::mp + 2 * PDG::mpi)) {
-    // Only 2-body decay possible, mass below 3-body threshold
     decaymode = 0;
-  } else {  // 2- or 3-body decay possible
+
+  // 2- or 3-body decay possible
+  } else {
 
     // C++11, thread_local is also static
-    thread_local std::discrete_distribution<> d(
-        {0.60, 0.40});       // 2->body / 3-body branching ratios from PDG
+    // 2->body / 3-body branching ratios from PDG
+    thread_local std::discrete_distribution<> d({0.60, 0.40});
     decaymode = d(rng.rng);  // Draw random
   }
 
@@ -324,11 +329,11 @@ void MFragment::NstarDecayTable(double M0, std::vector<int> &pdgcode, MRandom &r
     const int channel = subd(rng.rng);
 
     // PDG-ID of subchannels
-    const std::vector<std::vector<int>> ID = {{PDG_n, PDG_pip},   // neutron & pi+
-                                              {PDG_p, PDG_pi0}};  // proton  & pi0
+    const std::vector<std::vector<int>> ID = {{Q * PDG_n, Q * PDG_pip}, // (anti)neutron & pi(-)+
+                                              {Q * PDG_p, PDG_pi0}};    // (anti)proton  & pi0
 
     // Choose the decay channel
-    pdgcode = ID[channel];
+    pdgcodes = ID[channel];
   }
 
   // 3-body channel
@@ -340,16 +345,18 @@ void MFragment::NstarDecayTable(double M0, std::vector<int> &pdgcode, MRandom &r
     const int channel = subd(rng.rng);
 
     // PDG-ID of subchannels
-    const std::vector<std::vector<int>> ID = {
-        {PDG_n, PDG_pip, PDG_pi0}, {PDG_p, PDG_pip, PDG_pim}, {PDG_p, PDG_pi0, PDG_pi0}};
+    const std::vector<std::vector<int>> ID = 
+        {{Q*PDG_n, Q*PDG_pip, PDG_pi0},
+         {Q*PDG_p,   PDG_pip, PDG_pim},
+         {Q*PDG_p,   PDG_pi0, PDG_pi0}};
 
     // Perhaps to add
-    //{PDG_delta0, PDG_pip, PDG_pi0},     // delta0 & pi+ & pi0
-    //{PDG_deltap, PDG_pip, PDG_pim},     // delta+ & pi+ & pi-
-    //{PDG_deltap, PDG_pi0, PDG_pi0}};    // delta+ & pi0 & pi0
+    //{Q*PDG_delta0, Q*PDG_pip, PDG_pi0},    // delta0 & pi+ & pi0
+    //{Q*PDG_deltap, PDG_pip, PDG_pim},      // delta+ & pi+ & pi-
+    //{Q*PDG_deltap, PDG_pi0, PDG_pi0}};     // delta+ & pi0 & pi0
 
     // Draw the decay channel
-    pdgcode = ID[channel];
+    pdgcodes = ID[channel];
   }
 }
 

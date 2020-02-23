@@ -5,7 +5,7 @@
 // MultiDimArray<int, 3, 2> arr {1, 2, 3, 4, 5, 6};
 // assert(arr[1][1] == 4);
 //
-// (c) 2017-2019 Mikael Mieskolainen
+// (c) 2017-2020 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 #ifndef MDIMARRAY_H

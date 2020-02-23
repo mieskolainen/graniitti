@@ -14,7 +14,7 @@
 //  p%2 = -py
 //  p%3 = -pz
 //
-// (c) 2017-2019 Mikael Mieskolainen
+// (c) 2017-2020 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 #ifndef M4VEC_H

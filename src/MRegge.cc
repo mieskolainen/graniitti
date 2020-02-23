@@ -1,6 +1,6 @@
 // Regge Amplitudes
 //
-// (c) 2017-2019 Mikael Mieskolainen
+// (c) 2017-2020 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -36,72 +36,21 @@ using namespace gra::form;
 namespace gra {
 
 // Constructor
-MRegge::MRegge(const gra::LORENTZSCALAR& lts) {
+MRegge::MRegge(gra::LORENTZSCALAR& lts, const std::string& modelfile) {
 
   // Initialization
   gra::g_mutex.lock();
   if (!PARAM_REGGE::initialized && lts.decaytree.size() != 0) {
+    
     const int PDG = std::abs(lts.decaytree[0].p.pdg);
-    InitReggeAmplitude(PDG, gra::MODELPARAM);
-    PARAM_REGGE::initialized = true;
+    PARAM_REGGE::ReadParameters(PDG, modelfile);
+
+    // Construct 4 and 6 body Regge Ladder leg combinatorial permutations
+    const int mode = 1;  // charged permutations +- (FIXED FOR NOW)
+    permutations4 = gra::math::GetAmpPerm(4, mode);
+    permutations6 = gra::math::GetAmpPerm(6, mode);
   }
   gra::g_mutex.unlock();
-}
-
-// Destructor
-MRegge::~MRegge() {}
-
-
-// Generic Regge amplitude initialization
-// PDG is the pion/kaon/proton
-// TODO: we read couplings based on the first particle,
-// generalize to pairs such as pi+pi-K+K- (4-body) (easy extension)
-//
-void MRegge::InitReggeAmplitude(int PDG, const std::string &MODELPARAM) {
-
-  // Construct 4 and 6 body Regge Ladder leg combinatorial permutations
-  const int mode = 1;  // charged permutations +- (FIXED FOR NOW)
-  permutations4 = gra::math::GetAmpPerm(4, mode);
-  permutations6 = gra::math::GetAmpPerm(6, mode);
-
-  // ---------------------------------------------------------------------
-
-  using json           = nlohmann::json;
-  std::string fullpath = gra::aux::GetBasePath(2) + "/modeldata/" + MODELPARAM + "/GENERAL.json";
-
-  // Read and parse
-  try {
-    std::string data = gra::aux::GetInputData(fullpath);
-    json        j    = json::parse(data);
-
-    // Setup the parameter string
-    std::string str;
-    if        (PDG == 211 || PDG == 111) {    // Charged or Neutral Pions
-      str = "PARAM_PI";
-    } else if (PDG == 321 || PDG == 311) {    // Charged or Neutral Kaons
-      str = "PARAM_K";
-    } else if (PDG == 2212 || PDG == 2112) {  // Protons or Neutrons
-      str = "PARAM_P";
-    } else if (PDG == 113 || PDG == 213) {    // Neutral or charged rho(770)
-      str = "PARAM_RHO";
-    } else if (PDG == 331) {                  // phi(1020)
-      str = "PARAM_PHI";
-    } else if (PDG == 9000221) {              // f0(500)
-      str = "PARAM_F0500";
-    } else {  // The rest will use PARAM_X setup
-      str = "PARAM_X";
-    }
-
-    // Reggeon couplings
-    std::vector<double> c = j.at(str).at("c");
-    std::vector<bool>   n = j.at(str).at("n");
-    PARAM_REGGE::c        = c;
-    PARAM_REGGE::n        = n;
-
-    // PARAM_REGGE::PrintParam();
-  } catch (...) {
-    throw std::invalid_argument("MRegge::InitReggeAmplitude_: Parse error in " + fullpath);
-  }
 }
 
 // Triple-Regge (Pomeron) limits
@@ -1027,6 +976,52 @@ void PrintParam() {
     }
   }
   std::cout << std::endl;
+}
+
+// Read generic Regge amplitude parameters from files
+// PDG is the pion/kaon/proton
+// TODO: we read couplings based on the first particle,
+// generalize to pairs such as pi+pi-K+K- (4-body) (easy extension)
+//
+void ReadParameters(int PDG, const std::string& modelfile) {
+  
+  using json           = nlohmann::json;
+  
+  // Read and parse
+  try {
+    std::string data = gra::aux::GetInputData(modelfile);
+    json        j    = json::parse(data);
+
+    // Setup the parameter string
+    std::string str;
+    if        (PDG == 211 || PDG == 111) {    // Charged or Neutral Pions
+      str = "PARAM_PI";
+    } else if (PDG == 321 || PDG == 311) {    // Charged or Neutral Kaons
+      str = "PARAM_K";
+    } else if (PDG == 2212 || PDG == 2112) {  // Protons or Neutrons
+      str = "PARAM_P";
+    } else if (PDG == 113 || PDG == 213) {    // Neutral or charged rho(770)
+      str = "PARAM_RHO";
+    } else if (PDG == 331) {                  // phi(1020)
+      str = "PARAM_PHI";
+    } else if (PDG == 9000221) {              // f0(500)
+      str = "PARAM_F0500";
+    } else {  // The rest will use PARAM_X setup
+      str = "PARAM_X";
+    }
+
+    // Reggeon couplings
+    std::vector<double> c = j.at(str).at("c");
+    std::vector<bool>   n = j.at(str).at("n");
+    PARAM_REGGE::c        = c;
+    PARAM_REGGE::n        = n;
+    
+    PARAM_REGGE::initialized = true;
+
+    // PARAM_REGGE::PrintParam();
+  } catch (...) {
+    throw std::invalid_argument("MRegge::InitReggeAmplitude_: Parse error in " + modelfile);
+  }
 }
 
 // Non-Conserved Vector Current Pomeron [UNTESTED FUNCTION]

@@ -1,6 +1,6 @@
 // 'Durham QCD' Processes and Amplitudes
 //
-// (c) 2017-2019 Mikael Mieskolainen
+// (c) 2017-2020 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -40,19 +40,9 @@ static const std::vector<int> fs2 = {MM, MP, PM, PP};
 // Central system J^P = 0^+, 0^-, +2^+, -2^+
 enum SPINPARITY { P0, M0, P2, M2 };  // Implicit conversion to int
 
+// Constructor
+MDurham::MDurham(gra::LORENTZSCALAR& lts, const std::string& modelfile) {
 
-// Durham QCD / KMR model
-//
-// [REFERENCE: Pumplin, Phys.Rev.D 52 (1995)]
-// [REFERENCE: Khoze, Kaidalov, Martin, Ryskin, Stirling,
-// https://arxiv.org/abs/hep-ph/0507040]
-// [REFERENCE: Khoze, Martin, Ryskin, https://arxiv.org/abs/hep-ph/0605113]
-// [REFERENCE: Harland-Lang, Khoze, Ryskin, Stirling,
-// https://arxiv.org/abs/1005.0695]
-// [REFERENCE: Harland-Lang, Khoze, Ryskin, https://arxiv.org/abs/1409.4785]
-//
-double MDurham::DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process) {
-  // First run, init parameters
   // @@ MULTITHREADING LOCK NEEDED FOR THE INITIALIZATION @@
   gra::g_mutex.lock();
 
@@ -70,13 +60,26 @@ double MDurham::DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process) {
   }
   if (!Param.initialized) {
     try {
-      Param.ReadParameters();
+      Param.ReadParameters(modelfile);
     } catch (...) {
       gra::g_mutex.unlock();  // need to release here, otherwise get infinite lock
       throw;
     }
   }
   gra::g_mutex.unlock();
+}
+
+// Durham QCD / KMR model
+//
+// [REFERENCE: Pumplin, Phys.Rev.D 52 (1995)]
+// [REFERENCE: Khoze, Kaidalov, Martin, Ryskin, Stirling,
+// https://arxiv.org/abs/hep-ph/0507040]
+// [REFERENCE: Khoze, Martin, Ryskin, https://arxiv.org/abs/hep-ph/0605113]
+// [REFERENCE: Harland-Lang, Khoze, Ryskin, Stirling,
+// https://arxiv.org/abs/1005.0695]
+// [REFERENCE: Harland-Lang, Khoze, Ryskin, https://arxiv.org/abs/1409.4785]
+//
+double MDurham::DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process) {
 
   if (process == "gg") {
     // [Final state helicities/polarizations x 4 initial state helicities]

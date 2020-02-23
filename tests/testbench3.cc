@@ -1,8 +1,7 @@
 // Testbench 3 (unit tests)
 //
-// (c) 2017-2019 Mikael Mieskolainen
+// (c) 2017-2020 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
-
 
 #include <catch.hpp>
 #include <random>
@@ -27,7 +26,10 @@ TEST_CASE("form:: Form factors", "[gra::form]") {
 	const double EPS_DIPOLE = 1e-5;
 	const double EPS_KELLY  = 0.4;
 
-	MTensorPomeron tensor;
+	gra::LORENTZSCALAR lts;
+	const std::string modelfile =
+		gra::aux::GetBasePath(2) + "/modeldata/TUNE0/GENERAL.json";
+	MTensorPomeron tensor(lts, modelfile);
 
 	std::cout << "F1(0): " << form::F1(0)  << std::endl;
 	std::cout << "F2(0): " << form::F2(0)  << std::endl;

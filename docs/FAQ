@@ -1,4 +1,4 @@
-GRANIITTI FAQ: 18.12.2019
+GRANIITTI FAQ: 22.02.2020
 
 mikael.mieskolainen@cern.ch
 -----------
@@ -143,6 +143,17 @@ A:  After the '->' arrow, write down the final state in terms of PDG
 Q:  How do I know the PDG numbers/names?
 A:  Write down something (dummy) after the '->' arrow,
     and try to generate. You will get a list of all particles.
+
+
+Q:  What are the intermediate state (propagators, central systems, excited forward systems)
+    PDG ID codes and the status codes in general?
+A:  Check /include/MPDG.h file.
+
+
+Q:  How do I get the minimum bias process cross sections (SD,DD,ND) and generate events?
+A:  Use ./bin/minbias program. Running processes directly with "PP[SD]<Q>", "PP[DD]<Q>"
+    and "PP[ND]<Q>" macros with screening loop turned works too, but the cross section integral is
+    calculated properly for non-diffractive (ND) events only via ./bin/minbias program.
 
 
 Q:  What do generation cuts versus fiducial cuts mean?

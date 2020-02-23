@@ -1,6 +1,6 @@
 // (Sub)-Processes and Amplitudes
 //
-// (c) 2017-2019 Mikael Mieskolainen
+// (c) 2017-2020 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 #ifndef MSUBPROC_H
@@ -78,13 +78,17 @@ public:
   std::unique_ptr<MRegge>  Regge  = nullptr;
   std::unique_ptr<MTensorPomeron> Tensor = nullptr;
 
-  // Delayed constructors
-  void CallGamma(gra::LORENTZSCALAR& lts)  { if (Gamma  == nullptr) { Gamma  = make_unique<MGamma>(lts);      }}
-  void CallDurham(gra::LORENTZSCALAR& lts) { if (Durham == nullptr) { Durham = make_unique<MDurham>();        }}
-  void CallTensor(gra::LORENTZSCALAR& lts) { if (Tensor == nullptr) { Tensor = make_unique<MTensorPomeron>(); }}
-  void CallRegge(gra::LORENTZSCALAR& lts)  { if (Regge  == nullptr) { Regge  = make_unique<MRegge>(lts);      }}
+  // Delayed constructors, so global .json parameters are read from files already at this point
+  void CallGamma(gra::LORENTZSCALAR& lts)  { if (Gamma  == nullptr) { Gamma  = make_unique<MGamma>(lts,  GetModelFile());        }}
+  void CallDurham(gra::LORENTZSCALAR& lts) { if (Durham == nullptr) { Durham = make_unique<MDurham>(lts, GetModelFile());        }}
+  void CallTensor(gra::LORENTZSCALAR& lts) { if (Tensor == nullptr) { Tensor = make_unique<MTensorPomeron>(lts, GetModelFile()); }}
+  void CallRegge(gra::LORENTZSCALAR& lts)  { if (Regge  == nullptr) { Regge  = make_unique<MRegge>(lts,  GetModelFile());        }}
 
-
+  // Return general modelfile
+  std::string GetModelFile() const {
+    return gra::aux::GetBasePath(2) + "/modeldata/" + gra::MODELPARAM + "/GENERAL.json";
+  }
+  
   // Assert the final state list
   bool AssertN(const std::vector<int>& reference, const std::vector<int>& input) const {
     return std::is_permutation(reference.begin(), reference.end(), input.begin());

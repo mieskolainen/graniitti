@@ -1,6 +1,6 @@
 // Toy fragmentation class
 //
-// (c) 2017-2019 Mikael Mieskolainen
+// (c) 2017-2020 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 #ifndef MFRAGMENTATION_H
@@ -37,8 +37,8 @@ class MFragment {
   static void GetForwardMass(double &mass1, double &mass2, bool &excite1, bool &excite2,
                              unsigned int excite, MRandom &random);
   static void GetSingleForwardMass(double &mass, MRandom &random);
-  static void NstarDecayTable(double m0, std::vector<int> &pdgcode, MRandom &rng);
-
+  static void NstarDecayTable(int Q, double m0, std::vector<int> &pdgcode, MRandom &rng);
+  
   static bool PickParticles(double M, unsigned int N, int B, int S, int Q,
                             std::vector<double> &mass, std::vector<int> &pdgcode, const MPDG &PDG,
                             MRandom &rng);

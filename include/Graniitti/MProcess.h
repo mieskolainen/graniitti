@@ -1,6 +1,6 @@
 // Abstract process class
 //
-// (c) 2017-2019 Mikael Mieskolainen
+// (c) 2017-2020 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 #ifndef MPROCESS_H
@@ -302,8 +302,8 @@ class MProcess : public MUserHistograms {
 
   // --------------------------------------------------------
   // System fragmentation
-
-  bool ExciteNstar(const M4Vec &nstar, gra::MDecayBranch &forward);
+  
+  bool ExciteNstar(const M4Vec &nstar, gra::MDecayBranch &forward, const MParticle& pbeam);
   bool ExciteContinuum(const M4Vec &nstar, gra::MDecayBranch &forward, double Q2_scale, int B_sum,
                        int Q_sum, const std::string &pt_distribution = "powexp");
   void BranchForwardSystem(const std::vector<M4Vec> &p4, const std::vector<MParticle> &p,

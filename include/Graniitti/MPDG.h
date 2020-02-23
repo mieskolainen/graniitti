@@ -17,10 +17,8 @@
 #include "Graniitti/MParticle.h"
 #include "Graniitti/MAux.h"
 
-
 namespace gra {
 namespace PDG {
-
 
 // Common PDG ids, http://pdg.lbl.gov/2007/reviews/montecarlorpp.pdf
 // For MC internal, use 81-100
@@ -36,18 +34,21 @@ constexpr int PDG_gluon = 21;
 constexpr int PDG_muon  = 13;
 constexpr int PDG_rho0  = 113;
 
-constexpr int PDG_pomeron  = 990;
-constexpr int PDG_reggeon  = 110;
-constexpr int PDG_monopole = 992;    // spin-1/2 monopole
-constexpr int PDG_MSTAR    = 90000;  // Meson  resonance
-constexpr int PDG_NSTAR    = 90210;  // Baryon resonance
-constexpr int PDG_system   = 93;     // "Container" / "Jet" / "System"
+constexpr int PDG_pomeron    = 990;
+constexpr int PDG_reggeon    = 110;
+constexpr int PDG_monopole   = 992;    // spin-1/2 monopole
+constexpr int PDG_MSTAR      = 90000;  // Meson  resonance
+constexpr int PDG_NSTAR      = 90210;  // Baryon resonance
+constexpr int PDG_system     = 90;     // "Container" / "Jet" / "System"
+constexpr int PDG_fragment   = 91;     // Proton fragment
+constexpr int PDG_propagator = 99;     // Generic propagator
 
 // HepPMC STABLE definitions conventions
 constexpr int PDG_BEAM         = 4;   // Beam particles
 constexpr int PDG_STABLE       = 1;   // Final state "stable" particles
 constexpr int PDG_DECAY        = 2;   // Such as pi0
-constexpr int PDG_INTERMEDIATE = 81;  // Such as Pomerons etc
+constexpr int PDG_INTERMEDIATE = 81;  // Such as gamma*, pomeron etc.
+
 
 // For CPU efficiency [GeV]
 constexpr double mp   = 0.938272081;

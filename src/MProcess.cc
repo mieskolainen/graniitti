@@ -1,6 +1,6 @@
 // Abstract process class
 //
-// (c) 2017-2019 Mikael Mieskolainen
+// (c) 2017-2020 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -51,6 +51,7 @@ using gra::math::pow2;
 using gra::math::zi;
 
 namespace gra {
+
 void MProcess::PrintSetup() const {
   std::cout << std::endl;
   std::cout << rang::style::bold << "Process setup:" << rang::style::reset << std::endl
@@ -529,9 +530,6 @@ HELMatrix MProcess::ProcessHelicityDecay(const MParticle &             p,
                                          const std::vector<MParticle> &daughter) const {
   HELMatrix hc;
 
-  // Init once for speed
-  static MTensorPomeron TensorPomeron;
-
   // Get decay daughter PDG ids
   std::vector<int> refdecay;
   for (const auto &i : indices(daughter)) { refdecay.push_back(daughter[i].pdg); }
@@ -688,7 +686,7 @@ HELMatrix MProcess::ProcessHelicityDecay(const MParticle &             p,
       if (hc.g_decay_tensor.size() == 0) {  // Not set yet
 
         hc.g_decay_tensor = {
-            TensorPomeron.GDecay(p.spinX2 / 2, p.mass, p.width, daughter[0].mass, hc.BR)};
+            MTensorPomeron::GDecay(p.spinX2 / 2, p.mass, p.width, daughter[0].mass, hc.BR)};
 
         if (std::abs(PS) < ZERO_EPS) {
           // Try again with higher mother mass as a crude approximation, we might
@@ -700,7 +698,7 @@ HELMatrix MProcess::ProcessHelicityDecay(const MParticle &             p,
 
             // ---------------------------------------------------------------
             // Tensor Pomeron Model decay couplings
-            hc.g_decay_tensor = {TensorPomeron.GDecay(p.spinX2 / 2, p.mass + i * p.width, p.width,
+            hc.g_decay_tensor = {MTensorPomeron::GDecay(p.spinX2 / 2, p.mass + i * p.width, p.width,
                                                       daughter[0].mass, hc.BR)};
 
             if (PS > ZERO_EPS) { break; }
@@ -856,9 +854,9 @@ bool MProcess::ExciteContinuum(const M4Vec &nstar, gra::MDecayBranch &forward, d
 
     // Boundary conditions
     N = (N < 1) ? 1 : N;   // At least 1
-    N = (N >= B) ? N : B;  // Baryon number
-    N = (N >= Q) ? N : Q;  // Charge conservation
-
+    N = (N >= std::abs(B)) ? N : std::abs(B);  // Baryon number
+    N = (N >= std::abs(Q)) ? N : std::abs(Q);  // Charge conservation
+    
     // --------------------------------------------------------------------
     // Pick particles
 
@@ -998,21 +996,20 @@ void MProcess::BranchForwardSystem(const std::vector<M4Vec> &p4, const std::vect
 }
 
 
-// Proton low mass N* 2-body and 3-body excitation
+// Proton low mass (N* like) 2-body and 3-body excitation
 //
-// Return true  if OK
-// Return false if FAILS
 //
-bool MProcess::ExciteNstar(const M4Vec &nstar, gra::MDecayBranch &forward) {
+bool MProcess::ExciteNstar(const M4Vec &nstar, gra::MDecayBranch &forward, const MParticle& pbeam) {
+  
   // Find random decaymode
-  std::vector<int> pdgcode;
-  MFragment::NstarDecayTable(nstar.M(), pdgcode, random);
+  std::vector<int> pdgcodes;
+  MFragment::NstarDecayTable(pbeam.chargeX3 / 3, nstar.M(), pdgcodes, random);
 
   // Get corresponding PDG particles
-  std::vector<gra::MParticle> p(pdgcode.size());
-  std::vector<double>         mass(pdgcode.size(), 0.0);
-  for (const auto &i : indices(pdgcode)) {
-    p[i]    = lts.PDG.FindByPDG(pdgcode[i]);
+  std::vector<gra::MParticle> p(pdgcodes.size());
+  std::vector<double>         mass(pdgcodes.size(), 0.0);
+  for (const auto &i : indices(pdgcodes)) {
+    p[i]    = lts.PDG.FindByPDG(pdgcodes[i]);
     mass[i] = p[i].mass;
   }
 
@@ -1020,7 +1017,9 @@ bool MProcess::ExciteNstar(const M4Vec &nstar, gra::MDecayBranch &forward) {
   std::vector<M4Vec> p4;
 
   // Do the 2 or 3-body isotropic decay
-  if (mass.size() == 2) { gra::kinematics::TwoBodyPhaseSpace(nstar, nstar.M(), mass, p4, random); }
+  if (mass.size() == 2) {
+    gra::kinematics::TwoBodyPhaseSpace(nstar, nstar.M(), mass, p4, random);
+  }
   if (mass.size() == 3) {
     const bool UNWEIGHT = true;
     gra::kinematics::ThreeBodyPhaseSpace(nstar, nstar.M(), mass, p4, UNWEIGHT, random);
@@ -1550,14 +1549,16 @@ bool MProcess::GetLorentzScalars(unsigned int Nf) {
   return true;
 }
 
+// Event output recording (to HepMC containers)
+//
 bool MProcess::CommonRecord(HepMC3::GenEvent &evt) {
-  // Initial state protons (4-momentum, pdg-id, status code)
+  // Initial states (4-momentum, pdg-id, status code)
   HepMC3::GenParticlePtr gen_p1 = std::make_shared<HepMC3::GenParticle>(
       gra::aux::M4Vec2HepMC3(lts.pbeam1), lts.beam1.pdg, PDG::PDG_BEAM);
   HepMC3::GenParticlePtr gen_p2 = std::make_shared<HepMC3::GenParticle>(
       gra::aux::M4Vec2HepMC3(lts.pbeam2), lts.beam2.pdg, PDG::PDG_BEAM);
 
-  // Final state protons/N*
+  // Final states (protons/excited system)
   int PDG_ID1 = lts.beam1.pdg;
   int PDG_ID2 = lts.beam2.pdg;
 
@@ -1581,10 +1582,12 @@ bool MProcess::CommonRecord(HepMC3::GenEvent &evt) {
   // -------------------------------------------------------------------
 
   // Propagator 1 and 2
+  // it is ill-posed to try classify pomeron/gamma/gluon etc. here, thus,
+  // we tag only a generic propagator ID in the record
   HepMC3::GenParticlePtr gen_q1 = std::make_shared<HepMC3::GenParticle>(
-      gra::aux::M4Vec2HepMC3(lts.q1), PDG::PDG_pomeron, PDG::PDG_INTERMEDIATE);
+      gra::aux::M4Vec2HepMC3(lts.q1), PDG::PDG_propagator, PDG::PDG_INTERMEDIATE);
   HepMC3::GenParticlePtr gen_q2 = std::make_shared<HepMC3::GenParticle>(
-      gra::aux::M4Vec2HepMC3(lts.q2), PDG::PDG_pomeron, PDG::PDG_INTERMEDIATE);
+      gra::aux::M4Vec2HepMC3(lts.q2), PDG::PDG_propagator, PDG::PDG_INTERMEDIATE);
 
   // -------------------------------------------------------------------
 

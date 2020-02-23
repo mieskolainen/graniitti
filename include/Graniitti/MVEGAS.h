@@ -3,7 +3,7 @@
 // Future step:
 // Factorize all VEGAS functions out from MGraniitti to here (use function pointers etc.)
 //
-// (c) 2017-2019 Mikael Mieskolainen
+// (c) 2017-2020 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 #ifndef MVEGAS_H
