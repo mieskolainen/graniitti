@@ -9,8 +9,8 @@
 #include <iostream>
 
 // Own
-#include "Graniitti/MForm.h"
 #include "Graniitti/Amplitude/Parameters_sm.h"
+#include "Graniitti/MForm.h"
 
 
 void Parameters_sm::setIndependentParameters(SLHAReader &slha) {
@@ -70,10 +70,10 @@ void Parameters_sm::setIndependentParameters(SLHAReader &slha) {
   mdl_cw__exp__2  = ((mdl_cw) * (mdl_cw));
 }
 void Parameters_sm::setIndependentCouplings() {
-  GC_3 = -(mdl_ee * mdl_complexi);
-  GC_4 = mdl_ee * mdl_complexi;
-  GC_5 = mdl_ee__exp__2 * mdl_complexi;
-  GC_100 = (mdl_ee * mdl_complexi * mdl_conjg__CKM1x1)/(mdl_sw * mdl_sqrt__2);
+  GC_3   = -(mdl_ee * mdl_complexi);
+  GC_4   = mdl_ee * mdl_complexi;
+  GC_5   = mdl_ee__exp__2 * mdl_complexi;
+  GC_100 = (mdl_ee * mdl_complexi * mdl_conjg__CKM1x1) / (mdl_sw * mdl_sqrt__2);
 }
 void Parameters_sm::setDependentParameters(double alpS) {
   // **** MODIFIED ****
@@ -91,14 +91,13 @@ void Parameters_sm::setDependentCouplings() {
   GC_10 = -G;
 }
 void Parameters_sm::setAlphaQEDZero() {
-
-  const double mdl_ee_NEW = 2. * std::sqrt(1.0/137.03599908) * sqrt(M_PI);
+  const double mdl_ee_NEW         = 2. * std::sqrt(1.0 / 137.03599908) * sqrt(M_PI);
   const double mdl_ee__exp__2_NEW = mdl_ee * mdl_ee;
 
-  GC_3 = -(mdl_ee_NEW * mdl_complexi);
-  GC_4 = mdl_ee_NEW * mdl_complexi;
-  GC_5 = mdl_ee__exp__2_NEW * mdl_complexi;
-  GC_100 = (mdl_ee_NEW * mdl_complexi * mdl_conjg__CKM1x1)/(mdl_sw * mdl_sqrt__2);
+  GC_3   = -(mdl_ee_NEW * mdl_complexi);
+  GC_4   = mdl_ee_NEW * mdl_complexi;
+  GC_5   = mdl_ee__exp__2_NEW * mdl_complexi;
+  GC_100 = (mdl_ee_NEW * mdl_complexi * mdl_conjg__CKM1x1) / (mdl_sw * mdl_sqrt__2);
 }
 
 // Routines for printing out parameters
@@ -209,8 +208,8 @@ void Parameters_sm::printIndependentCouplings() {
        << "= " << setiosflags(ios::scientific) << setw(10) << GC_4 << endl;
   cout << setw(20) << "GC_5 "
        << "= " << setiosflags(ios::scientific) << setw(10) << GC_5 << endl;
-  cout << setw(20) <<  "GC_100 " <<  "= " << setiosflags(ios::scientific) <<
-      setw(10) << GC_100 << endl;
+  cout << setw(20) << "GC_100 "
+       << "= " << setiosflags(ios::scientific) << setw(10) << GC_100 << endl;
 }
 void Parameters_sm::printDependentParameters() {
   cout << "sm model parameters dependent on event kinematics:" << endl;

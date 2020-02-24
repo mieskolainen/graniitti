@@ -16,11 +16,13 @@
 #include "Graniitti/MKinematics.h"
 #include "Graniitti/MMath.h"
 #include "Graniitti/MProcess.h"
+#include "Graniitti/MQED.h"
 #include "Graniitti/MSpin.h"
 
 // Libraries
 #include "json.hpp"
 #include "rang.hpp"
+
 
 using gra::math::PI;
 using gra::math::abs2;
@@ -37,9 +39,31 @@ namespace gra {
 // Structure functions and nuclear form factors
 namespace PARAM_STRUCTURE {
 
-std::string F2 = "CKMT";
-std::string EM = "DIPOLE";
+std::string F2        = "CKMT";
+std::string EM        = "DIPOLE";
 std::string QED_alpha = "ZERO";
+
+bool initialized = false;
+// Read parameters from file
+void ReadParameters(const std::string &modelfile) {
+  try {
+    const std::string data = gra::aux::GetInputData(modelfile);
+    nlohmann::json    j    = nlohmann::json::parse(data);
+
+    const std::string XID = "PARAM_STRUCTURE";
+
+    PARAM_STRUCTURE::F2        = j.at(XID).at("F2");
+    PARAM_STRUCTURE::EM        = j.at(XID).at("EM");
+    PARAM_STRUCTURE::QED_alpha = j.at(XID).at("QED_alpha");
+
+    initialized = true;
+
+  } catch (...) {
+    std::string str = "PARAM_STRUCTURE::ReadParameters: Error parsing " + modelfile +
+                      " (Check for extra/missing commas)";
+    throw std::invalid_argument(str);
+  }
+}
 
 }  // namespace PARAM_STRUCTURE
 
@@ -65,6 +89,8 @@ double fc3 = 0.0;
 // On/Off
 bool ODDERON_ON = false;
 
+bool initialized = false;
+
 std::string GetHashString() {
   std::string str = std::to_string(PARAM_SOFT::DELTA_P) + std::to_string(PARAM_SOFT::ALPHA_P) +
                     std::to_string(PARAM_SOFT::gN_P) + std::to_string(PARAM_SOFT::gN_O) +
@@ -88,88 +114,99 @@ void PrintParam() {
   std::cout << (ODDERON_ON ? "true" : "false") << std::endl;
   std::cout << std::endl << std::endl;
 }
+
+// Read parameters from file
+void ReadParameters(const std::string &modelfile) {
+  try {
+    const std::string data = gra::aux::GetInputData(modelfile);
+    nlohmann::json    j    = nlohmann::json::parse(data);
+
+    const std::string XID = "PARAM_SOFT";
+
+    PARAM_SOFT::DELTA_P = j.at(XID).at("DELTA_P");
+    PARAM_SOFT::ALPHA_P = j.at(XID).at("ALPHA_P");
+    PARAM_SOFT::gN_P    = j.at(XID).at("gN_P");
+    PARAM_SOFT::gN_O    = j.at(XID).at("gN_O");
+
+    double triple3P   = j.at(XID).at("g3P");
+    PARAM_SOFT::g3P   = triple3P * PARAM_SOFT::gN_P;  // Convention
+    PARAM_SOFT::gamma = j.at(XID).at("gamma");
+
+    PARAM_SOFT::fc1 = j.at(XID).at("fc1");
+    PARAM_SOFT::fc2 = j.at(XID).at("fc2");
+    PARAM_SOFT::fc3 = j.at(XID).at("fc3");
+
+    PARAM_SOFT::ODDERON_ON = j.at(XID).at("ODDERON_ON");
+
+    initialized = true;
+    PARAM_SOFT::PrintParam();
+
+  } catch (...) {
+    std::string str = "PARAM_SOFT::ReadParameters: Error parsing " + modelfile +
+                      " (Check for extra/missing commas)";
+    throw std::invalid_argument(str);
+  }
+}
+
 }  // namespace PARAM_SOFT
 
 // Flat amplitude parameters
 namespace PARAM_FLAT {
-double b = 0.0;
-}
-
-// Monopole parameters
-namespace PARAM_MONOPOLE {
-int         En       = 0;       // Bound state energy level
-double      M0       = 0.0;     // Monopole mass
-double      Gamma0   = 0.0;     // Monopolium width
-std::string coupling = "null";  // Coupling scenarios
-int         gn       = 0;       // Dirac charge 1,2,3,...
+int    active = 0;
+double b      = 0.0;
 
 bool initialized = false;
 
-// Functions as a solution to radial Schroedinger equation with Coulomb type
-// potential
-// V(r) ~= -g^2/(4pi) * 1/r
-//
-// Monopolium binding energy eigenvalues
-// -> Monopolium system sits at lower energy than monopole + antimonopole
+// Read parameters from file
+void ReadParameters(const std::string &modelfile) {
+  try {
+    const std::string data = gra::aux::GetInputData(modelfile);
+    nlohmann::json    j    = nlohmann::json::parse(data);
 
-// Monopolium running width
-double GammaMP(double n, double alpha_g) {
-  return (8.0 * PI * pow2(alpha_g)) / pow2(PARAM_MONOPOLE::M0) * math::abs2(PsiMP(n));
-}
+    const std::string XID = "PARAM_FLAT";
 
-// Binding energy
-double EnergyMP(double n) {
-  return -pow2(1 / (8.0 * form::alpha_EM(0))) * PARAM_MONOPOLE::M0 / (n * n);
-  // return -2.0*M0/15.0; // DEBUG
-}
+    PARAM_FLAT::b = j.at(XID).at("b");
 
-// Monopolium wavefunction in the origin of the bound system
-double PsiMP(double n) {
-  return (1.0 / msqrt(PI)) *
-         std::pow(PARAM_MONOPOLE::M0 / (8.0 * form::alpha_EM(0) * n), 3.0 / 2.0);
-}
-
-void PrintParam(double sqrts, bool forceprint) {
-  if (_printcalls == 0 || forceprint) {
-    aux::PrintBar("*");
-    std::cout << rang::style::bold << "Monopolium process parameters:" << rang::style::reset
-              << std::endl
-              << std::endl;
-
-    printf("- M0     = %0.3f GeV \n", PARAM_MONOPOLE::M0);
-    printf("- Gamma0 = %0.3f GeV \n", PARAM_MONOPOLE::Gamma0);
-    printf("- En     = %d \n", PARAM_MONOPOLE::En);
-
-    const double M = 2 * PARAM_MONOPOLE::M0 + EnergyMP(PARAM_MONOPOLE::En);
-    printf(
-        "\nGives monopolium mass: M = %0.3f GeV (Binding Energy = %0.3f "
-        "GeV) \n\n",
-        M, M - 2 * PARAM_MONOPOLE::M0);
-
-    // Check we have enough energy
-    if (M > sqrts) {
-      std::string str =
-          "gra::form::PARAM_MONOPOLE::PrintParam: FATAL error "
-          "Monopolium mass > CMS energy!";
-      throw std::invalid_argument(str);
-    }
-
-    std::cout << "Dirac charge = " << PARAM_MONOPOLE::gn << std::endl;
-    std::cout << "Coupling scheme = " << PARAM_MONOPOLE::coupling << std::endl;
-    aux::PrintBar("*");
-    std::cout << std::endl;
-
-    _printcalls++;
+    initialized = true;
+  } catch (...) {
+    std::string str = "PARAM_FLAT::ReadParameters: Error parsing " + modelfile +
+                      " (Check for extra/missing commas)";
+    throw std::invalid_argument(str);
   }
 }
+}  // namespace PARAM_FLAT
 
-int _printcalls = 0;
-}  // namespace PARAM_MONOPOLE
-
-// N*, N**, N** excitation couplings
+// Forward proton excitation
 namespace PARAM_NSTAR {
-std::vector<double> rc = {0.0, 0.0, 0.0};
+std::string         fragment = "none";
+std::vector<double> rc       = {0.0, 0.0, 0.0};
+
+bool initialized = false;
+
+// Read parameters from file
+void ReadParameters(const std::string &modelfile) {
+  try {
+    const std::string data = gra::aux::GetInputData(modelfile);
+    nlohmann::json    j    = nlohmann::json::parse(data);
+
+    const std::string XID = "PARAM_NSTAR";
+
+    PARAM_NSTAR::fragment  = j.at(XID).at("fragment");
+    std::vector<double> rc = j.at(XID).at("rc");
+    PARAM_NSTAR::rc        = rc;
+
+    // Make sure they sum to one
+    const double sum_rc = std::accumulate(rc.begin(), rc.end(), 0);
+    for (std::size_t i = 0; i < PARAM_NSTAR::rc.size(); ++i) { PARAM_NSTAR::rc[i] /= sum_rc; }
+
+    initialized = true;
+  } catch (...) {
+    std::string str = "PARAM_NSTAR::ReadParameters: Error parsing " + modelfile +
+                      " (Check for extra/missing commas)";
+    throw std::invalid_argument(str);
+  }
 }
+}  // namespace PARAM_NSTAR
 
 namespace form {
 
@@ -480,18 +517,11 @@ double F2xQ2(double xbj, double Q2) {
 //
 double F1xQ2(double xbj, double Q2) { return F2xQ2(xbj, Q2) / (2.0 * xbj); }
 
+// QED: Proton magnetic moment in magneton units (mu_p / mu_N)
+double mu_ratio() { return 2.792847337; }
+
 // ============================================================================
 // Photon flux densities and form factors, input Q^2 as positive
-
-// Alpha EM(Q^2 = 0)
-double alpha_EM(double Q2) {  // no running here
-  return 1.0 / 137.035999139;
-}
-// Electric charge in natural units ~ 0.3
-double e_EM(double Q2) {  // no running here
-  return msqrt(alpha_EM(Q2) * 4.0 * PI);
-}
-double e_EM() { return msqrt(alpha_EM(0.0) * 4.0 * PI); }
 
 // kT unintegrated coherent EPA photon flux as in:
 //
@@ -532,8 +562,6 @@ double F2(double Q2) {
 // G_M(0) = mu_p for proton, mu_n for neutrons
 
 // <http://www.scholarpedia.org/article/Nucleon_Form_factors>
-constexpr double mu      = 2.792847337;  // Proton magnetic moment in nuclear magneton units
-constexpr double lambda2 = 0.71;         // Dipole parameter GeV^2
 
 double G_E(double Q2) {
   Q2 = std::abs(Q2);  // For safety
@@ -566,9 +594,12 @@ double G_M(double Q2) {
 //
 //
 double G_E_DIPOLE(double Q2) {
-  return G_M(Q2) / mu;  // Scaling assumption
+  return G_M(Q2) / mu_ratio();  // Scaling assumption
 }
-double G_M_DIPOLE(double Q2) { return mu / pow2(1.0 + Q2 / lambda2); }
+double G_M_DIPOLE(double Q2) {
+  constexpr double lambda2 = 0.71;  // Dipole parameter GeV^2
+  return mu_ratio() / pow2(1.0 + Q2 / lambda2);
+}
 
 // Simple parametrization of nucleon EM-form factors
 //
@@ -610,7 +641,7 @@ double G_M_KELLY(double Q2) {
   den += b[1] * pow2(tau);  // b_2 tau^2
   den += b[2] * pow3(tau);  // b_3 tau^3
 
-  return mu * num / den;
+  return mu_ratio() * num / den;
 }
 
 // Coherent photon flux from proton
@@ -641,7 +672,8 @@ double CohFlux(double xi, double t, double pt) {
   const double PART2 = pow2(G_M(Q2));
   const double DELTA = pt2 / (pt2 + xi2 * mp2);
 
-  double f = alpha_EM(0) / PI * ((1.0 - xi) * pow2(DELTA) * PART1 + (xi2 / 4.0) * DELTA * PART2);
+  double f =
+      qed::alpha_QED() / PI * ((1.0 - xi) * pow2(DELTA) * PART1 + (xi2 / 4.0) * DELTA * PART2);
 
   // Factors
   f /= xi;
@@ -674,7 +706,7 @@ double IncohFlux(double xi, double t, double pt, double M2) {
   const double xbj   = Q2 / (Q2 + M2 - mp2);  // Bjorken-x
   const double DELTA = pt2 / (pt2 + xi * (M2 - mp2) + xi2 * mp2);
 
-  double f = alpha_EM(0) / PI *
+  double f = qed::alpha_QED() / PI *
              ((1.0 - xi) * pow2(DELTA) * F2xQ2(xbj, Q2) / (Q2 + M2 - mp2) +
               (xi2 / (4.0 * pow2(xbj))) * DELTA * 2.0 * xbj * F1xQ2(xbj, Q2) / (Q2 + M2 - mp2));
 
@@ -691,7 +723,7 @@ double DZFlux(double x) {
   const double Q2min = (pow2(mp) * pow2(x)) / (1.0 - x);
   const double A     = 1.0 + 0.71 / Q2min;
 
-  double f = alpha_EM(0) / (2.0 * PI * x) * (1.0 + pow2(1.0 - x)) *
+  double f = qed::alpha_QED() / (2.0 * PI * x) * (1.0 + pow2(1.0 - x)) *
              (std::log(A) - 11.0 / 6.0 + 3.0 / A - 3.0 / (2.0 * pow2(A)) + 1.0 / (3 * pow3(A)));
 
   return f;  // Use at cross section level

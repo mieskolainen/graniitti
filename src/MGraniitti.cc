@@ -247,7 +247,7 @@ void MGraniitti::InitProcessMemory(std::string process, unsigned int seed) {
   PROCESS = process;
 
   // <Q> process
-  if        (proc_Q.ProcPtr.ProcessExist(process)) {
+  if (proc_Q.ProcPtr.ProcessExist(process)) {
     proc_Q = MQuasiElastic(process, syntax);
     proc   = &proc_Q;
 
@@ -282,7 +282,7 @@ void MGraniitti::InitMultiMemory() {
 
   // Create new process objects for each thread
   for (int i = 0; i < CORES; ++i) {
-    if        (proc_Q.ProcPtr.ProcessExist(PROCESS)) {
+    if (proc_Q.ProcPtr.ProcessExist(PROCESS)) {
       pvec[i] = new MQuasiElastic(proc_Q);
     } else if (proc_F.ProcPtr.ProcessExist(PROCESS)) {
       pvec[i] = new MFactorized(proc_F);
@@ -356,86 +356,19 @@ void MGraniitti::ReadGeneralParam(const std::string &inputfile) {
   gra::MODELPARAM = j.at(XID).at("MODELPARAM");
 }
 
-// Soft model parameter initialization
-void MGraniitti::ReadModelParam(const std::string &inputfile) {
-  // Read and parse
+// General model parameters initialized from .json file
+//
+void MGraniitti::ReadModelParam(const std::string &inputfile) const {
   const std::string fullpath =
       gra::aux::GetBasePath(2) + "/modeldata/" + inputfile + "/GENERAL.json";
-  const std::string data = gra::aux::GetInputData(fullpath);
 
-  json j;
-  try {
-    j = json::parse(data);
-  } catch (...) {
-    std::string str = "MGraniitti::ReadModelParam: Error parsing " + fullpath +
-                      " (Check for extra/missing commas)";
-    throw std::invalid_argument(str);
-  }
+  // Read generic blocks
+  PARAM_SOFT::ReadParameters(fullpath);
+  PARAM_STRUCTURE::ReadParameters(fullpath);
+  PARAM_FLAT::ReadParameters(fullpath);
+  PARAM_NSTAR::ReadParameters(fullpath);
 
-  try {
-    // Soft model parameters
-    PARAM_SOFT::DELTA_P = j.at("PARAM_SOFT").at("DELTA_P");
-    PARAM_SOFT::ALPHA_P = j.at("PARAM_SOFT").at("ALPHA_P");
-    PARAM_SOFT::gN_P    = j.at("PARAM_SOFT").at("gN_P");
-    PARAM_SOFT::gN_O    = j.at("PARAM_SOFT").at("gN_O");
-
-    double triple3P   = j.at("PARAM_SOFT").at("g3P");
-    PARAM_SOFT::g3P   = triple3P * PARAM_SOFT::gN_P;  // Convention
-    PARAM_SOFT::gamma = j.at("PARAM_SOFT").at("gamma");
-
-    PARAM_SOFT::fc1 = j.at("PARAM_SOFT").at("fc1");
-    PARAM_SOFT::fc2 = j.at("PARAM_SOFT").at("fc2");
-    PARAM_SOFT::fc3 = j.at("PARAM_SOFT").at("fc3");
-
-    PARAM_SOFT::ODDERON_ON = j.at("PARAM_SOFT").at("ODDERON_ON");
-
-
-    // Flat amplitude parameters
-    PARAM_FLAT::b = j.at("PARAM_FLAT").at("b");
-
-    // Monopole production
-    PARAM_MONOPOLE::coupling = j.at("PARAM_MONOPOLE").at("coupling");
-    PARAM_MONOPOLE::gn       = j.at("PARAM_MONOPOLE").at("gn");
-    PARAM_MONOPOLE::En       = j.at("PARAM_MONOPOLE").at("En");
-    PARAM_MONOPOLE::Gamma0   = j.at("PARAM_MONOPOLE").at("Gamma0");
-
-    // Regge amplitude parameters
-    std::vector<double> a0  = j.at("PARAM_REGGE").at("a0");
-    std::vector<double> ap  = j.at("PARAM_REGGE").at("ap");
-    std::vector<double> sgn = j.at("PARAM_REGGE").at("sgn");
-    PARAM_REGGE::a0         = a0;
-    PARAM_REGGE::ap         = ap;
-    PARAM_REGGE::sgn        = sgn;
-
-    PARAM_REGGE::s0 = j.at("PARAM_REGGE").at("s0");
-
-    PARAM_REGGE::offshellFF = j.at("PARAM_REGGE").at("offshellFF");
-    PARAM_REGGE::b_EXP      = j.at("PARAM_REGGE").at("b_EXP");
-    PARAM_REGGE::a_OREAR    = j.at("PARAM_REGGE").at("a_OREAR");
-    PARAM_REGGE::b_OREAR    = j.at("PARAM_REGGE").at("b_OREAR");
-    PARAM_REGGE::b_POW      = j.at("PARAM_REGGE").at("b_POW");
-    PARAM_REGGE::reggeize   = j.at("PARAM_REGGE").at("reggeize");
-    PARAM_REGGE::omega      = j.at("PARAM_REGGE").at("omega");
-
-
-    // Proton (Good-Walker) resonances
-    std::vector<double> rc = j.at("PARAM_NSTAR").at("rc");
-    PARAM_NSTAR::rc        = rc;
-
-    // Make sure they sum to one
-    const double sum_rc = std::accumulate(rc.begin(), rc.end(), 0);
-    for (std::size_t i = 0; i < PARAM_NSTAR::rc.size(); ++i) { PARAM_NSTAR::rc[i] /= sum_rc; }
-
-    // Proton structure functions
-    PARAM_STRUCTURE::F2 = j.at("PARAM_STRUCTURE").at("F2");
-    PARAM_STRUCTURE::EM = j.at("PARAM_STRUCTURE").at("EM");
-    PARAM_STRUCTURE::QED_alpha = j.at("PARAM_STRUCTURE").at("QED_alpha");
-    
-    PARAM_SOFT::PrintParam();
-  } catch (nlohmann::json::exception &e) {
-    throw std::invalid_argument("MGraniitti::ReadModelParam: Missing parameter in '" + inputfile +
-                                "' : " + e.what());
-  }
+  // The rest are handled by spesific amplitude classes
 }
 
 // Process parameter initialization, Call proc->post_Constructor() after this

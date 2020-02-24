@@ -44,7 +44,7 @@ struct AuxIntData {
   bool kinematics_ok = true;
   bool fidcuts_ok    = true;
   bool vetocuts_ok   = true;
-  
+
   // Forced acceptance of the event
   bool forced_accept = false;
 
@@ -71,7 +71,6 @@ struct MPI {
 // Abstract process class
 class MProcess : public MUserHistograms {
  public:
-
   // Of polymorphic type
   virtual ~MProcess() {}  // MUST HAVE IT HERE as virtual
 
@@ -205,7 +204,7 @@ class MProcess : public MUserHistograms {
   void SetFLATAMP(int in) {
     if (in > 0) {
       aux::PrintNotice();
-      std::cout << rang::fg::red << "MProcess::SetFLATAMP: Flat matrix element FLATAMP : " << in
+      std::cout << rang::fg::red << "MProcess::SetFLATAMP: Flat matrix element FLATAMP: " << in
                 << rang::fg::reset << std::endl;
     }
     FLATAMP = in;
@@ -245,16 +244,15 @@ class MProcess : public MUserHistograms {
   MRandom random;
 
   // Subprocess (amplitudes)
-  MSubProc                           ProcPtr;
+  MSubProc ProcPtr;
 
  protected:
-
   // Copy and assignment made private
   // MProcess(const MProcess& other);
   // MProcess& operator=(const MProcess& rhs);
 
   // Internal virtual functions, without definitions here
-  virtual void Initialize() = 0;
+  virtual void Initialize()                                                                   = 0;
   virtual bool LoopKinematics(const std::vector<double> &p1p, const std::vector<double> &p2p) = 0;
   virtual bool FiducialCuts() const                                                           = 0;
 
@@ -291,10 +289,10 @@ class MProcess : public MUserHistograms {
                             HepMC3::GenEvent &evt);
   void PrintFiducialCuts() const;
 
-  void GetOffShellMass(const gra::MDecayBranch &branch, double &mass);
-  void SetTechnicalBoundaries(gra::GENCUT &gcuts, unsigned int EXCITATION);
+  void   GetOffShellMass(const gra::MDecayBranch &branch, double &mass);
+  void   SetTechnicalBoundaries(gra::GENCUT &gcuts, unsigned int EXCITATION);
   double ForwardVolume() const;
-  
+
   // Lorentz scalars
   bool GetLorentzScalars(unsigned int Nf);
 
@@ -302,16 +300,18 @@ class MProcess : public MUserHistograms {
 
   // --------------------------------------------------------
   // System fragmentation
-  
-  bool ExciteNstar(const M4Vec &nstar, gra::MDecayBranch &forward, const MParticle& pbeam);
+
+  bool ExciteNstar(const M4Vec &nstar, gra::MDecayBranch &forward, const MParticle &pbeam);
   bool ExciteContinuum(const M4Vec &nstar, gra::MDecayBranch &forward, double Q2_scale, int B_sum,
                        int Q_sum, const std::string &pt_distribution = "powexp");
   void BranchForwardSystem(const std::vector<M4Vec> &p4, const std::vector<MParticle> &p,
                            const M4Vec &nstar, gra::MDecayBranch &forward);
+  bool CEPForwardFragment();
 
   // ---------------------------------------------------------
 
-  void ParseCMD(const std::string& str, std::string& first, std::string& second, std::string& third) const;
+  void ParseCMD(const std::string &str, std::string &first, std::string &second,
+                std::string &third) const;
 
   // Check std::nan/std::inf
   bool CheckInfNan(double &W) {
@@ -375,7 +375,6 @@ class MProcess : public MUserHistograms {
   // Non-Diffractive
   std::vector<MPI> etree;
   double           bt = 0.0;
-  
 };
 
 }  // namespace gra

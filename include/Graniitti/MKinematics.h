@@ -14,15 +14,15 @@
 #include <vector>
 
 // Own
-#include "Graniitti/MCW.h"
-#include "Graniitti/MResonance.h"
-#include "Graniitti/MParticle.h"
-#include "Graniitti/MPDG.h"
 #include "Graniitti/M4Vec.h"
 #include "Graniitti/MAux.h"
+#include "Graniitti/MCW.h"
 #include "Graniitti/MMatOper.h"
 #include "Graniitti/MMath.h"
 #include "Graniitti/MMatrix.h"
+#include "Graniitti/MPDG.h"
+#include "Graniitti/MParticle.h"
+#include "Graniitti/MResonance.h"
 #include "Graniitti/MSudakov.h"
 
 

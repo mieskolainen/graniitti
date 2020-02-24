@@ -42,9 +42,7 @@ using gra::PDG::GeV2barn;
 namespace gra {
 
 // This is needed by construction
-MFactorized::MFactorized() {
-  Initialize();
-}
+MFactorized::MFactorized() { Initialize(); }
 
 // Constructor
 MFactorized::MFactorized(std::string process, const std::vector<aux::OneCMD> &syntax) {
@@ -60,8 +58,8 @@ MFactorized::MFactorized(std::string process, const std::vector<aux::OneCMD> &sy
 
 void MFactorized::Initialize() {
   const std::vector<std::string> supported = {"PP", "yP", "OP", "yy", "gg"};
-  CID = "F";
-  ProcPtr = MSubProc(supported, CID);
+  CID                                      = "F";
+  ProcPtr                                  = MSubProc(supported, CID);
 }
 
 // Destructor
@@ -69,7 +67,6 @@ MFactorized::~MFactorized() {}
 
 // Initialize cut and process spesific postsetup
 void MFactorized::post_Constructor() {
-  
   // Set sampling boundaries
   SetTechnicalBoundaries(gcuts, EXCITATION);
 
@@ -402,14 +399,9 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
     if (!ConstructDecayKinematics(lts.decaytree[i])) { return false; }
   }
 
-  // Forward excitation
-  if (lts.excite1) {
-    // if (!ExciteContinuum(lts.pfinal[1], lts.decayforward1, lts.pfinal[1].M2(), 1, 1, "exp")) {
-    if (!ExciteNstar(lts.pfinal[1], lts.decayforward1, lts.beam1)) { return false; }
-  }
-  if (lts.excite2) {
-    //    if (!ExciteContinuum(lts.pfinal[2], lts.decayforward2, lts.pfinal[2].M2(), 1, 1, "exp")) {
-    if (!ExciteNstar(lts.pfinal[2], lts.decayforward2, lts.beam2)) { return false; }
+  // Forward system fragmentation
+  if (vetocuts.active) {  // N.B. need to fragment already now!, if cuts active
+    if (!CEPForwardFragment()) { return false; }
   }
 
   // ==============================================================================

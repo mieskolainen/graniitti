@@ -15,8 +15,8 @@
 #include "Graniitti/M4Vec.h"
 #include "Graniitti/MAux.h"
 #include "Graniitti/MKinematics.h"
-#include "Graniitti/MRandom.h"
 #include "Graniitti/MParticle.h"
+#include "Graniitti/MRandom.h"
 #include "Graniitti/MResonance.h"
 
 // Libraries
@@ -46,6 +46,9 @@ extern bool ODDERON_ON;
 
 void        PrintParam();
 std::string GetHashString();
+
+void        ReadParameters(const std::string& modelfile);
+extern bool initialized;
 }  // namespace PARAM_SOFT
 
 namespace PARAM_STRUCTURE {
@@ -53,38 +56,31 @@ extern std::string F2;
 extern std::string EM;
 extern std::string QED_alpha;
 
+void        ReadParameters(const std::string& modelfile);
+extern bool initialized;
 }  // namespace PARAM_STRUCTURE
 
 // Flat (DEBUG) amplitude parameters
 namespace PARAM_FLAT {
 extern double b;
-}
 
-// Monopole wave functions and parameters
-namespace PARAM_MONOPOLE {
-extern int         En;        // Bound state energy level
-extern double      M0;        // Monopole mass
-extern double      Gamma0;    // Monopolium width
-extern std::string coupling;  // Coupling scenarios
-extern int         gn;        // Monopole charge n = 1,2,3,...
+void        ReadParameters(const std::string& modelfile);
+extern bool initialized;
+}  // namespace PARAM_FLAT
 
-double EnergyMP(double n);
-double GammaMP(double n, double alpha_g);
-double PsiMP(double n);
-
-void PrintParam(double sqrts, bool forceprint = false);
-
-extern int _printcalls;
-}  // namespace PARAM_MONOPOLE
-
-// N* excitation
+// Forward proton excitation
 namespace PARAM_NSTAR {
+extern std::string         fragment;
 extern std::vector<double> rc;
-}
+
+void        ReadParameters(const std::string& modelfile);
+extern bool initialized;
+}  // namespace PARAM_NSTAR
 
 namespace form {
+
 // Read resonance
-gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng);
+gra::PARAM_RES ReadResonance(const std::string& resparam_str, MRandom& rng);
 
 // Regge signature
 std::complex<double> ReggeEta(double alpha_t, double sigma);
@@ -108,7 +104,6 @@ double S3HPL(double tau, double t);
 double DZFlux(double x);
 
 // Coherent gamma flux
-double alpha_EM(double Q2);
 double F1(double Q2);
 double F2(double Q2);
 double G_M(double Q2);
@@ -123,17 +118,13 @@ double G_E_KELLY(double Q2);
 double CohFlux(double x, double t, double pt);
 double IncohFlux(double x, double t, double pt, double M2);
 
-// QED coupling alpha_EM at Q^2 = 0 is 1/137.035999679,
-// gives 1/alpha_EM^2 = 0.085.
-// Electric charge in natural units thus ~ 0.3
-double e_EM(double Q2);
-double e_EM();
+double mu_ratio();
 
 // Breit-Wigner functions
 double deltaBWxsec(double shat, double M0, double Gamma);
 double deltaBWamp(double shat, double M0, double Gamma);
 
-std::complex<double> CBW(const gra::LORENTZSCALAR &lts, const gra::PARAM_RES &resonance);
+std::complex<double> CBW(const gra::LORENTZSCALAR& lts, const gra::PARAM_RES& resonance);
 std::complex<double> CBW_FW(double m2, double M0, double Gamma);
 std::complex<double> CBW_RW(double m2, double M0, double Gamma);
 std::complex<double> CBW_BF(double m2, double M0, double Gamma, int J, double mA, double mB);

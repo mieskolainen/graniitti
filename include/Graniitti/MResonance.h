@@ -20,7 +20,6 @@ namespace gra {
 
 // Resonance parameters
 class PARAM_RES {
-
  public:
   PARAM_RES() {}
   void PrintParam(double sqrts) const {
@@ -66,7 +65,7 @@ class PARAM_RES {
 
   // Particle class
   MParticle p;
-  
+
   // -------------------------------------------------------------------
   // Tensor Pomeron couplings
   std::vector<double> g_Tensor;  // Production couplings
@@ -100,6 +99,6 @@ class PARAM_RES {
   // --------------------------------------------------------------------
 };
 
-} // namespace gra
+}  // namespace gra
 
 #endif

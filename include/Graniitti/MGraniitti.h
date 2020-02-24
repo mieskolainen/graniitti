@@ -192,12 +192,12 @@ class MGraniitti {
 
   void PrintHistograms();
   void ReadGeneralParam(const std::string &inputfile);
-  void ReadModelParam(const std::string &inputfile);
   void ReadProcessParam(const std::string &inputfile, const std::string cmd_PROCESS = "null");
   void ReadIntegralParam(const std::string &inputfile);
   void ReadGenCuts(const std::string &inputfile);
   void ReadFidCuts(const std::string &inputfile);
   void ReadVetoCuts(const std::string &inputfile);
+  void ReadModelParam(const std::string &inputfile) const;
 
   void Generate();
 

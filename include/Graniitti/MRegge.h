@@ -44,7 +44,7 @@ extern std::vector<double> c;  // coupling
 extern std::vector<bool>   n;  // on/off
 
 void PrintParam();
-void ReadParameters(int PDG, const std::string& modelfile);
+void ReadParameters(int PDG, const std::string &modelfile);
 
 std::complex<double> JPC_CS_coupling(const gra::LORENTZSCALAR &lts,
                                      const gra::PARAM_RES &    resonance);
@@ -63,9 +63,8 @@ std::complex<double> FSI_prop(double t_hat, double M2);
 
 // Matrix element dimension: " GeV^" << -(2*external_legs - 8)
 class MRegge {
-
-public:
-  MRegge(gra::LORENTZSCALAR& lts, const std::string& modelfile);
+ public:
+  MRegge(gra::LORENTZSCALAR &lts, const std::string &modelfile);
   ~MRegge() {}
 
   // Regge amplitudes
@@ -97,12 +96,10 @@ public:
   double               gammaLambda(double t1, double t2, double m1, double m2) const;
   int                  xi3(int J, int P, int P_i, int sigma_i, int P_k, int sigma_k) const;
 
-private:
-
+ private:
   // Amplitude permutations
   std::vector<std::vector<int>> permutations4;
   std::vector<std::vector<int>> permutations6;
-
 };
 
 }  // namespace gra

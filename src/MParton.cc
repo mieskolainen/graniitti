@@ -42,9 +42,7 @@ using gra::PDG::GeV2barn;
 
 namespace gra {
 // This is needed by construction
-MParton::MParton() {
-  Initialize();
-}
+MParton::MParton() { Initialize(); }
 
 // Constructor
 MParton::MParton(std::string process, const std::vector<aux::OneCMD> &syntax) {
@@ -60,8 +58,8 @@ MParton::MParton(std::string process, const std::vector<aux::OneCMD> &syntax) {
 
 void MParton::Initialize() {
   const std::vector<std::string> supported = {"yy_LUX", "yy_DZ"};
-  CID = "P";
-  ProcPtr = MSubProc(supported, CID);
+  CID                                      = "P";
+  ProcPtr                                  = MSubProc(supported, CID);
 }
 
 // Destructor
@@ -185,18 +183,6 @@ void MParton::PrintInit(bool silent) const {
     }
     std::cout << proton2 << std::endl;
     std::cout << std::endl;
-
-    // --------------------------------------------------------------
-    // Amplitude setup printout
-    // Monopolium
-    if (ProcPtr.CHANNEL == "monopolium(0)") { PARAM_MONOPOLE::PrintParam(lts.sqrt_s); }
-
-    // Custom resonances processes
-    if (ProcPtr.CHANNEL == "RES") {
-      for (auto &x : lts.RESONANCES) { x.second.PrintParam(lts.sqrt_s); }
-    }
-    // --------------------------------------------------------------
-
     std::cout << std::endl;
     std::cout << rang::style::bold << "Generation cuts:" << rang::style::reset << std::endl
               << std::endl;

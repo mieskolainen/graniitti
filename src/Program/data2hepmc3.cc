@@ -113,10 +113,10 @@ int main(int argc, char *argv[]) {
       printf("Error in the file structure of %s!\n", DATAFILE.c_str());
       return EXIT_FAILURE;
     }
-    
+
     const double m1 = PDG::mpi;  // Pion mass
     const double m2 = PDG::mpi;
-    
+
     // Create 4-vectors
     gra::M4Vec pf1;
     pf1.SetPxPyPzM(P1_gen[0], P1_gen[1], P1_gen[2], m1);

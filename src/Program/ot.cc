@@ -23,8 +23,8 @@
 #include "HepMC3/WriterAscii.h"
 
 // Own
-#include "Graniitti/MMatOper.h"
 #include "Graniitti/MH1.h"
+#include "Graniitti/MMatOper.h"
 #include "Graniitti/MMath.h"
 #include "Graniitti/MMatrix.h"
 #include "Graniitti/MPDG.h"

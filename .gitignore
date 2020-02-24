@@ -5,5 +5,5 @@
 *.tex
 *.ascii
 *.out
+*.svg
 callgrind*
-

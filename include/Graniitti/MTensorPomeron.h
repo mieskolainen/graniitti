@@ -15,9 +15,9 @@
 #include "FTensor.hpp"
 
 // Own
-#include "Graniitti/MGlobals.h"
 #include "Graniitti/M4Vec.h"
 #include "Graniitti/MDirac.h"
+#include "Graniitti/MGlobals.h"
 #include "Graniitti/MKinematics.h"
 #include "Graniitti/MMath.h"
 #include "Graniitti/MTensor.h"
@@ -27,77 +27,67 @@ namespace gra {
 
 // Tensor Pomeron model parameters
 struct MTensorPomeronParam {
-
   // Trajectory parameters
   double delta_P  = 0;
   double delta_O  = 0;
   double delta_1R = 0;
   double delta_2R = 0;
 
-  double ap_P  = 0;      // GeV^{-2}
-  double ap_O  = 0;      // GeV^{-2}
-  double ap_1R = 0;      // GeV^{-2}
-  double ap_2R = 0;      // GeV^{-2}
+  double ap_P  = 0;  // GeV^{-2}
+  double ap_O  = 0;  // GeV^{-2}
+  double ap_1R = 0;  // GeV^{-2}
+  double ap_2R = 0;  // GeV^{-2}
 
-  double eta_O = 1;      // +- 1
-  
+  double eta_O = 1;  // +- 1
+
   // Scales
-  double M_O  = 0;       // GeV
-  double M_1R = 0;       // GeV
-  
+  double M_O  = 0;  // GeV
+  double M_1R = 0;  // GeV
+
   // Couplings
-  double gPNN   = 0;  // GeV^{-1}, Pomeron-Proton-Proton
-  double gPpipi = 0;  // GeV^{-1}, Pomeron-Pion-Pion
-  double gPKK   = 0;  // GeV^{-1}, Pomeron-Kaon-Kaon
+  double              gPNN   = 0;  // GeV^{-1}, Pomeron-Proton-Proton
+  double              gPpipi = 0;  // GeV^{-1}, Pomeron-Pion-Pion
+  double              gPKK   = 0;  // GeV^{-1}, Pomeron-Kaon-Kaon
+  std::vector<double> gPrhorho;    // [GeV^{-3}, GeV^{-1}], Pomeron-Rho-Rho
+  std::vector<double> gPphiphi;    // [GeV^{-3}, GeV^{-1}], Pomeron-Phi-Phi
 
-  std::vector<double> gPrhorho; // [GeV^{-3}, GeV^{-1}], Pomeron-Rho-Rho
-  std::vector<double> gPphiphi; // [GeV^{-3}, GeV^{-1}], Pomeron-Phi-Phi
-
-  // QED
-  double mu_ratio = 0;   // Proton magnetic moment in magneton units (mu_p / mu_N)
-  double alpha_QED = 0;  // alpha_QED at q^2 ~ 0
-  
-  bool   initialized = false;
+  bool initialized = false;
 
   // Read parameters from file
-  void ReadParameters(const std::string& modelfile) {
-
-    using json = nlohmann::json;
+  void ReadParameters(const std::string &modelfile) {
+    using json             = nlohmann::json;
     const std::string data = gra::aux::GetInputData(modelfile);
-    json j;
+    json              j;
 
     try {
       j = json::parse(data);
 
       // JSON block identifier
-      const std::string XID = "PARAM_TENSOR_POMERON";
+      const std::string XID = "PARAM_TENSORPOM";
 
-      delta_P   = j.at(XID).at("delta_P");
-      delta_O   = j.at(XID).at("delta_O");
-      delta_1R  = j.at(XID).at("delta_1R");
-      delta_2R  = j.at(XID).at("delta_2R");
+      delta_P  = j.at(XID).at("delta_P");
+      delta_O  = j.at(XID).at("delta_O");
+      delta_1R = j.at(XID).at("delta_1R");
+      delta_2R = j.at(XID).at("delta_2R");
 
-      ap_P      = j.at(XID).at("ap_P");
-      ap_O      = j.at(XID).at("ap_O");
-      ap_1R     = j.at(XID).at("ap_1R");
-      ap_2R     = j.at(XID).at("ap_2R");
+      ap_P  = j.at(XID).at("ap_P");
+      ap_O  = j.at(XID).at("ap_O");
+      ap_1R = j.at(XID).at("ap_1R");
+      ap_2R = j.at(XID).at("ap_2R");
 
-      eta_O     = j.at(XID).at("eta_O");
-      M_O       = j.at(XID).at("M_O");
-      M_1R      = j.at(XID).at("M_1R");
+      eta_O = j.at(XID).at("eta_O");
+      M_O   = j.at(XID).at("M_O");
+      M_1R  = j.at(XID).at("M_1R");
 
       gPNN   = j.at(XID).at("gPNN");
       gPpipi = j.at(XID).at("gPpipi");
       gPKK   = j.at(XID).at("gPKK");
-      
+
       std::vector<double> a = j.at(XID).at("gPrhorho");
-      gPrhorho  = a;
+      gPrhorho              = a;
 
       std::vector<double> b = j.at(XID).at("gPphiphi");
-      gPphiphi  = b;
-      
-      alpha_QED = j.at(XID).at("alpha_QED");
-      mu_ratio  = j.at(XID).at("mu_ratio");
+      gPphiphi              = b;
 
       initialized = true;
     } catch (...) {
@@ -112,7 +102,7 @@ struct MTensorPomeronParam {
 // Matrix element dimension: " GeV^" << -(2*external_legs - 8)
 class MTensorPomeron : public MDirac {
  public:
-  MTensorPomeron(gra::LORENTZSCALAR& lts, const std::string& modelfile);
+  MTensorPomeron(gra::LORENTZSCALAR &lts, const std::string &modelfile);
   ~MTensorPomeron() {}
 
   // Decay coupling (static so we can call it independently)

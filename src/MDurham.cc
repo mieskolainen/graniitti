@@ -41,8 +41,7 @@ static const std::vector<int> fs2 = {MM, MP, PM, PP};
 enum SPINPARITY { P0, M0, P2, M2 };  // Implicit conversion to int
 
 // Constructor
-MDurham::MDurham(gra::LORENTZSCALAR& lts, const std::string& modelfile) {
-
+MDurham::MDurham(gra::LORENTZSCALAR &lts, const std::string &modelfile) {
   // @@ MULTITHREADING LOCK NEEDED FOR THE INITIALIZATION @@
   gra::g_mutex.lock();
 
@@ -80,7 +79,6 @@ MDurham::MDurham(gra::LORENTZSCALAR& lts, const std::string& modelfile) {
 // [REFERENCE: Harland-Lang, Khoze, Ryskin, https://arxiv.org/abs/1409.4785]
 //
 double MDurham::DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process) {
-
   if (process == "gg") {
     // [Final state helicities/polarizations x 4 initial state helicities]
     std::vector<std::vector<std::complex<double>>> Amp(4,
@@ -96,7 +94,6 @@ double MDurham::DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process) {
     // Run loop
     return DQtloop(lts, Amp);
   } else if (process == "qqbar") {
-    
     // [Final state helicities/polarizations x 4 initial state helicities]
     std::vector<std::vector<std::complex<double>>> Amp(4,
                                                        std::vector<std::complex<double>>(4, 0.0));

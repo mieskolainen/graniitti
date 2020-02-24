@@ -14,11 +14,11 @@
 // Own
 #include "Graniitti/M4Vec.h"
 #include "Graniitti/MAux.h"
-#include "Graniitti/MForm.h"
-#include "Graniitti/MFlux.h"
-#include "Graniitti/MPDG.h"
 #include "Graniitti/MDurham.h"
+#include "Graniitti/MFlux.h"
+#include "Graniitti/MForm.h"
 #include "Graniitti/MGamma.h"
+#include "Graniitti/MPDG.h"
 #include "Graniitti/MRegge.h"
 #include "Graniitti/MTensorPomeron.h"
 
@@ -37,31 +37,29 @@ using math::msqrt;
 //
 //
 class MProc {
-
-public:
+ public:
   MProc(const std::string& i, const std::string& j, const std::vector<std::string>& k) {
     ISTATE      = i;
     CHANNEL     = j;
     DESCRIPTION = k;
   };
-  std::string ISTATE;
-  std::string CHANNEL;
+  std::string              ISTATE;
+  std::string              CHANNEL;
   std::vector<std::string> DESCRIPTION;
 
-  virtual ~MProc() {} // Needs to be virtual
+  virtual ~MProc() {}  // Needs to be virtual
 
   virtual double Amp2(gra::LORENTZSCALAR& lts) = 0;
 
   // Processes usable with different fluxes
   // 2y ->
   double GammaGammaCON(gra::LORENTZSCALAR& lts) {
-
     double amp2 = 0.0;
     if (!AssertN(2, lts.decaytree.size())) {
       throw std::invalid_argument(ISTATE + "[" + CHANNEL + "] requires 2-body final state");
     }
 
-    if        (AssertN({24,-24}, PDGlist(lts))) {
+    if (AssertN({24, -24}, PDGlist(lts))) {
       amp2 = Gamma->AmpMG5_yy_ww.CalcAmp2(lts, 0.0);
     } else if (AssertLeptonQuarkMonopolePair(PDGlist(lts))) {
       amp2 = Gamma->yyffbar(lts);
@@ -73,57 +71,60 @@ public:
   }
 
   // Process class containers
-  std::unique_ptr<MGamma>  Gamma  = nullptr;
-  std::unique_ptr<MDurham> Durham = nullptr;
-  std::unique_ptr<MRegge>  Regge  = nullptr;
+  std::unique_ptr<MGamma>         Gamma  = nullptr;
+  std::unique_ptr<MDurham>        Durham = nullptr;
+  std::unique_ptr<MRegge>         Regge  = nullptr;
   std::unique_ptr<MTensorPomeron> Tensor = nullptr;
 
   // Delayed constructors, so global .json parameters are read from files already at this point
-  void CallGamma(gra::LORENTZSCALAR& lts)  { if (Gamma  == nullptr) { Gamma  = make_unique<MGamma>(lts,  GetModelFile());        }}
-  void CallDurham(gra::LORENTZSCALAR& lts) { if (Durham == nullptr) { Durham = make_unique<MDurham>(lts, GetModelFile());        }}
-  void CallTensor(gra::LORENTZSCALAR& lts) { if (Tensor == nullptr) { Tensor = make_unique<MTensorPomeron>(lts, GetModelFile()); }}
-  void CallRegge(gra::LORENTZSCALAR& lts)  { if (Regge  == nullptr) { Regge  = make_unique<MRegge>(lts,  GetModelFile());        }}
+  void CallGamma(gra::LORENTZSCALAR& lts) {
+    if (Gamma == nullptr) { Gamma = make_unique<MGamma>(lts, GetModelFile()); }
+  }
+  void CallDurham(gra::LORENTZSCALAR& lts) {
+    if (Durham == nullptr) { Durham = make_unique<MDurham>(lts, GetModelFile()); }
+  }
+  void CallTensor(gra::LORENTZSCALAR& lts) {
+    if (Tensor == nullptr) { Tensor = make_unique<MTensorPomeron>(lts, GetModelFile()); }
+  }
+  void CallRegge(gra::LORENTZSCALAR& lts) {
+    if (Regge == nullptr) { Regge = make_unique<MRegge>(lts, GetModelFile()); }
+  }
 
   // Return general modelfile
   std::string GetModelFile() const {
     return gra::aux::GetBasePath(2) + "/modeldata/" + gra::MODELPARAM + "/GENERAL.json";
   }
-  
+
   // Assert the final state list
   bool AssertN(const std::vector<int>& reference, const std::vector<int>& input) const {
     return std::is_permutation(reference.begin(), reference.end(), input.begin());
   }
 
   // Assert the number of final states
-  bool AssertN(int reference, int input) const {
-    return (reference == input) ? true : false;
-  }
+  bool AssertN(int reference, int input) const { return (reference == input) ? true : false; }
 
   // Assert lepton or quark pair
   bool AssertLeptonQuarkMonopolePair(const std::vector<int>& input) const {
-
     // PDG identifiers
-    static const MMatrix<int> X = {{11, -11}, {13, -13}, {15, -15}, {1, -1}, {2, -2}, {3, -3}, {4, -4}, {5, -5}, {6, -6}, {992, -992}};
-    
+    static const MMatrix<int> X = {{11, -11}, {13, -13}, {15, -15}, {1, -1}, {2, -2},
+                                   {3, -3},   {4, -4},   {5, -5},   {6, -6}, {992, -992}};
+
     for (std::size_t i = 0; i < X.size_row(); ++i) {
       if (AssertN({X[i][0], X[i][1]}, input)) { return true; }
     }
     return false;
   }
-  
+
   // Get PDG list
   std::vector<int> PDGlist(const LORENTZSCALAR& lts) const {
     std::vector<int> L(lts.decaytree.size(), 0);
-    for (const auto& i : aux::indices(lts.decaytree)) {
-      L[i] = lts.decaytree[i].p.pdg;
-    }
+    for (const auto& i : aux::indices(lts.decaytree)) { L[i] = lts.decaytree[i].p.pdg; }
     return L;
   }
 
   void ThrowUnknownFinalState() const {
     throw std::invalid_argument(ISTATE + "[" + CHANNEL + "]" + " with unsupported final state");
   }
-
 };
 
 
@@ -132,7 +133,7 @@ public:
 // -----------------------------------------------------------------------
 
 class PROC_0 : public MProc {
-public:
+ public:
   PROC_0() : MProc("yy", "RES", {"2xGamma to parametric resonance", "kt-EPA"}) {}
   ~PROC_0() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
@@ -142,7 +143,7 @@ public:
   }
 };
 class PROC_1 : public MProc {
-public:
+ public:
   PROC_1() : MProc("yy", "Higgs", {"2xGamma to SM Higgs", "kt-EPA"}) {}
   ~PROC_1() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
@@ -152,7 +153,7 @@ public:
   }
 };
 class PROC_2 : public MProc {
-public:
+ public:
   PROC_2() : MProc("yy", "monopolium(0)", {"2xGamma to Monopolium (J=0)", "kt-EPA"}) {}
   ~PROC_2() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
@@ -162,7 +163,7 @@ public:
   }
 };
 class PROC_3 : public MProc {
-public:
+ public:
   PROC_3() : MProc("yy", "CON", {"2xGamma to l+l-, qqbar, W+W-, monopolepair", "kt-EPA"}) {}
   ~PROC_3() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
@@ -172,7 +173,7 @@ public:
   }
 };
 class PROC_4 : public MProc {
-public:
+ public:
   PROC_4() : MProc("yy", "QED", {"2xGamma to l+l-, qqbar", "FULL QED"}) {}
   ~PROC_4() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
@@ -191,39 +192,38 @@ public:
 // -----------------------------------------------------------------------
 
 class PROC_5 : public MProc {
-public:
+ public:
   PROC_5() : MProc("X", "EL", {"Elastic", "Eikonal Pomeron", "Use with screening loop on"}) {}
   ~PROC_5() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallRegge(lts);
-    return abs2( Regge->ME2(lts, 1) );
+    return abs2(Regge->ME2(lts, 1));
   }
 };
 class PROC_6 : public MProc {
-public:
+ public:
   PROC_6() : MProc("X", "SD", {"Single Diffractive", "Triple Pomeron", "With TOY fragmentation"}) {}
   ~PROC_6() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallRegge(lts);
-    return abs2( Regge->ME2(lts, 2) );
+    return abs2(Regge->ME2(lts, 2));
   }
 };
 class PROC_7 : public MProc {
-public:
+ public:
   PROC_7() : MProc("X", "DD", {"Double Diffractive", "Triple Pomeron", "With TOY fragmentation"}) {}
   ~PROC_7() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallRegge(lts);
-    return abs2( Regge->ME2(lts, 3) );
+    return abs2(Regge->ME2(lts, 3));
   }
 };
 class PROC_8 : public MProc {
-public:
-  PROC_8() : MProc("X", "ND", {"Non-Diffractive", "N-cut soft Pomerons", "With TOY fragmentation"}) {}
+ public:
+  PROC_8()
+      : MProc("X", "ND", {"Non-Diffractive", "N-cut soft Pomerons", "With TOY fragmentation"}) {}
   ~PROC_8() {}
-  virtual double Amp2(gra::LORENTZSCALAR& lts) {
-    return 1.0;
-  }
+  virtual double Amp2(gra::LORENTZSCALAR& lts) { return 1.0; }
 };
 
 // -----------------------------------------------------------------------
@@ -231,7 +231,7 @@ public:
 // -----------------------------------------------------------------------
 
 class PROC_9 : public MProc {
-public:
+ public:
   PROC_9() : MProc("PP", "RES", {"Regge parametric resonance", "Pomeron"}) {}
   ~PROC_9() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
@@ -239,7 +239,7 @@ public:
     std::complex<double> A = 0.0;
 
     // Coherent sum of Resonances (loop over)
-    for (auto &x : lts.RESONANCES) {
+    for (auto& x : lts.RESONANCES) {
       const int J = static_cast<int>(x.second.p.spinX2 / 2.0);
 
       // Gamma-Pomeron for vectors (could be Pomeron-Odderon too)
@@ -262,19 +262,21 @@ public:
 };
 
 class PROC_10 : public MProc {
-public:
-  PROC_10() : MProc("PP", "RESHEL", {"Regge sliding helicity amplitudes", "Pomeron", "<-- DEVELOPER ONLY PROCESS!"}) {}
+ public:
+  PROC_10()
+      : MProc("PP", "RESHEL",
+              {"Regge sliding helicity amplitudes", "Pomeron", "<-- DEVELOPER ONLY PROCESS!"}) {}
   ~PROC_10() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallRegge(lts);
     std::complex<double> A = 0.0;
-    A = Regge->ME3HEL(lts, lts.RESONANCES.begin()->second);
+    A                      = Regge->ME3HEL(lts, lts.RESONANCES.begin()->second);
     return abs2(A);
   }
 };
 
 class PROC_11 : public MProc {
-public:
+ public:
   PROC_11() : MProc("PP", "RESTENSOR", {"Regge resonance", "Tensor Pomeron"}) {}
   ~PROC_11() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
@@ -284,7 +286,7 @@ public:
 };
 
 class PROC_12 : public MProc {
-public:
+ public:
   PROC_12() : MProc("PP", "CONTENSOR", {"Regge continuum 2-body", "Tensor Pomeron"}) {}
   ~PROC_12() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
@@ -298,22 +300,28 @@ public:
 };
 
 class PROC_13 : public MProc {
-public:
-  PROC_13() : MProc("PP", "CONTENSOR24", {"Regge continuum 2-body > 4-body", "Tensor Pomeron", "<-- DEVELOPER ONLY PROCESS!"}) {}
+ public:
+  PROC_13()
+      : MProc(
+            "PP", "CONTENSOR24",
+            {"Regge continuum 2-body > 4-body", "Tensor Pomeron", "<-- DEVELOPER ONLY PROCESS!"}) {}
   ~PROC_13() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallTensor(lts);
 
     if (!AssertN(2, lts.decaytree.size()) && !AssertN(4, lts.decaytree.size())) {
-      throw std::invalid_argument(ISTATE + "[" + CHANNEL + "] requires 2 > {2x} or 4-body final state");
+      throw std::invalid_argument(ISTATE + "[" + CHANNEL +
+                                  "] requires 2 > {2x} or 4-body final state");
     }
     return Tensor->ME6(lts);
   }
 };
 
 class PROC_14 : public MProc {
-public:
-  PROC_14() : MProc("PP", "RES+CONTENSOR", {"Regge resonances + continuum 2-body", "Tensor Pomeron / yP"}) {}
+ public:
+  PROC_14()
+      : MProc("PP", "RES+CONTENSOR",
+              {"Regge resonances + continuum 2-body", "Tensor Pomeron / yP"}) {}
   ~PROC_14() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallTensor(lts);
@@ -327,14 +335,14 @@ public:
 
     // Add to temp vector (init with zero!)
     std::vector<std::complex<double>> tempsum(lts.hamp.size(), 0.0);
-    for (const auto &i : aux::indices(lts.hamp)) { tempsum[i] += lts.hamp[i]; }
+    for (const auto& i : aux::indices(lts.hamp)) { tempsum[i] += lts.hamp[i]; }
 
     // 2. Evaluate resonance matrix elements -> helicity amplitudes to lts.hamp
     if (lts.RESONANCES.size() != 0) {
       // We loop over resonances inside ME3
       Tensor->ME3(lts);
       // Add to temp vector
-      for (const auto &i : aux::indices(lts.hamp)) { tempsum[i] += lts.hamp[i]; }
+      for (const auto& i : aux::indices(lts.hamp)) { tempsum[i] += lts.hamp[i]; }
     }
     // ------------------------------------------------------------------
     // Set helicity amplitudes for the screening loop
@@ -343,7 +351,7 @@ public:
 
     // Get total amplitude squared 1/4 \sum_h |A_h|^2
     double amp2 = 0.0;
-    for (const auto &i : aux::indices(lts.hamp)) { amp2 += gra::math::abs2(lts.hamp[i]); }
+    for (const auto& i : aux::indices(lts.hamp)) { amp2 += gra::math::abs2(lts.hamp[i]); }
     amp2 /= 4;  // Initial state helicity average
 
     return amp2;
@@ -352,14 +360,14 @@ public:
 
 
 class PROC_15 : public MProc {
-public:
+ public:
   PROC_15() : MProc("PP", "CON", {"Regge continuum 2/4/6-body", "Pomeron"}) {}
   ~PROC_15() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallRegge(lts);
 
     std::complex<double> A = 0.0;
-    if        (AssertN(2, lts.decaytree.size())) {
+    if (AssertN(2, lts.decaytree.size())) {
       A = Regge->ME4(lts, 1);
     } else if (AssertN(4, lts.decaytree.size())) {
       A = Regge->ME6(lts);
@@ -374,7 +382,7 @@ public:
 
 
 class PROC_16 : public MProc {
-public:
+ public:
   PROC_16() : MProc("PP", "CON-", {"Regge continuum 2-body with [t-u] amplitude", "Pomeron"}) {}
   ~PROC_16() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
@@ -383,14 +391,14 @@ public:
     if (!AssertN(2, lts.decaytree.size())) {
       throw std::invalid_argument(ISTATE + "[" + CHANNEL + "] requires 2-body final state");
     }
-    std::complex<double> A = Regge->ME4(lts, -1);  
+    std::complex<double> A = Regge->ME4(lts, -1);
     return abs2(A);
   }
 };
 
 
 class PROC_17 : public MProc {
-public:
+ public:
   PROC_17() : MProc("PP", "RES+CON", {"Regge resonances + continuum 2-body", "Pomeron / yP"}) {}
   ~PROC_17() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
@@ -405,7 +413,7 @@ public:
     A = Regge->ME4(lts, 1);
 
     // 2. Coherent sum of Resonances (loop over)
-    for (auto &x : lts.RESONANCES) {
+    for (auto& x : lts.RESONANCES) {
       const int J = static_cast<int>(x.second.p.spinX2 / 2.0);
 
       // Gamma-Pomeron for vectors
@@ -432,7 +440,7 @@ public:
 // -----------------------------------------------------------------------
 
 class PROC_18 : public MProc {
-public:
+ public:
   PROC_18() : MProc("yP", "RES", {"Photoproduced parametric resonance", "kt-EPA x Pomeron"}) {}
   ~PROC_18() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
@@ -440,7 +448,7 @@ public:
     std::complex<double> A = 0.0;
 
     // Coherent sum of Resonances (loop over)
-    for (auto &x : lts.RESONANCES) {
+    for (auto& x : lts.RESONANCES) {
       const int J = static_cast<int>(x.second.p.spinX2 / 2.0);
       // Vectors only
       if (J == 1 && x.second.p.P == -1) {
@@ -453,7 +461,7 @@ public:
 
 
 class PROC_19 : public MProc {
-public:
+ public:
   PROC_19() : MProc("yP", "RESTENSOR", {"Photoproduced resonance", "QED x Tensor Pomeron"}) {}
   ~PROC_19() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
@@ -464,19 +472,17 @@ public:
 
 
 class PROC_20 : public MProc {
-public:
+ public:
   PROC_20() : MProc("OP", "RES", {"Regge parametric vector resonance", "Odderon x Pomeron"}) {}
   ~PROC_20() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallRegge(lts);
     std::complex<double> A = 0.0;
     // Coherent sum of Resonances (loop over)
-    for (auto &x : lts.RESONANCES) {
+    for (auto& x : lts.RESONANCES) {
       const int J = static_cast<int>(x.second.p.spinX2 / 2.0);
       // Vectors only
-      if (J == 1 && x.second.p.P == -1) {
-        A += Regge->ME3ODD(lts, x.second);
-      }
+      if (J == 1 && x.second.p.P == -1) { A += Regge->ME3ODD(lts, x.second); }
     }
     return abs2(A);  // amplitude squared
   }
@@ -488,26 +494,28 @@ public:
 // -----------------------------------------------------------------------
 
 class PROC_21 : public MProc {
-public:
+ public:
   PROC_21() : MProc("gg", "chic(0)", {"QCD resonance chic(0)", "Durham QCD"}) {}
   ~PROC_21() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallDurham(lts);
     double amp2 = 0.0;
-    amp2 = Durham->DurhamQCD(lts, CHANNEL);
+    amp2        = Durham->DurhamQCD(lts, CHANNEL);
     return amp2;
   }
 };
 
 class PROC_22 : public MProc {
-public:
-  PROC_22() : MProc("gg", "CON", {"QCD continuum to gg, 2 x pseudoscalar", "Durham QCD", "<-- UNDER VALIDATION!"}) {}
+ public:
+  PROC_22()
+      : MProc("gg", "CON",
+              {"QCD continuum to gg, 2 x pseudoscalar", "Durham QCD", "<-- UNDER VALIDATION!"}) {}
   ~PROC_22() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallDurham(lts);
 
     double amp2 = 0.0;
-    if        (AssertN({21,21}, PDGlist(lts))) {
+    if (AssertN({21, 21}, PDGlist(lts))) {
       amp2 = Durham->DurhamQCD(lts, "gg");
     } else if (AssertN(2, lts.decaytree.size())) {
       amp2 = Durham->DurhamQCD(lts, "MMbar");
@@ -524,8 +532,10 @@ public:
 // -----------------------------------------------------------------------
 
 class PROC_23 : public MProc {
-public:
-  PROC_23() : MProc("yy_LUX", "CON", {"2xGamma to l+l, qqbar, W+W- or monopolepair", "Collinear LUX-PDF"}) {}
+ public:
+  PROC_23()
+      : MProc("yy_LUX", "CON",
+              {"2xGamma to l+l, qqbar, W+W- or monopolepair", "Collinear LUX-PDF"}) {}
   ~PROC_23() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallGamma(lts);
@@ -535,8 +545,10 @@ public:
 };
 
 class PROC_24 : public MProc {
-public:
-  PROC_24() : MProc("yy_DZ", "CON", {"2xGamma to l+l, qqbar, W+W- or monopolepair", "Collinear Drees-Zeppenfeld EPA"}) {}
+ public:
+  PROC_24()
+      : MProc("yy_DZ", "CON",
+              {"2xGamma to l+l, qqbar, W+W- or monopolepair", "Collinear Drees-Zeppenfeld EPA"}) {}
   ~PROC_24() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     CallGamma(lts);
@@ -546,7 +558,7 @@ public:
 };
 
 class PROC_25 : public MProc {
-public:
+ public:
   PROC_25() : MProc("yy", "FLUX", {"2xGamma with constant matrix element", "kt-EPA"}) {}
   ~PROC_25() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
@@ -559,29 +571,28 @@ public:
 
 // Umbrella class
 class MSubProc {
-
  public:
-  MSubProc(const std::vector<std::string> &istate, const std::string& mc);
-  void Initialize(const std::string &istate, const std::string &channel);
+  MSubProc(const std::vector<std::string>& istate, const std::string& mc);
+  void Initialize(const std::string& istate, const std::string& channel);
 
   MSubProc() {}
   ~MSubProc();
 
-  double GetBareAmplitude2(gra::LORENTZSCALAR &lts);
+  double GetBareAmplitude2(gra::LORENTZSCALAR& lts);
 
-  std::string  ISTATE;      // "PP","yy","gg" etc.
-  std::string  CHANNEL;     // "CON", "RES" etc.
-  unsigned int LIPSDIM = 0; // Lorentz Invariant Phase Space Dimension
-  
+  std::string  ISTATE;       // "PP","yy","gg" etc.
+  std::string  CHANNEL;      // "CON", "RES" etc.
+  unsigned int LIPSDIM = 0;  // Lorentz Invariant Phase Space Dimension
+
   // Process descriptions
   std::map<std::string, std::vector<std::string>> Processes;
 
-  bool ProcessExist(std::string process) const;
+  bool                     ProcessExist(std::string process) const;
   std::vector<std::string> PrintProcesses() const;
   std::vector<std::string> GetProcessDescriptor(std::string process) const;
 
  private:
-  void ConstructDescriptions(const std::string &istate, const std::string& mc);
+  void ConstructDescriptions(const std::string& istate, const std::string& mc);
   void CreateProcesses();
   void DeleteProcesses();
   void ActivateProcess();

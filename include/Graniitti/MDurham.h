@@ -13,11 +13,11 @@
 
 // Own
 #include "Graniitti/M4Vec.h"
+#include "Graniitti/MAmplitudes.h"
 #include "Graniitti/MAux.h"
 #include "Graniitti/MGlobals.h"
 #include "Graniitti/MKinematics.h"
 #include "Graniitti/MSudakov.h"
-#include "Graniitti/MAmplitudes.h"
 
 
 namespace gra {
@@ -42,17 +42,16 @@ struct MDurhamParam {
   bool   initialized = false;
 
   // Read parameters from file
-  void ReadParameters(const std::string& modelfile) {
-
-    using json = nlohmann::json;
+  void ReadParameters(const std::string &modelfile) {
+    using json             = nlohmann::json;
     const std::string data = gra::aux::GetInputData(modelfile);
-    json j;
-    
+    json              j;
+
     try {
       j = json::parse(data);
 
       // JSON block identifier
-      const std::string XID = "PARAM_DURHAM_QCD";
+      const std::string XID = "PARAM_DURHAMQCD";
       N_qt                  = j.at(XID).at("N_qt");
       N_phi                 = j.at(XID).at("N_phi");
       qt2_MIN               = j.at(XID).at("qt2_MIN");
@@ -78,9 +77,8 @@ struct MDurhamParam {
 };
 
 class MDurham : public MAmplitudes {
-
  public:
-  MDurham(gra::LORENTZSCALAR& lts, const std::string& modelfile);
+  MDurham(gra::LORENTZSCALAR &lts, const std::string &modelfile);
   ~MDurham() {}
 
   double      DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process);
@@ -110,9 +108,8 @@ class MDurham : public MAmplitudes {
 
   double Asum = 0.0;
   double Nsum = 0.0;
-  
- private:
 
+ private:
   // Parameters
   MDurhamParam Param;
 };

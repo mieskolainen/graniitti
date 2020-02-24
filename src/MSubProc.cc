@@ -1,5 +1,5 @@
 // (Sub)-Processes and Amplitudes
-// 
+//
 // (c) 2017-2020 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
@@ -19,9 +19,8 @@ namespace gra {
 
 // Add all processes
 void MSubProc::CreateProcesses() {
-
   DeleteProcesses();
-  
+
   pr.push_back(new PROC_0());
   pr.push_back(new PROC_1());
   pr.push_back(new PROC_2());
@@ -48,53 +47,45 @@ void MSubProc::CreateProcesses() {
   pr.push_back(new PROC_23());
   pr.push_back(new PROC_24());
   pr.push_back(new PROC_25());
-
 }
 
 // Generic constructor, used for the first initialization
-MSubProc::MSubProc(const std::vector<std::string> &istate, const std::string& mc) {
-  for (const auto& i : aux::indices(istate)) {
-    ConstructDescriptions(istate[i], mc);
-  }
+MSubProc::MSubProc(const std::vector<std::string>& istate, const std::string& mc) {
+  for (const auto& i : aux::indices(istate)) { ConstructDescriptions(istate[i], mc); }
 }
 
 // Set spesific initial state and channel
-void MSubProc::Initialize(const std::string &istate, const std::string &channel) {
+void MSubProc::Initialize(const std::string& istate, const std::string& channel) {
   ISTATE  = istate;
   CHANNEL = channel;
   DeleteProcesses();
 }
 
 // Destructor
-MSubProc::~MSubProc() {
-  DeleteProcesses();
-}
+MSubProc::~MSubProc() { DeleteProcesses(); }
 
 // Delete all processes
 void MSubProc::DeleteProcesses() {
-  for (const auto& i : aux::indices(pr)) {
-    delete pr[i];
-  }
-  pr.clear(); // Finally empty
+  for (const auto& i : aux::indices(pr)) { delete pr[i]; }
+  pr.clear();  // Finally empty
 }
 
-void MSubProc::ConstructDescriptions(const std::string &istate, const std::string& mc) {
-
+void MSubProc::ConstructDescriptions(const std::string& istate, const std::string& mc) {
   CreateProcesses();
 
   // Construct labels
-  for (const auto & i : aux::indices(pr)) {
+  for (const auto& i : aux::indices(pr)) {
     if (pr[i]->ISTATE == istate) {
-      Processes.insert(std::make_pair(pr[i]->ISTATE + "[" + pr[i]->CHANNEL + "]<" + mc + ">", pr[i]->DESCRIPTION));
+      Processes.insert(std::make_pair(pr[i]->ISTATE + "[" + pr[i]->CHANNEL + "]<" + mc + ">",
+                                      pr[i]->DESCRIPTION));
     }
   }
 
-  DeleteProcesses(); // Important!
+  DeleteProcesses();  // Important!
 }
 
 // Activate spesific process
 void MSubProc::ActivateProcess() {
-
   CreateProcesses();
 
   while (true) {
@@ -110,31 +101,30 @@ void MSubProc::ActivateProcess() {
     if (pr.size() <= 1) { break; }
   }
   if (pr.size() == 0) {
-    throw std::invalid_argument("MSubProc::ActivateProcess: Unknown ISTATE = " + ISTATE + " or CHANNEL = " + CHANNEL);
+    throw std::invalid_argument("MSubProc::ActivateProcess: Unknown ISTATE = " + ISTATE +
+                                " or CHANNEL = " + CHANNEL);
   }
 }
 
 // Print out process lists
 std::vector<std::string> MSubProc::PrintProcesses() const {
-
   // Iterate through processes
-  std::vector<std::string> procstr;
+  std::vector<std::string>                                        procstr;
   std::map<std::string, std::vector<std::string>>::const_iterator it = Processes.begin();
 
   while (it != Processes.end()) {
     procstr.push_back(it->first);
 
-    if      (it->second.size() == 0) {
-      printf("%25s  =      ", it->first.c_str());    
-    }
-    else if (it->second.size() == 1) {
-      printf("%25s  =  %-43s", it->first.c_str(), it->second[0].c_str());    
-    }
-    else if (it->second.size() == 2) {
-      printf("%25s  =  %-43s  |  %-20s", it->first.c_str(), it->second[0].c_str(), it->second[1].c_str());    
-    }
-    else if (it->second.size() >= 3) {
-      printf("%25s  =  %-43s  |  %-20s  | %-10s", it->first.c_str(), it->second[0].c_str(), it->second[1].c_str(), it->second[2].c_str());    
+    if (it->second.size() == 0) {
+      printf("%25s  =      ", it->first.c_str());
+    } else if (it->second.size() == 1) {
+      printf("%25s  =  %-43s", it->first.c_str(), it->second[0].c_str());
+    } else if (it->second.size() == 2) {
+      printf("%25s  =  %-43s  |  %-20s", it->first.c_str(), it->second[0].c_str(),
+             it->second[1].c_str());
+    } else if (it->second.size() >= 3) {
+      printf("%25s  =  %-43s  |  %-20s  | %-10s", it->first.c_str(), it->second[0].c_str(),
+             it->second[1].c_str(), it->second[2].c_str());
     }
     std::cout << "\n";
     ++it;
@@ -158,11 +148,8 @@ std::vector<std::string> MSubProc::GetProcessDescriptor(std::string str) const {
 }
 
 // Wrapper function
-double MSubProc::GetBareAmplitude2(gra::LORENTZSCALAR &lts) {
-
-  if (pr.size() == 0) {
-      ActivateProcess();
-  }
+double MSubProc::GetBareAmplitude2(gra::LORENTZSCALAR& lts) {
+  if (pr.size() == 0) { ActivateProcess(); }
   return pr[0]->Amp2(lts);
 }
 

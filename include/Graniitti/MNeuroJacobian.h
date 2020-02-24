@@ -418,12 +418,9 @@ class MNeuroJacobian {
 
  private:
   class Neurocost {
+   public:
+    Neurocost(int _n) { n = _n; }
 
-  public:
-    Neurocost(int _n) {
-      n = _n;
-    }
-    
     double fx = 0.0;
     double operator()(const VectorXd &x, VectorXd &grad) {
       // Map to vectors
@@ -439,8 +436,8 @@ class MNeuroJacobian {
       return fx;
     }
 
-    private:
-      int n;
+   private:
+    int n;
   };
 
 };  // MNeuroJacobian

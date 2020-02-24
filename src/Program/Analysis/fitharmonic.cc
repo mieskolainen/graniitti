@@ -25,8 +25,8 @@
 // Own
 #include "Graniitti/Analysis/MHarmonic.h"
 #include "Graniitti/Analysis/MROOT.h"
-#include "Graniitti/MKinematics.h"
 #include "Graniitti/MAux.h"
+#include "Graniitti/MKinematics.h"
 #include "Graniitti/MPDG.h"
 
 // Libraries

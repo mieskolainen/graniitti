@@ -41,8 +41,8 @@ namespace aux {
 
 double      GetVersion() { return 1.04; }
 std::string GetVersionType() { return "release"; }
-std::string GetVersionDate() { return "22.02.2020"; }
-std::string GetVersionUpdate() { return "tensorpom parameters & forward excitation"; }
+std::string GetVersionDate() { return "23.02.2020"; }
+std::string GetVersionUpdate() { return "parameter control & forward excitation"; }
 
 // -------------------------------------------------------
 
@@ -614,10 +614,10 @@ void PrintVersion() {
   std::cout << "References: arXiv:1910.06300 [hep-ph]" << std::endl;
   std::cout << std::endl;
   std::cout << "(c) 2017-2020 Mikael Mieskolainen" << std::endl;
-  std::cout << "<m.mieskolainen@imperial.ac.uk>"   << std::endl;
+  std::cout << "<m.mieskolainen@imperial.ac.uk>" << std::endl;
   std::cout << std::endl;
   std::cout << "<opensource.org/licenses/GPL-3.0>" << std::endl;
-  std::cout << "<opensource.org/licenses/MIT>"     << std::endl;
+  std::cout << "<opensource.org/licenses/MIT>" << std::endl;
 }
 
 void PrintFlashScreen(rang::fg pcolor) {

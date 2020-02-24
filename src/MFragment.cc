@@ -300,14 +300,13 @@ bool MFragment::SolveAlpha(double &alpha, double M0, const std::vector<double> &
 //
 void MFragment::NstarDecayTable(int Q, double M0, std::vector<int> &pdgcodes, MRandom &rng) {
   int decaymode = 0;
-  
+
   // Only 2-body decay possible, mass below 3-body threshold
   if (M0 < (PDG::mp + 2 * PDG::mpi)) {
     decaymode = 0;
 
-  // 2- or 3-body decay possible
+    // 2- or 3-body decay possible
   } else {
-
     // C++11, thread_local is also static
     // 2->body / 3-body branching ratios from PDG
     thread_local std::discrete_distribution<> d({0.60, 0.40});
@@ -329,8 +328,8 @@ void MFragment::NstarDecayTable(int Q, double M0, std::vector<int> &pdgcodes, MR
     const int channel = subd(rng.rng);
 
     // PDG-ID of subchannels
-    const std::vector<std::vector<int>> ID = {{Q * PDG_n, Q * PDG_pip}, // (anti)neutron & pi(-)+
-                                              {Q * PDG_p, PDG_pi0}};    // (anti)proton  & pi0
+    const std::vector<std::vector<int>> ID = {{Q * PDG_n, Q * PDG_pip},  // (anti)neutron & pi(-)+
+                                              {Q * PDG_p, PDG_pi0}};     // (anti)proton  & pi0
 
     // Choose the decay channel
     pdgcodes = ID[channel];
@@ -345,10 +344,9 @@ void MFragment::NstarDecayTable(int Q, double M0, std::vector<int> &pdgcodes, MR
     const int channel = subd(rng.rng);
 
     // PDG-ID of subchannels
-    const std::vector<std::vector<int>> ID = 
-        {{Q*PDG_n, Q*PDG_pip, PDG_pi0},
-         {Q*PDG_p,   PDG_pip, PDG_pim},
-         {Q*PDG_p,   PDG_pi0, PDG_pi0}};
+    const std::vector<std::vector<int>> ID = {{Q * PDG_n, Q * PDG_pip, PDG_pi0},
+                                              {Q * PDG_p, PDG_pip, PDG_pim},
+                                              {Q * PDG_p, PDG_pi0, PDG_pi0}};
 
     // Perhaps to add
     //{Q*PDG_delta0, Q*PDG_pip, PDG_pi0},    // delta0 & pi+ & pi0

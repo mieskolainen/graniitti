@@ -15,9 +15,12 @@
 #include "Graniitti/MKinematics.h"
 #include "Graniitti/MMath.h"
 #include "Graniitti/MPDG.h"
+#include "Graniitti/MQED.h"
 #include "Graniitti/MRegge.h"
 #include "Graniitti/MSpin.h"
 
+
+using gra::math::PI;
 using gra::math::abs2;
 using gra::math::msqrt;
 using gra::math::pow2;
@@ -30,11 +33,21 @@ using namespace gra::form;
 namespace gra {
 
 // Constructor
-MGamma::MGamma(gra::LORENTZSCALAR& lts, const std::string& modelfile) {
-
-  // ** Read in global monopole mass (needed by monopolium process) **
-  PARAM_MONOPOLE::M0 = lts.PDG.FindByPDG(PDG::PDG_monopole).mass;
+MGamma::MGamma(gra::LORENTZSCALAR &lts, const std::string &modelfile) {
+  // @@ MULTITHREADING LOCK NEEDED FOR THE INITIALIZATION @@
+  gra::g_mutex.lock();
   
+  // Monopolium process
+  if (!PARAM_MONOPOLE::initialized) {
+    try {
+      PARAM_MONOPOLE::M0 = lts.PDG.FindByPDG(PDG::PDG_monopole).mass;
+      PARAM_MONOPOLE::ReadParameters(modelfile);
+    } catch (...) {
+      gra::g_mutex.unlock();  // need to release here, otherwise get infinite lock
+      throw;
+    }
+  }
+  gra::g_mutex.unlock();
 }
 
 // ============================================================================
@@ -81,7 +94,7 @@ MGamma::MGamma(gra::LORENTZSCALAR& lts, const std::string& modelfile) {
 //
 double MGamma::yyffbar(gra::LORENTZSCALAR &lts) {
   // QED couplings
-  double       COUPL         = 16.0 * pow2(gra::math::PI * gra::form::alpha_EM(0));  // = e^4
+  double       COUPL         = 16.0 * pow2(gra::math::PI * qed::alpha_QED());  // = e^4
   const double mass          = lts.decaytree[0].p4.M();  // lepton, quark (or monopole) mass
   const double mass2         = pow2(mass);
   const bool   MONOPOLE_MODE = (lts.decaytree[0].p.pdg == PDG::PDG_monopole) ? true : false;
@@ -95,7 +108,7 @@ double MGamma::yyffbar(gra::LORENTZSCALAR &lts) {
 
   // Monopole-Antimonopole coupling
   if (MONOPOLE_MODE) {
-    static const double g = 2.0 * math::PI * PARAM_MONOPOLE::gn / form::e_EM();
+    static const double g = 2.0 * math::PI * PARAM_MONOPOLE::gn / qed::e_QED();
 
     if (PARAM_MONOPOLE::coupling == "beta-dirac") {
       // Calculate beta (velocity)
@@ -144,7 +157,7 @@ double MGamma::yyffbar(gra::LORENTZSCALAR &lts) {
 
     return AmpMG5_yy_ll.CalcAmp2(lts, 0.0);
   }
-  
+
   // ------------------------------------------------------------------
   // quark pair (charge 1/3 or 2/3), apply charge and color factors
   if (std::abs(lts.decaytree[0].p.pdg) <= 6) {  // we have a quark
@@ -195,9 +208,10 @@ double MGamma::yyffbar(gra::LORENTZSCALAR &lts) {
 // *************************************************************
 //
 double MGamma::yyMP(gra::LORENTZSCALAR &lts) const {
-  gra::g_mutex.lock();  // @@@
-  PARAM_MONOPOLE::PrintParam(lts.sqrt_s);
-  gra::g_mutex.unlock();  // @@@
+  // Lazy printing
+  gra::g_mutex.lock();
+  PARAM_MONOPOLE::PrintParameters(lts.sqrt_s);
+  gra::g_mutex.unlock();
 
   // Monopolium nominal mass and width parameters
   static const double M = 2.0 * PARAM_MONOPOLE::M0 + PARAM_MONOPOLE::EnergyMP(PARAM_MONOPOLE::En);
@@ -214,7 +228,7 @@ double MGamma::yyMP(gra::LORENTZSCALAR &lts) const {
   }
 
   // Two coupling scenarios:
-  static const double g    = 2.0 * math::PI * PARAM_MONOPOLE::gn / form::e_EM();
+  static const double g    = 2.0 * math::PI * PARAM_MONOPOLE::gn / qed::e_QED();
   double              beta = 0.0;
 
   if (PARAM_MONOPOLE::coupling == "beta-dirac") {
@@ -327,5 +341,100 @@ double MGamma::yyX(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const {
 
   return abs2(A);
 }
+
+namespace PARAM_MONOPOLE {
+
+int         En       = 0;       // Bound state energy level
+double      M0       = 0.0;     // Monopole mass
+double      Gamma0   = 0.0;     // Monopolium width
+std::string coupling = "null";  // Coupling scenarios
+int         gn       = 0;       // Dirac charge 1,2,3,...
+
+bool printed     = false;
+bool initialized = false;
+
+// Functions as a solution to radial Schroedinger equation with Coulomb type
+// potential
+// V(r) ~= -g^2/(4pi) * 1/r
+//
+// Monopolium binding energy eigenvalues
+// -> Monopolium system sits at lower energy than monopole + antimonopole
+
+// Monopolium running width
+double GammaMP(double n, double alpha_g) {
+  return (8.0 * PI * pow2(alpha_g)) / pow2(PARAM_MONOPOLE::M0) * math::abs2(PsiMP(n));
+}
+
+// Binding energy
+double EnergyMP(double n) {
+  return -pow2(1 / (8.0 * qed::alpha_QED())) * PARAM_MONOPOLE::M0 / (n * n);
+  // return -2.0*M0/15.0; // DEBUG
+}
+
+// Monopolium wavefunction in the origin of the bound system
+double PsiMP(double n) {
+  return (1.0 / msqrt(PI)) * std::pow(PARAM_MONOPOLE::M0 / (8.0 * qed::alpha_QED() * n), 3.0 / 2.0);
+}
+
+void PrintParameters(double sqrts) {
+  if (!printed) {
+    aux::PrintBar("*");
+    std::cout << rang::style::bold << "Monopolium process parameters:" << rang::style::reset
+              << std::endl
+              << std::endl;
+
+    printf("- M0     = %0.3f GeV \n", PARAM_MONOPOLE::M0);
+    printf("- Gamma0 = %0.3f GeV \n", PARAM_MONOPOLE::Gamma0);
+    printf("- En     = %d \n", PARAM_MONOPOLE::En);
+
+    const double M = 2 * PARAM_MONOPOLE::M0 + EnergyMP(PARAM_MONOPOLE::En);
+    printf(
+        "\nGives monopolium mass: M = %0.3f GeV (Binding Energy = %0.3f "
+        "GeV) \n\n",
+        M, M - 2 * PARAM_MONOPOLE::M0);
+
+    // Check we have enough energy
+    if (M > sqrts) {
+      std::string str =
+          "PARAM_MONOPOLE::PrintParam: FATAL error "
+          "Monopolium mass > CMS energy!";
+      throw std::invalid_argument(str);
+    }
+
+    std::cout << "Dirac charge = " << PARAM_MONOPOLE::gn << std::endl;
+    std::cout << "Coupling scheme = " << PARAM_MONOPOLE::coupling << std::endl;
+    aux::PrintBar("*");
+    std::cout << std::endl;
+
+    printed = true;
+  }
+}
+
+
+// Read parameters from file
+void ReadParameters(const std::string &modelfile) {
+  try {
+    const std::string data = gra::aux::GetInputData(modelfile);
+    nlohmann::json    j    = nlohmann::json::parse(data);
+
+    // JSON block identifier
+    const std::string XID = "PARAM_MONOPOLE";
+
+    // Monopole production
+    PARAM_MONOPOLE::coupling = j.at(XID).at("coupling");
+    PARAM_MONOPOLE::gn       = j.at(XID).at("gn");
+    PARAM_MONOPOLE::En       = j.at(XID).at("En");
+    PARAM_MONOPOLE::Gamma0   = j.at(XID).at("Gamma0");
+
+    initialized = true;
+  } catch (...) {
+    std::string str = "PARAM_MONOPOLE::ReadParameters: Error parsing " + modelfile +
+                      " (Check for extra/missing commas)";
+    throw std::invalid_argument(str);
+  }
+}
+
+}  // namespace PARAM_MONOPOLE
+
 
 }  // namespace gra

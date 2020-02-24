@@ -12,17 +12,15 @@
 #include "Graniitti/MAux.h"
 #include "Graniitti/MEikonal.h"
 #include "Graniitti/MForm.h"
+#include "Graniitti/MGlobals.h"
 #include "Graniitti/MKinematics.h"
 #include "Graniitti/MMath.h"
 #include "Graniitti/MRegge.h"
 #include "Graniitti/MSpin.h"
-#include "Graniitti/MGlobals.h"
-
 
 // Libraries
 #include "json.hpp"
 #include "rang.hpp"
-
 
 using gra::math::msqrt;
 using gra::math::pow2;
@@ -30,25 +28,29 @@ using gra::math::pow3;
 using gra::math::zi;
 
 using gra::aux::indices;
-
 using namespace gra::form;
+
 
 namespace gra {
 
 // Constructor
-MRegge::MRegge(gra::LORENTZSCALAR& lts, const std::string& modelfile) {
-
+MRegge::MRegge(gra::LORENTZSCALAR &lts, const std::string &modelfile) {
   // Initialization
   gra::g_mutex.lock();
   if (!PARAM_REGGE::initialized && lts.decaytree.size() != 0) {
-    
-    const int PDG = std::abs(lts.decaytree[0].p.pdg);
-    PARAM_REGGE::ReadParameters(PDG, modelfile);
+    try {
+      const int PDG = std::abs(lts.decaytree[0].p.pdg);
+      PARAM_REGGE::ReadParameters(PDG, modelfile);
 
-    // Construct 4 and 6 body Regge Ladder leg combinatorial permutations
-    const int mode = 1;  // charged permutations +- (FIXED FOR NOW)
-    permutations4 = gra::math::GetAmpPerm(4, mode);
-    permutations6 = gra::math::GetAmpPerm(6, mode);
+      // Construct 4 and 6 body Regge Ladder leg combinatorial permutations
+      const int mode = 1;  // charged permutations +- (FIXED FOR NOW)
+      permutations4  = gra::math::GetAmpPerm(4, mode);
+      permutations6  = gra::math::GetAmpPerm(6, mode);
+
+    } catch (...) {
+      gra::g_mutex.unlock();  // need to release here, otherwise get infinite lock
+      throw;
+    }
   }
   gra::g_mutex.unlock();
 }
@@ -559,7 +561,6 @@ std::complex<double> MRegge::ME6(gra::LORENTZSCALAR &lts) const {
 //  ======F======>
 //
 std::complex<double> MRegge::ME8(gra::LORENTZSCALAR &lts) const {
-  
   // Amplitude
   std::complex<double> A(0, 0);
 
@@ -572,7 +573,7 @@ std::complex<double> MRegge::ME8(gra::LORENTZSCALAR &lts) const {
   // Create function pointers
   double (*ff)(double, double);
   double (*prop)(double, double);
-  
+
   const double sign = 1;
 
   if (sign > 0) {  // positive sign amplitudes
@@ -983,28 +984,44 @@ void PrintParam() {
 // TODO: we read couplings based on the first particle,
 // generalize to pairs such as pi+pi-K+K- (4-body) (easy extension)
 //
-void ReadParameters(int PDG, const std::string& modelfile) {
-  
-  using json           = nlohmann::json;
-  
+void ReadParameters(int PDG, const std::string &modelfile) {
   // Read and parse
   try {
-    std::string data = gra::aux::GetInputData(modelfile);
-    json        j    = json::parse(data);
+    const std::string data = gra::aux::GetInputData(modelfile);
+    nlohmann::json    j    = nlohmann::json::parse(data);
+
+    const std::string XID = "PARAM_REGGE";
+
+    // Regge amplitude parameters
+    std::vector<double> a0  = j.at(XID).at("a0");
+    std::vector<double> ap  = j.at(XID).at("ap");
+    std::vector<double> sgn = j.at(XID).at("sgn");
+    PARAM_REGGE::a0         = a0;
+    PARAM_REGGE::ap         = ap;
+    PARAM_REGGE::sgn        = sgn;
+    PARAM_REGGE::s0         = j.at(XID).at("s0");
+
+    PARAM_REGGE::offshellFF = j.at(XID).at("offshellFF");
+    PARAM_REGGE::b_EXP      = j.at(XID).at("b_EXP");
+    PARAM_REGGE::a_OREAR    = j.at(XID).at("a_OREAR");
+    PARAM_REGGE::b_OREAR    = j.at(XID).at("b_OREAR");
+    PARAM_REGGE::b_POW      = j.at(XID).at("b_POW");
+    PARAM_REGGE::reggeize   = j.at(XID).at("reggeize");
+    PARAM_REGGE::omega      = j.at(XID).at("omega");
 
     // Setup the parameter string
     std::string str;
-    if        (PDG == 211 || PDG == 111) {    // Charged or Neutral Pions
+    if (PDG == 211 || PDG == 111) {  // Charged or Neutral Pions
       str = "PARAM_PI";
-    } else if (PDG == 321 || PDG == 311) {    // Charged or Neutral Kaons
+    } else if (PDG == 321 || PDG == 311) {  // Charged or Neutral Kaons
       str = "PARAM_K";
     } else if (PDG == 2212 || PDG == 2112) {  // Protons or Neutrons
       str = "PARAM_P";
-    } else if (PDG == 113 || PDG == 213) {    // Neutral or charged rho(770)
+    } else if (PDG == 113 || PDG == 213) {  // Neutral or charged rho(770)
       str = "PARAM_RHO";
-    } else if (PDG == 331) {                  // phi(1020)
+    } else if (PDG == 331) {  // phi(1020)
       str = "PARAM_PHI";
-    } else if (PDG == 9000221) {              // f0(500)
+    } else if (PDG == 9000221) {  // f0(500)
       str = "PARAM_F0500";
     } else {  // The rest will use PARAM_X setup
       str = "PARAM_X";
@@ -1015,12 +1032,12 @@ void ReadParameters(int PDG, const std::string& modelfile) {
     std::vector<bool>   n = j.at(str).at("n");
     PARAM_REGGE::c        = c;
     PARAM_REGGE::n        = n;
-    
+
     PARAM_REGGE::initialized = true;
 
     // PARAM_REGGE::PrintParam();
   } catch (...) {
-    throw std::invalid_argument("MRegge::InitReggeAmplitude_: Parse error in " + modelfile);
+    throw std::invalid_argument("REGGE_PARAM::ReadParameters: Parse error in " + modelfile);
   }
 }
 

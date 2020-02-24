@@ -37,9 +37,7 @@ using gra::math::zi;
 
 namespace gra {
 // This is needed by construction
-MContinuum::MContinuum() {
-  Initialize();
-}
+MContinuum::MContinuum() { Initialize(); }
 
 // Constructor
 MContinuum::MContinuum(std::string process, const std::vector<aux::OneCMD> &syntax) {
@@ -55,8 +53,8 @@ MContinuum::MContinuum(std::string process, const std::vector<aux::OneCMD> &synt
 
 void MContinuum::Initialize() {
   const std::vector<std::string> supported = {"PP", "yP", "OP", "yy", "gg"};
-  CID = "C";
-  ProcPtr = MSubProc(supported, CID);
+  CID                                      = "C";
+  ProcPtr                                  = MSubProc(supported, CID);
 }
 
 // Destructor
@@ -68,7 +66,7 @@ void MContinuum::post_Constructor() {
 
   // Set sampling boundaries
   SetTechnicalBoundaries(gcuts, EXCITATION);
-  
+
   // Technical cuts here
   if (gcuts.kt_max < 0.0) {  // not set by user
 
@@ -428,16 +426,11 @@ bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1
     if (!ConstructDecayKinematics(lts.decaytree[i])) { return false; }
   }
 
-  // Forward excitation
-  if (lts.excite1) {
-    // if (!ExciteContinuum(lts.pfinal[1], lts.decayforward1, lts.pfinal[1].M2(), 1, 1, "exp")) {
-    if (!ExciteNstar(lts.pfinal[1], lts.decayforward1, lts.beam1)) { return false; }
+  // Forward system fragmentation
+  if (vetocuts.active) {  // N.B. need to fragment already now!, if cuts active
+    if (!CEPForwardFragment()) { return false; }
   }
-  if (lts.excite2) {
-    //    if (!ExciteContinuum(lts.pfinal[2], lts.decayforward2, lts.pfinal[2].M2(), 1, 1, "exp")) {
-    if (!ExciteNstar(lts.pfinal[2], lts.decayforward2, lts.beam2)) { return false; }
-  }
-  
+
   return GetLorentzScalars(Nf);
 }
 

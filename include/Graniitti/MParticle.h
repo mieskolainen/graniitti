@@ -13,23 +13,22 @@
 #include <vector>
 
 #include "Graniitti/MAux.h"
-#include "Graniitti/MMatrix.h"
-#include "Graniitti/MHELMatrix.h"
 #include "Graniitti/MCW.h"
+#include "Graniitti/MHELMatrix.h"
+#include "Graniitti/MMatrix.h"
 
 namespace gra {
 
 
 // Particle class
 struct MParticle {
-  
   // These values are read from the PDG-file
   std::string name;
   int         pdg      = 0;  // PDG code
   int         chargeX3 = 0;  // Q x 3
   int         spinX2   = 0;  // J x 2
   int         color    = 0;  // QCD color code
-  
+
   double mass  = 0.0;
   double width = 0.0;
   double tau   = 0.0;  // hbar / width

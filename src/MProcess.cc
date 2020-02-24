@@ -62,9 +62,7 @@ void MProcess::PrintSetup() const {
   printf("- CMS energy:       %0.1f GeV\n", lts.sqrt_s);
   std::cout << "- Process:          " << PROCESS << rang::fg::green << " [";
 
-  for (const auto & str : ProcPtr.GetProcessDescriptor(PROCESS)) {
-    std::cout << str << " | ";
-  }
+  for (const auto &str : ProcPtr.GetProcessDescriptor(PROCESS)) { std::cout << str << " | "; }
   std::cout << "]" << rang::fg::reset << std::endl << std::endl;
 
   // Subprocess
@@ -95,7 +93,6 @@ void MProcess::PrintSetup() const {
 
 // Cascaded phase-space factor [VOLUME] x [MC INTEGRAL] / (2PI)
 double MProcess::CascadePS() const {
-
   // Cascade resonances phase-space
   double product    = 1.0;
   double product2pi = 1.0;
@@ -699,7 +696,7 @@ HELMatrix MProcess::ProcessHelicityDecay(const MParticle &             p,
             // ---------------------------------------------------------------
             // Tensor Pomeron Model decay couplings
             hc.g_decay_tensor = {MTensorPomeron::GDecay(p.spinX2 / 2, p.mass + i * p.width, p.width,
-                                                      daughter[0].mass, hc.BR)};
+                                                        daughter[0].mass, hc.BR)};
 
             if (PS > ZERO_EPS) { break; }
           }
@@ -853,10 +850,10 @@ bool MProcess::ExciteContinuum(const M4Vec &nstar, gra::MDecayBranch &forward, d
     }
 
     // Boundary conditions
-    N = (N < 1) ? 1 : N;   // At least 1
+    N = (N < 1) ? 1 : N;                       // At least 1
     N = (N >= std::abs(B)) ? N : std::abs(B);  // Baryon number
     N = (N >= std::abs(Q)) ? N : std::abs(Q);  // Charge conservation
-    
+
     // --------------------------------------------------------------------
     // Pick particles
 
@@ -999,8 +996,7 @@ void MProcess::BranchForwardSystem(const std::vector<M4Vec> &p4, const std::vect
 // Proton low mass (N* like) 2-body and 3-body excitation
 //
 //
-bool MProcess::ExciteNstar(const M4Vec &nstar, gra::MDecayBranch &forward, const MParticle& pbeam) {
-  
+bool MProcess::ExciteNstar(const M4Vec &nstar, gra::MDecayBranch &forward, const MParticle &pbeam) {
   // Find random decaymode
   std::vector<int> pdgcodes;
   MFragment::NstarDecayTable(pbeam.chargeX3 / 3, nstar.M(), pdgcodes, random);
@@ -1017,9 +1013,7 @@ bool MProcess::ExciteNstar(const M4Vec &nstar, gra::MDecayBranch &forward, const
   std::vector<M4Vec> p4;
 
   // Do the 2 or 3-body isotropic decay
-  if (mass.size() == 2) {
-    gra::kinematics::TwoBodyPhaseSpace(nstar, nstar.M(), mass, p4, random);
-  }
+  if (mass.size() == 2) { gra::kinematics::TwoBodyPhaseSpace(nstar, nstar.M(), mass, p4, random); }
   if (mass.size() == 3) {
     const bool UNWEIGHT = true;
     gra::kinematics::ThreeBodyPhaseSpace(nstar, nstar.M(), mass, p4, UNWEIGHT, random);
@@ -1031,12 +1025,48 @@ bool MProcess::ExciteNstar(const M4Vec &nstar, gra::MDecayBranch &forward, const
   return true;
 }
 
+// Fragment forward systems in central production
+//
+bool MProcess::CEPForwardFragment() {
+  bool              ok = true;
+  const std::string pt = "exp";  // Soft exponential pt
+
+  if (lts.excite1 && lts.decayforward1.legs.size() == 0) {  // is excited AND not fragmented
+    const int Q = math::sign(lts.beam1.pdg);                // Charge and baryon number
+    const int B = Q;
+
+    if (PARAM_NSTAR::fragment == "fewbody") {
+      if (!ExciteNstar(lts.pfinal[1], lts.decayforward1, lts.beam1)) { ok = false; }
+    } else if (PARAM_NSTAR::fragment == "cylinder") {
+      if (!ExciteContinuum(lts.pfinal[1], lts.decayforward1, lts.pfinal[1].M2(), B, Q, pt)) {
+        ok = false;
+      }
+    } else {
+      // none
+    }
+  }
+  if (lts.excite2 && lts.decayforward2.legs.size() == 0) {
+    const int Q = math::sign(lts.beam2.pdg);  // Charge and baryon number
+    const int B = Q;
+
+    if (PARAM_NSTAR::fragment == "fewbody") {
+      if (!ExciteNstar(lts.pfinal[2], lts.decayforward2, lts.beam2)) { ok = false; }
+    } else if (PARAM_NSTAR::fragment == "cylinder") {
+      if (!ExciteContinuum(lts.pfinal[2], lts.decayforward2, lts.pfinal[2].M2(), B, Q, pt)) {
+        ok = false;
+      }
+    } else {
+      // none
+    }
+  }
+  return ok;
+}
 
 bool MProcess::VetoCuts() const {
   bool ok = true;
 
   // Veto cuts
-  if (vetocuts.active == true) {
+  if (vetocuts.active) {
     // Forward system
     FindVetoCuts(lts.decayforward1, ok);
     FindVetoCuts(lts.decayforward2, ok);
@@ -1654,6 +1684,10 @@ bool MProcess::CommonRecord(HepMC3::GenEvent &evt) {
   }
 
   // ----------------------------------------------------------------
+  // Crucial, check do we need to fragment
+  // with vetocuts INactive, fragmentation done at last step here (for efficiency)
+  if (!CEPForwardFragment()) { return false; }
+
   // Upper proton excitation
   if (lts.excite1) { SaveBranch(evt, lts.decayforward1, gen_p1f); }
 
@@ -1688,7 +1722,6 @@ void MProcess::SaveBranch(HepMC3::GenEvent &evt, const gra::MDecayBranch &branch
 
 // Set process
 void MProcess::SetProcess(std::string &str, const std::vector<aux::OneCMD> &syntax) {
-  
   // SET IT HERE!
   PROCESS = str;
 
@@ -1778,11 +1811,11 @@ void MProcess::SetProcess(std::string &str, const std::vector<aux::OneCMD> &synt
 
 // "PP[RES]<C>" is an example of valid string to be parsed
 //
-void MProcess::ParseCMD(const std::string& str, std::string& first, std::string& second, std::string& third) const {
-
-
+void MProcess::ParseCMD(const std::string &str, std::string &first, std::string &second,
+                        std::string &third) const {
   // First and Second
-  bool        found  = false;;
+  bool found = false;
+  ;
   for (const auto &i : indices(str)) {
     if (str[i] != '[' && !found) {
       first += str[i];
@@ -1805,10 +1838,10 @@ void MProcess::ParseCMD(const std::string& str, std::string& first, std::string&
     }
     if (str[i] == '>') {
       mark2 = i;
-      break; // First >, then break
+      break;  // First >, then break
     }
   }
-  third = str.substr(mark1+1, mark2-mark1-1);
+  third = str.substr(mark1 + 1, mark2 - mark1 - 1);
 }
 
 

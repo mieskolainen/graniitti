@@ -38,7 +38,7 @@ class MFragment {
                              unsigned int excite, MRandom &random);
   static void GetSingleForwardMass(double &mass, MRandom &random);
   static void NstarDecayTable(int Q, double m0, std::vector<int> &pdgcode, MRandom &rng);
-  
+
   static bool PickParticles(double M, unsigned int N, int B, int S, int Q,
                             std::vector<double> &mass, std::vector<int> &pdgcode, const MPDG &PDG,
                             MRandom &rng);

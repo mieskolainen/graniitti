@@ -8,14 +8,14 @@
 
 // C++
 #include <complex>
+#include <fstream>
 #include <map>
 #include <random>
 #include <vector>
-#include <fstream>
 
 // Own
-#include "Graniitti/MParticle.h"
 #include "Graniitti/MAux.h"
+#include "Graniitti/MParticle.h"
 
 namespace gra {
 namespace PDG {

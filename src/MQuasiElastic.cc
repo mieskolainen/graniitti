@@ -35,9 +35,7 @@ using gra::math::zi;
 
 namespace gra {
 // This is needed by construction
-MQuasiElastic::MQuasiElastic() {
-  Initialize();
-}
+MQuasiElastic::MQuasiElastic() { Initialize(); }
 
 // Constructor
 MQuasiElastic::MQuasiElastic(std::string process, const std::vector<aux::OneCMD> &syntax) {
@@ -56,8 +54,8 @@ MQuasiElastic::MQuasiElastic(std::string process, const std::vector<aux::OneCMD>
 
 void MQuasiElastic::Initialize() {
   const std::vector<std::string> supported = {"X"};
-  CID = "Q";
-  ProcPtr = MSubProc(supported, CID);
+  CID                                      = "Q";
+  ProcPtr                                  = MSubProc(supported, CID);
 }
 
 // Destructor
@@ -212,10 +210,8 @@ double MQuasiElastic::EventWeight(const std::vector<double> &randvec, AuxIntData
 
 // Record HepMC3 event
 bool MQuasiElastic::EventRecord(HepMC3::GenEvent &evt) {
-
   // Non-Diffractive
   if (ProcPtr.CHANNEL == "ND") {
-    
     HepMC3::GenParticlePtr gen_p1;
     HepMC3::GenParticlePtr gen_p2;
     HepMC3::GenParticlePtr gen_p1f;
@@ -223,19 +219,18 @@ bool MQuasiElastic::EventRecord(HepMC3::GenEvent &evt) {
 
     // Loop over multiple "cut pomerons"
     for (const auto &i : indices(etree)) {
-
-      if (i == 0) { // First
+      if (i == 0) {  // First
 
         // Initial state protons (4-momentum, pdg-id, status code)
-        gen_p1 = std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(etree[i].p1i),
-                  (i == 0) ? lts.beam1.pdg : PDG::PDG_fragment,
-                  (i == 0) ? PDG::PDG_BEAM : PDG::PDG_INTERMEDIATE);
+        gen_p1 = std::make_shared<HepMC3::GenParticle>(
+            gra::aux::M4Vec2HepMC3(etree[i].p1i), (i == 0) ? lts.beam1.pdg : PDG::PDG_fragment,
+            (i == 0) ? PDG::PDG_BEAM : PDG::PDG_INTERMEDIATE);
 
-        gen_p2 = std::make_shared<HepMC3::GenParticle>(gra::aux::M4Vec2HepMC3(etree[i].p2i),
-                  (i == 0) ? lts.beam2.pdg : PDG::PDG_fragment,
-                  (i == 0) ? PDG::PDG_BEAM : PDG::PDG_INTERMEDIATE);
+        gen_p2 = std::make_shared<HepMC3::GenParticle>(
+            gra::aux::M4Vec2HepMC3(etree[i].p2i), (i == 0) ? lts.beam2.pdg : PDG::PDG_fragment,
+            (i == 0) ? PDG::PDG_BEAM : PDG::PDG_INTERMEDIATE);
 
-      } else { // Others recursively
+      } else {  // Others recursively
 
         gen_p1 = gen_p1f;
         gen_p2 = gen_p2f;
@@ -263,7 +258,6 @@ bool MQuasiElastic::EventRecord(HepMC3::GenEvent &evt) {
       HepMC3::GenVertexPtr vX = std::make_shared<HepMC3::GenVertex>();
 
       if (i != etree.size() - 1) {
-
         // Upper vertex
         HepMC3::GenVertexPtr vXUP = std::make_shared<HepMC3::GenVertex>();
         vXUP->add_particle_in(gen_p1);
@@ -298,13 +292,13 @@ bool MQuasiElastic::EventRecord(HepMC3::GenEvent &evt) {
       evt.add_vertex(vX);
 
       // Try to fragment
-      int    B = 0; // Baryon number
-      int    Q = 0; // Charge
+      int    B        = 0;  // Baryon number
+      int    Q        = 0;  // Charge
       double Q2_scale = system4vec.M2();
 
       // Beam fragments carry the initial state quantum numbers
       if (i == etree.size() - 2) {
-        B = math::sign(lts.beam2.pdg); // Proton(anti) proton beams only
+        B = math::sign(lts.beam2.pdg);  // Proton(anti) proton beams only
         Q = B;
       }
       if (i == etree.size() - 1) {
@@ -388,10 +382,10 @@ bool MQuasiElastic::EventRecord(HepMC3::GenEvent &evt) {
   // Finally add all vertices
   evt.add_vertex(v1);
   evt.add_vertex(v2);
-  
+
   // Upper proton excitation
   if (lts.excite1) {
-    const int B = math::sign(lts.beam1.pdg); // baryon number the same as charge
+    const int B = math::sign(lts.beam1.pdg);  // baryon number the same as charge
     const int Q = B;
 
     if (!ExciteContinuum(lts.pfinal[1], lts.decayforward1, lts.pfinal[1].M2(), B, Q)) {
@@ -401,8 +395,7 @@ bool MQuasiElastic::EventRecord(HepMC3::GenEvent &evt) {
   }
   // Lower proton excitation
   if (lts.excite2) {
-
-    const int B = math::sign(lts.beam2.pdg); // baryon number the same as charge
+    const int B = math::sign(lts.beam2.pdg);  // baryon number the same as charge
     const int Q = B;
 
     if (!ExciteContinuum(lts.pfinal[2], lts.decayforward2, lts.pfinal[2].M2(), B, Q)) {

@@ -153,7 +153,7 @@ int main(int argc, char *argv[]) {
       std::cout << "  " << argv[0] << " -i ./input/test.json -p \"yy[QED]<F> -> e+ e-\""
                 << std::endl
                 << std::endl;
-      
+
       aux::CheckUpdate();
 
       return EXIT_FAILURE;

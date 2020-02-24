@@ -34,7 +34,7 @@ class Parameters_sm {
   std::complex<double> GC_3, GC_4, GC_5, GC_100;
   // Model couplings dependent on aS
   std::complex<double> GC_12, GC_11, GC_10;
-  
+
   // Set parameters that are unchanged during the run
   void setIndependentParameters(SLHAReader &slha);
   // Set couplings that are unchanged during the run
