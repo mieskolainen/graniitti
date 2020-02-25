@@ -35,6 +35,8 @@ using namespace gra;
 
 // Main
 int main(int argc, char *argv[]) {
+  aux::PrintArgv(argc, argv);
+  
   MTimer timer;
 
   // Save the number of input arguments

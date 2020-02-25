@@ -43,6 +43,8 @@ long GetFileSize(const std::string &filename) {
 // [REFERENCE: http://home.thep.lu.se/~torbjorn/talks/fnal04lha.pdf]
 //
 int main(int argc, char *argv[]) {
+  gra::aux::PrintArgv(argc, argv);
+
   if (argc != 2) {
     std::cout << std::endl;
     std::cout << "[HepMC3 to LHEF converter]" << std::endl << std::endl;

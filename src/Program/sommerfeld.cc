@@ -86,6 +86,8 @@ struct LIM {
 
 // Main
 int main(int argc, char* argv[]) {
+  aux::PrintArgv(argc, argv);
+  
   MTimer global_timer;
   MTimer timer;
 

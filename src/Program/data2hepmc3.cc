@@ -34,6 +34,8 @@ std::shared_ptr<HepMC3::GenRunInfo>  runinfo      = nullptr;
 std::shared_ptr<HepMC3::WriterAscii> outputHepMC3 = nullptr;
 
 int main(int argc, char *argv[]) {
+  gra::aux::PrintArgv(argc, argv);
+
   using namespace gra;
 
   if (argc != 2) {

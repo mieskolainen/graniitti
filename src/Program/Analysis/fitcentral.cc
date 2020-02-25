@@ -330,6 +330,7 @@ void Chi2Func(int &npar, double *gin, double &f, double *par, int iflag) {
 }  // namespace fitcentral
 
 int main(int argc, char *argv[]) {
+  gra::aux::PrintArgv(argc, argv);
   gra::aux::PrintFlashScreen(rang::fg::red);
   std::cout << rang::style::bold << "GRANIITTI - Soft Central Production Fitter"
             << rang::style::reset << std::endl

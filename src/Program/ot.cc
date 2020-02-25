@@ -23,6 +23,7 @@
 #include "HepMC3/WriterAscii.h"
 
 // Own
+#include "Graniitti/MAux.h"
 #include "Graniitti/MH1.h"
 #include "Graniitti/MMatOper.h"
 #include "Graniitti/MMath.h"
@@ -89,6 +90,8 @@ void ReadEvents(const std::string& inputfile, std::vector<std::vector<double>>& 
 
 // Main function
 int main(int argc, char* argv[]) {
+  aux::PrintArgv(argc, argv);
+
   std::cout << std::endl;
   std::cout << "OT" << std::endl;
 

@@ -63,6 +63,8 @@ void printvar() {
 
 // Main
 int main(int argc, char *argv[]) {
+  aux::PrintArgv(argc, argv);
+  
   // Detector observable histogram
   const double              XWIDTH = 30;
   MH1<std::complex<double>> hx(100, -XWIDTH, XWIDTH, "Path Integral MC");

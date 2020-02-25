@@ -77,6 +77,7 @@ const double pt_scale = 4.5;
 
 // Main function
 int main(int argc, char *argv[]) {
+  gra::aux::PrintArgv(argc, argv);
   gra::rootstyle::SetROOTStyle();
   gra::aux::PrintFlashScreen(rang::fg::blue);
 

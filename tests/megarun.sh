@@ -39,11 +39,6 @@ yes $CMD | source ./tests/run_odderon_phi/run.sh
 yes $CMD | source ./tests/run_JW_polarization/run.sh
 yes $CMD | source ./tests/run_JW_frames/run.sh
 
-# tensor Pomeron
-yes $CMD | source ./tests/run_tensor0_multi/run.sh
-yes $CMD | source ./tests/run_tensor2_multi/run.sh
-yes $CMD | source ./tests/run_tensor_spectrum/run.sh
-
 # kt-EPA vs full QED yy in low-mass and high-mass domain
 yes $CMD | source ./tests/run_cms_mumu_low_high/run.sh
 
@@ -64,8 +59,14 @@ yes $CMD | source ./tests/run_durham_mmbar/run.sh
 yes $CMD | source ./tests/run_cms_harmonic/run.sh
 yes $CMD | source ./tests/run_alice_harmonic/run.sh
 
+# tensor Pomeron
+yes $CMD | source ./tests/run_tensor0_multi/run.sh
+yes $CMD | source ./tests/run_tensor2_multi/run.sh
+yes $CMD | source ./tests/run_tensor_spectrum/run.sh
+
 # catch2 driven tests
 ./bin/testbench0
 ./bin/testbench1
 ./bin/testbench2
 ./bin/testbench3
+

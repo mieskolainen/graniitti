@@ -445,6 +445,7 @@ void SetSoftParam(double *par) {
 //
 // Main function
 int main(int argc, char *argv[]) {
+  gra::aux::PrintArgv(argc, argv);
   gra::aux::PrintFlashScreen(rang::fg::red);
   std::cout << rang::style::bold << "GRANIITTI - Eikonal Pomeron Fitter" << rang::style::reset
             << std::endl

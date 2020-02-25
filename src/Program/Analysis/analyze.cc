@@ -283,6 +283,7 @@ std::map<std::string, std::shared_ptr<hProfMultiplet>> hP;
 
 // Main program
 int main(int argc, char *argv[]) {
+  gra::aux::PrintArgv(argc, argv);
   gra::rootstyle::SetROOTStyle();
 
   gra::aux::PrintFlashScreen(rang::fg::green);

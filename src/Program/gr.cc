@@ -26,6 +26,8 @@ using namespace gra;
 
 // Main
 int main(int argc, char *argv[]) {
+  aux::PrintArgv(argc, argv);
+
   // Save the number of input arguments
   const int NARGC = argc - 1;
 

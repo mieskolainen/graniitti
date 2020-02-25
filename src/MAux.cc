@@ -49,6 +49,14 @@ std::string GetVersionUpdate() { return "parameter control & forward excitation"
 // Check do we have terminal output (=true), or output to file (=false)
 static const bool IS_TERMINAL = isatty(fileno(stdout)) != 0;
 
+void PrintArgv(int argc, char* argv[]) {
+  std::cout << rang::fg::green << "$ ";
+  for (int i = 0; i < argc; ++i) {
+    std::cout << std::string(argv[i]) << " ";
+  }
+  std::cout << rang::fg::reset << std::endl;
+}
+
 // Download LHAPDFset automatically
 void AutoDownloadLHAPDF(const std::string pdfname) {
   std::cout << rang::fg::red
