@@ -42,8 +42,9 @@ yes $CMD | source ./tests/run_JW_frames/run.sh
 # kt-EPA vs full QED yy in low-mass and high-mass domain
 yes $CMD | source ./tests/run_cms_mumu_low_high/run.sh
 
-# luxpdf gamma-gamma
+# gamma-gamma etc
 yes $CMD | source ./tests/run_luxtest/run.sh
+yes $CMD | source ./tests/run_flux/run.sh
 
 # eikonal/elastic scattering
 yes $CMD | source ./tests/run_elastic/run.sh

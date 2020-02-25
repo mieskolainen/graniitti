@@ -79,6 +79,7 @@ MDurham::MDurham(gra::LORENTZSCALAR &lts, const std::string &modelfile) {
 // [REFERENCE: Harland-Lang, Khoze, Ryskin, https://arxiv.org/abs/1409.4785]
 //
 double MDurham::DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process) {
+  // gluon pair continuum
   if (process == "gg") {
     // [Final state helicities/polarizations x 4 initial state helicities]
     std::vector<std::vector<std::complex<double>>> Amp(4,
@@ -93,6 +94,8 @@ double MDurham::DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process) {
 
     // Run loop
     return DQtloop(lts, Amp);
+
+    // qqbar continuum
   } else if (process == "qqbar") {
     // [Final state helicities/polarizations x 4 initial state helicities]
     std::vector<std::vector<std::complex<double>>> Amp(4,
@@ -110,6 +113,7 @@ double MDurham::DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process) {
     // Run loop
     return DQtloop(lts, Amp);
 
+    // Meson pair continuum
   } else if (process == "MMbar") {
     // [Final state helicities/polarizations x 4 initial state helicities]
     std::vector<std::vector<std::complex<double>>> Amp(1,
@@ -120,6 +124,8 @@ double MDurham::DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process) {
 
     // Run loop
     return DQtloop(lts, Amp);
+
+    // chic(0) resonance
   } else if (process == "chic(0)") {
     // [Final state helicities/polarizations x 4 initial state helicities]
     std::vector<std::vector<std::complex<double>>> Amp(1,
@@ -128,6 +134,28 @@ double MDurham::DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process) {
     // Amplitude evaluated outside the Qt-loop (approximation)
     std::vector<double> null;
     Dgg2chic0(lts, Amp, null, null);
+
+    // Run loop
+    return DQtloop(lts, Amp);
+
+    // Flux with |A| = 1
+  } else if (process == "FLUX") {
+    // [Final state helicities/polarizations x 4 initial state helicities]
+    std::vector<std::vector<std::complex<double>>> Amp(1,
+                                                       std::vector<std::complex<double>>(4, 0.0));
+
+    // Initial state gluon helicity combinations,
+    // ++ and -- give contribution for 0+ state (see DHelProj function)
+    const double A = 1.0;
+    
+    std::vector<std::complex<double>> is(4, 0.0);
+    is[MM] = A;
+    is[MP] = 0;
+    is[PM] = 0;
+    is[PP] = A;
+
+    // No polarization for the final state to loop over, only one index
+    Amp[0] = is;
 
     // Run loop
     return DQtloop(lts, Amp);

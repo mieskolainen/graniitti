@@ -920,7 +920,39 @@ bool MProcess::ExciteContinuum(const M4Vec &nstar, gra::MDecayBranch &forward, d
   return true;
 }
 
-// This is used with continuum excitation
+// Proton low mass (N* like) 2-body and 3-body excitation
+//
+//
+bool MProcess::ExciteNstar(const M4Vec &nstar, gra::MDecayBranch &forward, const MParticle &pbeam) {
+  // Find random decaymode
+  std::vector<int> pdgcodes;
+  MFragment::NstarDecayTable(pbeam.chargeX3 / 3, nstar.M(), pdgcodes, random);
+
+  // Get corresponding PDG particles
+  std::vector<gra::MParticle> p(pdgcodes.size());
+  std::vector<double>         mass(pdgcodes.size(), 0.0);
+  for (const auto &i : indices(pdgcodes)) {
+    p[i]    = lts.PDG.FindByPDG(pdgcodes[i]);
+    mass[i] = p[i].mass;
+  }
+
+  // Products 4-momenta
+  std::vector<M4Vec> p4;
+
+  // Do the 2 or 3-body isotropic decay
+  if (mass.size() == 2) { gra::kinematics::TwoBodyPhaseSpace(nstar, nstar.M(), mass, p4, random); }
+  if (mass.size() == 3) {
+    const bool UNWEIGHT = true;
+    gra::kinematics::ThreeBodyPhaseSpace(nstar, nstar.M(), mass, p4, UNWEIGHT, random);
+  }
+
+  // Create decaytree
+  BranchForwardSystem(p4, p, nstar, forward);
+
+  return true;
+}
+
+// This is used with forward excitation
 //
 void MProcess::BranchForwardSystem(const std::vector<M4Vec> &p4, const std::vector<MParticle> &p,
                                    const M4Vec &nstar, gra::MDecayBranch &forward) {
@@ -931,9 +963,8 @@ void MProcess::BranchForwardSystem(const std::vector<M4Vec> &p4, const std::vect
 
   // Construct decaytree
   forward       = gra::MDecayBranch();  // Initialize!!
-  forward.p.pdg = PDG::PDG_NSTAR;
   forward.p4    = nstar;
-
+  
   // Daughters
   forward.legs.resize(p.size());
   forward.depth = 0;
@@ -993,49 +1024,19 @@ void MProcess::BranchForwardSystem(const std::vector<M4Vec> &p4, const std::vect
 }
 
 
-// Proton low mass (N* like) 2-body and 3-body excitation
-//
-//
-bool MProcess::ExciteNstar(const M4Vec &nstar, gra::MDecayBranch &forward, const MParticle &pbeam) {
-  // Find random decaymode
-  std::vector<int> pdgcodes;
-  MFragment::NstarDecayTable(pbeam.chargeX3 / 3, nstar.M(), pdgcodes, random);
-
-  // Get corresponding PDG particles
-  std::vector<gra::MParticle> p(pdgcodes.size());
-  std::vector<double>         mass(pdgcodes.size(), 0.0);
-  for (const auto &i : indices(pdgcodes)) {
-    p[i]    = lts.PDG.FindByPDG(pdgcodes[i]);
-    mass[i] = p[i].mass;
-  }
-
-  // Products 4-momenta
-  std::vector<M4Vec> p4;
-
-  // Do the 2 or 3-body isotropic decay
-  if (mass.size() == 2) { gra::kinematics::TwoBodyPhaseSpace(nstar, nstar.M(), mass, p4, random); }
-  if (mass.size() == 3) {
-    const bool UNWEIGHT = true;
-    gra::kinematics::ThreeBodyPhaseSpace(nstar, nstar.M(), mass, p4, UNWEIGHT, random);
-  }
-
-  // Create decaytree
-  BranchForwardSystem(p4, p, nstar, forward);
-
-  return true;
-}
-
 // Fragment forward systems in central production
 //
 bool MProcess::CEPForwardFragment() {
   bool              ok = true;
   const std::string pt = "exp";  // Soft exponential pt
 
-  if (lts.excite1 && lts.decayforward1.legs.size() == 0) {  // is excited AND not fragmented
-    const int Q = math::sign(lts.beam1.pdg);                // Charge and baryon number
+  if (lts.excite1) {
+    const int Q = math::sign(lts.beam1.pdg);  // Charge and baryon number
     const int B = Q;
 
-    if (PARAM_NSTAR::fragment == "fewbody") {
+    if (PARAM_NSTAR::fragment == "none") {
+      BranchForwardSystem({}, {}, lts.pfinal[1], lts.decayforward1);
+    } else if (PARAM_NSTAR::fragment == "fewbody") {
       if (!ExciteNstar(lts.pfinal[1], lts.decayforward1, lts.beam1)) { ok = false; }
     } else if (PARAM_NSTAR::fragment == "cylinder") {
       if (!ExciteContinuum(lts.pfinal[1], lts.decayforward1, lts.pfinal[1].M2(), B, Q, pt)) {
@@ -1045,11 +1046,14 @@ bool MProcess::CEPForwardFragment() {
       // none
     }
   }
-  if (lts.excite2 && lts.decayforward2.legs.size() == 0) {
+
+  if (lts.excite2) {
     const int Q = math::sign(lts.beam2.pdg);  // Charge and baryon number
     const int B = Q;
 
-    if (PARAM_NSTAR::fragment == "fewbody") {
+    if (PARAM_NSTAR::fragment == "none") {
+      BranchForwardSystem({}, {}, lts.pfinal[2], lts.decayforward2);
+    } else if (PARAM_NSTAR::fragment == "fewbody") {
       if (!ExciteNstar(lts.pfinal[2], lts.decayforward2, lts.beam2)) { ok = false; }
     } else if (PARAM_NSTAR::fragment == "cylinder") {
       if (!ExciteContinuum(lts.pfinal[2], lts.decayforward2, lts.pfinal[2].M2(), B, Q, pt)) {
@@ -1591,16 +1595,16 @@ bool MProcess::CommonRecord(HepMC3::GenEvent &evt) {
   // Final states (protons/excited system)
   int PDG_ID1 = lts.beam1.pdg;
   int PDG_ID2 = lts.beam2.pdg;
-
+  
   int PDG_status1 = PDG::PDG_STABLE;
   int PDG_status2 = PDG::PDG_STABLE;
 
   if (lts.excite1 == true) {
-    PDG_ID1     = PDG::PDG_NSTAR;
+    PDG_ID1     = std::abs(PDG::PDG_NSTAR) * math::sign(lts.beam1.pdg);
     PDG_status1 = PDG::PDG_INTERMEDIATE;
   }
   if (lts.excite2 == true) {
-    PDG_ID2     = PDG::PDG_NSTAR;
+    PDG_ID2     = std::abs(PDG::PDG_NSTAR) * math::sign(lts.beam2.pdg);
     PDG_status2 = PDG::PDG_INTERMEDIATE;
   }
 
@@ -1628,19 +1632,19 @@ bool MProcess::CommonRecord(HepMC3::GenEvent &evt) {
   // ====================================================================
   // Construct vertices
 
-  // Upper proton-pomeron-proton
+  // Upper proton-propagator-proton
   HepMC3::GenVertexPtr v1 = std::make_shared<HepMC3::GenVertex>();
   v1->add_particle_in(gen_p1);
   v1->add_particle_out(gen_p1f);
   v1->add_particle_out(gen_q1);
 
-  // Lower proton-pomeron-proton
+  // Lower proton-propagator-proton
   HepMC3::GenVertexPtr v2 = std::make_shared<HepMC3::GenVertex>();
   v2->add_particle_in(gen_p2);
   v2->add_particle_out(gen_p2f);
   v2->add_particle_out(gen_q2);
 
-  // Pomeron-Pomeron-System vertex
+  // Propagator-Propagator-System vertex
   HepMC3::GenVertexPtr v3 = std::make_shared<HepMC3::GenVertex>();
   v3->add_particle_in(gen_q1);
   v3->add_particle_in(gen_q2);
@@ -1689,10 +1693,14 @@ bool MProcess::CommonRecord(HepMC3::GenEvent &evt) {
   if (!CEPForwardFragment()) { return false; }
 
   // Upper proton excitation
-  if (lts.excite1) { SaveBranch(evt, lts.decayforward1, gen_p1f); }
+  if (lts.excite1 && lts.decayforward1.legs.size() != 0) {
+    SaveBranch(evt, lts.decayforward1, gen_p1f);
+  }
 
   // Lower proton excitation
-  if (lts.excite2) { SaveBranch(evt, lts.decayforward2, gen_p2f); }
+  if (lts.excite2 && lts.decayforward2.legs.size() != 0) {
+    SaveBranch(evt, lts.decayforward2, gen_p2f);
+  }
 
   return true;
 }
@@ -1704,7 +1712,7 @@ void MProcess::SaveBranch(HepMC3::GenEvent &evt, const gra::MDecayBranch &branch
   HepMC3::GenVertexPtr vX = std::make_shared<HepMC3::GenVertex>();
   evt.add_vertex(vX);
 
-  // Add N* in
+  // Add mother in
   vX->add_particle_in(pX);
 
   // Add direct daughters

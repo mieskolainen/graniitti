@@ -41,18 +41,25 @@ namespace aux {
 
 double      GetVersion() { return 1.04; }
 std::string GetVersionType() { return "release"; }
-std::string GetVersionDate() { return "23.02.2020"; }
-std::string GetVersionUpdate() { return "parameter control & forward excitation"; }
+std::string GetVersionDate() { return "25.02.2020"; }
+std::string GetVersionUpdate() { return "performance, IO & bugfixes"; }
 
 // -------------------------------------------------------
 
 // Check do we have terminal output (=true), or output to file (=false)
 static const bool IS_TERMINAL = isatty(fileno(stdout)) != 0;
 
-void PrintArgv(int argc, char* argv[]) {
+// Print input arguments
+void PrintArgv(int argc, char *argv[]) {
   std::cout << rang::fg::green << "$ ";
   for (int i = 0; i < argc; ++i) {
-    std::cout << std::string(argv[i]) << " ";
+    const std::string s = std::string(argv[i]);
+    if (s.find(' ') != std::string::npos) {  // e.g. "PP[CON]<F> -> pi+ pi-"
+      std::cout << "\"" << s << "\""
+                << " ";
+    } else {
+      std::cout << s << " ";
+    }
   }
   std::cout << rang::fg::reset << std::endl;
 }

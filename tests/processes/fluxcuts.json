@@ -11,75 +11,76 @@
   
   "GENERALPARAM" : {
 
-    "OUTPUT"  : "STAR18_2pi",  // Output filename
-    "FORMAT"  : "hepmc3",      // hepmc3, hepmc2, hepevt
-    "CORES"   : 0,             // Number of CPU threads (0 for automatic)
-    "NEVENTS" : 1000,          // Number of events
-    "INTEGRATOR" : "VEGAS",    // "VEGAS" (default), "FLAT" (for debug),
-    "WEIGHTED" : false,        // Weighted events (default false)
-    "MODELPARAM" : "TUNE0"     // General model tune
+    "OUTPUT"  : "",              // Output filename
+    "FORMAT"  : "hepmc3",        // hepmc3, hepmc2, hepevt
+    "CORES"   : 0,               // Number of CPU threads (0 for automatic)
+    "NEVENTS" : 1000,            // Number of unweighted (weight = 1) events
+    "INTEGRATOR" : "VEGAS",      // "VEGAS" (default), "FLAT" (for debug),
+    "WEIGHTED" : true,           // Weighted events (default false)
+    "MODELPARAM" : "TUNE0"       // General model tune
   },
   
   // ----------------------------------------------------------------------
   // Process setup
   
   "PROCESSPARAM" : {
-    
-    "BEAM" :   ["p+","p-"],    // Beam PDG-ID / Name
-    "ENERGY" : [100, 100],     // Beam energy in the lab (GeV)
-    "PROCESS" : "PP[RES+CON]<F> -> pi+ pi-",  // Process ID
-    "RES" : ["f0_500", "rho_770", "f0_980", "phi_1020", "f2_1270", "f0_1500", "f2_1525", "f0_1710"],
-    "POMLOOP" : false,          // Eikonal Pomeron loop screening
-    "NSTARS" : 0,              // N* excitation (0 = elastic, 1 = single, 2 = double)
-    "LHAPDF" : "CT10nlo",      // LHAPDF parton distribution set
-    "HIST"    : 0,             // On-the-flight histograms (0 = off,1,2)
-    "RNDSEED" : 12345678,      // Random seed (int32)
+        
+    "BEAM" :   ["p+","p+"],      // Beam PDG-ID / Name
+    "ENERGY" : [7000, 7000],     // Beam energy in the lab (GeV)
+    "PROCESS" : "", // Process
+    "RES" : [],
+    "POMLOOP" : false,           // Eikonal Pomeron loop screening
+    "NSTARS" : 0,                // N* excitation (0 = elastic, 1 = single, 2 = double)
+    "LHAPDF" : "MSTW2008lo68cl", // LHAPDF parton distribution set
+    "HIST"    : 2,               // On-the-flight histograms (0 = off,1,2)
+    "RNDSEED" : 12345678,        // Random seed (int32)
   },
 
   // ----------------------------------------------------------------------
   // Monte Carlo integrator setup
 
   "INTEGRALPARAM" : {
-
+      
     // Loop integration
     "POMLOOP" : {
-      "ND" : 1               // Loop integral discretization  
+      "ND" : 1              // Loop integral discretization
     },
     
     // VEGAS integrator
     "VEGAS" : {
-      
+
       "BINS" : 128,          // Maximum number of bins per dimension (NOTE: EVEN NUMBER)
       "LAMBDA" : 1.5,        // Regularization parameter
-      "NCALL" : 10000,       // Number of function calls per initialization iteration (5000 or more)
+      "NCALL" : 5000,        // Number of function calls per initialization iteration (5000 or more)
       "ITER"  : 5,           // Number of initialization iteration (10 or more)
       "CHI2MAX" : 10.0,      // Maximum Chi^2 in initialization
       "PRECISION"  : 0.01,   // Integral relative precision target
       "DEBUG" : -1           // Debug output (default -1)
     },
-    
+
     // FLAT integrator
     "FLAT" : {
 
-      "PRECISION"  : 0.05,      // Integral relative precision
-      "MIN_EVENTS" : 1000000    // Minimum number of events to be sampled
+      "PRECISION"  : 0.05,   // Integral relative precision
+      "MIN_EVENTS" : 1000000 // Minimum number of events to be sampled
     }
   },
-  
+
   // ----------------------------------------------------------------------
   // Generation cuts
-
+  
   "GENCUTS" : {
 
     "<C>" : {
-      "Rap" : [-2.5, 2.5],  // Rapidity boundaries of the final states (<C> class)
+      "Rap" : [-8, 8]  // Rapidity boundaries of the final states (<C> class)
     },
+    
     "<F>" : {
       "Rap" : [-2.5, 2.5], // Rapidity boundaries of the system (<F> class)
-      "M"   : [0, 7.0]
+      "M"   : [50, 1500],
     },
     "<Q>" : {
-      "Xi"  : [0, 0.05]    // Invariant scale M^2/s (forward excitation)
+      "Xi" : [0, 0.05]    // Invariant scale M^2/s (forward excitation)
     }
   },
 
@@ -93,21 +94,21 @@
 
      // Central system final states
     "PARTICLE" : {
-      
-      "Eta"  : [-0.7, 0.7],     // Pseudorapidity
+
+      "Eta"  : [-10.0, 10.0],     // Pseudorapidity
       "Rap"  : [-10.0, 10.0],   // Rapidity
-      "Pt"   : [0.2, 100000.0], // Transverse momentum
+      "Pt"   : [0.0, 100000.0], // Transverse momentum
       "Et"   : [0.0, 100000.0]  // Transverse energy
     },
     
     // Central system
     "SYSTEM" : {
-      
-      "M"    : [0.0, 100000.0], // Mass
-      "Rap"  : [-0.9, 0.9],     // Rapidity
+
+      "M"    : [50.0, 1500.0], // Mass
+      "Rap"  : [-2.5, 2.5],   // Rapidity
       "Pt"   : [0.0, 100000.0]  // Transverse momentum
     },
-
+    
     // Forward system
     "FORWARD" : {
       "M"    : [0.0, 100000.0], // Mass
@@ -115,7 +116,6 @@
     },
     
     // Custom user cuts (default false, otherwise identifier ID)
-    "USERCUTS" : false, //280818
-  }
-
+    "USERCUTS" : false
+  },
 }

@@ -206,7 +206,7 @@ void testfft() {
 // Main
 int main(int argc, char *argv[]) {
   aux::PrintArgv(argc, argv);
-  
+
   if (argc != 7) {
     std::cout << "Kuramoto-Sivashinsky 4th order PDE FFT-testbench" << std::endl;
     std::cout << "Usage: ./pdebench 64 128 16 4 2400 0" << std::endl;

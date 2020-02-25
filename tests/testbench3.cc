@@ -54,14 +54,15 @@ TEST_CASE("MDurham", "[gra::MDurham]") {
 	MDurham a(lts, modelfile);	
 }
 
-// Test initializing Durham model amplitudes
+// Test initializing gamma-gamma amplitudes
 //
+/*
 TEST_CASE("MGamma", "[gra::MGamma]") {
 
 	gra::LORENTZSCALAR lts;
 	MGamma a(lts, modelfile);
-
 }
+*/
 
 // Test running QED coupling
 //

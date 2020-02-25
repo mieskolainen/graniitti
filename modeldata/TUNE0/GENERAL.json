@@ -1,6 +1,6 @@
 // Model parameters ("TUNE0")
 //
-// mikael.mieskolainen@cern.ch, updated 22.02.2020
+// mikael.mieskolainen@cern.ch, updated 25.02.2020
 {
   
   // ---------------------------------------------------------------------
@@ -77,7 +77,7 @@
   },
 
   // ---------------------------------------------------------------------
-  // [regge-like model parameters]
+  // [Central production regge model parameters]
 
   "PARAM_REGGE" : {
 
@@ -114,7 +114,7 @@
   },
 
   // ---------------------------------------------------------------------
-  // [non-tensor pomeron model] continuum amplitude couplings
+  // [Non-tensor pomeron model continuum amplitude couplings]
   //
   // For coupling constants see e.g.
   //   pipi: Phys. Rev. D81 (2010) 036003
@@ -173,7 +173,7 @@
   },
 
   // ---------------------------------------------------------------------
-  // [tensor Pomeron model parameters]
+  // [Tensor Pomeron model parameters]
   
   "PARAM_TENSORPOM" : {
 
@@ -202,7 +202,7 @@
   },
   
   // ---------------------------------------------------------------------
-  // Proton structure functions and form factors
+  // [Proton structure functions and form factors]
 
   "PARAM_STRUCTURE" : {
 
@@ -219,7 +219,7 @@
   },
 
   // ---------------------------------------------------------------------
-  // Durham QCD parameters
+  // [Durham QCD model parameters]
 
   "PARAM_DURHAMQCD" : {
 
@@ -242,14 +242,14 @@
   },
 
   // ---------------------------------------------------------------------
-  // Central production with forward proton excitation
+  // [Central production with forward proton excitation]
 
   "PARAM_NSTAR" : {
 
     // Forward system fragmentation mode
     // "none" (only leg kinematics), "fewbody" (2/3-body decays) or "cylinder" (N-body tube)
     "fragment" : "cylinder",
-
+    
     // Good-Walker N*(**/***) (UNDER CONSTRUCTION, NOT ACTIVE)
     "rc" : [0.5, 0.3, 0.2]
   },

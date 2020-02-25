@@ -2,6 +2,6 @@
  "name": "GRANIITTI",
  "version": 1.04,
  "type": "release",
- "date": "23.02.2020",
- "update": "parameter control & forward excitation"
+ "date": "25.02.2020",
+ "update": "performance, IO & bugfixes"
 }

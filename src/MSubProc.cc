@@ -20,7 +20,7 @@ namespace gra {
 // Add all processes
 void MSubProc::CreateProcesses() {
   DeleteProcesses();
-
+  
   pr.push_back(new PROC_0());
   pr.push_back(new PROC_1());
   pr.push_back(new PROC_2());
@@ -47,6 +47,8 @@ void MSubProc::CreateProcesses() {
   pr.push_back(new PROC_23());
   pr.push_back(new PROC_24());
   pr.push_back(new PROC_25());
+  pr.push_back(new PROC_26());
+  pr.push_back(new PROC_27());
 }
 
 // Generic constructor, used for the first initialization

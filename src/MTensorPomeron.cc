@@ -459,7 +459,7 @@ double MTensorPomeron::ME3(gra::LORENTZSCALAR &lts) const {
           iD.push_back(temp);
         }
 
-        // Sequential decay treatment [TBD]
+        // Sequential spin correlated decay treatment [TBD]
         /*
         const Tensor2<std::complex<double>, 4,4> iGvv2psps = iG_vv2psps({}, lts.decaytree[0].p.pdg);
 

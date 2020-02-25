@@ -36,7 +36,7 @@ namespace gra {
 MGamma::MGamma(gra::LORENTZSCALAR &lts, const std::string &modelfile) {
   // @@ MULTITHREADING LOCK NEEDED FOR THE INITIALIZATION @@
   gra::g_mutex.lock();
-  
+
   // Monopolium process
   if (!PARAM_MONOPOLE::initialized) {
     try {
