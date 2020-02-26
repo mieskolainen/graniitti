@@ -1,2 +1,2 @@
-HepMC-3.2.0
+HepMC3-3.2.0
 LHAPDF-6.2.3
