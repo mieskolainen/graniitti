@@ -291,12 +291,14 @@ bool MQuasiElastic::EventRecord(HepMC3::GenEvent &evt) {
       // Add vertex to the event
       evt.add_vertex(vX);
 
-      // Try to fragment
+      // -----------------------------------------------------------------
+      // Quantum numbers distributed here
       int    B        = 0;  // Baryon number
       int    Q        = 0;  // Charge
       double Q2_scale = system4vec.M2();
 
-      // Beam fragments carry the initial state quantum numbers
+      // Beam fragments carry the initial state quantum numbers,
+      // we distribute them here for the second last and the last MPI
       if (i == etree.size() - 2) {
         B = math::sign(lts.beam2.pdg);  // Proton(anti) proton beams only
         Q = B;
