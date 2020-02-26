@@ -12,9 +12,7 @@
 #
 #git clone https://gitlab.cern.ch/hepmc/HepMC3.git
 
-#tar -xf HepMC3-130319.tar.gz
 tar -xf HepMC3-3.2.0.tar.gz
-
 cd HepMC3-3.2.0
 
 cmake -DHEPMC3_ENABLE_SEARCH=ON -DHEPMC3_ENABLE_PYTHON=OFF -DHEPMC3_ENABLE_ROOTIO=OFF .
