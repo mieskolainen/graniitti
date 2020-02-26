@@ -25,7 +25,7 @@
   
   "PROCESSPARAM" : {
     
-    "BEAM" :   ["p+","p-"],    // Beam PDG-ID / Name
+    "BEAM" :   ["p+","p+"],    // Beam PDG-ID / Name
     "ENERGY" : [100, 100],     // Beam energy in the lab (GeV)
     "PROCESS" : "PP[RES+CON]<F> -> pi+ pi-",  // Process ID
     "RES" : ["f0_500", "rho_770", "f0_980", "phi_1020", "f2_1270", "f0_1500", "f2_1525", "f0_1710"],
