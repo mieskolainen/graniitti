@@ -36,7 +36,7 @@ S2=1.0
 -i "pure_gg_flux, pure_yy_flux, pure_yy_dz_flux" \
 -g "22, 22, 22" \
 -n "2, 2, 2" \
--l "Durham flux, kt-EPA flux , DZ flux" \
+-l "Durham flux, kt-EPA flux , DZ EPA flux" \
 -M "95, 50.0, 900.0" \
 -Y "95,-2.5, 2.5" \
 -P "95, 0.0, 3.0" \
