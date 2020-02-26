@@ -366,10 +366,10 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
 
     // Find out central particles
     std::vector<HepMC3::GenParticlePtr> find_pip =
-        HepMC3::applyFilter(HepMC3::Selector::PDG_ID == PDG::PDG_pip, evt.particles());
+        HepMC3::applyFilter(HepMC3::StandardSelector::PDG_ID == PDG::PDG_pip, evt.particles());
 
     std::vector<HepMC3::GenParticlePtr> find_pim =
-        HepMC3::applyFilter(HepMC3::Selector::PDG_ID == PDG::PDG_pim, evt.particles());
+        HepMC3::applyFilter(HepMC3::StandardSelector::PDG_ID == PDG::PDG_pim, evt.particles());
 
     for (const HepMC3::GenParticlePtr &p1 : find_pip) {
       pip.push_back(gra::aux::HepMC2M4Vec(p1->momentum()));
@@ -402,7 +402,7 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
     // Beam protons needed
     if (FRAME == "GJ" || FRAME == "PG" || FRAME == "CS" || FRAME == "AH") {
       for (HepMC3::ConstGenParticlePtr p1 : HepMC3::applyFilter(
-               HepMC3::Selector::STATUS == PDG::PDG_BEAM && HepMC3::Selector::PDG_ID == PDG::PDG_p,
+               HepMC3::StandardSelector::STATUS == PDG::PDG_BEAM && HepMC3::StandardSelector::PDG_ID == PDG::PDG_p,
                evt.particles())) {
         // Print::line(p1);
         pvec = gra::aux::HepMC2M4Vec(p1->momentum());
@@ -417,8 +417,8 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
     // Final state protons
     if (FRAME == "GJ") {
       for (HepMC3::ConstGenParticlePtr p1 :
-           HepMC3::applyFilter(HepMC3::Selector::STATUS == PDG::PDG_STABLE &&
-                                   HepMC3::Selector::PDG_ID == PDG::PDG_p,
+           HepMC3::applyFilter(HepMC3::StandardSelector::STATUS == PDG::PDG_STABLE &&
+                                   HepMC3::StandardSelector::PDG_ID == PDG::PDG_p,
                                evt.particles())) {
         // Print::line(p1);
         pvec = gra::aux::HepMC2M4Vec(p1->momentum());

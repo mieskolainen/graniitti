@@ -12,12 +12,15 @@
 //#include <experimental/filesystem>
 
 // C system functions
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/resource.h>
 #include <sys/statvfs.h>
 #include <sys/time.h>
 #include <sys/utsname.h>
 #include <time.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 // Libraries
 #include "HepMC3/FourVector.h"
@@ -39,10 +42,10 @@ namespace aux {
 // -------------------------------------------------------
 // FIXED HERE manually
 
-double      GetVersion() { return 1.05; }
+double      GetVersion() { return 1.051; }
 std::string GetVersionType() { return "release"; }
-std::string GetVersionDate() { return "25.02.2020"; }
-std::string GetVersionUpdate() { return "performance, IO & bugfixes"; }
+std::string GetVersionDate() { return "26.02.2020"; }
+std::string GetVersionUpdate() { return "performance, IO, new HepMC3 & bugfixes"; }
 
 // -------------------------------------------------------
 
@@ -80,7 +83,7 @@ void AutoDownloadLHAPDF(const std::string pdfname) {
   }
 
   // Download, untar
-  std::string cmd1 = "wget http://www.hepforge.org/archive/lhapdf/pdfsets/6.2/" + pdfname +
+  std::string cmd1 = "wget http://lhapdfsets.web.cern.ch/lhapdfsets/current/" + pdfname +
                      ".tar.gz -O- | " + " tar xz -C " + INSTALLPATH + "/share/LHAPDF";
   std::cout << cmd1 << std::endl;
   std::string OUTPUT1 = aux::ExecCommand(cmd1);
@@ -588,7 +591,7 @@ void CreateVersionJSON() {
   // Get program path and output this VERSION.json
   const std::string output = GetBasePath(2) + "/VERSION.json";
   const std::string MSG =
-      "{\n \"name\": \"%s\",\n \"version\": %0.2f,\n \"type\": \"%s\",\n \"date\": \"%s\",\n "
+      "{\n \"name\": \"%s\",\n \"version\": %0.3f,\n \"type\": \"%s\",\n \"date\": \"%s\",\n "
       "\"update\": \"%s\"\n}\n";
 
   FILE *file = fopen(output.c_str(), "w");
@@ -600,7 +603,7 @@ void CreateVersionJSON() {
 
 std::string GetVersionString() {
   char buff[100];
-  snprintf(buff, sizeof(buff), "Version %0.2f (%s) %s", GetVersion(), GetVersionType().c_str(),
+  snprintf(buff, sizeof(buff), "Version %0.3f (%s) %s", GetVersion(), GetVersionType().c_str(),
            GetVersionDate().c_str());
   std::string str = buff;
   return str;
@@ -609,7 +612,7 @@ std::string GetVersionString() {
 std::string GetVersionTLatex() {
   char         buff[100];
   const double version = GetVersion();
-  snprintf(buff, sizeof(buff), "#color[16]{#scale[0.6]{GRANIITTI #scale[0.8]{%0.2f}}}", version);
+  snprintf(buff, sizeof(buff), "#color[16]{#scale[0.6]{GRANIITTI #scale[0.8]{%0.3f}}}", version);
   std::string str = buff;
   return str;
 }

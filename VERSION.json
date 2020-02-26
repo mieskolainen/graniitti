@@ -1,7 +1,7 @@
 {
  "name": "GRANIITTI",
- "version": 1.05,
+ "version": 1.051,
  "type": "release",
- "date": "25.02.2020",
- "update": "performance, IO & bugfixes"
+ "date": "26.02.2020",
+ "update": "performance, IO, new HepMC3 & bugfixes"
 }
