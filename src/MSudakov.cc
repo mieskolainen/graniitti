@@ -72,7 +72,7 @@ void MSudakov::InitArrays() {
     veto.InitArray();  // Initialize (call last!)
 
     const unsigned long hash     = gra::aux::djb2hash(veto.GetHashString());
-    const std::string   filename = "./sudakov/SUDA_" + gra::aux::ToString(veto.sqrts, 0) + "_" +
+    const std::string   filename = gra::aux::GetBasePath(2) + "/eikonal/SUDA_" + gra::aux::ToString(veto.sqrts, 0) + "_" +
                                  PDFSETNAME + "_" + std::to_string(hash);
 
     // Try to read pre-calculated
@@ -100,7 +100,7 @@ void MSudakov::InitArrays() {
     spdf.InitArray();  // Initialize (call last!)
 
     const unsigned long hash     = gra::aux::djb2hash(spdf.GetHashString());
-    const std::string   filename = "./sudakov/SHUV_" + gra::aux::ToString(spdf.sqrts, 0) + "_" +
+    const std::string   filename = gra::aux::GetBasePath(2) + "/eikonal/SHUV_" + gra::aux::ToString(spdf.sqrts, 0) + "_" +
                                  PDFSETNAME + "_" + std::to_string(hash);
 
     // Try to read pre-calculated
