@@ -551,14 +551,16 @@ void CheckUpdate() {
         std::cout << "To update, copy-and-run: " << std::endl;
         std::cout
             << "git pull origin master && source ./install/setenv.sh && make superclean && make -j4"
-            << std::endl;
+            << std::endl << std::endl;
+        std::cout << "If compilation fails, check that your HepMC3 and LHAPDF6 are as given in requirements.txt" << std::endl;
+        std::cout << "You can re-install them with cd install && source autoinstall.sh" << std::endl;
         PrintBar("-", 80);
         std::cout << std::endl;
       } else if (std::abs(GetVersion() - online_version) < 1e-6) {  // Same as online
         std::cout << std::endl;
         PrintBar("-", 80);
         std::cout << rang::style::bold << "This version " << GetVersion() << " ("
-                  << GetVersionDate() << ") is up to date with online version" << rang::style::reset
+                  << GetVersionDate() << ") is up to date with the online version" << rang::style::reset
                   << std::endl;
         PrintBar("-", 80);
         std::cout << std::endl;
@@ -566,7 +568,7 @@ void CheckUpdate() {
         std::cout << std::endl;
         PrintBar("-", 80);
         std::cout << rang::style::bold << rang::fg::green << "This version " << GetVersion() << " ("
-                  << GetVersionDate() << ") is newer than online version " << online_version << " ("
+                  << GetVersionDate() << ") is newer than the online version " << online_version << " ("
                   << online_date << ")" << rang::style::reset << std::endl;
         PrintBar("-", 80);
         std::cout << std::endl;
