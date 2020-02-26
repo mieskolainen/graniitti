@@ -15,6 +15,10 @@
 tar -xf HepMC3-3.2.0.tar.gz
 cd HepMC3-3.2.0
 
+# Remove old
+rm ${INSTALLPATH}/HEPMC3 -f -r
+
+# Compile and install new
 cmake -DHEPMC3_ENABLE_SEARCH=ON -DHEPMC3_ENABLE_PYTHON=OFF -DHEPMC3_ENABLE_ROOTIO=OFF .
 cmake --build .
 cmake . -DCMAKE_INSTALL_PREFIX=${INSTALLPATH}/HEPMC3

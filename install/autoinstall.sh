@@ -8,7 +8,7 @@
 INSTALLPATH=$HOME/local
 # ****
 
-read -p "Do you want to install HepMC3 and LHAPDF6 to $INSTALLPATH? [y/n]" -n 1 -r
+read -p "Do you want to install HepMC3 and LHAPDF6 to $INSTALLPATH (old installation will be removed)? [y/n]" -n 1 -r
 echo # New line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then

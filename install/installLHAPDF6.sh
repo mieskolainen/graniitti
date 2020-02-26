@@ -13,6 +13,11 @@
 
 tar -xf LHAPDF-6.2.3.tar.gz
 cd LHAPDF-6.2.3
+
+# Remove old
+rm ${INSTALLPATH}/LHAPDF -f -r
+
+# Compile and install new
 ./configure --prefix=${INSTALLPATH}/LHAPDF
 make -j4
 make install
