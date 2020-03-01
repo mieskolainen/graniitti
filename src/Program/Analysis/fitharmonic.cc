@@ -401,9 +401,10 @@ void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &eve
 
     // Beam protons needed
     if (FRAME == "GJ" || FRAME == "PG" || FRAME == "CS" || FRAME == "AH") {
-      for (HepMC3::ConstGenParticlePtr p1 : HepMC3::applyFilter(
-               HepMC3::StandardSelector::STATUS == PDG::PDG_BEAM && HepMC3::StandardSelector::PDG_ID == PDG::PDG_p,
-               evt.particles())) {
+      for (HepMC3::ConstGenParticlePtr p1 :
+           HepMC3::applyFilter(HepMC3::StandardSelector::STATUS == PDG::PDG_BEAM &&
+                                   HepMC3::StandardSelector::PDG_ID == PDG::PDG_p,
+                               evt.particles())) {
         // Print::line(p1);
         pvec = gra::aux::HepMC2M4Vec(p1->momentum());
         if (pvec.Pz() > 0) {

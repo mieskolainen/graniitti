@@ -94,7 +94,9 @@ bool UserCut(int id, const gra::LORENTZSCALAR &lts) {
 
   // --------------------------------------------------------------------
   // STAR/RHIC \sqrt{s} = 200 GeV pi+pi- (+ other cuts needed in .json file)
-  // https://indico.cern.ch/event/713101/contributions/3102315/attachments/1705771/2748440/Diffraction2018_RafalSikora.pdf
+  // indico.cern.ch/event/713101/contributions/3102315/
+  // attachments/1705771/2748440/Diffraction2018_RafalSikora.pdf
+  //
   else if (id == 280818) {
     // Loop over forward protons
     std::vector<int> indices = {1, 2};
@@ -120,7 +122,8 @@ bool UserCut(int id, const gra::LORENTZSCALAR &lts) {
       }
     }
 
-    // https://arxiv.org/pdf/1608.03765.pdf
+    // [arxiv.org/abs/1608.03765]
+
   } else if (id == 160803765) {
     const double xi1 = (lts.pbeam1.Pz() - lts.pfinal[1].Pz()) / lts.pbeam1.Pz();
     const double xi2 = (lts.pbeam2.Pz() - lts.pfinal[2].Pz()) / lts.pbeam2.Pz();
@@ -136,7 +139,7 @@ bool UserCut(int id, const gra::LORENTZSCALAR &lts) {
 
   // --------------------------------------------------------------------
   // CDF exclusive dijets
-  // https://arxiv.org/pdf/0712.0604.pdf
+  // [arxiv.org/abs/0712.0604]
 
   else if (id == 7120604) {
     // antiproton longitudinal momentum loss fraction
@@ -151,7 +154,7 @@ bool UserCut(int id, const gra::LORENTZSCALAR &lts) {
 
   // --------------------------------------------------------------------
   // ATLAS yy->mu+mu- 13 TeV fiducial cuts (+other cuts needed in .json file)
-  // https://arxiv.org/abs/hep-ex/170804053
+  // [arxiv.org/abs/hep-ex/170804053]
 
   else if (id == 170804053) {
     const double M = gra::math::msqrt(lts.m2);
@@ -172,11 +175,11 @@ bool UserCut(int id, const gra::LORENTZSCALAR &lts) {
   }
 
   // --------------------------------------------------------------------
-  // ATLAS pi+pi- 13 TeV roman pot fiducial cuts (+other cuts needed in .json
-  // file)
+  // ATLAS pi+pi- 13 TeV roman pot fiducial cuts
+  // (+other cuts needed in .json file)
   // from R. Sikora, ATLAS poster, Bad Honnef QCD School 2017
   //
-  // (not sure if correct/implemented right way
+  // (N.B. check the implementation
   // c.f. cut |t| > 0.03 GeV^2 seems to give more physical results)
 
   else if (id == 1230123) {

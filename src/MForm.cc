@@ -398,7 +398,7 @@ std::complex<double> ReggeEtaLinear(double t, double alpha_t0, double ap, double
 // ----------------------------------------------------------------------
 // Non-linear Pomeron trajectory functional form:
 //
-// [REFERENCE: Khoze, Martin, Ryskin, https://arxiv.org/abs/hep-ph/0007359]
+// [REFERENCE: Khoze, Martin, Ryskin, arxiv.org/abs/hep-ph/0007359]
 double S3PomAlpha(double t) {
   // Additive quark model Beta_pi / Beta_p = 2/3 ->
   const double BETApi = (2.0 / 3.0) * PARAM_SOFT::gN_P;
@@ -429,7 +429,7 @@ double S3HPL(double tau, double t) {
 // Elastic proton form factor parametrization
 //
 // <apply at amplitude level>
-// [REFERENCE: Khoze, Martin, Ryskin, https://arxiv.org/abs/hep-ph/0007359]
+// [REFERENCE: Khoze, Martin, Ryskin, arxiv.org/abs/hep-ph/0007359]
 double S3F(double t) {
   return (1.0 / (1 - t / PARAM_SOFT::fc1)) * (1.0 / (1 - t / PARAM_SOFT::fc2));
 }
@@ -532,10 +532,10 @@ double mu_ratio() { return 2.792847337; }
 //
 // Proton electromagnetic form factors: Basic notions, present
 // achievements and future perspectives, Physics Reports, 2015
-// <https://www.sciencedirect.com/science/article/pzi/S0370157314003184>
+// <www.sciencedirect.com/science/article/pzi/S0370157314003184>
 //
 // [REFERENCE: Budnev, Ginzburg, Meledin, Serbo, EPA paper, Physics Reports, 1976]
-// <https://www.sciencedirect.com/science/article/pzi/0370157375900095>
+// <www.sciencedirect.com/science/article/pzi/0370157375900095>
 //
 //
 // Proton EM form factor F1 (Dirac)
@@ -759,12 +759,10 @@ std::complex<double> CBW(const gra::LORENTZSCALAR &lts, const gra::PARAM_RES &re
 }
 
 // See e.g.
-// [REFERENCE: TASI Lectures on propagators,
-// http://users.ictp.it/~smr2244/tait-supplemental.pdf]
-// [REFERENCE: Cacciapaglia, Deandrea, Curtis,
-// https://arxiv.org/abs/0906.3417v2]
+// [REFERENCE: TASI Lectures on propagators, users.ictp.it/~smr2244/tait-supplemental.pdf]
+// [REFERENCE: Cacciapaglia, Deandrea, Curtis, arxiv.org/abs/0906.3417v2]
 // [REFERENCE:
-// http://www.t2.ucsd.edu/twiki2/pub/UCSDTier2/Physics214Spring2015/ajw-breit-wigner-cbx99-55.pdf]
+// www.t2.ucsd.edu/twiki2/pub/UCSDTier2/Physics214Spring2015/ajw-breit-wigner-cbx99-55.pdf]
 
 // ----------------------------------------------------------------------
 // Delta function \delta(\hat{s} - M_0^2) replacement function:
@@ -805,9 +803,9 @@ std::complex<double> CBW_BF(double m2, double M0, double Gamma, int J, double mA
   return -1.0 / (m2 - M0 * M0 + zi * Gamma * M0 * M0 / msqrt(m2) * Bfactor);
 }
 
-// 4. Spin dependent Relativistic Breit-Wigner
+// 4. Spin dependent Relativistic Breit-Wigner (should not be used blindly!)
 //
-// [REFERENCE: https://arxiv.org/pdf/1402.1178.pdf]
+// [REFERENCE: Alwall el al., arxiv.org/abs/1402.1178]
 std::complex<double> CBW_JR(double m2, double M0, double Gamma, double J) {
   const std::complex<double> denom = (m2 - M0 * M0 + zi * M0 * Gamma);
 

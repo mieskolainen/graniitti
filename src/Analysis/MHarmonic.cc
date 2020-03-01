@@ -1,7 +1,7 @@
-// "Meta class" for Spherical Harmonics Expansion - contains
+// "Metaclass" for Spherical Harmonics Expansion - contains
 // dataprocessing/Minuit/ROOT plotting functions.
 //
-// All spherical harmonic processing is separated to MSpherical namespace.
+// All mathematical spherical harmonic processing is separated to MSpherical namespace.
 //
 //
 // (c) 2017-2020 Mikael Mieskolainen
@@ -139,63 +139,12 @@ void MHarmonic::Init(const HPARAM &hp) {
 MHarmonic::~MHarmonic() {}
 
 bool MHarmonic::PrintLoop(const std::string &output) const {
-  /*
-  // ------------------------------------------------------------------
-  // Print out results for EXTERNAL analysis
-  FILE* fp;
+  // Add here code to print output to files ...
 
-  char buff[100];
-  snprintf(buff, sizeof(buff), "./fits/%s_%s.m", output.c_str(), FRAME.c_str());
-  std::string outputfile = buff;
-
-  fp = fopen(outputfile.c_str(), "w");
-
-  if (fp == NULL) {
-                  fprintf(stderr, "Cannot open outputfile %s !\n", outputfile.c_str());
-                  return false;
-  }
-
-  fprintf(fp, "FRAME = %s; \n",     FRAME.c_str());
-  fprintf(fp, "param.LMAX = %d; \n",      param.LMAX);
-  fprintf(fp, "LAMBDA = %0.3f; \n", LAMBDA);
-  fprintf(fp, "ACTIVE = [");
-
-  for (std::size_t i = 0; i < ACTIVE.size(); ++i) {
-                  fprintf(fp, "%d ", (int)ACTIVE[i]);
-  }
-  fprintf(fp, "]; \n\n");
-  fprintf(fp, "M_CELL = [");
-
-  for (std::size_t i = 0; i < masscenter.size(); ++i) {
-                  fprintf(fp, "%0.3f ", masscenter[i]);
-  }
-  fprintf(fp, "]; \n\n");
-
-  fprintf(fp, "A{1} = [");
-  PrintMatrix(fp, fla.t_lm_EML);
-  fprintf(fp, "];\n");
-  fprintf(fp, "A{2} = [");
-  PrintMatrix(fp, fid.t_lm_EML);
-  fprintf(fp, "];\n");
-  fprintf(fp, "A{3} = [");
-  PrintMatrix(fp, det.t_lm_EML);
-  fprintf(fp, "];\n");
-
-  fprintf(fp, "A{4} = [");
-  PrintMatrix(fp, fla.t_lm_MPP);
-  fprintf(fp, "];\n");
-  fprintf(fp, "A{5} = [");
-  PrintMatrix(fp, fid.t_lm_MPP);
-  fprintf(fp, "];\n");
-  fprintf(fp, "A{6} = [");
-  PrintMatrix(fp, det.t_lm_MPP);
-  fprintf(fp, "];\n");
-
-  fclose(fp);
-  */
   return true;
 }
 
+// Plot all figures
 void MHarmonic::PlotAll(const std::string &outputpath) const {
   for (const auto &OBSERVABLE : {0, 1, 2}) {
     // **** EFFICIENCY DECOMPOSITION ****

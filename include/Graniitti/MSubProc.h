@@ -568,7 +568,8 @@ class PROC_25 : public MProc {
 
 class PROC_26 : public MProc {
  public:
-  PROC_26() : MProc("yy", "FLUX", {"kt-EPA flux with |A|^2 = 1", "kt-EPA", "SYSTEM TEST PROCESS!"}) {}
+  PROC_26()
+      : MProc("yy", "FLUX", {"kt-EPA flux with |A|^2 = 1", "kt-EPA", "SYSTEM TEST PROCESS!"}) {}
   ~PROC_26() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     InitGamma(lts);
@@ -580,8 +581,9 @@ class PROC_26 : public MProc {
 class PROC_27 : public MProc {
  public:
   PROC_27()
-      : MProc("yy_DZ", "FLUX",
-              {"DZ flux with |A|^2 = 1", "Collinear Drees-Zeppenfeld EPA", "SYSTEM TEST PROCESS!"}) {}
+      : MProc(
+            "yy_DZ", "FLUX",
+            {"DZ flux with |A|^2 = 1", "Collinear Drees-Zeppenfeld EPA", "SYSTEM TEST PROCESS!"}) {}
   ~PROC_27() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     InitGamma(lts);

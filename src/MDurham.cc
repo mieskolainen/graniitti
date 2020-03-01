@@ -71,12 +71,10 @@ MDurham::MDurham(gra::LORENTZSCALAR &lts, const std::string &modelfile) {
 // Durham QCD / KMR model
 //
 // [REFERENCE: Pumplin, Phys.Rev.D 52 (1995)]
-// [REFERENCE: Khoze, Kaidalov, Martin, Ryskin, Stirling,
-// https://arxiv.org/abs/hep-ph/0507040]
-// [REFERENCE: Khoze, Martin, Ryskin, https://arxiv.org/abs/hep-ph/0605113]
-// [REFERENCE: Harland-Lang, Khoze, Ryskin, Stirling,
-// https://arxiv.org/abs/1005.0695]
-// [REFERENCE: Harland-Lang, Khoze, Ryskin, https://arxiv.org/abs/1409.4785]
+// [REFERENCE: Khoze, Kaidalov, Martin, Ryskin, Stirling, arxiv.org/abs/hep-ph/0507040]
+// [REFERENCE: Khoze, Martin, Ryskin, arxiv.org/abs/hep-ph/0605113]
+// [REFERENCE: Harland-Lang, Khoze, Ryskin, Stirling, arxiv.org/abs/1005.0695]
+// [REFERENCE: Harland-Lang, Khoze, Ryskin, arxiv.org/abs/1409.4785]
 //
 double MDurham::DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process) {
   // gluon pair continuum
@@ -147,7 +145,7 @@ double MDurham::DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process) {
     // Initial state gluon helicity combinations,
     // ++ and -- give contribution for 0+ state (see DHelProj function)
     const double A = 1.0;
-    
+
     std::vector<std::complex<double>> is(4, 0.0);
     is[MM] = A;
     is[MP] = 0;
@@ -202,7 +200,7 @@ inline void MDurham::DHelicity(const std::vector<double> &q1, const std::vector<
 //
 // where lambda1, lambda2 are the initial state gluon helicities
 //
-// [REFERENCE: https://arxiv.org/abs/1405.0018v2, formula (20)]
+// [REFERENCE: arxiv.org/abs/1405.0018v2, formula (20)]
 //
 inline std::complex<double> MDurham::DHelProj(const std::vector<std::complex<double>> &A,
                                               const std::vector<std::complex<double>> &JzP) const {
@@ -276,12 +274,11 @@ inline void MDurham::DScaleChoise(double qt2, double q1_2, double q2_2, double &
   }
 }
 
-// [REFERENCE: Khoze, Martin, Ryskin,
-// https://journals.aps.org/prd/pdf/10.1103/PhysRevD.56.5867]
-// [REFERENCE: Harland-Lang, Khoze, Martin, Ryskin, Stirling,
-// https://arxiv.org/abs/1405.0018v2]
+// [REFERENCE: Khoze, Martin, Ryskin, journals.aps.org/prd/pdf/10.1103/PhysRevD.56.5867]
+// [REFERENCE: Harland-Lang, Khoze, Martin, Ryskin, Stirling, arxiv.org/abs/1405.0018v2]
 //
-// See also: <https://arxiv.org/pdf/1608.03765.pdf> (LUND)
+// See also:
+// [REFERENCE: Lonnblad, Zlebcik, arxiv.org/abs/1608.03765]
 //
 //
 // Durham loop integral amplitude:
@@ -414,9 +411,8 @@ double MDurham::DQtloop(gra::LORENTZSCALAR &                           lts,
 // ======================================================================
 // Exclusive \chi_c(0+) sub-amplitude
 //
-// [REFERENCE: Khoze, Martin, Ryskin, Stirling,
-// https://arxiv.org/abs/hep-ph/0403218]
-// [REFERENCE: Pasechnik, Szczurek, Teryaev, https://arxiv.org/abs/0709.0857v1]
+// [REFERENCE: Khoze, Martin, Ryskin, Stirling, arxiv.org/abs/hep-ph/0403218]
+// [REFERENCE: Pasechnik, Szczurek, Teryaev, arxiv.org/abs/0709.0857v1]
 //
 void MDurham::Dgg2chic0(const gra::LORENTZSCALAR &                      lts,
                         std::vector<std::vector<std::complex<double>>> &Amp,
@@ -457,7 +453,7 @@ void MDurham::Dgg2chic0(const gra::LORENTZSCALAR &                      lts,
 // or at most one is different from the rest, vanish for any n >= 4,
 // where n is the total number of gluons (in+out)
 //
-// [REFERENCE: Dixon, https://arxiv.org/abs/1310.5353v1]
+// [REFERENCE: Dixon, arxiv.org/abs/1310.5353v1]
 //
 // Note that incoming gluons (a,b) are in a color singlet state,
 // i.e., a = b or \delta^{ab} Tr [ .color algebra. ] has been applied
@@ -526,8 +522,7 @@ void MDurham::Dgg2gg(const gra::LORENTZSCALAR &                      lts,
 // ======================================================================
 // gg -> meson pair (gg -> q\bar{q} q\bar{q})
 //
-// [REFERENCE: Harland-Lang, Khoze, Ryskin, Stirling,
-// https://arxiv.org/pdf/1105.1626.pdf]
+// [REFERENCE: Harland-Lang, Khoze, Ryskin, Stirling, arxiv.org/pdf/1105.1626.pdf]
 
 // Meson wave-function (without scale Q⁻dependence)
 // x the longitudinal momentum fraction of a parton within the meson

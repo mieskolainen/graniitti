@@ -104,15 +104,14 @@ MRegge::MRegge(gra::LORENTZSCALAR &lts, const std::string &modelfile) {
 //
 //
 // [REFERENCE: Gribov, A Reggeon Diagram Technique, Soviet JETP, 1968,
-// http://jetp.ac.ru/cgi-bin/dn/e_026_02_0414.pdf]
-// [REFERENCE: Gribov, Migdal, Strong coupling in the Pomeranchuk pole problem,
-// Sov. Phys. JETP
-// 28(4), 784-795 (1968)]
+// jetp.ac.ru/cgi-bin/dn/e_026_02_0414.pdf]
+//
+// Strong coupling in the Pomeranchuk pole problem
+// [REFERENCE: Gribov, Migdal, Sov. Phys. JETP 28(4), 784-795 (1968)]
 // [REFERENCE: Muller, 1972]
 //
-// For different forms of triple Pomeron coupling (weak/strong, scalar/vector),
-// see:
-// [REFERENCE: Luna, Khoze, Martin, Ryskin, https://arxiv.org/abs/1005.4864v1]
+// For different forms of triple Pomeron coupling (weak/strong, scalar/vector):
+// [REFERENCE: Luna, Khoze, Martin, Ryskin, arxiv.org/abs/1005.4864v1]
 //
 std::complex<double> MRegge::ME2(gra::LORENTZSCALAR &lts, int mode) const {
   const double s0 = 1.0;  // Energy scale GeV^2
@@ -195,7 +194,7 @@ std::complex<double> MRegge::ME2(gra::LORENTZSCALAR &lts, int mode) const {
 //
 //
 // [Check Witten-Sakai-Sugimoto model based holographic eta,eta':
-// https://arxiv.org/pdf/1406.7010.pdf]
+// [arxiv.org/abs/1406.7010]
 //
 std::complex<double> MRegge::ME3HEL(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const {
   const int J = resonance.p.spinX2 / 2.0;
@@ -389,8 +388,8 @@ std::complex<double> MRegge::gik_Vertex(double t1, double t2, double dphi, int l
 //
 // [REFERENCE: Azimov, Khoze, Levin, Ryskin, Sov.J.Nucl.Phys.21, 215 (1975)]
 // [REFERENCE: Pumplin, Henyey, Nucl.Phys. B117, 377 (1976)]
-// [REFERENCE: Lebiedowicz, Szczurek, https://arxiv.org/abs/0912.0190]
-// [REFERENCE: Harland-Lang, Khoze, Ryskin, https://arxiv.org/abs/1312.4553]
+// [REFERENCE: Lebiedowicz, Szczurek, arxiv.org/abs/0912.0190]
+// [REFERENCE: Harland-Lang, Khoze, Ryskin, arxiv.org/abs/1312.4553]
 //
 std::complex<double> MRegge::ME4(gra::LORENTZSCALAR &lts, double sign) const {
   // Offshell propagator nominal mass^2 read from the outgoing particle PDG mass
@@ -460,14 +459,12 @@ std::complex<double> MRegge::ME4(gra::LORENTZSCALAR &lts, double sign) const {
 // For many similar amplitudes, see the literature of the era
 // "pre-superstring/generalized Veneziano amplitude". For example:
 //
-// [REFERENCE: Bardakci, Ruegg,
-// https://journals.aps.org/pr/pdf/10.1103/PhysRev.181.1884]
+// [REFERENCE: Bardakci, Ruegg, journals.aps.org/pr/pdf/10.1103/PhysRev.181.1884]
 //
 //
 // Numerically, one may compare with:
 //
-// [REFERENCE: Kycia, Lebiedowicz, Szczurek, Turnau,
-// https://arxiv.org/abs/1702.07572]
+// [REFERENCE: Kycia, Lebiedowicz, Szczurek, Turnau, arxiv.org/abs/1702.07572]
 //
 //
 std::complex<double> MRegge::ME6(gra::LORENTZSCALAR &lts) const {

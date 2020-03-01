@@ -1,10 +1,10 @@
 // Tensor Pomeron amplitudes
 //
-// See:
-// [REFERENCE: Ewerz, Maniatis, Nachtmann, https://arxiv.org/pdf/1309.3478.pdf]
-// [REFERENCE: Lebiodowicz, Nachtmann, Szczurek, arxiv.org/pdf/1601.04537.pdf]
-// [REFERENCE: LNS, arxiv.org/pdf/1801.03902.pdf]
-// [REFERENCE: LNS, arxiv.org/pdf/1901.11490.pdf]
+//
+// [REFERENCE: Ewerz, Maniatis, Nachtmann, arxiv.org/abs/1309.3478]
+// [REFERENCE: Lebiodowicz, Nachtmann, Szczurek, arxiv.org/abs/1601.04537]
+// [REFERENCE: LNS, arxiv.org/abs/1801.03902]
+// [REFERENCE: LNS, arxiv.org/abs/1901.11490]
 //
 // (c) 2017-2020 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.

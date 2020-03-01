@@ -88,10 +88,7 @@ void MParton::post_Constructor() {
   // if (EXCITATION == 2) { ProcPtr.LIPSDIM += 2; }
 }
 
-// Update kinematics (screening kT loop calls this)
-// Exact 4-momentum conservation at loop vertices, that is, by using this one
-// does not assume vanishing external momenta in the screening loop calculation.
-
+// No screening loop kinematics considered here
 bool MParton::LoopKinematics(const std::vector<double> &p1p, const std::vector<double> &p2p) {
   return false;
 }

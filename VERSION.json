@@ -3,5 +3,5 @@
  "version": 1.051,
  "type": "release",
  "date": "26.02.2020",
- "update": "performance, IO, new HepMC3 & bugfixes"
+ "update": "performance, IO, new HepMC3 & fixes"
 }

@@ -1,4 +1,4 @@
-// (Sub)-Processes and Amplitudes
+// (Sub)-Processes and Amplitude containers
 //
 // (c) 2017-2020 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
@@ -20,7 +20,7 @@ namespace gra {
 // Add all processes
 void MSubProc::CreateProcesses() {
   DeleteProcesses();
-  
+
   pr.push_back(new PROC_0());
   pr.push_back(new PROC_1());
   pr.push_back(new PROC_2());

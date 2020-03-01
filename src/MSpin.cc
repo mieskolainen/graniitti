@@ -234,7 +234,7 @@ void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MPartic
             << "  <=> sum |T_{lambda1,lambda2}|^2 = " << hc.T.FrobNorm2() << std::endl
             << std::endl;
 
-  // Do we have missing values?
+  // Check do have missing values:
   if (tag_set) {
     std::string str = "";
     for (std::size_t l = 0; l < need_to_set.size_row(); ++l) {

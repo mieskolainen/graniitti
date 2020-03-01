@@ -12,15 +12,15 @@
 //#include <experimental/filesystem>
 
 // C system functions
-#include <sys/types.h>
-#include <sys/stat.h>
+#include <fcntl.h>
 #include <sys/resource.h>
+#include <sys/stat.h>
 #include <sys/statvfs.h>
 #include <sys/time.h>
+#include <sys/types.h>
 #include <sys/utsname.h>
 #include <time.h>
 #include <unistd.h>
-#include <fcntl.h>
 
 // Libraries
 #include "HepMC3/FourVector.h"
@@ -45,7 +45,7 @@ namespace aux {
 double      GetVersion() { return 1.051; }
 std::string GetVersionType() { return "release"; }
 std::string GetVersionDate() { return "26.02.2020"; }
-std::string GetVersionUpdate() { return "performance, IO, new HepMC3 & bugfixes"; }
+std::string GetVersionUpdate() { return "performance, IO, new HepMC3 & fixes"; }
 
 // -------------------------------------------------------
 
@@ -478,34 +478,32 @@ bool FileExist(const std::string &name) {
 }
 
 void PrintNotice() {
-  std::cout << rang::fg::red
-            << "███╗   ██╗ ██████╗ ████████╗██╗ ██████╗███████╗\n"
-               "████╗  ██║██╔═══██╗╚══██╔══╝██║██╔════╝██╔════╝\n"
-               "██╔██╗ ██║██║   ██║   ██║   ██║██║     █████╗  \n"
-               "██║╚██╗██║██║   ██║   ██║   ██║██║     ██╔══╝  \n"
-               "██║ ╚████║╚██████╔╝   ██║   ██║╚██████╗███████╗\n"
-               "╚═╝  ╚═══╝ ╚═════╝    ╚═╝   ╚═╝ ╚═════╝╚══════╝\n"
+  std::cout << rang::fg::red << "<NOTICE>\n\n"
+            << "ZZZ    ZZ  ZZZZZZ  ZZZZZZZZ ZZ ZZZZZZ ZZZZZZZ \n"
+               "ZZZZ   ZZ ZZ    ZZ    ZZ    ZZ ZZ      ZZ     \n"
+               "ZZ ZZ  ZZ ZZ    ZZ    ZZ    ZZ ZZ      ZZZZZ  \n"
+               "ZZ  ZZ ZZ ZZ    ZZ    ZZ    ZZ ZZ      ZZ     \n"
+               "ZZ   ZZZZ  ZZZZZZ     ZZ    ZZ ZZZZZZ ZZZZZZZ \n"
             << rang::fg::reset << std::endl;
 }
 
 void PrintWarning() {
-  std::cout << rang::fg::red
-            << "██╗    ██╗ █████╗ ██████╗ ███╗   ██╗██╗███╗   ██╗ ██████╗ \n"
-               "██║    ██║██╔══██╗██╔══██╗████╗  ██║██║████╗  ██║██╔════╝ \n"
-               "██║ █╗ ██║███████║██████╔╝██╔██╗ ██║██║██╔██╗ ██║██║  ███╗\n"
-               "██║███╗██║██╔══██║██╔══██╗██║╚██╗██║██║██║╚██╗██║██║   ██║\n"
-               "╚███╔███╔╝██║  ██║██║  ██║██║ ╚████║██║██║ ╚████║╚██████╔╝\n"
-               " ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝╚═╝  ╚═══╝ ╚═════╝ \n"
+  std::cout << rang::fg::red << "<WARNING>\n\n"
+            << "ZZ     ZZ  ZZZZZ  ZZZZZZ  ZZZ    ZZ ZZ ZZZ    ZZ  ZZZZZZ  \n"
+               "ZZ     ZZ ZZ   ZZ ZZ   ZZ ZZZZ   ZZ ZZ ZZZZ   ZZ ZZ       \n"
+               "ZZ  Z  ZZ ZZZZZZZ ZZZZZZ  ZZ ZZ  ZZ ZZ ZZ ZZ  ZZ ZZ   ZZZ \n"
+               "ZZ ZZZ ZZ ZZ   ZZ ZZ   ZZ ZZ  ZZ ZZ ZZ ZZ  ZZ ZZ ZZ    ZZ \n"
+               " ZZZ ZZZ  ZZ   ZZ ZZ   ZZ ZZ   ZZZZ ZZ ZZ   ZZZZ  ZZZZZZ  \n"
             << rang::fg::reset << std::endl;
 }
 
 void PrintGameOver() {
-  std::cout << " ██████╗  █████╗ ███╗   ███╗███████╗     ██████╗ ██╗   ██╗███████╗██████╗ \n"
-               "██╔════╝ ██╔══██╗████╗ ████║██╔════╝    ██╔═══██╗██║   ██║██╔════╝██╔══██╗\n"
-               "██║  ███╗███████║██╔████╔██║█████╗      ██║   ██║██║   ██║█████╗  ██████╔╝\n"
-               "██║   ██║██╔══██║██║╚██╔╝██║██╔══╝      ██║   ██║╚██╗ ██╔╝██╔══╝  ██╔══██╗\n"
-               "╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗    ╚██████╔╝ ╚████╔╝ ███████╗██║  ██║\n"
-               " ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝     ╚═════╝   ╚═══╝  ╚══════╝╚═╝  ╚═╝\n"
+  std::cout << "<GAME OVER>\n\n"
+            << " ZZZZZZ   ZZZZZ  ZZZ    ZZZ ZZZZZZZ    ZZZZZZ  ZZ    ZZ ZZZZZZZ ZZZZZZ  \n"
+               "ZZ       ZZ   ZZ ZZZZ  ZZZZ ZZ        ZZ    ZZ ZZ    ZZ ZZ      ZZ   ZZ \n"
+               "ZZ   ZZZ ZZZZZZZ ZZ ZZZZ ZZ ZZZZZ     ZZ    ZZ ZZ    ZZ ZZZZZ   ZZZZZZ  \n"
+               "ZZ    ZZ ZZ   ZZ ZZ  ZZ  ZZ ZZ        ZZ    ZZ  ZZ  ZZ  ZZ      ZZ   ZZ \n"
+               " ZZZZZZ  ZZ   ZZ ZZ      ZZ ZZZZZZZ    ZZZZZZ    ZZZZ   ZZZZZZZ ZZ   ZZ \n"
             << std::endl;
 }
 
@@ -551,25 +549,29 @@ void CheckUpdate() {
         std::cout << "To update, copy-and-run: " << std::endl;
         std::cout
             << "git pull origin master && source ./install/setenv.sh && make superclean && make -j4"
-            << std::endl << std::endl;
-        std::cout << "If compilation fails, check that your HepMC3 and LHAPDF6 are as given in requirements.txt" << std::endl;
-        std::cout << "You can re-install them with cd install && source autoinstall.sh" << std::endl;
+            << std::endl
+            << std::endl;
+        std::cout
+            << "If compilation fails, check that HepMC3 and LHAPDF6 are as in requirements.txt"
+            << std::endl;
+        std::cout << "You can re-install them with cd install && source autoinstall.sh"
+                  << std::endl;
         PrintBar("-", 80);
         std::cout << std::endl;
       } else if (std::abs(GetVersion() - online_version) < 1e-6) {  // Same as online
         std::cout << std::endl;
         PrintBar("-", 80);
         std::cout << rang::style::bold << "This version " << GetVersion() << " ("
-                  << GetVersionDate() << ") is up to date with the online version" << rang::style::reset
-                  << std::endl;
+                  << GetVersionDate() << ") is up to date with the online version"
+                  << rang::style::reset << std::endl;
         PrintBar("-", 80);
         std::cout << std::endl;
       } else {  // This version is newer than oline
         std::cout << std::endl;
         PrintBar("-", 80);
         std::cout << rang::style::bold << rang::fg::green << "This version " << GetVersion() << " ("
-                  << GetVersionDate() << ") is newer than the online version " << online_version << " ("
-                  << online_date << ")" << rang::style::reset << std::endl;
+                  << GetVersionDate() << ") is newer than the online version " << online_version
+                  << " (" << online_date << ")" << rang::style::reset << std::endl;
         PrintBar("-", 80);
         std::cout << std::endl;
       }
@@ -718,7 +720,6 @@ std::vector<OneCMD> SplitCommands(const std::string &fullstr) {
     std::vector<std::string>           target;
     std::map<std::string, std::string> arg;
 
-    // ------------------------------------------------------------------
     // Check we find [] brackets
     std::size_t left  = subcmd[i].find("[");
     std::size_t right = subcmd[i].find("]");
@@ -742,7 +743,6 @@ std::vector<OneCMD> SplitCommands(const std::string &fullstr) {
       // Remove [...] block including brackets
       subcmd[i].erase(left, right - left + 1);
     }
-    // ------------------------------------------------------------------
 
     // Check we find {} brackets
     std::size_t Lpos = subcmd[i].find("{", 0);

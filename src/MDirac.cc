@@ -3,10 +3,10 @@
 // Next step, optimize this class using more efficient spinor-products.
 // For those, see e.g.:
 //
-// http://www.phys.nthu.edu.tw/~class/Helicity/YPYAO_Note_01.pdf
-// http://www.physics.wayne.edu/~ablechman/main/Research_files/shm.pdf
+// www.phys.nthu.edu.tw/~class/Helicity/YPYAO_Note_01.pdf
+// www.physics.wayne.edu/~ablechman/main/Research_files/shm.pdf
 // R. Kleiss, W.J. Stirling, Spinor Techniques, Nucl.Phys. B262 (1985) 235-262
-// https://arxiv.org/pdf/hep-ph/0110108.pdf
+// P. Richarsson, arxiv.org/abs/hep-ph/0110108
 //
 //
 // (c) 2017-2020 Mikael Mieskolainen

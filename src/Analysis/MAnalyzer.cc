@@ -127,20 +127,10 @@ MAnalyzer::MAnalyzer(const std::string &ID) {
 // Destructor
 MAnalyzer::~MAnalyzer() {}
 
-// Fiducial cuts
-// return true if event passes, else false
-/*
-bool MAnalyzer::FiducialCuts(HepMC3::GenEvent& ) {
-
-                return true;
-}
-*/
-
 // "Oracle" histogram filler:
 //
-// Oracle here means that in this function we (may) use event tree information
-// (unphysical), not just pure fiducial final state information which is purely physical
-// observables.
+// Oracle here means that in this function we (may) use event tree information,
+// not just pure fiducial final state information based on purely physical observables.
 //
 double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multiplicity,
                                     int finalPDG, unsigned int MAXEVENTS,
@@ -219,8 +209,9 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
       M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
 
       // Check that ancestor is a central system
-      std::vector<HepMC3::ConstGenParticlePtr> results = HepMC3::applyFilter(
-          *abs(HepMC3::StandardSelector::PDG_ID) == PDG::PDG_system, HepMC3::Relatives::ANCESTORS(p1));
+      std::vector<HepMC3::ConstGenParticlePtr> results =
+          HepMC3::applyFilter(*abs(HepMC3::StandardSelector::PDG_ID) == PDG::PDG_system,
+                              HepMC3::Relatives::ANCESTORS(p1));
       if (results.size() != 0) { pip.push_back(pvec); }
     }
     for (HepMC3::ConstGenParticlePtr p1 :
@@ -248,14 +239,16 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
     for (const auto &x : pip) { system += x; }
     for (const auto &x : pim) { system += x; }
 
-    std::vector<HepMC3::GenParticlePtr> beam_protons = HepMC3::applyFilter(
-        HepMC3::StandardSelector::STATUS == PDG::PDG_BEAM && HepMC3::StandardSelector::PDG_ID == PDG::PDG_p,
-        evt.particles());
+    std::vector<HepMC3::GenParticlePtr> beam_protons =
+        HepMC3::applyFilter(HepMC3::StandardSelector::STATUS == PDG::PDG_BEAM &&
+                                HepMC3::StandardSelector::PDG_ID == PDG::PDG_p,
+                            evt.particles());
 
-    std::vector<HepMC3::GenParticlePtr> final_protons = HepMC3::applyFilter(
-        HepMC3::StandardSelector::STATUS == PDG::PDG_STABLE && HepMC3::StandardSelector::PDG_ID == PDG::PDG_p,
-        evt.particles());
-    
+    std::vector<HepMC3::GenParticlePtr> final_protons =
+        HepMC3::applyFilter(HepMC3::StandardSelector::STATUS == PDG::PDG_STABLE &&
+                                HepMC3::StandardSelector::PDG_ID == PDG::PDG_p,
+                            evt.particles());
+
     M4Vec p_beam_plus;
     M4Vec p_beam_minus;
     M4Vec p_final_plus;
@@ -283,11 +276,11 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
       M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
 
       // Check that ancestor is NOT excited forward system or central system
-      std::vector<HepMC3::GenParticlePtr> results = HepMC3::applyFilter(
-          HepMC3::StandardSelector::PDG_ID ==  PDG::PDG_NSTAR ||
-          HepMC3::StandardSelector::PDG_ID == -PDG::PDG_NSTAR ||
-          HepMC3::StandardSelector::PDG_ID == PDG::PDG_system,
-          HepMC3::Relatives::ANCESTORS(p1));
+      std::vector<HepMC3::GenParticlePtr> results =
+          HepMC3::applyFilter(HepMC3::StandardSelector::PDG_ID == PDG::PDG_NSTAR ||
+                                  HepMC3::StandardSelector::PDG_ID == -PDG::PDG_NSTAR ||
+                                  HepMC3::StandardSelector::PDG_ID == PDG::PDG_system,
+                              HepMC3::Relatives::ANCESTORS(p1));
 
       if (results.size() == 0) {
         if (pvec.Rap() > 0) {
@@ -476,8 +469,8 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 
 // Sanity check
 double MAnalyzer::CheckEnergyMomentum(HepMC3::GenEvent &evt) const {
-  std::vector<HepMC3::GenParticlePtr> all_init =
-      HepMC3::applyFilter(HepMC3::StandardSelector::STATUS == PDG::PDG_BEAM, evt.particles());  // Beam
+  std::vector<HepMC3::GenParticlePtr> all_init = HepMC3::applyFilter(
+      HepMC3::StandardSelector::STATUS == PDG::PDG_BEAM, evt.particles());  // Beam
 
   std::vector<HepMC3::GenParticlePtr> all_final = HepMC3::applyFilter(
       HepMC3::StandardSelector::STATUS == PDG::PDG_STABLE, evt.particles());  // Final state
@@ -580,8 +573,9 @@ void MAnalyzer::NStarObservables(double W, HepMC3::GenEvent &evt) {
       HepMC3::applyFilter(HepMC3::StandardSelector::PDG_ID == PDG::PDG_pim, evt.particles());
 
   std::vector<HepMC3::GenParticlePtr> search_nstar =
-      HepMC3::applyFilter(HepMC3::StandardSelector::PDG_ID ==  PDG::PDG_NSTAR ||
-                          HepMC3::StandardSelector::PDG_ID == -PDG::PDG_NSTAR, evt.particles());
+      HepMC3::applyFilter(HepMC3::StandardSelector::PDG_ID == PDG::PDG_NSTAR ||
+                              HepMC3::StandardSelector::PDG_ID == -PDG::PDG_NSTAR,
+                          evt.particles());
 
   // Find out if we excited one or two protons
   bool excited_plus  = false;
@@ -607,9 +601,10 @@ void MAnalyzer::NStarObservables(double W, HepMC3::GenEvent &evt) {
     M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
 
     // Check that ancestor is excited forward system
-    std::vector<HepMC3::GenParticlePtr> ancestor = HepMC3::applyFilter(
-        HepMC3::StandardSelector::PDG_ID ==  PDG::PDG_NSTAR ||
-        HepMC3::StandardSelector::PDG_ID == -PDG::PDG_NSTAR, HepMC3::Relatives::ANCESTORS(p1));
+    std::vector<HepMC3::GenParticlePtr> ancestor =
+        HepMC3::applyFilter(HepMC3::StandardSelector::PDG_ID == PDG::PDG_NSTAR ||
+                                HepMC3::StandardSelector::PDG_ID == -PDG::PDG_NSTAR,
+                            HepMC3::Relatives::ANCESTORS(p1));
 
     if (ancestor.size() != 0) {
       hEta_Gamma->Fill(pvec.Eta(), W);
@@ -745,17 +740,6 @@ void MAnalyzer::PlotAll(const std::string &titlestr) {
     hXF_Gamma->Draw("same");
     hXF_Pions->Draw("same");
     hXF_Neutron->Draw("same");
-    /*
-    hE_Gamma->SetLineColor(2);
-    hE_Pions->SetLineColor(4);
-    hE_Neutron->SetLineColor(8);
-    hE_GammaNeutron->SetLineColor(kBlack);
-
-    hE_Gamma->Draw("same");
-    hE_Pions->Draw("same");
-    hE_Neutron->Draw("same");
-    hE_GammaNeutron->Draw("same");
-    */
 
     c1.cd(3);
     gPad->SetLogy();

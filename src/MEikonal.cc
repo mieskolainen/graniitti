@@ -163,18 +163,17 @@ std::complex<double> MEikonal::SingleAmpElastic(double s, double t, int type) {
 
 
 // Proton bt-density Omega(s,b_t) by Fourier-Bessel transform of the t-density
-// see <http://mathworld.wolfram.com/HankelTransform.html>
+// see <mathworld.wolfram.com/HankelTransform.html>
 //
 //
 // For eikonalization see:
-// [REFERENCE: Desgrolard, Giffon, Martynov, Predazzi,
-// https://arxiv.org/abs/hep-ph/9907451v2]
-// [REFERENCE: Desgrolard, Giffon, Martynov, Predazzi,
-// https://arxiv.org/abs/hep-ph/0001149]
+// [REFERENCE: Desgrolard, Giffon, Martynov, Predazzi, arxiv.org/abs/hep-ph/9907451v2]
+// [REFERENCE: Desgrolard, Giffon, Martynov, Predazzi, arxiv.org/abs/hep-ph/0001149]
 //
 //
 // For some discussion about Odderon versus Pomeron, see:
-// [REFERENCE: Ewerz, Maniatis, Nachtmann, https://arxiv.org/abs/1309.3478]
+// [REFERENCE: Ewerz, Maniatis, Nachtmann, arxiv.org/abs/1309.3478]
+//
 std::complex<double> MEikonal::S3Density(double bt) const {
   // Discretization of kt
   const double kt_STEP =
@@ -262,8 +261,8 @@ void MEikonal::S3CalcXS() {
   // Two channel eikonal eigenvalue solutions obtained via symbolic
   // calculation see e.g.
   //
-  // [REFERENCE: Khoze, Martin, Ryskin, https://arxiv.org/abs/hep-ph/0007359v2]
-  // [REFERENCE: Roehr, http://inspirehep.net/record/1351489/files/Thesis-2014-Roehr.pdf]
+  // [REFERENCE: Khoze, Martin, Ryskin, arxiv.org/abs/hep-ph/0007359v2]
+  // [REFERENCE: Roehr, inspirehep.net/record/1351489/files/Thesis-2014-Roehr.pdf]
   //
   // Unitary transformation matrix
   const MMatrix<double> cc = {{1, 1, 1, 1},     // pp

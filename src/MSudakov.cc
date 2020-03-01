@@ -5,11 +5,11 @@
 
 // C++
 #include <complex>
+#include <fstream>
 #include <future>
 #include <iostream>
 #include <memory>
 #include <vector>
-#include <fstream>
 
 // C file processing
 #include <sys/stat.h>
@@ -72,8 +72,9 @@ void MSudakov::InitArrays() {
     veto.InitArray();  // Initialize (call last!)
 
     const unsigned long hash     = gra::aux::djb2hash(veto.GetHashString());
-    const std::string   filename = gra::aux::GetBasePath(2) + "/eikonal/SUDA_" + gra::aux::ToString(veto.sqrts, 0) + "_" +
-                                 PDFSETNAME + "_" + std::to_string(hash);
+    const std::string   filename = gra::aux::GetBasePath(2) + "/eikonal/SUDA_" +
+                                 gra::aux::ToString(veto.sqrts, 0) + "_" + PDFSETNAME + "_" +
+                                 std::to_string(hash);
 
     // Try to read pre-calculated
     bool ok = veto.ReadArray(filename);
@@ -100,8 +101,9 @@ void MSudakov::InitArrays() {
     spdf.InitArray();  // Initialize (call last!)
 
     const unsigned long hash     = gra::aux::djb2hash(spdf.GetHashString());
-    const std::string   filename = gra::aux::GetBasePath(2) + "/eikonal/SHUV_" + gra::aux::ToString(spdf.sqrts, 0) + "_" +
-                                 PDFSETNAME + "_" + std::to_string(hash);
+    const std::string   filename = gra::aux::GetBasePath(2) + "/eikonal/SHUV_" +
+                                 gra::aux::ToString(spdf.sqrts, 0) + "_" + PDFSETNAME + "_" +
+                                 std::to_string(hash);
 
     // Try to read pre-calculated
     bool ok = spdf.ReadArray(filename);
@@ -137,7 +139,7 @@ double MSudakov::xg_xQ2(double x, double q2) const {
 
 // PDF access
 //
-// [REFERENCE: LHAPDF6, https://arxiv.org/abs/1412.7420]
+// [REFERENCE: LHAPDF6, arxiv.org/abs/1412.7420]
 void MSudakov::InitLHAPDF(const std::string &pdfname) {
   PDFSETNAME = pdfname;
 
@@ -226,7 +228,7 @@ double MSudakov::AlphaS_Q2(double q2) const {
 //
 // Requires 4 evaluations of densities
 //
-// [REFERENCE: https://en.wikipedia.org/wiki/Richardson_extrapolation]
+// [REFERENCE: en.wikipedia.org/wiki/Richardson_extrapolation]
 double MSudakov::diff_xg_xQ2_wrt_Q2(double x, double q2) const {
   // Do not take h less than 1E-4 with 64-bit double
   const double h   = 1E-4;
@@ -293,7 +295,7 @@ double MSudakov::fg_xQ2M(double x, double q2, double M) const {
 // Hg  = numerical integral transformed from standard pdf
 // dHg = dHg/dq^2 (differentiated numerically)
 //
-// [REFERENCE: Harland-Lang, https://arxiv.org/abs/1306.6661]
+// [REFERENCE: Harland-Lang, arxiv.org/abs/1306.6661]
 //
 std::pair<double, double> MSudakov::Shuvaev_H(double q2, double x) {
   const double y_MIN  = x / 4.0;
@@ -346,7 +348,7 @@ std::pair<double, double> MSudakov::Shuvaev_H(double q2, double x) {
 // Tg  = numerical integral value [range [0,1)]
 // dTg = dTg/dq^2 (analytic derivative)
 //
-// [REFERENCE: Coughlin, Forshaw, https://arxiv.org/abs/0912.3280v2]
+// [REFERENCE: Coughlin, Forshaw, arxiv.org/abs/0912.3280v2]
 //
 std::pair<double, double> MSudakov::Sudakov_T(double qt2, double mu) {
   // Scale functor
@@ -559,7 +561,7 @@ bool IArray2D::ReadArray(const std::string &filename) {
 // Standard 2D-bilinear interpolation f(a,b) = Z, and derivative dZ
 //
 //
-// [REFERENCE: https://en.wikipedia.org/wiki/Bilinear_interpolation]
+// [REFERENCE: en.wikipedia.org/wiki/Bilinear_interpolation]
 std::pair<double, double> IArray2D::Interpolate2D(double a, double b) const {
   const double EPS = 1e-5;
 

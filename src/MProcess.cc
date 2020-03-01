@@ -962,9 +962,9 @@ void MProcess::BranchForwardSystem(const std::vector<M4Vec> &p4, const std::vect
   */
 
   // Construct decaytree
-  forward       = gra::MDecayBranch();  // Initialize!!
-  forward.p4    = nstar;
-  
+  forward    = gra::MDecayBranch();  // Initialize!!
+  forward.p4 = nstar;
+
   // Daughters
   forward.legs.resize(p.size());
   forward.depth = 0;
@@ -1595,7 +1595,7 @@ bool MProcess::CommonRecord(HepMC3::GenEvent &evt) {
   // Final states (protons/excited system)
   int PDG_ID1 = lts.beam1.pdg;
   int PDG_ID2 = lts.beam2.pdg;
-  
+
   int PDG_status1 = PDG::PDG_STABLE;
   int PDG_status2 = PDG::PDG_STABLE;
 

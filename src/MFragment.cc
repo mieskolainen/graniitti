@@ -38,10 +38,8 @@ using gra::PDG::PDG_pim;
 using gra::PDG::PDG_pip;
 
 namespace gra {
-// Return decay status
-//
-// Should update this function to draw exponential decay lengths,
-// and based on a user defined ctau say 1 cm, decide if stable or not
+
+// Return decay status [RESERVATION!]
 //
 //
 void MFragment::GetDecayStatus(const std::vector<int> &pdgcode, std::vector<bool> &isstable) {
@@ -130,7 +128,7 @@ void MFragment::ExpPowRND(double q, double T, double maxpt, const std::vector<do
   }
 }
 
-// "Retro" N-body fragmentation with tube (cylinder) phase space
+// N-body fragmentation with tube (cylinder) phase space
 // (approximate target distribution is flat over rapidity, pt from a given
 // distribution)
 //

@@ -1141,7 +1141,7 @@ void MGraniitti::SampleVegas(unsigned int N) {
 //
 // Original algorithm from:
 // [REFERENCE: Lepage, G.P. Journal of Computational Physics, 1978]
-// https://en.wikipedia.org/wiki/VEGAS_algorithm
+// en.wikipedia.org/wiki/VEGAS_algorithm
 
 int MGraniitti::VEGAS(unsigned int init, unsigned int calls, unsigned int itermin, unsigned int N) {
   // First the initialization

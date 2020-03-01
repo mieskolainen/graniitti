@@ -88,9 +88,9 @@ MGamma::MGamma(gra::LORENTZSCALAR &lts, const std::string &modelfile) {
 // Dirac:     alpha_g = g^2/(4pi)
 // Beta-dirac alpha_g = (g*beta)^2 / (4pi)
 //
-// [REFERENCE: Rajantie, https://physicstoday.scitation.org/doi/pdf/10.1063/PT.3.3328]
-// [REFERENCE: Dougall, Wick, https://arxiv.org/abs/0706.1042]
-// [REFERENCE: Rels, Sauter, https://arxiv.org/abs/1707.04170v1]
+// [REFERENCE: Rajantie, physicstoday.scitation.org/doi/pdf/10.1063/PT.3.3328]
+// [REFERENCE: Dougall, Wick, arxiv.org/abs/0706.1042]
+// [REFERENCE: Rels, Sauter, arxiv.org/abs/1707.04170v1]
 //
 double MGamma::yyffbar(gra::LORENTZSCALAR &lts) {
   // QED couplings
