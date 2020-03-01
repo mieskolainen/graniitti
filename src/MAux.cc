@@ -479,31 +479,31 @@ bool FileExist(const std::string &name) {
 
 void PrintNotice() {
   std::cout << rang::fg::red << "<NOTICE>\n\n"
-            << "ZZZ    ZZ  ZZZZZZ  ZZZZZZZZ ZZ ZZZZZZ ZZZZZZZ \n"
-               "ZZZZ   ZZ ZZ    ZZ    ZZ    ZZ ZZ      ZZ     \n"
-               "ZZ ZZ  ZZ ZZ    ZZ    ZZ    ZZ ZZ      ZZZZZ  \n"
-               "ZZ  ZZ ZZ ZZ    ZZ    ZZ    ZZ ZZ      ZZ     \n"
-               "ZZ   ZZZZ  ZZZZZZ     ZZ    ZZ ZZZZZZ ZZZZZZZ \n"
+            << "ZZZ    ZZ  ZZZZZZ  ZZZZZZZZ ZZ ZZZZZZ ZZZZZZZ  \n"
+               "ZZZZ   ZZ ZZ    ZZ    ZZ    ZZ ZZ     ZZ       \n"
+               "ZZ ZZ  ZZ ZZ    ZZ    ZZ    ZZ ZZ     ZZZZZ    \n"
+               "ZZ  ZZ ZZ ZZ    ZZ    ZZ    ZZ ZZ     ZZ       \n"
+               "ZZ   ZZZZ  ZZZZZZ     ZZ    ZZ ZZZZZZ ZZZZZZZ  \n"
             << rang::fg::reset << std::endl;
 }
 
 void PrintWarning() {
   std::cout << rang::fg::red << "<WARNING>\n\n"
-            << "ZZ     ZZ  ZZZZZ  ZZZZZZ  ZZZ    ZZ ZZ ZZZ    ZZ  ZZZZZZ  \n"
-               "ZZ     ZZ ZZ   ZZ ZZ   ZZ ZZZZ   ZZ ZZ ZZZZ   ZZ ZZ       \n"
-               "ZZ  Z  ZZ ZZZZZZZ ZZZZZZ  ZZ ZZ  ZZ ZZ ZZ ZZ  ZZ ZZ   ZZZ \n"
-               "ZZ ZZZ ZZ ZZ   ZZ ZZ   ZZ ZZ  ZZ ZZ ZZ ZZ  ZZ ZZ ZZ    ZZ \n"
-               " ZZZ ZZZ  ZZ   ZZ ZZ   ZZ ZZ   ZZZZ ZZ ZZ   ZZZZ  ZZZZZZ  \n"
+            << "ZZ     ZZ  ZZZZZ  ZZZZZZ  ZZZ    ZZ ZZ ZZZ    ZZ  ZZZZZZ   \n"
+               "ZZ     ZZ ZZ   ZZ ZZ   ZZ ZZZZ   ZZ ZZ ZZZZ   ZZ ZZ        \n"
+               "ZZ  Z  ZZ ZZZZZZZ ZZZZZZ  ZZ ZZ  ZZ ZZ ZZ ZZ  ZZ ZZ   ZZZ  \n"
+               "ZZ ZZZ ZZ ZZ   ZZ ZZ   ZZ ZZ  ZZ ZZ ZZ ZZ  ZZ ZZ ZZ    ZZ  \n"
+               " ZZZ ZZZ  ZZ   ZZ ZZ   ZZ ZZ   ZZZZ ZZ ZZ   ZZZZ  ZZZZZZ   \n"
             << rang::fg::reset << std::endl;
 }
 
 void PrintGameOver() {
   std::cout << "<GAME OVER>\n\n"
-            << " ZZZZZZ   ZZZZZ  ZZZ    ZZZ ZZZZZZZ    ZZZZZZ  ZZ    ZZ ZZZZZZZ ZZZZZZ  \n"
-               "ZZ       ZZ   ZZ ZZZZ  ZZZZ ZZ        ZZ    ZZ ZZ    ZZ ZZ      ZZ   ZZ \n"
-               "ZZ   ZZZ ZZZZZZZ ZZ ZZZZ ZZ ZZZZZ     ZZ    ZZ ZZ    ZZ ZZZZZ   ZZZZZZ  \n"
-               "ZZ    ZZ ZZ   ZZ ZZ  ZZ  ZZ ZZ        ZZ    ZZ  ZZ  ZZ  ZZ      ZZ   ZZ \n"
-               " ZZZZZZ  ZZ   ZZ ZZ      ZZ ZZZZZZZ    ZZZZZZ    ZZZZ   ZZZZZZZ ZZ   ZZ \n"
+            << " ZZZZZZ   ZZZZZ  ZZZ    ZZZ ZZZZZZZ    ZZZZZZ  ZZ    ZZ ZZZZZZZ ZZZZZZ   \n"
+               "ZZ       ZZ   ZZ ZZZZ  ZZZZ ZZ        ZZ    ZZ ZZ    ZZ ZZ      ZZ   ZZ  \n"
+               "ZZ   ZZZ ZZZZZZZ ZZ ZZZZ ZZ ZZZZZ     ZZ    ZZ ZZ    ZZ ZZZZZ   ZZZZZZ   \n"
+               "ZZ    ZZ ZZ   ZZ ZZ  ZZ  ZZ ZZ        ZZ    ZZ  ZZ  ZZ  ZZ      ZZ   ZZ  \n"
+               " ZZZZZZ  ZZ   ZZ ZZ      ZZ ZZZZZZZ    ZZZZZZ    ZZZZ   ZZZZZZZ ZZ   ZZ  \n"
             << std::endl;
 }
 
@@ -628,20 +628,6 @@ std::string GetWebTLatex() {
   return str;
 }
 
-void PrintVersion() {
-  std::cout << GetVersionString() << std::endl;
-  std::cout << rang::style::bold << "<github.com/mieskolainen/GRANIITTI>" << rang::style::reset
-            << std::endl
-            << std::endl;
-  std::cout << "References: arXiv:1910.06300 [hep-ph]" << std::endl;
-  std::cout << std::endl;
-  std::cout << "(c) 2017-2020 Mikael Mieskolainen" << std::endl;
-  std::cout << "<m.mieskolainen@imperial.ac.uk>" << std::endl;
-  std::cout << std::endl;
-  std::cout << "<opensource.org/licenses/GPL-3.0>" << std::endl;
-  std::cout << "<opensource.org/licenses/MIT>" << std::endl;
-}
-
 void PrintFlashScreen(rang::fg pcolor) {
   std::cout << std::endl;
   gra::aux::PrintBar("-");
@@ -670,9 +656,22 @@ void PrintFlashScreen(rang::fg pcolor) {
                "`/yhoshhhh////++:.....`:yy+/...sddhs/:////:-/++ooo+oyssyoo:.`:/+oosssshddd\n"
                "`dddyhydhdyyddhddo``.+.`+/oyoh-..+yddho/-......--:----://+osyyhho++/--::/+\n"
                "/hddhmhmhmdmddhdds:+s+:+/-:++hhh//.-/++osssso++/-.````.-://::-.....`......\n"
+            << std::endl << std::endl;
+  std::cout << rang::fg::reset;
+}
+
+void PrintVersion() {
+  std::cout << GetVersionString() << std::endl;
+  std::cout << rang::style::bold << "<github.com/mieskolainen/GRANIITTI>" << rang::style::reset
             << std::endl
             << std::endl;
-  std::cout << rang::fg::reset;
+  std::cout << "References: arXiv:1910.06300 [hep-ph]" << std::endl;
+  std::cout << std::endl;
+  std::cout << "(c) 2017-2020 Mikael Mieskolainen" << std::endl;
+  std::cout << "<m.mieskolainen@imperial.ac.uk>" << std::endl;
+  std::cout << std::endl;
+  std::cout << "<opensource.org/licenses/GPL-3.0>" << std::endl;
+  std::cout << "<opensource.org/licenses/MIT>" << std::endl;
 }
 
 // Print horizontal bar
