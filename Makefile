@@ -1,6 +1,6 @@
 # GRANIITTI Makefile
-# 
-# (c) 2017-2019 Mikael Mieskolainen.
+#
+# (c) 2017-2020 Mikael Mieskolainen.
 # Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 # -----------------------------------------------------------------------
 #
@@ -19,7 +19,7 @@
 # To compile with profiling:               make VALGRIND=TRUE
 #
 # -----------------------------------------------------------------------
-# 
+#
 # EXTERNAL LIBRARIES SETUP:
 #
 #   [HEPMC3] and [LHAPDF]: See ./install folder
