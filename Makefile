@@ -36,20 +36,20 @@
 # "undefined symbol: _ZN5HepMC10FilterBase19init_has_end_vertexEv"
 # check that you do not have a collision of HEPMC3 with an existing
 # HepMC2 shared library installation!
-# 
+#
 # Check below:
-# 
+#
 # For tracking the libraries of the program:
 #  $> ldd ./executable
-# 
+#
 # Check if the shared object (.so) file contains the missing symbol:
 #  $> nm -D libHepMC.so
 #
 # -----------------------------------------------------------------------
 # Creating shared libraries, use -fPIC flag, then:
 # g++ -shared MH1.o -o libMH1.so
-# 
-# 
+#
+#
 # USE [TABS] for intendation while modifying this file!
 # -----------------------------------------------------------------------
 
@@ -59,8 +59,9 @@
 
 ifeq ($(CXX),g++)
 
-#KERNEL_GCC_VERSION := $(shell cat /proc/version | sed -n 's/.*gcc version \([[:digit:]]\.[[:digit:]]\.[[:digit:]]\).*/\1/p')
-#$(info Info KERNEL_GCC_VERSION = $(KERNEL_GCC_VERSION))
+# KERNEL_GCC_VERSION
+# := $(shell cat /proc/version | sed -n 's/.*gcc version \([[:digit:]]\.[[:digit:]]\.[[:digit:]]\).*/\1/p')
+# $(info Info KERNEL_GCC_VERSION = $(KERNEL_GCC_VERSION))
 
 CXX_VERSION = $(shell g++ -dumpversion)
 $(info Found CXX_VERSION = $(CXX_VERSION))
@@ -70,7 +71,7 @@ CXX_REQUIRED = 7.0
 FOO=$(shell echo "$(CXX_VERSION) < $(CXX_REQUIRED)" | bc)
 
 ifeq ($(FOO),1)
-$(error Your CXX_VERSION is too old, need at least CXX_VERSION = $(CXX_REQUIRED), update your GCC toolchain)
+$(error Your CXX_VERSION is too old, need at least CXX_VERSION = $(CXX_REQUIRED), update your GCC chain)
 endif
 
 endif
@@ -323,7 +324,7 @@ BIN_DIR = bin
 .SUFFIXES:      .o .cc
 
 # Normal
-EXE_NAMES      = gr xscan minbias hepmc3tolhe data2hepmc3 pathmark pdebench sommerfeld ot 
+EXE_NAMES      = gr xscan minbias hepmc3tolhe data2hepmc3 pathmark pdebench sommerfeld ot
 PROGRAM        = $(EXE_NAMES:%=$(BIN_DIR)/%)
 
 ifeq ($(ROOT),TRUE)
@@ -331,7 +332,7 @@ EXE_ROOT_NAMES = analyze fitsoft fitcentral fitharmonic
 PROGRAM_ROOT   = $(EXE_ROOT_NAMES:%=$(BIN_DIR)/%)
 endif
 
-PROGRAM_TEST   = 
+PROGRAM_TEST   =
 ifeq ($(TEST),TRUE)
 EXE_TEST_NAMES = testbench0 testbench1 testbench2 testbench3
 PROGRAM_TEST   = $(EXE_TEST_NAMES:%=$(BIN_DIR)/%)
@@ -388,7 +389,8 @@ $(OBJ_DIR)/%.o: $(SRC_DIR_1)/%.cc
 $(OBJ_DIR)/%.o: $(SRC_DIR_2)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) $(CXXVER_OLD) -c $< -o $@ $(CXXFLAGS) $(INCLUDES) -I$(ROOTSYS)/include -I$(ROOTSYS)/include/root
+	$(CXX) $(CXXVER_OLD) -c $< -o $@ $(CXXFLAGS) $(INCLUDES) \
+		-I$(ROOTSYS)/include -I$(ROOTSYS)/include/root
 # =======================================================================
 
 # =======================================================================
@@ -411,7 +413,8 @@ $(OBJ_DIR)/$(BIN_DIR)/%.o: $(SRC_DIR_PROGRAM)/%.cc
 $(OBJ_DIR)/$(BIN_DIR)/%.o: $(SRC_DIR_PROGRAM_ROOT)/%.cc
 	@echo " "
 	@echo "Generating dependencies and compiling $<..."
-	$(CXX) $(CXXVER_OLD) -c $< -o $@ $(CXXFLAGS) $(INCLUDES) -I$(ROOTSYS)/include -I$(ROOTSYS)/include/root
+	$(CXX) $(CXXVER_OLD) -c $< -o $@ $(CXXFLAGS) $(INCLUDES) \
+		-I$(ROOTSYS)/include -I$(ROOTSYS)/include/root
 # =======================================================================
 
 # =======================================================================

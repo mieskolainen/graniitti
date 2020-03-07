@@ -1,4 +1,14 @@
-# Python pre-processor of MadGraph C++ output to GRANIITTI
+# Python processor for MadGraph C++ amplitude output to GRANIITTI conversion
+#
+# The input folder should contain files:
+# CPPProcess.cc
+# CPPProcess.h
+# param_card.dat
+#
+# Example with folder 'yy_ll':     yes yy_ll | python MG2GRA.py
+#
+# (c) 2017-2020 Mikael Mieskolainen
+# Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 # Set here the new process name
 PROCESS = input("Give the name of the process folder: ")
@@ -10,7 +20,8 @@ PROCESS = input("Give the name of the process folder: ")
 CLASSNAME = 'AMP_MG5_' + PROCESS;
 
 message_orig = '// Visit launchpad.net/madgraph5 and amcatnlo.web.cern.ch'
-message_new  = '// Visit launchpad.net/madgraph5 and amcatnlo.web.cern.ch \n// @@@@ MadGraph to GRANIITTI autoconversion done @@@@'
+message_new  = ('// Visit launchpad.net/madgraph5 and amcatnlo.web.cern.ch'
+				'\n// @@@@ MadGraph to GRANIITTI conversion done @@@@')
 
 
 # ------------------------------------------------------------------------
@@ -24,14 +35,20 @@ for line in fin:
 	line = line.replace('virtual','')
 	line = line.replace(message_orig, message_new)
 
-	line = line.replace('#include "Parameters_sm.h', 
-		'#include "Graniitti/Amplitude/Parameters_sm.h" \n#include "Graniitti/MForm.h" \n#include "Graniitti/MAux.h" \n#include "Graniitti/MKinematics.h" \n#include "Graniitti/MMath.h')
+	line = line.replace('#include "Parameters_sm.h',
+		('#include "Graniitti/Amplitude/Parameters_sm.h"'
+		 '\n#include "Graniitti/MForm.h"'
+		 '\n#include "Graniitti/MAux.h"'
+		 '\n#include "Graniitti/MKinematics.h"'
+		 '\n#include "Graniitti/MMath.h'))
 	
 	line = line.replace('CPPProcess', CLASSNAME)
 	line = line.replace('Parameters_sm * pars;', 'Parameters_sm pars; // GRANIITTI')
 	line = line.replace('void sigmaKin()', 'double CalcAmp2(gra::LORENTZSCALAR &lts, double alphas)')
 	
-	line = line.replace(CLASSNAME + '() {}', CLASSNAME + '() {initProc(gra::aux::GetBasePath(2) + "/MG5cards/param_card_' + PROCESS + '.dat"); }');
+	line = line.replace(CLASSNAME + '() {}',
+		CLASSNAME + '() {initProc(gra::aux::GetBasePath(2) + "/MG5cards/param_card_'
+		+ PROCESS + '.dat"); }');
 	
 	fout.write(line)
 
@@ -54,7 +71,8 @@ for line in fin:
 	line = line.replace('#include "HelAmps_sm.h', '#include "Graniitti/Amplitude/HelAmps_sm.h')
 	line = line.replace('#include "CPPProcess.h', '#include "Graniitti/Amplitude/CPPProcess.h')
 	
-	line = line.replace('void CPPProcess::sigmaKin()', 'double CPPProcess::CalcAmp2(gra::LORENTZSCALAR &lts, double alphas)')
+	line = line.replace('void CPPProcess::sigmaKin()',
+		'double CPPProcess::CalcAmp2(gra::LORENTZSCALAR &lts, double alphas)')
 	line = line.replace('CPPProcess', CLASSNAME)
 	
 	line = line.replace('pars = Parameters_sm::getInstance();', 'pars = Parameters_sm(); // GRANIITTI')
@@ -193,8 +211,4 @@ print('Output to param_card_' + PROCESS + '.dat created')
 os.system('cp ./output/*.h ../../include/Graniitti/Amplitude/')
 os.system('cp ./output/*.cc ../../src/Amplitude/')
 os.system('cp ./output/*.dat ../../MG5cards/')
-
-
-
-
 

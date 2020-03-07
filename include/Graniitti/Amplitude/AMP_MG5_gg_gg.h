@@ -3,92 +3,93 @@
 // MadGraph5_aMC@NLO v. 2.6.7, 2019-10-16
 // By the MadGraph5_aMC@NLO Development Team
 // Visit launchpad.net/madgraph5 and amcatnlo.web.cern.ch
-// @@@@ MadGraph to GRANIITTI autoconversion done @@@@
+// @@@@ MadGraph to GRANIITTI conversion done @@@@
 //==========================================================================
 
 #ifndef MG5_Sigma_sm_gg_gg_H
 #define MG5_Sigma_sm_gg_gg_H
 
-#include <complex>
-#include <vector>
+#include <complex> 
+#include <vector> 
 
 #include "Graniitti/Amplitude/Parameters_sm.h"
-#include "Graniitti/MAux.h"
 #include "Graniitti/MForm.h"
+#include "Graniitti/MAux.h"
 #include "Graniitti/MKinematics.h"
 #include "Graniitti/MMath.h"
 
-using namespace std;
+using namespace std; 
 
 //==========================================================================
 // A class for calculating the matrix elements for
 // Process: g g > g g WEIGHTED<=2 @1
 //--------------------------------------------------------------------------
 
-class AMP_MG5_gg_gg {
- public:
-  // Constructor.
-  AMP_MG5_gg_gg() { initProc(gra::aux::GetBasePath(2) + "/MG5cards/param_card_gg_gg.dat"); }
+class AMP_MG5_gg_gg
+{
+  public:
 
-  // Initialize process.
-  void initProc(string param_card_name);
+    // Constructor.
+    AMP_MG5_gg_gg() {initProc(gra::aux::GetBasePath(2) + "/MG5cards/param_card_gg_gg.dat"); }
 
-  // Calculate flavour-independent parts of cross section.
-  double CalcAmp2(gra::LORENTZSCALAR &lts, double alphas);
+    // Initialize process.
+     void initProc(string param_card_name); 
 
-  // Evaluate sigmaHat(sHat).
-  double sigmaHat();
+    // Calculate flavour-independent parts of cross section.
+     double CalcAmp2(gra::LORENTZSCALAR &lts, double alphas); 
 
-  // Info on the subprocess.
-  string name() const { return "g g > g g (sm)"; }
+    // Evaluate sigmaHat(sHat).
+     double sigmaHat(); 
 
-  int code() const { return 1; }
+    // Info on the subprocess.
+     string name() const {return "g g > g g (sm)";}
 
-  const vector<double> &getMasses() const { return mME; }
+     int code() const {return 1;}
 
-  // Get and set momenta for matrix element evaluation
-  vector<double *> getMomenta() { return p; }
-  void             setMomenta(vector<double *> &momenta) { p = momenta; }
-  void             setInitial(int inid1, int inid2) {
-    id1 = inid1;
-    id2 = inid2;
-  }
+    const vector<double> & getMasses() const {return mME;}
 
-  // Get matrix element vector
-  const double *getMatrixElements() const { return matrix_element; }
+    // Get and set momenta for matrix element evaluation
+    vector < double * > getMomenta(){return p;}
+    void setMomenta(vector < double * > & momenta){p = momenta;}
+    void setInitial(int inid1, int inid2){id1 = inid1; id2 = inid2;}
 
-  // Constants for array limits
-  static const int ninitial   = 2;
-  static const int nexternal  = 4;
-  static const int nprocesses = 1;
+    // Get matrix element vector
+    const double * getMatrixElements() const {return matrix_element;}
 
- private:
-  // Private functions to calculate the matrix element for all subprocesses
-  // Calculate wavefunctions
-  void                 calculate_wavefunctions(const int perm[], const int hel[]);
-  static const int     nwavefuncs = 7;
-  std::complex<double> w[nwavefuncs][18];
-  static const int     namplitudes = 6;
-  std::complex<double> amp[namplitudes];
-  double               matrix_1_gg_gg();
+    // Constants for array limits
+    static const int ninitial = 2; 
+    static const int nexternal = 4; 
+    static const int nprocesses = 1; 
 
-  // Store the matrix element value from sigmaKin
-  double matrix_element[nprocesses];
+  private:
 
-  // Color flows, used when selecting color
-  double *jamp2[nprocesses];
+    // Private functions to calculate the matrix element for all subprocesses
+    // Calculate wavefunctions
+    void calculate_wavefunctions(const int perm[], const int hel[]); 
+    static const int nwavefuncs = 7; 
+    std::complex<double> w[nwavefuncs][18]; 
+    static const int namplitudes = 6; 
+    std::complex<double> amp[namplitudes]; 
+    double matrix_1_gg_gg(); 
 
-  // Pointer to the model parameters
-  Parameters_sm pars;  // GRANIITTI
+    // Store the matrix element value from sigmaKin
+    double matrix_element[nprocesses]; 
 
-  // vector with external particle masses
-  vector<double> mME;
+    // Color flows, used when selecting color
+    double * jamp2[nprocesses]; 
 
-  // vector with momenta (to be changed each event)
-  vector<double *> p;
-  // Initial particle ids
-  int id1, id2;
-};
+    // Pointer to the model parameters
+    Parameters_sm pars; // GRANIITTI 
+
+    // vector with external particle masses
+    vector<double> mME; 
+
+    // vector with momenta (to be changed each event)
+    vector < double * > p; 
+    // Initial particle ids
+    int id1, id2; 
+
+}; 
 
 
 #endif  // MG5_Sigma_sm_gg_gg_H

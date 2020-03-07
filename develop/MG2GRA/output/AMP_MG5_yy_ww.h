@@ -2,8 +2,8 @@
 // This file has been automatically generated for C++ Standalone by
 // MadGraph5_aMC@NLO v. 2.6.7, 2019-10-16
 // By the MadGraph5_aMC@NLO Development Team
-// Visit launchpad.net/madgraph5 and amcatnlo.web.cern.ch 
-// @@@@ MadGraph to GRANIITTI autoconversion done @@@@
+// Visit launchpad.net/madgraph5 and amcatnlo.web.cern.ch
+// @@@@ MadGraph to GRANIITTI conversion done @@@@
 //==========================================================================
 
 #ifndef MG5_Sigma_sm_aa_wpwm_H
@@ -12,10 +12,10 @@
 #include <complex> 
 #include <vector> 
 
-#include "Graniitti/Amplitude/Parameters_sm.h" 
-#include "Graniitti/MForm.h" 
-#include "Graniitti/MAux.h" 
-#include "Graniitti/MKinematics.h" 
+#include "Graniitti/Amplitude/Parameters_sm.h"
+#include "Graniitti/MForm.h"
+#include "Graniitti/MAux.h"
+#include "Graniitti/MKinematics.h"
 #include "Graniitti/MMath.h"
 
 using namespace std; 
