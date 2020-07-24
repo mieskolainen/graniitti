@@ -1,4 +1,4 @@
-GRANIITTI FAQ: 22.02.2020
+GRANIITTI FAQ: 24.07.2020
 
 mikael.mieskolainen@cern.ch
 -----------
@@ -308,6 +308,17 @@ A:  Sure, if you have ROOT installed, which is needed for plotting and
     inspect the condition number of moment mixing matrices which is automatically calculated,
     take care of (possible) regularization, have very large MC statistics for the detector expansion and so on.
 
+
+Q:  I get different spherical harmonic acceptance inversion results in different Lorentz rest frames.
+A:  This is expected and is due to a finite spherical harmonics expansion order, say L_max=4. However,
+    in the limit of infinite MC statistics and infinite harmonic expansion order, different frames will expand
+    the acceptance identically and also the data inversion results should then be identical.
+
+    The expansion itself is just a harmonic fit to a 2D-function in (cos theta,phi)-space in a hyperbin of system mass, (Pt, rapidity).
+    In some event-by-event rotated rest frames, the underlying geometric 2D-acceptance function is more flat, thus requires
+    less harmonic components to fit. Comparing two detectors at the same \sqrt{s}, the one with larger geometric
+    (eta,pt)-acceptance requires less harmonics, generally speaking. The underlying physics (scattering process) enforces
+    the same practical lower limit for the harmonics in both detectors, naturally.
 
 
 ADVANCED
