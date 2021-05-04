@@ -1,6 +1,6 @@
 // 'Continuum' i.e. directly constructed phase space class
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -25,15 +25,15 @@
 // Libraries
 #include "rang.hpp"
 
-using gra::PDG::GeV2barn;
 using gra::aux::indices;
-using gra::math::PI;
 using gra::math::abs2;
 using gra::math::msqrt;
+using gra::math::PI;
 using gra::math::pow2;
 using gra::math::pow3;
 using gra::math::pow4;
 using gra::math::zi;
+using gra::PDG::GeV2barn;
 
 namespace gra {
 // This is needed by construction
@@ -92,7 +92,7 @@ void MContinuum::post_Constructor() {
 // Exact 4-momentum conservation at loop vertices, that is, by using this one
 // does not assume vanishing external momenta in the screening loop calculation
 bool MContinuum::LoopKinematics(const std::vector<double> &p1p, const std::vector<double> &p2p) {
-  static const M4Vec beamsum = lts.pbeam1 + lts.pbeam2;
+  const M4Vec        beamsum = lts.pbeam1 + lts.pbeam2;
   const unsigned int Kf      = lts.decaytree.size();  // Number of central particles
   const unsigned int Nf      = Kf + 2;                // Number of final states
 
@@ -335,7 +335,7 @@ bool MContinuum::BNBuildKin(unsigned int Nf, double pt1, double pt2, double phi1
                             const std::vector<double> &kt, const std::vector<double> &phi,
                             const std::vector<double> &y, double m1, double m2) {
   const unsigned int Kf      = Nf - 2;  // Central system multiplicity
-  static const M4Vec beamsum = lts.pbeam1 + lts.pbeam2;
+  const M4Vec        beamsum = lts.pbeam1 + lts.pbeam2;
 
   if (lts.decaytree.size() != Kf) {
     std::string str =

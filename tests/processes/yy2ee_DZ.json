@@ -33,7 +33,7 @@
     "NSTARS"  : 0,              // N* excitation (0 = elastic, 1 = single, 2 = double)
     "LHAPDF"  : "LUXqed17_plus_PDF4LHC15_nnlo_100",  // LHAPDF parton distribution set
     "HIST"    : 2,              // On-the-flight histograms (0 = off,1,2)
-    "RNDSEED" : 12345678        // Random seed (int32)
+    "RNDSEED" : 12345678,        // Random seed (uint)
   },
   
   // ----------------------------------------------------------------------

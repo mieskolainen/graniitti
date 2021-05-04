@@ -1,6 +1,6 @@
 // Standard relativistic kinematics and related structures [HEADER ONLY file]
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 #ifndef MKINEMATICS_H
@@ -627,7 +627,7 @@ inline MCW NBodySetup(const T1 &mother, double M0, const std::vector<double> &m,
 //                                                    *
 //                                                     M_{N-3}
 //
-// For faster alternatives, investigate:
+// For (faster) alternatives, investigate:
 // M.M. Block, Monte Carlo phase space evaluation, Comp. Phys. Commun.
 // 69, 459 (1992)
 // S. Platzer, RAMBO on diet, https://arxiv.org/abs/1308.2922
@@ -678,6 +678,186 @@ inline MCW NBodyPhaseSpace(const T1 &mother, double M0, const std::vector<double
 
   return x;  // Phase-space weight
 }
+
+
+// Pure RAMBO (massless) flat phase space
+//
+// [REFERENCE: Kleiss R., Stirling W.J., Ellis S.D, 1986]
+//
+// See: https://www.ictp-saifr.org/wp-content/uploads/2019/02/newmc.pdf
+//
+// Return: weight for a valid and -1.0 for a kinematically impossible
+//
+template <typename T1, typename T2>
+inline MCW RamboMassless(const T1 &mother, double M0, std::vector<T1> &p, T2 &rng,
+                         bool boost = true) {
+  const int N = p.size();
+  if (N == 0) { throw std::invalid_argument("RamboMassless: p.size() == 0"); }
+
+  // Generate energies q_j^0 according to: q_j^0 exp(-q_j^0)
+  // Generate momenta \vec{q}_j isotropically with |\vec{q}_j| = q_j^0
+  //
+  std::valarray<T1> q(N);
+  for (const auto &i : aux::indices(p)) {
+    const double q0 = -std::log(rng.U(0, 1) * rng.U(0, 1));
+
+    double costheta = 0;
+    double sintheta = 0;
+    double phi      = 0;
+    FlatIsotropic(costheta, sintheta, phi, rng);
+    const double pt = q0 * sintheta;
+
+    q[i] = T1(pt * std::cos(phi), pt * std::sin(phi), q0 * costheta, q0);
+  }
+
+  // Q^\mu = \sum_j q_j^\mu
+  const T1     Q   = q.sum();
+  const double M_Q = Q.M();
+
+  std::vector<double> b = Q.P3();
+  for (const auto &i : aux::indices(b)) { b[i] = -b[i] / M_Q; }
+
+  const double gamma = Q.Gamma();
+  const double a     = 1.0 / (1.0 + gamma);
+  const double x     = M0 / M_Q;
+
+  // Boost to the rest
+  // p_j <-- \Lambda q_j / x
+  T1 psum;
+  for (const auto &i : aux::indices(p)) {
+    const double              qE = q[i].E();
+    const std::vector<double> q3 = q[i].P3();
+    const double              BQ = b[0] * q3[0] + b[1] * q3[1] + b[2] * q3[2];
+
+    // Conformal transform
+    std::vector<double> p3(3);
+    for (const auto &k : aux::indices(p3)) { p3[k] = x * (q3[k] + b[k] * (qE + a * BQ)); }
+    const double p0 = x * (gamma * qE + BQ);
+
+    p[i] = T1(p3[0], p3[1], p3[2], p0);
+  }
+
+  // ---------------------------------------------------------------------
+  // Boost all particles to the lab frame
+
+  if (boost) {
+    for (const auto &i : aux::indices(p)) {
+      // p[i].Print("particle " + std::to_string(i));
+      LorentzBoost(mother, M0, p[i], 1);  // note plus
+    }
+  }
+  // ---------------------------------------------------------------------
+
+
+  // Event weight
+  const double weight = PSnMassless(M0 * M0, N);
+
+  return MCW(weight, gra::math::pow2(weight), 1);
+}
+
+
+// RAMBO algorithm for flat phase space with masses
+//
+// [REFERENCE: Kleiss R., Stirling W.J., Ellis S.D, 1986]
+//
+// Return: weight for a valid and -1.0 for a kinematically impossible
+//
+template <typename T1, typename T2>
+inline MCW RamboMassive(const T1 &mother, double M0, const std::vector<double> &m,
+                        std::vector<T1> &p, T2 &rng) {
+  const int    ITERMAX = 1000;
+  const double EPS     = 1E-5;
+  const int    N       = m.size();
+
+  // Make sure it is of right size
+  p.resize(N);
+
+  // Generate massless, last parameter set to false, we do boost to the lab here
+  const MCW W0 = RamboMassless(mother, M0, p, rng, false);
+
+  double XMT = 0.0;
+  for (const auto &i : aux::indices(m)) { XMT += m[i]; }
+
+  if (XMT == 0) {  // Purely massless case
+    for (const auto &i : aux::indices(p)) {
+      LorentzBoost(mother, M0, p[i], 1);  // note plus
+    }
+    return W0;
+  }
+
+  // =====================================================================
+  // Generate masses
+
+  std::valarray<double> E(N);
+  std::vector<double>   k2(N);
+  std::vector<double>   m2(N);
+
+  for (const auto &i : aux::indices(p)) {
+    k2[i] = p[i].P3mod2();
+    m2[i] = math::pow2(m[i]);
+  }
+
+  const double XMAX = std::sqrt(1 - math::pow2(XMT / M0));
+  double       xi   = XMAX;
+
+  // Iteratively find value of xi to scale the momentum
+  int n_iter = 0;
+  while (n_iter < ITERMAX) {
+    double       G0  = 0;
+    const double xi2 = xi * xi;
+
+    for (const auto &i : aux::indices(k2)) {
+      E[i] = math::msqrt(k2[i] * xi2 + m2[i]);
+      G0   = G0 + k2[i] / E[i];
+    }
+    const double F0 = E.sum() - M0;
+
+    if (std::abs(F0) < EPS) {
+      // Scale momentum and set new energy
+      for (const auto &i : aux::indices(p)) {
+        p[i] *= xi;
+        p[i].SetE(E[i]);
+      }
+      break;  // We are done
+
+    } else {
+      ++n_iter;
+      xi = xi - F0 / (xi * G0);
+    }
+    if (n_iter == ITERMAX) {
+      std::cout << "RamboMassive: no convergence reached, return -1" << std::endl;
+      return MCW(-1, 0, 0);
+    }
+  }  // while loop
+
+  // =====================================================================
+  // Compute event weight
+
+  double prod = 1.0;
+  double sumA = 0;
+  double sumB = 0;
+
+  for (const auto &i : aux::indices(p)) {
+    const double k_mag = p[i].P3mod();
+    const double k0    = p[i].E();
+
+    sumA += k_mag / M0;
+    sumB += math::pow2(k_mag) / (k0 * M0);
+    prod *= k0 / k_mag;
+  }
+
+  const double weight = W0.Integral() / (prod * sumB * std::pow(sumA, 3 - 2 * N));
+
+  // ---------------------------------------------------------------------
+  // Boost all particles to the lab frame
+  for (const auto &i : aux::indices(p)) {
+    LorentzBoost(mother, M0, p[i], 1);  // note plus
+  }
+  // ---------------------------------------------------------------------
+
+  return MCW(weight, gra::math::pow2(weight), 1);
+}
+
 
 // SO(3) Rotations
 
@@ -1548,6 +1728,19 @@ class LORENTZSCALAR {
   // Propagator pt
   double qt1 = 0.0;
   double qt2 = 0.0;
+
+  // ** HepMC output **
+
+  // Evaluated PDF-values xf(x)
+  int    id1   = 0;  // Parton PDG id
+  int    id2   = 0;
+  double xf1   = 0.0;  // PDF value
+  double xf2   = 0.0;
+  double scale = 0.0;  // Factorization scale (GeV)
+
+  // Running couplings
+  double alphaQCD = 0.0;
+  double alphaQED = 0.0;
 };
 
 // Generator cut (default parameters set here)

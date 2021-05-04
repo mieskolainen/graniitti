@@ -1,6 +1,6 @@
 // Mathematical functions [HEADER ONLY file]
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 #ifndef MMATH_H
@@ -401,8 +401,9 @@ inline T CSIntegral(const std::vector<T> &f, double hstep) {
 template <typename T>
 inline T CS38Integral(const std::vector<T> &f, double hstep) {
   if ((f.size() - 1) % 3 != 0) {  // Must be multiple of 3
-    std::string str = "FATAL ERROR: gra::math::CS38Integral N = " +
-                      std::to_string((f.size() - 1) / 3) + " is not multiple of 3!";
+    std::string str =
+        "FATAL ERROR: gra::math::CS38Integral N = " + std::to_string((f.size() - 1) / 3) +
+        " is not multiple of 3!";
     throw std::invalid_argument(str);
   }
 
@@ -736,8 +737,8 @@ inline std::vector<std::vector<int>> GetAmpPerm(int N, int type) {
   std::vector<std::vector<int>> outset = Permutations(set);
 
   if (type == 1) {
-    return outset;  // Return complete permutations
-  } else {          // Return local charge conserving
+    return outset;         // Return complete permutations
+  } else if (type == 0) {  // Return local charge conserving
 
     // Create alternating charge series
     // 1,-1,1,-1,...
@@ -766,6 +767,9 @@ inline std::vector<std::vector<int>> GetAmpPerm(int N, int type) {
     // printf("Total = %d, Charge conserving = %d \n",
     // outset.size(), valid_amplitudes.size());
     return valid_amplitudes;
+  } else {
+    throw std::invalid_argument(
+        "math::GetAmpPerm: permutation parameter should 0 (charged) or 1 (complete).");
   }
 }
 
@@ -882,7 +886,6 @@ inline double NReY(const std::complex<double> &Y, int l, int m) {
 inline double Y_real_basis(double costheta, double phi, int l, int m) {
   // Normalization function
   auto K = [](int l, int m) -> double {
-
     if (m == 0) { return msqrt((2.0 * l + 1.0) / (4.0 * PI)); }  // Speed it up
     double temp =
         ((2.0 * l + 1.0) * factorial(l - m)) / static_cast<double>(4.0 * PI * factorial(l + m));

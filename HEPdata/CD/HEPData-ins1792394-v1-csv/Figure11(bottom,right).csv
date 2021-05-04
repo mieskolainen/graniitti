@@ -1,0 +1,29 @@
+#: table_doi: 10.17182/hepdata.94264.v1/t12
+#: name: Figure 11 (bottom, right)
+#: description: Differential fiducial cross section for CEP of $p\bar{p}$ pairs as a function of the sum of the squares of the four-momenta losses in the proton vertices.
+
+Systematic uncertainties assigned to data points are strongly correlated between bins and should be treated as allowed collective variation of all data points. There are two components of the total systematic uncertainty. The systematic uncertainty related to the experimental tools and analysis method is labeled "syst. (experimental)". The systematic uncertainty related to the integrated luminosity (fully correlated between all data points) is labeled "syst. (luminosity)".
+
+Fiducial region definition:
+ * central state $p$, $\bar{p}$
+	- $p_{\mathrm{T}} > 0.4~\mathrm{GeV}$
+	- $min(p_{\mathrm{T}}(p), p_{\mathrm{T}}(\bar{p})) < 1.1~\mathrm{GeV}$
+	- $|\eta| < 0.7$
+ * intact forward-scattered beam protons $p'$
+	- $p_x > -0.2~\mathrm{GeV}$
+	- $0.2~\mathrm{GeV} < |p_{y}| < 0.4~\mathrm{GeV}$
+	- $(p_x+0.3~\mathrm{GeV})^2 + p_y^2 < 0.25~\mathrm{GeV}^2$
+#: data_file: figure_11_(bottom,_right).yaml
+#: keyword reactions: P P --> P P PBAR P
+#: keyword observables: DSIG/D|T1+T2|
+#: keyword cmenergies: 200
+#: keyword phrases: Exclusive | Diffractive | Cross Section | Proton-Proton Scattering | Single Differential Cross Section
+#: SQRT(S) [GeV],,,200
+#: LUMINOSITY [$pb^{-1}$],,,14.2
+#: RE,,,P P --> P P PBAR P
+|T1+T2| [GEV**2],|T1+T2| [GEV**2] LOW,|T1+T2| [GEV**2] HIGH,DSIG/D|T1+T2| [PB/GEV**2],stat. +,stat. -,syst. (luminosity) +,syst. (luminosity) -,syst. (experimental) +,syst. (experimental) -
+0.125,0.1,0.15,167.04,68.425,-68.425,10.662,-9.4552,17.232,-16.292
+0.175,0.15,0.2,367.76,99.496,-99.496,23.474,-20.817,32.532,-29.477
+0.225,0.2,0.25,265.4,87.184,-87.184,16.94,-15.023,33.012,-29.38
+0.275,0.25,0.3,125.21,66.621,-66.621,7.992,-7.0873,19.838,-17.878
+

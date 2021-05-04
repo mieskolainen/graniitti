@@ -1,0 +1,23 @@
+#: table_doi: 10.17182/hepdata.94264.v1/t47
+#: name: Table 5
+#: description: Exponential slope of the $t$-distribution in three ranges of $m(\pi^+\pi^-)$ and two ranges of $\Delta\varphi$.
+
+The results are obtained for the Lorentz-invariant phase-space defined below:
+	- $|y(\pi^+\pi^-)| < 0.4$
+	- $0.05~\mathrm{GeV}^2 < -t_1, -t_2 < 0.16~\mathrm{GeV}^2$
+#: data_file: table_5.yaml
+#: keyword reactions: P P --> P PI+ PI- P
+#: keyword observables: SLOPE
+#: keyword cmenergies: 200
+#: keyword phrases: Exclusive | Diffractive | Proton-Proton Scattering
+#: SQRT(S) [GeV],,,200
+#: LUMINOSITY [$pb^{-1}$],,,14.2
+#: RE,,,P P --> P PI+ PI- P
+DPHI [DEG],DPHI [DEG] LOW,DPHI [DEG] HIGH,M(PI+PI-) [GEV],SLOPE [GEV**-2],stat. +,stat. -,syst. +,syst. -
+22.5,0.0,45.0,0.6 < M < 1.0,8.875,0.28131,-0.28131,0.85704,-0.61299
+22.5,0.0,45.0,1.0 < M < 1.5,10.072,0.65654,-0.65654,0.63976,-0.66275
+22.5,0.0,45.0,M > 1.5,8.3301,1.1869,-1.1869,0.68941,-0.7194
+157.5,135.0,180.0,0.6 < M < 1.0,14.069,0.46383,-0.46383,0.5212,-0.90444
+157.5,135.0,180.0,1.0 < M < 1.5,4.4632,0.40187,-0.40187,0.66296,-0.68027
+157.5,135.0,180.0,M > 1.5,5.0019,0.96535,-0.96535,0.69382,-0.72337
+

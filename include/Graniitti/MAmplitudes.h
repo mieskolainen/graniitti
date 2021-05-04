@@ -1,6 +1,6 @@
 // All external amplitudes (matrix elements) from MadGraph etc. collected here
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 #ifndef MAMPLITUDES_H

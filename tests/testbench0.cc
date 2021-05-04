@@ -1,6 +1,6 @@
-// Testbench 0 (unit tests)
+// GRANIITTI Testbench 0 (unit tests)
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 #include <catch.hpp>
@@ -18,67 +18,89 @@ using gra::aux::indices;
 using gra::math::pow2;
 
 
+gra::M4Vec psum(const std::vector<gra::M4Vec>& p) {
+	gra::M4Vec ptot;
+	for (const auto& i : indices(p)) { ptot += p[i]; }
+	return ptot;
+}
+
+
 // Generic phase space algorithms
-//
-//
-bool PhaseSpaceTest(uint N, double m0, double& a, double& b, double& c) {
-	
+// 
+// 
+bool PhaseSpaceTest(uint N, const M4Vec& mother, double mpart, double& a, double& b, double& c, double& d) {
+
     MRandom rng;
     rng.SetSeed(123456);
 
+    const double EPS = 1e-4;
+
 	// Test routine
 	printf("Phase space volume test \n");
-	M4Vec mother(0,0,0, m0);
 
+	const double m0 = mother.M();
+	
 	// Daughter masses
-	double mpart = 0.0;
-	if (N == 2 || N == 3) {
-		mpart = 0.0;
-	}
 	printf("<m = %0.3f GeV> : ", mpart);
+
 
 	std::vector<double> m(N, mpart); // n massless particles
 	std::vector<M4Vec> p(N);
-
-	bool unweight = true;
+	
+	bool unweight = false;
 	uint repeat   = 0;
 	gra::kinematics::MCW Xbod;
 	gra::kinematics::MCW Nbod;
+	gra::kinematics::MCW Rbod;	
 
 	do {
 		gra::kinematics::MCW x;
 		if (N == 2) {
 	 		x = gra::kinematics::TwoBodyPhaseSpace(mother, m0, m, p, rng);
+	 		REQUIRE(math::CheckEMC(mother - psum(p), EPS));
 			Xbod += x;
 		}
 		if (N == 3) {
 	 		x = gra::kinematics::ThreeBodyPhaseSpace(mother, m0, m, p, unweight, rng);
+	 		REQUIRE(math::CheckEMC(mother - psum(p), EPS));
 	 		Xbod += x;
 		}
+
 		x = gra::kinematics::NBodyPhaseSpace(mother, m0, m, p, unweight, rng);
+		REQUIRE(math::CheckEMC(mother - psum(p), EPS));
 		Nbod += x;
 
+		x = gra::kinematics::RamboMassive(mother, m0, m, p, rng);
+		REQUIRE(math::CheckEMC(mother - psum(p), EPS));
+		Rbod += x;
+
 	} while ((++repeat) < 1E4);
-
-	double exact = gra::kinematics::PSnMassless(m0*m0, N);
-
+	
 	if (N == 2) {
-		exact = gra::kinematics::PS2Massive(m0*m0, m[0]*m[0], m[1]*m[1]);
-	}
-	if (N == 2 || N == 3) {
 
 		a = Xbod.Integral();
 		b = Nbod.Integral();
-		c = exact;
-		printf("N = %d :: M0 = %6.1f :: \t XBodyPhaseSpace = %0.5E (%0.5f)  NBodyPhaseSpace = %0.5E (%0.5f) \t[PSnMassless = %0.5E] \n", 
-				N, m0, a, a/c, b, b/c, c);
+		c = Rbod.Integral();
+		d = gra::kinematics::PS2Massive(m0*m0, m[0]*m[0], m[1]*m[1]);
+		printf("N = %d :: M0 = %6.1f :: \t 2BodyPhaseSpace = %0.5E  NBodyPhaseSpace = %0.5E  RamboMassive = %0.5E  \t[PS2Massive = %0.5E] \n", 
+				N, m0, a, b, c, d);
+	}
+	else if (N == 3) {
+
+		a = Xbod.Integral();
+		b = Nbod.Integral();
+		c = Rbod.Integral();
+		d = a;
+		printf("N = %d :: M0 = %6.1f :: \t 3BodyPhaseSpace = %0.5E  NBodyPhaseSpace = %0.5E  RamboMassive = %0.5E  \t[PSnMassless = %0.5E] \n", 
+				N, m0, a, b, c, d);
 	} else {
 
 		a = 0.0;
 		b = Nbod.Integral();
-		c = exact;
-		printf("N = %d :: M0 = %6.1f :: \t\t\t\t\t\t  NBodyPhaseSpace = %0.5E (%0.5f) \t[PSnMassless = %0.5E] \n",
-			    N, m0, b/c, b/c, c);
+		c = Rbod.Integral();
+		d = gra::kinematics::PSnMassless(m0*m0, N);
+		printf("N = %d :: M0 = %6.1f :: \t\t\t\t\t  NBodyPhaseSpace = %0.5E  RamboMassive = %0.5E  \t[PSnMassless = %0.5E] \n",
+			    N, m0, b, c, d);
 	}
 	std::cout << std::endl;
 
@@ -88,41 +110,108 @@ bool PhaseSpaceTest(uint N, double m0, double& a, double& b, double& c) {
 // Generic phase space algorithms
 //
 //
-TEST_CASE("gra::kinematics::TwoBodyPhaseSpace, ThreeBodyPhaseSpace, NBodyPhaseSpace", "[PhaseSpace]") {
+TEST_CASE("gra::kinematics::TwoBodyPhaseSpace, ThreeBodyPhaseSpace, NBodyPhaseSpace, RamboMassive", "[PhaseSpace]") {
 
-	double M0 = 1500;
+    MRandom rng;
+    rng.SetSeed(123456);
+
+	const double EPS = 0.05;
+
 	double  a = 0.0;
 	double  b = 0.0;
 	double  c = 0.0;
+	double  d = 0.0;	
 
-	const double EPS = 0.01;
+	// Sample different mother momentum
+	int trials = 0;
+	while (trials < 30) {
+		++trials;
 
-	SECTION("N = 2") {
+		// --------------------------------------------------
+		// Random momentum for the mother
 
-		PhaseSpaceTest(2, M0, a,b,c);
-		REQUIRE( a == Approx(c).epsilon(EPS) );
-		REQUIRE( b == Approx(c).epsilon(EPS) );
-	}
-	SECTION("N = 3") {
+		const double Px = rng.U(-5, 5);
+		const double Py = rng.U(-5, 5);
+		const double Pz = rng.U(-5, 5);
+		const double M  = rng.U(1.5, 30);
 
-		PhaseSpaceTest(3, M0, a,b,c);
-		REQUIRE( a == Approx(c).epsilon(EPS) );
-		REQUIRE( b == Approx(c).epsilon(EPS) );
-	}
-	SECTION("N = 4") {
+		M4Vec mother;
+		mother.SetPxPyPzM(Px,Py,Pz,M);
 
-		PhaseSpaceTest(4, M0, a,b,c);
-		REQUIRE( b == Approx(c).epsilon(EPS) );
-	}
-	SECTION("N = 5") {
+		// --------------------------------------------------
 
-		PhaseSpaceTest(5, M0, a,b,c);
-		REQUIRE( b == Approx(c).epsilon(EPS) );
-	}
-	SECTION("N = 6") {
+		double mpart = 0.0;
 
-		PhaseSpaceTest(6, M0, a,b,c);
-		REQUIRE( b == Approx(c).epsilon(EPS) );
+		//SECTION("N = 2 | m = 0") {
+
+			PhaseSpaceTest(2, mother, mpart, a,b,c,d);
+			REQUIRE( a == Approx(d).epsilon(EPS) );
+			REQUIRE( b == Approx(d).epsilon(EPS) );
+			REQUIRE( c == Approx(d).epsilon(EPS) );	
+		//}
+		//SECTION("N = 3 | m = 0") {
+
+			PhaseSpaceTest(3, mother, mpart, a,b,c,d);
+			REQUIRE( a == Approx(d).epsilon(EPS) );
+			REQUIRE( b == Approx(d).epsilon(EPS) );
+			REQUIRE( c == Approx(d).epsilon(EPS) );	
+		//}
+		//SECTION("N = 4 | m = 0") {
+
+			PhaseSpaceTest(4, mother, mpart, a,b,c,d);
+			REQUIRE( b == Approx(d).epsilon(EPS) );
+			REQUIRE( c == Approx(d).epsilon(EPS) );
+		//}
+		
+		//SECTION("N = 5 | m = 0") {
+
+			PhaseSpaceTest(5, mother, mpart, a,b,c,d);
+			REQUIRE( b == Approx(d).epsilon(EPS) );
+			REQUIRE( c == Approx(d).epsilon(EPS) );
+		//}
+		/*
+		SECTION("N = 6 | m = 0") {
+
+			PhaseSpaceTest(6, mother, mpart, a,b,c,d);
+			REQUIRE( b == Approx(d).epsilon(EPS) );
+			REQUIRE( c == Approx(d).epsilon(EPS) );
+		}
+		*/
+
+		// ===================================================================
+		mpart = 0.139;
+
+
+		//SECTION("N = 2 | m != 0") {
+
+			PhaseSpaceTest(2, mother, mpart, a,b,c,d);
+			REQUIRE( b == Approx(a).epsilon(EPS) );
+			REQUIRE( c == Approx(a).epsilon(EPS) );
+		//}
+		//SECTION("N = 3 | m != 0") {
+
+			PhaseSpaceTest(3, mother, mpart, a,b,c,d);
+			REQUIRE( b == Approx(a).epsilon(EPS) );
+			REQUIRE( c == Approx(a).epsilon(EPS) );	
+		//}
+		//SECTION("N = 4 | m != 0") {
+
+			PhaseSpaceTest(4, mother, mpart, a,b,c,d);
+			REQUIRE( b == Approx(c).epsilon(EPS) );
+		//}
+		
+		//SECTION("N = 5 | m != 0") {
+
+			PhaseSpaceTest(5, mother, mpart, a,b,c,d);
+			REQUIRE( b == Approx(c).epsilon(EPS) );
+		//}
+		/*
+		SECTION("N = 6 | m != 0") {
+
+			PhaseSpaceTest(6, mother, mpart, a,b,c,d);
+			REQUIRE( b == Approx(c).epsilon(EPS) );
+		}
+		*/
 	}
 }
 

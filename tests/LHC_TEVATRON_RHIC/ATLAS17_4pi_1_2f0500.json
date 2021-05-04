@@ -11,7 +11,7 @@
   
   "GENERALPARAM" : {
 
-    "OUTPUT"  : "ATLAS17_2rho_4pi",             // Output filename
+    "OUTPUT"  : "ATLAS17_4pi_1_2f0500",             // Output filename
     "FORMAT"  : "hepmc3",                // hepmc3, hepmc2, hepevt
     "CORES"   : 0,                     // Number of CPU threads (0 for automatic)
     "NEVENTS" : 1000,                     // Number of unweighted (weight = 1) events
@@ -33,7 +33,7 @@
     "NSTARS" : 0,          // N* excitation (0 = elastic, 1 = single, 2 = double)
     "LHAPDF" : "CT10nlo",  // LHAPDF parton distribution set
     "HIST"    : 0,         // On-the-flight histograms (0 = off,1,2)
-    "RNDSEED" : 12345678,              // Random seed (int32)
+    "RNDSEED" : 12345678,        // Random seed (uint)
   },
   
   // ----------------------------------------------------------------------
@@ -123,7 +123,7 @@
     //"USERCUTS" : 1230123,
     "USERCUTS" : false,
   },
-
+  
   // ----------------------------------------------------------------------
   // Veto cuts
   // A single particle filling the conditions VETO (reject) the event.

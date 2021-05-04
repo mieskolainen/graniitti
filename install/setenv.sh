@@ -7,6 +7,7 @@
 # run with: source setenv.sh
 
 # ***
+PYTHON_VERSION=3.8
 INSTALLPATH=$HOME/local
 # ***
 
@@ -22,6 +23,10 @@ export PATH=${LHAPDFSYS}/bin:${PATH}
 export LD_LIBRARY_PATH=${LHAPDFSYS}/lib:${LD_LIBRARY_PATH}
 export LD_LIBRARY_PATH=${LHAPDFSYS}/lib64:${LD_LIBRARY_PATH}
 
+
+export PYTHONPATH=${HOME}/local/HEPMC3/lib/python${PYTHON_VERSION}/site-packages:${PYTHONPATH}
+
+
 echo 'New environment variables:'
 echo ''
 echo ' HEPMC3SYS='$HEPMC3SYS
@@ -30,3 +35,5 @@ echo ''
 echo ' PATH='$PATH
 echo ''
 echo ' LD_LIBRARY_PATH='$LD_LIBRARY_PATH
+echo ''
+echo ' PYTHONPATH='$PYTHONPATH

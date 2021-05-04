@@ -1,0 +1,23 @@
+{
+
+"ACTIVE"   : true,
+"NAME"     : "STAR 0.2 TeV",
+"TYPE"     : "HEPDATA",
+"DATAPATH" : "/HEPdata/CD/HEPData-ins1792394-v1-csv/",
+
+"GENCARD"  : ["/fitcard/STAR_1792394_ppbar.json"],
+
+"PID"      : [2212, -2212],
+
+"HIST" : [
+  {"FILE" : "Figure9(right).csv",         "OBS" : "M",            "SCALE" : 1E-12 },
+  {"FILE" : "Figure11(top,right).csv",    "OBS" : "dPhi_pp",      "SCALE" : 1E-12 },
+  {"FILE" : "Figure11(bottom,right).csv", "OBS" : "Abs_t1t2",     "SCALE" : 1E-12 },
+
+  {"FILE" : "Figure10(right).csv",        "OBS" : "Rap",          "SCALE" : 1E-12 },
+  {"FILE" : "Figure14(top,right).csv",    "OBS" : "costheta_CS",  "SCALE" : 1E-12 },
+  {"FILE" : "Figure14(bottom,right).csv", "OBS" : "phi_CS",       "SCALE" : 1E-12 },
+  
+]
+
+}

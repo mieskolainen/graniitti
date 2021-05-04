@@ -1,7 +1,7 @@
 // Technical discretization parameters
 //
 //
-// mikael.mieskolainen@cern.ch, 2018
+// mikael.mieskolainen@cern.ch, 2021
 {
 
   "NUMERICS_EIKONAL" : {

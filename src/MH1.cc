@@ -1,6 +1,6 @@
 // Templated 1D-histogram class with real or complex weights
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -35,6 +35,16 @@ MH1<T>::MH1(int xbins, std::string namestr) {
   FILLBUFF = true;
 }
 
+// Constructor with varying bin sizes [N x 2]
+template <class T>
+MH1<T>::MH1(std::vector<std::vector<double>> edges, std::string namestr) {
+  name = namestr;
+
+  // Init
+  ResetBounds(edges);
+  FILLBUFF = false;
+}
+
 // Empty constructor
 template <class T>
 MH1<T>::MH1() {
@@ -47,20 +57,26 @@ template <class T>
 MH1<T>::~MH1() {}
 
 
-// Raw output
+// Raw output to a file (or to the screen if file = stdout)
 template <class T>
-void MH1<T>::RawOutput() const {
-  printf("#binlow,binhigh,value,error \n");
+void MH1<T>::RawOutput(FILE *file) const {
+  fprintf(file, "#binlow,binhigh,value,error,value/binwidth,error/binwidth \n");
 
   for (std::size_t idx = 0; idx < static_cast<unsigned int>(XBINS); ++idx) {
     // This will take care of amplitude versus amplitude squared
     const double value     = GetPositiveDefinite(idx);
     const double value_err = GetBinError(idx);
 
-    printf("%0.5E,%0.5E,%0.5E,%0.5E\n", GetBinXVal(idx, -1), GetBinXVal(idx, 1), value, value_err);
+    const double lower = GetBinXVal(idx, -1);
+    const double upper = GetBinXVal(idx, 1);
+    const double width = upper - lower;
+
+    fprintf(file, "%0.6E,%0.6E,%0.6E,%0.6E,%0.6E,%0.6E\n", lower, upper, value, value_err,
+            value / width, value_err / width);
   }
 }
 
+// Print screen
 template <class T>
 void MH1<T>::Print(double width) const {
   if (!(fills > 0)) {  // No fills
@@ -74,13 +90,14 @@ void MH1<T>::Print(double width) const {
   const std::size_t N         = XBINS * width;         // Number of ascii columns (PARAMETER)
   double            maxvisual = 1.1 * GetMaxWeight();  // Give some % space to top
 
-  std::cout << "          |";  // Empty top left corner
+  // Top left corner
+  std::cout << "                       |";
   for (std::size_t i = 0; i < N; ++i) { std::cout << "="; }
   std::cout << "| " << std::endl;
 
   for (std::size_t idx = 0; idx < static_cast<unsigned int>(XBINS); ++idx) {
-    const int boundary = 0;  // (lower,center,upper)
-    printf("%9.2E |", GetBinXVal(idx, boundary));
+    printf("(%9.2E, %9.2E] |", GetBinXVal(idx, -1), GetBinXVal(idx, 1));
+
 
     // This will take care of amplitude versus amplitude squared
     const double value     = GetPositiveDefinite(idx);
@@ -113,14 +130,16 @@ void MH1<T>::Print(double width) const {
     } else {
       for (std::size_t j = 0; j < N; ++j) { std::cout << " "; }
     }
-    const double BINWIDTH = (XMAX - XMIN) / XBINS;
+
     // Raw value +- error
     // printf("| %0.1E +- %0.1E \n", value, value_err);
     // raw value +- stat | dO/dx (differential cross section, for example)
-    printf("| %0.1E +- %0.1E [dO/dx] = %0.1E \n", value, value_err, value / fills / BINWIDTH);
+    printf("| %0.1E +- %0.1E [dO/dx] = %0.1E \n", value, value_err, GetdOdX(idx));
   }
 
-  std::cout << "          |";  // Empty bottom left corner
+  // Empty bottom left corner
+  std::cout << "                       |";
+
   for (std::size_t i = 0; i < N; ++i) { std::cout << "="; }
   std::cout << "| " << std::endl;
 
@@ -137,6 +156,7 @@ void MH1<T>::Print(double width) const {
 
   std::cout << std::endl;
 }
+
 
 template <class T>
 std::pair<double, double> MH1<T>::WeightMeanAndError() const {
@@ -159,17 +179,23 @@ void MH1<T>::GetXPositiveDefinite(std::valarray<double> &x, std::valarray<double
   }
 }
 
-// Histogram mean (based on binned values)
+// Histogram mean (based on binned values), possibly with some power applied
 template <class T>
 double MH1<T>::GetMean(int power) const {
-  double       sum      = 0.0;
-  double       norm     = 0.0;  // Normalization
-  const double binwidth = (XMAX - XMIN) / XBINS;
+  double sum  = 0.0;
+  double norm = 0.0;  // Normalization
 
   for (std::size_t i = 0; i < static_cast<unsigned int>(XBINS); ++i) {
-    const double value  = std::pow(binwidth * (i + 1) - binwidth / 2.0 + XMIN, power);
+    double X_value = 0;
+    if (binedges.empty()) {
+      const double binwidth = (XMAX - XMIN) / XBINS;
+      X_value               = binwidth * (i + 1) - binwidth / 2.0 + XMIN;
+    } else {
+      X_value = (binedges[i][1] - binedges[i][0]) / 2;
+    }
+
     const double weight = GetPositiveDefinite(i);
-    sum += weight * value;
+    sum += weight * std::pow(X_value, power);
     norm += weight;
   }
   if (norm > 0) {
@@ -200,7 +226,8 @@ void MH1<T>::Fill(double xvalue, T weight) {
     fills += 1;
 
     // Find out bin
-    const int idx = GetIdx(xvalue, XMIN, XMAX, XBINS, LOGX);
+    int idx = 0;
+    GetBinIdx(xvalue, idx);
 
     if (idx == -3) { nanflow += 1; }
     if (idx == -1) { underflow += 1; }
@@ -285,6 +312,29 @@ template <class T>
 void MH1<T>::ResetBounds(int xbins) {
   ResetBounds(xbins, 0.0, 0.0);
   FILLBUFF = true;  // Autorange on, no explicit bounds
+}
+
+// Reset histogram completely
+template <class T>
+void MH1<T>::ResetBounds(std::vector<std::vector<double>> edges) {
+  binedges = edges;
+
+  if (binedges.empty()) {
+    throw std::invalid_argument("MH1<T>::ResetBounds: input edge array is empty " +
+                                std::to_string(binedges.size()));
+  }
+  for (std::size_t i = 0; i < binedges.size(); ++i) {
+    if (binedges[i].size() != 2) {
+      throw std::invalid_argument(
+          "MH1<T>::ResetBounds: every element of the edge array should size 2 (minimum, maximum)");
+    }
+    if (binedges[i][1] <= binedges[i][0]) {
+      throw std::invalid_argument("MH1<T>::ResetBounds: non-monotonic binedges at index = " +
+                                  std::to_string(i));
+    }
+  }
+
+  ResetBounds(binedges.size(), binedges[0][0], binedges[binedges.size() - 1][1]);
 }
 
 // Reset histogram completely
@@ -407,6 +457,40 @@ double MH1<T>::GetBinError(int idx) const {
   return err;
 }
 
+// Return weight (double) or |w|^2 (complex case) as a differential distribution
+template <class T>
+double MH1<T>::GetdOdX(int idx) const {
+  const double norm = fills * GetBinWidth(idx);
+
+  if (ValidBin(idx) && norm > 0.0) {
+    return GetPositiveDefinite(idx) / norm;
+  } else {
+    return 0.0;
+  }
+}
+
+// Return uncertainty as a differential distribution
+template <class T>
+double MH1<T>::GetdOdXError(int idx) const {
+  const double norm = fills * GetBinWidth(idx);
+
+  if (ValidBin(idx) && norm > 0.0) {
+    return GetBinError(idx) / norm;
+  } else {
+    return 0.0;
+  }
+}
+
+// Return bin normalization
+template <class T>
+double MH1<T>::GetBinWidth(int idx) const {
+  if (binedges.empty()) {
+    return (XMAX - XMIN) / XBINS;
+  } else {
+    return binedges[idx][1] - binedges[idx][0];
+  }
+}
+
 // Return weight (double) or |w|^2 (complex case)
 template <class T>
 double MH1<T>::GetPositiveDefinite(int idx) const {
@@ -418,17 +502,32 @@ double MH1<T>::GetPositiveDefinite(int idx) const {
   }
 }
 
+
 // Get bin index (idx) corresponding to value (xvalue)
 template <class T>
 void MH1<T>::GetBinIdx(double xvalue, int &idx) {
-  // Find out bins
-  idx = GetIdx(xvalue, XMIN, XMAX, XBINS, LOGX);
+  // Equal width binning
+  if (binedges.empty()) {
+    idx = ComputeIdx(xvalue, XMIN, XMAX, XBINS, LOGX);
+
+    // Variable width binning
+  } else {
+    idx = ComputeIdx(xvalue, binedges);
+  }
 }
 
 // Get bin value in units of X for a given bin index
 // boundary = -1,0,1 (lower, center, upper)
 template <class T>
 double MH1<T>::GetBinXVal(int idx, int boundary) const {
+  // Non-equal width binning
+  if (!binedges.empty()) {
+    if (boundary == -1) return binedges[idx][0];
+    if (boundary == 0) return (binedges[idx][1] - binedges[idx][0]) / 2;
+    if (boundary == 1) return binedges[idx][1];
+  }
+
+  // Equal binning
   if (idx > XBINS - 1) {
     throw std::invalid_argument("MH1::GetBinXVal: idx = " + std::to_string(idx) +
                                 " > XBINS-1 = " + std::to_string(XBINS - 1));
@@ -461,17 +560,50 @@ double MH1<T>::GetBinXVal(int idx, int boundary) const {
   }
 }
 
-// Get table/histogram index for linearly or base-10 logarithmically spaced
-// bins
-// Gives exact uniform filling within bin boundaries.
+
+// Compute bin index for variable width binning
+//
+template <class T>
+int MH1<T>::ComputeIdx(double value, const std::vector<std::vector<double>> &edges) const {
+  if (std::isnan(value) || std::isinf(value)) { return -3; }
+
+  // Underflow
+  if (value < edges[0][0]) {
+    return -1;
+  }
+  // Overflow
+  else if (value > edges[edges.size() - 1][1]) {
+    return -2;
+  }
+  // Binary search
+  else {
+    /*
+    // Linear search
+    for (std::size_t i = 0; i < binedges.size(); ++i) {
+      if (binedges[i][0] < xvalue && xvalue <= binedges[i][1]) {
+        idx = i;
+      }
+    }
+    */
+    // Binary search via STL library
+    const auto it = std::upper_bound(edges.begin(), edges.end(), value, compare_bin_edges());
+    return (it != edges.end()) ? it - edges.begin() : -3;  // -3 happens only if hole
+  }
+}
+
+
+// Compute table/histogram index for linearly or base-10 logarithmically spaced
+// bins. Computes exact uniform filling within bin boundaries.
 //
 // In the logarithmic case, MINVAL and MAXVAL > 0, naturally.
 //
 //
-// Underflow returns -1
-// Overflow  returns -2
+// Underflow     returns -1
+// Overflow      returns -2
+// Invalid input returns -3
+//
 template <class T>
-int MH1<T>::GetIdx(double value, double minval, double maxval, int nbins, bool logbins) const {
+int MH1<T>::ComputeIdx(double value, double minval, double maxval, int nbins, bool logbins) const {
   if (std::isnan(value) || std::isinf(value)) { return -3; }
   if (value < minval) { return -1; }  // underflow
   if (value > maxval) { return -2; }  // overflow

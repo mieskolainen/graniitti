@@ -8,6 +8,7 @@
 
 // C++
 #include <math.h>
+
 #include <algorithm>
 #include <chrono>
 #include <complex>
@@ -107,7 +108,8 @@ std::vector<double> dsigma_el_dt(double *par, const double sqrts,
 
   try {
     // Read process input from file
-    gen->ReadInput(fitsoft::INPUTFILE);
+    nlohmann::json js = json::parse(gra::aux::GetInputData(fitsoft::INPUTFILE));
+    gen->ReadInput(js);
 
     // Set beam and energy
     const std::vector<double> energy = {sqrts / 2, sqrts / 2};
@@ -164,8 +166,11 @@ void SigmaXS(double *par, double &xs_tot, double &xs_el, double &xs_inel, const 
   std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
 
   try {
-    // Read process input from file and set initial state
-    gen->ReadInput(fitsoft::INPUTFILE);
+    // Read process input from file
+    nlohmann::json js = json::parse(gra::aux::GetInputData(fitsoft::INPUTFILE));
+    gen->ReadInput(js);
+
+    // Set the initial state
     const std::vector<double> energy = {sqrts / 2, sqrts / 2};
     gen->proc->SetInitialState(beam, energy);
 
@@ -474,7 +479,9 @@ int main(int argc, char *argv[]) {
   MGraniitti gen;
 
   // Read process input from file
-  gen.ReadInput(fitsoft::INPUTFILE);
+  nlohmann::json js = json::parse(gra::aux::GetInputData(fitsoft::INPUTFILE));
+  gen.ReadInput(js);
+
 
   // SET SOFT PARAMETERS [step, min, max]
   // Pomeron trajectors

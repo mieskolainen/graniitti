@@ -1,7 +1,7 @@
 {
  "name": "GRANIITTI",
- "version": 1.051,
- "type": "release",
- "date": "26.02.2020",
- "update": "performance, IO, new HepMC3 & fixes"
+ "version": 1.080,
+ "type": "pre-release",
+ "date": "04.05.2021",
+ "update": "spin-machinery extensions, new tune, updated tech & bugfixes"
 }

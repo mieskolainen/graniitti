@@ -1,0 +1,16 @@
+{
+
+"ACTIVE"   : true,
+"NAME"     : "ATLAS 13 TeV",
+"TYPE"     : "RAW_SCALAR",
+"DATAPATH" : "/HEPdata/CD/",
+
+"GENCARD"  : ["/fitcard/ATLAS_13_pipi.json"],
+
+"PID"      : [211, -211],
+
+"HIST" : [
+  {"FILE" : "ATLAS_pipi_13_TeV.raw", "OBS" : "M", "SCALE" : 1, "NBINS" : 50, "XMIN" : 0.3, "XMAX" : 2.4 },
+]
+
+}

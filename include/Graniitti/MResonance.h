@@ -1,6 +1,6 @@
 // Resonance container class
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 #ifndef MRESONANCE_H
@@ -90,7 +90,7 @@ class PARAM_RES {
   // Maximum sliding pomeron helicity
   int JMAX = 0;
 
-  // Spin-density matrix (constant)
+  // Spin-density matrix (2J+1) (constant)
   MMatrix<std::complex<double>> rho;
 
   // --------------------------------------------------------------------

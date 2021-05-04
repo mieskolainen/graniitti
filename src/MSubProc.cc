@@ -1,6 +1,6 @@
 // (Sub)-Processes and Amplitude containers
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -17,96 +17,94 @@
 
 namespace gra {
 
-// Add all processes
-void MSubProc::CreateProcesses() {
-  DeleteProcesses();
 
-  pr.push_back(new PROC_0());
-  pr.push_back(new PROC_1());
-  pr.push_back(new PROC_2());
-  pr.push_back(new PROC_3());
-  pr.push_back(new PROC_4());
-  pr.push_back(new PROC_5());
-  pr.push_back(new PROC_6());
-  pr.push_back(new PROC_7());
-  pr.push_back(new PROC_8());
-  pr.push_back(new PROC_9());
-  pr.push_back(new PROC_10());
-  pr.push_back(new PROC_11());
-  pr.push_back(new PROC_12());
-  pr.push_back(new PROC_13());
-  pr.push_back(new PROC_14());
-  pr.push_back(new PROC_15());
-  pr.push_back(new PROC_16());
-  pr.push_back(new PROC_17());
-  pr.push_back(new PROC_18());
-  pr.push_back(new PROC_19());
-  pr.push_back(new PROC_20());
-  pr.push_back(new PROC_21());
-  pr.push_back(new PROC_22());
-  pr.push_back(new PROC_23());
-  pr.push_back(new PROC_24());
-  pr.push_back(new PROC_25());
-  pr.push_back(new PROC_26());
-  pr.push_back(new PROC_27());
+// Add all processes
+std::vector<std::shared_ptr<MProc>> MSubProc::CreateAllProcesses() const {
+  std::vector<std::shared_ptr<MProc>> v;
+
+  v.push_back(std::shared_ptr<MProc>{new PROC_0()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_1()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_2()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_3()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_4()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_5()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_6()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_7()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_8()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_9()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_10()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_11()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_12()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_13()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_14()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_15()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_16()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_17()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_18()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_19()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_20()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_21()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_22()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_23()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_24()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_25()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_26()});
+  v.push_back(std::shared_ptr<MProc>{new PROC_27()});
+
+  return v;
 }
+
 
 // Generic constructor, used for the first initialization
 MSubProc::MSubProc(const std::vector<std::string>& istate, const std::string& mc) {
   for (const auto& i : aux::indices(istate)) { ConstructDescriptions(istate[i], mc); }
 }
 
+
 // Set spesific initial state and channel
 void MSubProc::Initialize(const std::string& istate, const std::string& channel) {
   ISTATE  = istate;
   CHANNEL = channel;
-  DeleteProcesses();
 }
 
-// Destructor
-MSubProc::~MSubProc() { DeleteProcesses(); }
 
-// Delete all processes
-void MSubProc::DeleteProcesses() {
-  for (const auto& i : aux::indices(pr)) { delete pr[i]; }
-  pr.clear();  // Finally empty
-}
-
+// Construct textual descriptions
 void MSubProc::ConstructDescriptions(const std::string& istate, const std::string& mc) {
-  CreateProcesses();
+  const std::vector<std::shared_ptr<MProc>> p = CreateAllProcesses();
 
-  // Construct labels
-  for (const auto& i : aux::indices(pr)) {
-    if (pr[i]->ISTATE == istate) {
-      Processes.insert(std::make_pair(pr[i]->ISTATE + "[" + pr[i]->CHANNEL + "]<" + mc + ">",
-                                      pr[i]->DESCRIPTION));
+  for (const auto& i : aux::indices(p)) {
+    if (p[i]->ISTATE == istate) {
+      Processes.insert(
+          std::make_pair(p[i]->ISTATE + "[" + p[i]->CHANNEL + "]<" + mc + ">", p[i]->DESCRIPTION));
     }
   }
-
-  DeleteProcesses();  // Important!
 }
+
 
 // Activate spesific process
 void MSubProc::ActivateProcess() {
-  CreateProcesses();
+  std::vector<std::shared_ptr<MProc>> p = CreateAllProcesses();
 
   while (true) {
-    for (const auto& i : aux::indices(pr)) {
-      if (pr[i]->ISTATE == ISTATE && pr[i]->CHANNEL == CHANNEL) {
+    for (const auto& i : aux::indices(p)) {
+      if (p[i]->ISTATE == ISTATE && p[i]->CHANNEL == CHANNEL) {
         // Fine
       } else {
-        delete pr[i];
-        pr.erase(pr.begin() + i);
+        p.erase(p.begin() + i);
         break;
       }
     }
-    if (pr.size() <= 1) { break; }
+    if (p.size() <= 1) { break; }
   }
-  if (pr.size() == 0) {
+  if (p.size() == 0) {
     throw std::invalid_argument("MSubProc::ActivateProcess: Unknown ISTATE = " + ISTATE +
                                 " or CHANNEL = " + CHANNEL);
   }
+
+  // move it!
+  pr = std::move(p[0]);
 }
+
 
 // Print out process lists
 std::vector<std::string> MSubProc::PrintProcesses() const {
@@ -151,8 +149,8 @@ std::vector<std::string> MSubProc::GetProcessDescriptor(std::string str) const {
 
 // Wrapper function
 double MSubProc::GetBareAmplitude2(gra::LORENTZSCALAR& lts) {
-  if (pr.size() == 0) { ActivateProcess(); }
-  return pr[0]->Amp2(lts);
+  if (pr == nullptr) { ActivateProcess(); }
+  return pr->Amp2(lts);
 }
 
 }  // namespace gra

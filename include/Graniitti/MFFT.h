@@ -3,7 +3,7 @@
 // Normalization is 1 to 1, that is: ifft( fft(x) ) = x
 //
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 #ifndef MFFT_H
@@ -54,6 +54,6 @@ void ifft(std::valarray<std::complex<T>> &x) {
 }
 }  // namespace MFFT
 
-}  // gra namespace ends
+}  // namespace gra
 
 #endif

@@ -1,6 +1,6 @@
 // Resonance parameters
 //
-// mikael.mieskolainen@cern.ch, 2019
+// mikael.mieskolainen@cern.ch, 2021
 {
   
   "PARAM_RES" : {
@@ -13,7 +13,7 @@
     "W"  : 1.31E-06,
     "J"  : 0,
     "P"  : -1,
-
+    
     // Breit-Wigner propagator type
     // 1 = fixed width relativistic
     // 2 = running width relativistic
@@ -29,21 +29,17 @@
     // Set 0 for density matrix below, or an integer > 0 for a random sampled
     // Different integers give different matrices.
     "random_rho" : 0,
-
-    // Production coupling constant at amplitude level
-    "g_A"   :  0.2,
-    "g_phi" :  0.0,
-
-    // Production form factor parameter (GeV)
-    "g_FF"  : 1.0,
     
-    // Resonance spin-density (von Neumann) matrix (Re and Im parts)
-    "rho_real" : [ [ 0.0,  0,  0] ,
-                   [ 0,  0.0,  0] ,
-                   [ 0,  0,  0.0] ],
-    "rho_imag" : [ [ 0,   0,   0] ,
-                   [ 0,   0,   0] ,
-                   [ 0,   0,   0] ],
+    // Production coupling constant at amplitude level
+    "g_A"   :   0.2,     // Ansatz (no fit)
+    "g_phi" :  1.57,
+    
+    // Production form factor parameter (GeV)
+    "g_FF"  :   1.0,
+    
+    // Resonance spin-density (2J+1) (von Neumann) matrix (Re and Im parts)
+    "rho_real" : [ [1.0] ],
+    "rho_imag" : [ [0.0] ],
   }
   
 }

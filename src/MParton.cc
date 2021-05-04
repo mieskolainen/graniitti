@@ -1,7 +1,7 @@
 // Collinear parton model 2->2 or (2->N) type phase space class
 // for calculations without proton (remnant) considerations
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -28,10 +28,10 @@
 
 using gra::aux::indices;
 
-using gra::math::CheckEMC;
-using gra::math::PI;
 using gra::math::abs2;
+using gra::math::CheckEMC;
 using gra::math::msqrt;
+using gra::math::PI;
 using gra::math::pow2;
 using gra::math::pow3;
 using gra::math::pow4;
@@ -53,6 +53,7 @@ MParton::MParton(std::string process, const std::vector<aux::OneCMD> &syntax) {
   // Init final states
   M4Vec zerovec(0, 0, 0, 0);
   for (std::size_t i = 0; i < 10; ++i) { lts.pfinal.push_back(zerovec); }
+
   std::cout << "MParton:: [Constructor done]" << std::endl;
 }
 
@@ -220,7 +221,7 @@ bool MParton::B2RandomKin(const std::vector<double> &randvec) {
 
 // Build kinematics for 2 -> 1 x 1 -> N collinear
 bool MParton::B2BuildKin(double x1, double x2) {
-  static const M4Vec beamsum = lts.pbeam1 + lts.pbeam2;
+  const M4Vec beamsum = lts.pbeam1 + lts.pbeam2;
 
   // We-work in CMS-frame
 

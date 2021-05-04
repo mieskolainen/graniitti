@@ -1,6 +1,6 @@
 // Fast MC analysis class
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -156,7 +156,7 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
   // ---------------------------------------------------------------------
   // Set final state [charged pair or neutral pair]
   MPDG PDG;
-  PDG.ReadParticleData(gra::aux::GetBasePath(2) + "/modeldata/mass_width_2018.mcd");
+  PDG.ReadParticleData(gra::aux::GetBasePath(2) + "/modeldata/mass_width_2020.mcd");
 
   // Try to find the particle from PDG table, will throw exception if fails
   MParticle p           = PDG.FindByPDG(finalPDG);

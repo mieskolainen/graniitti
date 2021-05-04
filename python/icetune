@@ -1,0 +1,260 @@
+#! /usr/bin/env python
+
+# icetune -- MC parameter fitting / tuning program via modern Bayesian optimization,
+#            using distributed computing via <ray.io>
+#
+# -------------------------------------
+# 1. Automatic start (either on the head node of local cluster or fully locally):
+#    python ./python/icetune
+#
+#   ( If you start locally, remember first: 'ray stop' and then 'ray start --head' )
+# 
+# 2. Launch on a spesific ray cluster:
+#    python ./python/icetune --address=192.168.10.201:6379 --cdir=$PWD --libdir=$HOME/local
+#
+#
+# (c) 2021 Mikael Mieskolainen
+# Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+
+__VERSION__ = 0.01
+__RELEASE__ = "beta"
+
+
+import numpy as np
+import time
+import copy
+import sys
+import os
+from   tqdm import tqdm
+import argparse
+import socket
+from importlib import import_module
+import subprocess
+from termcolor import colored
+
+import ray
+from ray import tune
+from ray.tune import Callback
+
+import iceobs
+import iceplot
+import icetune
+
+import signal
+import sys
+
+
+#def main():
+# Parse input arguments
+parser = argparse.ArgumentParser(description=f"%(prog)s {__VERSION__} {__RELEASE__}",
+    epilog="""
+    
+    """, formatter_class=argparse.RawTextHelpFormatter)
+
+parser.add_argument("--cdir", type=str, default=os.getcwd())
+parser.add_argument("--libdir", type=str, default=os.environ['HOME'] + '/local')
+parser.add_argument("--address", type=str, default=icetune.get_ip() + ':6379')
+parser.add_argument("--max_concurrent", type=int, default=32, help="example: --max_concurrent 32")
+
+
+parser.add_argument("--algorithm", type=str, default='optuna', help="example: --algorithm optuna")
+parser.add_argument("--obs", type=str, default='default_obs', help="example: --obs default_obs")
+parser.add_argument("--tuneconfig", type=str, default='default_tuneconfig', help="example: --tuneconfig default_tuneconfig")
+
+
+parser.add_argument("--density",   type=bool, default=False, help="example: --density true")
+parser.add_argument("--plot", action='store_true', help="example: --plot")
+parser.add_argument("--maxevents", type=int, default=None, help="example: --maxevents 1000")
+parser.add_argument("--nofit", action='store_true', help="example: --nofit")
+
+
+args = parser.parse_args()
+
+print(colored(__name__ + f'.icetune: IP = {icetune.get_ip()}', 'yellow'))
+print(colored(args, 'yellow'))
+
+LD_LIBRARY_PATH, PYTHONPATH = icetune.setpaths(cdir=args.cdir, libdir=args.libdir)
+
+
+compare_steer = {
+    'density':   args.density,
+    'plot':      args.plot,
+    'maxevents': args.maxevents
+}
+
+
+print(colored(compare_steer, 'yellow'))
+
+# Save it
+HEAD_IP  = args.address.replace(" ","").split(":")[0]
+
+"""
+class MyCallback(Callback):
+
+    def on_trial_result(self, **info):
+        print(f"Got result: {info['result']['metric']}")
+
+        cost = info['result']['metric']
+        if cost < MIN_COST:
+            MIN_COST = cost
+            icetune.update_all(thread_id='best', param=param, cdir=args.cdir)
+"""
+
+# ========================================================================
+# Initialize ray
+
+if not args.nofit:
+    ray.init(address=args.address)
+
+
+# ========================================================================
+# Graceful exit
+
+def signal_handler(sig, frame):
+    print('icetune: You pressed Ctrl+C!')
+    
+    # ------------------------------------------------------------
+    # ** Remove temporary tune folder **
+    tunefolder = f'{args.cdir}/modeldata/TUNE-icetune*'
+    subprocess.check_output(f'rm {tunefolder} -f -r', shell=True, text=True)
+    # ------------------------------------------------------------
+    
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, signal_handler)
+
+#signal.pause()
+
+# ========================================================================
+# Make sure the right number of nodes is connected
+
+"""
+import time
+
+@ray.remote
+def f():
+    time.sleep(0.01)
+    return ray.services.get_node_ip_address()
+
+# Get a list of the IP addresses of the nodes that have joined the cluster.
+set(ray.get([f.remote() for _ in range(1000)]))
+"""
+
+# ============================================================================
+# ** Import tune setup **
+
+Config = import_module(args.tuneconfig)
+
+
+# ============================================================================
+# Compute once with the current input parameter values
+
+chi2, ndf = icetune.compute(thread_id=0, fitcardfile=Config.fitcardfile, \
+    mc_steer=Config.mc_steer, obs_module=args.obs, cdir=args.cdir, compare_steer=compare_steer)
+
+print("")
+print(colored(__name__ + f'.icetune: Initial chi2 / ndf = {np.sum(chi2):0.1f} / {np.sum(ndf)} = {np.sum(chi2) / np.sum(ndf):0.1f} | <chi2/ndf> = {np.mean(chi2/ndf):0.1f}\n', 'red'))
+
+if args.nofit: # No fitting, exit now
+    exit(0)
+
+time.sleep(3)
+
+# ============================================================================
+### Loss function
+
+def objective(param):
+
+    # This needs to be here for raytune (cannot find otherwise HepMC3.so etc. needed by GRANIITTI)
+    os.environ['LD_LIBRARY_PATH'] = LD_LIBRARY_PATH
+    os.environ['PYTHONPATH']      = PYTHONPATH
+    
+    # Slightly dirty unique ID set here
+    thread_id = np.random.randint(low=1, high=1000000000000000000)
+
+    ### Update all parameters
+    icetune.update_all(thread_id=thread_id, param=param, cdir=args.cdir)
+
+    ### Plotting only on the head node
+    mysteer = copy.deepcopy(compare_steer)
+    if icetune.get_ip() != HEAD_IP:
+        mysteer['plot'] = False
+
+    ### Generate and compare
+    chi2,ndf = icetune.compute(thread_id=thread_id, fitcardfile=Config.fitcardfile, \
+        mc_steer=Config.mc_steer, obs_module=args.obs, cdir=args.cdir, compare_steer=mysteer)
+
+    # We choose global chi2 minimization (alternative options here TBD)
+    cost = np.sum(chi2) / np.sum(ndf) # division by ndf just for convinience
+    
+    tune.report(chi2=cost)
+
+
+# -------------------------------------------------------------------
+# Raytune launch
+
+#from ray.tune.suggest import ConcurrencyLimiter
+#from ray.tune.schedulers import HyperBandScheduler
+# Create HyperBand scheduler and maximize score
+#hyperband = HyperBandScheduler(metric="chi2", mode="min")
+
+
+start = time.time()
+
+if args.algorithm == 'bayesopt':
+    from ray.tune.suggest.bayesopt import BayesOptSearch
+    algo = BayesOptSearch(utility_kwargs={
+        "kind": "ucb",
+        "kappa": 2.5,
+        "xi": 0.0
+    })
+
+elif args.algorithm == 'hebo':
+    from ray.tune.suggest.hebo import HEBOSearch
+    from ray.tune.schedulers import AsyncHyperBandScheduler
+    
+    algo = HEBOSearch(max_concurrent=args.max_concurrent)
+    #scheduler = AsyncHyperBandScheduler()
+
+elif args.algorithm == 'optuna':
+    from ray.tune.suggest.optuna import OptunaSearch
+    algo = OptunaSearch()
+
+elif args.algorithm == 'ax':
+    from ray.tune.suggest.ax import AxSearch
+    algo = AxSearch()
+
+elif args.algorithm == 'nevergrad':
+    from ray.tune.suggest.nevergrad import NevergradSearch
+    import nevergrad as ng
+    algo = NevergradSearch(
+        optimizer=ng.optimizers.OnePlusOne,
+        metric="chi2",
+        mode="min")
+elif args.algorithm == 'basic':
+    from ray.tune.suggest.basic_variant import BasicVariantGenerator
+    algo = BasicVariantGenerator()
+
+else:
+    raise Exception("Unknown optimizer <algorithm> chosen!")
+
+
+# Launch
+analysis = tune.run(objective, search_alg=algo, **Config.raytune_setup)
+
+# resources_per_trial = {"cpu": 8}
+
+# Inspect output
+best_trial      = analysis.best_trial       # Best trial
+best_config     = analysis.best_config      # -- hyperparameters
+best_logdir     = analysis.best_logdir      # -- logdir
+best_checkpoint = analysis.best_checkpoint  # -- best checkpoint
+best_result     = analysis.best_result      # -- best trial's last results
+best_result_df  = analysis.best_result_df   # -- result as pandas dataframe
+
+taken = time.time() - start
+
+print(f"Time taken: {taken:.2f} seconds.")
+print(f"Best config: {analysis.best_config}")
+
+print('[icetune: done]')

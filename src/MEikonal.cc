@@ -1,7 +1,7 @@
 // Eikonal density and screening class
 //
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -440,7 +440,7 @@ bool IArray1D::ReadArray(const std::string &filename) {
   std::ifstream file;
   file.open(filename);
   if (!file.is_open()) {
-    std::string str = "IArray1D::ReadArray: Fatal IO-error with: " + filename;
+    // Do not throw exception here, return false instead!
     return false;
   }
   std::string  line;
@@ -476,8 +476,7 @@ bool IArray1D::ReadArray(const std::string &filename) {
   file.close();
 
   if (fills != 3 * (N + 1)) {
-    std::string str = "Corrupted file: " + filename;
-    std::cout << str << std::endl;
+    throw std::invalid_argument("IArray1D:ReadArray: Corrupted file: " + filename);
     return false;
   }
   std::cout << rang::fg::green << "[DONE]" << rang::fg::reset << std::endl;

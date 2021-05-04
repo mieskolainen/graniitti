@@ -1,6 +1,6 @@
 // Form factors, structure functions, Regge trajectories etc. parametrizations
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 #ifndef MFORM_H

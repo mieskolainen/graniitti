@@ -10,6 +10,7 @@
 
 // C++
 #include <math.h>
+
 #include <algorithm>
 #include <chrono>
 #include <complex>
@@ -320,7 +321,6 @@ int main(int argc, char *argv[]) {
   }
 
   std::cout << "[fitharmonic:: done]" << std::endl;
-  aux::CheckUpdate();
 
   return EXIT_SUCCESS;
 }

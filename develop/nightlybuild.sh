@@ -8,7 +8,7 @@ echo '* GRANIITTI automated nightly build script *'
 git pull origin master
 source ./install/setenv.sh
 make superclean
-make -j4 ROOT14=TRUE TEST=TRUE
+make -j4 TEST=TRUE
 
 # Test if compilation went fine
 FILE=./bin/gr

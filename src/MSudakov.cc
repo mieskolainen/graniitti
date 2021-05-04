@@ -1,6 +1,6 @@
 // Shuvaev PDF and Sudakov suppression class
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -512,7 +512,7 @@ bool IArray2D::ReadArray(const std::string &filename) {
   std::ifstream file;
   file.open(filename);
   if (!file.is_open()) {
-    std::string str = "IArray2D::ReadArray: Fatal IO-error with: " + filename;
+    // Do not throw error here, return false instead !
     return false;
   }
 

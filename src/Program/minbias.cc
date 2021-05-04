@@ -3,11 +3,12 @@
 //
 // <minimum bias processes combined>
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
 #include <math.h>
+
 #include <algorithm>
 #include <chrono>
 #include <complex>
@@ -35,6 +36,7 @@
 
 using gra::aux::indices;
 using namespace gra;
+
 
 // Main
 int main(int argc, char *argv[]) {
@@ -87,7 +89,9 @@ int main(int argc, char *argv[]) {
         std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
 
         // Read process input from file
-        gen->ReadInput(json_in[p]);
+        nlohmann::json js = json::parse(gra::aux::GetInputData(json_in[p]));
+
+        gen->ReadInput(js);
         // gen->SetNumberOfEvents(0);
 
         gen->proc->SetInitialState(beam, energy);
@@ -132,13 +136,15 @@ int main(int argc, char *argv[]) {
           std::make_shared<HepMC3::WriterAsciiHepMC2>(outputstr);
 
       // Loop over processes
-      for (std::size_t i = 0; i < NEVT.size(); ++i) {
+      for (const auto &p : indices(NEVT)) {
         // Create generator object first
         std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
 
-        // Read the process input from a file
-        gen->ReadInput(json_in[i]);
-        gen->SetNumberOfEvents(NEVT[i]);
+        // Read process input from file
+        nlohmann::json js = json::parse(gra::aux::GetInputData(json_in[p]));
+
+        gen->ReadInput(js);
+        gen->SetNumberOfEvents(NEVT[p]);
 
         // Set beam and energy (same as above)
         gen->proc->SetInitialState(beam, energy);

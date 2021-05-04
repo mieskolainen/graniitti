@@ -1,27 +1,30 @@
 // Resonance branching ratio PDG tables. Particles are identified by their PDG IDs.
-// Add new particles here as you wish. 
+// Add new particles here as you wish.
 //
-// mikael.mieskolainen@cern.ch, 2019
+// m.mieskolainen@imperial.ac.uk, 2021
 
-// Helicity decay amplitude ls-couplings with row format: [l,s, Real part, Imag part]
-// l is the relative angular momentum of daughters, s is the total spin of daughters
-//
-// Value collected manually from PDGlive2019
+// Helicity decay amplitude ls-couplings with a matrix format:
+// alpha_ls = [l,s, Real part, Imag part],
 // 
-// Branching ratio BR = Gamma_partial / Gamma
-//
+// where l is the relative angular momentum of daughters, s is the total spin of daughters
+// 
+// 
+// Value collected manually from PDGlive
+// 
+// Branching ratio BR == Gamma_partial / Gamma
+// 
 // ----------------------------------------------------------------------
 // 
 // Example of isospin and PDG notation:
-//
-// Gamma(X -> \pi+\pi-) = 2 x Gamma(X -> \pi0 \pi0) = 2/3 Gamma(X -> f0 \pi\pi)
+// 
+// Gamma(X -> \pi+\pi-) = 2 x Gamma(X -> \pi0 \pi0) = 2/3 Gamma(X -> \pi\pi)
 // Gamma(X -> K+K-)     = Gamma(X -> K0\bar{K0})    = 1/2 Gamma(X -> K\bar{K})
-//
+// 
 // X above having isospin I = 0, ratios obtained with CG SU(2)-coefficients
-//
+// 
 // ----------------------------------------------------------------------
 {
-
+  
   // Flat 0+ [FOR DEBUG/DIAGNOSTICS]
   "0" : {
     "0" : { // pi+pi-
@@ -40,7 +43,7 @@
   "111" : {
 
     "0" : { // gamma gamma
-      "PDG" : [22, 22], "BR" : 1.0,     // PDGlive 19.08.19
+      "PDG" : [22, 22], "BR" : 0.98823,   // PDGlive 16.04.21
       "alpha_ls" : [ [1,1, 1.0, 0.0] ],
       "P_conservation" : true,      
     }
@@ -50,7 +53,7 @@
   "221" : {
 
     "0" : { // gamma gamma
-      "PDG" : [22, 22], "BR" : 0.3941,  // PDGlive 19.08.19
+      "PDG" : [22, 22], "BR" : 0.3941,    // PDGlive 16.04.21
       "alpha_ls" : [ [1,1, 1.0, 0.0] ],
       "P_conservation" : true,
     }
@@ -60,22 +63,22 @@
   "331" : {
 
     "0" : { // gamma gamma
-      "PDG" : [22, 22], "BR" : 0.0022,  // PDGlive 19.08.19
+      "PDG" : [22, 22], "BR" : 2.307E-2,  // PDGlive 16.04.21
       "alpha_ls" : [ [1,1, 1.0, 0.0] ],
       "P_conservation" : true,
     }
   },
-
+  
   // f0(500)
   "9000221" : {
-
+    
     "0" : { // pi+pi- (DOMINANT)
-      "PDG" : [-211, 211], "BR" : 1.0,  // Ansatz, PDGlive 19.08.19 no data
+      "PDG" : [-211, 211], "BR" : 0.9,  // Ansatz, PDGlive 16.04.21 no data
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
-    "1" : { // K+K- 
-      "PDG" : [-321, 321], "BR" : 0.01, // PDGlive 19.08.19 no data
+    "1" : { // K+K-
+      "PDG" : [-321, 321], "BR" : 0.1,  // Ansatz, PDGlive 16.04.21 no data
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     }
@@ -85,12 +88,12 @@
   "113" : {
     
     "0" : { // pi+pi-
-      "PDG" : [-211, 211], "BR" : 1.0, // PDGlive 19.08.19
+      "PDG" : [-211, 211], "BR" : 1.0, // PDGlive 16.04.21
       "alpha_ls" : [[1,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
-    "1" : { // K+K- (highly off-shell)
-      "PDG" : [321, -321], "BR" : 0.0, // PDGlive 19.08.19
+    "1" : { // K+K-
+      "PDG" : [321, -321], "BR" : 0.0, // PDGlive 16.04.21
       "alpha_ls" : [ [1,0, 1.0, 0.0] ],
       "P_conservation" : true,
     }
@@ -100,12 +103,12 @@
   "9010221" : {
 
     "0" : { // pi+pi-
-      "PDG" : [211, -211], "BR" : 0.500,  // Ansatz, PDGlive 19.08.19 no data
+      "PDG" : [211, -211], "BR" : 0.500,  // Ansatz, PDGlive 16.04.21 no data
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
     "1" : { // K+ K-
-      "PDG" : [321, -321], "BR" : 0.345,  // K+K-/pi+pi- ~= 0.69 from https://arxiv.org/abs/hep-ex/0605003
+      "PDG" : [321, -321], "BR" : 0.345,  // K+K-/pi+pi- ~= 0.69 +- 0.32 from https://arxiv.org/abs/hep-ex/0605003
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     }
@@ -115,17 +118,17 @@
   "333" : {
     
     "0" : { // K+K-
-      "PDG" : [321, -321], "BR" : 0.489,  // PDGlive 19.08.19
+      "PDG" : [321, -321], "BR" : 0.492,  // PDGlive 16.04.21
       "alpha_ls" : [ [1,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
     "1" : { // K0(L) K0(S)
-      "PDG" : [130, 310],  "BR" : 0.342,  // PDGlive 19.08.19
+      "PDG" : [130, 310],  "BR" : 0.340,  // PDGlive 16.04.21
       "alpha_ls" : [ [1,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
     "2" : { // pi+pi-
-      "PDG" : [211, -211], "BR" : 7.3E-5, // PDGlive 19.08.19
+      "PDG" : [211, -211], "BR" : 7.3E-5, // PDGlive 16.04.21
       "alpha_ls" : [ [1,0, 1.0, 0.0] ],
       "P_conservation" : true,
     }
@@ -135,17 +138,17 @@
   "225" : {
 
     "0" : { // pi+pi-
-      "PDG" : [211, -211], "BR" : 0.562,  // PDGlive 19.08.19
+      "PDG" : [211, -211], "BR" : 0.562,  // PDGlive 16.04.21, pipi * [2/3]
       "alpha_ls" : [ [2,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
     "1" : { // K+K-
-      "PDG" : [321, -321], "BR" : 0.0227, // PDGlive 19.08.19, K\bar{K} / pipi * Gamma(f2 -> pipi) * [1/2]
+      "PDG" : [321, -321], "BR" : 0.023,  // PDGlive 16.04.21, K\bar{K} / pipi * Gamma(f2 -> pipi) * [1/2]
       "alpha_ls" : [ [2,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
     "3" : { // pi+pi-pi+pi-
-      "PDG" : [211, -211, 211, -211], "BR" : 0.028, // PDGlive 19.08.19
+      "PDG" : [211, -211, 211, -211], "BR" : 0.028, // PDGlive 16.04.21
       "alpha_ls" : [ [2,0, 1.0, 0.0] ],
       "P_conservation" : true,
     }
@@ -155,12 +158,12 @@
   "20333" : {
 
     "0" : { // K+K-pi0
-      "PDG" : [321, -321, 111], "BR" : 1.0,       // PDGlive 19.08.19, SEEN, no data
+      "PDG" : [321, -321, 111], "BR" : 0.1,       // PDGlive 16.04.21, SEEN, no data
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
     "1" : { // pi+pi-pi+pi-
-      "PDG" : [211, -211, 211, -211], "BR" : 1.0, // PDGlive 19.08.19, SEEN, no data
+      "PDG" : [211, -211, 211, -211], "BR" : 0.1, // PDGlive 16.04.21, SEEN, no data
       "alpha_ls" : [ [1,0, 1.0, 0.0] ],
       "P_conservation" : true,
     }
@@ -170,17 +173,17 @@
   "9030221" : {
     
     "0" : { // pi+pi-
-      "PDG" : [211, -211], "BR" : 0.2299, // PDGlive 19.08.19, pipi * [2/3]
+      "PDG" : [211, -211], "BR" : 0.2300, // PDGlive 16.04.21, pipi * [2/3]
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
     "1" : { // K+K-
-      "PDG" : [321, -321], "BR" : 0.0425, // PDGlive 19.08.19, KKbar * [1/2]
+      "PDG" : [321, -321], "BR" : 0.0425, // PDGlive 16.04.21, KKbar * [1/2]
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
     "2" : { // pi+pi-pi+pi-
-      "PDG" : [211, -211, 211, -211], "BR" : 0.495, // PDGlive 19.08.19, NOT DEFINITE
+      "PDG" : [211, -211, 211, -211], "BR" : 0.489, // PDGlive 16.04.21 (note 4pi total!)
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
@@ -190,32 +193,47 @@
   "335" : {
     
     "0" : { // K+K-
-      "PDG" : [321, -321], "BR" : 0.4435,  // PDGlive 19.08.19, KKbar * [1/2]
+      "PDG" : [321, -321], "BR" : 0.438,   // PDGlive 16.04.21, KKbar * [1/2]
       "alpha_ls" : [ [2,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
     "1" : { // pi+pi-
-      "PDG" : [211, -211], "BR" : 0.00546, // PDGlive 19.08.19, pipi * [2/3]
+      "PDG" : [211, -211], "BR" : 0.00553, // PDGlive 16.04.21, pipi * [2/3]
       "alpha_ls" : [ [2,0, 1.0, 0.0] ],
       "P_conservation" : true,
     }
   },
   
+  // rho(3)(1690)
+  "117" : {
+    
+    "0" : { // pi+pi-
+      "PDG" : [-211, 211], "BR" : 0.15733, // PDGlive 16.04.21, pipi * [2/3]
+      "alpha_ls" : [[3,0, 1.0, 0.0]],
+      "P_conservation" : true,
+    },
+    "1" : { // K+K-
+      "PDG" : [321, -321], "BR" : 0.0079,  // PDGlive 16.04.21, KK * [1/2]
+      "alpha_ls" : [[3,0, 1.0, 0.0]],
+      "P_conservation" : true,
+    }
+  },
+
   // f(0)(1710)
   "10331" : {
     
     "0" : { // K+K-
-      "PDG" : [321, -321], "BR" : 0.18,   // PDGlive 19.08.19, KKbar * [1/2]
+      "PDG" : [321, -321], "BR" : 0.18,   // https://pdg.lbl.gov/2018/listings/pdf-files/m068.pdf, KKbar * [1/2]
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
     "1" : { // pi+pi-
-      "PDG" : [211, -211], "BR" : 0.0552, // PDGlive 19.08.19, (pipi/KKbar) * Gamma(KKbar) * [2/3]
+      "PDG" : [211, -211], "BR" : 0.0983, // ^ [pipi/KKbar] * [KKbar/TOT] * [2/3] = 0.41 * 0.36 * [2/3]
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
     "2" : { // rho0rho0
-      "PDG" : [113, 113], "BR" : 0.01,    // PDGlive 19.08.19, no data
+      "PDG" : [113, 113], "BR" : 0.01,    // https://pdg.lbl.gov/2018/listings/pdf-files/m068.pdf, no data
       "alpha_ls" : [ [0,0, 1.0, 0.0],
                      [2,2, 1.0, 0.0]],
       "P_conservation" : true,
@@ -227,45 +245,85 @@
   "9050225" : {
       
     "0" : { // pi+pi-
-      "PDG" : [211, -211], "BR" : 1.0,    // PDGlive 19.08.19, seen, no data
+      "PDG" : [211, -211], "BR" : 0.1,    // PDGlive 16.04.21, seen, no data
       "alpha_ls" : [ [2,0, 1.0, 0.0] ],
       "P_conservation" : true,
     }
   },
 
-  // f2(2200)
+  // f2(2150)
   "9080225" : {
 
-    "0" : { // rho(770)0 rho(770)0        // PDGlive 19.08.19, no data
-      "PDG" : [113, 113], "BR" : 1.0,
+    "0" : { // rho(770)0 rho(770)0        // PDGlive 16.04.21, no data
+      "PDG" : [113, 113], "BR" : 0.1,
       "alpha_ls" : [ [0,2, 1.0, 0.0],
                      [2,0, 1.0, 0.0],
                      [2,2, 1.0, 0.0],
                      [4,2, 1.0, 0.0] ],
       "P_conservation" : true,
-      "g_decay_tensor" : [1.0, 0.0], // Tensor Pomeron decay coupling
+      "g_decay_tensor" : [1.0, 0.0],      // Tensor Pomeron decay coupling
     },
   },
   
+  // f4(2300)
+  "9100225" : {
+
+    "0" : { // pi+pi-
+      "PDG" : [211, -211], "BR" : 0.1,    // PDGlive 16.04.21, seen, no data
+      "alpha_ls" : [ [2,0, 1.0, 0.0] ],
+      "P_conservation" : true,
+    }
+  },
+
+  // f6(2510)
+  "9120225" : {
+
+    "0" : { // pi+pi-
+      "PDG" : [-211, 211], "BR" : 0.1,  // No data
+      "alpha_ls" : [ [6,0, 1.0, 0.0]],
+      "P_conservation" : true,
+    },
+    "1" : { // K+K-
+      "PDG" : [321, -321], "BR" : 0.1,  // No data
+      "alpha_ls" : [ [6,0, 1.0, 0.0]],
+      "P_conservation" : true,
+    }
+  },
+
+  // rho(5)(2350)
+  "121" : {
+    
+    "0" : { // pi+pi-
+      "PDG" : [-211, 211], "BR" : 0.1,  // No data
+      "alpha_ls" : [ [5,0, 1.0, 0.0]],
+      "P_conservation" : true,
+    },
+    "1" : { // K+K-
+      "PDG" : [321, -321], "BR" : 0.1,  // No data
+      "alpha_ls" : [ [5,0, 1.0, 0.0]],
+      "P_conservation" : true,
+    }
+  },
+
   // J/psi |c\bar{c}>
   "443" : {
 
     "0" : { // e+e-
-      "PDG" : [11, -11], "BR" : 5.971e-2,  // PDGlive 19.08.19
+      "PDG" : [11, -11], "BR" : 5.971e-2,  // PDGlive 16.04.21
       "alpha_ls" : [ [0,1, 1.0, 0.0], 
                      [2,1, 1.0, 0.0] ],
       "P_conservation" : true,
     },
 
     "1" : { // mu+mu-
-      "PDG" : [13, -13], "BR" : 5.961e-2,  // PDGlive 19.08.19
+      "PDG" : [13, -13], "BR" : 5.961e-2,  // PDGlive 16.04.21
       "alpha_ls" : [ [0,1, 1.0, 0.0], 
                      [2,1, 1.0, 0.0] ],
       "P_conservation" : true,
     },
 
     "2" : { // pi+pi-
-      "PDG" : [211, -211], "BR" : 1.47e-4, // PDGlive 19.08.19
+      "PDG" : [211, -211], "BR" : 1.47e-4, // PDGlive 16.04.21
       "alpha_ls" : [ [1,0, 1.0, 0.0] ],
       "P_conservation" : true,
     }
@@ -275,23 +333,23 @@
   "10441" : {
     
     "0" : { // pi+pi-
-      "PDG" : [211, -211], "BR" : 5.8e-3,  // PDGlive 19.08.19
+      "PDG" : [211, -211], "BR" : 5.7e-3,  // PDGlive 16.04.21, pipi * [2/3]
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
     "1" : { // K+K-
-      "PDG" : [211, -211], "BR" : 5.8e-3,  // PDGlive 19.08.19
+      "PDG" : [211, -211], "BR" : 6.05e-3, // PDGlive 16.04.21
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     }
   },
   
   // Higgs(0) (125 GeV)
-  // http://pdg.lbl.gov/2017/reviews/rpp2017-rev-higgs-boson.pdf
+  // https://pdg.lbl.gov/2020/reviews/rpp2020-rev-higgs-boson.pdf
   "25" : {
 
     "0" : { // bbar
-      "PDG" : [5, -5],   "BR" : 5.84E-01,
+      "PDG" : [5, -5],   "BR" : 5.82E-01,
       "alpha_ls" : [ [1,1, 1.0, 0.0] ],
       "P_conservation" : true,
     },
@@ -311,12 +369,12 @@
       "P_conservation" : true,
     },
     "4" : { // ccbar
-      "PDG" : [4, -4],   "BR" : 2.88E-02,
+      "PDG" : [4, -4],   "BR" : 2.89E-02,
       "alpha_ls" : [ [1,1, 1.0, 0.0] ],
       "P_conservation" : true,
     },
     "5" : { // ZZ
-      "PDG" : [23, 23],  "BR" : 2.52E-02,
+      "PDG" : [23, 23],  "BR" : 2.62E-02,
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
@@ -326,10 +384,10 @@
       "P_conservation" : true,
     },
     "7" : { // Zy
-      "PDG" : [23, 22],  "BR" : 1.57E-03,
+      "PDG" : [23, 22],  "BR" : 1.53E-03,
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
-    },    
+    },
     "8" : { // mu+mu-
       "PDG" : [13, -13], "BR" : 2.18E-04,
       "alpha_ls" : [ [1,1, 1.0, 0.0] ],

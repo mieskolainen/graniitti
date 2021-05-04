@@ -1,0 +1,16 @@
+{
+
+"ACTIVE"   : true,
+"NAME"     : "STAR 0.2 TeV",
+"TYPE"     : "HEPDATA",
+"DATAPATH" : "/HEPdata/CD/HEPData-ins1792394-v1-csv/",
+
+"GENCARD"  : ["/fitcard/STAR_1792394_pipi_less_90.json"],
+
+"PID"      : [211, -211],
+
+"HIST" : [
+  {"FILE" : "Figure12(top,left).csv",    "OBS" : "M",           "SCALE" : 1E-9  }
+]
+
+}

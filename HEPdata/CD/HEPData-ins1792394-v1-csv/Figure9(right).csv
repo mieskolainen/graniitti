@@ -1,0 +1,31 @@
+#: table_doi: 10.17182/hepdata.94264.v1/t3
+#: name: Figure 9 (right)
+#: description: Differential fiducial cross section for CEP of $p\bar{p}$ pairs as a function of the invariant mass of the pair.
+
+Systematic uncertainties assigned to data points are strongly correlated between bins and should be treated as allowed collective variation of all data points. There are two components of the total systematic uncertainty. The systematic uncertainty related to the experimental tools and analysis method is labeled "syst. (experimental)". The systematic uncertainty related to the integrated luminosity (fully correlated between all data points) is labeled "syst. (luminosity)".
+
+Fiducial region definition:
+ * central state $p$, $\bar{p}$
+	- $p_{\mathrm{T}} > 0.4~\mathrm{GeV}$
+	- $min(p_{\mathrm{T}}(p), p_{\mathrm{T}}(\bar{p})) < 1.1~\mathrm{GeV}$
+	- $|\eta| < 0.7$
+ * intact forward-scattered beam protons $p'$
+	- $p_x > -0.2~\mathrm{GeV}$
+	- $0.2~\mathrm{GeV} < |p_{y}| < 0.4~\mathrm{GeV}$
+	- $(p_x+0.3~\mathrm{GeV})^2 + p_y^2 < 0.25~\mathrm{GeV}^2$
+#: data_file: figure_9_(right).yaml
+#: keyword reactions: P P --> P P PBAR P
+#: keyword observables: DSIG/DM
+#: keyword cmenergies: 200
+#: keyword phrases: Exclusive | Diffractive | Cross Section | Proton-Proton Scattering | Single Differential Cross Section
+#: SQRT(S) [GeV],,,200
+#: LUMINOSITY [$pb^{-1}$],,,14.2
+#: RE,,,P P --> P P PBAR P
+M(PPBAR) [GEV],M(PPBAR) [GEV] LOW,M(PPBAR) [GEV] HIGH,DSIG/DM [PB/GEV],stat. +,stat. -,syst. (luminosity) +,syst. (luminosity) -,syst. (experimental) +,syst. (experimental) -
+2.1,2.0,2.2,30.807,15.148,-15.148,1.9664,-1.7438,3.5676,-3.2333
+2.3,2.2,2.4,98.415,23.714,-23.714,6.2818,-5.5707,11.879,-11.194
+2.5,2.4,2.6,59.147,20.88,-20.88,3.7753,-3.3479,8.9901,-8.6647
+2.7,2.6,2.8,35.976,14.664,-14.664,2.2963,-2.0364,4.4262,-3.9491
+2.9,2.8,3.0,13.046,6.6651,-6.6651,0.83272,-0.73845,1.5847,-1.4324
+3.1,3.0,3.2,8.8747,6.4154,-6.4154,0.56647,-0.50234,2.2361,-2.0471
+

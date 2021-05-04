@@ -1,6 +1,6 @@
 // Form factors, structure functions, Regge trajectories etc. parametrizations
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -24,9 +24,9 @@
 #include "rang.hpp"
 
 
-using gra::math::PI;
 using gra::math::abs2;
 using gra::math::msqrt;
+using gra::math::PI;
 using gra::math::pow2;
 using gra::math::pow3;
 using gra::math::zi;
@@ -340,8 +340,11 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
     const int                     n = res.p.spinX2 + 1;  // n = 2J + 1
     MMatrix<std::complex<double>> rho(n, n);
 
-    // If we have spin
-    if (res.p.spinX2 != 0) {
+    // Construct the density matrix
+    if (res.p.spinX2 == 0) {
+      rho[0][0] = 1.0;  // Unit
+
+    } else {
       // Draw random density matrices (until the number set by user)
       if (j.at("PARAM_RES").at("random_rho") > 0) {
         for (std::size_t k = 0; k < j.at("PARAM_RES").at("random_rho"); ++k) {
@@ -806,6 +809,7 @@ std::complex<double> CBW_BF(double m2, double M0, double Gamma, int J, double mA
 // 4. Spin dependent Relativistic Breit-Wigner (should not be used blindly!)
 //
 // [REFERENCE: Alwall el al., arxiv.org/abs/1402.1178]
+//
 std::complex<double> CBW_JR(double m2, double M0, double Gamma, double J) {
   const std::complex<double> denom = (m2 - M0 * M0 + zi * M0 * Gamma);
 

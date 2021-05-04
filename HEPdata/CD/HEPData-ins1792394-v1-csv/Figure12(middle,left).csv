@@ -1,0 +1,51 @@
+#: table_doi: 10.17182/hepdata.94264.v1/t15
+#: name: Figure 12 (middle, left)
+#: description: Differential fiducial cross section for CEP of $K^+K^-$ pairs as a function of the invariant mass of the pair, for events with $\Delta\varphi < 90$ degrees.
+
+Systematic uncertainties assigned to data points are strongly correlated between bins and should be treated as allowed collective variation of all data points. There are two components of the total systematic uncertainty. The systematic uncertainty related to the experimental tools and analysis method is labeled "syst. (experimental)". The systematic uncertainty related to the integrated luminosity (fully correlated between all data points) is labeled "syst. (luminosity)".
+
+Fiducial region definition:
+ * central state $K^+$, $K^-$
+	- $p_{\mathrm{T}} > 0.3~\mathrm{GeV}$
+	- $min(p_{\mathrm{T}}(K^+), p_{\mathrm{T}}(K^-)) < 0.7~\mathrm{GeV}$
+	- $|\eta| < 0.7$
+ * intact forward-scattered beam protons $p'$
+	- $p_x > -0.2~\mathrm{GeV}$
+	- $0.2~\mathrm{GeV} < |p_{y}| < 0.4~\mathrm{GeV}$
+	- $(p_x+0.3~\mathrm{GeV})^2 + p_y^2 < 0.25~\mathrm{GeV}^2$
+ * additional cuts
+	- $\Delta\varphi < 90$ degrees
+
+#: data_file: figure_12_(middle,_left).yaml
+#: keyword reactions: P P --> P K+ K- P
+#: keyword observables: DSIG/DM
+#: keyword cmenergies: 200
+#: keyword phrases: Exclusive | Diffractive | Cross Section | Proton-Proton Scattering | Single Differential Cross Section | Strange production
+#: SQRT(S) [GeV],,,200
+#: LUMINOSITY [$pb^{-1}$],,,14.2
+#: RE,,,P P --> P K+ K- P
+M(K+K-) [GEV],M(K+K-) [GEV] LOW,M(K+K-) [GEV] HIGH,DSIG/DM [NB/GEV],stat. +,stat. -,syst. (luminosity) +,syst. (luminosity) -,syst. (experimental) +,syst. (experimental) -
+1.018665,0.98733,1.05,1.0066,0.32496,-0.32496,0.064249,-0.056976,0.19214,-0.167
+1.0750000000000002,1.05,1.1,0.55352,0.22133,-0.22133,0.035331,-0.031331,0.094047,-0.083522
+1.125,1.1,1.15,1.2741,0.36669,-0.36669,0.081324,-0.072118,0.20857,-0.18333
+1.1749999999999998,1.15,1.2,0.54808,0.19195,-0.19195,0.034984,-0.031023,0.085745,-0.07632
+1.225,1.2,1.25,0.96889,0.25145,-0.25145,0.061844,-0.054843,0.14991,-0.13379
+1.275,1.25,1.3,1.3333,0.26005,-0.26005,0.085106,-0.075471,0.19694,-0.17486
+1.3250000000000002,1.3,1.35,1.268,0.25412,-0.25412,0.080935,-0.071773,0.17434,-0.15514
+1.375,1.35,1.4,0.65367,0.17991,-0.17991,0.041723,-0.037,0.089375,-0.079622
+1.4249999999999998,1.4,1.45,0.42051,0.14618,-0.14618,0.026841,-0.023802,0.061237,-0.055003
+1.475,1.45,1.5,0.6506,0.16956,-0.16956,0.041528,-0.036826,0.08794,-0.07925
+1.525,1.5,1.55,2.4394,0.31721,-0.31721,0.1557,-0.13808,0.33268,-0.2932
+1.5750000000000002,1.55,1.6,2.5723,0.31376,-0.31376,0.16419,-0.1456,0.35741,-0.31707
+1.625,1.6,1.65,2.3154,0.30292,-0.30292,0.14779,-0.13106,0.29894,-0.2668
+1.6749999999999998,1.65,1.7,1.695,0.24062,-0.24062,0.10819,-0.095943,0.21761,-0.19356
+1.725,1.7,1.75,1.6167,0.33921,-0.33921,0.10319,-0.091511,0.21284,-0.18733
+1.775,1.75,1.8,1.0828,0.20448,-0.20448,0.069115,-0.061291,0.14018,-0.12353
+1.8250000000000002,1.8,1.85,0.54771,0.13863,-0.13863,0.03496,-0.031003,0.070707,-0.062047
+1.875,1.85,1.9,0.069194,0.055265,-0.055265,0.0044167,-0.0039167,0.011361,-0.010631
+1.9249999999999998,1.9,1.95,0.18071,0.079723,-0.079723,0.011535,-0.010229,0.023373,-0.020823
+1.975,1.95,2.0,0.24302,0.13641,-0.13641,0.015512,-0.013756,0.037524,-0.033054
+2.05,2.0,2.1,0.11972,0.058717,-0.058717,0.0076418,-0.0067767,0.015316,-0.013547
+2.1500000000000004,2.1,2.2,0.026766,0.019039,-0.019039,0.0017085,-0.001515,0.0039766,-0.0035304
+2.25,2.2,2.3,0.097582,0.086341,-0.086341,0.0062286,-0.0055235,0.011119,-0.0092746
+

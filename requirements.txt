@@ -1,2 +1,33 @@
-HepMC3==3.2.0
-LHAPDF==6.2.3
+# GRANIITTI python tools requirements
+
+# These are installed manually
+#hepmc3==3.2.3
+#lhapdf==6.3.0
+
+# Generic python
+cmake
+maketools
+pyjson5
+pyhepmc-ng
+matplotlib
+numba
+numpy
+iminuit
+braceexpand
+termcolor
+tqdm
+
+# ray + raytune algorithms
+ray[default]
+pandas
+tabulate
+HEBO
+hyperopt
+optuna
+bayesian-optimization
+nevergrad
+tensorboard
+tensorboardX
+
+# Unit tests
+pytest

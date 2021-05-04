@@ -1,0 +1,41 @@
+#: table_doi: 10.17182/hepdata.94264.v1/t33
+#: name: Figure 15 (bottom, left)
+#: description: Differential fiducial cross section for CEP of $\pi^+\pi^-$ pairs as a function of the rapidity of the pair, for invariant masses $m(\pi^+\pi^-) > 1.5~\mathrm{GeV}$.
+
+Systematic uncertainties assigned to data points are strongly correlated between bins and should be treated as allowed collective variation of all data points. There are two components of the total systematic uncertainty. The systematic uncertainty related to the experimental tools and analysis method is labeled "syst. (experimental)". The systematic uncertainty related to the integrated luminosity (fully correlated between all data points) is labeled "syst. (luminosity)".
+
+Fiducial region definition:
+ * central state $\pi^+$, $\pi^-$
+	- $p_{\mathrm{T}} > 0.2~\mathrm{GeV}$
+	- $|\eta| < 0.7$
+ * intact forward-scattered beam protons $p'$
+	- $p_x > -0.2~\mathrm{GeV}$
+	- $0.2~\mathrm{GeV} < |p_{y}| < 0.4~\mathrm{GeV}$
+	- $(p_x+0.3~\mathrm{GeV})^2 + p_y^2 < 0.25~\mathrm{GeV}^2$
+ * additional cuts
+	- $m(\pi^+\pi^-) > 1.5~\mathrm{GeV}$
+
+#: data_file: figure_15_(bottom,_left).yaml
+#: keyword reactions: P P --> P PI+ PI- P
+#: keyword observables: DSIG/DYRAP
+#: keyword cmenergies: 200
+#: keyword phrases: Exclusive | Diffractive | Cross Section | Proton-Proton Scattering | Single Differential Cross Section
+#: SQRT(S) [GeV],,,200
+#: LUMINOSITY [$pb^{-1}$],,,14.2
+#: RE,,,P P --> P PI+ PI- P
+YRAP(PI+PI-),YRAP(PI+PI-) LOW,YRAP(PI+PI-) HIGH,DSIG/DYRAP [NB],stat. +,stat. -,syst. (luminosity) +,syst. (luminosity) -,syst. (experimental) +,syst. (experimental) -
+-0.6499999999999999,-0.7,-0.6,0.14171,0.033748,-0.033748,0.0090453,-0.0080213,0.011172,-0.01021
+-0.55,-0.6,-0.5,0.60611,0.068529,-0.068529,0.038688,-0.034308,0.048111,-0.042351
+-0.45,-0.5,-0.4,1.0785,0.093762,-0.093762,0.068842,-0.061048,0.081186,-0.074591
+-0.35,-0.4,-0.3,1.5771,0.11434,-0.11434,0.10066,-0.089269,0.11627,-0.10652
+-0.25,-0.3,-0.2,1.8964,0.13796,-0.13796,0.12104,-0.10734,0.15998,-0.1437
+-0.15000000000000002,-0.2,-0.1,1.9036,0.13357,-0.13357,0.12151,-0.10775,0.16133,-0.14438
+-0.05,-0.1,0.0,3.0018,0.16945,-0.16945,0.1916,-0.16991,0.2361,-0.21616
+0.05,0.0,0.1,2.4305,0.14679,-0.14679,0.15514,-0.13758,0.18733,-0.17067
+0.15000000000000002,0.1,0.2,2.3786,0.15016,-0.15016,0.15183,-0.13464,0.18803,-0.17187
+0.25,0.2,0.3,1.774,0.12789,-0.12789,0.11323,-0.10041,0.14374,-0.13123
+0.35,0.3,0.4,1.5374,0.12117,-0.12117,0.098131,-0.087022,0.1253,-0.11304
+0.45,0.4,0.5,1.0665,0.092776,-0.092776,0.068072,-0.060366,0.080954,-0.073671
+0.55,0.5,0.6,0.8262,0.086986,-0.086986,0.052736,-0.046766,0.060737,-0.05557
+0.6499999999999999,0.6,0.7,0.25921,0.051623,-0.051623,0.016545,-0.014672,0.020215,-0.019915
+

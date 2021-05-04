@@ -1,6 +1,6 @@
 // Custom user cuts which cannot be implemented directly via json steering files
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -15,6 +15,7 @@
 #include "Graniitti/MUserCuts.h"
 
 namespace gra {
+
 // USERCUTS (implement custom cuts here; cuts which cannot be implemented
 // in .json steering file). Label these by unique integer.
 
@@ -75,7 +76,7 @@ bool UserCut(int id, const gra::LORENTZSCALAR &lts) {
   // Forward proton |deltaphi| in (90, 180]
   else if (id == 90180) {
     const double deltaphiabs = lts.pfinal[1].DeltaPhiAbs(lts.pfinal[2]);
-    if (gra::math::Deg2Rad(90) < deltaphiabs && deltaphiabs <= gra::math::Deg2Rad(180)) {
+    if (math::Deg2Rad(90) < deltaphiabs && deltaphiabs <= math::Deg2Rad(180)) {
       // fine
     } else {
       return false;  // did not pass
@@ -85,7 +86,7 @@ bool UserCut(int id, const gra::LORENTZSCALAR &lts) {
   // Forward proton |deltaphi| in (0, 90]
   else if (id == 90) {
     const double deltaphiabs = lts.pfinal[1].DeltaPhiAbs(lts.pfinal[2]);
-    if (0 < deltaphiabs && deltaphiabs <= gra::math::Deg2Rad(90)) {
+    if (0 < deltaphiabs && deltaphiabs <= math::Deg2Rad(90)) {
       // fine
     } else {
       return false;  // did not pass
@@ -93,35 +94,64 @@ bool UserCut(int id, const gra::LORENTZSCALAR &lts) {
   }
 
   // --------------------------------------------------------------------
-  // STAR/RHIC \sqrt{s} = 200 GeV pi+pi- (+ other cuts needed in .json file)
-  // indico.cern.ch/event/713101/contributions/3102315/
-  // attachments/1705771/2748440/Diffraction2018_RafalSikora.pdf
+  // STAR/RHIC \sqrt{s} = 200 GeV pi+pi- / K+K-, ppbar (+ other cuts needed in .json file)
+  // https://rivet.hepforge.org/analyses/STAR_2020_I1792394
   //
-  else if (id == 280818) {
+  else if (id == 1792394000 || id == 1792394001 || id == 1792394002 || id == 1792394010 ||
+           id == 1792394011 || id == 1792394012 || id == 1792394020 || id == 1792394021 ||
+           id == 1792394022) {
+    const std::vector<int> indices = {1, 2};
+
     // Loop over forward protons
-    std::vector<int> indices = {1, 2};
-
     for (const auto &i : indices) {
-      if (gra::math::pow2(lts.pfinal[i].Px() + 0.3) + gra::math::pow2(lts.pfinal[i].Py()) <
-          0.25) {  // GeV^2
-                   // fine
+      if (lts.pfinal[i].Px() > -0.2 && std::abs(lts.pfinal[i].Py()) > 0.2 &&
+          std::abs(lts.pfinal[i].Py()) < 0.4 &&
+          (math::pow2(lts.pfinal[i].Px() + 0.3) + math::pow2(lts.pfinal[i].Py())) < 0.25) {
+        // fine
       } else {
         return false;  // not passed
       }
 
-      if (0.2 < std::abs(lts.pfinal[i].Py()) && std::abs(lts.pfinal[i].Py()) < 0.4) {  // GeV
-                                                                                       // fine
-      } else {
-        return false;  // not passed
+      // ============================================================
+      // *** Extra forward cuts for all pi+pi- / K+K- / ppbar ***
+      if (id == 1792394001 || id == 1792394011 || id == 1792394021) {
+        const double deltaphiabs = lts.pfinal[1].DeltaPhiAbs(lts.pfinal[2]);
+        if (0 < deltaphiabs && deltaphiabs <= math::Deg2Rad(90)) {
+          // fine
+        } else {
+          return false;  // did not pass
+        }
+      } else if (id == 1792394002 || id == 1792394012 || id == 1792394022) {
+        const double deltaphiabs = lts.pfinal[1].DeltaPhiAbs(lts.pfinal[2]);
+        if (math::Deg2Rad(90) < deltaphiabs && deltaphiabs <= math::Deg2Rad(180)) {
+          // fine
+        } else {
+          return false;  // did not pass
+        }
       }
 
-      if (lts.pfinal[i].Px() > -0.2) {  // GeV
-                                        // fine
-      } else {
-        return false;  // not passed
+      // ============================================================
+      // ** Extra central K+, K- cuts ***
+      if (id == 1792394010 || id == 1792394011 || id == 1792394012) {
+        if (std::min(lts.decaytree[0].p4.Pt(), lts.decaytree[1].p4.Pt()) < 0.7) {
+          // fine
+        } else {
+          return false;  // did not pass
+        }
+      }
+
+      // ============================================================
+      // ** Extra central p, pbar cuts ***
+      if (id == 1792394020 || id == 1792394021 || id == 1792394022) {
+        if (std::min(lts.decaytree[0].p4.Pt(), lts.decaytree[1].p4.Pt()) < 1.1) {
+          // fine
+        } else {
+          return false;  // did not pass
+        }
       }
     }
 
+    // --------------------------------------------------------------------
     // [arxiv.org/abs/1608.03765]
 
   } else if (id == 160803765) {
@@ -157,7 +187,7 @@ bool UserCut(int id, const gra::LORENTZSCALAR &lts) {
   // [arxiv.org/abs/hep-ex/170804053]
 
   else if (id == 170804053) {
-    const double M = gra::math::msqrt(lts.m2);
+    const double M = math::msqrt(lts.m2);
 
     if (12 <= M && M < 30) {  // GeV
       if (lts.decaytree[0].p4.Pt() > 6 && lts.decaytree[1].p4.Pt() > 6) {
@@ -184,15 +214,17 @@ bool UserCut(int id, const gra::LORENTZSCALAR &lts) {
 
   else if (id == 1230123) {
     // Forward protons |py| and |phi|
-    std::vector<double> pyabs  = {std::abs(lts.pfinal[1].Py()), std::abs(lts.pfinal[2].Py())};
-    std::vector<double> phiabs = {std::abs(lts.pfinal[1].Phi()), std::abs(lts.pfinal[2].Phi())};
-    for (std::size_t i = 0; i < 2; ++i) {
+    const std::vector<double> pyabs  = {std::abs(lts.pfinal[1].Py()), std::abs(lts.pfinal[2].Py())};
+    const std::vector<double> phiabs = {std::abs(lts.pfinal[1].Phi()),
+                                        std::abs(lts.pfinal[2].Phi())};
+
+    for (const auto &i : aux::indices(pyabs)) {
       if ((0.17 < pyabs[i]) && (pyabs[i] < 0.5)) {  // GeV
                                                     // fine
       } else {
         return false;  // not passed
       }
-      if ((gra::math::PI / 4 < phiabs[i]) && (phiabs[i] < 3.0 * gra::math::PI / 4)) {
+      if ((math::PI / 4 < phiabs[i]) && (phiabs[i] < 3.0 * math::PI / 4)) {
         // fine
       } else {
         return false;  // not passed
@@ -201,7 +233,7 @@ bool UserCut(int id, const gra::LORENTZSCALAR &lts) {
 
     // Roman pot geometry
     const double deltaphiabs = lts.pfinal[1].DeltaPhiAbs(lts.pfinal[2]);
-    if ((deltaphiabs < gra::math::Deg2Rad(40.0)) || (deltaphiabs > gra::math::Deg2Rad(140.0))) {
+    if ((deltaphiabs < math::Deg2Rad(40.0)) || (deltaphiabs > math::Deg2Rad(140.0))) {
       // fine
     } else {
       return false;  // not passed

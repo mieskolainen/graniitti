@@ -3,11 +3,12 @@
 //
 // <Integrated cross section energy evolution scanner>
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
 #include <math.h>
+
 #include <algorithm>
 #include <chrono>
 #include <complex>
@@ -47,8 +48,8 @@ int main(int argc, char *argv[]) {
 
     options.add_options("")("i,input", "Input cards            <card1.json,card2.json,...>",
                             cxxopts::value<std::string>())(
-        "e,energy", "CMS energies           <energy0,energy1,...>", cxxopts::value<std::string>())(
-        "l,pomloop", "Pomeron loop screening <true|false>", cxxopts::value<std::string>())("H,help",
+        "e,ENERGY", "CMS energies           <energy0,energy1,...>", cxxopts::value<std::string>())(
+        "l,POMLOOP", "Pomeron loop screening <true|false>", cxxopts::value<std::string>())("H,help",
                                                                                            "Help");
 
     auto r = options.parse(argc, argv);
@@ -65,13 +66,6 @@ int main(int argc, char *argv[]) {
       aux::CheckUpdate();
 
       return EXIT_FAILURE;
-    }
-
-    // Screening
-    bool SCREENING = false;
-    if (r.count("l")) {
-      const std::string val = r["l"].as<std::string>();
-      SCREENING             = (val == "true");
     }
 
     // Input energy list
@@ -113,15 +107,13 @@ int main(int argc, char *argv[]) {
         std::unique_ptr<MGraniitti> gen = std::make_unique<MGraniitti>();
 
         // Read process input from file
-        gen->ReadInput(jsinput[k]);
+        nlohmann::json js = json::parse(gra::aux::GetInputData(jsinput[k]));
 
-        // Set beam and energy
-        const std::vector<std::string> beam  = {"p+", "p+"};
-        const std::vector<double>      ebeam = {energy[i] / 2, energy[i] / 2};
-        gen->proc->SetInitialState(beam, ebeam);
+        // Re-set parameters
+        js["PROCESSPARAM"]["ENERGY"]  = std::vector<double>(2, energy[i] / 2);
+        js["PROCESSPARAM"]["POMLOOP"] = (r["l"].as<std::string>() == "true");
 
-        // SCREENING
-        gen->proc->SetScreening(SCREENING);
+        gen->ReadInput(js);
 
         // Always last!
         gen->Initialize();
@@ -187,7 +179,6 @@ int main(int argc, char *argv[]) {
   printf("scan:: Output created to scan{.csv,.tex} \n\n");
 
   std::cout << "[xscan: done]" << std::endl;
-  aux::CheckUpdate();
 
   return EXIT_SUCCESS;
 }

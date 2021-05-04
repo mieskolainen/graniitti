@@ -1,6 +1,6 @@
 // Random number class
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 #ifndef MRANDOM_H
@@ -21,19 +21,28 @@ class MRandom {
   ~MRandom() {}
 
   // Set random number engine seed
-  void SetSeed(int seed) {
+  void SetSeed(int seed) {  // Keep it int, so negative can be spotted
     const int SEEDMAX = 2147483647;
     if (seed > SEEDMAX) {
-      std::string str = "MRandom::SetSeed: Invalid input seed: " + std::to_string(seed) +
+      std::string str = "MRandom::SetSeed: Invalid random seed: " + std::to_string(seed) +
                         " > SEEDMAX = " + std::to_string(SEEDMAX);
       throw std::invalid_argument(str);
     }
-    rng.seed(seed);
+    if (seed < 0) {
+      std::string str =
+          "MRandom::SetSeed: Invalid random seed: " + std::to_string(seed) + " ( < 0)";
+      throw std::invalid_argument(str);
+    }
+    // Seed via seed sequence
+    std::seed_seq seedseq({seed});
+    rng.seed(seedseq);
+
     RNDSEED = seed;
   }
 
+
   // Return current random seed
-  unsigned int GetSeed() const { return RNDSEED; }
+  uint32_t GetSeed() const { return RNDSEED; }
 
   // Random sampling functions
   double U(double a, double b);
@@ -61,10 +70,11 @@ class MRandom {
   // [REFERENCE: Luscher, https://arxiv.org/abs/hep-lat/9309020]
   std::ranlux48 rng;
 
+
   // Distribution engines
   std::uniform_real_distribution<double> flat;
   std::normal_distribution<double>       gaussian;
-  unsigned int                           RNDSEED = 0;  // Random seed set
+  uint32_t                               RNDSEED = 0;  // Random seed set
 
  private:
   // Nothing

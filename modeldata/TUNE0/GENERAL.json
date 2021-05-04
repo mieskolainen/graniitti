@@ -1,10 +1,12 @@
 // Model parameters ("TUNE0")
 //
-// mikael.mieskolainen@cern.ch, updated 25.02.2020
+// m.mieskolainen@imperial.ac.uk, 2021
 {
   
   // ---------------------------------------------------------------------
-  // [Global soft model parameters] (eikonal screening, elastic, SD, DD)
+  // [Global soft model parameters]
+
+  // [IMPACT: eikonal screening, elastic, SD, DD, all soft processes proton vertices]
   
   "PARAM_SOFT" : {
 
@@ -22,14 +24,16 @@
     "fc1"      : 0.34,        // Proton form factor param 1 (GeV^2)
     "fc2"      : 5.0,         // Proton form factor param 2 (GeV^2)
     "fc3"      : 10.0,        // Pion loop form factor (GeV^2)
-
+    
     // Odderon
     "ODDERON_ON" : false
   },
-
+  
   // ---------------------------------------------------------------------
   // [Jacob-Wick helicity amplitudes etc.]
   
+  // [IMPACT: "minimal pomeron" resonance processes]
+
   "PARAM_SPIN" : {
 
     // 2 -> 1 generation (fusion) spin correlations active
@@ -47,79 +51,55 @@
   },
 
   // ---------------------------------------------------------------------
-  // [Parameters for flat (DEBUG/ANALYSIS) amplitudes]
-  
-  "PARAM_FLAT" : {
-    "b" : 6,  // t-slope [GeV^{-2}], |M|^2 ~ exp(bt_1)exp(b_t2)
-  },
-
-  // ---------------------------------------------------------------------
-  // [Monopolium / Monopole pair process parameters]
-  //
-  // N.B. Monopole mass with PDG ID 992 is read from PDG file, change
-  // it via input string @ syntax
-
-  "PARAM_MONOPOLE" : {
-
-    // Coupling scheme: "beta-dirac", "dirac"
-    "coupling" : "beta-dirac",
-
-    // Dirac charge n = 1,2,3,4,...
-    "gn" : 1,
-
-    // Monopolium bound state energy level (>= 13) controlling
-    // bound state (negative) binding energy
-    "En"  : 13,
-
-    // Monopolium (MMbar) bare width (GeV)
-    "Gamma0" : 10.0
-
-  },
-
-  // ---------------------------------------------------------------------
   // [Central production regge model parameters]
+  //
+  // [IMPACT: "minimal pomeron" processes]
 
   "PARAM_REGGE" : {
+    
+    // Regge-trajectory parameters (pomeron, f2, a2)
+    "a0"  : [1.09, 0.55, 0.55],    // 1 + Intercept (alpha_0 = 1 + DELTA)
+    "ap"  : [0.20, 0.93, 0.93],    // Slope (alpha') [GeV^{-2}]
+    "sgn" : [1, -1, 1],            // Regge signature (sigma) (+-1)
+    "s0"  : 1.0,                   // Normalization scale (GeV^2)
+    
+    // Intermediate off-shell meson M* propagator "Reggeization" (NOT IMPLEMENTED CURRENTLY)
+    "reggeize" : false,
+    
+    // Pomeron-Pomeron-Resonance vertex flux [1/m^2]^{omega} parameter
+    "omega" : 0.5,
+    
+    // 4-body and 6-body continuum amplitude permutations construction:
+    // Set 0 for for charged (determinant like) +- combinations, 1 for all combinations
+    "ampcombs" : 0,
+    
+    // -----------------------------------------------------------------
+    // IMPACT: [non-tensor pomeron AND tensor pomeron models]
+    
+    // Continuum amplitude t/u channel form factor:
+    //
+    // Note that with (interfering) resonances, the continuum parameters
+    // should be fitted together with the resonances + screening loop on.
+    "offshellFF" : "POW", // "EXP", "OREAR" or "POW"
+    
+    // Form factor parameters
+    "b_EXP"   : 1.0,       // GeV^-2
 
-      // [non-tensor pomeron model]
+    "a_OREAR" : 0.8,       // GeV^1
+    "b_OREAR" : 1.8,       // GeV^-1
 
-      // Regge-trajectory parameters (pomeron, f2, a2)
-      "a0"  : [1.088, 0.55, 0.55],  // 1 + Intercept (alpha_0 = 1 + DELTA)
-      "ap"  : [0.20, 0.93, 0.93],   // Slope (alpha') [GeV^{-2}]
-      "sgn" : [1, -1, 1],           // Regge signature (sigma) (+-1)
-      "s0"  : 1.0,                  // Normalization scale (GeV^2)
-
-      // Intermediate off-shell meson M* propagator "Reggeization"
-      // (NOT IMPLEMENTED CURRENTLY)
-      "reggeize" : false,
-
-      // Pomeron-Pomeron-Resonance vertex flux [1/m^2]^{lambda} parameter
-      "omega" : 0.5,
-
-      // -----------------------------------------------------------------
-      // [non-tensor pomeron AND tensor pomeron models]
-
-      // Continuum amplitude t/u channel form factor:
-      // 0 = "exp", 1 = "orear", 2 = "pow"
-      //
-      // Note that with (interfering) resonances, the continuum parameters
-      // should be fitted together with the resonances.
-      "offshellFF" : 2,
-
-      // Form factor parameters
-      "b_EXP" :   0.944,            // GeV^-2
-      "a_OREAR" : 0.638,            // GeV^-1
-      "b_OREAR" : 1.886,            // GeV^-1
-      "b_POW" :   0.500,            // GeV^2
+    "b_POW"   : 0.5,       // GeV^2
   },
-
+  
   // ---------------------------------------------------------------------
-  // [Non-tensor pomeron model continuum amplitude couplings]
-  //
+  // [Central production Regge model parameters]
+  // 
+  // [IMPACT: "minimal pomeron" processes]
+  // 
   // For coupling constants see e.g.
   //   pipi: Phys. Rev. D81 (2010) 036003
   //   KK:   Phys. Rev. D85 (2012) 014026
-  //
+  // 
   // Originating from fits by:
   // A. Donnachie and P.V. Landshoff, Phys. Lett.B296 (1992) 227.
   // Note that these couplings are technically only compatible with the
@@ -128,53 +108,53 @@
   // Fixed final state couplings [in GeV^{-2}] (1 mb = 2.56819 GeV^{-2}]
   //
   // These DL-couplings are transformed inside the program by:
-  // gpi_P = PARAM_REGGE::c[0] / PARAM_SOFT::gN_P
+  // gpi_P = PARAM_REGGE::c[i] / PARAM_SOFT::gN_P
 
   // pion
   "PARAM_PI" : {
     "c" : [35.00184, 81.63672, 10.86264],
-    "n" : [true, false, false],  // Which Reggeons are exchanged (pomeron, f2, a2)
+    "active" : [true, true, true],  // Which Reggeons are exchanged (pomeron, f2, a2)
   },
 
   // kaon
   "PARAM_K" : {
     "c" : [30.35376, 44.31084, 23.38164],
-    "n" : [true, false, false]
+    "active" : [true, true, true]
   },
 
   // proton (ansatz) (here one can compare with gN_P above)
   "PARAM_P" : {
     "c" : [27.0, 0, 0],
-    "n" : [true, false, false]
+    "active" : [true, false, false]
   },
 
   // rho(770) (ansatz)
   "PARAM_RHO" : {
     "c" : [25.0, 0, 0],
-    "n" : [true, false, false]
+    "active" : [true, false, false]
   },
 
   // phi(1020) (ansatz)
   "PARAM_PHI" : {
     "c" : [18.0, 0, 0],
-    "n" : [true, false, false]
+    "active" : [true, false, false]
   },
 
   // f0(500) (ansatz)
   "PARAM_F0500" : {
     "c" : [35.0, 0, 0],
-    "n" : [true, false, false]
+    "active" : [true, false, false]
   },
 
   // other, such as lambda(1115) (ansatz)
   "PARAM_X" : {
     "c" : [15.0, 0, 0],
-    "n" : [true, false, false]
+    "active" : [true, false, false]
   },
-
-  // ---------------------------------------------------------------------
-  // [Tensor Pomeron model parameters]
   
+  // ---------------------------------------------------------------------
+  // [Tensor Pomeron model processes]
+
   "PARAM_TENSORPOM" : {
 
     // Trajectory parameters
@@ -203,6 +183,8 @@
   
   // ---------------------------------------------------------------------
   // [Proton structure functions and form factors]
+  // 
+  // [IMPACT: yy-processes]
 
   "PARAM_STRUCTURE" : {
 
@@ -239,6 +221,36 @@
 
     // Angular |cos(theta*)| < MAXCOS cutoff for meson amplitudes [0,1]
     "MAXCOS" : 0.9,
+  },
+
+  // ---------------------------------------------------------------------
+  // [Monopolium / Monopole pair process parameters]
+  //
+  // N.B. Monopole mass with PDG ID 992 is read from PDG file, change
+  // it via input string @ syntax
+  
+  "PARAM_MONOPOLE" : {
+
+    // Coupling scheme: "beta-dirac", "dirac"
+    "coupling" : "beta-dirac",
+
+    // Dirac charge n = 1,2,3,4,...
+    "gn" : 1,
+
+    // Monopolium bound state energy level (>= 13) controlling
+    // bound state (negative) binding energy
+    "En"  : 13,
+
+    // Monopolium (MMbar) bare width (GeV)
+    "Gamma0" : 10.0
+
+  },
+
+  // ---------------------------------------------------------------------
+  // [Parameters for flat (DEBUG/ANALYSIS) amplitudes]
+  
+  "PARAM_FLAT" : {
+    "b" : 6,  // t-slope [GeV^{-2}], |M|^2 ~ exp(bt_1)exp(b_t2)
   },
 
   // ---------------------------------------------------------------------

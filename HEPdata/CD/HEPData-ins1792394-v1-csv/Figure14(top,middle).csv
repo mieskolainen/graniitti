@@ -1,0 +1,42 @@
+#: table_doi: 10.17182/hepdata.94264.v1/t22
+#: name: Figure 14 (top, middle)
+#: description: Differential fiducial cross section for CEP of $K^+K^-$ pairs as a function of the $\cos{\theta^{CS}}$ of the positive charge kaon in the Collins-Soper reference frame.
+
+Systematic uncertainties assigned to data points are strongly correlated between bins and should be treated as allowed collective variation of all data points. There are two components of the total systematic uncertainty. The systematic uncertainty related to the experimental tools and analysis method is labeled "syst. (experimental)". The systematic uncertainty related to the integrated luminosity (fully correlated between all data points) is labeled "syst. (luminosity)".
+
+Fiducial region definition:
+ * central state $K^+$, $K^-$
+	- $p_{\mathrm{T}} > 0.3~\mathrm{GeV}$
+	- $min(p_{\mathrm{T}}(K^+), p_{\mathrm{T}}(K^-)) < 0.7~\mathrm{GeV}$
+	- $|\eta| < 0.7$
+ * intact forward-scattered beam protons $p'$
+	- $p_x > -0.2~\mathrm{GeV}$
+	- $0.2~\mathrm{GeV} < |p_{y}| < 0.4~\mathrm{GeV}$
+	- $(p_x+0.3~\mathrm{GeV})^2 + p_y^2 < 0.25~\mathrm{GeV}^2$
+#: data_file: figure_14_(top,_middle).yaml
+#: keyword reactions: P P --> P K+ K- P
+#: keyword observables: DSIG/DCOSTHETA
+#: keyword cmenergies: 200
+#: keyword phrases: Exclusive | Diffractive | Cross Section | Proton-Proton Scattering | Single Differential Cross Section | Strange production
+#: SQRT(S) [GeV],,,200
+#: LUMINOSITY [$pb^{-1}$],,,14.2
+#: RE,,,P P --> P K+ K- P
+COSTHETA(K+),COSTHETA(K+) LOW,COSTHETA(K+) HIGH,DSIG/DCOSTHETA [NB],stat. +,stat. -,syst. (luminosity) +,syst. (luminosity) -,syst. (experimental) +,syst. (experimental) -
+-0.8500000000000001,-0.9,-0.8,0.070369,0.051545,-0.051545,0.0044916,-0.0039831,0.012387,-0.010995
+-0.75,-0.8,-0.7,0.11824,0.094317,-0.094317,0.0075473,-0.0066929,0.029853,-0.024572
+-0.6499999999999999,-0.7,-0.6,0.14548,0.10077,-0.10077,0.0092858,-0.0082346,0.028737,-0.027287
+-0.55,-0.6,-0.5,0.44311,0.127,-0.127,0.028284,-0.025082,0.078211,-0.070805
+-0.45,-0.5,-0.4,1.1238,0.21897,-0.21897,0.071731,-0.06361,0.17125,-0.15185
+-0.35,-0.4,-0.3,1.0253,0.15435,-0.15435,0.065442,-0.058033,0.14772,-0.13404
+-0.25,-0.3,-0.2,1.4357,0.18406,-0.18406,0.091638,-0.081264,0.19954,-0.18035
+-0.15000000000000002,-0.2,-0.1,1.9176,0.22678,-0.22678,0.1224,-0.10854,0.27606,-0.24636
+-0.05,-0.1,0.0,1.8039,0.22921,-0.22921,0.11514,-0.10211,0.2673,-0.24225
+0.05,0.0,0.1,2.0458,0.21938,-0.21938,0.13058,-0.1158,0.28122,-0.25281
+0.15000000000000002,0.1,0.2,2.039,0.23179,-0.23179,0.13015,-0.11541,0.28508,-0.25469
+0.25,0.2,0.3,1.5819,0.21585,-0.21585,0.10098,-0.089544,0.24289,-0.21599
+0.35,0.3,0.4,1.2204,0.1982,-0.1982,0.077899,-0.06908,0.16802,-0.15144
+0.45,0.4,0.5,0.74966,0.18017,-0.18017,0.047851,-0.042434,0.11452,-0.10289
+0.55,0.5,0.6,0.58848,0.1541,-0.1541,0.037563,-0.03331,0.092001,-0.080522
+0.6499999999999999,0.6,0.7,0.17675,0.078345,-0.078345,0.011282,-0.010005,0.026294,-0.024585
+0.75,0.7,0.8,0.035842,0.042795,-0.042795,0.0022878,-0.0020288,0.0071544,-0.0065418
+

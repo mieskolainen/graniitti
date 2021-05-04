@@ -80,4 +80,4 @@ cp ./tests/analysis_xsec/figs/ratio.pdf $F0/
 cp ./tests/analysis_sudakov/figs/sudakov_1D_mu.pdf $F0/
 cp ./tests/analysis_sudakov/figs/sudakov_1D_Q2.pdf $F0/
 
-echo "copyrun.sh [Done]"
+echo "[copyrun.sh: done]"

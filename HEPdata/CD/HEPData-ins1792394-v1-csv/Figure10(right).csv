@@ -1,0 +1,31 @@
+#: table_doi: 10.17182/hepdata.94264.v1/t6
+#: name: Figure 10 (right)
+#: description: Differential fiducial cross section for CEP of $p\bar{p}$ pairs as a function of the rapidity of the pair.
+
+Systematic uncertainties assigned to data points are strongly correlated between bins and should be treated as allowed collective variation of all data points. There are two components of the total systematic uncertainty. The systematic uncertainty related to the experimental tools and analysis method is labeled "syst. (experimental)". The systematic uncertainty related to the integrated luminosity (fully correlated between all data points) is labeled "syst. (luminosity)".
+
+Fiducial region definition:
+ * central state $p$, $\bar{p}$
+	- $p_{\mathrm{T}} > 0.4~\mathrm{GeV}$
+	- $min(p_{\mathrm{T}}(p), p_{\mathrm{T}}(\bar{p})) < 1.1~\mathrm{GeV}$
+	- $|\eta| < 0.7$
+ * intact forward-scattered beam protons $p'$
+	- $p_x > -0.2~\mathrm{GeV}$
+	- $0.2~\mathrm{GeV} < |p_{y}| < 0.4~\mathrm{GeV}$
+	- $(p_x+0.3~\mathrm{GeV})^2 + p_y^2 < 0.25~\mathrm{GeV}^2$
+#: data_file: figure_10_(right).yaml
+#: keyword reactions: P P --> P P PBAR P
+#: keyword observables: DSIG/DYRAP
+#: keyword cmenergies: 200
+#: keyword phrases: Exclusive | Diffractive | Cross Section | Proton-Proton Scattering | Single Differential Cross Section
+#: SQRT(S) [GeV],,,200
+#: LUMINOSITY [$pb^{-1}$],,,14.2
+#: RE,,,P P --> P P PBAR P
+YRAP(PPBAR),YRAP(PPBAR) LOW,YRAP(PPBAR) HIGH,DSIG/DYRAP [PB],stat. +,stat. -,syst. (luminosity) +,syst. (luminosity) -,syst. (experimental) +,syst. (experimental) -
+-0.5,-0.6,-0.4,2.193,3.7561,-3.7561,0.13998,-0.12413,0.28757,-0.26439
+-0.30000000000000004,-0.4,-0.2,41.393,13.719,-13.719,2.6421,-2.343,7.853,-7.6285
+-0.1,-0.2,0.0,84.374,24.671,-24.671,5.3856,-4.7759,12.605,-12.022
+0.1,0.0,0.2,81.637,23.125,-23.125,5.2109,-4.6209,9.5313,-8.8674
+0.30000000000000004,0.2,0.4,25.467,11.627,-11.627,1.6256,-1.4415,3.2284,-3.0131
+0.5,0.4,0.6,11.179,6.7403,-6.7403,0.71354,-0.63276,1.1988,-1.1104
+

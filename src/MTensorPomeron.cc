@@ -6,7 +6,7 @@
 // [REFERENCE: LNS, arxiv.org/abs/1801.03902]
 // [REFERENCE: LNS, arxiv.org/abs/1901.11490]
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -96,8 +96,8 @@
   }
 
 using gra::aux::indices;
-using gra::math::PI;
 using gra::math::msqrt;
+using gra::math::PI;
 using gra::math::pow2;
 using gra::math::zi;
 
@@ -147,7 +147,11 @@ double MTensorPomeron::GDecay(int J, double M, double Gamma, double mf, double B
     return sqrt(partialWidth / (M / (192 * PI) * math::pow3(P)));
   } else if (J == 2) {
     return sqrt(partialWidth / (M / (480 * PI) * pow2(M / S0) * math::pow5(P)));
-  } else if (J == 4) {
+  } else if (J >= 3) {
+    std::cout << "MTensorPomeron::GDecay: Spin-" + std::to_string(J) +
+                     " support not implemented for Tensor Pomeron model!"
+              << std::endl
+              << std::endl;
     return 1.0;  // future
   } else {
     throw std::invalid_argument("MTensorPomeron::GDecay: Unknown input spin J = " +

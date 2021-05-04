@@ -1,10 +1,14 @@
 #!/bin/bash
 #
-# Automatic installation (tested on Ubuntu 16+)
+# Automatic installation (tested on Ubuntu 20.1 LTS)
+#
+# Ubuntu requirements:
+#   sudo apt install cmake g++ python3-dev
 #
 # Run with: source autoinstall.sh
 
 # ****
+PYTHON_VERSION=3.8
 INSTALLPATH=$HOME/local
 # ****
 

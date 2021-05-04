@@ -1,0 +1,31 @@
+#: table_doi: 10.17182/hepdata.94264.v1/t11
+#: name: Figure 11 (bottom, middle)
+#: description: Differential fiducial cross section for CEP of $K^+K^-$ pairs as a function of the sum of the squares of the four-momenta losses in the proton vertices.
+
+Systematic uncertainties assigned to data points are strongly correlated between bins and should be treated as allowed collective variation of all data points. There are two components of the total systematic uncertainty. The systematic uncertainty related to the experimental tools and analysis method is labeled "syst. (experimental)". The systematic uncertainty related to the integrated luminosity (fully correlated between all data points) is labeled "syst. (luminosity)".
+
+Fiducial region definition:
+ * central state $K^+$, $K^-$
+	- $p_{\mathrm{T}} > 0.3~\mathrm{GeV}$
+	- $min(p_{\mathrm{T}}(K^+), p_{\mathrm{T}}(K^-)) < 0.7~\mathrm{GeV}$
+	- $|\eta| < 0.7$
+ * intact forward-scattered beam protons $p'$
+	- $p_x > -0.2~\mathrm{GeV}$
+	- $0.2~\mathrm{GeV} < |p_{y}| < 0.4~\mathrm{GeV}$
+	- $(p_x+0.3~\mathrm{GeV})^2 + p_y^2 < 0.25~\mathrm{GeV}^2$
+#: data_file: figure_11_(bottom,_middle).yaml
+#: keyword reactions: P P --> P K+ K- P
+#: keyword observables: DSIG/D|T1+T2|
+#: keyword cmenergies: 200
+#: keyword phrases: Exclusive | Diffractive | Cross Section | Proton-Proton Scattering | Single Differential Cross Section | Strange production
+#: SQRT(S) [GeV],,,200
+#: LUMINOSITY [$pb^{-1}$],,,14.2
+#: RE,,,P P --> P K+ K- P
+|T1+T2| [GEV**2],|T1+T2| [GEV**2] LOW,|T1+T2| [GEV**2] HIGH,DSIG/D|T1+T2| [NB/GEV**2],stat. +,stat. -,syst. (luminosity) +,syst. (luminosity) -,syst. (experimental) +,syst. (experimental) -
+0.1,0.08,0.12,4.559,0.54611,-0.54611,0.291,-0.25806,0.60745,-0.54068
+0.14,0.12,0.16,11.38,0.82212,-0.82212,0.72636,-0.64413,1.5379,-1.3836
+0.18,0.16,0.2,10.296,0.84676,-0.84676,0.65721,-0.58281,1.4575,-1.3281
+0.22,0.2,0.24,8.3135,0.85672,-0.85672,0.53065,-0.47057,1.2662,-1.1296
+0.27,0.24,0.3,4.0502,0.5138,-0.5138,0.25853,-0.22926,0.77175,-0.67557
+0.33999999999999997,0.3,0.38,0.34734,0.16221,-0.16221,0.022171,-0.019661,0.094433,-0.078357
+

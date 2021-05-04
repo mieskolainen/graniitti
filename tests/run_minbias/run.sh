@@ -22,10 +22,8 @@ fi
 
 fi
 
-# SET RIVET source here (otherwise collapse between HepMC2 and HepMC3 libraries!)
-source ./lenovo/rivet/local/rivetenv.sh
-#source ./i5/local/rivetenv.sh
-#source ./core4/rivet/local/rivetenv.sh
+# Set source here
+source $HOME/scratch/rivet/local/rivetenv.sh
 
 
 # # # # # -----------------------------------------------------------------------------------
@@ -38,7 +36,7 @@ SET=ATLAS_2010_S8918562
 
 # #--cross-section=7.36e10
 rivet --analysis=$SET ./output/minbias_900.hepmc2
-rivet-mkhtml --mc-errs Rivet.yoda:"GRANIITTI" -o ./rivet-plots-900/
+rivet-mkhtml --mc-errs Rivet.yoda:"GRANIITTI" -o ./rivetplots/minbias_900/
 
 
 # # # # # -----------------------------------------------------------------------------------
@@ -49,7 +47,7 @@ SET=ATLAS_2010_S8918562,ALICE_2010_S8625980,ATLAS_2012_I1084540,TOTEM_2012_I1115
 # # # # # #,CMS_2010_S8656010,ATLAS_2010_S8894728
 
 #rivet --analysis=$SET ./output/minbias_7000.hepmc2
-#rivet-mkhtml --mc-errs Rivet.yoda:"GRANIITTI" -o ./rivet-plots-7000/
+#rivet-mkhtml --mc-errs Rivet.yoda:"GRANIITTI" -o ./rivetplots/minbias_7000/
 
 
 # # # # # -----------------------------------------------------------------------------------
@@ -60,4 +58,4 @@ SET=ATLAS_2016_I1467230
 #,CMS_2015_I1384119
 
 rivet --analysis=$SET ./output/minbias_13000.hepmc2
-rivet-mkhtml --mc-errs Rivet.yoda:"GRANIITTI" -o ./rivet-plots-13000/
+rivet-mkhtml --mc-errs Rivet.yoda:"GRANIITTI" -o ./rivetplots/minbias_13000/

@@ -1,0 +1,33 @@
+#: table_doi: 10.17182/hepdata.94264.v1/t5
+#: name: Figure 10 (middle)
+#: description: Differential fiducial cross section for CEP of $K^+K^-$ pairs as a function of the rapidity of the pair.
+
+Systematic uncertainties assigned to data points are strongly correlated between bins and should be treated as allowed collective variation of all data points. There are two components of the total systematic uncertainty. The systematic uncertainty related to the experimental tools and analysis method is labeled "syst. (experimental)". The systematic uncertainty related to the integrated luminosity (fully correlated between all data points) is labeled "syst. (luminosity)".
+
+Fiducial region definition:
+ * central state $K^+$, $K^-$
+	- $p_{\mathrm{T}} > 0.3~\mathrm{GeV}$
+	- $min(p_{\mathrm{T}}(K^+), p_{\mathrm{T}}(K^-)) < 0.7~\mathrm{GeV}$
+	- $|\eta| < 0.7$
+ * intact forward-scattered beam protons $p'$
+	- $p_x > -0.2~\mathrm{GeV}$
+	- $0.2~\mathrm{GeV} < |p_{y}| < 0.4~\mathrm{GeV}$
+	- $(p_x+0.3~\mathrm{GeV})^2 + p_y^2 < 0.25~\mathrm{GeV}^2$
+#: data_file: figure_10_(middle).yaml
+#: keyword reactions: P P --> P K+ K- P
+#: keyword observables: DSIG/DYRAP
+#: keyword cmenergies: 200
+#: keyword phrases: Exclusive | Diffractive | Cross Section | Proton-Proton Scattering | Single Differential Cross Section | Strange production
+#: SQRT(S) [GeV],,,200
+#: LUMINOSITY [$pb^{-1}$],,,14.2
+#: RE,,,P P --> P K+ K- P
+YRAP(K+K-),YRAP(K+K-) LOW,YRAP(K+K-) HIGH,DSIG/DYRAP [NB],stat. +,stat. -,syst. (luminosity) +,syst. (luminosity) -,syst. (experimental) +,syst. (experimental) -
+-0.525,-0.6,-0.45,0.13038,0.043492,-0.043492,0.0083224,-0.0073802,0.022006,-0.019573
+-0.375,-0.45,-0.3,0.88164,0.11802,-0.11802,0.056275,-0.049904,0.14214,-0.12582
+-0.22499999999999998,-0.3,-0.15,2.059,0.19464,-0.19464,0.13143,-0.11655,0.30329,-0.27023
+-0.075,-0.15,0.0,2.7347,0.25087,-0.25087,0.17455,-0.15479,0.41043,-0.36534
+0.075,0.0,0.15,2.3552,0.23366,-0.23366,0.15033,-0.13331,0.33398,-0.30177
+0.22499999999999998,0.15,0.3,1.8293,0.18495,-0.18495,0.11676,-0.10354,0.26151,-0.23411
+0.375,0.3,0.45,0.82132,0.11332,-0.11332,0.052425,-0.04649,0.10361,-0.095546
+0.525,0.45,0.6,0.20658,0.060612,-0.060612,0.013186,-0.011693,0.027741,-0.025477
+

@@ -3,13 +3,16 @@
 // Future step:
 // Factorize all VEGAS functions out from MGraniitti to here (use function pointers etc.)
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 #ifndef MVEGAS_H
 #define MVEGAS_H
 
 #include <vector>
+
+#include "json.hpp"
+using json = nlohmann::json;
 
 
 namespace gra {
@@ -27,8 +30,7 @@ struct VEGASPARAM {
   int          DEBUG     = -1;     // Debug mode
 
   // User cannot set these
-  unsigned int MAXFDIM = 100;      // Maximum integral dimension
-  double       EPS     = 1.0e-30;  // Epsilon parameter
+  double EPS = 1.0e-30;  // Epsilon parameter
 };
 
 
@@ -161,18 +163,18 @@ struct VEGASData {
 
   // Full init
   void ClearAll(const VEGASPARAM &param) {
-    // Vectors [MAXFDIM]
-    dcache = std::vector<double>(param.MAXFDIM, 0.0);
-    dxvec  = std::vector<double>(param.MAXFDIM, 0.0);
+    // Vectors [FDIM]
+    dcache = std::vector<double>(FDIM, 0.0);
+    dxvec  = std::vector<double>(FDIM, 0.0);
 
     // Vectors [BINS]
     rvec   = std::vector<double>(param.BINS, 0.0);
     xcache = std::vector<double>(param.BINS, 0.0);
 
-    // Matrices [BINS x MAXFDIM]
-    fmat  = std::vector<std::vector<double>>(param.BINS, std::vector<double>(param.MAXFDIM, 0.0));
-    f2mat = std::vector<std::vector<double>>(param.BINS, std::vector<double>(param.MAXFDIM, 0.0));
-    xmat  = std::vector<std::vector<double>>(param.BINS, std::vector<double>(param.MAXFDIM, 0.0));
+    // Matrices [BINS x FDIM]
+    fmat  = std::vector<std::vector<double>>(param.BINS, std::vector<double>(FDIM, 0.0));
+    f2mat = std::vector<std::vector<double>>(param.BINS, std::vector<double>(FDIM, 0.0));
+    xmat  = std::vector<std::vector<double>>(param.BINS, std::vector<double>(FDIM, 0.0));
 
     // Init with 1!
     for (std::size_t j = 0; j < FDIM; ++j) { xmat[0][j] = 1.0; }
@@ -185,6 +187,59 @@ struct VEGASData {
     // Previous binning
     BINS_prev = 1;
   }
+
+  // Save everything to JSON
+  void struct2json(json &j) const {
+    j["BINS_prev"] = BINS_prev;
+
+    j["FDIM"] = FDIM;
+
+    j["fsum"]  = fsum;
+    j["f2sum"] = f2sum;
+
+    j["sumdata"] = sumdata;
+    j["sumchi2"] = sumchi2;
+    j["sweight"] = sweight;
+
+    j["region"] = region;
+
+    j["dcache"] = dcache;
+    j["dxvec"]  = dxvec;
+
+    j["rvec"]   = rvec;
+    j["xcache"] = xcache;
+
+    j["fmat"]  = fmat;
+    j["f2mat"] = f2mat;
+    j["xmat"]  = xmat;
+  }
+
+  // Read everything from JSON
+  void json2struct(const json &jf) {
+    jf.at("BINS_prev").get_to(BINS_prev);
+
+    jf.at("FDIM").get_to(FDIM);
+
+    jf.at("fsum").get_to(fsum);
+    jf.at("f2sum").get_to(f2sum);
+
+    jf.at("sumdata").get_to(sumdata);
+    jf.at("sumchi2").get_to(sumchi2);
+    jf.at("sweight").get_to(sweight);
+
+    jf.at("region").get_to(region);
+
+    jf.at("dcache").get_to(dcache);
+    jf.at("dxvec").get_to(dxvec);
+
+    jf.at("rvec").get_to(rvec);
+    jf.at("xcache").get_to(xcache);
+
+    jf.at("fmat").get_to(fmat);
+    jf.at("f2mat").get_to(f2mat);
+    jf.at("xmat").get_to(xmat);
+  }
+
 
   // VEGAS scalars
   unsigned int BINS_prev = 0;

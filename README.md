@@ -12,10 +12,65 @@ https://arxiv.org/abs/1910.06300
 See VERSION.json for the version information
 
 
-## Installation and introduction at:
+## Physics introduction at
 ## https://mieskolainen.github.io
 
 </br>
+
+
+## Fast instructions on Ubuntu 20.x
+
+Compile C++ code
+```
+sudo apt install cmake g++ python3-dev curl
+git clone --depth 1 https://github.com/mieskolainen/graniitti
+cd graniitti && cd install && source autoinstall.sh && cd ..
+source ./install/setenv.sh 
+make -j4
+```
+
+Commands and guidance
+```
+Run ./bin/gr and see /docs/FAQ
+```
+
+Simulate MC events
+```
+./bin/gr -i ./fitcard/STAR_1792394_pipi.json -w true -l true -n 30000
+```
+
+Setup virtual Python environment via Conda
+```
+wget https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh
+chmod +x and execute the installer
+
+conda create -y --name graniitti python==3.8.5 && conda activate graniitti
+pip install -r requirements.txt
+```
+
+Analyze MC events and data
+```
+python ./python/iceshot --hepmc3 STAR_1792394_pipi --hepdata dataset_STAR_1792394_pipi --pid '[[211,-211]]'
+```
+
+Compare MC with differential fiducial measurements made at RHIC/Tevatron/LHC
+```
+pytest ./tests/testbench_exloop.py -s
+pytest ./tests/testbench_cepdata.py -s
+```
+
+MC model tuning via HPC-distributed Bayesian / evolutionary optimization
+```
+ray start --head
+python ./python/icetune
+```
+
+Unit and integration tests
+```
+make -j4 TEST=TRUE && ./bin/testbench*
+pytest ./tests/testbench_*.py -s
+```
+
 
 ## Citation
 

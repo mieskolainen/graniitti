@@ -2,7 +2,7 @@
 //
 // The format is strictly upper/lower case sensitive.
 //
-// mikael.mieskolainen@cern.ch, 2018
+// mikael.mieskolainen@cern.ch, 2021
 {
 
   // ----------------------------------------------------------------------
@@ -27,14 +27,14 @@
     "BEAM"    : ["p+","p+"],     // Beam PDG-ID / Name
     "ENERGY"  : [6500, 6500],    // Beam energy in the lab (GeV)
     "PROCESS" : "PP[RES+CON]<C> -> pi+ pi-",  // Process
-    "RES"     : ["f0_500", "f0_980", "f2_1270", "f0_1500"],
+    "RES"     : ["f0_500", "rho_770", "f0_980", "phi_1020", "f2_1270", "f0_1500", "f2_1525", "f0_1710"],
     "POMLOOP" : false,           // Eikonal Pomeron loop screening
     "NSTARS"  : 0,               // N* excitation (0 = elastic, 1 = single, 2 = double)
     "LHAPDF"  : "CT10nlo",       // LHAPDF parton distribution set
     "HIST"    : 1,               // On-the-flight histograms (0 = off,1,2)
-    "RNDSEED" : 12345678         // Random seed (int32)
+    "RNDSEED" : 12345678,        // Random seed (uint)
   },
-
+  
   // ----------------------------------------------------------------------
   // Monte Carlo integrator setup
 
@@ -42,20 +42,20 @@
     
     // Loop integration
     "POMLOOP" : {
-      "ND" : 0              // Loop integral discretization
+      "ND" : 0,               // Integral discretization [larger -> more discrete] (0 gives default discretization) (int)
     },
 
     // VEGAS integrator
     "VEGAS" : {
       
-      "BINS" : 128,         // Maximum number of bins per dimension (NOTE: EVEN NUMBER)
-      "LAMBDA" : 1.25,      // Regularization parameter
-      "NCALL" : 15000,       // Number of function calls per iteration (5000 or more)
-      "ITER"  : 5,          // Number of initialization iteration (10 or more)
-      "CHI2MAX" : 10.0,     // Maximum Chi^2 in initialization
-      "PRECISION"  : 0.05,  // Integral relative precision target
-
-      "DEBUG" : -1          // Debug output (default -1)
+      "PRECISION" : 0.01,     // Integral relative precision target
+      "NCALL"     : 40000,    // Number of function calls per initialization iteration (5000 .. 50000 or more)
+      "ITER"      : 10,       // Number of initialization iteration (10 or more)
+      
+      "BINS"    : 128,        // Maximum number of bins per dimension (NOTE: EVEN NUMBER)
+      "LAMBDA"  : 1.5,        // Regularization parameter
+      "CHI2MAX" : 10.0,       // Maximum Chi^2 in initialization
+      "DEBUG"   : -1,         // Debug output (default -1)
     },
 
     // FLAT integrator

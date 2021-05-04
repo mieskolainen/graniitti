@@ -1,6 +1,6 @@
 // Abstract process class
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -324,8 +324,9 @@ void MProcess::SetBeamEnergies(double E1, double E2) {
   lts.sqrt_s = msqrt(lts.s);
 
   if (lts.sqrt_s < (lts.beam1.mass + lts.beam2.mass)) {
-    std::string str = "MProcess::SetBeamEnergies: Error with input CMS energy: " +
-                      std::to_string(lts.sqrt_s) + " GeV < initial state masses!";
+    std::string str =
+        "MProcess::SetBeamEnergies: Error with input CMS energy: " + std::to_string(lts.sqrt_s) +
+        " GeV < initial state masses!";
     throw std::invalid_argument(str);
   }
 
@@ -1734,7 +1735,7 @@ void MProcess::SetProcess(std::string &str, const std::vector<aux::OneCMD> &synt
   PROCESS = str;
 
   // Call this always first
-  lts.PDG.ReadParticleData(gra::aux::GetBasePath(2) + "/modeldata/mass_width_2018.mcd");
+  lts.PDG.ReadParticleData(gra::aux::GetBasePath(2) + "/modeldata/mass_width_2020.mcd");
 
   // @SYNTAX Read and set new PDG input
   for (const auto &i : indices(syntax)) {

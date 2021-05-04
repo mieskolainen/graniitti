@@ -1,6 +1,6 @@
 // Regge Amplitudes
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -33,27 +33,25 @@ using namespace gra::form;
 
 namespace gra {
 
-// Constructor
+// Class constructor
 MRegge::MRegge(gra::LORENTZSCALAR &lts, const std::string &modelfile) {
-  // Initialization
   gra::g_mutex.lock();
-  if (!PARAM_REGGE::initialized && lts.decaytree.size() != 0) {
-    try {
+  try {
+    // Global Regge parameter initialization
+    if (!PARAM_REGGE::initialized && lts.decaytree.size() != 0) {
       const int PDG = std::abs(lts.decaytree[0].p.pdg);
       PARAM_REGGE::ReadParameters(PDG, modelfile);
-
-      // Construct 4 and 6 body Regge Ladder leg combinatorial permutations
-      const int mode = 1;  // charged permutations +- (FIXED FOR NOW)
-      permutations4  = gra::math::GetAmpPerm(4, mode);
-      permutations6  = gra::math::GetAmpPerm(6, mode);
-
-    } catch (...) {
-      gra::g_mutex.unlock();  // need to release here, otherwise get infinite lock
-      throw;
     }
+    // Class local initialization
+    // ...
+
+  } catch (...) {
+    gra::g_mutex.unlock();  // need to release here, otherwise get infinite lock
+    throw;
   }
   gra::g_mutex.unlock();
 }
+
 
 // Triple-Regge (Pomeron) limits
 //
@@ -374,13 +372,13 @@ std::complex<double> MRegge::gik_Vertex(double t1, double t2, double dphi, int l
 //
 //  ======F======>
 //        *
-//        * P
+//        * P (R)
 //        *
 //        ff ----> pi+/K+,p,rho0 ...
 //        |
 //        ff ----> pi-/K-,pbar,rho0 ...
 //        *
-//        * P
+//        * P (R)
 //        *
 //  ======F======>
 //
@@ -414,20 +412,30 @@ std::complex<double> MRegge::ME4(gra::LORENTZSCALAR &lts, double sign) const {
   double FF_B = 0.0;
   PomPomProtonVertex(lts, FF_A, FF_B);
 
-  // Particle-Particle-Pomeron coupling
-  const double gpp_P = PARAM_REGGE::c[0] / PARAM_SOFT::gN_P;
 
-  const std::complex<double> A_t = PropOnly(lts.ss[1][3], lts.t1) * FF_A * (*ff)(lts.t_hat, M2_) *
-                                   gpp_P * prop(lts.t_hat, M2_) * (*ff)(lts.t_hat, M2_) * gpp_P *
-                                   PropOnly(lts.ss[2][4], lts.t2) * FF_B;
+  // Loop over different exchanges (Pomeron, Reggeons ...)
+  std::complex<double> A(0, 0);
 
-  // sign applied here
-  const std::complex<double> A_u =
-      sign * PropOnly(lts.ss[1][4], lts.t1) * FF_A * (*ff)(lts.u_hat, M2_) * gpp_P *
-      prop(lts.u_hat, M2_) * (*ff)(lts.u_hat, M2_) * gpp_P * PropOnly(lts.ss[2][3], lts.t2) * FF_B;
+  for (std::size_t k = 0; k < PARAM_REGGE::active.size(); ++k) {
+    // Particle-Particle-Pomeron( or Reggon) coupling
+    if (PARAM_REGGE::active[k]) {
+      const double gpp_P = PARAM_REGGE::c[k] / PARAM_SOFT::gN_P;  // Coupling
 
-  // Total amplitude
-  const std::complex<double> A = A_t + A_u;
+      const std::complex<double> A_t = PropOnly(lts.ss[1][3], lts.t1, k) * FF_A *
+                                       (*ff)(lts.t_hat, M2_) * gpp_P * prop(lts.t_hat, M2_) *
+                                       (*ff)(lts.t_hat, M2_) * gpp_P *
+                                       PropOnly(lts.ss[2][4], lts.t2, k) * FF_B;
+
+      // sign applied here
+      const std::complex<double> A_u = sign * PropOnly(lts.ss[1][4], lts.t1, k) * FF_A *
+                                       (*ff)(lts.u_hat, M2_) * gpp_P * prop(lts.u_hat, M2_) *
+                                       (*ff)(lts.u_hat, M2_) * gpp_P *
+                                       PropOnly(lts.ss[2][3], lts.t2, k) * FF_B;
+
+      // Total sub-amplitude
+      A += (A_t + A_u);
+    }
+  }
 
   // --------------------------------------------------------------------
   // For screening loop
@@ -467,7 +475,12 @@ std::complex<double> MRegge::ME4(gra::LORENTZSCALAR &lts, double sign) const {
 // [REFERENCE: Kycia, Lebiedowicz, Szczurek, Turnau, arxiv.org/abs/1702.07572]
 //
 //
-std::complex<double> MRegge::ME6(gra::LORENTZSCALAR &lts) const {
+std::complex<double> MRegge::ME6(gra::LORENTZSCALAR &lts) {
+  // Construct 4-body Regge Ladder leg combinatorial permutations
+  if (permutations4.size() == 0) {
+    permutations4 = gra::math::GetAmpPerm(4, PARAM_REGGE::ampcombs);
+  }
+
   // Amplitude_
   std::complex<double> A(0, 0);
 
@@ -557,7 +570,12 @@ std::complex<double> MRegge::ME6(gra::LORENTZSCALAR &lts) const {
 //        *
 //  ======F======>
 //
-std::complex<double> MRegge::ME8(gra::LORENTZSCALAR &lts) const {
+std::complex<double> MRegge::ME8(gra::LORENTZSCALAR &lts) {
+  // Construct 6-body Regge Ladder leg combinatorial permutations
+  if (permutations6.size() == 0) {
+    permutations6 = gra::math::GetAmpPerm(6, PARAM_REGGE::ampcombs);
+  }
+
   // Amplitude
   std::complex<double> A(0, 0);
 
@@ -779,10 +797,11 @@ std::complex<double> MRegge::ME3ODD(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res
 // ===========
 //
 std::complex<double> MRegge::PhotoME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const {
-  // Check spin
-  if (resonance.p.spinX2 != 2) {
-    throw std::invalid_argument("MRegge::PhotoME3: Resonance spin J = " +
-                                std::to_string(resonance.p.spinX2) + " (should be J = 1)!");
+  // Check spin-parity
+  if ((resonance.p.spinX2 / 2 % 2) == 0 || resonance.p.P != -1) {
+    throw std::invalid_argument(
+        "MRegge::PhotoME3: Resonance J^P = " + std::to_string(resonance.p.spinX2 / 2) + "^" +
+        std::to_string(resonance.p.P) + " (should be 1-,3-,5-)!");
   }
 
   // Resonance part
@@ -885,23 +904,17 @@ std::complex<double> MRegge::PhotoProp(double s, double t, double m2, bool excit
 // ============================================================================
 // Regge propagators in the form (s/s0)^alpha(t)
 //
-std::complex<double> MRegge::PropOnly(double s, double t) const {
-  std::complex<double> M(0, 0);
+// k indices which Reggeon (Pomeron)
+std::complex<double> MRegge::PropOnly(double s, double t, int k) const {
+  // Trajectory signature
+  const double               alpha    = PARAM_REGGE::a0[k] + PARAM_REGGE::ap[k] * t;
+  const double               alpha_t0 = PARAM_REGGE::a0[k];
+  const double               ap       = PARAM_REGGE::ap[k];
+  const std::complex<double> eta      = ReggeEtaLinear(t, alpha_t0, ap, PARAM_REGGE::sgn[k]);
 
-  // Loop over Pomeron, Reggeon, Reggeon... exchanges
-  for (std::size_t k = 0; k < PARAM_REGGE::a0.size(); ++k) {
-    if (PARAM_REGGE::n[k] == true) {  // Trajectory active
+  // Add to the sum
+  const std::complex<double> M = eta * std::pow(s / PARAM_REGGE::s0, alpha);
 
-      // Trajectory signature
-      const double               alpha    = PARAM_REGGE::a0[k] + PARAM_REGGE::ap[k] * t;
-      const double               alpha_t0 = PARAM_REGGE::a0[k];
-      const double               ap       = PARAM_REGGE::ap[k];
-      const std::complex<double> eta      = ReggeEtaLinear(t, alpha_t0, ap, PARAM_REGGE::sgn[k]);
-
-      // Add to the sum
-      M += eta * std::pow(s / PARAM_REGGE::s0, alpha);
-    }
-  }
   return M;
 }
 
@@ -922,6 +935,7 @@ std::complex<double> MRegge::OdderonProp(double s, double t) const {
 
 // Regge amplitude parameters
 namespace PARAM_REGGE {
+
 bool initialized = false;
 
 std::vector<double> a0;
@@ -930,18 +944,18 @@ std::vector<double> sgn;
 
 double s0 = 0.0;
 
-int    offshellFF = 0;
-double b_EXP      = 0.0;
-double a_OREAR    = 0.0;
-double b_OREAR    = 0.0;
-double b_POW      = 0.0;
+std::string offshellFF = "null";
+double      b_EXP      = 0.0;
+double      a_OREAR    = 0.0;
+double      b_OREAR    = 0.0;
+double      b_POW      = 0.0;
 
-bool reggeize = false;
+bool   reggeize = false;
+double omega    = 0.0;
+int    ampcombs = 0;
 
-double omega = 0.0;
-
-std::vector<double> c;  // coupling
-std::vector<bool>   n;  // on/off
+std::vector<double> c;       // coupling
+std::vector<bool>   active;  // on/off
 
 void PrintParam() {
   std::cout << "PARAM_REGGE:: Sub-amplitude parameters:" << std::endl << std::endl;
@@ -951,23 +965,29 @@ void PrintParam() {
         "[GeV^{-2}] t, sgn = %0.0f \n",
         i, a0[i], ap[i], sgn[i]);
   }
-  printf("- offshellFF = %d \n", offshellFF);
-  if (offshellFF == 0) { printf("  -- b_EXP = %0.3f [GeV^{-2}] (exponential) \n", b_EXP); }
-  if (offshellFF == 1) {
+  printf("- offshellFF = %s \n", offshellFF.c_str());
+  if (offshellFF == "exp") {
+    printf("  -- b_EXP = %0.3f [GeV^{-2}] (exponential) \n", b_EXP);
+  } else if (offshellFF == "orear") {
     printf(
-        "  -- a_OREAR = %0.3f [GeV^{-1}], b_OREAR = %0.3f "
+        "  -- a_OREAR = %0.3f [GeV^{1}], b_OREAR = %0.3f "
         "[GeV^{-1}] (Orear)\n",
         a_OREAR, b_OREAR);
+  } else if (offshellFF == "pow") {
+    printf("  -- b_POW = %0.3f [GeV^{-2}] (powerlaw) \n", b_POW);
+  } else {
+    throw std::invalid_argument("Unknown <offshellFF> chosen");
   }
-  if (offshellFF == 2) { printf("  -- b_POW = %0.3f [GeV^{-2}] (powerlaw) \n", b_POW); }
+
   printf("- reggeize = %d \n", reggeize);
+  printf("- ampcombs = %d \n", ampcombs);
   printf("- s0 = %0.3f [GeV^2]", s0);
   std::cout << std::endl << std::endl;
 
   std::cout << "Couplings:" << std::endl;
   for (unsigned int i = 0; i < c.size(); ++i) {
     printf("- Reggeon[%d]: c = %0.3f [GeV^{-2}]", i, c[i]);
-    if (n[i]) {
+    if (active[i]) {
       std::cout << rang::fg::green << " [on]" << rang::fg::reset << std::endl;
     } else {
       std::cout << rang::fg::red << " [off]" << rang::fg::reset << std::endl;
@@ -1005,6 +1025,8 @@ void ReadParameters(int PDG, const std::string &modelfile) {
     PARAM_REGGE::b_POW      = j.at(XID).at("b_POW");
     PARAM_REGGE::reggeize   = j.at(XID).at("reggeize");
     PARAM_REGGE::omega      = j.at(XID).at("omega");
+    PARAM_REGGE::ampcombs   = j.at(XID).at("ampcombs");
+
 
     // Setup the parameter string
     std::string str;
@@ -1025,10 +1047,10 @@ void ReadParameters(int PDG, const std::string &modelfile) {
     }
 
     // Reggeon couplings
-    std::vector<double> c = j.at(str).at("c");
-    std::vector<bool>   n = j.at(str).at("n");
-    PARAM_REGGE::c        = c;
-    PARAM_REGGE::n        = n;
+    std::vector<double> c      = j.at(str).at("c");
+    std::vector<bool>   active = j.at(str).at("active");
+    PARAM_REGGE::c             = c;
+    PARAM_REGGE::active        = active;
 
     PARAM_REGGE::initialized = true;
 
@@ -1155,21 +1177,16 @@ std::complex<double> JPC_CS_coupling(const gra::LORENTZSCALAR &lts,
 double Meson_FF(double t_hat, double M2) {
   const double tprime = t_hat - M2;
 
-  switch (PARAM_REGGE::offshellFF) {
-    // Exponential
-    case 0:
-      return std::exp(-PARAM_REGGE::b_EXP * std::abs(tprime));
-    // Orear
-    case 1:
-      return std::exp(-PARAM_REGGE::b_OREAR * msqrt(std::abs(tprime) + pow2(PARAM_REGGE::a_OREAR)) +
-                      PARAM_REGGE::a_OREAR * PARAM_REGGE::b_OREAR);
-    // Powerlaw
-    case 2:
-      return 1.0 / (1.0 - tprime / PARAM_REGGE::b_POW);
-
-    default:
-      throw std::invalid_argument("Meson_FF: Unknown parameter: " +
-                                  std::to_string(PARAM_REGGE::offshellFF));
+  if (PARAM_REGGE::offshellFF == "EXP") {
+    return std::exp(-PARAM_REGGE::b_EXP * std::abs(tprime));
+  } else if (PARAM_REGGE::offshellFF == "OREAR") {
+    return std::exp(-PARAM_REGGE::b_OREAR * msqrt(std::abs(tprime) + pow2(PARAM_REGGE::a_OREAR)) +
+                    PARAM_REGGE::a_OREAR * PARAM_REGGE::b_OREAR);
+  } else if (PARAM_REGGE::offshellFF == "POW") {
+    return 1.0 / (1.0 - tprime / PARAM_REGGE::b_POW);
+  } else {
+    throw std::invalid_argument("Meson_FF: Unknown PARAM_REGGE::offshellFF parameter " +
+                                PARAM_REGGE::offshellFF);
   }
 }
 
@@ -1177,21 +1194,16 @@ double Meson_FF(double t_hat, double M2) {
 double Baryon_FF(double t_hat, double M2) {
   const double tprime = t_hat - M2;
 
-  switch (PARAM_REGGE::offshellFF) {
-    // Exponential
-    case 0:
-      return std::exp(-PARAM_REGGE::b_EXP * std::abs(tprime));
-    // Orear
-    case 1:
-      return std::exp(-PARAM_REGGE::b_OREAR * msqrt(std::abs(tprime) + pow2(PARAM_REGGE::a_OREAR)) +
-                      PARAM_REGGE::a_OREAR * PARAM_REGGE::b_OREAR);
-    // Powerlaw
-    case 2:
-      return 1.0 / (1.0 - tprime / PARAM_REGGE::b_POW);
-
-    default:
-      throw std::invalid_argument("Baryon_FF: Unknown parameter: " +
-                                  std::to_string(PARAM_REGGE::offshellFF));
+  if (PARAM_REGGE::offshellFF == "EXP") {
+    return std::exp(-PARAM_REGGE::b_EXP * std::abs(tprime));
+  } else if (PARAM_REGGE::offshellFF == "OREAR") {
+    return std::exp(-PARAM_REGGE::b_OREAR * msqrt(std::abs(tprime) + pow2(PARAM_REGGE::a_OREAR)) +
+                    PARAM_REGGE::a_OREAR * PARAM_REGGE::b_OREAR);
+  } else if (PARAM_REGGE::offshellFF == "POW") {
+    return 1.0 / (1.0 - tprime / PARAM_REGGE::b_POW);
+  } else {
+    throw std::invalid_argument("Baryon_FF: Unknown PARAM_REGGE::offshellFF parameter " +
+                                PARAM_REGGE::offshellFF);
   }
 }
 

@@ -1,6 +1,6 @@
 // (Histo0, Histo1, Histo2, ..., Histo N-1) Multiplet ROOT histograms
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -56,6 +56,7 @@ h1Multiplet::h1Multiplet(const std::string &name, const std::string &labeltext, 
   }
 }
 
+
 // Histogram normalization
 void h1Multiplet::NormalizeAll(const std::vector<double> &cross_section,
                                const std::vector<double> &multiplier) {
@@ -67,18 +68,14 @@ void h1Multiplet::NormalizeAll(const std::vector<double> &cross_section,
     const double integral = h[i]->Integral(0, h[i]->GetNbinsX() + 1);
     if (integral > 0) { scale /= integral; }
 
-    // Binwidth
-    const int    bin      = 1;
-    const double binwidth = h[i]->GetXaxis()->GetBinWidth(bin);
-    if (binwidth > 0) { scale /= binwidth; }
-
     // Cross Section
     if (cross_section[i] > 0) { scale *= cross_section[i]; }
 
     // Additional scale factor
     scale *= multiplier[i];
 
-    h[i]->Scale(scale);
+    // Finally, binwidth normalization taken simultaneously into account via TH1::Scale "width"
+    h[i]->Scale(scale, "width");
   }
 }
 
@@ -290,6 +287,7 @@ h2Multiplet::h2Multiplet(const std::string &name, const std::string &labeltext, 
   }
 }
 
+// Histogram normalization
 void h2Multiplet::NormalizeAll(const std::vector<double> &cross_section,
                                const std::vector<double> &multiplier) {
   for (const auto &i : indices(h)) {
@@ -300,18 +298,14 @@ void h2Multiplet::NormalizeAll(const std::vector<double> &cross_section,
     const double integral = h[i]->Integral(0, h[i]->GetNbinsX() + 1, 0, h[i]->GetNbinsY() + 1);
     if (integral > 0) { scale /= integral; }
 
-    // Binwidth
-    const int    bin      = 1;
-    const double binwidth = h[i]->GetXaxis()->GetBinWidth(bin) * h[i]->GetYaxis()->GetBinWidth(bin);
-    if (binwidth > 0) { scale /= binwidth; }
-
     // Cross Section
     if (cross_section[i] > 0) { scale *= cross_section[i]; }
 
     // Additional scale factor
     scale *= multiplier[i];
 
-    h[i]->Scale(scale);
+    // Finally, binwidth normalization taken simultaneously into account via TH1::Scale "width"
+    h[i]->Scale(scale, "width");
   }
 }
 

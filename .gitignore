@@ -1,9 +1,42 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+.pytest_cache
+
+
+scan.*
+scan_screening*
+
+
+# Tuning
+TUNE-icetune-*
+
+# Output
+*.lhe
+*.hepevt
+*.hepmc2
+*.hepmc3
+*.hfast
+*.vgrid
+testfigs
+
+
+# Compiler
 *.o
 *.d
-*.csv
+
+# Text
+*.raw
 *.pdf
 *.tex
 *.ascii
 *.out
 *.svg
+*.yoda
+
+# Profiler
+*.profile
 callgrind*
+
+# Rivet
+rivetplots*

@@ -1,0 +1,32 @@
+#: table_doi: 10.17182/hepdata.94264.v1/t7
+#: name: Figure 11 (top, left)
+#: description: Differential fiducial cross section for CEP of $\pi^+\pi^-$ pairs as a function of the difference of azimuthal angles of the forward scattered protons.
+
+Systematic uncertainties assigned to data points are strongly correlated between bins and should be treated as allowed collective variation of all data points. There are two components of the total systematic uncertainty. The systematic uncertainty related to the experimental tools and analysis method is labeled "syst. (experimental)". The systematic uncertainty related to the integrated luminosity (fully correlated between all data points) is labeled "syst. (luminosity)".
+
+Fiducial region definition:
+ * central state $\pi^+$, $\pi^-$
+	- $p_{\mathrm{T}} > 0.2~\mathrm{GeV}$
+	- $|\eta| < 0.7$
+ * intact forward-scattered beam protons $p'$
+	- $p_x > -0.2~\mathrm{GeV}$
+	- $0.2~\mathrm{GeV} < |p_{y}| < 0.4~\mathrm{GeV}$
+	- $(p_x+0.3~\mathrm{GeV})^2 + p_y^2 < 0.25~\mathrm{GeV}^2$
+#: data_file: figure_11_(top,_left).yaml
+#: keyword reactions: P P --> P PI+ PI- P
+#: keyword observables: DSIG/DDPHI
+#: keyword cmenergies: 200
+#: keyword phrases: Exclusive | Diffractive | Cross Section | Proton-Proton Scattering | Single Differential Cross Section
+#: SQRT(S) [GeV],,,200
+#: LUMINOSITY [$pb^{-1}$],,,14.2
+#: RE,,,P P --> P PI+ PI- P
+DPHI [DEG],DPHI [DEG] LOW,DPHI [DEG] HIGH,DSIG/DDPHI [NB/DEG],stat. +,stat. -,syst. (luminosity) +,syst. (luminosity) -,syst. (experimental) +,syst. (experimental) -
+10.0,0.0,20.0,1.3016,0.0086092,-0.0086092,0.083084,-0.073678,0.1102,-0.099749
+30.0,20.0,40.0,0.691,0.0061689,-0.0061689,0.044106,-0.039113,0.055602,-0.050929
+50.0,40.0,60.0,0.19814,0.003283,-0.003283,0.012647,-0.011215,0.016558,-0.015121
+75.0,60.0,90.0,0.01055,0.00059835,-0.00059835,0.00067341,-0.00059718,0.00088462,-0.00081748
+105.0,90.0,120.0,0.01958,0.00088871,-0.00088871,0.0012498,-0.0011083,0.0018033,-0.0016345
+130.0,120.0,140.0,0.16644,0.0032773,-0.0032773,0.010624,-0.0094212,0.015823,-0.014053
+150.0,140.0,160.0,0.35344,0.0045703,-0.0045703,0.02256,-0.020006,0.027252,-0.024954
+170.0,160.0,180.0,0.50642,0.0056325,-0.0056325,0.032325,-0.028666,0.035218,-0.032796
+

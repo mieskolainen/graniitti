@@ -4,7 +4,7 @@
 // All mathematical spherical harmonic processing is separated to MSpherical namespace.
 //
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -44,8 +44,8 @@
 #include <Eigen/Dense>
 
 using gra::aux::indices;
-using gra::math::PI;
 using gra::math::msqrt;
+using gra::math::PI;
 using gra::math::pow2;
 using gra::math::zi;
 

@@ -1,6 +1,6 @@
 // GRANIITTI Monte Carlo main class
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 #ifndef MGRANIITTI_H
@@ -34,6 +34,10 @@
 #include "Graniitti/MTimer.h"
 #include "Graniitti/MVEGAS.h"
 
+// Other
+#include "cxxopts.hpp"
+#include "json.hpp"
+
 namespace gra {
 
 // Simple MC parameters
@@ -64,6 +68,55 @@ class Stats {
     // err_trials = err^2 / sqrt(trials) (standard error of the mean)
     sigma_err = gra::math::msqrt(sigma_err2 / evaluations);
   }
+
+  void struct2json(json &j) const {
+    j["amplitude_ok"]  = amplitude_ok;
+    j["kinematics_ok"] = kinematics_ok;
+    j["fidcuts_ok"]    = fidcuts_ok;
+    j["vetocuts_ok"]   = vetocuts_ok;
+
+    j["evaluations"] = evaluations;
+    j["trials"]      = trials;
+
+    j["generated"]  = generated;
+    j["N_overflow"] = N_overflow;
+
+    j["sigma"]      = sigma;
+    j["sigma_err"]  = sigma_err;
+    j["sigma_err2"] = sigma_err2;
+
+    j["Wsum"]  = Wsum;
+    j["W2sum"] = W2sum;
+    j["maxW"]  = maxW;
+
+    j["maxf"] = maxf;
+    j["chi2"] = chi2;
+  }
+
+  void json2struct(json &j) {
+    j.at("amplitude_ok").get_to(amplitude_ok);
+    j.at("kinematics_ok").get_to(kinematics_ok);
+    j.at("fidcuts_ok").get_to(fidcuts_ok);
+    j.at("vetocuts_ok").get_to(vetocuts_ok);
+
+    j.at("evaluations").get_to(evaluations);
+    j.at("trials").get_to(trials);
+
+    j.at("generated").get_to(generated);
+    j.at("N_overflow").get_to(N_overflow);
+
+    j.at("sigma").get_to(sigma);
+    j.at("sigma_err").get_to(sigma_err);
+    j.at("sigma_err2").get_to(sigma_err2);
+
+    j.at("Wsum").get_to(Wsum);
+    j.at("W2sum").get_to(W2sum);
+    j.at("maxW").get_to(maxW);
+
+    j.at("maxf").get_to(maxf);
+    j.at("chi2").get_to(chi2);
+  }
+
 
   double amplitude_ok  = 0.0;
   double kinematics_ok = 0.0;
@@ -98,15 +151,24 @@ class MGraniitti {
   MGraniitti();
   ~MGraniitti();
 
+  // -------------------------------------------------------------------
+  // Copy, assignment and move disabled
+  MGraniitti(const MGraniitti &) = delete;
+  MGraniitti &operator=(const MGraniitti &) = delete;
+  MGraniitti(MGraniitti &&)                 = delete;
+  MGraniitti &operator=(MGraniitti &&) = delete;
+  // -------------------------------------------------------------------
+
   // For cross-section for HepMC3 output
   void ForceXS(double xs) { xsforced = xs; }
 
   // Read parameters
-  void ReadInput(const std::string &inputfile, const std::string cmd_PROCESS = "null");
+  void ReadInput(const json &j);
 
   // Initialize memory
   void InitProcessMemory(std::string process, unsigned int RNDSEED);
   void InitMultiMemory();
+
 
   // Set simple MC parameters
   void SetMCParam(MCPARAM &in);
@@ -190,18 +252,22 @@ class MGraniitti {
   // Process object pointer, public so methods can be accessed
   MProcess *proc = nullptr;
 
+  void SaveVGRID() const;
+  void ReadVGRID(const std::string &inputfile);
+
   void PrintHistograms();
-  void ReadGeneralParam(const std::string &inputfile);
-  void ReadProcessParam(const std::string &inputfile, const std::string cmd_PROCESS = "null");
-  void ReadIntegralParam(const std::string &inputfile);
-  void ReadGenCuts(const std::string &inputfile);
-  void ReadFidCuts(const std::string &inputfile);
-  void ReadVetoCuts(const std::string &inputfile);
-  void ReadModelParam(const std::string &inputfile) const;
+  void ReadGeneralParam(const json &j);
+  void ReadProcessParam(const json &j);
+  void ReadIntegralParam(const json &j);
+  void ReadGenCuts(const json &j);
+  void ReadFidCuts(const json &j);
+  void ReadVetoCuts(const json &j);
+  void ReadModelParam(const std::string &tune) const;
 
   void Generate();
 
-  std::string PROCESS = "null";  // Physics process identifier
+  std::string FULL_PROCESS_STR = "null";  // Full process string
+  std::string PROCESS          = "null";  // Physics process identifier
 
   bool        WEIGHTED   = false;   // Unweighted or weighted event generation
   int         NEVENTS    = 0;       // Number of events to be generated
@@ -211,12 +277,18 @@ class MGraniitti {
   // SILENT OUTPUT
   bool HILJAA = false;
 
+  void SetVgridFile(const std::string &inputfile) { MC_VGRID_INPUT = inputfile; }
+
+  // Terminal input
+  void ConstructTerminal(cxxopts::Options &options) const;
+  void ProcessTerminal(json &j, cxxopts::ParseResult const &r) const;
+
  private:
-  // -------------------------------------------------------------------
-  // Copy and assignment disabled by making the private
-  MGraniitti(const MGraniitti &);
-  MGraniitti &operator=(const MGraniitti &);
-  // -------------------------------------------------------------------
+  const double OUTPUT_XS_SCALE = 1E12;  // Output in picobarns
+
+
+  // MC initialized from a file
+  std::string MC_VGRID_INPUT = "null";
 
   // Integration statistics
   Stats stat;
@@ -224,8 +296,6 @@ class MGraniitti {
   // Histogram fusion
   bool hist_fusion_done = false;
 
-  // Input string
-  std::string FULL_INPUT_STR = "null";
 
   // HepMC outputfile
   std::string FULL_OUTPUT_STR = "null";

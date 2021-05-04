@@ -1,0 +1,17 @@
+{
+
+"ACTIVE"   : true,
+"NAME"     : "STAR 0.2 TeV",
+"TYPE"     : "HEPDATA",
+"DATAPATH" : "/HEPdata/CD/HEPData-ins1792394-v1-csv/",
+
+"GENCARD"  : ["/fitcard/STAR_1792394_ppbar_more_90.json"],
+
+"PID"      : [2212, -2212],
+
+"HIST" : [
+  {"FILE" : "Figure12(bottom,right).csv",           "OBS" : "M",            "SCALE" : 1E-12  }
+  
+]
+
+}

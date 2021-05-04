@@ -1,0 +1,384 @@
+// LHC/Tevatron/RHIC fiducial integrated
+// cross section measurements for MC-data comparisons
+//
+//
+// "ASSERT_NSIGMA" is allowed abs difference between MC and data (used in autotests)
+// in terms of measurement uncertainty nsigmas
+//
+// m.mieskolainen@imperial.ac.uk, 2021
+
+{
+
+// ====================================================================
+// Simulations with LHC/Tevatron measurement reference
+
+// ---------------------------------------------------------------------
+// https://arxiv.org/abs/2004.11078
+
+"STAR_1792394_pipi_less_90" :
+{
+	"CUTS": "STAR, $\\Delta \\phi < 90^{\\circ}$",
+	"CHANNEL":"$\\pi^+\\pi^-$",
+	"BIBTEX": "Adam:2020sap",
+	"MEASUREMENT": [44.1, 0.2, 4.6],
+	"UNIT": 9,
+	"SQRTS":"0.2",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+"STAR_1792394_pipi_more_90" :
+{
+	"CUTS": "STAR, $\\Delta \\phi > 90^{\\circ}$",
+	"CHANNEL":"$\\pi^+\\pi^-$",
+	"BIBTEX": "Adam:2020sap",
+	"MEASUREMENT": [21.1, 0.2, 2.1],
+	"UNIT": 9,
+	"SQRTS":"0.2",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+"STAR_1792394_KK_less_90" :
+{
+	"CUTS": "STAR, $\\Delta \\phi < 90^{\\circ}$",
+	"CHANNEL":"$K^+K^-$",
+	"BIBTEX": "Adam:2020sap",
+	"MEASUREMENT": [1090, 60, 170],
+	"UNIT": 12,
+	"SQRTS":"0.2",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+"STAR_1792394_KK_more_90" :
+{
+	"CUTS": "STAR, $\\Delta \\phi > 90^{\\circ}$",
+	"CHANNEL":"$K^+K^-$",
+	"BIBTEX": "Adam:2020sap",
+	"MEASUREMENT": [570, 40, 100],
+	"UNIT": 12,
+	"SQRTS":"0.2",
+	
+	"ASSERT_NSIGMA": 3.5
+},
+
+"STAR_1792394_ppbar_less_90" :
+{
+	"CUTS": "STAR, $\\Delta \\phi < 90^{\\circ}$",
+	"CHANNEL":"$p\\bar{p}$",
+	"BIBTEX": "Adam:2020sap",
+	"MEASUREMENT": [17.4, 4.7, 2.9],
+	"UNIT": 12,
+	"SQRTS":"0.2",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+"STAR_1792394_ppbar_more_90" :
+{
+	"CUTS": "STAR, $\\Delta \\phi > 90^{\\circ}$",
+	"CHANNEL":"$p\\bar{p}$",
+	"BIBTEX": "Adam:2020sap",
+	"MEASUREMENT": [31.8, 6.2, 4.6],
+	"UNIT": 12,
+	"SQRTS":"0.2",
+	
+	"ASSERT_NSIGMA": 3.5
+},
+// ---------------------------------------------------------------------
+
+
+// https://arxiv.org/abs/1502.01391
+"CDF14_2pi" :
+{
+	"CUTS":"CDF",
+	"CHANNEL":"$\\pi^+\\pi^-$",
+	"BIBTEX":"aaltonen2015measurement",
+	"MEASUREMENT": [null,null,null], // N.B! Integrated not given in the paper [one should integrate histograms]
+	"UNIT":6,
+	"SQRTS":"1.96",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+// https://arxiv.org/abs/1706.08310
+"CMS17_2pi_E0" :
+{
+	"CUTS":"CMS",
+	"CHANNEL":"$\\pi^+\\pi^-_{EL}$",
+	"BIBTEX":"khachatryan2017exclusive",
+	"MEASUREMENT": [26.5, 0.3, 5.12], // 26.5 +/- 0.3 [stat] +/- 5.0 [syst] +/- 1.1 [lumi] microbarns.
+	"UNIT":6,
+	"SQRTS":"7",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+"CMS17_2pi_E1" :
+{
+	"CUTS":"$|y| < 2, p_t > 0.2, M_{1} < 5$ GeV",
+	"CHANNEL":"$\\pi^+\\pi^-_{SD}$",
+	"BIBTEX":null,
+	"MEASUREMENT": [null,null,null],
+	"UNIT":6,
+	"SQRTS":"7",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+"CMS17_2pi_E2" :
+{
+	"CUTS":"$|y| < 2, p_t > 0.2, M_{1,2} < 5$ GeV",
+	"CHANNEL":"$\\pi^+\\pi^-_{DD}$",
+	"BIBTEX":null,
+	"MEASUREMENT": [null,null,null],
+	"UNIT":6,
+	"SQRTS":"7",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+// http://cds.cern.ch/record/2679648/files/FSQ-16-006-pas.pdf
+"CMS19_2pi_E0" :
+{
+	"CUTS":"CMS",
+	"CHANNEL":"$\\pi^+\\pi^-_{EL}$",
+	"BIBTEX":"CMS-PAS-FSQ-16-006",
+	"MEASUREMENT": [19.0, 0.6, 3.2],
+	"UNIT":6,
+	"SQRTS":"13",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+"CMS19_2pi_E1" :
+{
+	"CUTS":"$|\\eta| < 2.4, p_t > 0.2, M_{1} < 5$ GeV",
+	"CHANNEL":"$\\pi^+\\pi^-_{SD}$",
+	"BIBTEX":null,
+	"MEASUREMENT": [null, null, null],
+	"UNIT":6,
+	"SQRTS":"13",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+"CMS19_2pi_E2" :
+{
+	"CUTS":"$|\\eta| < 2.4, p_t > 0.2, M_{1,2} < 5$ GeV",
+	"CHANNEL":"$\\pi^+\\pi^-_{DD}$",
+	"BIBTEX":null,
+	"MEASUREMENT": [null, null, null],
+	"UNIT":6,
+	"SQRTS":"13",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+// https://discoverycenter.nbi.ku.dk/teaching/thesis_page/MasterEmilBolsFinal.pdf
+"ATLAS17_2pi" :
+{
+	"CUTS":"ATLAS [Thesis]",
+	"CHANNEL":"$\\pi^+\\pi^-$",
+	"BIBTEX":"Bols:2288372",
+	"MEASUREMENT": [18.75, 0.048, 0.770],
+	"UNIT":6,
+	"SQRTS":"13",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+
+"ATLAS17_4pi_0" :
+{
+	"CUTS":"ATLAS [Thesis]",
+	"CHANNEL":"$4\\pi^{\\pm}$",
+	"BIBTEX":"Bols:2288372",
+	"MEASUREMENT":[3.575, 0.065, 0.338],
+	"UNIT":6,
+	"SQRTS":"13",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+
+// https://arxiv.org/pdf/hep-ex/0611040.pdf
+"CDF07_ee" :
+{
+	"CUTS":"CDF",
+	"CHANNEL":"$e^+e^-$",
+	"BIBTEX":"abulencia2007observation",
+	"MEASUREMENT": [1.6, 0.5, 0.3],
+	"UNIT":12,
+	"SQRTS":"1.96",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+// https://arxiv.org/pdf/1112.0858.pdf
+"CDF11_ee" :
+{
+	"CUTS":"CDF",
+	"CHANNEL":"$e^+e^-$",
+	"BIBTEX":"aaltonen2012observation",
+	"MEASUREMENT": [2.88, 0.57, 0.63],
+	"UNIT":12,
+	"SQRTS":"1.96",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+// https://arxiv.org/abs/1111.5536
+"CMS11_mumu" :
+{
+	"CUTS":"CMS",
+	"CHANNEL":"$\\mu^+\\mu^-$",
+	"BIBTEX":"chatrchyan2012exclusive",
+	"MEASUREMENT": [3.38, 0.58, 0.21],
+	"UNIT":12,
+	"SQRTS":"7",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+// https://arxiv.org/abs/1506.07098
+"ATLAS15_ee" :
+{
+	"CUTS":"ATLAS",
+	"CHANNEL":"$e^+e^-$",
+	"BIBTEX":"atlas2015measurement",
+	"MEASUREMENT": [0.428, 0.035, 0.018],
+	"UNIT":12,
+	"SQRTS":"7",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+// https://arxiv.org/abs/1506.07098
+"ATLAS15_mumu" :
+{
+	"CUTS":"ATLAS",
+	"CHANNEL":"$\\mu^+\\mu^-$",
+	"BIBTEX":"atlas2015measurement",
+	"MEASUREMENT": [0.628, 0.032, 0.021],
+	"UNIT":12,
+	"SQRTS":"7",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+// https://arxiv.org/abs/1708.04053
+"ATLAS17_mumu" :
+{
+	"CUTS":"ATLAS",
+	"CHANNEL":"$\\mu^+\\mu^-$",
+	"BIBTEX":"aaboud2018measurement",
+	"MEASUREMENT": [3.12, 0.07, 0.14],
+	"UNIT":12,
+	"SQRTS":"13",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+// =======================================================================
+// Simulations without measurement reference
+
+"ATLAS17_4pi_1_2f0500" :
+{
+	"CUTS":"$|\\eta| < 2.5, p_t > 0.1$ GeV",
+	"CHANNEL":"$2f_0 > \\pi^+\\pi^-$",
+	"BIBTEX":null,
+	"MEASUREMENT":[null,null,null],
+	"UNIT":6,
+	"SQRTS":"13",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+"ALICE19_2pi_E0" :
+{
+	"CUTS":"$|\\eta| < 0.9, p_t > 0.15$ GeV",
+	"CHANNEL":"$\\pi^+\\pi^-_{EL}$",
+	"BIBTEX":null,
+	"MEASUREMENT": [null, null, null],
+	"UNIT":6,
+	"SQRTS":"7",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+"ALICE19_2pi_E1" :
+{
+	"CUTS":"$|\\eta| < 0.9, p_t > 0.15, M_{1} < 5$ GeV",
+	"CHANNEL":"$\\pi^+\\pi^-_{SD}$",
+	"BIBTEX":null,
+	"MEASUREMENT": [null, null, null],
+	"UNIT":6,
+	"SQRTS":"7",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+"ALICE19_2pi_E2" :
+{
+	"CUTS":"$|\\eta| < 0.9, p_t > 0.15, M_{1,2} < 5$ GeV",
+	"CHANNEL":"$\\pi^+\\pi^-_{DD}$",
+	"BIBTEX":null,
+	"MEASUREMENT": [null, null, null],
+	"UNIT":6,
+	"SQRTS":"7",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+"ALICE19_2pi_PWA" :
+{
+	"CUTS":"$|Y_X| < 0.9$",
+	"CHANNEL":"$\\pi^+\\pi^-$ ",
+	"BIBTEX":null,
+	"MEASUREMENT": [null, null, null], // 31 0.5 2
+	"UNIT":6,
+	"SQRTS":"7",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+"STAR18_2pi" :
+{
+	"CUTS":"$|\\eta| < 0.7, p_t > 0.2$ GeV",
+	"CHANNEL":"$\\pi^+\\pi^-$",
+	"BIBTEX":null,
+	"MEASUREMENT": [null, null, null],
+	"UNIT":6,
+	"SQRTS":"0.2",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+
+"gg2gg" :
+{
+	"CUTS":"$|y| < 2.5, p_t > 20$ GeV",
+	"CHANNEL":"$gg$",
+	"BIBTEX":null,
+	"MEASUREMENT": [null, null, null],
+	"UNIT":9,
+	"SQRTS":"13",
+
+	"ASSERT_NSIGMA": 3.5
+},
+
+"WW7TeV" :
+{
+	"CUTS":"Full $4\\pi$",
+	"CHANNEL":"$W^+W^-$",
+	"BIBTEX":null,
+	"MEASUREMENT": [null, null, null],
+	"UNIT":15,
+	"SQRTS":"7",
+
+	"ASSERT_NSIGMA": 3.5
+}
+
+}

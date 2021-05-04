@@ -1,0 +1,31 @@
+#: table_doi: 10.17182/hepdata.94264.v1/t9
+#: name: Figure 11 (top, right)
+#: description: Differential fiducial cross section for CEP of $p\bar{p}$ pairs as a function of the difference of azimuthal angles of the forward scattered protons.
+
+Systematic uncertainties assigned to data points are strongly correlated between bins and should be treated as allowed collective variation of all data points. There are two components of the total systematic uncertainty. The systematic uncertainty related to the experimental tools and analysis method is labeled "syst. (experimental)". The systematic uncertainty related to the integrated luminosity (fully correlated between all data points) is labeled "syst. (luminosity)".
+
+Fiducial region definition:
+ * central state $p$, $\bar{p}$
+	- $p_{\mathrm{T}} > 0.4~\mathrm{GeV}$
+	- $min(p_{\mathrm{T}}(p), p_{\mathrm{T}}(\bar{p})) < 1.1~\mathrm{GeV}$
+	- $|\eta| < 0.7$
+ * intact forward-scattered beam protons $p'$
+	- $p_x > -0.2~\mathrm{GeV}$
+	- $0.2~\mathrm{GeV} < |p_{y}| < 0.4~\mathrm{GeV}$
+	- $(p_x+0.3~\mathrm{GeV})^2 + p_y^2 < 0.25~\mathrm{GeV}^2$
+#: data_file: figure_11_(top,_right).yaml
+#: keyword reactions: P P --> P P PBAR P
+#: keyword observables: DSIG/DDPHI
+#: keyword cmenergies: 200
+#: keyword phrases: Exclusive | Diffractive | Cross Section | Proton-Proton Scattering | Single Differential Cross Section
+#: SQRT(S) [GeV],,,200
+#: LUMINOSITY [$pb^{-1}$],,,14.2
+#: RE,,,P P --> P P PBAR P
+DPHI [DEG],DPHI [DEG] LOW,DPHI [DEG] HIGH,DSIG/DDPHI [PB/DEG],stat. +,stat. -,syst. (luminosity) +,syst. (luminosity) -,syst. (experimental) +,syst. (experimental) -
+10.0,0.0,20.0,0.50688,0.16864,-0.16864,0.032354,-0.028691,0.068502,-0.064402
+30.0,20.0,40.0,0.35237,0.14995,-0.14995,0.022491,-0.019945,0.041292,-0.038612
+65.0,40.0,90.0,0.0046295,0.023495,-0.023495,0.0002955,-0.00026205,0.003995,-0.0039879
+115.0,90.0,140.0,0.16824,0.060126,-0.060126,0.010738,-0.0095228,0.01751,-0.016277
+150.0,140.0,160.0,0.53272,0.17741,-0.17741,0.034003,-0.030154,0.092075,-0.088196
+170.0,160.0,180.0,0.63755,0.20468,-0.20468,0.040695,-0.036088,0.073895,-0.068842
+

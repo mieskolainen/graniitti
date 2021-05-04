@@ -12,7 +12,7 @@
 // combinations, together with Breit-Wigner weights at amplitude level.
 //
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++ standard
@@ -79,6 +79,17 @@ void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MPartic
   bool         tag_set = false;
   unsigned int nonzero = 0;
 
+
+  // Check Landau-Yang theorem
+  // [REFERENCE: Landau (1948), Yang (1950)]
+  if ((static_cast<int>(J) % 2 != 0) && (p1.pdg == PDG::PDG_gamma || p1.pdg == PDG::PDG_gluon) &&
+      (p2.pdg == PDG::PDG_gamma || p2.pdg == PDG::PDG_gluon)) {
+    aux::PrintWarning();
+    std::cout << "gra::spin::InitTMatrix: Landau-Yang theorem: States with JP = "
+                 "(1+-,3-,5-,7-,...) should not decay into two massless spin-1 (or reverse)"
+              << std::endl;
+  }
+
   // Construct T-matrix (2s1 + 1) x (2s2 + 1) elements
   std::cout << std::endl;
   std::cout << "gra::spin:: "
@@ -94,8 +105,8 @@ void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MPartic
       << "gra::spin::InitTMatrix: Calculating SU(2) decomposition [lambda = lambda1 - lambda2]: "
       << std::endl;
 
-  // Two loops, first check that sum |alpha_ls|^2 == 1 for active ls values
 
+  // Two loops, first check that sum |alpha_ls|^2 == 1 for active ls values
   for (int MODE = 0; MODE < 2; ++MODE) {
     for (int s = 0; s <= static_cast<int>(s1 + s2); ++s) {
       for (int l = 0; l <= static_cast<int>(J + s); ++l) {
@@ -150,10 +161,11 @@ void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MPartic
             }
 
             // CG-coupling product is non-zero
-            if (std::abs(cg1 * cg2) < 1e-6) { continue; }
+            if (std::abs(cg1 * cg2) < 1e-6) { continue; }  // is negligible
 
             // ** This coefficient is active **
             active[l][s] = true;
+
 
             // INITIALIZATION MODE
             if (MODE == 0) {
@@ -218,6 +230,7 @@ void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MPartic
                             (hc.P_conservation ? std::string("true]") : std::string("false]"));
     throw std::invalid_argument(str0 + str);
   }
+
   std::cout << std::endl;
   std::cout << "T matrix (2s1 + 1) x (2s2 + 1):" << std::endl;
   gra::matoper::PrintMatrixSeparate(hc.T);
@@ -284,27 +297,24 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &res)
   // Generation 2->1 spin correlations not active
   if (res.SPINGEN == false) { return A0; }
 
-  // ---------------------------------------------------------------------
-  // Tensors J^P = 2+, 4+, 6+,...
-  // "Pomeron effective spins"
+  // "Pomeron effective spins" set here. We start with the lowest J^P=0^+ state if possible
   double s1 = 0;
   double s2 = 0;
 
-  // SU(2) decomposition as given by InitTMatrix
-  //
-  // only one alpha_(ls) = 1.0 needed
-  MMatrix<std::complex<double>> T0 = {{std::complex<double>(1.0)}};
 
-  // ---------------------------------------------------------------------
+  MMatrix<std::complex<double>> T0;
 
-  // Scalar
-  if (res.p.spinX2 == 0 && res.p.P == 1) { return A0; }
+  // Scalar J^P = 0+
+  if (res.p.spinX2 == 0 && res.p.P == 1) {
+    return A0;
+  }
 
   // Pseudoscalar J^P = 0-, [e.g. eta(548), eta(958)']
-  if (res.p.spinX2 == 0 && res.p.P == -1) {
-    /*
+  else if (res.p.spinX2 == 0 && res.p.P == -1) {
     s1 = 1;
     s2 = 1;
+
+    /*
     // SU(2) decomposition as given by InitTMatrix
     //
     // only one alpha_(ls = 11) = 1.0
@@ -313,8 +323,7 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &res)
           {std::complex<double>(0.000), std::complex<double>(0.000), std::complex<double>( 0.000)},
           {std::complex<double>(0.000), std::complex<double>(0.000), std::complex<double>(-0.707)}};
     */
-
-    // This should be recursively connected with protons, instead use simplification below:
+    // This should be connected with proton legs, instead use simplification below:
 
     // Forward proton pair deltaphi
     const double dphi = lts.pfinal[1].DeltaPhiAbs(lts.pfinal[2]);
@@ -326,7 +335,7 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &res)
     //  ------------->
     //  0           180 deg
     //
-    // Two cases m1=m2=-1 and m1=m2=-1
+    // Two cases m1=m2=1 and m1=m2=-1
     const double m1 = 1;
     const double m2 = 1;
 
@@ -340,11 +349,13 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &res)
   }
 
   // Axial vector J^P = 1+ [e.g. f1_1420]
-  if (res.p.spinX2 == 2 && res.p.P == 1) {
+  // TBD. Think about proton-proton-pomeron vertex for s1, s2 legs (neglected now)
+  else if (res.p.spinX2 / 2 == 1 && res.p.P == 1) {
     s1 = 1;
-    s2 = 1;
+    s2 = 1;  // assume identical initial state
+
     // SU(2) decomposition as given by InitTMatrix
-    // only one alpha_(ls = 22) = 1
+    // assuming alpha_(ls = 22) = 1
     //
     T0 = {{std::complex<double>(0.000), std::complex<double>(-0.500), std::complex<double>(0.000)},
           {std::complex<double>(0.500), std::complex<double>(0.000), std::complex<double>(-0.500)},
@@ -352,15 +363,54 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &res)
   }
 
   // Vector photoproduction J^P = 1- [e.g. rho770]
-  if (res.p.spinX2 == 2 && res.p.P == -1) {
+  // TBD. Think about proton-proton-pomeron vertex for s2 leg (neglected now)
+  else if (res.p.spinX2 / 2 == 1 && res.p.P == -1) {
     s1 = 0;
     s2 = 1;
+
     // SU(2) decomposition as given by InitTMatrix
     // assuming alpha_(ls = 01) = 1/sqrt(2)
     //          alpha_(ls = 21) = 1/sqrt(2)
     T0 = {
         {std::complex<double>(-0.697), std::complex<double>(-0.169), std::complex<double>(0.697)}};
   }
+
+  // Spin-3 photoproduction J^P = 3- [e.g. rho(3)1690]
+  // TBD. Think about proton-proton-pomeron vertex for s2 leg (neglected now)
+  else if (res.p.spinX2 / 2 == 3 && res.p.P == -1) {
+    s1 = 0;
+    s2 = 1;
+
+    // SU(2) decomposition as given by InitTMatrix
+    // assuming alpha_(ls = 21) = 1/sqrt(2)
+    //          alpha_(ls = 41) = 1/sqrt(2)
+    T0 = {{std::complex<double>(0.705), std::complex<double>(-0.072), std::complex<double>(0.705)}};
+  }
+
+  // Spin-5 photoproduction J^P = 5- [e.g. rho(5)2350]
+  // TBD. Think about proton-proton-pomeron vertex for s2 leg (neglected now)
+  else if (res.p.spinX2 / 2 == 5 && res.p.P == -1) {
+    s1 = 0;
+    s2 = 1;
+
+    // SU(2) decomposition as given by InitTMatrix
+    // assuming alpha_(ls = 41) = 1/sqrt(2)
+    //          alpha_(ls = 61) = 1/sqrt(2)
+    T0 = {{std::complex<double>(0.706), std::complex<double>(-0.046), std::complex<double>(0.706)}};
+  }
+
+  // Tensors J^P = 2+, 4+, 6+, ... [e.g. f(2)(1270)]
+  // This case is complete.
+  else {
+    s1 = 0;
+    s2 = 0;
+
+    // SU(2) decomposition as given by InitTMatrix
+    //
+    // only one alpha_(ls) = 1.0 needed
+    T0 = {{std::complex<double>(1.0)}};
+  }
+  // ---------------------------------------------------------------------
 
   // Boost propagator to the system rest frame
   M4Vec q1 = lts.q1;
@@ -412,10 +462,13 @@ std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
 
   // This function handles only 2-body decays
   if (lts.decaytree.size() != 2) { return A0; }
-  // No spin, no need
-  if (res.p.spinX2 == 0) {
+
+  // --------------------------------------------------
+  // Scalar J^P = 0^+, easy special case
+  if (res.p.spinX2 == 0 && res.p.P == 1) {
     return res.hel.T[0][0] * A0;  // (l,s) = (0,0)
   }
+  // --------------------------------------------------
 
   // Transition amplitude matrix f for X -> A + B in the X rest frame
   // Daughter spins
@@ -453,23 +506,31 @@ std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
   MMatrix<std::complex<double>> fA_D = fA.Dagger();
 
   // ------------------------------------------------------------------
-  // Construct the D-matrix for an event-by-event spin space density operator
-  // rotation
-  double theta_R = 0.0;
-  double phi_R   = 0.0;
-  GetRhoRotation(lts, res.FRAME, theta_R, phi_R);
-
-  // ------------------------------------------------------------------
   // Rotation does mixing of spin states. N.B. Eigenvalues do not change in
   // rotation.
-  const MMatrix<std::complex<double>> D = gra::spin::DMatrix(res.p.spinX2 / 2.0, theta_R, phi_R);
+  MMatrix<std::complex<double>> fRfd;
 
-  // rho_rot = D^\dagger*rho*D [keep this sandwich order!]
-  const MMatrix<std::complex<double>> rho_ROT = D.Dagger() * res.rho * D;
+  if (res.p.spinX2 != 0) {
+    // ------------------------------------------------------------------
+    // Construct the D-matrix for an event-by-event spin space density operator
+    // rotation
+    double theta_R = 0.0;
+    double phi_R   = 0.0;
+    GetRhoRotation(lts, res.FRAME, theta_R, phi_R);
 
-  // Weight (amplitude squared) of the event by the density matrix formalism:
-  // Tr[f*rho*f^dagger]
-  const MMatrix<std::complex<double>> fRfd = f * rho_ROT * f.Dagger();
+    const MMatrix<std::complex<double>> D = gra::spin::DMatrix(res.p.spinX2 / 2.0, theta_R, phi_R);
+
+    // rho_rot = D^\dagger*rho*D [keep this sandwich order!]
+    const MMatrix<std::complex<double>> rho_ROT = D.Dagger() * res.rho * D;
+
+    // Weight (amplitude squared) of the event by the density matrix formalism:
+    // Tr[f*rho*f^dagger]
+    fRfd = f * rho_ROT * f.Dagger();
+
+  } else {
+    // Pseudoscalar 0^- can end up here
+    fRfd = f * f.Dagger();
+  }
 
   // (2J+1) is normalization to match production coupling with spin-0
   // (same cross section obtained as with spin-0 if density

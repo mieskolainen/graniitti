@@ -1,6 +1,6 @@
 // Regge Amplitudes
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 #ifndef MREGGE_H
@@ -29,19 +29,19 @@ extern std::vector<double> sgn;
 
 extern double s0;
 
-extern int    offshellFF;
-extern double b_EXP;
-extern double a_OREAR;
-extern double b_OREAR;
-extern double b_POW;
+extern std::string offshellFF;
+extern double      b_EXP;
+extern double      a_OREAR;
+extern double      b_OREAR;
+extern double      b_POW;
 
-extern bool reggeize;
-
+extern bool   reggeize;
 extern double omega;
+extern int    ampcombs;
 
 // Meson/Baryon Couplings and Pomeron, Reggeon, Reggeon exchanges
-extern std::vector<double> c;  // coupling
-extern std::vector<bool>   n;  // on/off
+extern std::vector<double> c;       // coupling
+extern std::vector<bool>   active;  // on/off
 
 void PrintParam();
 void ReadParameters(int PDG, const std::string &modelfile);
@@ -68,8 +68,8 @@ class MRegge {
   ~MRegge() {}
 
   // Regge amplitudes
-  std::complex<double> ME8(gra::LORENTZSCALAR &lts) const;
-  std::complex<double> ME6(gra::LORENTZSCALAR &lts) const;
+  std::complex<double> ME8(gra::LORENTZSCALAR &lts);
+  std::complex<double> ME6(gra::LORENTZSCALAR &lts);
   std::complex<double> ME4(gra::LORENTZSCALAR &lts, double sign) const;
   std::complex<double> ME2(gra::LORENTZSCALAR &lts, int mode) const;
   std::complex<double> ME3(gra::LORENTZSCALAR &lts, gra::PARAM_RES &resonance) const;
@@ -84,7 +84,7 @@ class MRegge {
   void ConstructPerm(int type);
 
   // Regge propagators
-  std::complex<double> PropOnly(double s, double t) const;
+  std::complex<double> PropOnly(double s, double t, int k = 0) const;
   std::complex<double> OdderonProp(double s, double t) const;
   std::complex<double> PhotoProp(double s, double t, double m2, bool excite,
                                  double M2_forward) const;
@@ -97,7 +97,7 @@ class MRegge {
   int                  xi3(int J, int P, int P_i, int sigma_i, int P_k, int sigma_k) const;
 
  private:
-  // Amplitude permutations
+  // Amplitude permutations, these need to be initialized within calling amplitude function
   std::vector<std::vector<int>> permutations4;
   std::vector<std::vector<int>> permutations6;
 };

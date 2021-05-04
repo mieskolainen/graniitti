@@ -1,6 +1,6 @@
 // (Sub)-Processes and Amplitudes
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 #ifndef MSUBPROC_H
@@ -29,6 +29,13 @@ using math::abs2;
 using math::msqrt;
 
 
+// Helper for copy constructors of unique_ptr
+template <class T>
+std::unique_ptr<T> copy_unique(const std::unique_ptr<T>& source) {
+  return source ? std::make_unique<T>(*source) : nullptr;
+}
+
+
 // Abstract process base class
 //
 // BASIC DESIGN:
@@ -46,6 +53,39 @@ class MProc {
   std::string              ISTATE;
   std::string              CHANNEL;
   std::vector<std::string> DESCRIPTION;
+
+  // ---------------------------------------------------------------------
+  // Default copy, assignment and move work fine
+
+  // MProc(MProc const&) = default;
+  MProc(MProc&&) = default;
+
+  // MProc& operator=(MProc const&) = default;
+  MProc& operator=(MProc&&) = default;
+  // ---------------------------------------------------------------------
+
+  // Process class containers
+  std::unique_ptr<MGamma>         Gamma  = nullptr;
+  std::unique_ptr<MDurham>        Durham = nullptr;
+  std::unique_ptr<MRegge>         Regge  = nullptr;
+  std::unique_ptr<MTensorPomeron> Tensor = nullptr;
+
+
+  // Delayed constructors, so global .json parameters are read from files already at this point
+  void InitGamma(gra::LORENTZSCALAR& lts) {
+    if (Gamma == nullptr) { Gamma = make_unique<MGamma>(lts, GetModelFile()); }
+  }
+  void InitDurham(gra::LORENTZSCALAR& lts) {
+    if (Durham == nullptr) { Durham = make_unique<MDurham>(lts, GetModelFile()); }
+  }
+  void InitTensor(gra::LORENTZSCALAR& lts) {
+    if (Tensor == nullptr) { Tensor = make_unique<MTensorPomeron>(lts, GetModelFile()); }
+  }
+  void InitRegge(gra::LORENTZSCALAR& lts) {
+    if (Regge == nullptr) { Regge = make_unique<MRegge>(lts, GetModelFile()); }
+  }
+
+  // ---------------------------------------------------------------------
 
   virtual ~MProc() {}  // Needs to be virtual
 
@@ -68,26 +108,6 @@ class MProc {
     }
 
     return amp2;
-  }
-
-  // Process class containers
-  std::unique_ptr<MGamma>         Gamma  = nullptr;
-  std::unique_ptr<MDurham>        Durham = nullptr;
-  std::unique_ptr<MRegge>         Regge  = nullptr;
-  std::unique_ptr<MTensorPomeron> Tensor = nullptr;
-
-  // Delayed constructors, so global .json parameters are read from files already at this point
-  void InitGamma(gra::LORENTZSCALAR& lts) {
-    if (Gamma == nullptr) { Gamma = make_unique<MGamma>(lts, GetModelFile()); }
-  }
-  void InitDurham(gra::LORENTZSCALAR& lts) {
-    if (Durham == nullptr) { Durham = make_unique<MDurham>(lts, GetModelFile()); }
-  }
-  void InitTensor(gra::LORENTZSCALAR& lts) {
-    if (Tensor == nullptr) { Tensor = make_unique<MTensorPomeron>(lts, GetModelFile()); }
-  }
-  void InitRegge(gra::LORENTZSCALAR& lts) {
-    if (Regge == nullptr) { Regge = make_unique<MRegge>(lts, GetModelFile()); }
   }
 
   // Return general modelfile
@@ -242,8 +262,8 @@ class PROC_9 : public MProc {
     for (auto& x : lts.RESONANCES) {
       const int J = static_cast<int>(x.second.p.spinX2 / 2.0);
 
-      // Gamma-Pomeron for vectors (could be Pomeron-Odderon too)
-      if (J == 1 && x.second.p.P == -1) {
+      // Gamma-Pomeron for vectors
+      if ((J % 2 != 0) && x.second.p.P == -1) {
         A += Regge->PhotoME3(lts, x.second);
       }
       // Pomeron-Pomeron, J = 0,1,2,... all ok
@@ -382,7 +402,9 @@ class PROC_15 : public MProc {
 
 class PROC_16 : public MProc {
  public:
-  PROC_16() : MProc("PP", "CON-", {"Hadron continuum 2-body with [t-u] amp.", "Pomeron"}) {}
+  PROC_16()
+      : MProc("PP", "CON-",
+              {"Hadron continuum 2-body with [t-u] amp.", "Pomeron", "AMPLITUDE SIGN FLIP!"}) {}
   ~PROC_16() {}
   virtual double Amp2(gra::LORENTZSCALAR& lts) {
     InitRegge(lts);
@@ -416,7 +438,7 @@ class PROC_17 : public MProc {
       const int J = static_cast<int>(x.second.p.spinX2 / 2.0);
 
       // Gamma-Pomeron for vectors
-      if (J == 1 && x.second.p.P == -1) {
+      if ((J % 2 != 0) && x.second.p.P == -1) {
         A += Regge->PhotoME3(lts, x.second);
       }
       // Pomeron-Pomeron, J = 0,1,2,... all ok
@@ -449,8 +471,9 @@ class PROC_18 : public MProc {
     // Coherent sum of Resonances (loop over)
     for (auto& x : lts.RESONANCES) {
       const int J = static_cast<int>(x.second.p.spinX2 / 2.0);
-      // Vectors only
-      if (J == 1 && x.second.p.P == -1) {
+
+      // Gamma-Pomeron for vectors
+      if ((J % 2 != 0) && x.second.p.P == -1) {
         A += Regge->PhotoME3(lts, lts.RESONANCES.begin()->second);
       }
     }
@@ -479,8 +502,9 @@ class PROC_20 : public MProc {
     // Coherent sum of Resonances (loop over)
     for (auto& x : lts.RESONANCES) {
       const int J = static_cast<int>(x.second.p.spinX2 / 2.0);
-      // Vectors only
-      if (J == 1 && x.second.p.P == -1) { A += Regge->ME3ODD(lts, x.second); }
+
+      // Vectors J=1,3,5,...
+      if ((J % 2 != 0) && x.second.p.P == -1) { A += Regge->ME3ODD(lts, x.second); }
     }
     return abs2(A);  // amplitude squared
   }
@@ -599,30 +623,38 @@ class MSubProc {
   MSubProc(const std::vector<std::string>& istate, const std::string& mc);
   void Initialize(const std::string& istate, const std::string& channel);
 
-  MSubProc() {}
-  ~MSubProc();
+  // ---------------------------------------------------------------------
+  // Default copy, assignment, move work fine
 
-  double GetBareAmplitude2(gra::LORENTZSCALAR& lts);
+  MSubProc() {}
+  ~MSubProc() {}
+
+  MSubProc(MSubProc const&) = default;
+  MSubProc(MSubProc&&)      = default;
+
+  MSubProc& operator=(MSubProc const&) = default;
+  MSubProc& operator=(MSubProc&&) = default;
+  // ---------------------------------------------------------------------
 
   std::string  ISTATE;       // "PP","yy","gg" etc.
   std::string  CHANNEL;      // "CON", "RES" etc.
   unsigned int LIPSDIM = 0;  // Lorentz Invariant Phase Space Dimension
+  std::map<std::string, std::vector<std::string>> Processes;  // Process descriptions
 
-  // Process descriptions
-  std::map<std::string, std::vector<std::string>> Processes;
-
-  bool                     ProcessExist(std::string process) const;
-  std::vector<std::string> PrintProcesses() const;
-  std::vector<std::string> GetProcessDescriptor(std::string process) const;
+  double                              GetBareAmplitude2(gra::LORENTZSCALAR& lts);
+  bool                                ProcessExist(std::string process) const;
+  std::vector<std::string>            PrintProcesses() const;
+  std::vector<std::shared_ptr<MProc>> CreateAllProcesses() const;
+  std::vector<std::string>            GetProcessDescriptor(std::string process) const;
 
  private:
   void ConstructDescriptions(const std::string& istate, const std::string& mc);
-  void CreateProcesses();
-  void DeleteProcesses();
   void ActivateProcess();
 
-  std::vector<MProc*> pr;
+  // shared_ptr because of multithreading support!
+  std::shared_ptr<MProc> pr = nullptr;
 };
+
 
 }  // namespace gra
 

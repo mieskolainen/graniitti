@@ -1,0 +1,28 @@
+#: table_doi: 10.17182/hepdata.94264.v1/t45
+#: name: Table 4 (A)
+#: description: Ratios of integrated cross sections of resonance production to cross sections for f2(1270) production, in the pi+pi- channel.
+
+The results are obtained for the Lorentz-invariant phase-space defined below:
+	- $|y(\pi^+\pi^-)| < 0.4$
+	- $0.05~\mathrm{GeV}^2 < -t_1, -t_2 < 0.16~\mathrm{GeV}^2$
+
+The experimental systematic uncertainties "(syst.)" are calculated as the quadratic sum of the differences between the nominal fit result and the result of the fit to $d\sigma/dm(\pi^+\pi^-)$ with each systematic effect. The uncertainties related to the extrapolation "(model.)" are quoted as the largest deviation from the nominal fit result.
+#: data_file: table_4_(a).yaml
+#: keyword reactions: P P --> P F0(980) <PI+ PI-> P | P P --> P F0(1500) <PI+ PI-> P
+#: keyword observables: SIG/SIG
+#: keyword cmenergies: 200
+#: keyword phrases: Exclusive | Diffractive | Cross Section | Proton-Proton Scattering | Integrated Cross Section
+#: SQRT(S) [GeV],,,200
+#: LUMINOSITY [$pb^{-1}$],,,14.2
+#: RE,,,P P --> P F0(980) <PI+ PI-> P
+DPHI [DEG],DPHI [DEG] LOW,DPHI [DEG] HIGH,SIG(F0(980))/SIG(F2(1270)),stat. +,stat. -,syst. +,syst. -,model. +,model. -
+22.5,0.0,45.0,8.9083,2.3086,-2.3086,0.41476,-0.44968,7.179,-0.22989
+157.5,135.0,180.0,0.32687,0.064829,-0.064829,0.0083878,-0.0081499,0.13189,-0.079555
+
+#: SQRT(S) [GeV],,,200
+#: LUMINOSITY [$pb^{-1}$],,,14.2
+#: RE,,,P P --> P F0(1500) <PI+ PI-> P
+DPHI [DEG],DPHI [DEG] LOW,DPHI [DEG] HIGH,SIG(F0(1500))/SIG(F2(1270)),stat. +,stat. -,syst. +,syst. -,model. +,model. -
+22.5,0.0,45.0,0.47265,0.14614,-0.14614,0.025406,-0.027175,0.24032,-0.052236
+157.5,135.0,180.0,0.01049,0.0071093,-0.0071093,0.00063794,-0.00060613,0.0040624,-0.0004541
+

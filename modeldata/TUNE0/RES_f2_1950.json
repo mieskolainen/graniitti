@@ -1,6 +1,6 @@
 // Resonance parameters
 //
-// mikael.mieskolainen@cern.ch, 2019
+// mikael.mieskolainen@cern.ch, 2021
 {
 
   "PARAM_RES" : {
@@ -9,16 +9,16 @@
     "PDG" : 9050225,
     
     // Mass, width, spin (0,1/2,1,3/2,2...), parity (1,-1)
-    "M"  : 1.936,  // pdglive 19.08.19
-    "W"  : 0.464,  // pdglive 19.08.19
+    "M"  : 1.936,  // pdglive 16.04.21
+    "W"  : 0.464,  // pdglive 16.04.21
     "J"  : 2,
     "P"  : 1,
-
+    
     // Breit-Wigner propagator type
     // 1 = fixed width relativistic
     // 2 = running width relativistic
     // 3 = spin barrier relativistic
-    "BW" : 2,
+    "BW" : 3,
 
     // ------------------------------------------------------------------
     // Tensor Pomeron model production couplings
@@ -31,13 +31,14 @@
     "random_rho" : 0,
     
     // Production coupling constant at amplitude level
-    "g_A"   :  0.1,
-    "g_phi" :  -1.57,
+    "g_A"   :   0.1,  // Ansatz (no fit)
+    "g_phi" :  1.57,
     
     // Production form factor parameter (GeV)
     "g_FF"  : 1.0,
     
-    // Resonance spin-density (von Neumann) matrix (Re and Im parts)
+    // Resonance spin-density (2J+1) (von Neumann) matrix (Re and Im parts)
+    // Jz = +- 2
     "rho_real" : [ [0.5, 0, 0, 0, 0] ,
                    [0, 0, 0, 0, 0] ,
                    [0, 0, 0, 0, 0] ,

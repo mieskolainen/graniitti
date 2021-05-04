@@ -3,7 +3,7 @@
 //
 // <Main generator program>
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -37,27 +37,13 @@ int main(int argc, char *argv[]) {
   try {
     cxxopts::Options options(argv[0], "");
 
-    options.add_options("")("i,INPUT", "Input card", cxxopts::value<std::string>())("H,help",
-                                                                                    "Help");
+    options.add_options("")("i,INPUT", "Input card                <string>",
+                            cxxopts::value<std::string>())(
+        "d,VGRID", "Use pre-computed MC grid  <string>", cxxopts::value<std::string>())("H,help",
+                                                                                        "Help");
 
-    options.add_options("GENERALPARAM")
-
-        ("o,OUTPUT", "Output name            <string>", cxxopts::value<std::string>())(
-            "f,FORMAT", "Output format          <hepmc3|hepmc2|hepevt>",
-            cxxopts::value<std::string>())("n,NEVENT", "Number of events       <integer32>",
-                                           cxxopts::value<unsigned int>())(
-            "g,INTEGRATOR", "Integrator             <VEGAS|FLAT>", cxxopts::value<std::string>())(
-            "w,WEIGHTED", "Weighted events        <true|false>", cxxopts::value<std::string>())(
-            "c,CORES", "Number of CPU threads  <integer>", cxxopts::value<unsigned int>());
-
-    options.add_options("PROCESSPARAM")("p,PROCESS", "Process                 <string>",
-                                        cxxopts::value<std::string>())(
-        "e,ENERGY", "CMS energy              <double>", cxxopts::value<double>())(
-        "l,POMLOOP", "Screening Pomeron loop  <true|false>", cxxopts::value<std::string>())(
-        "s,NSTARS", "Excite protons          <0|1|2>", cxxopts::value<unsigned int>())(
-        "q,LHAPDF", "Set LHAPDF              <string>", cxxopts::value<std::string>())(
-        "h,HIST", "Histogramming           <0|1|2>", cxxopts::value<unsigned int>())(
-        "r,RNDSEED", "Random seed             <integer32>", cxxopts::value<unsigned int>());
+    // Add global options
+    gen->ConstructTerminal(options);
 
     auto r = options.parse(argc, argv);
 
@@ -156,58 +142,41 @@ int main(int argc, char *argv[]) {
                 << std::endl
                 << std::endl;
 
+      std::cout << rang::style::bold << rang::fg::green
+                << " A steering card example with pre-computed MC integration array and custom "
+                   "random seed (for e.g. GRID computing):"
+                << rang::style::reset << std::endl;
+      std::cout << "  " << argv[0] << " -i ./input/test.json -d ./vgrid/test.vgrid -r 12345"
+                << std::endl
+                << std::endl;
+
       aux::CheckUpdate();
 
       return EXIT_FAILURE;
     }
 
-    // -------------------------------------------------------------------
-    // This first
-    // Process re-set from commandline
-    if (r.count("p")) {
-      gen->ReadInput(r["i"].as<std::string>(), r["p"].as<std::string>());
-    } else {
-      gen->ReadInput(r["i"].as<std::string>());
-    }
+    // ===================================================================
+
+    // Read and parse json input
+    const std::string inputfile = r["i"].as<std::string>();
+    std::cout << "gr: Reading input: " << inputfile << std::endl;
+    json j = json::parse(gra::aux::GetInputData(inputfile));
+
+    // Process terminal input
+    gen->ProcessTerminal(j, r);
+
+    // Read input parameters
+    gen->ReadInput(j);
+
 
     // -------------------------------------------------------------------
-    // Quick custom parameters
-
-    // General parameters (order is important)
-    if (r.count("n")) { gen->SetNumberOfEvents(r["n"].as<unsigned int>()); }
-    if (r.count("o") && r.count("f")) {
-      gen->SetOutput(r["o"].as<std::string>());
-      gen->SetFormat(r["f"].as<std::string>());
-    } else if ((r.count("o") && !r.count("f")) || (!r.count("o") && r.count("f"))) {
-      throw std::invalid_argument("Error: Use options -o and -f together.");
+    // Use a pre-computed MC grid input
+    if (r.count("d")) {
+      gen->SetVgridFile(r["d"].as<std::string>());
+      gen->proc->SetHistograms(0);  // Always off when using pre-computed grid!
     }
-    if (r.count("g")) {
-      const std::string val = r["g"].as<std::string>();
-      gen->SetIntegrator(val);
-    }
-    if (r.count("w")) {
-      const std::string val = r["w"].as<std::string>();
-      gen->SetWeighted(val == "true");
-    }
-    if (r.count("c")) { gen->SetCores(r["c"].as<unsigned int>()); }
-
-    // Process parameters (adding more might be involved due to initialization
-    // in
-    // MProcess...)
-    if (r.count("l")) {
-      const std::string val = r["l"].as<std::string>();
-      gen->proc->SetScreening(val == "true");
-    }
-    if (r.count("e")) {
-      double E = r["e"].as<double>() / 2.0;  // CMS-energy in symmetric collider
-      gen->proc->SetBeamEnergies(E, E);
-    }
-    if (r.count("s")) { gen->proc->SetExcitation(r["s"].as<unsigned int>()); }
-    if (r.count("q")) { gen->proc->SetLHAPDF(r["q"].as<std::string>()); }
-    if (r.count("h")) { gen->proc->SetHistograms(r["h"].as<unsigned int>()); }
-    if (r.count("r")) { gen->proc->random.SetSeed(r["r"].as<unsigned int>()); }
-
     // -------------------------------------------------------------------
+
 
     // Initialize generator (always last!)
     gen->Initialize();
@@ -217,6 +186,7 @@ int main(int argc, char *argv[]) {
 
     // Print histograms
     gen->PrintHistograms();
+
 
     // Exception handling
   } catch (const std::invalid_argument &e) {
@@ -248,7 +218,6 @@ int main(int argc, char *argv[]) {
   }
 
   std::cout << "[gr: done]" << std::endl;
-  aux::CheckUpdate();
 
   return EXIT_SUCCESS;
 }

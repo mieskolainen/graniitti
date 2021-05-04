@@ -1,6 +1,6 @@
 // Resonance parameters
 //
-// mikael.mieskolainen@cern.ch, 2019
+// mikael.mieskolainen@cern.ch, 2021
 {
 
   "PARAM_RES" : {
@@ -19,7 +19,7 @@
     // 2 = running width relativistic
     // 3 = spin barrier relativistic
     "BW" : 2,
- 
+    
     // ------------------------------------------------------------------
     // Tensor Pomeron model production couplings
     // (2 for scalar/pseudoscalar, 2 for vectors, 7 for tensors)
@@ -31,13 +31,14 @@
     "random_rho" : 0,
 
     // Production coupling constant at amplitude level
-    "g_A"   : 1.0,
-    "g_phi" : 0.0,
-
-    // Production form factor parameter (GeV)
-    "g_FF"  : 1.0,
+    "g_A"   :   0.1,     // Ansatz (no fit)
+    "g_phi" :  1.57,
     
-    // Resonance spin-density (von Neumann) matrix (Re and Im parts)
+    // Production form factor parameter (GeV)
+    "g_FF"  :   1.0,
+    
+    // Resonance spin-density (2J+1) (von Neumann) matrix (Re and Im parts)
+    // Jz = 0
     "rho_real" : [ [ 0,  0,  0] ,
                    [ 0,  1,  0] ,
                    [ 0,  0,  0] ],

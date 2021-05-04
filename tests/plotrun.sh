@@ -3,14 +3,11 @@
 # Generate simulations and analysis plots
 #
 # Run with: time xxx.sh
-#
-# Run with: source ./tests/megarun.sh > megarun.out
 
 
-make -j4 TEST=TRUE ROOT14=TRUE
+make -j4 TEST=TRUE
 
-# For different ROOT installation versions
-#make -j4 TEST=TRUE
+
 
 read -p "plotrun: Generate events (or only analyze)? [y/n] " -n 1 -r
 echo # New line
@@ -54,6 +51,6 @@ EVENTS=10000000
 yes $CMD | source ./tests/run_cms_harmonic/run.sh
 #yes $CMD | source ./tests/run_alice_harmonic/run.sh
 
-echo "plotrun.sh [Done]"
+echo "[plotrun.sh: done]"
 
 source ./tests/copyrun.sh

@@ -1,6 +1,6 @@
 // QuasiElastic (EL,SD,DD) and soft ND (simplified) class
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -24,14 +24,14 @@
 #include "Graniitti/MQuasiElastic.h"
 #include "Graniitti/MUserCuts.h"
 
-using gra::PDG::GeV2barn;
-using gra::PDG::mp;
 using gra::aux::indices;
-using gra::math::PI;
 using gra::math::abs2;
 using gra::math::msqrt;
+using gra::math::PI;
 using gra::math::pow2;
 using gra::math::zi;
+using gra::PDG::GeV2barn;
+using gra::PDG::mp;
 
 namespace gra {
 // This is needed by construction
@@ -124,7 +124,7 @@ bool MQuasiElastic::FiducialCuts() const {
 }
 
 bool MQuasiElastic::LoopKinematics(const std::vector<double> &p1p, const std::vector<double> &p2p) {
-  static const M4Vec beamsum = lts.pbeam1 + lts.pbeam2;
+  const M4Vec beamsum = lts.pbeam1 + lts.pbeam2;
 
   const double m1 = lts.pfinal[1].M();
   const double m2 = lts.pfinal[2].M();
@@ -769,9 +769,9 @@ bool MQuasiElastic::B3RandomKin(const std::vector<double> &randvec) {
 
 // Build kinematics for elastic, single and double diffractive 2->2 quasielastic
 bool MQuasiElastic::B3BuildKin(double s3, double s4, double t) {
-  static const double s1      = lts.pbeam1.M2();
-  static const double s2      = lts.pbeam2.M2();
-  static const M4Vec  beamsum = lts.pbeam1 + lts.pbeam2;
+  const double s1      = lts.pbeam1.M2();
+  const double s2      = lts.pbeam2.M2();
+  const M4Vec  beamsum = lts.pbeam1 + lts.pbeam2;
 
   // Scattering angle based on invariants
   double theta = std::acos(kinematics::CosthetaStar(lts.s, t, s1, s2, s3, s4));

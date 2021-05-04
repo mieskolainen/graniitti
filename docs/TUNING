@@ -1,0 +1,67 @@
+Distributed MC computations (tuning) via ray(tune)
+
+m.mieskolainen@imperial.ac.uk, 03/05/2021
+
+
+Create conda virtual environment
+-------------------------------------------------------------------
+```
+conda create -y --name graniitti python==3.8.5
+conda activate graniitti
+pip install -r requirements.txt
+```
+
+
+Local cluster SSH setup
+-------------------------------------------------------------------
+
+1. Create SSH key
+ssh-keygen -t rsa
+
+2. (self access)
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+
+3. Copy the public half to the other servers
+ssh-copy-id -i ~/.ssh/id_rsa.pub user@server
+
+
+RAY manual start
+-------------------------------------------------------------------
+https://docs.ray.io/en/releases-0.8.7/cluster/launcher.html#running-ray-scripts-on-the-cluster-ray-submit
+
+
+1. Start the head node (with here e.g. IP of 192.168.10.200)
+ray start --head --port=6379
+
+2. Connect other nodes to the head
+ray start --address=192.168.10.200:6379
+
+3. Finally, on some node, execute:
+python ./python/icetune --address=192.168.10.200:6379
+
+
+- More nodes can join later also
+- If something fails, try 'ray stop' on all nodes and repeat the steps.
+
+
+
+tmux (improved screen)
+-------------------------------------------------------------------
+https://github.com/tmux/tmux/wiki
+
+
+Tensorboard
+-------------------------------------------------------------------
+
+First check that ~/ray_results/ does not have old logs (which one should remove)
+
+
+1. Locally
+
+tensorboard --logdir=~/ray_results/ --port 6006
+
+
+2. On cluster (untested):
+
+ray exec tune-default.yaml 'tensorboard --logdir=~/ray_results/ --port 6006' --port-forward 6006
+

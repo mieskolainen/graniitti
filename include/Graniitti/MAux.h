@@ -1,6 +1,6 @@
 // I/O aux functions
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 #ifndef MAUX_H
@@ -9,6 +9,7 @@
 // C++
 #include <limits.h>
 #include <unistd.h>
+
 #include <complex>
 #include <mutex>
 #include <random>
@@ -104,6 +105,7 @@ inline Eigen::MatrixXd Matrix2Eigen(const MMatrix<T> &M) {
 }
 
 // System information
+std::string GetTimeStamp(const std::string format = "%d-%m-%Y_%H-%M-%S");
 void        PrintArgv(int argc, char *argv[]);
 void        AutoDownloadLHAPDF(const std::string pdfname);
 std::string ExecCommand(const std::string &cmd);
@@ -123,7 +125,10 @@ void           GetDiskUsage(const std::string &path, int64_t &size, int64_t &fre
 unsigned long long TotalSystemMemory();
 std::string        SystemName();
 std::string        HostName();
-const std::string  DateTime();
+std::string        DateTime();
+
+
+std::string execsystem(const char *cmd);
 
 // Progress bar
 void PrintProgress(double ratio);
@@ -147,6 +152,9 @@ void TrimTrailSpace(std::string &value);
 void TrimEmptySpace(std::string &value);
 void TrimAllSpace(std::string &value);
 
+
+// Boolean to string
+std::string bool_cast(bool b);
 
 // Number to string with formatting
 template <typename T>

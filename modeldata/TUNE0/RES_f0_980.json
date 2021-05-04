@@ -1,6 +1,6 @@
 // Resonance parameters
 //
-// mikael.mieskolainen@cern.ch, 2019
+// mikael.mieskolainen@cern.ch, 2021
 {
 
   "PARAM_RES" : {
@@ -31,19 +31,15 @@
     "random_rho" : 0,
 
     // Production coupling constant at amplitude level
-    "g_A"   :  0.065,
-    "g_phi" : -3.14159,
-
-    // Production form factor parameter (GeV)
-    "g_FF"  : 1.0,
+    "g_A"   :     0.14,      // Fit value
+    "g_phi" :  -3.14159,
     
-    // Resonance spin-density (von Neumann) matrix (Re and Im parts)
-    "rho_real" : [ [ 0.0,  0,  0] ,
-                   [ 0,  0.0,  0] ,
-                   [ 0,  0,  0.0] ],
-    "rho_imag" : [ [ 0,   0,   0] ,
-                   [ 0,   0,   0] ,
-                   [ 0,   0,   0] ],
+    // Production form factor parameter (GeV)
+    "g_FF"  :      1.0,
+    
+    // Resonance spin-density (2J+1) (von Neumann) matrix (Re and Im parts)
+    "rho_real" : [ [1.0] ],
+    "rho_imag" : [ [0.0] ],
   }
 
 }

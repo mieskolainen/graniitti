@@ -1,6 +1,6 @@
 // 'Durham QCD' Processes and Amplitudes
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -21,11 +21,11 @@
 #include "rang.hpp"
 
 namespace gra {
-using PDG::mp;
-using math::PI;
 using math::msqrt;
+using math::PI;
 using math::pow2;
 using math::zi;
+using PDG::mp;
 
 // 2-body incoming or outgoing helicity combinations
 // (keep it algebraic order to match with MadGraph)
@@ -57,6 +57,7 @@ MDurham::MDurham(gra::LORENTZSCALAR &lts, const std::string &modelfile) {
       throw;
     }
   }
+  // Class local initialization
   if (!Param.initialized) {
     try {
       Param.ReadParameters(modelfile);
@@ -83,7 +84,7 @@ double MDurham::DurhamQCD(gra::LORENTZSCALAR &lts, const std::string &process) {
     std::vector<std::vector<std::complex<double>>> Amp(4,
                                                        std::vector<std::complex<double>>(4, 0.0));
 
-    // Madgraph
+    // Madgraph (UNDER IMPLEMENTATION)
     const double alpha_s = lts.GlobalSudakovPtr->AlphaS_Q2(lts.s_hat);
     AmpMG5_gg_gg.CalcAmp2(lts, alpha_s);
 
@@ -283,8 +284,8 @@ inline void MDurham::DScaleChoise(double qt2, double q1_2, double q2_2, double &
 //
 // Durham loop integral amplitude:
 // A = pi^2 \int \frac{d^2 Q_t M(gg->X)}{Q_t^2(Q_t-{p_1t})^2(Q_t+p_{2t})^2}
-//               x f_g(x_1,x_1',Q_1^2,\mu_2;t_1) x
-//               f_g(x_2,x_2',Q_2^2,\mu_2;t_2)
+//               x f_g(x_1,x_1',Q_1^2,\mu;t_1) x
+//               f_g(x_2,x_2',Q_2^2,\mu;t_2)
 //
 double MDurham::DQtloop(gra::LORENTZSCALAR &                           lts,
                         std::vector<std::vector<std::complex<double>>> Amp) {
@@ -640,7 +641,6 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR &                      lts,
   //
   // T_+- = T_-+
   auto T_SFO_PM = [&](double x, double y) {
-
     const double a = (1.0 - x) * (1.0 - y) + x * y;  // +
     const double b = (1.0 - x) * (1.0 - y) - x * y;  // -
 
@@ -656,13 +656,11 @@ void MDurham::Dgg2MMbar(const gra::LORENTZSCALAR &                      lts,
   //
   // T_++ = T_--
   auto T_SFS_PP = [&](double x, double y) {
-
     return 1.0 / (x * y * (1.0 - x) * (1.0 - y)) * (1.0 + costheta2) / pow2(1.0 - costheta2);
   };
 
   // T_+- = T_-+
   auto T_SFS_PM = [&](double x, double y) {
-
     return 1.0 / (x * y * (1.0 - x) * (1.0 - y)) * (1.0 + 3.0 * costheta2) /
            (2.0 * pow2(1.0 - costheta2));
   };

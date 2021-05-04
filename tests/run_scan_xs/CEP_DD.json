@@ -35,7 +35,7 @@
     "NSTARS"  : 2,             // N* excitation (0 = elastic, 1 = single, 2 = double)
     "LHAPDF"  : "CT10nlo",     // LHAPDF parton distribution set
     "HIST"    : 0,             // On-the-flight histograms (0 = off,1,2)
-    "RNDSEED" : 12345678       // Random seed (int32)
+    "RNDSEED" : 12345678,        // Random seed (uint)
   },
 
   // ----------------------------------------------------------------------

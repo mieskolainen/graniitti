@@ -8,6 +8,7 @@
 
 // C++
 #include <math.h>
+
 #include <algorithm>
 #include <complex>
 #include <cstdlib>
@@ -50,6 +51,7 @@ using gra::aux::indices;
 using namespace gra;
 
 // Initialize 1D-histograms
+//
 void Init1DHistogram(std::map<std::string, std::shared_ptr<h1Multiplet>> &h,
                      const std::vector<std::string> &legendtext, std::vector<int> multiplicity,
                      const std::string &title, const std::string &units, const h1Bound &bM,
@@ -145,6 +147,7 @@ void Init1DHistogram(std::map<std::string, std::shared_ptr<h1Multiplet>> &h,
 }
 
 // Initialize 2D-histograms
+//
 void Init2DHistogram(std::map<std::string, std::shared_ptr<h2Multiplet>> &h,
                      const std::vector<std::string> &legendtext, std::vector<int> multiplicity,
                      const std::string &title, const std::string &units, const h1Bound &bM,
@@ -238,6 +241,7 @@ void Init2DHistogram(std::map<std::string, std::shared_ptr<h2Multiplet>> &h,
 }
 
 // Initialize Profile histograms
+//
 void InitPrHistogram(std::map<std::string, std::shared_ptr<hProfMultiplet>> &h,
                      const std::vector<std::string> &legendtext, std::vector<int> multiplicity,
                      const std::string &title, const h1Bound &bM, const h1Bound &bP,
@@ -422,7 +426,6 @@ int main(int argc, char *argv[]) {
     // Create histogram and add pointer to the map
 
     auto tripletfunc = [&](const std::string &str) {
-
       const std::string         vecstr = r[str].as<std::string>();
       const std::vector<double> vec    = gra::aux::SplitStr(vecstr, double(0), ',');
       if (vec.size() != 3) {
@@ -516,7 +519,6 @@ int main(int argc, char *argv[]) {
   }
 
   std::cout << "[analyze: done]" << std::endl;
-  aux::CheckUpdate();
 
   return EXIT_SUCCESS;
 }

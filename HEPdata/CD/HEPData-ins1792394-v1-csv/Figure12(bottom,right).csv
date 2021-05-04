@@ -1,0 +1,33 @@
+#: table_doi: 10.17182/hepdata.94264.v1/t18
+#: name: Figure 12 (bottom, right)
+#: description: Differential fiducial cross section for CEP of $p\bar{p}$ pairs as a function of the invariant mass of the pair, for events with $\Delta\varphi > 90$ degrees.
+
+Systematic uncertainties assigned to data points are strongly correlated between bins and should be treated as allowed collective variation of all data points. There are two components of the total systematic uncertainty. The systematic uncertainty related to the experimental tools and analysis method is labeled "syst. (experimental)". The systematic uncertainty related to the integrated luminosity (fully correlated between all data points) is labeled "syst. (luminosity)".
+
+Fiducial region definition:
+ * central state $p$, $\bar{p}$
+	- $p_{\mathrm{T}} > 0.4~\mathrm{GeV}$
+	- $min(p_{\mathrm{T}}(p), p_{\mathrm{T}}(\bar{p})) < 1.1~\mathrm{GeV}$
+	- $|\eta| < 0.7$
+ * intact forward-scattered beam protons $p'$
+	- $p_x > -0.2~\mathrm{GeV}$
+	- $0.2~\mathrm{GeV} < |p_{y}| < 0.4~\mathrm{GeV}$
+	- $(p_x+0.3~\mathrm{GeV})^2 + p_y^2 < 0.25~\mathrm{GeV}^2$
+ * additional cuts
+	- $\Delta\varphi > 90$ degrees
+
+#: data_file: figure_12_(bottom,_right).yaml
+#: keyword reactions: P P --> P P PBAR P
+#: keyword observables: DSIG/DM
+#: keyword cmenergies: 200
+#: keyword phrases: Exclusive | Diffractive | Cross Section | Proton-Proton Scattering | Single Differential Cross Section
+#: SQRT(S) [GeV],,,200
+#: LUMINOSITY [$pb^{-1}$],,,14.2
+#: RE,,,P P --> P P PBAR P
+M(PPBAR) [GEV],M(PPBAR) [GEV] LOW,M(PPBAR) [GEV] HIGH,DSIG/DM [PB/GEV],stat. +,stat. -,syst. (luminosity) +,syst. (luminosity) -,syst. (experimental) +,syst. (experimental) -
+2.1,2.0,2.2,19.208,9.8134,-9.8134,1.226,-1.0872,2.2804,-1.9796
+2.3,2.2,2.4,78.793,19.366,-19.366,5.0293,-4.46,12.467,-12.129
+2.5,2.4,2.6,33.711,15.927,-15.927,2.1518,-1.9082,9.8134,-9.6576
+2.7,2.6,2.8,28.879,11.378,-11.378,1.8433,-1.6347,4.0299,-3.6465
+2.9,2.8,3.0,6.8242,4.8672,-4.8672,0.43559,-0.38628,0.74484,-0.66059
+

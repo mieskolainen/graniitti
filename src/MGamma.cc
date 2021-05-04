@@ -1,6 +1,6 @@
 // Gamma-Gamma Amplitudes
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -20,9 +20,9 @@
 #include "Graniitti/MSpin.h"
 
 
-using gra::math::PI;
 using gra::math::abs2;
 using gra::math::msqrt;
+using gra::math::PI;
 using gra::math::pow2;
 using gra::math::pow3;
 using gra::math::pow4;
@@ -37,18 +37,22 @@ MGamma::MGamma(gra::LORENTZSCALAR &lts, const std::string &modelfile) {
   // @@ MULTITHREADING LOCK NEEDED FOR THE INITIALIZATION @@
   gra::g_mutex.lock();
 
-  // Monopolium process
-  if (!PARAM_MONOPOLE::initialized) {
-    try {
+  try {
+    // Global Monopolium process parameters
+    if (!PARAM_MONOPOLE::initialized) {
       PARAM_MONOPOLE::M0 = lts.PDG.FindByPDG(PDG::PDG_monopole).mass;
       PARAM_MONOPOLE::ReadParameters(modelfile);
-    } catch (...) {
-      gra::g_mutex.unlock();  // need to release here, otherwise get infinite lock
-      throw;
     }
+    // Class local initialization here
+    // ...
+
+  } catch (...) {
+    gra::g_mutex.unlock();  // need to release here, otherwise get infinite lock
+    throw;
   }
   gra::g_mutex.unlock();
 }
+
 
 // ============================================================================
 // (yy -> fermion-antifermion pair)

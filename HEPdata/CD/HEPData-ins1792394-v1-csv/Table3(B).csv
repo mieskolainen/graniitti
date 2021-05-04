@@ -1,0 +1,38 @@
+#: table_doi: 10.17182/hepdata.94264.v1/t44
+#: name: Table 3 (B)
+#: description: Results of the fit to extrapolated $d\sigma/dm(\pi^+\pi^-)$ in two ranges of azimuthal angle difference $\Delta\varphi$ between forward-scattered protons.
+
+The fit describes the cross-section extrapolated to Lorentz-invariant phase-space defined below:
+	- $|y(\pi^+\pi^-)| < 0.4$
+	- $0.05~\mathrm{GeV}^2 < -t_1, -t_2 < 0.16~\mathrm{GeV}^2$
+
+The experimental systematic uncertainties "(syst.)" are calculated as the quadratic sum of the differences between the nominal fit result and the result of the fit to $d\sigma/dm(\pi^+\pi^-)$ with each systematic effect. The uncertainties related to the extrapolation "(model.)" are quoted as the largest deviation from the nominal fit result.
+#: data_file: table_3_(b).yaml
+#: keyword reactions: P P --> P F0(980) <PI+ PI-> P | P P --> P F0(1500) <PI+ PI-> P
+#: keyword observables: M | WIDTH
+#: keyword cmenergies: 200
+#: keyword phrases: Exclusive | Diffractive | Cross Section | Proton-Proton Scattering | Integrated Cross Section
+#: SQRT(S) [GeV],200
+#: LUMINOSITY [$pb^{-1}$],14.2
+#: RE,P P --> P F0(980) <PI+ PI-> P
+WIDTH [MEV],stat. +,stat. -,syst. +,syst. -,model. +,model. -
+162.74,26.006,-26.006,3.3634,-2.9828,17.306,-19.878
+
+#: SQRT(S) [GeV],200
+#: LUMINOSITY [$pb^{-1}$],14.2
+#: RE,P P --> P F0(1500) <PI+ PI-> P
+WIDTH [MEV],stat. +,stat. -,syst. +,syst. -,model. +,model. -
+89.397,13.869,-13.869,1.6962,-1.8553,3.7802,-2.7831
+
+#: SQRT(S) [GeV],200
+#: LUMINOSITY [$pb^{-1}$],14.2
+#: RE,P P --> P F0(980) <PI+ PI-> P
+M [MEV],stat. +,stat. -,syst. +,syst. -,model. +,model. -
+956.22,6.7508,-6.7508,0.88558,-1.1443,4.1353,-5.4831
+
+#: SQRT(S) [GeV],200
+#: LUMINOSITY [$pb^{-1}$],14.2
+#: RE,P P --> P F0(1500) <PI+ PI-> P
+M [MEV],stat. +,stat. -,syst. +,syst. -,model. +,model. -
+1469.1,9.2056,-9.2056,1.1206,-1.1655,1.7085,-2.2788
+

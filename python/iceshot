@@ -1,0 +1,298 @@
+#! /usr/bin/env python
+
+# iceshot -- MC and data differential comparison via HepMC3 & HepData
+# 
+# (c) 2021 Mikael Mieskolainen
+# Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+
+__VERSION__ = 0.01
+__RELEASE__ = "beta"
+
+
+import iceobs
+import iceplot
+import icetune
+from tqdm import tqdm
+
+import time
+import os
+import argparse
+import socket
+import copy
+
+import pyhepmc_ng as hepmc3
+import pathlib
+import matplotlib.pyplot as plt
+import pyjson5 as json5
+import numpy as np
+
+
+import multiprocessing
+
+
+def parallel_wrapper(param):
+    """ Wrapper for parallel (multiprocess) processing.
+    """
+    # Read event data
+    mcdata = iceobs.read_hepmc3(chunk_range=param['chunk_range'], \
+        hepmc3file=param['hepmc3file'], all_obs=param['all_obs'], pid=param['pid'], cuts=param['cuts'])
+
+    # Histogram it
+    hist = iceplot.histmc(mcdata=mcdata, all_obs=param['all_obs'], scale=param['scale'], \
+        density=param['density'], color=iceplot.colors(param['k']), label=param['label'])
+    
+    return hist
+
+
+def main():
+    ### Parse input arguments
+    
+    parser = argparse.ArgumentParser(description=f"%(prog)s {__VERSION__} ({__RELEASE__})",
+        epilog="""
+    """, formatter_class=argparse.RawTextHelpFormatter)
+    
+    parser.add_argument("--cdir",      type=str, default=os.getcwd())
+    parser.add_argument("--libdir",    type=str, default=os.environ['HOME'] + '/local')
+    parser.add_argument("--address",   type=str, default=icetune.get_ip() + ':6379')
+    
+    
+    parser.add_argument("--obs",       type=str,  default='default_obs',  help="example: --obs default_obs")
+    parser.add_argument("--cuts",      type=str,  default='default_cuts', help="example: --cuts default_cuts")
+    parser.add_argument("--pid",       type=str,  default='[[211,-211]]', help="example: --pid '[[211,-211], [321,-321]]'")
+    
+
+    parser.add_argument("--unit",      type=str,  default='pb',          help="example: --unit ub (mb, ub, nb, pb, fb)")
+    parser.add_argument("--density",   type=bool, default=False,         help="example: --density true")
+    parser.add_argument("--maxevents", type=int,  default=None,          help="example: --maxevents 1000")
+    parser.add_argument("--chi2",      action='store_true',              help="example: --chi2")
+    parser.add_argument("--chunksize", type=int,  default=int(1E4),      help="example: --chunksize 10000")
+
+    
+    parser.add_argument("--hepmc3",    nargs='+', default=[],            help="example: --hepmc3 sample_pipi sample_KK")
+    parser.add_argument("--hepdata",   nargs='+', help="example: --hepdata STAR_200_GeV", default = [])
+    
+
+    parser.add_argument("--datalabel", nargs='+', help="example: --datalabel 'CMS 13 TeV' 'ATLAS 13 TeV'")
+    parser.add_argument("--mclabel",   nargs='+', help="example: --mclabel 'GRANIITTI pi+pi-' 'GRANIITTI K+K-'")
+    parser.add_argument("--title",     type=str,  default=f'iceshot', help="example: --title 'LHC analysis'")
+    
+
+    parser.add_argument("--datascale", nargs='+', help="example: --datascale 1.1")
+    parser.add_argument("--mcscale",   nargs='+', help="example: --mcscale 1.0 0.8")
+    
+
+    parser.add_argument("--output",    type=str,  help="example: --output pipi_KK")
+    
+    
+    args        = parser.parse_args()
+    args.output = f'iceshot--{args.hepdata}--{args.hepmc3}--{args.obs}' if args.output is None else f'iceshot--{args.output}'
+    
+    
+    # Turn into array of integers
+    ss = args.pid
+    ss = ss.replace(" ", "")
+    args.pid = eval(ss.split()[0])
+    
+    
+    if len(args.hepdata) == 0 and len(args.hepmc3) == 0:
+        print('iceshot: No data or hepmc3 input given.')
+        return
+    
+    # Check input
+    if args.datascale is not None:
+        if len(args.datascale) != len(args.hepdata):
+            raise Exception('iceshot: Possible scale factors should be provided for each HEPData file')
+
+    if args.mcscale is not None:
+        if len(args.mcscale) != len(args.hepmc3):
+            raise Exception('iceshot: Possible scale factors should be provided for each HepMC3 file')
+
+    if len(args.pid) != len(args.hepmc3):
+        raise Exception('iceshot: Give final state PID array for each HepMC3 file!')
+
+    # ========================================================================
+    ### Set paths
+
+    LD_LIBRARY_PATH, PYTHONPATH = icetune.setpaths(cdir=args.cdir, libdir=args.libdir)
+
+    print(__name__ + f'.iceshot: IP = {icetune.get_ip()}')
+    print(args)
+
+
+    # ========================================================================
+    ### Get observables
+
+    all_obs = icetune.get_observables(args.obs)
+    if len(all_obs) == 0: raise Exception(__name__ + '.compute: Observables not found!')
+
+
+    # ========================================================================
+    ### Change visualization scale
+
+    # These are w.r.t. to HepMC standard of picobarns
+    unitset = {'mb': 1E-9, 'ub': 1E-6, 'nb': 1E-3, 'pb': 1.0, 'fb': 1E3}
+
+    if  args.unit in unitset.keys():
+        unitscale = unitset[args.unit]
+    else:
+        raise Exception(f"iceshot: Unknown scale 'unit' chosen, use: {unitset.keys()}!")
+
+
+    # ========================================================================
+    # Read in all HEPDATA
+
+    data         = {}
+    data_all_obs = {}
+
+    for i in range(len(args.hepdata)):
+        try:
+            t = str(args.datalabel[i]) # Try to change label, if available
+        except:
+            t = str(args.hepdata[i])
+
+        filename = f'{args.cdir}/fitcard/{args.hepdata[i]}.json'
+
+        ### Read out the datasets
+        with open(filename, 'r') as file:
+            json_data = json5.load(file)
+
+        data[t], data_all_obs[t] = iceobs.read_hepdata(dataset=json_data, all_obs=all_obs, cdir=args.cdir)
+
+
+    # ========================================================================
+    # Replace binning by the first data source !
+
+    if len(data_all_obs.keys()) > 0:
+
+        for k,key in enumerate(data_all_obs.keys()):
+            print(f'Changing all histogram binning as in HEPData source <{key}> \n')
+            all_obs = data_all_obs[key]
+            break;
+
+    for key in all_obs.keys():
+        all_obs[key]['units']['y'] = args.unit
+
+
+    # ========================================================================
+    ### Collecting HEPData histograms
+
+    # Different data sources
+    datalist = []
+    if len(data) > 0:
+        for k,key in enumerate(data.keys()):
+            scale  = float(args.datascale[k]) if args.datascale is not None else 1.0
+            scale *= unitscale # Visualization scale choice
+            datalist.append(iceplot.histhepdata(hepdata=data[key], all_obs=all_obs, scale=scale, density=args.density, label=key))
+
+
+    # ========================================================================
+    # Read in all HepMC3 input in chunks and histogram each chunk
+
+    hepmc3files = {}
+    pid = {}
+    for i in range(len(args.hepmc3)):
+        try:
+            t = str(args.mclabel[i]) # Try to change label, if available
+        except:
+            t = str(args.hepmc3[i])
+        hepmc3files[t] = f'{args.cdir}/output/{args.hepmc3[i]}.hepmc3'
+        pid[t] = args.pid[i]
+    
+    print(hepmc3files)
+
+    # 1. Loop over different hepmc3files
+    mcdata = {}
+    for k,label in enumerate(hepmc3files):
+
+        # Scaling
+        scale  = float(args.mcscale[k]) if args.mcscale is not None else 1.0
+        scale *= unitscale
+
+        # Find out how many events the file contains in total
+        print(f'iceshot: Reading the number of events in a file: {hepmc3files[label]}')
+        with hepmc3.open(hepmc3files[label], "r") as f:
+            nevents = 0
+            for i,_ in tqdm(enumerate(f)):
+                if nevents == args.maxevents:
+                    print(f'iceshot: Maximum events limit = {args.maxevents} reached')
+                    break
+                nevents += 1
+
+        # 2. Chunked loop [parallel processing]
+        same_param = {
+            'chunk_range': None,
+            'hepmc3file':  hepmc3files[label],
+            'all_obs':     all_obs,
+            'pid':         args.pid[k],
+            'cuts':        args.cuts,
+            'scale':       scale,
+            'k':           k,
+            'label':       label,
+            'density':     args.density
+        }
+
+        # Create parameter dictionaries for each process
+        paramlist = []
+        for chunk_range in icetune.generate_partitions(totalsize=nevents, chunksize=args.chunksize):
+            new_param = copy.deepcopy(same_param)
+            new_param['chunk_range'] = chunk_range
+            paramlist.append(new_param)
+
+        # Start multiprocessing
+        print(f'iceshot: Multiprocessing file {hepmc3files[label]}')
+        t     = time.time()
+        pool  = multiprocessing.Pool(multiprocessing.cpu_count())
+        hists = pool.map(parallel_wrapper, paramlist)
+        elapsed = time.time() - t
+        print(f'Processing took: {elapsed:.1f} s [{nevents/elapsed:0.1f} ev/s]')
+
+        # ----------------------------------------------------------------
+        # 3. Fuse histograms from each chunk for each observable
+        mcdata[label] = iceplot.fuse_histograms(hists)
+        # ----------------------------------------------------------------
+
+    # Collect different MC samples
+    mclist = [] if len(mcdata) == 0 else [mcdata[key] for k,key in enumerate(mcdata.keys())]
+
+
+    # ========================================================================
+    ### Plotting
+    
+    # Change y-axis labels
+    if args.density:
+        all_obs = iceplot.change2density_labels(all_obs=all_obs)
+
+    for OBS in all_obs.keys():
+
+        data_obj  = [datalist[i][OBS] for i in range(len(datalist))]
+        mc_obj    = [mclist[i][OBS] for i in range(len(mclist))]
+        hist_objs = data_obj + mc_obj # Fuse lists
+
+        for yscale in ['linear', 'log']:
+            fig, ax = iceplot.superplot(hist_objs, observable=all_obs[OBS], yscale=yscale)
+            
+            ### Chi2 for this observable
+            if (len(data_obj) > 0) and (len(mc_obj) > 0) and args.chi2:
+                i,j   = 0,0 # Use the first pair
+                chi2  = iceplot.chi2_cost(h_mc=mc_obj[i]['hdata'], h_data=data_obj[j]['hdata'])
+                ndf   = len(mc_obj[i]['hdata'].counts) # Count here only the number of bins (not parameters)
+                args.title = f'$\\chi^2$ / ndf = {chi2:0.1f} / {ndf:0.0f} = {chi2/ndf:0.1f}'
+                ax[0].set_title(args.title)
+            else:
+                ax[0].set_title('$\\it{' + args.title + '}$', loc='right')
+
+            # Create path and save
+            fullpath = f'{args.cdir}/figs/{args.output}'
+            pathlib.Path(fullpath).mkdir(parents=True, exist_ok=True)
+            filename = f"{fullpath}/hplot__{all_obs[OBS]['tag']}_{yscale}.pdf"
+            fig.savefig(filename, bbox_inches='tight')
+            print(f'Saving figure: {filename}')
+            plt.close()
+
+    # Save objects out
+    # pickle.dump([mclist, datalist])
+    print('[iceshot: done]')
+
+
+if __name__ == "__main__":
+    main()

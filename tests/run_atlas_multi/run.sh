@@ -13,7 +13,7 @@ then
 # Not set
 if [ -z "$EVENTS" ]
 then
-	EVENTS=1000000
+	EVENTS=100000
 fi
 
 # Full

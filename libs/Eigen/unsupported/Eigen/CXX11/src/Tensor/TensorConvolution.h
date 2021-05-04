@@ -303,6 +303,8 @@ struct TensorEvaluator<const TensorConvolutionOp<Indices, InputArgType, KernelAr
   typedef typename XprType::CoeffReturnType CoeffReturnType;
   typedef typename PacketType<CoeffReturnType, Device>::type PacketReturnType;
   static const int PacketSize = PacketType<CoeffReturnType, Device>::size;
+  typedef StorageMemory<Scalar, Device> Storage;
+  typedef typename Storage::Type EvaluatorPointerType;
 
   enum {
     IsAligned = TensorEvaluator<InputArgType, Device>::IsAligned & TensorEvaluator<KernelArgType, Device>::IsAligned,
@@ -313,6 +315,10 @@ struct TensorEvaluator<const TensorConvolutionOp<Indices, InputArgType, KernelAr
     CoordAccess = false,  // to be implemented
     RawAccess = false
   };
+
+  //===- Tensor block evaluation strategy (see TensorBlock.h) -------------===//
+  typedef internal::TensorBlockNotImplemented TensorBlock;
+  //===--------------------------------------------------------------------===//
 
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE TensorEvaluator(const XprType& op, const Device& device)
       : m_inputImpl(op.inputExpression(), device), m_kernelImpl(op.kernelExpression(), device), m_kernelArg(op.kernelExpression()), m_kernel(NULL), m_local_kernel(false), m_device(device)
@@ -469,7 +475,7 @@ struct TensorEvaluator<const TensorConvolutionOp<Indices, InputArgType, KernelAr
                                        PacketSize));
   }
 
-  EIGEN_DEVICE_FUNC typename Eigen::internal::traits<XprType>::PointerType data() const { return NULL; }
+  EIGEN_DEVICE_FUNC EvaluatorPointerType data() const { return NULL; }
 
  private:
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Index firstInput(Index index) const {
@@ -525,7 +531,7 @@ struct TensorEvaluator<const TensorConvolutionOp<Indices, InputArgType, KernelAr
       m_local_kernel = false;
     } else {
       size_t kernel_sz = m_kernelImpl.dimensions().TotalSize() * sizeof(Scalar);
-      Scalar* local = (Scalar*)m_device.allocate(kernel_sz);
+      Scalar* local = (Scalar*)m_device.allocate_temp(kernel_sz);
       typedef TensorEvalToOp<const KernelArgType> EvalTo;
       EvalTo evalToTmp(local, m_kernelArg);
       const bool Vectorize = internal::IsVectorizable<Device, KernelArgType>::value;
@@ -548,7 +554,7 @@ struct TensorEvaluator<const TensorConvolutionOp<Indices, InputArgType, KernelAr
   KernelArgType m_kernelArg;
   const Scalar* m_kernel;
   bool m_local_kernel;
-  const Device& m_device;
+  const Device EIGEN_DEVICE_REF m_device;
 };
 
 
@@ -572,7 +578,7 @@ struct GetKernelSize<Dynamic> {
 
 template <typename InputEvaluator, typename Index, typename InputDims,
           int StaticKernelSize>
-__global__ void EigenConvolutionKernel1D(
+__global__ EIGEN_HIP_LAUNCH_BOUNDS_1024 void EigenConvolutionKernel1D(
     InputEvaluator eval,
     const internal::IndexMapper<Index, InputDims, 1, InputEvaluator::Layout>
         indexMapper,
@@ -624,7 +630,7 @@ __global__ void EigenConvolutionKernel1D(
 
 template <typename InputEvaluator, typename Index, typename InputDims,
           int StaticKernelSizeX, int StaticKernelSizeY>
-__global__ void EigenConvolutionKernel2D(
+__global__ EIGEN_HIP_LAUNCH_BOUNDS_1024 void EigenConvolutionKernel2D(
     InputEvaluator eval,
     const internal::IndexMapper<Index, InputDims, 2, InputEvaluator::Layout>
         indexMapper,
@@ -695,7 +701,7 @@ __global__ void EigenConvolutionKernel2D(
 };
 
 template <typename InputEvaluator, typename Index, typename InputDims>
-__global__ void EigenConvolutionKernel3D(
+__global__ EIGEN_HIP_LAUNCH_BOUNDS_1024 void EigenConvolutionKernel3D(
     InputEvaluator eval,
     const internal::IndexMapper<Index, InputDims, 3, InputEvaluator::Layout>
         indexMapper,
@@ -786,6 +792,10 @@ struct TensorEvaluator<const TensorConvolutionOp<Indices, InputArgType, KernelAr
     CoordAccess = false,  // to be implemented
     RawAccess = false
   };
+
+  //===- Tensor block evaluation strategy (see TensorBlock.h) -------------===//
+  typedef internal::TensorBlockNotImplemented TensorBlock;
+  //===--------------------------------------------------------------------===//
 
   EIGEN_DEVICE_FUNC TensorEvaluator(const XprType& op, const GpuDevice& device)
       : m_inputImpl(op.inputExpression(), device), m_kernelImpl(op.kernelExpression(), device), m_kernelArg(op.kernelExpression()), m_indices(op.indices()), m_buf(NULL), m_kernel(NULL), m_local_kernel(false), m_device(device)

@@ -1,6 +1,6 @@
 // Photon and other fluxes
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -40,6 +40,12 @@ double ApplyktEPAfluxes(double amp2, gra::LORENTZSCALAR& lts) {
   for (const auto& i : aux::indices(lts.hamp)) { lts.hamp[i] *= sqrt_fluxes; }
   // --------------------------------------------------------------------
 
+  // ** Save for HepMC output **
+  lts.id1 = PDG::PDG_gamma;
+  lts.id2 = PDG::PDG_gamma;
+  lts.xf1 = lts.x1 * gammaflux1;
+  lts.xf2 = lts.x2 * gammaflux2;
+
   return tot;
 }
 
@@ -51,6 +57,12 @@ double ApplyDZfluxes(double amp2, gra::LORENTZSCALAR& lts) {
   const double f2         = form::DZFlux(lts.x2);
   const double phasespace = 1.0 / (lts.x1 * lts.x2);
   const double tot        = f1 * f2 * amp2 * phasespace;
+
+  // ** Save for HepMC output **
+  lts.id1 = PDG::PDG_gamma;
+  lts.id2 = PDG::PDG_gamma;
+  lts.xf1 = lts.x1 * f1;
+  lts.xf2 = lts.x2 * f2;
 
   return tot;
 }
@@ -98,6 +110,13 @@ double ApplyLUXfluxes(double amp2, gra::LORENTZSCALAR& lts) {
 
   const double phasespace = 1.0 / (lts.x1 * lts.x2);
   const double tot        = f1 * f2 * amp2 * phasespace;
+
+  // ** Save for HepMC output **
+  lts.id1   = PDG::PDG_gamma;
+  lts.id2   = PDG::PDG_gamma;
+  lts.xf1   = lts.x1 * f1;
+  lts.xf2   = lts.x2 * f2;
+  lts.scale = math::msqrt(Q2);
 
   return tot;
 }

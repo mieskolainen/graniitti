@@ -1,6 +1,7 @@
-GRANIITTI FAQ: 24.07.2020
+GRANIITTI Monte Carlo event generator FAQ
+03/05/2021
 
-mikael.mieskolainen@cern.ch
+m.mieskolainen@imperial.ac.uk
 -----------
 
 START
@@ -12,8 +13,8 @@ source ./install/setenv.sh
 make -j4 CXX=g++ 
 
 
-Above, you may use also CXX=clang-6.0, but there can be problems with ROOT.
-Note that you need GCC > 7 or newer.
+Above, you may use also CXX=clang, but there can be problems with ROOT (which is optional).
+Note that you need GCC > 9 or newer.
 
 
 FIRST RUN
@@ -45,6 +46,7 @@ SOURCE
 ├── modeldata/          - Global model parameters
 ├── obj/                - Compiled object files
 ├── output/             - Simulation output folder
+├── python/             - HPC distributed tuning via <ray> & analysis tools (in Python)
 ├── src/                - Source files (C++)
 |   ├── Amplitude/      - MadGraph amplitudes
 |   ├── Analysis/       - ROOT dependent analysis source files
@@ -52,6 +54,7 @@ SOURCE
 |      └── Analysis/    - ROOT dependent main program source files
 ├── sudakov/            - Special transformed gluon pdfs arrays
 ├── tests/              - Test suite; automated tests, simulations & analysis benchmark examples
+├── vgrid/              - MC integration grid outputs, useful for e.g. distributed HPC computation
 
 
 PROGRAMS
@@ -62,26 +65,31 @@ PROGRAMS
 
 ./bin/gr             Main simulation program
 ./bin/xscan          Process cross section energy dependence scanner
-./bin/minbias        Minimum bias processes (SD,DD,ND) combined simulation
+./bin/minbias        Minimum bias processes (SD,DD,ND) simulation (for minimalistic rapidity gap fluctuation studies)
 ./bin/hepmc3tolhe    Convert .hepmc3 to .lhe event output format
+
 
 2. Analysis
 -----------
 
+./python/*           Analysis and tuning with Python 3 libraries
+
 ./bin/analyze        Fast histogramming and plotting of fiducial observables in central production
 ./bin/fitharmonic    Spherical harmonic inverse expansion and analysis
-./bin/fitcentral     Fit tool for soft central production parameters
-./bin/fitsoft        Fit tool for eikonal Pomeron model parameters
-./bin/data2hepmc3    Push events from external sources to .hepmc3 format for a quick analysis
+./bin/fitsoft        Fit tool for the eikonal Pomeron model parameters
+./bin/data2hepmc3    Push events from external sources to .hepmc3 format for a quick analysis (code template)
+
 
 3. Automated tests
 -----------
 
 Compile with 'make -j4 TEST=TRUE'
 
-./bin/testbench*     Test cases using catch2 framework
+./bin/testbench*     Test cases using C++ catch2 framework
 ./tests/megarun.sh   Will run all the global and unit tests, runtime 1 hour+
-./tests/exloop.sh    Loops over pre-defined fiducial measurements
+
+pytest ./tests/testbench_exloop.py -s 
+Loops over pre-defined fiducial measurements and produces a comparison table
 
 
 INSTALLATION
@@ -89,12 +97,12 @@ INSTALLATION
 
 Q:  It does not compile :(
 A:  If you use MacOSX, try to obtain the latest GCC toolchain.
-    The software is being tested and developed on Ubuntu linux (+ ROOT 6).
+    The software is being tested and developed always on the latest Ubuntu linux (+ ROOT 6).
 
 
 Q:  I use lxplus.cern.ch, what is the right environment setup?
 A:  Try this before compiling anything:
-    source /cvmfs/sft.cern.ch/lcg/views/setupViews.sh LCG_latest x86_64-centos7-gcc8-opt
+    source /cvmfs/sft.cern.ch/lcg/views/setupViews.sh LCG_98python3 x86_64-centos7-gcc9-opt
 
 
 Q:  I use a standalone system, for example Ubuntu linux, what do I need for the ROOT libraries setup?
@@ -108,27 +116,44 @@ A:  Assuming you have compiled ROOT or use pre-compiled binaries downloaded from
     And make sure that these paths make sense, so that you find binaries/objects/headers
     under $ROOTSYS/bin, $ROOTSYS/lib, $ROOTSYS/include.
 
+    Hint:  Try also the default ROOT environment setup macro "source $ROOTSYS/bin/thisroot.sh"
+
+    Hint2: Note that ROOT 6.18 is seemingly the last version with "old Python" environment, not crucial here,
+    but can be for compatibility with other programs.
+
 
 Q:  Compilation with ROOT failes due to reason such as "‘handlePrefetch’ was not declared in this scope".
-A:  Your ROOT library is probably not compiled with -std=c++17 switch,
-    so try again with 'make -j4 ROOT14=TRUE'.
+A:  Your ROOT library is probably not compiled with -std=c++14 (or -std=c++17) switch,
+    so try again with 'make -j4 CXX_ROOT=c++17'.
 
 
 Q:  How to turn off ROOT dependent compilation completely?
 A:  Compile with 'make -j4 ROOTSYS=' or run 'unset ROOTSYS' for removing the shell variable.
-    The simulation part of GRANIITTI is not dependent on ROOT but the analysis tools are.
+    The simulation part of GRANIITTI is not dependent on ROOT but some analysis tools depend on it.
 
 
 
 BASIC OPERATION
 -----------
 
+Q:  Your generator does not match (my) data!
+A:  GRANIITTI includes a spectrum of different amplitudes and model variations.
+    For strong interaction (Pomeron driven) amplitudes, you may start with the simplest one, PP[CON],
+    and try the intermediate form factor of 'Orear' and 'power law' types (large effects in e.g. \Delta\phi_pp).
+    Then, try with and without the screening (absorption) loop turned on. Once this behavior is understood,
+    try adding resonances, PP[RES+CON], and perhaps adjust the resonance spin polarization parameters
+    and so on. You can always send email for instructions on how to do e.g. distributed model tuning.
+    
+    PS. Solid fiducial measurements should be executed in a way that the arbitrary generator model
+    dependence is minimized, e.g. by using techniques such as DeepEfficiency [https://arxiv.org/abs/1809.06101].
+
+
 Q:  I get "error while loading shared libraries: libHepMC3.so.1: cannot open shared object file"
 A:  Always remember the environment setup: 'source ./install/setenv.sh'
 
 
 Q:  Where are the examples of .json steering cards?
-A:  Under /tests/processes folder. Make a copy to /input and modify.
+A:  Under /tests/processes folder. Make a copy and modify.
 
 
 Q:  How do I choose the final state?
@@ -154,12 +179,13 @@ Q:  How do I get the minimum bias process cross sections (SD,DD,ND) and generate
 A:  Use ./bin/minbias program. Running processes directly with "PP[SD]<Q>", "PP[DD]<Q>"
     and "PP[ND]<Q>" macros with screening loop turned works too, but the cross section integral is
     calculated properly for non-diffractive (ND) events only via ./bin/minbias program.
+    Remember that these events should be fragmented with e.g. PYTHIA.
 
 
 Q:  What do generation cuts versus fiducial cuts mean?
 A:  Generation cuts are applied at the level of phase space sampling
     kinematic construction, completely necessary. Fiducial cuts are
-    applied after the event kinematics has been constructed - this is optional.
+    applied after the event kinematics has been constructed -- this is optional.
 
 
 Q:  For the analysis/reference purposes, I just want to generate pure J=0 amplitude (S-wave)
@@ -177,8 +203,8 @@ A:  This is supported via Jacob-Wick amplitudes. First setup the mother resonanc
 
 
 Q:  Integrated cross section seems very high?
-A:  Turn on the screening integral (event-by-event Pomeron loop). The effect can be
-    very high, depending on the process - less for gamma-gamma processes.
+A:  Turn on the screening integral (event-by-event Pomeron loop). The absorptive effect can be
+    very high, depending on the process -- less for gamma-gamma processes.
     Also, take care of the branching ratios and phase space volumes (see below).
 
 
@@ -205,7 +231,7 @@ A:  Very good, that is the right attitude! You find my heavily commented code
     under /src and /include folders. If you feel something is too dark, just send email --
     I am interested in what is right in terms of physics, what is wrong and in
     improving the code quality. All original calculations etc. are inline referenced
-    to arXiv for more information.
+    to arXiv for more information or should be described in the code, if they are derived here.
 
 
 Q:  Which features or processes are "under construction"?
@@ -218,7 +244,9 @@ MONTE CARLO TECHNIQUES
 
 Q:  I am running it on a GRID / distributed computing system, what do I need to do?
 A:  Remember to set the random number seed differently on separate instances/machines
-    when generating events. Example: './bin/gr -i mycard.json -r 12345'.
+    when generating events. Example: './bin/gr -i mycard.json -r 12345'. You may also
+    want to use the same MC integration grid for each node, by using -d switch and
+    the output data obtained from "/vgrid" folder (first computed on a single node).
 
 
 Q:  MC integral does not converge (stat. error estimate is very high)!
@@ -241,7 +269,7 @@ A:  Different ways to organize the phase space sampling.
 
 Q:  I get different integrals with '<C>' and '<F>' algorithms.
 A:  Your cuts are not equivalent. Please note that '<C>' class applies the
-    generation cuts to the (direct not daughter) final states and '<F>' applies generation
+    generation cuts to the direct (not daughter) final states and '<F>' applies generation
     cuts to the central system, instead. However, if you then apply also fiducial cuts,
     and make sure that the generation phase space is larger in both cases than the fiducial one,
     you will obtain equivalent numbers with '<C>' and '<F>'.
@@ -292,16 +320,24 @@ A:  As many as your system can. You can try out which number gives the best perf
 ANALYSIS
 -----------
 
-
 Q:  How to do fast plotting of the fiducial observables of a given MC sample
     and stack different MC samples in the same plot?
-A:  With ROOT installed, just try some examples under /tests/.
+
+A:  PYTHON: The latest hi-tech option is 'python ./python/iceshot --hepmc3 file1 file2'
+    
+    ROOT:   With ROOT installed, just try some examples under /tests/.
     The program ./bin/analyzer calculates a large collection of automated publication quality plots
-    for arbitrary central production processes. We recommend also one to use RIVET via HepMC2.
+    for arbitrary central production processes.
+
+    RIVET:  We recommend also one to try RIVET.
+
+
+Q:  How do I use RIVET?
+A:  Install it with /install/installRIVET.sh and see examples under ./tests/run_rivet_*
 
 
 Q:  I want to do a full spherical harmonics expansion.
-A:  Sure, if you have ROOT installed, which is needed for plotting and
+A:  Sure, if you have ROOT installed, which is needed here for plotting and
     Extended Maximum Likelihood via TMinuit. This advanced analysis algorithm is fully automated
     including the efficiency and acceptance inversion. See examples under /tests/run_*_harmonic.
     Please do note that this is an ill-posed inverse problem, like unfolding. You need to
@@ -314,15 +350,23 @@ A:  This is expected and is due to a finite spherical harmonics expansion order,
     in the limit of infinite MC statistics and infinite harmonic expansion order, different frames will expand
     the acceptance identically and also the data inversion results should then be identical.
 
-    The expansion itself is just a harmonic fit to a 2D-function in (cos theta,phi)-space in a hyperbin of system mass, (Pt, rapidity).
-    In some event-by-event rotated rest frames, the underlying geometric 2D-acceptance function is more flat, thus requires
-    less harmonic components to fit. Comparing two detectors at the same \sqrt{s}, the one with larger geometric
-    (eta,pt)-acceptance requires less harmonics, generally speaking. The underlying physics (scattering process) enforces
-    the same practical lower limit for the harmonics in both detectors, naturally.
+    The expansion itself is just a harmonic fit to a 2D-function in (cos theta,phi)-space in a hyperbin of
+    system mass, (Pt, rapidity). In some event-by-event rotated rest frames, the underlying geometric
+    2D-acceptance function is more flat, thus requires less harmonic components to fit. Comparing two
+    detectors at the same \sqrt{s}, the one with larger geometric (eta,pt)-acceptance requires less
+    harmonics, generally speaking. The underlying physics (scattering process) enforces the same practical
+    lower limit for the harmonics in both detectors, naturally.
 
 
 ADVANCED
 -----------
+
+Q:  How do I set transverse polarization (Jz = +-1, +-2, ...) or longitudinal polarization (Jz = 0)
+    for the parametric resonances?
+A:  For the Jacob-Wick helicity amplitudes, see the (fixed) resonance spin density matrices and the chosen
+    polarization frame under /modeldata/TUNE/{GENERAL, RES_X}.json. For Tensor Pomeron model, this
+    question is fully determined by the model Lorentz structure and the free coupling parameters per
+    resonance, again set under /modeldata/{RES_X.json}.
 
 
 Q:  Can I add some arbitrary new process / amplitude?
@@ -355,9 +399,14 @@ A:  The soft central production amplitude parameters are such that an approximat
 
 
 Q:  Can I make my own tune?
-A:  Sure, just copy /modeldata/TUNE0 to e.g. /modeldata/TUNE1, change the
+A:  MANUAL: Sure, just copy /modeldata/TUNE0 to e.g. /modeldata/TUNE1, change the
     reference to that in your .json steering card and start tuning. Then go beyond
     and put in your own scattering amplitudes.
+    
+    AUTOMATED: For distributed HPC tuning via <ray> platform, see /docs/TUNING.
+    Basically, the tuning algorithms modify the input parameter json files, generate new MC samples,
+    construct the MC histograms from hepmc3 files and compares these with HEPData histograms,
+    and then repeats this parameter optimization process by minimizing global chi2.
 
 
 
@@ -366,7 +415,8 @@ OTHER
 
 Q:  Your .json files are not obeying JSON standard.
 A:  Yes, I use an extended, new JSON5 standard subset which allows commenting and other
-    user friendly properties.
+    user friendly properties. You can read them with json5 reader libraries or with
+    standard json libraries after some regexp cleaning.
 
 
 Q:  I want to install it into our collaboration software platform.

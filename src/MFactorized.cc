@@ -1,6 +1,6 @@
 // Factorized type phase space class
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -27,10 +27,10 @@
 
 using gra::aux::indices;
 
-using gra::math::CheckEMC;
-using gra::math::PI;
 using gra::math::abs2;
+using gra::math::CheckEMC;
 using gra::math::msqrt;
+using gra::math::PI;
 using gra::math::pow2;
 using gra::math::pow3;
 using gra::math::pow4;
@@ -82,7 +82,7 @@ void MFactorized::post_Constructor() {
 // does not assume vanishing external momenta in the screening loop calculation.
 
 bool MFactorized::LoopKinematics(const std::vector<double> &p1p, const std::vector<double> &p2p) {
-  static const M4Vec beamsum = lts.pbeam1 + lts.pbeam2;
+  const M4Vec        beamsum = lts.pbeam1 + lts.pbeam2;
   const unsigned int Nf      = lts.decaytree.size() + 2;  // Number of final states
 
   // SET new final states pT degrees of freedom
@@ -306,7 +306,7 @@ bool MFactorized::B51RandomKin(const std::vector<double> &randvec) {
 // Build kinematics for 2->3 skeleton
 bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, double yX,
                               double m2X, double m1, double m2) {
-  static const M4Vec beamsum = lts.pbeam1 + lts.pbeam2;
+  const M4Vec beamsum = lts.pbeam1 + lts.pbeam2;
 
   // Final state 4-momenta, set px,py first
   M4Vec p1(pt1 * std::cos(phi1), pt1 * std::sin(phi1), 0, 0);
@@ -362,25 +362,33 @@ bool MFactorized::B51BuildKin(double pt1, double pt2, double phi1, double phi2, 
     // @@ Note, we need to take offshell masses here calculated first in B51RandomKin @@
     masses.push_back(lts.decaytree[i].m_offshell);
   }
-  std::vector<M4Vec> products;
+  std::vector<M4Vec> products(lts.decaytree.size());
 
   // false if amplitude has dependence on the final state legs (generic),
   // true if amplitude is a function of central system kinematics only (limited)
   const bool UNWEIGHT = !lts.PS_active;
 
   gra::kinematics::MCW w;
+
   // 2-body
   if (lts.decaytree.size() == 2) {
     w = gra::kinematics::TwoBodyPhaseSpace(lts.pfinal[0], msqrt(m2X), masses, products, random);
+
     // 3-body
   } else if (lts.decaytree.size() == 3) {
     w = gra::kinematics::ThreeBodyPhaseSpace(lts.pfinal[0], msqrt(m2X), masses, products, UNWEIGHT,
                                              random);
+
     // N-body
   } else if (lts.decaytree.size() > 3) {
-    w = gra::kinematics::NBodyPhaseSpace(lts.pfinal[0], msqrt(m2X), masses, products, UNWEIGHT,
-                                         random);
+    if (UNWEIGHT) {
+      w = gra::kinematics::NBodyPhaseSpace(lts.pfinal[0], msqrt(m2X), masses, products, UNWEIGHT,
+                                           random);
+    } else {
+      w = gra::kinematics::RamboMassive(lts.pfinal[0], msqrt(m2X), masses, products, random);
+    }
   }
+  // printf("%0.3E \n", w.Integral());
 
   if (w.GetW() < 0) {
     return false;  // Kinematically impossible

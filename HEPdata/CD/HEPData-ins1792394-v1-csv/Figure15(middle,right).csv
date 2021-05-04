@@ -1,0 +1,33 @@
+#: table_doi: 10.17182/hepdata.94264.v1/t32
+#: name: Figure 15 (middle, right)
+#: description: Differential fiducial cross section for CEP of $\pi^+\pi^-$ pairs as a function of the sum of the squares of the four-momenta losses in the proton vertices, for invariant masses $1 \mathrm{GeV} < m(\pi^+\pi^-) < 1.5~\mathrm{GeV}$.
+
+Systematic uncertainties assigned to data points are strongly correlated between bins and should be treated as allowed collective variation of all data points. There are two components of the total systematic uncertainty. The systematic uncertainty related to the experimental tools and analysis method is labeled "syst. (experimental)". The systematic uncertainty related to the integrated luminosity (fully correlated between all data points) is labeled "syst. (luminosity)".
+
+Fiducial region definition:
+ * central state $\pi^+$, $\pi^-$
+	- $p_{\mathrm{T}} > 0.2~\mathrm{GeV}$
+	- $|\eta| < 0.7$
+ * intact forward-scattered beam protons $p'$
+	- $p_x > -0.2~\mathrm{GeV}$
+	- $0.2~\mathrm{GeV} < |p_{y}| < 0.4~\mathrm{GeV}$
+	- $(p_x+0.3~\mathrm{GeV})^2 + p_y^2 < 0.25~\mathrm{GeV}^2$
+ * additional cuts
+	- $1 \mathrm{GeV} < m(\pi^+\pi^-) < 1.5~\mathrm{GeV}$
+
+#: data_file: figure_15_(middle,_right).yaml
+#: keyword reactions: P P --> P PI+ PI- P
+#: keyword observables: DSIG/D|T1+T2|
+#: keyword cmenergies: 200
+#: keyword phrases: Exclusive | Diffractive | Cross Section | Proton-Proton Scattering | Single Differential Cross Section
+#: SQRT(S) [GeV],,,200
+#: LUMINOSITY [$pb^{-1}$],,,14.2
+#: RE,,,P P --> P PI+ PI- P
+|T1+T2| [GEV**2],|T1+T2| [GEV**2] LOW,|T1+T2| [GEV**2] HIGH,DSIG/D|T1+T2| [NB/GEV**2],stat. +,stat. -,syst. (luminosity) +,syst. (luminosity) -,syst. (experimental) +,syst. (experimental) -
+0.1,0.08,0.12,20.008,0.61408,-0.61408,1.2771,-1.1325,1.0823,-1.0245
+0.14,0.12,0.16,66.519,1.1235,-1.1235,4.2459,-3.7652,3.5403,-3.3425
+0.18,0.16,0.2,66.808,1.1946,-1.1946,4.2643,-3.7816,4.2357,-3.9961
+0.22,0.2,0.24,53.733,1.1737,-1.1737,3.4298,-3.0415,5.3256,-4.7782
+0.27,0.24,0.3,19.433,0.62716,-0.62716,1.2404,-1.1,2.78,-2.3606
+0.33999999999999997,0.3,0.38,2.1387,0.21453,-0.21453,0.13651,-0.12106,0.51007,-0.39164
+

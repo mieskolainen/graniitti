@@ -1,14 +1,18 @@
 // I/O aux functions
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
+#include <chrono>
 #include <complex>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <regex>
+#include <sstream>
 #include <vector>
+
 //#include <experimental/filesystem>
 
 // C system functions
@@ -21,6 +25,12 @@
 #include <sys/utsname.h>
 #include <time.h>
 #include <unistd.h>
+
+// Networking
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
 
 // Libraries
 #include "HepMC3/FourVector.h"
@@ -39,13 +49,17 @@
 namespace gra {
 namespace aux {
 
+
 // -------------------------------------------------------
 // FIXED HERE manually
 
-double      GetVersion() { return 1.051; }
-std::string GetVersionType() { return "release"; }
-std::string GetVersionDate() { return "26.02.2020"; }
-std::string GetVersionUpdate() { return "performance, IO, new HepMC3 & fixes"; }
+double      GetVersion() { return 1.08; }
+std::string GetVersionType() { return "pre-release"; }
+std::string GetVersionDate() { return "04.05.2021"; }
+std::string GetVersionUpdate() {
+  return "spin-machinery extensions, new tune, updated tech & bugfixes";
+}
+
 
 // -------------------------------------------------------
 
@@ -88,6 +102,18 @@ void AutoDownloadLHAPDF(const std::string pdfname) {
   std::cout << cmd1 << std::endl;
   std::string OUTPUT1 = aux::ExecCommand(cmd1);
 }
+
+// Return timestamp in the given format
+std::string GetTimeStamp(const std::string format) {
+  std::time_t        t  = std::time(nullptr);
+  std::tm            tm = *std::localtime(&t);
+  std::ostringstream oss;
+  oss << std::put_time(&tm, format.c_str());
+  std::string timestamp(oss.str());
+
+  return timestamp;
+}
+
 
 // Run terminal command, get output to std::string
 std::string ExecCommand(const std::string &cmd) {
@@ -235,15 +261,14 @@ std::string SystemName() {
 std::string HostName() {
   char hostname[2048];
   gethostname(hostname, 2048);
-
-  std::string str(hostname);
-  return str;
+  return std::string(hostname);
 }
+
 
 // Get current date/time, format is YYYY-MM-DD HH:mm:ss
 // http://en.cppreference.com/w/cpp/chrono/c/strftime
 // for more information about date/time format
-const std::string DateTime() {
+std::string DateTime() {
   time_t    now = time(0);
   struct tm tstruct;
   char      buf[80];
@@ -314,7 +339,10 @@ std::string GetInputData(const std::string &inputfile) {
   }
   // Create a JSON object from file
   std::ifstream ifs(inputfile);
-  std::string   data((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
+  if (!ifs.is_open()) {
+    throw std::invalid_argument("MAux::GetInputData: Error: Cannot open inputfile " + inputfile);
+  }
+  std::string data((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 
   // https://json5.org/ features:
   // We use C++11 raw string literals here R"(text)"
@@ -322,9 +350,14 @@ std::string GetInputData(const std::string &inputfile) {
 
   // JSON5: <Single and multi-line comments are allowed>
   // First this. Remove C style block comments /* */
+  /*
   data = std::regex_replace(data, std::regex(R"(\/\*(\*(?!\/)|[^*])*\*\/)"), "");
   // Second this. Remove C++ style single line comments "//"
   data = std::regex_replace(data, std::regex(R"([/]+.*)"), "");
+  */
+
+  // This removes C or C++ style comments and handles also slashes properly inside strings
+  data = std::regex_replace(data, std::regex(R"(//.*?(\r\n?|\n)|/\*.*?\*/)"), "");
 
   // Remove "\n" or "\t" or "\r", needed for the following regex operations
   data = std::regex_replace(data, std::regex(R"(\n|\t|\r)"), "");
@@ -507,35 +540,44 @@ void PrintGameOver() {
             << std::endl;
 }
 
+
+#include <array>
+#include <stdexcept>
+#include <string>
+
+// Execute terminal command get output
+std::string execsystem(const char *cmd) {
+  std::array<char, 1024>                   buffer;
+  std::string                              result;
+  std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+  if (!pipe) { throw std::runtime_error("popen() failed!"); }
+  while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) { result += buffer.data(); }
+  return result;
+}
+
+
 // Check updates online
 void CheckUpdate() {
-  const std::string tmpfile = "/tmp/GRANIITTI_VERSION_" + std::to_string(time(0)) + ".json";
+  auto PrintMessage = []() {
+    std::cout << std::endl;
+    PrintBar("-", 80);
+    std::cout << "Check you have 'curl' and internet access -- could not update version information"
+              << std::endl;
+    PrintBar("-", 80);
+    std::cout << std::endl;
+  };
+
   const std::string cmd =
-      "curl -s -o " + tmpfile +
-      " https://raw.githubusercontent.com/mieskolainen/GRANIITTI/master/VERSION.json";
+      "curl -s https://raw.githubusercontent.com/mieskolainen/GRANIITTI/master/VERSION.json &> "
+      "/dev/stdout";
+  const std::string data = execsystem(cmd.c_str());
 
-  // Execute curl
-  const int ret = system(cmd.c_str());
-
-  if (ret != -1) {  // Success
-
-    // Read and parse
-    std::string    data;
+  if (data.size() > 0) {
     nlohmann::json j;
 
     try {
-      data = gra::aux::GetInputData(tmpfile);
-      j    = nlohmann::json::parse(data);
-    } catch (...) {
-      std::cout << std::endl;
-      PrintBar("-", 80);
-      std::cout << "Check your internet access -- could not update version information"
-                << std::endl;
-      PrintBar("-", 80);
-      std::cout << std::endl;
-    }
+      j = nlohmann::json::parse(data);
 
-    try {
       const double      online_version = j.at("version");
       const std::string online_date    = j.at("date");
 
@@ -546,14 +588,15 @@ void CheckUpdate() {
                   << " (" << online_date << ") available at <github.com/mieskolainen/GRANIITTI>"
                   << rang::fg::reset << rang::style::reset << std::endl;
         std::cout << std::endl;
+        std::cout << "Updates are: " << j.at("update") << std::endl;
+        std::cout << std::endl;
         std::cout << "To update, copy-and-run: " << std::endl;
         std::cout
             << "git pull origin master && source ./install/setenv.sh && make superclean && make -j4"
             << std::endl
             << std::endl;
-        std::cout
-            << "If compilation fails, check that HepMC3 and LHAPDF6 are as in requirements.txt"
-            << std::endl;
+        std::cout << "If compilation fails, check that HepMC3 and LHAPDF6 are as required"
+                  << std::endl;
         std::cout << "You can re-install them with cd install && source autoinstall.sh"
                   << std::endl;
         PrintBar("-", 80);
@@ -566,7 +609,7 @@ void CheckUpdate() {
                   << rang::style::reset << std::endl;
         PrintBar("-", 80);
         std::cout << std::endl;
-      } else {  // This version is newer than oline
+      } else {  // This version is newer than online
         std::cout << std::endl;
         PrintBar("-", 80);
         std::cout << rang::style::bold << rang::fg::green << "This version " << GetVersion() << " ("
@@ -576,15 +619,9 @@ void CheckUpdate() {
         std::cout << std::endl;
       }
 
-      // Remove tmp file
-      const std::string rmcmd = "rm " + tmpfile;
-      if (system(rmcmd.c_str()) != 1) {
-        // success
-      }
-
-    } catch (...) {
-      // do nothing
-    }
+    } catch (...) { PrintMessage(); }
+  } else {
+    PrintMessage();
   }
 
   // Create this version JSON
@@ -604,6 +641,11 @@ void CreateVersionJSON() {
   fclose(file);
 }
 
+std::string bool_cast(bool b) {
+  std::ostringstream ss;
+  ss << std::boolalpha << b;
+  return ss.str();
+}
 
 std::string GetVersionString() {
   char buff[100];
@@ -656,7 +698,8 @@ void PrintFlashScreen(rang::fg pcolor) {
                "`/yhoshhhh////++:.....`:yy+/...sddhs/:////:-/++ooo+oyssyoo:.`:/+oosssshddd\n"
                "`dddyhydhdyyddhddo``.+.`+/oyoh-..+yddho/-......--:----://+osyyhho++/--::/+\n"
                "/hddhmhmhmdmddhdds:+s+:+/-:++hhh//.-/++osssso++/-.````.-://::-.....`......\n"
-            << std::endl << std::endl;
+            << std::endl
+            << std::endl;
   std::cout << rang::fg::reset;
 }
 
@@ -667,7 +710,7 @@ void PrintVersion() {
             << std::endl;
   std::cout << "References: arXiv:1910.06300 [hep-ph]" << std::endl;
   std::cout << std::endl;
-  std::cout << "(c) 2017-2020 Mikael Mieskolainen" << std::endl;
+  std::cout << "(c) 2017-2021 Mikael Mieskolainen" << std::endl;
   std::cout << "<m.mieskolainen@imperial.ac.uk>" << std::endl;
   std::cout << std::endl;
   std::cout << "<opensource.org/licenses/GPL-3.0>" << std::endl;

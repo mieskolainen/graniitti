@@ -1,0 +1,31 @@
+#: table_doi: 10.17182/hepdata.94264.v1/t23
+#: name: Figure 14 (top, right)
+#: description: Differential fiducial cross section for CEP of $p\bar{p}$ pairs as a function of the $\cos{\theta^{CS}}$ of the central state proton in the Collins-Soper reference frame.
+
+Systematic uncertainties assigned to data points are strongly correlated between bins and should be treated as allowed collective variation of all data points. There are two components of the total systematic uncertainty. The systematic uncertainty related to the experimental tools and analysis method is labeled "syst. (experimental)". The systematic uncertainty related to the integrated luminosity (fully correlated between all data points) is labeled "syst. (luminosity)".
+
+Fiducial region definition:
+ * central state $p$, $\bar{p}$
+	- $p_{\mathrm{T}} > 0.4~\mathrm{GeV}$
+	- $min(p_{\mathrm{T}}(p), p_{\mathrm{T}}(\bar{p})) < 1.1~\mathrm{GeV}$
+	- $|\eta| < 0.7$
+ * intact forward-scattered beam protons $p'$
+	- $p_x > -0.2~\mathrm{GeV}$
+	- $0.2~\mathrm{GeV} < |p_{y}| < 0.4~\mathrm{GeV}$
+	- $(p_x+0.3~\mathrm{GeV})^2 + p_y^2 < 0.25~\mathrm{GeV}^2$
+#: data_file: figure_14_(top,_right).yaml
+#: keyword reactions: P P --> P P PBAR P
+#: keyword observables: DSIG/DCOSTHETA
+#: keyword cmenergies: 200
+#: keyword phrases: Exclusive | Diffractive | Cross Section | Proton-Proton Scattering | Single Differential Cross Section
+#: SQRT(S) [GeV],,,200
+#: LUMINOSITY [$pb^{-1}$],,,14.2
+#: RE,,,P P --> P P PBAR P
+COSTHETA(P),COSTHETA(P) LOW,COSTHETA(P) HIGH,DSIG/DCOSTHETA [PB],stat. +,stat. -,syst. (luminosity) +,syst. (luminosity) -,syst. (experimental) +,syst. (experimental) -
+-0.5,-0.6,-0.4,7.1684,6.2462,-6.2462,0.45756,-0.40576,1.8241,-1.781
+-0.30000000000000004,-0.4,-0.2,16.135,12.208,-12.208,1.0299,-0.91333,2.7603,-2.6505
+-0.1,-0.2,0.0,86.279,23.217,-23.217,5.5072,-4.8837,10.198,-9.4476
+0.1,0.0,0.2,50.871,16.128,-16.128,3.2471,-2.8795,8.2654,-7.9415
+0.30000000000000004,0.2,0.4,41.462,15.171,-15.171,2.6465,-2.3469,4.1768,-3.7911
+0.5,0.4,0.6,44.312,17.04,-17.04,2.8284,-2.5082,5.0862,-4.7232
+

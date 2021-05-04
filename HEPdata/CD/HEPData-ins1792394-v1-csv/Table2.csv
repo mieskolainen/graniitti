@@ -1,0 +1,49 @@
+#: table_doi: 10.17182/hepdata.94264.v1/t42
+#: name: Table 2
+#: description: Integrated fiducial cross sections with statistical and systematic uncertainties for CEP of $\pi^+\pi^-$, $K^+K^-$ and $p\bar{p}$ pairs in two ranges of azimuthal angle difference, $\Delta\varphi$, between the two forward-scattered protons.
+
+Fiducial region definition:
+
+ * central state
+
+ 	- $p_{\mathrm{T}} > 0.2~\mathrm{GeV}$ ($\pi^+$, $\pi^-$)
+
+ 	- $p_{\mathrm{T}} > 0.3~\mathrm{GeV}$,   $min(p_{\mathrm{T}}^+, p_{\mathrm{T}}^-) < 0.7~\mathrm{GeV}$ ($K^+$, $K^-$)
+
+ 	- $p_{\mathrm{T}} > 0.4~\mathrm{GeV}$,   $min(p_{\mathrm{T}}^+, p_{\mathrm{T}}^-) < 1.1~\mathrm{GeV}$ ($p$, $\bar{p}$)
+
+ 	- $|\eta| < 0.7$ (all species)
+
+ * intact forward-scattered beam protons $p'$
+
+ 	- $p_x > -0.2~\mathrm{GeV}$
+
+ 	- $0.2~\mathrm{GeV} < |p_{y}| < 0.4~\mathrm{GeV}$
+
+ 	- $(p_x+0.3~\mathrm{GeV})^2 + p_y^2 < 0.25~\mathrm{GeV}^2$
+#: data_file: table_2.yaml
+#: keyword reactions: P P --> P PI+ PI- P | P P --> P K+ K- P | P P --> P P PBAR P
+#: keyword observables: SIG
+#: keyword cmenergies: 200
+#: keyword phrases: Exclusive | Diffractive | Cross Section | Proton-Proton Scattering | Integrated Cross Section
+#: SQRT(S) [GeV],,,200
+#: LUMINOSITY [$pb^{-1}$],,,14.2
+#: RE,,,P P --> P PI+ PI- P
+DPHI [DEG],DPHI [DEG] LOW,DPHI [DEG] HIGH,SIG [NB],stat. +,stat. -,syst. +,syst. -
+45.0,0.0,90.0,44.132,0.2225,-0.2225,4.6279,-4.1701
+135.0,90.0,180.0,21.114,0.16141,-0.16141,2.0967,-1.8979
+
+#: SQRT(S) [GeV],,,200
+#: LUMINOSITY [$pb^{-1}$],,,14.2
+#: RE,,,P P --> P K+ K- P
+DPHI [DEG],DPHI [DEG] LOW,DPHI [DEG] HIGH,SIG [NB],stat. +,stat. -,syst. +,syst. -
+45.0,0.0,90.0,1.0871,0.057284,-0.057284,0.17019,-0.15178
+135.0,90.0,180.0,0.56569,0.041448,-0.041448,0.092338,-0.083427
+
+#: SQRT(S) [GeV],,,200
+#: LUMINOSITY [$pb^{-1}$],,,14.2
+#: RE,,,P P --> P P PBAR P
+DPHI [DEG],DPHI [DEG] LOW,DPHI [DEG] HIGH,SIG [NB],stat. +,stat. -,syst. +,syst. -
+45.0,0.0,90.0,0.017423,0.0047049,-0.0047049,0.002889,-0.0027386
+135.0,90.0,180.0,0.031818,0.0062025,-0.0062025,0.004576,-0.004271
+

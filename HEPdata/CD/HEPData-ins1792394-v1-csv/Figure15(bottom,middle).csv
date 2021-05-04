@@ -1,0 +1,35 @@
+#: table_doi: 10.17182/hepdata.94264.v1/t34
+#: name: Figure 15 (bottom, middle)
+#: description: Differential fiducial cross section for CEP of $\pi^+\pi^-$ pairs as a function of the difference of azimuthal angles of the forward scattered protons, for invariant masses $m(\pi^+\pi^-) > 1.5~\mathrm{GeV}$.
+
+Systematic uncertainties assigned to data points are strongly correlated between bins and should be treated as allowed collective variation of all data points. There are two components of the total systematic uncertainty. The systematic uncertainty related to the experimental tools and analysis method is labeled "syst. (experimental)". The systematic uncertainty related to the integrated luminosity (fully correlated between all data points) is labeled "syst. (luminosity)".
+
+Fiducial region definition:
+ * central state $\pi^+$, $\pi^-$
+	- $p_{\mathrm{T}} > 0.2~\mathrm{GeV}$
+	- $|\eta| < 0.7$
+ * intact forward-scattered beam protons $p'$
+	- $p_x > -0.2~\mathrm{GeV}$
+	- $0.2~\mathrm{GeV} < |p_{y}| < 0.4~\mathrm{GeV}$
+	- $(p_x+0.3~\mathrm{GeV})^2 + p_y^2 < 0.25~\mathrm{GeV}^2$
+ * additional cuts
+	- $m(\pi^+\pi^-) > 1.5~\mathrm{GeV}$
+
+#: data_file: figure_15_(bottom,_middle).yaml
+#: keyword reactions: P P --> P PI+ PI- P
+#: keyword observables: DSIG/DDPHI
+#: keyword cmenergies: 200
+#: keyword phrases: Exclusive | Diffractive | Cross Section | Proton-Proton Scattering | Single Differential Cross Section
+#: SQRT(S) [GeV],,,200
+#: LUMINOSITY [$pb^{-1}$],,,14.2
+#: RE,,,P P --> P PI+ PI- P
+DPHI [DEG],DPHI [DEG] LOW,DPHI [DEG] HIGH,DSIG/DDPHI [PB/DEG],stat. +,stat. -,syst. (luminosity) +,syst. (luminosity) -,syst. (experimental) +,syst. (experimental) -
+10.0,0.0,20.0,26.418,1.1171,-1.1171,1.6863,-1.4954,2.11,-1.9175
+30.0,20.0,40.0,14.712,0.80935,-0.80935,0.93906,-0.83275,1.1286,-1.0331
+50.0,40.0,60.0,5.0986,0.47426,-0.47426,0.32544,-0.2886,0.44198,-0.39769
+75.0,60.0,90.0,0.27883,0.07708,-0.07708,0.017798,-0.015783,0.026695,-0.02465
+105.0,90.0,120.0,0.96543,0.17539,-0.17539,0.061623,-0.054647,0.081704,-0.074126
+130.0,120.0,140.0,7.788,0.61419,-0.61419,0.49711,-0.44083,0.75939,-0.66656
+150.0,140.0,160.0,20.521,0.97323,-0.97323,1.3099,-1.1616,1.6374,-1.4841
+170.0,160.0,180.0,25.98,1.0703,-1.0703,1.6583,-1.4706,1.8458,-1.7041
+

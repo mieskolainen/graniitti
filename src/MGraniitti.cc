@@ -1,6 +1,6 @@
 // GRANIITTI Monte Carlo main class
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -41,6 +41,7 @@
 #include "json.hpp"
 #include "rang.hpp"
 
+
 namespace gra {
 
 // ******************************************************************
@@ -58,8 +59,8 @@ std::exception_ptr globalExceptionPtr;
 using json = nlohmann::json;
 
 using gra::aux::indices;
-using gra::math::PI;
 using gra::math::msqrt;
+using gra::math::PI;
 using gra::math::pow2;
 using gra::math::pow3;
 using gra::math::zi;
@@ -78,18 +79,132 @@ MGraniitti::MGraniitti() {
   PrintInit();
 }
 
+
 // Destructor
 MGraniitti::~MGraniitti() {
   // Destroy processes
-  for (std::size_t i = 0; i < pvec.size(); ++i) { delete pvec[i]; }
+  for (const auto &i : indices(pvec)) { delete pvec[i]; }
 
   std::cout << "~MGraniitti [DONE]" << std::endl;
 }
 
-void MGraniitti::PrintHistograms() {
-  HistogramFusion();
-  proc->PrintHistograms();
+
+void MGraniitti::Initialize() {
+  // ** ALWAYS HERE ONLY AS LAST! **
+  proc->post_Constructor();
+
+  // If Eikonals are not yet initialized and pomeron screening loop is on
+  if (proc->Eikonal.IsInitialized() == false && proc->GetScreening() == true) {
+    proc->Eikonal.S3Constructor(proc->GetMandelstam_s(), proc->GetInitialState(), false);
+  }
+
+  // Integrate
+  CallIntegrator(0);
 }
+
+
+// Initialize with external Eikonal
+void MGraniitti::Initialize(const MEikonal &eikonal_in) {
+  // ** ALWAYS HERE ONLY AS LAST! **
+  proc->post_Constructor();
+
+  // Set input eikonal
+  proc->SetEikonal(eikonal_in);
+
+  // Integrate
+  CallIntegrator(0);
+}
+
+
+// Save VEGAS grids to a file
+void MGraniitti::SaveVGRID() const {
+  // VEGAS data
+  json jvegas;
+  VD.struct2json(jvegas);
+
+  // MC stats
+  json jstat;
+  stat.struct2json(jstat);
+
+  // Combined
+  json j;
+  j["PROCESS"] = FULL_PROCESS_STR;
+  j["VEGAS"]   = jvegas;
+  j["STAT"]    = jstat;
+  j["POMLOOP"] = proc->GetScreening();
+  j["SQRTS"]   = proc->lts.sqrt_s;
+
+  const std::string filename = gra::aux::GetBasePath(2) + "/vgrid/" + OUTPUT + ".vgrid";
+  std::ofstream     file(filename);
+  file << j << std::endl;
+
+  std::cout << "MGraniitti::SaveVGRID: Saved MC integration grids to " + filename << std::endl;
+}
+
+
+// Read VEGAS grids from a file
+void MGraniitti::ReadVGRID(const std::string &inputfile) {
+  std::cout << "MGraniitti::ReadVGRID: Reading pre-computed MC integration grids from " + inputfile
+            << std::endl;
+  std::cout << "** Re-cycling of these grids requires that the process energy, parameters and cuts "
+               "match! **"
+            << std::endl;
+
+  // Read and parse
+  const std::string data = gra::aux::GetInputData(inputfile);
+  json              j;
+  try {
+    j = json::parse(data);
+  } catch (...) {
+    std::string str = "MGraniitti::ReadVGRID: Error parsing " + inputfile;
+    throw std::invalid_argument(str);
+  }
+
+  // Read in VEGAS data
+  VD.json2struct(j.at("VEGAS"));
+
+  // Check that the phase space dimension matches
+  if (VD.FDIM != proc->GetdLIPSDim()) {
+    throw std::invalid_argument(
+        "MGraniitti::ReadVGRID: Input .vgrid with VEGAS phase space dim = " +
+        std::to_string(VD.FDIM) + " but process with dim = " + std::to_string(proc->GetdLIPSDim()));
+  }
+
+  // Check that the screening matches
+  const bool pomloop = j.at("POMLOOP");
+  if (pomloop != proc->GetScreening()) {
+    throw std::invalid_argument(
+        "MGraniitti::ReadVGRID: Input .vgrid with POMLOOP = " + aux::bool_cast(pomloop) +
+        " but process with POMLOOP = " + aux::bool_cast(proc->GetScreening()));
+  }
+
+  // Check that the CMS-energy matches
+  const double sqrts = j.at("SQRTS");
+  if (!aux::AssertRatio(sqrts, proc->lts.sqrt_s, 0.01)) {
+    throw std::invalid_argument(
+        "MGraniitti::ReadVGRID: Input .vgrid with SQRTS = " + std::to_string(sqrts) +
+        " but process with SQRTS = " + std::to_string(proc->lts.sqrt_s));
+  }
+
+  // Read in MC stats
+  stat.json2struct(j["STAT"]);
+}
+
+
+// Print fast histograms
+void MGraniitti::PrintHistograms() {
+  if (proc->HIST != 0) {
+    HistogramFusion();
+
+    // First print to screen (flushes buffers)
+    proc->PrintHistograms();
+
+    // Then save
+    const std::string filename = gra::aux::GetBasePath(2) + "/output/" + OUTPUT + ".hfast";
+    proc->SaveHistograms(filename);
+  }
+}
+
 
 // Unify histogram bounds across threads, so the histogram fusion is possible
 void MGraniitti::UnifyHistogramBounds() {
@@ -173,42 +288,6 @@ void MGraniitti::Generate() {
   }
 }
 
-// This is called just before event generation
-// Check against nullptr is done below, because if the output is already set
-// externally,
-// this function is not used.
-void MGraniitti::InitFileOutput() {
-  if (NEVENTS > 0) {
-    if (OUTPUT == "") {  // OUTPUT must be set
-      throw std::invalid_argument("MGraniitti::InitFileOutput: OUTPUT filename not set!");
-    }
-
-    FULL_OUTPUT_STR = gra::aux::GetBasePath(2) + "/output/" + OUTPUT + "." + FORMAT;
-
-    // --------------------------------------------------------------
-    // Generator info
-    runinfo = std::make_shared<HepMC3::GenRunInfo>();
-
-    struct HepMC3::GenRunInfo::ToolInfo generator = {
-        std::string("GRANIITTI (" + gra::MODELPARAM + ")"),
-        std::to_string(aux::GetVersion()).substr(0, 5), std::string("Generator")};
-    runinfo->tools().push_back(generator);
-
-    struct HepMC3::GenRunInfo::ToolInfo config = {FULL_INPUT_STR, "1.0",
-                                                  std::string("Steering card")};
-    runinfo->tools().push_back(config);
-
-    // --------------------------------------------------------------
-
-    if (FORMAT == "hepmc3" && outputHepMC3 == nullptr) {
-      outputHepMC3 = std::make_shared<HepMC3::WriterAscii>(FULL_OUTPUT_STR, runinfo);
-    } else if (FORMAT == "hepmc2" && outputHepMC2 == nullptr) {
-      outputHepMC2 = std::make_shared<HepMC3::WriterAsciiHepMC2>(FULL_OUTPUT_STR, runinfo);
-    } else if (FORMAT == "hepevt" && outputHEPEVT == nullptr) {
-      outputHEPEVT = std::make_shared<HepMC3::WriterHEPEVT>(FULL_OUTPUT_STR);
-    }
-  }
-}
 
 // Return process numbers available
 std::vector<std::string> MGraniitti::GetProcessNumbers() const {
@@ -275,13 +354,15 @@ void MGraniitti::InitProcessMemory(std::string process, unsigned int seed) {
   proc->random.SetSeed(seed);
 }
 
+
 void MGraniitti::InitMultiMemory() {
   // ** Init multithreading memory by making copies of the process **
-  for (std::size_t i = 0; i < pvec.size(); ++i) { delete pvec[i]; }
+  for (const auto &i : indices(pvec)) { delete pvec[i]; }
+
   pvec.resize(CORES, nullptr);
 
   // Create new process objects for each thread
-  for (int i = 0; i < CORES; ++i) {
+  for (const auto &i : indices(pvec)) {
     if (proc_Q.ProcPtr.ProcessExist(PROCESS)) {
       pvec[i] = new MQuasiElastic(proc_Q);
     } else if (proc_F.ProcPtr.ProcessExist(PROCESS)) {
@@ -294,19 +375,21 @@ void MGraniitti::InitMultiMemory() {
   }
 
   // RANDOM SEED PER THREAD (IMPORTANT!)
-  for (int i = 0; i < CORES; ++i) {
-    const unsigned int tid = i + 1;
+  for (const auto &i : indices(pvec)) {
     // Deterministic seed
-    const unsigned int thread_seed =
-        static_cast<unsigned int>(std::max(0, (int)pvec[i]->random.GetSeed()) * tid);
+    const uint32_t thread_seed = static_cast<uint32_t>(pvec[i]->random.GetSeed() + i * 10);
     pvec[i]->random.SetSeed(thread_seed);
+
+    printf("Thread [%3lu] : RNG seed = %9d \n", i, pvec[i]->random.GetSeed());
   }
+  std::cout << std::endl;
 
   // SET main control pointer to the first one
   // (needed for printing etc.)
   proc = pvec[0];
   proc->PrintInit(HILJAA);
 }
+
 
 // Set simple MC parameters
 void MGraniitti::SetMCParam(MCPARAM &in) { mcparam = in; }
@@ -315,32 +398,14 @@ void MGraniitti::SetMCParam(MCPARAM &in) { mcparam = in; }
 void MGraniitti::SetVegasParam(const VEGASPARAM &in) { vparam = in; }
 
 // Read parameters from a single JSON file
-void MGraniitti::ReadInput(const std::string &inputfile, const std::string cmd_PROCESS) {
-  // Save it for later use
-  FULL_INPUT_STR = inputfile;
-
-  std::cout << rang::fg::green << "MGraniitti::ReadInput: " + inputfile << rang::fg::reset
-            << std::endl
-            << std::endl;
-
-  ReadGeneralParam(inputfile);
-  ReadProcessParam(inputfile, cmd_PROCESS);
+void MGraniitti::ReadInput(const json &j) {
+  ReadGeneralParam(j);
+  ReadProcessParam(j);
   ReadModelParam(gra::MODELPARAM);
 }
 
 // General parameter initialization
-void MGraniitti::ReadGeneralParam(const std::string &inputfile) {
-  // Read and parse
-  const std::string data = gra::aux::GetInputData(inputfile);
-  json              j;
-  try {
-    j = json::parse(data);
-  } catch (...) {
-    std::string str = "MGraniitti::ReadGeneralParam: Error parsing " + inputfile +
-                      " (Check for extra/missing commas)";
-    throw std::invalid_argument(str);
-  }
-
+void MGraniitti::ReadGeneralParam(const json &j) {
   // JSON block identifier
   const std::string XID = "GENERALPARAM";
 
@@ -358,9 +423,8 @@ void MGraniitti::ReadGeneralParam(const std::string &inputfile) {
 
 // General model parameters initialized from .json file
 //
-void MGraniitti::ReadModelParam(const std::string &inputfile) const {
-  const std::string fullpath =
-      gra::aux::GetBasePath(2) + "/modeldata/" + inputfile + "/GENERAL.json";
+void MGraniitti::ReadModelParam(const std::string &tune) const {
+  const std::string fullpath = gra::aux::GetBasePath(2) + "/modeldata/" + tune + "/GENERAL.json";
 
   // Read generic blocks
   PARAM_SOFT::ReadParameters(fullpath);
@@ -372,28 +436,14 @@ void MGraniitti::ReadModelParam(const std::string &inputfile) const {
 }
 
 // Process parameter initialization, Call proc->post_Constructor() after this
-void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::string cmd_PROCESS) {
-  // Read and parse
-  const std::string data = gra::aux::GetInputData(inputfile);
-  json              j;
-  try {
-    j = json::parse(data);
-  } catch (...) {
-    std::string str = "MGraniitti::ReadProcessParam: Error parsing " + inputfile +
-                      " (Check for extra/missing commas)";
-    throw std::invalid_argument(str);
-  }
+void MGraniitti::ReadProcessParam(const json &j) {
   const std::string XID = "PROCESSPARAM";
 
   // ----------------------------------------------------------------
   // Initialize process
 
-  std::string fullstring;
-  if (cmd_PROCESS == "null") {
-    fullstring = j.at(XID).at("PROCESS");
-  } else {  // commandline override
-    fullstring = cmd_PROCESS;
-  }
+  std::string fullstring = j.at(XID).at("PROCESS");
+  FULL_PROCESS_STR       = fullstring;  // Save it for later
 
   // ----------------------------------------------------------------
   // First separate possible extra arguments by @... ...
@@ -473,7 +523,7 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
     }
 
     // Read resonance data
-    for (std::size_t i = 0; i < RES.size(); ++i) {
+    for (const auto &i : indices(RES)) {
       const std::string str = "RES_" + RES[i] + ".json";
       RESONANCES[RES[i]]    = gra::form::ReadResonance(str, proc->random);
     }
@@ -600,39 +650,27 @@ void MGraniitti::ReadProcessParam(const std::string &inputfile, const std::strin
   proc->SetInitialState(beam, energy);
 
   // Now rest of the parameters
-  ReadIntegralParam(inputfile);
-  ReadGenCuts(inputfile);
-  ReadFidCuts(inputfile);
-  ReadVetoCuts(inputfile);
+  ReadIntegralParam(j);
+  ReadGenCuts(j);
+  ReadFidCuts(j);
+  ReadVetoCuts(j);
 }
 
 // MC integrator parameter initialization
-void MGraniitti::ReadIntegralParam(const std::string &inputfile) {
-  using namespace gra::aux;
-
-  // Read and parse
-  const std::string data = gra::aux::GetInputData(inputfile);
-  json              j;
-  try {
-    j = json::parse(data);
-  } catch (...) {
-    std::string str = "MGraniitti::ReadIntegralParam: Error parsing " + inputfile +
-                      " (Check for extra/missing commas)";
-    throw std::invalid_argument(str);
-  }
+void MGraniitti::ReadIntegralParam(const json &j) {
   const std::string XID = "INTEGRALPARAM";
 
   // Numerical loop integration
   const int ND = j.at(XID).at("POMLOOP").at("ND");
-  AssertRange(ND, {-10, 10}, "POMLOOP::ND", true);
+  gra::aux::AssertRange(ND, {-10, 10}, "POMLOOP::ND", true);
   proc->Eikonal.Numerics.SetLoopDiscretization(ND);
 
   // FLAT (naive) MC parameters
   MCPARAM mpam;
   mpam.PRECISION = j.at(XID).at("FLAT").at("PRECISION");
-  AssertRange(mpam.PRECISION, {0.0, 1.0}, "FLAT::PRECISION", true);
+  gra::aux::AssertRange(mpam.PRECISION, {0.0, 1.0}, "FLAT::PRECISION", true);
   mpam.MIN_EVENTS = j.at(XID).at("FLAT").at("MIN_EVENTS");
-  AssertRange(mpam.MIN_EVENTS, {10, (unsigned int)1e9}, "FLAT::MIN_EVENTS", true);
+  gra::aux::AssertRange(mpam.MIN_EVENTS, {10, (unsigned int)1e9}, "FLAT::MIN_EVENTS", true);
   SetMCParam(mpam);
 
   try {
@@ -647,43 +685,32 @@ void MGraniitti::ReadIntegralParam(const std::string &inputfile) {
   // VEGAS parameters
   VEGASPARAM vpam;
   vpam.BINS = j.at(XID).at("VEGAS").at("BINS");
-  AssertRange(vpam.BINS, {0, (unsigned int)1e9}, "VEGAS::BINS", true);
+  gra::aux::AssertRange(vpam.BINS, {0, (unsigned int)1e9}, "VEGAS::BINS", true);
   if ((vpam.BINS % 2) != 0) {
     throw std::invalid_argument("VEGAS::BINS = " + std::to_string(vpam.BINS) +
                                 " should be even number");
   }
 
   vpam.LAMBDA = j.at(XID).at("VEGAS").at("LAMBDA");
-  AssertRange(vpam.LAMBDA, {1.0, 10.0}, "VEGAS::LAMBDA", true);
+  gra::aux::AssertRange(vpam.LAMBDA, {1.0, 10.0}, "VEGAS::LAMBDA", true);
   vpam.NCALL = j.at(XID).at("VEGAS").at("NCALL");
-  AssertRange(vpam.NCALL, {50, (unsigned int)1e9}, "VEGAS::NCALL", true);
+  gra::aux::AssertRange(vpam.NCALL, {50, (unsigned int)1e9}, "VEGAS::NCALL", true);
   vpam.ITER = j.at(XID).at("VEGAS").at("ITER");
-  AssertRange(vpam.ITER, {1, (unsigned int)1e9}, "VEGAS::ITER", true);
+  gra::aux::AssertRange(vpam.ITER, {1, (unsigned int)1e9}, "VEGAS::ITER", true);
   vpam.CHI2MAX = j.at(XID).at("VEGAS").at("CHI2MAX");
-  AssertRange(vpam.CHI2MAX, {0.0, 1e3}, "VEGAS::CHI2MAX", true);
+  gra::aux::AssertRange(vpam.CHI2MAX, {0.0, 1e3}, "VEGAS::CHI2MAX", true);
   vpam.PRECISION = j.at(XID).at("VEGAS").at("PRECISION");
-  AssertRange(vpam.PRECISION, {0.0, 1.0}, "VEGAS::PRECISION", true);
+  gra::aux::AssertRange(vpam.PRECISION, {0.0, 1.0}, "VEGAS::PRECISION", true);
   vpam.DEBUG = j.at(XID).at("VEGAS").at("DEBUG");
-  AssertSet(vpam.DEBUG, {-1, 0, 1}, "VEGAS::DEBUG", true);
+  gra::aux::AssertSet(vpam.DEBUG, {-1, 0, 1}, "VEGAS::DEBUG", true);
 
   SetVegasParam(vpam);
 }
 
 // Generator cuts
-void MGraniitti::ReadGenCuts(const std::string &inputfile) {
-  // Read and parse
-  const std::string data = gra::aux::GetInputData(inputfile);
-  json              j;
-  try {
-    j = json::parse(data);
-  } catch (...) {
-    std::string str =
-        "MGraniitti::ReadGenCuts: Error parsing " + inputfile + " (Check for extra/missing commas)";
-    throw std::invalid_argument(str);
-  }
+void MGraniitti::ReadGenCuts(const json &j) {
+  gra::GENCUT       gcuts;
   const std::string XID = "GENCUTS";
-
-  gra::GENCUT gcuts;
 
   // Continuum phase space class
   if (PROCESS.find("<C>") != std::string::npos) {
@@ -823,18 +850,7 @@ void MGraniitti::ReadGenCuts(const std::string &inputfile) {
 }
 
 // Fiducial cuts
-void MGraniitti::ReadFidCuts(const std::string &inputfile) {
-  // Read and parse
-  const std::string data = gra::aux::GetInputData(inputfile);
-  json              j;
-  try {
-    j = json::parse(data);
-  } catch (...) {
-    std::string str =
-        "MGraniitti::ReadFidCuts: Error parsing " + inputfile + " (Check for extra/missing commas)";
-    throw std::invalid_argument(str);
-  }
-
+void MGraniitti::ReadFidCuts(const json &j) {
   // Fiducial cuts
   gra::FIDCUT       fcuts;
   const std::string XID = "FIDCUTS";
@@ -907,18 +923,7 @@ void MGraniitti::ReadFidCuts(const std::string &inputfile) {
 }
 
 // Fiducial cuts
-void MGraniitti::ReadVetoCuts(const std::string &inputfile) {
-  // Read and parse
-  const std::string data = gra::aux::GetInputData(inputfile);
-  json              j;
-  try {
-    j = json::parse(data);
-  } catch (...) {
-    std::string str = "MGraniitti::ReadVetoCuts: Error parsing " + inputfile +
-                      " (Check for extra/missing commas)";
-    throw std::invalid_argument(str);
-  }
-
+void MGraniitti::ReadVetoCuts(const json &j) {
   // Fiducial cuts
   gra::VETOCUT      veto;
   const std::string XID = "VETOCUTS";
@@ -962,7 +967,7 @@ void MGraniitti::ReadVetoCuts(const std::string &inputfile) {
   proc->SetVetoCuts(veto);
 }
 
-// Get maximum vegasweight
+// Get maximum integration weight
 double MGraniitti::GetMaxweight() const {
   if (INTEGRATOR == "VEGAS") {
     return stat.maxf;
@@ -986,9 +991,10 @@ void MGraniitti::SetMaxweight(double weight) {
   }
 }
 
+
 void MGraniitti::PrintInit() const {
   if (!HILJAA) {
-    gra::aux::PrintFlashScreen(rang::fg::yellow);
+    gra::aux::PrintFlashScreen(rang::fg::green);
     std::cout << rang::style::bold
               << "GRANIITTI - Monte Carlo event generator for "
                  "high energy diffraction"
@@ -1013,14 +1019,13 @@ void MGraniitti::PrintInit() const {
   }
 }
 
-void MGraniitti::Initialize() {
-  // ** ALWAYS HERE ONLY AS LAST! **
-  proc->post_Constructor();
 
+void MGraniitti::CallIntegrator(unsigned int N) {
   // Print out basic information
   std::cout << std::endl;
   std::cout << rang::style::bold << "General setup:" << rang::style::reset << std::endl
             << std::endl;
+
   std::cout << "Output file:            " << OUTPUT << std::endl;
   std::cout << "Output format:          " << FORMAT << std::endl;
   std::cout << "Multithreading:         " << CORES << std::endl;
@@ -1032,28 +1037,9 @@ void MGraniitti::Initialize() {
   std::cout << rang::fg::green << "Generation mode:        " << str << rang::fg::reset << std::endl;
   std::cout << std::endl;
 
-  // If Eikonals are not yet initialized and pomeron screening loop is on
-  if (proc->Eikonal.IsInitialized() == false && proc->GetScreening() == true) {
-    proc->Eikonal.S3Constructor(proc->GetMandelstam_s(), proc->GetInitialState(), false);
-  }
 
-  // Integrate
-  CallIntegrator(0);
-}
+  // =====================================================================
 
-// Initialize with external Eikonal
-void MGraniitti::Initialize(const MEikonal &eikonal_in) {
-  // ** ALWAYS HERE ONLY AS LAST! **
-  proc->post_Constructor();
-
-  // Set input eikonal
-  proc->SetEikonal(eikonal_in);
-
-  // Integrate
-  CallIntegrator(0);
-}
-
-void MGraniitti::CallIntegrator(unsigned int N) {
   // Initialize global clock
   if (N == 0) { global_tictoc = MTimer(true); }
 
@@ -1075,24 +1061,30 @@ void MGraniitti::SampleVegas(unsigned int N) {
   if (N == 0) {
     InitMultiMemory();
     GMODE = 0;  // Pure integration
+
+    // ******************************************************
+    // Create integral sampling region array with given phase space dimension
+    VD.InitRegion(proc->GetdLIPSDim());
+    // ******************************************************
   }
   if (N > 0) {
     GMODE = 1;  // Event generation
   }
 
-  // ******************************************************
-  // Create integral sampling region array
+  // A. Initalize from a pre-computed file
+  if (MC_VGRID_INPUT != "null" && GMODE == 0) {
+    ReadVGRID(MC_VGRID_INPUT);
 
-  VD.InitRegion(proc->GetdLIPSDim());
+    // Print pre-computed statistics
+    PrintStatistics(N);
+  }
 
-  // ******************************************************
-
-  // Pure integration mode
-  if (GMODE == 0) {
+  // B. On-the-flight initialization
+  else if (GMODE == 0) {
     const double MINTIME     = 0.1;  // Seconds
     unsigned int BURNIN_ITER = 3;    // BURN-IN iterations (default)!
 
-    // Initialize GRID
+    // Initialize GRID on-the-flight
     do {
       unsigned int init   = 0;
       int          factor = 0;
@@ -1124,13 +1116,20 @@ void MGraniitti::SampleVegas(unsigned int N) {
         BURNIN_ITER = 2 * BURNIN_ITER;
       }
     } while (true);
+
+    // Save VEGAS grid
+    SaveVGRID();
   }
 
   // Event generation mode
-  if (GMODE == 1) {
+  else if (GMODE == 1) {
     const unsigned int init    = 2;
     const unsigned int itermin = 1E9;
     VEGAS(init, vparam.NCALL * 10, itermin, N);
+  }
+
+  else {
+    throw std::invalid_argument("MGraniitti::SampleVegas: Unknown operation mode!");
   }
 }
 
@@ -1182,7 +1181,8 @@ int MGraniitti::VEGAS(unsigned int init, unsigned int calls, unsigned int itermi
 
   // -------------------------------------------------------------------
   // Create number of calls per thread, their sum == calls
-  std::vector<unsigned int> LOCALcalls = VD.GetLocalCalls(calls, CORES);
+  const std::vector<unsigned int> LOCALcalls = VD.GetLocalCalls(calls, CORES);
+
 
   MTimer gridtic;
 
@@ -1207,10 +1207,11 @@ int MGraniitti::VEGAS(unsigned int init, unsigned int calls, unsigned int itermi
 
     std::vector<std::thread> threads;
     for (int tid = 0; tid < CORES; ++tid) {
-      threads.push_back(std::thread([=] { VEGASMultiThread(N, tid, init, LOCALcalls[tid]); }));
+      threads.push_back(
+          std::thread([=, this] { VEGASMultiThread(N, tid, init, LOCALcalls[tid]); }));
     }
 
-    // Loop again to join the threads
+    // Loop again to join the threads once they complete
     for (auto &t : threads) { t.join(); }
     if (gra::globalExceptionPtr) {  // Exception handling of threads
       std::rethrow_exception(gra::globalExceptionPtr);
@@ -1260,13 +1261,14 @@ int MGraniitti::VEGAS(unsigned int init, unsigned int calls, unsigned int itermi
         gra::aux::ClearProgress();
         throw std::invalid_argument(
             "VEGAS:: Integral inf/nan: FATAL ERROR, cuts or parameters "
-            "need fixing. Try <F> phase space class if not in use.");
+            "need fixing. Otherwise, increase 'NCALL' or try <F> phase space class if not in use.");
       }
       if (stat.sigma < 1e-60) {
         gra::aux::ClearProgress();
-        throw std::invalid_argument(
-            "VEGAS:: Integral < 1E-60: Check VEGAS parameters, decaymode "
-            "sanity, generation and fiducial cuts! Try <F> phase space class if not in use.");
+        printf("VEGAS:: integral = %0.1f < 1e-60: Convergence problem, increasing 10 x calls. \n",
+               stat.sigma);
+        printf("Try <F> phase space class if not in use. \n");
+        return 10;  // 10 times more calls
       }
       if (stat.chi2 > 50) {
         gra::aux::ClearProgress();
@@ -1456,6 +1458,7 @@ void MGraniitti::SampleFlat(unsigned int N) {
   const unsigned int  dim = proc->GetdLIPSDim();
   std::vector<double> randvec(dim, 0.0);
 
+
   // Reset local timer
   local_tictoc = MTimer(true);
 
@@ -1574,7 +1577,6 @@ void MGraniitti::SampleNeuro(unsigned int N) {
   std::vector<double> u(D);
 
   auto NeuroSample = [&](gra::AuxIntData &aux) {
-
     // Prior p(z) distribution sampling
     VectorXdual z(u.size());
     for (std::size_t i = 0; i < D; ++i) { z[i] = proc->random.G(0, 1); }
@@ -1669,7 +1671,7 @@ int MGraniitti::SaveEvent(MProcess *pr, double weight, double MAXWEIGHT,
     // Create HepMC3 event (do not lock yet for speed)
     HepMC3::GenEvent evt(HepMC3::Units::GEV, HepMC3::Units::MM);
 
-    // Construct event record
+    // ** Construct event record **
     if (!pr->EventRecord(evt)) {  // Event not ok!
       // std::cout << "MGraniitti::SaveEvent: Last moment rare veto!" <<
       // std::endl;
@@ -1688,21 +1690,32 @@ int MGraniitti::SaveEvent(MProcess *pr, double weight, double MAXWEIGHT,
       return 1;
     }
 
-    // Save cross section information (HepMC3 format wants it event
-    // by event)
+    // Set event number
+    evt.set_event_number(stat.generated);
+
+
+    // ** Save event weight (unweighted events with weight 1)
+    const double HepMC3_weight = WEIGHTED ? weight : 1.0;
+    evt.weights().push_back(HepMC3_weight);  // add more weights with .push_back()
+
+
+    // ** Save cross section information (HepMC3 wants event by event)
     std::shared_ptr<HepMC3::GenCrossSection> xsobj = std::make_shared<HepMC3::GenCrossSection>();
     evt.add_attribute("GenCrossSection", xsobj);
 
     // Now add the value in picobarns [HepMC3 convention]
     if (xsforced > 0) {
-      xsobj->set_cross_section(xsforced * 1E12, 0);  // external fixed one
+      xsobj->set_cross_section(xsforced * OUTPUT_XS_SCALE, 0);  // external fixed one
     } else {
-      xsobj->set_cross_section(stat.sigma * 1E12, stat.sigma_err * 1E12);
+      xsobj->set_cross_section(stat.sigma * OUTPUT_XS_SCALE, stat.sigma_err * OUTPUT_XS_SCALE);
     }
 
-    // Save event weight (unweighted events with weight 1)
-    const double HepMC3_weight = WEIGHTED ? weight : 1.0;
-    evt.weights().push_back(HepMC3_weight);  // add more weights with .push_back()
+    // ** Save PDF info
+    std::shared_ptr<HepMC3::GenPdfInfo> pdf = std::make_shared<HepMC3::GenPdfInfo>();
+    evt.add_attribute("GenPdfInfo", pdf);
+    pdf->set(pr->lts.id1, pr->lts.id2, pr->lts.x1, pr->lts.x2, pr->lts.scale, pr->lts.xf1,
+             pr->lts.xf2, 0, 0);
+
 
     if (FORMAT == "hepmc3") {
       outputHepMC3->write_event(evt);
@@ -1717,6 +1730,9 @@ int MGraniitti::SaveEvent(MProcess *pr, double weight, double MAXWEIGHT,
     // LAST STEP
     stat.generated += 1;  // +1 event generated
 
+    // Cleanup up the event from memory
+    evt.clear();
+
     gra::g_mutex.unlock();
     // @@ THIS IS THREAD-NON-SAFE <- LOCK IT @@
     return 0;
@@ -1724,6 +1740,59 @@ int MGraniitti::SaveEvent(MProcess *pr, double weight, double MAXWEIGHT,
     return 1;
   }
 }
+
+// This is called just before event generation
+// Check against nullptr is done below, because if the output is already set
+// externally,
+// this function is not used.
+void MGraniitti::InitFileOutput() {
+  if (NEVENTS > 0) {
+    if (OUTPUT == "") {  // OUTPUT must be set
+      throw std::invalid_argument("MGraniitti::InitFileOutput: OUTPUT filename not set!");
+    }
+
+    FULL_OUTPUT_STR = gra::aux::GetBasePath(2) + "/output/" + OUTPUT + "." + FORMAT;
+
+    // --------------------------------------------------------------
+    // Generator info
+    runinfo = std::make_shared<HepMC3::GenRunInfo>();
+
+    struct HepMC3::GenRunInfo::ToolInfo generator = {
+        std::string("GRANIITTI (" + gra::MODELPARAM + ")"),
+        std::to_string(aux::GetVersion()).substr(0, 5), std::string("Generator")};
+    runinfo->tools().push_back(generator);
+
+    struct HepMC3::GenRunInfo::ToolInfo config = {FULL_PROCESS_STR, "1.0",
+                                                  std::string("Steering card")};
+    runinfo->tools().push_back(config);
+
+
+    // ** Cross section is added also event by event later **
+    // Now add the value in picobarns [HepMC3 convention]
+    if (xsforced > 0) {
+      // external fixed one
+      runinfo->add_attribute("xs",
+                             std::make_shared<HepMC3::FloatAttribute>(xsforced * OUTPUT_XS_SCALE));
+      runinfo->add_attribute("xs_err", std::make_shared<HepMC3::FloatAttribute>(0));
+    } else {
+      runinfo->add_attribute(
+          "xs", std::make_shared<HepMC3::FloatAttribute>(stat.sigma * OUTPUT_XS_SCALE));
+      runinfo->add_attribute(
+          "xs_err", std::make_shared<HepMC3::FloatAttribute>(stat.sigma_err * OUTPUT_XS_SCALE));
+    }
+
+    // --------------------------------------------------------------
+
+    if (FORMAT == "hepmc3" && outputHepMC3 == nullptr) {
+      outputHepMC3 = std::make_shared<HepMC3::WriterAscii>(FULL_OUTPUT_STR, runinfo);
+    } else if (FORMAT == "hepmc2" && outputHepMC2 == nullptr) {
+      outputHepMC2 = std::make_shared<HepMC3::WriterAsciiHepMC2>(FULL_OUTPUT_STR, runinfo);
+    } else if (FORMAT == "hepevt" && outputHEPEVT == nullptr) {
+      outputHEPEVT = std::make_shared<HepMC3::WriterHEPEVT>(FULL_OUTPUT_STR);
+    }
+  }
+}
+
 
 // Intermediate statistics
 void MGraniitti::PrintStatus(unsigned int events, unsigned int N, MTimer &tictoc, double timercut) {
@@ -1760,6 +1829,7 @@ void MGraniitti::PrintStatus(unsigned int events, unsigned int N, MTimer &tictoc
     }
   }
 }
+
 
 // Final statistics
 void MGraniitti::PrintStatistics(unsigned int N) {
@@ -1907,6 +1977,55 @@ void MGraniitti::PrintStatistics(unsigned int N) {
     gra::aux::PrintBar("=");
     std::cout << std::endl;
   }
+}
+
+
+// Construct terminal input parameters
+void MGraniitti::ConstructTerminal(cxxopts::Options &options) const {
+  options.add_options("GENERALPARAM")("o,OUTPUT", "Output name             <string>",
+                                      cxxopts::value<std::string>())(
+      "f,FORMAT", "Output format           <hepmc3|hepmc2|hepevt>", cxxopts::value<std::string>())(
+      "c,CORES", "Number of CPU threads   <integer>", cxxopts::value<unsigned int>())(
+      "n,NEVENTS", "Number of events        <integer32>", cxxopts::value<unsigned int>())(
+      "g,INTEGRATOR", "Integrator              <VEGAS|FLAT>", cxxopts::value<std::string>())(
+      "w,WEIGHTED", "Weighted events         <true|false>", cxxopts::value<std::string>())(
+      "m,MODELPARAM", "Model tune              <string>", cxxopts::value<std::string>());
+
+  options.add_options("PROCESSPARAM")("p,PROCESS", "Process                 <string>",
+                                      cxxopts::value<std::string>())(
+      "e,ENERGY", "CMS energy              <double>", cxxopts::value<double>())(
+      "l,POMLOOP", "Screening Pomeron loop  <true|false>", cxxopts::value<std::string>())(
+      "s,NSTARS", "Excite protons          <0|1|2>", cxxopts::value<unsigned int>())(
+      "q,LHAPDF", "Set LHAPDF              <string>", cxxopts::value<std::string>())(
+      "h,HIST", "Histogramming           <0|1|2>", cxxopts::value<unsigned int>())(
+      "r,RNDSEED", "Random seed             <integer32>", cxxopts::value<unsigned int>());
+}
+
+
+// Override json object parameters from the command line object r
+void MGraniitti::ProcessTerminal(json &j, cxxopts::ParseResult const &r) const {
+  // GENERALPARAM
+
+  if (r.count("n")) { j.at("GENERALPARAM").at("NEVENTS") = r["n"].as<unsigned int>(); }
+  if (r.count("o")) { j.at("GENERALPARAM").at("OUTPUT") = r["o"].as<std::string>(); }
+  if (r.count("f")) { j.at("GENERALPARAM").at("FORMAT") = r["f"].as<std::string>(); }
+  if (r.count("m")) { j.at("GENERALPARAM").at("MODELPARAM") = r["m"].as<std::string>(); }
+  if (r.count("g")) { j.at("GENERALPARAM").at("INTEGRATOR") = r["g"].as<std::string>(); }
+  if (r.count("w")) { j.at("GENERALPARAM").at("WEIGHTED") = (r["w"].as<std::string>() == "true"); }
+  if (r.count("c")) { j.at("GENERALPARAM").at("CORES") = r["c"].as<unsigned int>(); }
+
+
+  // PROCESSPARAM
+
+  if (r.count("p")) { j.at("PROCESSPARAM").at("PROCESS") = r["p"].as<std::string>(); }
+  if (r.count("l")) { j.at("PROCESSPARAM").at("POMLOOP") = (r["l"].as<std::string>() == "true"); }
+  if (r.count("e")) {
+    j.at("PROCESSPARAM").at("ENERGY") = std::vector<double>(2, r["e"].as<double>() / 2.0);
+  }
+  if (r.count("s")) { j.at("PROCESSPARAM").at("NSTARS") = r["s"].as<unsigned int>(); }
+  if (r.count("q")) { j.at("PROCESSPARAM").at("LHAPDF") = r["q"].as<std::string>(); }
+  if (r.count("h")) { j.at("PROCESSPARAM").at("HIST") = r["h"].as<unsigned int>(); }
+  if (r.count("r")) { j.at("PROCESSPARAM").at("RNDSEED") = r["r"].as<unsigned int>(); }
 }
 
 }  // namespace gra

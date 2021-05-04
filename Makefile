@@ -1,6 +1,6 @@
 # GRANIITTI Makefile
 #
-# (c) 2017-2020 Mikael Mieskolainen.
+# (c) 2017-2021 Mikael Mieskolainen.
 # Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 # -----------------------------------------------------------------------
 #
@@ -11,27 +11,32 @@
 #        make clean (objects)
 #        make superclean (objects + binaries)
 #
-# To compile with clang:                   make CXX=clang
-#     -|-         unit tests:              make TEST=TRUE
+# To compile with clang:                    make CXX=clang
+#     -|-         unit tests:               make TEST=TRUE
+# 
+# To compile with different c++ standards:  make CXX_STANDARD=c++2a (c++17, c++20)
+# 
+# To compile with ROOT using -std=c++17:    make CXX_ROOT=c++17
+# 
+# To compile without ROOT                   make ROOT=
 #
-# To compile with ROOT using -std=c++14:   make ROOT14=TRUE
-#
-# To compile with profiling:               make VALGRIND=TRUE
-#
+# To compile with profiling:                make VALGRIND=TRUE
+# 
 # -----------------------------------------------------------------------
 #
 # EXTERNAL LIBRARIES SETUP:
 #
 #   [HEPMC3] and [LHAPDF]: See ./install folder
-#   [ROOT]                 Example: export ROOTSYS=/home/user/sw/ROOT6
+#   [ROOT]                 Example: export ROOTSYS=/home/user/local/ROOT6
 #
 # GENERAL:
 #
 #   If you just installed e.g. HEPMC3 libraries
 #   $> sudo ldconfig
-#
+# 
 # -----------------------------------------------------------------------
-#
+# TIPS:
+# 
 # If you see symbol errors related to HepMC such that:
 # "undefined symbol: _ZN5HepMC10FilterBase19init_has_end_vertexEv"
 # check that you do not have a collision of HEPMC3 with an existing
@@ -44,12 +49,24 @@
 #
 # Check if the shared object (.so) file contains the missing symbol:
 #  $> nm -D libHepMC.so
+# 
+# .......................................................................
 #
-# -----------------------------------------------------------------------
 # Creating shared libraries, use -fPIC flag, then:
 # g++ -shared MH1.o -o libMH1.so
+# 
+# .......................................................................
 #
+# Enable MACRO switches via 'g++ -DNAME', where NAME e.g. DEBUG
+# 
+# .......................................................................
 #
+# Find out the compiler version of libraries (works with gcc, at least)
+# 
+#  $> readelf -p .comment ./obj/MGraniitti.o
+# 
+#
+# -----------------------------------------------------------------------
 # USE [TABS] for intendation while modifying this file!
 # -----------------------------------------------------------------------
 
@@ -65,7 +82,7 @@ ifeq ($(CXX),g++)
 
 CXX_VERSION = $(shell g++ -dumpversion)
 $(info Found CXX_VERSION = $(CXX_VERSION))
-CXX_REQUIRED = 7.0
+CXX_REQUIRED = 9.0
 
 # Use bc command for double comparison, a common utility on Unix platforms
 FOO=$(shell echo "$(CXX_VERSION) < $(CXX_REQUIRED)" | bc)
@@ -75,6 +92,7 @@ $(error Your CXX_VERSION is too old, need at least CXX_VERSION = $(CXX_REQUIRED)
 endif
 
 endif
+
 
 # =======================================================================
 # PATH setup
@@ -113,7 +131,7 @@ ROOT=TRUE
 $(info )
 $(info ************************************************************************************)
 $(info **                                                                                **)
-$(info **   If compilation with ROOT libraries failes, try with: make -j4 ROOT14=TRUE    **)
+$(info **  If compilation with ROOT libraries failes, try with: make -j4 CXX_ROOT=c++17  **)
 $(info **                                                                                **)
 $(info ************************************************************************************)
 $(info )
@@ -158,6 +176,9 @@ LDLIBS += $(LHAPDF6lib)
 LDLIBS += $(STANDARDlib)
 #LDLIBS += $(PYTORCHlib)
 
+# BLAS AND LAPACK
+#LDLIBS += -llapack -lblas
+
 
 # =======================================================================
 # Header files
@@ -180,8 +201,18 @@ INCLUDES += -Ilibs
 # FTensor
 INCLUDES += -Ilibs/FTensor
 
+# Armadillo
+#INCLUDES += -Ilibs/armadillo
+
+# Ensmallen
+#INCLUDES += -Ilibs/ensmallen
+
 # Eigen
-INCLUDES += -Ilibs/Eigen/unsupported/
+INCLUDES += -Ilibs/Eigen
+INCLUDES += -Ilibs/Eigen/unsupported
+
+# optimlib
+#INCLUDES += -Ilibs/optim
 
 # PyTorch
 #INCLUDES += -Ilibs/libtorch/include/
@@ -189,17 +220,25 @@ INCLUDES += -Ilibs/Eigen/unsupported/
 
 
 # =======================================================================
-# Compiler and its options
+# Compiler, language version and its options
 
-CXX        = g++
+CXX=g++
 
-CXXVER     = -std=c++17
-CXXVER_OLD = -std=c++17
+# Ubuntu 20.1 GCC 9.3 + pre-compiled ROOT 6.18 for Ubuntu (from root.cern.ch) tested default
 
-# Use this for alternative ROOT installations
-ifeq ($(ROOT14),TRUE)
+ifneq ($(CXX_STANDARD),)
+CXXVER     = -std=$(CXX_STANDARD)
+else
+CXXVER     = -std=c++2a
+endif
+
+# Needed for ROOT library
+ifneq ($(CXX_ROOT),)
+CXXVER_OLD = -std=$(CXX_ROOT)
+else
 CXXVER_OLD = -std=c++14
 endif
+
 
 OPTIM      = -O3 -DNDEBUG -ftree-vectorize -fno-signed-zeros
 CXXFLAGS   = -Wall -fPIC -pipe $(OPTIM)
@@ -227,6 +266,9 @@ CXXFLAGS += -MMD -MP
 # -pipe,             Faster compilation using pipes
 # -O0 -pg,           Profiling and debugging (HUGE PERFORMANCE HIT)
 # -rpath-link        Needed for .so which links to another .so
+#
+# Fortran like complex number treatments (faster than C++)
+# -fcx-fortran-rules -fcx-limited-range
 #
 # Check your CPU instruction set with: cat /proc/cpuinfo
 
@@ -328,7 +370,7 @@ EXE_NAMES      = gr xscan minbias hepmc3tolhe data2hepmc3 pathmark pdebench somm
 PROGRAM        = $(EXE_NAMES:%=$(BIN_DIR)/%)
 
 ifeq ($(ROOT),TRUE)
-EXE_ROOT_NAMES = analyze fitsoft fitcentral fitharmonic
+EXE_ROOT_NAMES = analyze fitsoft fitharmonic
 PROGRAM_ROOT   = $(EXE_ROOT_NAMES:%=$(BIN_DIR)/%)
 endif
 

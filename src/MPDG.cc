@@ -1,6 +1,6 @@
 // PDG class
 //
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2017-2021 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 #include <map>
@@ -19,7 +19,12 @@ namespace gra {
 void MPDG::ReadParticleData(const std::string &filepath) {
   std::cout << "MPDG::ReadParticleData: Reading in PDG tables: ";
   std::ifstream infile(filepath);
-  std::string   line;
+
+  if (!infile.is_open()) {
+    throw std::invalid_argument("MPDG::ReadParticleData: Error: Cannot open inputfile " + filepath);
+  }
+
+  std::string line;
 
   // Clear particle data
   PDG_table.clear();

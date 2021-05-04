@@ -1,6 +1,6 @@
-GRANIITTI UNDERWORK: 1.10.2019
+GRANIITTI UNDERWORK: 27.04.2021
 
-mikael.mieskolainen@cern.ch
+m.mieskolainen@imperial.ac.uk
 -----------
 
 
@@ -10,16 +10,17 @@ Processes & features under validation/implementation:
 - perturbative (Durham QCD) meson pair (higher mass) continuum
 
 
-Processes & features under construction/feasibility inspection
+Processes & features under construction/inspection
 
+- alternative Pomeron models / different operator structures
 - "sliding" Regge helicity amplitudes (helicity trajectories)
 - in forward excitation, the "partonic beam-split" for PYTHIA could be useful?
 
 
 Known problems
 
-- ./bin/analyze may throw memory dump after exit, unknown ROOT problem probably with smart pointers
-
-- Looping MGraniitti() in sequencies with different LHAPDF sets or otherwise different json input
-  causes crash in ./bin/xscan, sounds like a memory problem?
+- ./bin/analyze may throw memory dump after exit (ROOT problem), has no effect on operation, though.
+  
+- Looping MGraniitti() in sequencies with different LHAPDF sets
+  causes crash in ./bin/xscan, sounds like a static variable problem related to LHAPDF?
   Single instances of ./bin/gr launched from commandline is safe from this bug.
