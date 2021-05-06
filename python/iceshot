@@ -61,7 +61,7 @@ def main():
     parser.add_argument("--pid",       type=str,  default='[[211,-211]]', help="example: --pid '[[211,-211], [321,-321]]'")
     
     
-    parser.add_argument("--unit",      type=str,  default='pb',           help="example: --unit ub (mb, ub, nb, pb, fb)")
+    parser.add_argument("--unit",      type=str,  default='pb',           help="example: --unit ub (b, mb, ub, nb, pb, fb)")
     parser.add_argument("--density",   type=bool, default=False,          help="example: --density true")
     parser.add_argument("--maxevents", type=int,  default=None,           help="example: --maxevents 1000")
     parser.add_argument("--chi2",      action='store_true',               help="example: --chi2")
@@ -230,14 +230,14 @@ def main():
             'label':       label,
             'density':     args.density
         }
-
+        
         # Create parameter dictionaries for each process
         paramlist = []
-        for chunk_range in icetune.generate_partitions(totalsize=nevents, chunksize=args.chunksize):
+        for chunk_range in iceio.generate_partitions(totalsize=nevents, chunksize=args.chunksize):
             new_param = copy.deepcopy(same_param)
             new_param['chunk_range'] = chunk_range
             paramlist.append(new_param)
-
+        
         # Start multiprocessing
         print(f'iceshot: Multiprocessing file {hepmc3files[label]}')
         t     = time.time()

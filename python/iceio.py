@@ -14,6 +14,32 @@ class ice_event:
         self.evt = evt
         self.pid = pid
 
+def generate_partitions(totalsize, chunksize):
+    """
+    Generate partition indices
+    """
+
+    # Special case
+    if totalsize <= chunksize:
+        yield (0, totalsize-1)
+        return # Needs return here
+
+    # General case
+    N = int(np.ceil(totalsize/chunksize))
+    remainder = totalsize - chunksize * N
+    a = 0
+    for i in range(N):
+        b = a + chunksize + (i < remainder)
+        yield (a, b - 1)
+        a = b
+
+
+def generate_chunks(lst, n):
+    """Yield successive n-sized chunks from the list
+    """
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
 
 def read_hepmc3(hepmc3file, all_obs, pid, cuts=None, maxevents=None, chunk_range=[0, int(1E12)]):
     """

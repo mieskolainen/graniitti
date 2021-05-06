@@ -31,26 +31,6 @@ import iceio
 import iceplot
 
 
-def generate_partitions(totalsize, chunksize):
-    """
-    Generate partition indices
-    """
-    N = int(np.ceil(totalsize/chunksize))
-    remainder = totalsize - chunksize * N
-    a = 0
-    for i in range(N):
-        b = a + chunksize + (i < remainder)
-        yield (a, b - 1)
-        a = b
-
-
-def generate_chunks(lst, n):
-    """Yield successive n-sized chunks from the list
-    """
-    for i in range(0, len(lst), n):
-        yield lst[i:i + n]
-
-
 def get_observables(module_name):
     """ 
     Read out content from module under 'obs'
@@ -192,8 +172,8 @@ def compute(thread_id, fitcardfile, obs_module, mc_steer, compare_steer, cdir=No
             outputfile  = f'{cdir}/output/' + hepmc3output
             hepmc3file  = outputfile + '.hepmc3'
             pid         = datasets[i]['PID']
-
-
+            
+            
             # ========================================================================
             ### Get observables
 
@@ -204,7 +184,7 @@ def compute(thread_id, fitcardfile, obs_module, mc_steer, compare_steer, cdir=No
             hepdata, all_obs = iceio.read_hepdata(dataset=datasets[i], all_obs=all_obs, cdir=cdir)
 
             # Read in MC observables
-            mcdata           = iceio.read_hepmc3(hepmc3file=hepmc3file, all_obs=all_obs, pid=pid, maxevents=compare_steer['maxevents'])
+            mcdata           = iceio.read_hepmc3(hepmc3file=hepmc3file, all_obs=all_obs, pid=pid)
             
 
             # ========================================================================
