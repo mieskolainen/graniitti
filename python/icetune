@@ -59,7 +59,7 @@ parser.add_argument("--max_concurrent", type=int, default=32, help="example: --m
 
 parser.add_argument("--algorithm",  type=str, default='optuna',  help="example: --algorithm optuna")
 parser.add_argument("--obs",        type=str, default='default', help="example: --obs default")
-parser.add_argument("--tunefix",    type=str, default='default', help="example: --tunefix default")
+parser.add_argument("--tuneset",    type=str, default='default', help="example: --tuneset default")
 
 
 parser.add_argument("--density",    type=bool, default=False, help="example: --density true")
@@ -141,7 +141,7 @@ set(ray.get([f.remote() for _ in range(1000)]))
 # ============================================================================
 # ** Import tune setup **
 
-Config = import_module('config_tunefix.' + args.tunefix)
+Config = import_module('config_tuneset.' + args.tuneset)
 
 
 # ============================================================================

@@ -28,7 +28,7 @@ script:
 
   # Ray tuning
   - ray start --head
-  - python ./python/icetune --tunefix fast
+  - python ./python/icetune --tuneset fast
 
   # C++ tests
   - for i in {0,1,2,3}; do "./bin/testbench$i"; done
