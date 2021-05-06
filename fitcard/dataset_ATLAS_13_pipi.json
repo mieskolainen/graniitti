@@ -3,7 +3,7 @@
 "ACTIVE"   : true,
 "NAME"     : "ATLAS 13 TeV",
 "TYPE"     : "RAW_SCALAR",
-"DATAPATH" : "/HEPdata/CD/",
+"DATAPATH" : "/HEPData/CD/",
 
 "GENCARD"  : ["/fitcard/ATLAS_13_pipi.json"],
 

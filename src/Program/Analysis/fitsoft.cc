@@ -203,7 +203,7 @@ void SigmaXS(double *par, double &xs_tot, double &xs_el, double &xs_inel, const 
 // Read differential input
 bool ReadData(std::string inputfile, std::vector<double> &x, std::vector<double> &y,
               std::vector<double> &err) {
-  printf("fitsoft::ReadData: using HepDATA inputfile %s \n", inputfile.c_str());
+  printf("fitsoft::ReadData: using HEPData inputfile %s \n", inputfile.c_str());
 
   double xval      = 0.0;
   double xval_low  = 0.0;
@@ -272,7 +272,7 @@ bool InitData() {
   printf("fitsoft::InitData: \n");
 
   uint              N        = 0;
-  const std::string BASEPATH = gra::aux::GetBasePath(2) + "/HEPdata/EL/";
+  const std::string BASEPATH = gra::aux::GetBasePath(2) + "/HEPData/EL/";
 
   // 7 TeV DATA
   fitsoft::PushNull();

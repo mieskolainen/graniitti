@@ -5,7 +5,6 @@
 
 
 import numpy as np
-import iceobs
 
 from iceobs import *
 
@@ -15,9 +14,12 @@ def cut_func(event, central_eta=6):
         and np.abs(p.momentum.eta()) < central_eta, event.evt.particles)
     
     p = [hepmc2vec4(p.momentum) for p in plist]
-    X = reduce(lambda a,b: a + b, p)
     
     if len(p) == len(event.pid):
+
+    	# Sum the system momentum
+    	#X = reduce(lambda a,b: a + b, p)
+    	
         return True
     else:
         return False

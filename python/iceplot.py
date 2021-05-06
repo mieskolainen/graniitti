@@ -407,7 +407,7 @@ def superplot(data, observable=None, ratio_plot=True, yscale='linear', ratio_err
     if ratio_plot:
 
         plot_horizontal_line(ax[1])
-
+        
         for i in range(len(data)):
 
             if data[i]['hdata'].is_empty:

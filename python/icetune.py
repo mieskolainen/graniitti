@@ -1,4 +1,4 @@
-# IO & tuning steering functions
+# IO & MC tuning steering functions
 #
 # (c) 2021 Mikael Mieskolainen
 # Licensed under the MIT License <http://opensource.org/licenses/MIT>.
@@ -27,7 +27,7 @@ matplotlib.use('Agg') # Important for multithreaded applications
 from matplotlib import pyplot as plt
 
 
-import iceobs
+import iceio
 import iceplot
 
 
@@ -53,9 +53,9 @@ def generate_chunks(lst, n):
 
 def get_observables(module_name):
     """ 
-    Read out content from module
+    Read out content from module under 'obs'
     """
-    MyConfig = import_module(module_name)
+    MyConfig = import_module('config_obs.' + module_name)
 
     all_obs = {}
     for key in MyConfig.__dict__.keys():
@@ -108,9 +108,11 @@ def setpaths(cdir, libdir):
 
 def compute(thread_id, fitcardfile, obs_module, mc_steer, compare_steer, cdir=None):
     """
-    Compute MC sample and compare with HEPDATA over all fitcardfile input
+    Compute MC sample and compare with HEPData over all fitcardfile input
     """
     
+    print(__name__ + f'.compute: Running with thread_id = {thread_id} ...')
+
     def recompute(inputfile, output):
         cmd = f"{cdir}/bin/gr -h 0 -i {inputfile} -o {output} -n 0 -l {'true' if mc_steer['POMLOOP'] else 'false'}"
         result = os.system(cmd)
@@ -118,8 +120,6 @@ def compute(thread_id, fitcardfile, obs_module, mc_steer, compare_steer, cdir=No
     if cdir is None:
         cdir = os.getcwd()
         print(__name__ + f'.compute: cdir : {cdir}')
-
-    print(__name__ + f'.compute: thread_id = {thread_id}')
 
     ### Loop over all datasets of the card
     datasets    = []
@@ -201,10 +201,10 @@ def compute(thread_id, fitcardfile, obs_module, mc_steer, compare_steer, cdir=No
             if len(all_obs) == 0: raise Exception(__name__ + '.compute: Observables not found!')
 
             # Read in data observables
-            hepdata, all_obs = iceobs.read_hepdata(dataset=datasets[i], all_obs=all_obs, cdir=cdir)
+            hepdata, all_obs = iceio.read_hepdata(dataset=datasets[i], all_obs=all_obs, cdir=cdir)
 
             # Read in MC observables
-            mcdata           = iceobs.read_hepmc3(hepmc3file=hepmc3file, all_obs=all_obs, pid=pid, maxevents=compare_steer['maxevents'])
+            mcdata           = iceio.read_hepmc3(hepmc3file=hepmc3file, all_obs=all_obs, pid=pid, maxevents=compare_steer['maxevents'])
             
 
             # ========================================================================

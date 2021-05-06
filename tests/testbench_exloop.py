@@ -43,10 +43,10 @@ def print_tex_footer():
 
 
 @pytest.mark.parametrize("POMLOOP_ON", [False, True])
-def test_exloop(POMLOOP_ON, datacard='/HEPdata/LHC_TEVATRON_RHIC.json', ASSERT_ON=False):
+def test_exloop(POMLOOP_ON, datacard='/HEPData/LHC_TEVATRON_RHIC.json', ASSERT_ON=False):
 
     print_tex_header()
-
+    
     # ====================================================================
     # Set screening true / false
 

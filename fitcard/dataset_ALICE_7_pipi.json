@@ -3,7 +3,7 @@
 "ACTIVE"   : true,
 "NAME"     : "ALICE 7 TeV",
 "TYPE"     : "RAW_SCALAR",
-"DATAPATH" : "/HEPdata/CD/",
+"DATAPATH" : "/HEPData/CD/",
 
 "GENCARD"  : ["/fitcard/ALICE_7_pipi.json"],
 

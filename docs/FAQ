@@ -32,7 +32,7 @@ SOURCE
 ├── eikonal/            - Eikonal screening amplitude and proton density arrays
 ├── figs/               - Figure output directory
 ├── fitcard/            - Steering cards for fitting programs
-├── HEPdata/            - Measurement data
+├── HEPData/            - Measurement data
 |   ├── CD/             - Central Diffraction
 |   └── EL/             - Elastic scattering
 ├── include/            - Header files (C++)

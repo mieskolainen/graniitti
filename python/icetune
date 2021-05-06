@@ -16,7 +16,7 @@
 # (c) 2021 Mikael Mieskolainen
 # Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
-__VERSION__ = 0.01
+__VERSION__ = (0,0,1)
 __RELEASE__ = "beta"
 
 
@@ -51,21 +51,21 @@ parser = argparse.ArgumentParser(description=f"%(prog)s {__VERSION__} {__RELEASE
     
     """, formatter_class=argparse.RawTextHelpFormatter)
 
-parser.add_argument("--cdir", type=str, default=os.getcwd())
-parser.add_argument("--libdir", type=str, default=os.environ['HOME'] + '/local')
-parser.add_argument("--address", type=str, default=icetune.get_ip() + ':6379')
+parser.add_argument("--cdir",           type=str, default=os.getcwd())
+parser.add_argument("--libdir",         type=str, default=os.environ['HOME'] + '/local')
+parser.add_argument("--address",        type=str, default=icetune.get_ip() + ':6379')
 parser.add_argument("--max_concurrent", type=int, default=32, help="example: --max_concurrent 32")
 
 
-parser.add_argument("--algorithm", type=str, default='optuna', help="example: --algorithm optuna")
-parser.add_argument("--obs", type=str, default='default_obs', help="example: --obs default_obs")
-parser.add_argument("--tuneconfig", type=str, default='default_tuneconfig', help="example: --tuneconfig default_tuneconfig")
+parser.add_argument("--algorithm",  type=str, default='optuna',  help="example: --algorithm optuna")
+parser.add_argument("--obs",        type=str, default='default', help="example: --obs default")
+parser.add_argument("--tunes",      type=str, default='default', help="example: --tunes default")
 
 
-parser.add_argument("--density",   type=bool, default=False, help="example: --density true")
-parser.add_argument("--plot", action='store_true', help="example: --plot")
-parser.add_argument("--maxevents", type=int, default=None, help="example: --maxevents 1000")
-parser.add_argument("--nofit", action='store_true', help="example: --nofit")
+parser.add_argument("--density",    type=bool, default=False, help="example: --density true")
+parser.add_argument("--plot",       action='store_true',      help="example: --plot")
+parser.add_argument("--maxevents",  type=int, default=None,   help="example: --maxevents 1000")
+parser.add_argument("--nofit",      action='store_true',      help="example: --nofit")
 
 
 args = parser.parse_args()
@@ -143,7 +143,7 @@ set(ray.get([f.remote() for _ in range(1000)]))
 # ============================================================================
 # ** Import tune setup **
 
-Config = import_module(args.tuneconfig)
+Config = import_module('config_tunes.' + args.tunes)
 
 
 # ============================================================================
