@@ -1,16 +1,25 @@
+dist: focal # Ubuntu 20.x
+
 language: python
+
 compiler:
   - g++
+  - clang
+
 python:
 #- '3.7'
   - '3.8'
 #- 3.8-dev
 #- nightly
+
 before_install:
+  # HEPMC3 and LHAPDF6
   - cd install && yes y | source autoinstall.sh && source setenv.sh && cd ..
+
 install:
   - pip install -r requirements.txt
   - make -j8
+
 script:
 #- pytest --cov
 #- make -C docs/ clean
@@ -20,6 +29,7 @@ script:
 after_success:
 #- coverage run --source=httpsuite -m pytest tests/
 #- coveralls
+
 deploy:
 #  - provider: pypi
 #    user: "__token__"
