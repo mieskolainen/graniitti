@@ -21,6 +21,7 @@ CONDA_ENV=graniitti
 # Paths
 LOCAL_DIR=${HOME}/cernbox/graniitti/python
 REMOTE_DIR=${HOME}/cernbox/graniitti
+CONDA_PATH=${HOME}/anaconda3
 
 # ------------------------------------------------------------------------
 
@@ -39,14 +40,14 @@ ray start --head --port=$port
 
 # pip install -r $REMOTE_DIR/requirements.txt; \
 
-cmd=". ~/.bashrc; source ~/anaconda3/etc/profile.d/conda.sh; conda activate $CONDA_ENV; \
+cmd=". ~/.bashrc; source $CONDA_PATH/etc/profile.d/conda.sh; conda activate $CONDA_ENV; \
 chmod +x $REMOTE_DIR/bin/*; \
 ray stop --force; sleep 2; ray stop --force; ray start --address=$address"
 
 
 for IP in "${IP_ARRAY[@]}"
 do
-	echo 'connecting $IP'
+	echo "connecting remote node: ${IP}"
 	
 	# Sync the files (rsync will copy only files which changed)
 	rsync -avz -e 'ssh' ${LOCAL_DIR} user@${IP}:${REMOTE_DIR}
