@@ -31,7 +31,7 @@ import iceio
 import iceplot
 
 
-def setpaths(cdir, libdir):
+def setpaths(cdir, libdir, PYTHON_VERSION="3.8"):
 
     try:
         LD_LIBRARY_PATH = os.environ['LD_LIBRARY_PATH']
@@ -42,13 +42,13 @@ def setpaths(cdir, libdir):
         PYTHONPATH = os.environ['PYTHONPATH']
     except:
         PYTHONPATH = ''
-
+    
     LD_LIBRARY_PATH = f"{libdir}/HEPMC3/lib:{libdir}/HEPMC3/lib64:{libdir}/LHAPDF/lib:{libdir}/LHAPDF/lib64:{LD_LIBRARY_PATH}"
-    PYTHONPATH      = f"{cdir}/python:{libdir}/HEPMC3/lib/python3.8/site-packages:{PYTHONPATH}"
-
+    PYTHONPATH      = f"{cdir}/python:{libdir}/HEPMC3/lib/python{PYTHON_VERSION}/site-packages:{PYTHONPATH}"
+    
     os.environ['LD_LIBRARY_PATH'] = LD_LIBRARY_PATH
     os.environ['PYTHONPATH']      = PYTHONPATH
-
+    
     sys.path.append(PYTHONPATH) # This is crucial with Ray!
 
     return LD_LIBRARY_PATH, PYTHONPATH
