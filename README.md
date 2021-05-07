@@ -55,14 +55,14 @@ python python/iceshot --hepmc3 STAR_1792394_pipi --hepdata dataset_STAR_1792394_
 
 Compare MC with differential fiducial measurements made at RHIC/Tevatron/LHC
 ```
-pytest tests/testbench_exloop.py -s
-pytest tests/testbench_cepdata.py -s
+pytest tests/testbench_exloop.py -s --POMLOOP true
+pytest tests/testbench_cepdata.py -s --POMLOOP true
 ```
 
 MC model tuning via HPC-distributed Bayesian / evolutionary optimization
 ```
 ray start --head
-python python/icetune
+python python/icetune --tuneset default
 ```
 
 Unit and integration tests

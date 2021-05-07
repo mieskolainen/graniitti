@@ -15,7 +15,9 @@ from test_helpers import *
 
 
 #@pytest.mark.parametrize("POMLOOP", [False, True])
-def test_cepdata(POMLOOP, NEVENTS, MODELPARAM='TUNE0'):
+def test_cepdata(POMLOOP, NEVENTS, MODELPARAM):
+    
+    print(f'POMLOOP={POMLOOP} NEVENTS={NEVENTS} MODELPARAM={MODELPARAM}')
 
     cdir      = os.getcwd()
     

@@ -34,13 +34,13 @@ script:
   - for i in {0,1,2,3}; do "./bin/testbench$i"; done
   
   # Python driven tests (fast mode --> POMLOOP False)
-  - pytest tests/testbench_cepdata.py -s --POMLOOP False --NEVENTS 2000
-  - pytest tests/testbench_exloop.py -s --POMLOOP False --NEVENTS 2000
+  - pytest tests/testbench_cepdata.py -s --POMLOOP false --NEVENTS 2000
+  - pytest tests/testbench_exloop.py -s --POMLOOP false
   - pytest tests/testbench_vgrid.py -s
   - pytest tests/testbench_integrators.py -s
   - pytest tests/testbench_global_fast.py -s
   - pytest tests/testbench_global_slow.py -s
-  
+
   #- pytest --cov
   #- make -C docs/ clean
   #- make -C docs/ html

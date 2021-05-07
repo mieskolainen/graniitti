@@ -44,6 +44,8 @@ def print_tex_footer():
 
 #@pytest.mark.parametrize("POMLOOP", [False, True])
 def test_exloop(POMLOOP, datacard='/HEPData/LHC_TEVATRON_RHIC.json', ASSERT_ON=False):
+    
+    print(f'POMLOOP={POMLOOP} datacard={datacard} ASSERT_ON={ASSERT_ON}')
 
     print_tex_header()
     
@@ -51,7 +53,6 @@ def test_exloop(POMLOOP, datacard='/HEPData/LHC_TEVATRON_RHIC.json', ASSERT_ON=F
     # Set screening true / false
 
     POMLOOP_values = ['false', 'true'] if POMLOOP else ['false']
-
 
     # ====================================================================
     # Read in JSON data
