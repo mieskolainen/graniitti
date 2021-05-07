@@ -12,10 +12,12 @@ from ray import tune
 
 # Event generation setup
 mc_steer = {
-  'NEVENTS'  : 5000,    # At least ~ 20k to 50k events per parameter space trial
-  'POMLOOP'  : False,   # Screening on/off (set False for fast trials, True for precision tuning)
-  'WEIGHTED' : True,    # Keep it always weighted for speed
-  'kfactor'  : 1.0      # MC cross-section scale factor
+  'NEVENTS'   : 5000,    # At least ~ 20k to 50k events per parameter space trial
+  'POMLOOP'   : False,   # Screening on/off (set False for fast trials, True for precision tuning)
+  'WEIGHTED'  : True,    # Keep it always weighted for speed
+  'FRESHGRID' : False,   # Reset integration grids for each parameter trial
+                         # ==> necessary if tuned parameters impact significantly the integrated cross section
+  'kfactor'   : 1.0      # MC cross-section scale factor
 }
 
 

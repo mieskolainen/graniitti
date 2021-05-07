@@ -139,6 +139,11 @@ def compute(thread_id, fitcardfile, obs_module, mc_steer, compare_steer, cdir=No
                 output = json5.load(file)['GENERALPARAM']['OUTPUT']
 
             output   = output + f"_POMLOOP_{mc_steer['POMLOOP']}"
+            
+            # Integration grid reset required
+            if mc_steer['FRESHGRID']:
+                output = f'{output}_{thread_id}'
+
             gridfile = cdir + '/vgrid/' + output + '.vgrid'
 
             # If not yet initialized
@@ -153,9 +158,8 @@ def compute(thread_id, fitcardfile, obs_module, mc_steer, compare_steer, cdir=No
 
                 if griddata['POMLOOP'] != mc_steer['POMLOOP']:
                     print('vgrid file with non-matching POMLOOP -- re-computing')
-                    recompute(inputfile)
+                    recompute(inputfile=inputfile, output=output)
 
-            
             # ========================================================================
             ### Generate events
             
