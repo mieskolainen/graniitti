@@ -585,7 +585,7 @@ void CheckUpdate() {
         std::cout << std::endl;
         PrintBar("-", 80);
         std::cout << rang::style::bold << rang::fg::green << "New version " << online_version
-                  << " (" << online_date << ") available at <github.com/mieskolainen/GRANIITTI>"
+                  << " (" << online_date << ") available at <github.com/mieskolainen/graniitti>"
                   << rang::fg::reset << rang::style::reset << std::endl;
         std::cout << std::endl;
         std::cout << "Updates are: " << j.at("update") << std::endl;
@@ -705,7 +705,7 @@ void PrintFlashScreen(rang::fg pcolor) {
 
 void PrintVersion() {
   std::cout << GetVersionString() << std::endl;
-  std::cout << rang::style::bold << "<github.com/mieskolainen/GRANIITTI>" << rang::style::reset
+  std::cout << rang::style::bold << "<github.com/mieskolainen/graniitti>" << rang::style::reset
             << std::endl
             << std::endl;
   std::cout << "References: arXiv:1910.06300 [hep-ph]" << std::endl;

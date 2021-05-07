@@ -3,7 +3,7 @@ https://arxiv.org/abs/1910.06300
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Build Status](https://travis-ci.com/mieskolainen/GRANIITTI.svg?branch=master)](https://travis-ci.com/mieskolainen/GRANIITTI)
+[![Build Status](https://travis-ci.com/mieskolainen/graniitti.svg?branch=master)](https://travis-ci.com/mieskolainen/graniitti)
 
 ## Algorithmic Engine and Monte Carlo Event Generator for High Energy Diffraction
 
@@ -50,25 +50,25 @@ pip install -r requirements.txt
 
 Analyze MC events and data
 ```
-python ./python/iceshot --hepmc3 STAR_1792394_pipi --hepdata dataset_STAR_1792394_pipi --pid '[[211,-211]]'
+python python/iceshot --hepmc3 STAR_1792394_pipi --hepdata dataset_STAR_1792394_pipi --pid '[[211,-211]]'
 ```
 
 Compare MC with differential fiducial measurements made at RHIC/Tevatron/LHC
 ```
-pytest ./tests/testbench_exloop.py -s
-pytest ./tests/testbench_cepdata.py -s
+pytest tests/testbench_exloop.py -s
+pytest tests/testbench_cepdata.py -s
 ```
 
 MC model tuning via HPC-distributed Bayesian / evolutionary optimization
 ```
 ray start --head
-python ./python/icetune
+python python/icetune
 ```
 
 Unit and integration tests
 ```
 make -j4 TEST=TRUE && ./bin/testbench*
-pytest ./tests/testbench_*.py -s
+pytest tests/testbench_*.py -s
 ```
 
 

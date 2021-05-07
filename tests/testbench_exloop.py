@@ -42,15 +42,15 @@ def print_tex_footer():
     print('')
 
 
-@pytest.mark.parametrize("POMLOOP_ON", [False, True])
-def test_exloop(POMLOOP_ON, datacard='/HEPData/LHC_TEVATRON_RHIC.json', ASSERT_ON=False):
+#@pytest.mark.parametrize("POMLOOP", [False, True])
+def test_exloop(POMLOOP, datacard='/HEPData/LHC_TEVATRON_RHIC.json', ASSERT_ON=False):
 
     print_tex_header()
     
     # ====================================================================
     # Set screening true / false
 
-    POMLOOP_values = ['false', 'true'] if POMLOOP_ON else ['false']
+    POMLOOP_values = ['false', 'true'] if POMLOOP else ['false']
 
 
     # ====================================================================
@@ -74,8 +74,8 @@ def test_exloop(POMLOOP_ON, datacard='/HEPData/LHC_TEVATRON_RHIC.json', ASSERT_O
             inputcard = cdir + f'/{folder}' + '/' + key + '.json'
             if os.path.isfile(inputcard):
 
-                for POMLOOP in POMLOOP_values:
-                    cmd    = f'{cdir}/bin/gr -i {inputcard} -l {POMLOOP} -h 0 -n 0 -o {key}_POMLOOP_{POMLOOP}'
+                for P in POMLOOP_values:
+                    cmd    = f'{cdir}/bin/gr -i {inputcard} -l {P} -h 0 -n 0 -o {key}_POMLOOP_{P}'
                     result = subprocess.check_output(cmd, shell=True, text=True)
             else:
                 continue
@@ -86,15 +86,15 @@ def test_exloop(POMLOOP_ON, datacard='/HEPData/LHC_TEVATRON_RHIC.json', ASSERT_O
         XS['false'] = 0
         
         ### Collect MC output values
-        for POMLOOP in POMLOOP_values:
-            with open(f'{cdir}/vgrid/{key}_POMLOOP_{POMLOOP}.vgrid', 'r') as file:
+        for P in POMLOOP_values:
+            with open(f'{cdir}/vgrid/{key}_POMLOOP_{P}.vgrid', 'r') as file:
                 vgrid = json5.load(file)
 
                 # Read-out integrated cross-section
-                XS[POMLOOP] = float(vgrid['STAT']['sigma']) * (10**j[key]['UNIT']) 
+                XS[P] = float(vgrid['STAT']['sigma']) * (10**j[key]['UNIT']) 
         
         # Integrated screening (absorption) factor computed
-        if POMLOOP_ON:
+        if POMLOOP:
             S2 = XS['true'] / XS['false']
         else:
             S2 = 0
@@ -109,7 +109,7 @@ def test_exloop(POMLOOP_ON, datacard='/HEPData/LHC_TEVATRON_RHIC.json', ASSERT_O
         
         
         ### ** Autocomparison of the measurement and screened MC result **
-        if m[0] is not None and POMLOOP_ON and ASSERT_ON:
+        if m[0] is not None and POMLOOP and ASSERT_ON:
             error = np.sqrt(m[1]**2 + m[2]**2) # Measurement error stat & syst in quadrature
             abs_tolerance = error * j[key]['ASSERT_NSIGMA']
 

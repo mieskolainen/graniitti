@@ -106,9 +106,8 @@ obs_dPhi_pp = {
 # Function to calculate
 'func'    : iceobs.proj_1D_dPhi_pp
 }
-"""
 
-"""
+
 obs_costheta_CS = {
 
 'tag'     : 'costheta_CS',
@@ -142,7 +141,7 @@ obs_phi_CS = {
 'xlim'    : (0, 180),
 'ylim'    : None,
 'xlabel'  : r'$\phi_{CS}$',
-'ylabel'  : r'$d\sigma/d\phi$',
+'ylabel'  : r'$d\sigma/d\phi_{CS}$',
 'units'   : {'x': r'deg', 'y': r'pb'},
 'label'   : r'Angle in Collins-Soper frame',
 'figsize' : (4, 3.75),
@@ -157,7 +156,5 @@ obs_phi_CS = {
 # Function to calculate
 'func'    : iceobs.proj_1D_phi_CS
 }
-
-
 
 

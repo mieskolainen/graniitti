@@ -345,7 +345,7 @@ def hist_filled_error(ax, bins, cbins, y, err, color, **kwargs):
 
 
 def superplot(data, observable=None, ratio_plot=True, yscale='linear', ratio_error_plot=True, \
-    legend_counts=False, color=None, legend_properties={'fontsize': 9}, EPS=1E-12):
+    legend_counts=False, color=None, legend_properties={'fontsize': 9}, bottom_PRC=5, EPS=1E-12):
     """ Superposition (overlaid) plotting
     """
     if observable == None:
@@ -379,10 +379,11 @@ def superplot(data, observable=None, ratio_plot=True, yscale='linear', ratio_err
 
         # -----------------------------------------------
         # ** For visualization autolimits **
-        bottom_count  = np.min([bottom_count, np.min(counts[counts > EPS])])
+        # Use percentile for the bottom (~ handle noisy small bins)
+        bottom_count  = np.min([bottom_count, np.percentile(counts[counts > EPS], bottom_PRC)])
         ceiling_count = np.max([ceiling_count, np.max(counts[counts > 0])])
         # -----------------------------------------------
-
+        
         label = data[i]['label']
         if legend_counts == True:
             label += f' $N={np.sum(data[i]["hdata"].counts):.1f}$'

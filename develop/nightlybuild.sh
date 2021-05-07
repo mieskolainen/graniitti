@@ -35,10 +35,10 @@ MSG="{\n \"name\": \"GRANIITTI\",\n \"build_passing\": $BUILD_PASSING,\n \"build
 printf "$MSG" > ./develop/BUILD.json
 
 # Push via SSH
-git remote set-url origin git+ssh://git@github.com/mieskolainen/GRANIITTI.git
+git remote set-url origin git+ssh://git@github.com/mieskolainen/graniitti.git
 git add -A
 git commit -m "nightly build"
 git push origin master
 
 # Change back to https
-git remote set-url origin https://github.com/mieskolainen/GRANIITTI.git
+git remote set-url origin https://github.com/mieskolainen/graniitti.git

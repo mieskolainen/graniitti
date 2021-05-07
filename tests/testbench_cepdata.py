@@ -14,9 +14,9 @@ import pyjson5 as json5
 from test_helpers import *
 
 
-@pytest.mark.parametrize("POMLOOP", [True])
-def test_cepdata(POMLOOP, N=30000, MODELPARAM='TUNE0'):
-    
+#@pytest.mark.parametrize("POMLOOP", [False, True])
+def test_cepdata(POMLOOP, NEVENTS, MODELPARAM='TUNE0'):
+
     cdir      = os.getcwd()
     
     # Filenames under /fitcard/
@@ -50,7 +50,7 @@ def test_cepdata(POMLOOP, N=30000, MODELPARAM='TUNE0'):
         execute(cmd)
 
         ### Generate events with pre-computed MC grids
-        cmd = f"./bin/gr -i {inputcard} -m {MODELPARAM} -l {'true' if POMLOOP else 'false'} -h 0 -n {N} -w true -d {gridfile} -o {output}"
+        cmd = f"./bin/gr -i {inputcard} -m {MODELPARAM} -l {'true' if POMLOOP else 'false'} -h 0 -n {NEVENTS} -w true -d {gridfile} -o {output}"
         execute(cmd)
         
         ### Produce comparison figures
