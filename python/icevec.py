@@ -7,8 +7,8 @@ import numpy as np
 
 
 def hepmc2vec4(p):
-    """ HepMC 4-vector to vec4 """
-    return vec4(x=p.px, y=p.py, z=p.pz, t=p.e)
+    """ HepMC3 python binding FourVector to vec4 """
+    return vec4(x=p.px(), y=p.py(), z=p.pz(), t=p.e())
 
 
 class vec4:

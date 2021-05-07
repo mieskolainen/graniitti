@@ -52,12 +52,14 @@ class Stats {
   void Accumulate(const gra::AuxIntData &aux) {
     evaluations += 1.0;
 
-    amplitude_ok += (aux.amplitude_ok ? 1.0 : 0.0);
+    amplitude_ok  += (aux.amplitude_ok ? 1.0 : 0.0);
     kinematics_ok += (aux.kinematics_ok ? 1.0 : 0.0);
-    fidcuts_ok += (aux.fidcuts_ok ? 1.0 : 0.0);
-    vetocuts_ok += (aux.vetocuts_ok ? 1.0 : 0.0);
-  }
+    fidcuts_ok    += (aux.fidcuts_ok ? 1.0 : 0.0);
+    vetocuts_ok   += (aux.vetocuts_ok ? 1.0 : 0.0);
 
+    all_ok        += (aux.amplitude_ok && aux.kinematics_ok && aux.fidcuts_ok && aux.vetocuts_ok) ? 1.0 : 0.0;
+  }
+  
   // Calculate integrated cross section sigma and its
   // error for direct (simple) sampling. NOT TO BE USED WITH VEGAS!
   void CalculateCrossSection() {
@@ -74,7 +76,8 @@ class Stats {
     j["kinematics_ok"] = kinematics_ok;
     j["fidcuts_ok"]    = fidcuts_ok;
     j["vetocuts_ok"]   = vetocuts_ok;
-
+    j["all_ok"]        = all_ok;    
+    
     j["evaluations"] = evaluations;
     j["trials"]      = trials;
 
@@ -98,6 +101,7 @@ class Stats {
     j.at("kinematics_ok").get_to(kinematics_ok);
     j.at("fidcuts_ok").get_to(fidcuts_ok);
     j.at("vetocuts_ok").get_to(vetocuts_ok);
+    j.at("all_ok").get_to(all_ok);    
 
     j.at("evaluations").get_to(evaluations);
     j.at("trials").get_to(trials);
@@ -122,7 +126,8 @@ class Stats {
   double kinematics_ok = 0.0;
   double fidcuts_ok    = 0.0;
   double vetocuts_ok   = 0.0;
-
+  double all_ok        = 0.0;
+  
   // Keep as double to avoid overflow of range
   double evaluations = 0.0;  // Integrand evaluations
   double trials      = 0.0;  // Event generation trials

@@ -5,7 +5,7 @@
 # (c) 2021 Mikael Mieskolainen
 # Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
-__VERSION__ = (0,0,1)
+__VERSION__ = (0,0,2)
 __RELEASE__ = "beta"
 
 
@@ -20,7 +20,9 @@ import argparse
 import socket
 import copy
 
-import pyhepmc_ng as hepmc3
+from pyHepMC3 import HepMC3 as hepmc3
+
+
 import pathlib
 import matplotlib.pyplot as plt
 import pyjson5 as json5
@@ -110,10 +112,11 @@ def main():
     if len(args.pid) != len(args.hepmc3):
         raise Exception('iceshot: Give final state PID array for each HepMC3 file!')
 
+
     # ========================================================================
     ### Set paths
 
-    LD_LIBRARY_PATH, PYTHONPATH = icetune.setpaths(cdir=args.cdir, libdir=args.libdir)
+    icetune.setpaths(cdir=args.cdir, libdir=args.libdir)
 
     print(__name__ + f'.iceshot: IP = {icetune.get_ip()}')
     print(args)
@@ -210,13 +213,19 @@ def main():
 
         # Find out how many events the file contains in total
         print(f'iceshot: Reading the number of events in a file: {hepmc3files[label]}')
-        with hepmc3.open(hepmc3files[label], "r") as f:
-            nevents = 0
-            for i,_ in tqdm(enumerate(f)):
-                if nevents == args.maxevents:
-                    print(f'iceshot: Maximum events limit = {args.maxevents} reached')
-                    break
-                nevents += 1
+
+        file = hepmc3.ReaderAscii(hepmc3files[label])
+        if file.failed(): return
+
+        nevents = 0
+        while not file.failed():
+            if nevents == args.maxevents:
+                print(f'iceshot: Maximum events limit = {args.maxevents} reached')
+                break
+            nevents += 1
+            evt = hepmc3.GenEvent()
+            file.read_event(evt)
+
 
         # 2. Chunked loop [parallel processing]
         same_param = {

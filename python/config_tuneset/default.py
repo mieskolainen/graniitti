@@ -12,12 +12,14 @@ from ray import tune
 
 # Event generation setup
 mc_steer = {
-  'NEVENTS'   : 30000,   # At least ~ 20k to 50k events per parameter space trial
-  'POMLOOP'   : True,    # Screening on/off (set False for fast trials, True for precision tuning)
-  'WEIGHTED'  : True,    # Keep it always weighted for speed
-  'FRESHGRID' : False,   # Reset integration grids for each parameter trial
-                         # ==> necessary if tuned parameters impact significantly the integrated cross section
-  'kfactor'   : 1.0      # MC cross-section scale factor
+  'NEVENTS' : 30000,     # At least ~ 30k to 50k events per parameter space trial
+  'POMLOOP' : True,      # Screening on/off (set False for fast test trials, True for precision tuning)
+  'XSMODE'  : 'sample',  # Cross section normalization mode:
+                         # -- 'reset'   compute full cross section initialization (vgrid file) for every parameter trial
+                         # -- 'vgrid'   use once pre-computed value from .vgrid file (use this if parameters under tune do not impact the integrated xs)
+                         # -- 'sample'  (default) compute new cross-section from the event sample weights, otherwise as 'vgrid' (use this if parameters impact the integrated xs)
+
+  'kfactor' : 1.0        # MC cross-section scale factor
 }
 
 

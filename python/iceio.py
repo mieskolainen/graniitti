@@ -7,6 +7,8 @@ from importlib import import_module
 
 from iceobs import *
 
+from pyHepMC3 import HepMC3 as hepmc3
+
 
 # Object wrapper (for icecache)
 class ice_event:
@@ -41,9 +43,13 @@ def generate_chunks(lst, n):
         yield lst[i:i + n]
 
 
-def read_hepmc3(hepmc3file, all_obs, pid, cuts=None, maxevents=None, chunk_range=[0, int(1E12)]):
+def read_hepmc3(hepmc3file, all_obs, pid, cuts=None, maxevents=None, chunk_range=[0, int(1E12)], xsmode='header'):
     """
     Read in a single HepMC3 file and compute observables
+
+    Args:
+    
+        xsmode = 'header' or 'sample'
     """
     mc_data = {}
     for OBS in all_obs.keys():
@@ -53,8 +59,8 @@ def read_hepmc3(hepmc3file, all_obs, pid, cuts=None, maxevents=None, chunk_range
     mc_xsec_pb       = 0
     mc_xsec_pb_err   = 0
 
-
     mc_weights_tot   = []
+    mc_trials        = 0
 
     # --------------------------------------------------------------------
     def identity_cut(event):
@@ -68,58 +74,70 @@ def read_hepmc3(hepmc3file, all_obs, pid, cuts=None, maxevents=None, chunk_range
     # --------------------------------------------------------------------
 
     # Open HepMC3 file
-    t = time.time()
+    t    = time.time()
+    file = hepmc3.ReaderAscii(hepmc3file)
+    k    = -1
 
-    with hepmc3.open(hepmc3file, "r") as f:
+    while not file.failed():
+        k  += 1
+        evt = hepmc3.GenEvent()
+        file.read_event(evt)
 
-        # Loop over events
-        for k, evt in enumerate(f):
+        if file.failed(): # end-of-file
+            break
 
-            event = ice_event(evt=evt, pid=pid)
+        # -------------------------------
+        # This after the header reader
+        if k < chunk_range[0]:
+            continue
+        if k > chunk_range[1]:
+            break
+        # -------------------------------
 
-            # This wont work with hepmc3-ng (python bindings) currently
-            #xsection = evt.cross_section
-            
-            # ------------------------------------------------------------
-            # Read it from GRANIITTI header            
-            if k == 0:
-                string = repr(evt.run_info)
-                tmp = re.search("{(.*?)}", string).group(1).split(",")
-                mc_xsec_pb     = float(tmp[0].split(":")[1])
-                mc_xsec_err_pb = float(tmp[1].split(":")[1])
-            # ------------------------------------------------------------
+        # Event weight for each event
+        w = float(evt.weights()[0])
+        mc_weights_tot.append(w)
 
-            # -------------------------------
-            # This after the header reader
-            if k < chunk_range[0]:
-                continue
-            if k > chunk_range[1]:
-                break
-            # -------------------------------
+        # Get GenCrossSection info attributes
+        mc_xsec_pb     = float(evt.cross_section().xsec())
+        mc_xsec_err_pb = float(evt.cross_section().xsec_err())
+        mc_trials      = float(evt.cross_section().get_attempted_events())
 
-            # Event weight for each event
-            mc_weights_tot.append(evt.weights[0])
+        event = ice_event(evt=evt, pid=pid)
 
-            # -------------------------------
-            # Apply additional fiducial cuts here ...
-            if not cut_func(event):
+        # -------------------------------
+        # Apply additional fiducial cuts here ...
+        if not cut_func(event):
+            continue;
+        # -------------------------------
+
+        # Construct all observables
+        for OBS in all_obs.keys():
+            try:
+                value = all_obs[OBS]['func'](event=event)
+                mc_data[OBS].append(value)
+            except:
                 continue;
-            # -------------------------------
 
-            # Construct all observables
-            for OBS in all_obs.keys():
-                try:
-                    mc_data[OBS].append( all_obs[OBS]['func'](event=event))
-                except:
-                    continue;
-
-            # Event weight for passed events
-            mc_weights.append(evt.weights[0])
+        # Event weight for passed events
+        mc_weights.append(w)
 
     mc_weights_tot = np.array(mc_weights_tot)
     mc_weights     = np.array(mc_weights)
 
-    # Count the user cuts fiducial acceptance
+    # --------------------------------------------------------------------
+    # Compute cross section from the sample weights (works with weighted events)
+    if xsmode == 'sample':
+        SCALE          = 1E12
+        N              = mc_trials
+        W              = np.sum(mc_weights_tot)
+        W2             = np.sum(mc_weights_tot**2)
+
+        mc_xsec_pb     = SCALE * W/N
+        mc_xsec_err_pb = SCALE * np.sqrt((W2/N - (W/N)**2)/N);
+    # --------------------------------------------------------------------
+    
+    # Count the python user cuts fiducial acceptance
     acceptance     = np.sum(mc_weights) / np.sum(mc_weights_tot)
 
     elapsed        = time.time() - t
@@ -132,7 +150,7 @@ def read_hepmc3(hepmc3file, all_obs, pid, cuts=None, maxevents=None, chunk_range
     
     print(f'After  cuts: mc_xs_pb: {mc_xsec_pb:.3g} +- {mc_xsec_err_pb:.3g} | events read = {len(mc_weights)} | wsum = {np.sum(mc_weights):0.3E} | cuts <{cuts}> acceptance = {acceptance:0.3E}')
     
-    return {'data': mc_data, 'weights': mc_weights, 'xsection_pb': mc_xsec_pb, 'xsection_pb_err' : mc_xsec_pb, 'acceptance': acceptance}
+    return {'data': mc_data, 'weights': mc_weights, 'xsection_pb': mc_xsec_pb, 'xsection_pb_err' : mc_xsec_err_pb, 'acceptance': acceptance}
 
 
 def read_hepdata(dataset, all_obs, cdir=None):

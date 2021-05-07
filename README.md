@@ -44,7 +44,8 @@ Setup virtual Python environment via Conda
 wget https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh
 chmod +x and execute the installer
 
-conda create -y --name graniitti python==3.8.5 && conda activate graniitti
+conda create -y --name graniitti python==3.8.5
+conda activate graniitti
 pip install -r requirements.txt
 ```
 

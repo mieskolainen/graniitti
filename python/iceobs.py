@@ -7,10 +7,10 @@ from functools import lru_cache
 from cachetools import cached
 import copy
 import numpy as np
-import pyhepmc_ng as hepmc3
 import numba
 import re
 import time
+from pyHepMC3 import HepMC3 as hepmc3
 
 from functools import reduce
 from tqdm import tqdm
@@ -55,24 +55,24 @@ def deg2rad(x):
 #
 @icecache
 def proj_central_particles(event, beam_eta=6):
-    return filter(lambda p: p.status == FINAL_STATE and p.pid in event.pid \
-        and np.abs(p.momentum.eta()) < beam_eta, event.evt.particles)
+    return filter(lambda p: p.status() == FINAL_STATE and p.pid() in event.pid \
+        and np.abs(p.momentum().eta()) < beam_eta, event.evt.particles())
 
 @icecache
 def sum_4_momenta(particles):
-    return reduce(lambda a,b: a.momentum + b.momentum, particles)
+    return reduce(lambda a,b: a.momentum() + b.momentum(), particles)
 
 @icecache
 def proj_1D_CS(event, beam_eta=6):
     
     # Central system sum 4-momentum
-    plist     = filter(lambda p: p.status == FINAL_STATE and p.pid in event.pid \
-        and np.abs(p.momentum.eta()) < beam_eta, event.evt.particles)
-    particles = [hepmc2vec4(p.momentum) for p in plist]
+    plist     = filter(lambda p: p.status() == FINAL_STATE and p.pid() in event.pid \
+        and np.abs(p.momentum().eta()) < beam_eta, event.evt.particles())
+    particles = [hepmc2vec4(p.momentum()) for p in plist]
     X         = reduce(lambda a,b: a + b, particles)
     
     # Beams
-    beam  = [hepmc2vec4(p.momentum) for p in filter(lambda p: p.status == INITIAL_STATE, event.evt.particles)]
+    beam  = [hepmc2vec4(p.momentum()) for p in filter(lambda p: p.status() == INITIAL_STATE, event.evt.particles())]
     
     # Do the frame transform
     pb1boost,pb2boost,pfboost = LorentFramePrepare(pbeam1=beam[0], pbeam2=beam[1], particles=particles, X=X)
@@ -108,12 +108,12 @@ def proj_1D_Abs_t1t2(event, beam_eta=6):
     """
     |t1 + t2| (GeV^2)
     """
-    forward  = filter(lambda p: p.pid == PDG_PROTON and p.momentum.eta() >  beam_eta, event.evt.particles)
-    backward = filter(lambda p: p.pid == PDG_PROTON and p.momentum.eta() < -beam_eta, event.evt.particles)
+    forward  = filter(lambda p: p.pid() == PDG_PROTON and p.momentum().eta() >  beam_eta, event.evt.particles())
+    backward = filter(lambda p: p.pid() == PDG_PROTON and p.momentum().eta() < -beam_eta, event.evt.particles())
 
     # Mandelstam invariants
-    t1 = reduce(lambda a,b: (a.momentum - b.momentum).m2(), forward)
-    t2 = reduce(lambda a,b: (a.momentum - b.momentum).m2(), backward)
+    t1 = reduce(lambda a,b: (a.momentum() - b.momentum()).m2(), forward)
+    t2 = reduce(lambda a,b: (a.momentum() - b.momentum()).m2(), backward)
 
     return np.abs(t1 + t2)
 
@@ -144,9 +144,9 @@ def proj_1D_dPhi_pp(event, beam_eta=6):
     Forward proton pair deltaphi in the lab frame (in deg [0,180])
     """
     
-    plist = filter(lambda p: p.status == FINAL_STATE and p.pid == PDG_PROTON \
-        and np.abs(p.momentum.eta()) > beam_eta, event.evt.particles)
-    beam  = [hepmc2vec4(p.momentum) for p in plist]
+    plist = filter(lambda p: p.status() == FINAL_STATE and p.pid() == PDG_PROTON \
+        and np.abs(p.momentum().eta()) > beam_eta, event.evt.particles())
+    beam  = [hepmc2vec4(p.momentum()) for p in plist]
     
     return rad2deg(beam[0].abs_delta_phi(beam[1]))
 

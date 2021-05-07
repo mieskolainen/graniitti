@@ -8,7 +8,6 @@
 cmake
 maketools
 pyjson5
-pyhepmc-ng
 matplotlib
 numba
 numpy

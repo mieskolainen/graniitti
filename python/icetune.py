@@ -9,18 +9,18 @@ import json as json
 import os
 import subprocess
 import re
-import pyhepmc_ng as hepmc3
+
 import pathlib
 from tqdm import tqdm
 import socket
 from importlib import import_module
 from pprint import pprint
+import sys
 
 
 # Command line arguments
 from glob import glob
 from braceexpand import braceexpand
-
 
 import matplotlib
 matplotlib.use('Agg') # Important for multithreaded applications
@@ -29,6 +29,29 @@ from matplotlib import pyplot as plt
 
 import iceio
 import iceplot
+
+
+def setpaths(cdir, libdir):
+
+    try:
+        LD_LIBRARY_PATH = os.environ['LD_LIBRARY_PATH']
+    except:
+        LD_LIBRARY_PATH = ''
+
+    try:
+        PYTHONPATH = os.environ['PYTHONPATH']
+    except:
+        PYTHONPATH = ''
+
+    LD_LIBRARY_PATH = f"{libdir}/HEPMC3/lib:{libdir}/HEPMC3/lib64:{libdir}/LHAPDF/lib:{libdir}/LHAPDF/lib64:{LD_LIBRARY_PATH}"
+    PYTHONPATH      = f"{cdir}/python:{libdir}/HEPMC3/lib/python3.8/site-packages:{PYTHONPATH}"
+
+    os.environ['LD_LIBRARY_PATH'] = LD_LIBRARY_PATH
+    os.environ['PYTHONPATH']      = PYTHONPATH
+
+    sys.path.append(PYTHONPATH) # This is crucial with Ray!
+
+    return LD_LIBRARY_PATH, PYTHONPATH
 
 
 def get_observables(module_name):
@@ -62,30 +85,6 @@ def get_ip():
     return IP
 
 
-def setpaths(cdir, libdir):
-
-    #sys.path.append(f'{cdir}')
-    #sys.path.append(f'{cdir}/python')
-
-    try:
-        LD_LIBRARY_PATH = os.environ['LD_LIBRARY_PATH']
-    except:
-        LD_LIBRARY_PATH = ''
-
-    try:
-        PYTHONPATH = os.environ['PYTHONPATH']
-    except:
-        PYTHONPATH = ''
-
-    LD_LIBRARY_PATH = f"{libdir}/HEPMC3/lib:{libdir}/HEPMC3/lib64:{libdir}/LHAPDF/lib:{libdir}/LHAPDF/lib64:{LD_LIBRARY_PATH}"
-    PYTHONPATH      = f"{cdir}/python:{libdir}/HEPMC3/lib/python3.8/site-packages:{PYTHONPATH}"
-
-    os.environ['LD_LIBRARY_PATH'] = LD_LIBRARY_PATH
-    os.environ['PYTHONPATH']      = PYTHONPATH
-
-    return LD_LIBRARY_PATH, PYTHONPATH
-
-
 def compute(thread_id, fitcardfile, obs_module, mc_steer, compare_steer, cdir=None):
     """
     Compute MC sample and compare with HEPData over all fitcardfile input
@@ -95,7 +94,8 @@ def compute(thread_id, fitcardfile, obs_module, mc_steer, compare_steer, cdir=No
 
     def recompute(inputfile, output):
         cmd = f"{cdir}/bin/gr -h 0 -i {inputfile} -o {output} -n 0 -l {'true' if mc_steer['POMLOOP'] else 'false'}"
-        result = os.system(cmd)
+        #result = os.system(cmd)
+        result = subprocess.check_output(cmd, shell=True, text=True)
     
     if cdir is None:
         cdir = os.getcwd()
@@ -129,7 +129,7 @@ def compute(thread_id, fitcardfile, obs_module, mc_steer, compare_steer, cdir=No
     for i in range(len(datasets)):
 
         if datasets[i]['ACTIVE']:
-
+            
             # ========================================================================
             ### Read input and initialize
 
@@ -140,9 +140,11 @@ def compute(thread_id, fitcardfile, obs_module, mc_steer, compare_steer, cdir=No
 
             output   = output + f"_POMLOOP_{mc_steer['POMLOOP']}"
             
-            # Integration grid reset required
-            if mc_steer['FRESHGRID']:
+            # ------------------------------------------------------------------------
+            # Integration grid reset requested
+            if mc_steer['XSMODE'] == 'reset':
                 output = f'{output}_{thread_id}'
+            # ------------------------------------------------------------------------
 
             gridfile = cdir + '/vgrid/' + output + '.vgrid'
 
@@ -169,9 +171,10 @@ def compute(thread_id, fitcardfile, obs_module, mc_steer, compare_steer, cdir=No
                 tunename = f'TUNE-icetune-{thread_id}'
             hepmc3output = f'{output}_{thread_id}'
 
-            cmd       = f"{cdir}/bin/gr -h 0 -m {tunename} -d {gridfile} -i {inputfile} -o {hepmc3output } -n {mc_steer['NEVENTS']} -w {'true' if mc_steer['WEIGHTED'] else 'false'} -l {'true' if mc_steer['POMLOOP'] else 'false'}"
+            # Generation command
+            cmd         = f"{cdir}/bin/gr -h 0 -w true -m {tunename} -d {gridfile} -i {inputfile} -o {hepmc3output } -n {mc_steer['NEVENTS']} -l {'true' if mc_steer['POMLOOP'] else 'false'}"
             #print(__name__ + f".compute: Generating events: {cmd}")
-            result    = subprocess.check_output(cmd, shell=True, text=True)
+            result      = subprocess.check_output(cmd, shell=True, text=True)
             
             outputfile  = f'{cdir}/output/' + hepmc3output
             hepmc3file  = outputfile + '.hepmc3'
@@ -188,9 +191,10 @@ def compute(thread_id, fitcardfile, obs_module, mc_steer, compare_steer, cdir=No
             hepdata, all_obs = iceio.read_hepdata(dataset=datasets[i], all_obs=all_obs, cdir=cdir)
 
             # Read in MC observables
-            mcdata           = iceio.read_hepmc3(hepmc3file=hepmc3file, all_obs=all_obs, pid=pid)
+            xsmode  = 'sample' if mc_steer['XSMODE'] == 'sample' else 'header'
+            mcdata           = iceio.read_hepmc3(hepmc3file=hepmc3file, all_obs=all_obs, pid=pid, xsmode=xsmode)     
             
-
+            
             # ========================================================================
             ### Histogramming
             

@@ -16,7 +16,7 @@
 # (c) 2021 Mikael Mieskolainen
 # Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
-__VERSION__ = (0,0,1)
+__VERSION__ = (0,0,2)
 __RELEASE__ = "beta"
 
 
@@ -36,8 +36,6 @@ import ray
 from ray import tune
 from ray.tune import Callback
 
-import iceobs
-import iceplot
 import icetune
 
 import signal
@@ -72,7 +70,7 @@ args = parser.parse_args()
 print(colored(__name__ + f'.icetune: IP = {icetune.get_ip()}', 'yellow'))
 print(colored(args, 'yellow'))
 
-LD_LIBRARY_PATH, PYTHONPATH = icetune.setpaths(cdir=args.cdir, libdir=args.libdir)
+icetune.setpaths(cdir=args.cdir, libdir=args.libdir)
 
 
 compare_steer = {
@@ -153,6 +151,7 @@ chi2, ndf = icetune.compute(thread_id=0, fitcardfile=Config.fitcardfile, \
 print("")
 print(colored(__name__ + f'.icetune: Initial chi2 / ndf = {np.sum(chi2):0.1f} / {np.sum(ndf)} = {np.sum(chi2) / np.sum(ndf):0.1f} | <chi2/ndf> = {np.mean(chi2/ndf):0.1f}\n', 'red'))
 
+
 if args.nofit: # No fitting, exit now
     exit(0)
 
@@ -164,10 +163,9 @@ time.sleep(3)
 
 def objective(param):
 
-    # This needs to be here for raytune (cannot find otherwise HepMC3.so etc. needed by GRANIITTI)
-    os.environ['LD_LIBRARY_PATH'] = LD_LIBRARY_PATH
-    os.environ['PYTHONPATH']      = PYTHONPATH
-    
+    # This needs to be here for raytune (cannot find otherwise HepMC3.so, pyHepMC3 etc.)
+    icetune.setpaths(cdir=args.cdir, libdir=args.libdir)
+
     # Slightly dirty unique ID set here
     thread_id = np.random.randint(low=1, high=1000000000000000000)
 

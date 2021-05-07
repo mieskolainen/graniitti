@@ -1696,20 +1696,25 @@ int MGraniitti::SaveEvent(MProcess *pr, double weight, double MAXWEIGHT,
 
     // ** Save event weight (unweighted events with weight 1)
     const double HepMC3_weight = WEIGHTED ? weight : 1.0;
-    evt.weights().push_back(HepMC3_weight);  // add more weights with .push_back()
-
+    evt.weights().push_back(HepMC3_weight);  // add more weight attributes with .push_back()
+    
 
     // ** Save cross section information (HepMC3 wants event by event)
     std::shared_ptr<HepMC3::GenCrossSection> xsobj = std::make_shared<HepMC3::GenCrossSection>();
     evt.add_attribute("GenCrossSection", xsobj);
-
+    
     // Now add the value in picobarns [HepMC3 convention]
     if (xsforced > 0) {
       xsobj->set_cross_section(xsforced * OUTPUT_XS_SCALE, 0);  // external fixed one
     } else {
       xsobj->set_cross_section(stat.sigma * OUTPUT_XS_SCALE, stat.sigma_err * OUTPUT_XS_SCALE);
     }
-
+    
+    // Add the number of generated and attempted
+    xsobj->set_accepted_events(stat.generated);
+    xsobj->set_attempted_events(stat.trials);    // => allows computing xs = sum(weights) / attempted
+    
+    
     // ** Save PDF info
     std::shared_ptr<HepMC3::GenPdfInfo> pdf = std::make_shared<HepMC3::GenPdfInfo>();
     evt.add_attribute("GenPdfInfo", pdf);
