@@ -13,4 +13,4 @@ export CXX=$CONDA_PREFIX/bin/x86_64-conda_cos6-linux-gnu-g++
 # cd install && source autoinstall.sh && cd ..
 
 # Compile
-# make -j8 TEST=TRUE CXX=$CXX CXX_STANDARD=c++17
+# make -j8 CXX=$CXX CXX_STANDARD=c++17 TEST=TRUE

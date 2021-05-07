@@ -82,7 +82,7 @@ ifeq ($(CXX),g++)
 
 CXX_VERSION = $(shell g++ -dumpversion)
 $(info Found CXX_VERSION = $(CXX_VERSION))
-CXX_REQUIRED = 9.0
+CXX_REQUIRED = 7.0
 
 # Use bc command for double comparison, a common utility on Unix platforms
 FOO=$(shell echo "$(CXX_VERSION) < $(CXX_REQUIRED)" | bc)
