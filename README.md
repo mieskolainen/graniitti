@@ -73,9 +73,9 @@ pytest tests/testbench_*.py -s
 ```
 
 
-## Citation
+## Reference
 
-If you find this work useful, you may cite the paper:
+If you use this work in your research, please cite the paper:
 ```
 @article{mieskolainen2019graniitti,
     title={GRANIITTI: A Monte Carlo Event Generator for High Energy Diffraction},
