@@ -127,6 +127,7 @@ else
 $(info Found ROOTSYS = $(ROOTSYS))
 ROOT=TRUE
 
+
 # Info messages
 $(info )
 $(info ************************************************************************************)
@@ -135,6 +136,14 @@ $(info **  If compilation with ROOT libraries failes, try with: make -j4 CXX_ROO
 $(info **                                                                                **)
 $(info ************************************************************************************)
 $(info )
+endif
+
+ifeq ($(LIBTORCHSYS),)
+$(info Did not find LIBTORCHSYS - compilation without <libtorch> dependent tools)
+LIBTORCH=FALSE
+else
+$(info Found LIBTORCHSYS = $(LIBTORCHSYS))
+LIBTORCH=TRUE
 endif
 
 
@@ -147,10 +156,13 @@ HEPMC3lib      = -L$(HEPMC3SYS)/lib -L$(HEPMC3SYS)/lib64 -lHepMC3 -lHepMC3search
 # LHAPDF6 (lib64 needed on some systems)
 LHAPDF6lib     = -L$(LHAPDFSYS)/lib -L$(LHAPDFSYS)/lib64 -lLHAPDF
 
-# PyTorch
-# Note -Wl,-rpath-link= handles the recursive dependency (for linker)
-#PYTORCHlib     = -L./libs/libtorch/lib -lc10 -ltorch -lgomp -lcaffe2 \
-#				 -Wl,-rpath-link=./libs/libtorch/lib
+# LIBTORCH
+# Note -Wl,-R handles the recursive dependency (for linker)
+ifeq ($(LIBTORCH),TRUE)
+LIBTORCHlib    = -L${LIBTORCHSYS}/lib \
+				-Wl,-R${LIBTORCHSYS}/lib \
+				-ltorch -ltorch_cpu -lc10 -lgomp
+endif
 
 # ROOT
 ifeq ($(ROOT),TRUE)
@@ -174,7 +186,11 @@ LDLIBS += $(LHAPDF6lib)
 
 # The rest
 LDLIBS += $(STANDARDlib)
-#LDLIBS += $(PYTORCHlib)
+
+# LIBTORCH
+ifeq ($(LIBTORCH),TRUE)
+LDLIBS += $(LIBTORCHlib)
+endif
 
 # BLAS AND LAPACK
 #LDLIBS += -llapack -lblas
@@ -214,9 +230,11 @@ INCLUDES += -Ilibs/Eigen/unsupported
 # optimlib
 #INCLUDES += -Ilibs/optim
 
-# PyTorch
-#INCLUDES += -Ilibs/libtorch/include/
-#INCLUDES += -Ilibs/libtorch/include/torch/csrc/api/include
+# LIBTORCH
+ifeq ($(LIBTORCH),TRUE)
+INCLUDES += -I${LIBTORCHSYS}/include
+INCLUDES += -I${LIBTORCHSYS}/include/torch/csrc/api/include
+endif
 
 
 # =======================================================================
@@ -248,10 +266,6 @@ ifeq ($(VALGRIND),TRUE)
 OPTIM   += -pg 
 endif
 
-
-# Needed by PyTorch if using pre-compiled (ABI = Application Binary Interface)
-# gcc < 5.1 is 0, later versions use 1 by default
-# CXXFLAGS += -D_GLIBCXX_USE_CXX11_ABI=0
 
 # Automatic dependencies on
 CXXFLAGS += -MMD -MP 

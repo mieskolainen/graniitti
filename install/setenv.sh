@@ -23,6 +23,7 @@ export PATH=${LHAPDFSYS}/bin:${PATH}
 export LD_LIBRARY_PATH=${LHAPDFSYS}/lib:${LD_LIBRARY_PATH}
 export LD_LIBRARY_PATH=${LHAPDFSYS}/lib64:${LD_LIBRARY_PATH}
 
+#export LIBTORCHSYS=${INSTALLPATH}/libtorch
 
 export PYTHONPATH=${HOME}/local/HEPMC3/lib/python${PYTHON_VERSION}/site-packages:${PYTHONPATH}
 
@@ -31,6 +32,7 @@ echo 'New environment variables:'
 echo ''
 echo ' HEPMC3SYS='$HEPMC3SYS
 echo ' LHAPDFSYS='$LHAPDFSYS
+echo ' LIBTORCHSYS='$LIBTORCHSYS
 echo ''
 echo ' PATH='$PATH
 echo ''
