@@ -561,11 +561,11 @@ MMatrix<std::complex<double>> CalculateFMatrix(const MDecayBranch &branch) {
   gra::kinematics::HXframe(daughter, branch.p4);
 
   /*
-  // Boost daughters to the non-rotated frame (test/debug reservation)
+  // Boost daughters to the non-rotated rest frame (test/debug reservation)
   gra::kinematics::LorentzBoost(branch.p4, branch.p4.M(), daughter[0], -1);
   gra::kinematics::LorentzBoost(branch.p4, branch.p4.M(), daughter[1], -1);
   */
-  
+
   return fMatrix(branch.hel.T, branch.p.spinX2 / 2.0, s1, s2, daughter[A].Theta(),
                  daughter[A].Phi());
 }
