@@ -12,7 +12,7 @@
     "M"  : 3.51067,
     "W"  : 8.4E-04,
     "J"  :  1,
-    "P"  :  -1,
+    "P"  :  1,
     
     // Breit-Wigner propagator type
     // 1 = fixed width relativistic
