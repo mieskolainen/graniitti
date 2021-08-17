@@ -475,7 +475,7 @@ std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
   const double s1 = lts.decaytree[0].p.spinX2 / 2.0;
   const double s2 = lts.decaytree[1].p.spinX2 / 2.0;
 
-  // Boost daughter to the A-rest frame
+  // Boost daughter A to the X-rest frame
   M4Vec boosted_daughter = lts.decaytree[0].p4;
   gra::kinematics::LorentzBoost(lts.pfinal[0], lts.pfinal[0].M(), boosted_daughter, -1);
 
@@ -554,11 +554,18 @@ MMatrix<std::complex<double>> CalculateFMatrix(const MDecayBranch &branch) {
   const double s1 = branch.legs[A].p.spinX2 / 2.0;
   const double s2 = branch.legs[B].p.spinX2 / 2.0;
 
-  // Rotate and boost daughters to the frame where z-spanned by X-flight direction (X-helicity rest
-  // frame)
   std::vector<M4Vec> daughter = {branch.legs[A].p4, branch.legs[B].p4};
+  
+  // Rotate and boost daughters to the frame where
+  // z-spanned by X-flight direction (X-helicity rest frame)
   gra::kinematics::HXframe(daughter, branch.p4);
 
+  /*
+  // Boost daughters to the non-rotated frame (test/debug reservation)
+  gra::kinematics::LorentzBoost(branch.p4, branch.p4.M(), daughter[0], -1);
+  gra::kinematics::LorentzBoost(branch.p4, branch.p4.M(), daughter[1], -1);
+  */
+  
   return fMatrix(branch.hel.T, branch.p.spinX2 / 2.0, s1, s2, daughter[A].Theta(),
                  daughter[A].Phi());
 }

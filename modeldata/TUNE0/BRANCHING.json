@@ -38,6 +38,16 @@
       "P_conservation" : true,
     }
   },
+
+  // chi(c1)(1P)
+  "20443" : {
+
+    "0" : { // phi(1020)0 phi(1020)0
+      "PDG" : [333, 333], "BR" : 4.2E-4, // PDGlive 17.8.21
+      "alpha_ls" : [ [1,1, 1.0, 0.0]],
+      "P_conservation" : true,      
+    }
+  },
   
   // pi0
   "111" : {
@@ -131,7 +141,13 @@
       "PDG" : [211, -211], "BR" : 7.3E-5, // PDGlive 16.04.21
       "alpha_ls" : [ [1,0, 1.0, 0.0] ],
       "P_conservation" : true,
-    }
+    },
+    "3" : { // e+e-
+      "PDG" : [11, -11], "BR" : 2.974E-4, // PDGlive 17.08.21
+      "alpha_ls" : [ [0,1, 1.0, 0.0],
+                     [2,1, 1.0, 0.0] ],
+      "P_conservation" : true,
+    },    
   },
   
   // f(2)(1270)
