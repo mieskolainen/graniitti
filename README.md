@@ -3,7 +3,7 @@ https://arxiv.org/abs/1910.06300
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Build Status](https://travis-ci.com/mieskolainen/graniitti.svg?branch=master)](https://travis-ci.com/mieskolainen/graniitti)
+[![Build Status](https://travis-ci.com/mieskolainen/graniitti.svg?branch=master)](https://app.travis-ci.com/github/mieskolainen/graniitti)
 
 ## Algorithmic Engine and Monte Carlo Event Generator for High Energy Diffraction
 
