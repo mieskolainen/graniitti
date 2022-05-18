@@ -23,8 +23,8 @@ install:
 
 script:
   # Event generation and plots
-  - ./bin/gr -i ./input/test.json -h 0 -w true -l false
-  - python ./python/iceshot --hepmc3 test
+  - ./bin/gr -i ./input/test.json -h 0 -w true -l false -n 1500
+  - python ./python/iceshot --hepmc3 test --chunksize 299
 
   # Ray tuning
   - ray start --head

@@ -559,7 +559,7 @@ MMatrix<std::complex<double>> CalculateFMatrix(const MDecayBranch &branch) {
   // Rotate and boost daughters to the frame where
   // z-spanned by X-flight direction (X-helicity rest frame)
   gra::kinematics::HXframe(daughter, branch.p4);
-
+  
   /*
   // Boost daughters to the non-rotated rest frame (test/debug reservation)
   gra::kinematics::LorentzBoost(branch.p4, branch.p4.M(), daughter[0], -1);

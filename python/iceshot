@@ -2,11 +2,12 @@
 
 # iceshot -- MC and data differential comparison via HepMC3 & HEPData
 # 
-# (c) 2021 Mikael Mieskolainen
+# (c) 2022 Mikael Mieskolainen
 # Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
-__VERSION__ = (0,0,2)
+__VERSION__ = (0,0,3)
 __RELEASE__ = "beta"
+__AUTHOR__  = "Mikael Mieskolainen (m.mieskolainen@imperial.ac.uk)"
 
 
 import iceio
@@ -49,7 +50,7 @@ def parallel_wrapper(param):
 def main():
     ### Parse input arguments
     
-    parser = argparse.ArgumentParser(description=f"%(prog)s {__VERSION__} ({__RELEASE__})",
+    parser = argparse.ArgumentParser(description=f"%(prog)s {__VERSION__} ({__RELEASE__}) [{__AUTHOR__}]",
         epilog="""
     """, formatter_class=argparse.RawTextHelpFormatter)
     
@@ -78,7 +79,7 @@ def main():
     parser.add_argument("--mclabel",   nargs='+', help="example: --mclabel 'GRANIITTI pi+pi-' 'GRANIITTI K+K-'")
     parser.add_argument("--title",     type=str,  default=f'iceshot', help="example: --title 'LHC analysis'")
     
-
+    
     parser.add_argument("--datascale", nargs='+', help="example: --datascale 1.1")
     parser.add_argument("--mcscale",   nargs='+', help="example: --mcscale 1.0 0.8")
     
@@ -217,7 +218,7 @@ def main():
         file = hepmc3.ReaderAscii(hepmc3files[label])
         if file.failed(): return
 
-        nevents = 0
+        nevents = -1
         while not file.failed():
             if nevents == args.maxevents:
                 print(f'iceshot: Maximum events limit = {args.maxevents} reached')
@@ -226,6 +227,11 @@ def main():
             evt = hepmc3.GenEvent()
             file.read_event(evt)
 
+        if nevents < 1:
+            print(f'iceshot: Error -- Founds no events from the file')
+            return
+
+        print(f'iceshot: Number of events found in total: {nevents}')
 
         # 2. Chunked loop [parallel processing]
         same_param = {

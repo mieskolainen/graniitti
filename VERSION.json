@@ -1,7 +1,7 @@
 {
  "name": "GRANIITTI",
- "version": 1.080,
+ "version": 1.081,
  "type": "pre-release",
- "date": "04.05.2021",
- "update": "spin-machinery extensions, new tune, updated tech & bugfixes"
+ "date": "18.05.2022",
+ "update": "python plotting tool bugfixes"
 }

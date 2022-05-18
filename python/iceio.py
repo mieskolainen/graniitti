@@ -1,6 +1,6 @@
 # HepMC3 and HEPData input/output functions
 #
-# (c) 2021 Mikael Mieskolainen
+# (c) 2022 Mikael Mieskolainen
 # Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 from importlib import import_module
@@ -100,7 +100,7 @@ def read_hepmc3(hepmc3file, all_obs, pid, cuts=None, maxevents=None, chunk_range
 
         # Get GenCrossSection info attributes
         mc_xsec_pb     = float(evt.cross_section().xsec())
-        mc_xsec_err_pb = float(evt.cross_section().xsec_err())
+        mc_xsec_pb_err = float(evt.cross_section().xsec_err())
         mc_trials      = float(evt.cross_section().get_attempted_events())
 
         event = ice_event(evt=evt, pid=pid)
@@ -134,7 +134,7 @@ def read_hepmc3(hepmc3file, all_obs, pid, cuts=None, maxevents=None, chunk_range
         W2             = np.sum(mc_weights_tot**2)
 
         mc_xsec_pb     = SCALE * W/N
-        mc_xsec_err_pb = SCALE * np.sqrt((W2/N - (W/N)**2)/N);
+        mc_xsec_pb_err = SCALE * np.sqrt((W2/N - (W/N)**2)/N);
     # --------------------------------------------------------------------
     
     # Count the python user cuts fiducial acceptance
@@ -142,15 +142,15 @@ def read_hepmc3(hepmc3file, all_obs, pid, cuts=None, maxevents=None, chunk_range
 
     elapsed        = time.time() - t
     print(f'{hepmc3file}')
-    print(f'Before cuts: mc_xs_pb: {mc_xsec_pb:.3g} +- {mc_xsec_err_pb:.3g} | events read = {len(mc_weights_tot)} | wsum = {np.sum(mc_weights_tot):0.3E} | chunk = {chunk_range}')
+    print(f'Before cuts: mc_xs_pb: {mc_xsec_pb:.3g} +- {mc_xsec_pb_err:.3g} | events read = {len(mc_weights_tot)} | wsum = {np.sum(mc_weights_tot):0.3E} | chunk = {chunk_range}')
     
     if acceptance < 1.0:
         mc_xsec_pb     *= acceptance
-        mc_xsec_err_pb *= acceptance
+        mc_xsec_pb_err *= acceptance
     
-    print(f'After  cuts: mc_xs_pb: {mc_xsec_pb:.3g} +- {mc_xsec_err_pb:.3g} | events read = {len(mc_weights)} | wsum = {np.sum(mc_weights):0.3E} | cuts <{cuts}> acceptance = {acceptance:0.3E}')
+    print(f'After  cuts: mc_xs_pb: {mc_xsec_pb:.3g} +- {mc_xsec_pb_err:.3g} | events read = {len(mc_weights)} | wsum = {np.sum(mc_weights):0.3E} | cuts <{cuts}> acceptance = {acceptance:0.3E}')
     
-    return {'data': mc_data, 'weights': mc_weights, 'xsection_pb': mc_xsec_pb, 'xsection_pb_err' : mc_xsec_err_pb, 'acceptance': acceptance}
+    return {'data': mc_data, 'weights': mc_weights, 'xsection_pb': mc_xsec_pb, 'xsection_pb_err' : mc_xsec_pb_err, 'acceptance': acceptance}
 
 
 def read_hepdata(dataset, all_obs, cdir=None):

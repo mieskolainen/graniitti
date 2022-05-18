@@ -36,12 +36,12 @@ Run ./bin/gr and see /docs/FAQ
 
 Simulate MC events
 ```
-./bin/gr -i ./fitcard/STAR_1792394_pipi.json -w true -l true -n 30000
+./bin/gr -i ./fitcard/STAR_1792394_pipi.json -w true -l true -n 50000
 ```
 
 Setup virtual Python environment via Conda
 ```
-wget https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh
+wget https://repo.anaconda.com/archive/Anaconda3-2022.05-Linux-x86_64.sh
 chmod +x and execute the installer
 
 conda create -y --name graniitti python==3.8.5
@@ -49,24 +49,24 @@ conda activate graniitti
 pip install -r requirements.txt
 ```
 
-Analyze MC events and data
+(Python) Analyze MC events and data
 ```
 python python/iceshot --hepmc3 STAR_1792394_pipi --hepdata dataset_STAR_1792394_pipi --pid '[[211,-211]]'
 ```
 
-Compare MC with differential fiducial measurements made at RHIC/Tevatron/LHC
+(Python) Compare MC with differential fiducial measurements made at RHIC/Tevatron/LHC
 ```
 pytest tests/testbench_exloop.py -s --POMLOOP true
 pytest tests/testbench_cepdata.py -s --POMLOOP true
 ```
 
-MC model tuning via HPC-distributed Bayesian / evolutionary optimization
+(Python) MC model tuning via HPC-distributed Bayesian / evolutionary optimization
 ```
 ray start --head
 python python/icetune --tuneset default
 ```
 
-Unit and integration tests
+(Python) Unit and integration tests
 ```
 make -j4 TEST=TRUE && ./bin/testbench*
 pytest tests/testbench_*.py -s

@@ -53,13 +53,26 @@ namespace aux {
 // -------------------------------------------------------
 // FIXED HERE manually
 
-double      GetVersion() { return 1.08; }
+double      GetVersion() { return 1.081; }
 std::string GetVersionType() { return "pre-release"; }
-std::string GetVersionDate() { return "04.05.2021"; }
+std::string GetVersionDate() { return "18.05.2022"; }
 std::string GetVersionUpdate() {
-  return "spin-machinery extensions, new tune, updated tech & bugfixes";
+  return "python plotting tool bugfixes";
 }
 
+void PrintVersion() {
+  std::cout << GetVersionString() << std::endl;
+  std::cout << rang::style::bold << "<github.com/mieskolainen/graniitti>" << rang::style::reset
+            << std::endl
+            << std::endl;
+  std::cout << "References: arXiv:1910.06300 [hep-ph]" << std::endl;
+  std::cout << std::endl;
+  std::cout << "(c) 2017-2022 Mikael Mieskolainen" << std::endl;
+  std::cout << "<m.mieskolainen@imperial.ac.uk>" << std::endl;
+  std::cout << std::endl;
+  std::cout << "<opensource.org/licenses/GPL-3.0>" << std::endl;
+  std::cout << "<opensource.org/licenses/MIT>" << std::endl;
+}
 
 // -------------------------------------------------------
 
@@ -703,19 +716,6 @@ void PrintFlashScreen(rang::fg pcolor) {
   std::cout << rang::fg::reset;
 }
 
-void PrintVersion() {
-  std::cout << GetVersionString() << std::endl;
-  std::cout << rang::style::bold << "<github.com/mieskolainen/graniitti>" << rang::style::reset
-            << std::endl
-            << std::endl;
-  std::cout << "References: arXiv:1910.06300 [hep-ph]" << std::endl;
-  std::cout << std::endl;
-  std::cout << "(c) 2017-2021 Mikael Mieskolainen" << std::endl;
-  std::cout << "<m.mieskolainen@imperial.ac.uk>" << std::endl;
-  std::cout << std::endl;
-  std::cout << "<opensource.org/licenses/GPL-3.0>" << std::endl;
-  std::cout << "<opensource.org/licenses/MIT>" << std::endl;
-}
 
 // Print horizontal bar
 void PrintBar(std::string str, unsigned int N) {

@@ -29,7 +29,7 @@ def test_cepdata(POMLOOP, NEVENTS, MODELPARAM):
 
     # Apply fast screening (absorption) factor at \sqrt{s} = 200 GeV
     # (applied to plots)
-    S2_factor = 0.4 if not POMLOOP else 1.0
+    S2_factor = 0.3 if not POMLOOP else 1.0
     
     
     ### Loop over all datasets
