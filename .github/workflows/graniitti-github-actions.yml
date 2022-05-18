@@ -16,32 +16,30 @@ jobs:
       #- run: npm install -g bats
       #- run: bats -v
 
-      # Compile C++
-      - run: source install/setenv.sh && make -j8 TEST=TRUE
-      
-      
       # HepMC3 and LHAPDF6 install
       - run: cd install && yes y | source autoinstall.sh && cd ..
+
+      # Compile C++
+      - run: source install/setenv.sh && make -j8 TEST=TRUE
 
       # Install (python tools)
       - run: pip install -r requirements.txt
 
       # Event generation
-      - run: ./bin/gr -i ./input/test.json -h 0 -w true -l false -n 1500
+      - run: source install/setenv.sh && ./bin/gr -i ./input/test.json -h 0 -w true -l false -n 1500
 
       # Python plots
       - run: python ./python/iceshot --hepmc3 test --chunksize 299
 
       # Ray tuning
-      - run: ray start --head
-      - run: python ./python/icetune --tuneset fast
-        
+      - run: source install/setenv.sh && ray start --head && python ./python/icetune --tuneset fast
+      
       # C++ tests
-      - run: for i in {0,1,2,3}; do "./bin/testbench$i"; done
+      - run: source install/setenv.sh && for i in {0,1,2,3}; do "./bin/testbench$i"; done
         
       # Python driven tests (fast mode --> POMLOOP False)
-      - run: pytest tests/testbench_cepdata.py -s --POMLOOP false --NEVENTS 2000
-      - run: pytest tests/testbench_exloop.py  -s --POMLOOP false
+      - run: source install/setenv.sh && pytest tests/testbench_cepdata.py -s --POMLOOP false --NEVENTS 2000
+      - run: source install/setenv.sh && pytest tests/testbench_exloop.py  -s --POMLOOP false
       #- run: pytest tests/testbench_vgrid.py -s
       #- run: pytest tests/testbench_integrators.py -s
       #- run: pytest tests/testbench_global_fast.py -s
