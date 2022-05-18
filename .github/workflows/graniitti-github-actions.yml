@@ -16,17 +16,24 @@ jobs:
       #- run: npm install -g bats
       #- run: bats -v
 
-      # HepMC3 and LHAPDF6 install
-      - run: cd install && yes y | source autoinstall.sh && source setenv.sh && cd ..
+      # Set C++ environment variables
+      - run: chmod +x install/setenv.sh && install/setenv.sh
 
-      # Install python tools and compile C++
+      # HepMC3 and LHAPDF6 install
+      - run: cd install && yes y | source autoinstall.sh && cd ..
+
+      # Install (python tools)
       - run: pip install -r requirements.txt
+
+      # Compile C++
       - run: make -j8 TEST=TRUE
-      
-      # Event generation and plots
+
+      # Event generation
       - run: ./bin/gr -i ./input/test.json -h 0 -w true -l false -n 1500
+
+      # Python plots
       - run: python ./python/iceshot --hepmc3 test --chunksize 299
-      
+
       # Ray tuning
       - run: ray start --head
       - run: python ./python/icetune --tuneset fast
