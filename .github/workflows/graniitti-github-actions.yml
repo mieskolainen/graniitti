@@ -16,12 +16,10 @@ jobs:
       #- run: npm install -g bats
       #- run: bats -v
 
-      # Set C++ environment variables
-      - run: chmod +x install/setenv.sh && install/setenv.sh
-
       # Compile C++
-      - run: make -j8 TEST=TRUE
-
+      - run: source install/setenv.sh && make -j8 TEST=TRUE
+      
+      
       # HepMC3 and LHAPDF6 install
       - run: cd install && yes y | source autoinstall.sh && cd ..
 
