@@ -1,0 +1,43 @@
+# Github actions CI (continous integration) setup
+
+name: graniitti-github-actions
+
+on: [push]
+
+jobs:
+  install-generate-plot-tune-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      #- uses: actions/setup-node@v3
+      #  with:
+      #    node-version: '14'
+      #- run: npm install -g bats
+      #- run: bats -v
+
+      # HepMC3 and LHAPDF6 install
+      - run: cd install && yes y | source autoinstall.sh && source setenv.sh && cd ..
+
+      # Install python tools and compile C++
+      - run: pip install -r requirements.txt
+      - run: make -j8 TEST=TRUE
+      
+      # Event generation and plots
+      - run: ./bin/gr -i ./input/test.json -h 0 -w true -l false -n 1500
+      - run: python ./python/iceshot --hepmc3 test --chunksize 299
+      
+      # Ray tuning
+      - run: ray start --head
+      - run: python ./python/icetune --tuneset fast
+        
+      # C++ tests
+      - run: for i in {0,1,2,3}; do "./bin/testbench$i"; done
+        
+      # Python driven tests (fast mode --> POMLOOP False)
+      - run: pytest tests/testbench_cepdata.py -s --POMLOOP false --NEVENTS 2000
+      - run: pytest tests/testbench_exloop.py  -s --POMLOOP false
+      #- run: pytest tests/testbench_vgrid.py -s
+      #- run: pytest tests/testbench_integrators.py -s
+      #- run: pytest tests/testbench_global_fast.py -s
+      #- run: pytest tests/testbench_global_slow.py -s
