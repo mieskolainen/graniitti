@@ -19,14 +19,14 @@ jobs:
       # Set C++ environment variables
       - run: chmod +x install/setenv.sh && install/setenv.sh
 
+      # Compile C++
+      - run: make -j8 TEST=TRUE
+
       # HepMC3 and LHAPDF6 install
       - run: cd install && yes y | source autoinstall.sh && cd ..
 
       # Install (python tools)
       - run: pip install -r requirements.txt
-
-      # Compile C++
-      - run: make -j8 TEST=TRUE
 
       # Event generation
       - run: ./bin/gr -i ./input/test.json -h 0 -w true -l false -n 1500
