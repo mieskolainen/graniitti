@@ -1,6 +1,6 @@
 # Github actions CI (continous integration) setup
 
-name: graniitti-github-actions
+name: graniitti-install-generate-test
 
 on: [push]
 
