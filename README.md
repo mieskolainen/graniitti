@@ -3,7 +3,7 @@ https://arxiv.org/abs/1910.06300
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Build Status](https://github.com/mieskolainen/graniitti/actions/workflows/graniitti-install-generate-test.yml/badge.svg)](https://github.com/mieskolainen/graniitti/workflows/graniitti-install-generate-test/badge.svg?branch=master)
+[![Build Status](https://github.com/mieskolainen/graniitti/actions/workflows/graniitti-install-generate-test.yml/badge.svg)](https://github.com/mieskolainen/graniitti/actions)
 
 
 ## Algorithmic Engine and Monte Carlo Event Generator for High Energy Diffraction
