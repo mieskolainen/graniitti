@@ -9,8 +9,8 @@ cmake
 maketools
 pyjson5
 matplotlib
-numba
-numpy
+numba==0.53.0
+numpy==1.21.4
 iminuit
 braceexpand
 termcolor
