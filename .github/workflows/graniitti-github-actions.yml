@@ -29,7 +29,7 @@ jobs:
       - run: source install/setenv.sh && ./bin/gr -i ./input/test.json -h 0 -w true -l false -n 1500
 
       # Python plots
-      - run: python ./python/iceshot --hepmc3 test --chunksize 299
+      - run: source install/setenv.sh && python ./python/iceshot --hepmc3 test --chunksize 299
 
       # Ray tuning
       - run: source install/setenv.sh && ray start --head && python ./python/icetune --tuneset fast
@@ -40,7 +40,7 @@ jobs:
       # Python driven tests (fast mode --> POMLOOP False)
       - run: source install/setenv.sh && pytest tests/testbench_cepdata.py -s --POMLOOP false --NEVENTS 2000
       - run: source install/setenv.sh && pytest tests/testbench_exloop.py  -s --POMLOOP false
-      #- run: pytest tests/testbench_vgrid.py -s
-      #- run: pytest tests/testbench_integrators.py -s
-      #- run: pytest tests/testbench_global_fast.py -s
-      #- run: pytest tests/testbench_global_slow.py -s
+      #- run: source install/setenv.sh && pytest tests/testbench_vgrid.py -s
+      #- run: source install/setenv.sh && pytest tests/testbench_integrators.py -s
+      #- run: source install/setenv.sh && pytest tests/testbench_global_fast.py -s
+      #- run: source install/setenv.sh && pytest tests/testbench_global_slow.py -s
