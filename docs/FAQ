@@ -1,5 +1,5 @@
 GRANIITTI Monte Carlo event generator FAQ
-03/05/2021
+19/05/2022
 
 m.mieskolainen@imperial.ac.uk
 -----------
@@ -7,14 +7,32 @@ m.mieskolainen@imperial.ac.uk
 START
 -----------
 
+```
 git clone --depth 1 https://github.com/mieskolainen/graniitti && cd graniitti
 cd install && source autoinstall.sh && cd ..
-source ./install/setenv.sh
+source install/setenv.sh
 make -j4 CXX=g++ 
-
+```
 
 Above, you may use also CXX=clang, but there can be problems with ROOT (which is optional).
-Note that you need GCC > 9 or newer.
+
+** Note that you need GCC > 9 or newer. **
+
+
+
+COMPILING UNDER CONDA VIRTUAL ENVIRONMENT
+-----------
+
+Under the Conda virtual environment:
+
+```
+conda install -c anaconda cmake
+conda install gcc_linux-64=9.3.0
+conda install gxx_linux-64=9.3.0
+
+ln -s $CONDA_PREFIX/bin/x86_64-conda-linux-gnu-gcc $CONDA_PREFIX/bin/gcc
+ln -s $CONDA_PREFIX/bin/x86_64-conda-linux-gnu-g++ $CONDA_PREFIX/bin/g++
+```
 
 
 FIRST RUN
@@ -63,30 +81,34 @@ PROGRAMS
 1. Simulation
 -----------
 
+```
 ./bin/gr             Main simulation program
 ./bin/xscan          Process cross section energy dependence scanner
 ./bin/minbias        Minimum bias processes (SD,DD,ND) simulation (for minimalistic rapidity gap fluctuation studies)
 ./bin/hepmc3tolhe    Convert .hepmc3 to .lhe event output format
-
+```
 
 2. Analysis
 -----------
 
+```
 ./python/*           Analysis and tuning with Python 3 libraries
 
 ./bin/analyze        Fast histogramming and plotting of fiducial observables in central production
 ./bin/fitharmonic    Spherical harmonic inverse expansion and analysis
 ./bin/fitsoft        Fit tool for the eikonal Pomeron model parameters
 ./bin/data2hepmc3    Push events from external sources to .hepmc3 format for a quick analysis (code template)
-
+```
 
 3. Automated tests
 -----------
 
 Compile with 'make -j4 TEST=TRUE'
 
+```
 ./bin/testbench*     Test cases using C++ catch2 framework
 ./tests/megarun.sh   Will run all the global and unit tests, runtime 1 hour+
+```
 
 pytest ./tests/testbench_exloop.py -s 
 Loops over pre-defined fiducial measurements and produces a comparison table
@@ -109,9 +131,11 @@ Q:  I use a standalone system, for example Ubuntu linux, what do I need for the 
 A:  Assuming you have compiled ROOT or use pre-compiled binaries downloaded from <root.cern.ch>,
     which are extracted for example to $HOME/local/root, then setup these 3 lines in your environment:
     
+    ```
     export ROOTSYS=$HOME/local/root
     export PATH=$ROOTSYS/bin:$PATH
     export LD_LIBRARY_PATH=$ROOTSYS/lib:$LD_LIBRARY_PATH
+    ```
 
     And make sure that these paths make sense, so that you find binaries/objects/headers
     under $ROOTSYS/bin, $ROOTSYS/lib, $ROOTSYS/include.

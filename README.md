@@ -24,9 +24,9 @@ See VERSION.json for the version information
 Compile C++ code
 ```
 sudo apt install cmake g++ python3-dev curl
-git clone --depth 1 https://github.com/mieskolainen/graniitti
-cd graniitti && cd install && source autoinstall.sh && cd ..
-source ./install/setenv.sh 
+git clone --depth 1 https://github.com/mieskolainen/graniitti && cd graniitti
+cd install && source autoinstall.sh && cd ..
+source install/setenv.sh 
 make -j4
 ```
 
