@@ -38,7 +38,7 @@ if   SET == 0:
     dataset_STAR_1792394_pipi_less_90.json }'
 
   if mc_steer['POMLOOP'] == False:
-    mc_steer['kfactor'] = 0.4 # Simple fast approximation
+    mc_steer['kfactor'] = 0.3 # Simple fast approximation
 
 elif SET == 1:
   fitcardfile = '{ \
@@ -46,13 +46,13 @@ elif SET == 1:
     dataset_STAR_1792394_KK_less_90.json}'
   
   if mc_steer['POMLOOP'] == False:
-    mc_steer['kfactor'] = 0.4
+    mc_steer['kfactor'] = 0.3
 
 elif SET == 2:
   fitcardfile = '{dataset_STAR_1792394_pipi*, dataset_STAR_1792394_KK*}'
   
   if mc_steer['POMLOOP'] == False:
-    mc_steer['kfactor'] = 0.4
+    mc_steer['kfactor'] = 0.3
 
 elif SET == 3:
   fitcardfile = '{dataset_ALICE*, dataset_ATLAS*}'
@@ -113,7 +113,7 @@ free_resonances = ['f0_500', 'f0_980', 'f2_1270', 'f0_1500', 'f2_1525', 'f0_1710
 
 ## Masses and widths
 """
-config['RES|f0_500:M'] = tune.uniform(0.4, 0.7)
+config['RES|f0_500:M'] = tune.uniform(0.3, 0.7)
 config['RES|f0_500:W'] = tune.uniform(0.3, 0.6)
 """
 

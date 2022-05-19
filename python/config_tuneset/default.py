@@ -38,7 +38,7 @@ if   SET == 0:
     dataset_STAR_1792394_pipi_less_90.json }'
 
   if mc_steer['POMLOOP'] == False:
-    mc_steer['kfactor'] = 0.4 # Simple fast approximation
+    mc_steer['kfactor'] = 0.3 # Simple fast approximation
 
 elif SET == 1:
   fitcardfile = '{ \
@@ -46,13 +46,13 @@ elif SET == 1:
     dataset_STAR_1792394_KK_less_90.json}'
   
   if mc_steer['POMLOOP'] == False:
-    mc_steer['kfactor'] = 0.4
+    mc_steer['kfactor'] = 0.3
 
 elif SET == 2:
   fitcardfile = '{dataset_STAR_1792394_pipi*, dataset_STAR_1792394_KK*}'
   
   if mc_steer['POMLOOP'] == False:
-    mc_steer['kfactor'] = 0.4
+    mc_steer['kfactor'] = 0.3
 
 elif SET == 3:
   fitcardfile = '{dataset_ALICE*, dataset_ATLAS*}'
