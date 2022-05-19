@@ -454,6 +454,7 @@ A:  Great! However, do NOT embed or create custom interfaces to the
 
 Q:  Under Conda environment, "ModuleNotFoundError: No module named '_sysconfigdata_x86_64_conda_linux_gnu'"
 A:  Try the following:
+    conda install python=3.8.5
     cd $CONDA_PREFIX/lib/python3.8
     cp _sysconfigdata_x86_64_conda_cos6_linux_gnu.py _sysconfigdata_x86_64_conda_linux_gnu.py
 
