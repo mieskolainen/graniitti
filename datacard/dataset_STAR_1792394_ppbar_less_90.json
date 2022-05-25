@@ -5,7 +5,7 @@
 "TYPE"     : "HEPDATA",
 "DATAPATH" : "/HEPData/CD/HEPData-ins1792394-v1-csv/",
 
-"GENCARD"  : ["/fitcard/STAR_1792394_ppbar_less_90.json"],
+"GENCARD"  : ["/gencard/STAR_1792394_ppbar_less_90.json"],
 
 "PID"      : [2212, -2212],
 

@@ -22,10 +22,10 @@ def test_input_output():
     """
 
     cmd = []
-    cmd.append(f"./bin/gr -i ./input/test.json -w true -l false -h 0 -n 0 -p 'PP[CON]<F> -> pi+ pi-' -o CON")
-    cmd.append(f"./bin/gr -i ./input/test.json -w true -l false -h 0 -n 0 -p 'PP[RES+CON]<F> -> pi+ pi-' -o RES_CON")
-    cmd.append(f"./bin/gr -i ./input/test.json -d ./vgrid/CON.vgrid -w true -l false -h 0 -n 1000 -p 'PP[CON]<F> -> pi+ pi-' -o CON -f hepmc3")
-    cmd.append(f"./bin/gr -i ./input/test.json -d ./vgrid/RES_CON.vgrid -w true -l false -h 0 -n 1000 -p 'PP[RES+CON]<F> -> pi+ pi-' -o RES_CON -f hepmc3")
+    cmd.append(f"./bin/gr -i gencard/test.json -w true -l false -h 0 -n 0 -p 'PP[CON]<F> -> pi+ pi-' -o CON")
+    cmd.append(f"./bin/gr -i gencard/test.json -w true -l false -h 0 -n 0 -p 'PP[RES+CON]<F> -> pi+ pi-' -o RES_CON")
+    cmd.append(f"./bin/gr -i gencard/test.json -d ./vgrid/CON.vgrid -w true -l false -h 0 -n 1000 -p 'PP[CON]<F> -> pi+ pi-' -o CON -f hepmc3")
+    cmd.append(f"./bin/gr -i gencard/test.json -d ./vgrid/RES_CON.vgrid -w true -l false -h 0 -n 1000 -p 'PP[RES+CON]<F> -> pi+ pi-' -o RES_CON -f hepmc3")
     execute(cmd)
     
     cmd = "python ./python/iceshot --hepmc3 CON RES_CON --maxevents 1000 --pid '[[211,-211], [211,-211]]'"
@@ -42,7 +42,7 @@ def test_vgrid():
     """
     cmd = []
 
-    command = f"./bin/gr -i ./input/test.json -w true -l false -h 0 -n 0 -p 'PP[CON]<F> -> pi+ pi-' -o vgrid_test"
+    command = f"./bin/gr -i gencard/test.json -w true -l false -h 0 -n 0 -p 'PP[CON]<F> -> pi+ pi-' -o vgrid_test"
     cmd.append(f"{command}")
     cmd.append(f"{command} -d ./vgrid/vgrid_test.vgrid")
     execute(cmd)
@@ -54,7 +54,7 @@ def test_output():
     """
     cmd = []
     for output in ['output_A', 'output_B']:
-        cmd.append(f"./bin/gr -i ./input/test.json -w true -l false -h 0 -n 0 -p 'PP[CON]<F> -> pi+ pi-' -o {output} -o output_test_{output}")
+        cmd.append(f"./bin/gr -i gencard/test.json -w true -l false -h 0 -n 0 -p 'PP[CON]<F> -> pi+ pi-' -o {output} -o output_test_{output}")
     execute(cmd)
 
 
@@ -64,7 +64,7 @@ def test_format():
     """
     cmd = []
     for f in ['hepmc2', 'hepmc3', 'hepevt']:
-        cmd.append(f"./bin/gr -i ./input/test.json -w true -l false -h 0 -n 0 -p 'PP[CON]<F> -> pi+ pi-' -f {f} -o format_test_{f}")
+        cmd.append(f"./bin/gr -i gencard/test.json -w true -l false -h 0 -n 0 -p 'PP[CON]<F> -> pi+ pi-' -f {f} -o format_test_{f}")
     execute(cmd)
 
 
@@ -74,7 +74,7 @@ def test_cores():
     """
     cmd = []
     for cores in [0, 16, 128, 1024, 4096]:
-        cmd.append(f"./bin/gr -i ./input/test.json -w true -l false -h 0 -n 0 -p 'PP[CON]<F> -> pi+ pi-' -c {cores} -o cores_test_{cores}")
+        cmd.append(f"./bin/gr -i gencard/test.json -w true -l false -h 0 -n 0 -p 'PP[CON]<F> -> pi+ pi-' -c {cores} -o cores_test_{cores}")
     execute(cmd)
 
 
@@ -84,7 +84,7 @@ def test_nevents():
     """
     cmd = []
     for n in [0, 100]:
-        cmd.append(f"./bin/gr -i ./input/test.json -w true -l false -h 0 -p 'PP[CON]<F> -> pi+ pi-' -n {n}  -o nevents_test_{n}")
+        cmd.append(f"./bin/gr -i gencard/test.json -w true -l false -h 0 -p 'PP[CON]<F> -> pi+ pi-' -n {n}  -o nevents_test_{n}")
     execute(cmd)
 
 
@@ -94,7 +94,7 @@ def test_weighted():
     """
     cmd = []
     for weighted in ['false', 'true']:
-        cmd.append(f"./bin/gr -i ./input/test.json -l false -h 0 -n 100 -p 'PP[CON]<F> -> pi+ pi-' -w {weighted} -o weighted_test_{weighted}")
+        cmd.append(f"./bin/gr -i gencard/test.json -l false -h 0 -n 100 -p 'PP[CON]<F> -> pi+ pi-' -w {weighted} -o weighted_test_{weighted}")
     execute(cmd)
 
 
@@ -104,7 +104,7 @@ def test_modelparam():
     """
     cmd = []
     for modelparam in ['TUNE0', 'TUNE0']:
-        cmd.append(f"./bin/gr -i ./input/test.json -w false -m {modelparam} -l false -h 0 -n 0 -p 'PP[CON]<F> -> pi+ pi-' -o modelparam_test_{modelparam}")
+        cmd.append(f"./bin/gr -i gencard/test.json -w false -m {modelparam} -l false -h 0 -n 0 -p 'PP[CON]<F> -> pi+ pi-' -o modelparam_test_{modelparam}")
     execute(cmd)
 
 
@@ -117,14 +117,14 @@ def test_process():
                  'PP[CON]<C> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-}', \
                  'PP[RES+CON]<F> -> pi+ pi- @RES{f0_500:0,rho_770:1,f0_980:1,f2_1270:1} @R[f0_980]{M:0.98,W:0.065}']:
         
-        cmd.append(f"./bin/gr -i ./input/test.json -w true -h 0 -n 0 -p '{proc}' -o process_test")
+        cmd.append(f"./bin/gr -i gencard/test.json -w true -h 0 -n 0 -p '{proc}' -o process_test")
     execute(cmd)
 
 
 def test_energy():
     cmd = []
     for energy in ['7000', '13000']:
-        cmd.append(f"./bin/gr -i ./input/test.json -w true -h 0 -n 0 -p 'PP[CON]<C> -> pi+ pi-' -e {energy} -o energy_test_{energy}")
+        cmd.append(f"./bin/gr -i gencard/test.json -w true -h 0 -n 0 -p 'PP[CON]<C> -> pi+ pi-' -e {energy} -o energy_test_{energy}")
     execute(cmd)
 
 
@@ -134,7 +134,7 @@ def test_nstars():
     """
     cmd = []
     for excite in [0,1,2]:
-        cmd.append(f"./bin/gr -i ./input/test.json -w true -l false -h 0 -n 0 -p 'PP[CON]<F> -> pi+ pi-' -s {excite} -o excite_test_{excite}")
+        cmd.append(f"./bin/gr -i gencard/test.json -w true -l false -h 0 -n 0 -p 'PP[CON]<F> -> pi+ pi-' -s {excite} -o excite_test_{excite}")
     execute(cmd)
 
 
@@ -144,7 +144,7 @@ def test_hist():
     """
     cmd = []
     for screening in ['true', 'false']:
-        cmd.append(f"./bin/gr -i ./input/test.json -w true -h 0 -n 0 -p 'PP[CON]<C> -> pi+ pi-' -l {screening} -o hist_test_{screening}")
+        cmd.append(f"./bin/gr -i gencard/test.json -w true -h 0 -n 0 -p 'PP[CON]<C> -> pi+ pi-' -l {screening} -o hist_test_{screening}")
     execute(cmd)
 
 def test_rndseed():
@@ -153,7 +153,7 @@ def test_rndseed():
     """
     cmd = []
     for seed in [123, 456]:
-        cmd.append(f"./bin/gr -i ./input/test.json -w true -l false -h 0 -n 100 -p 'PP[CON]<C> -> pi+ pi-' -r {seed} -o rndseed_test_{seed}")
+        cmd.append(f"./bin/gr -i gencard/test.json -w true -l false -h 0 -n 100 -p 'PP[CON]<C> -> pi+ pi-' -r {seed} -o rndseed_test_{seed}")
     execute(cmd)
 
 
@@ -168,20 +168,20 @@ def test_otf():
     # Tree sampling
     clist  = ['@FLATAMP:1', '@FLATMASS2:true', '@OFFSHELL:7']
     
-    for OF in clist: cmd.append(f"./bin/gr -i ./input/test.json -w true -l false -h 0 -n 100 -p 'PP[CON]<F> -> pi+ pi- {OF}' -o test1")
+    for OF in clist: cmd.append(f"./bin/gr -i gencard/test.json -w true -l false -h 0 -n 100 -p 'PP[CON]<F> -> pi+ pi- {OF}' -o test1")
     execute(cmd)
 
     # Mass and width
     clist  = ['@PDG[992]{M:350.0, W:5.0}']
     clist += ['@R[f0_980]{M:0.990, W:0.065}']
 
-    for OF in clist: cmd.append(f"./bin/gr -i ./input/test.json -w true -l false -h 0 -n 100 -p 'PP[CON]<F> -> pi+ pi- {OF}' -o test2")
+    for OF in clist: cmd.append(f"./bin/gr -i gencard/test.json -w true -l false -h 0 -n 100 -p 'PP[CON]<F> -> pi+ pi- {OF}' -o test2")
     execute(cmd)
 
     # Active resonances
     clist  = ['@RES{f0_980:1, f2_1270:1}']
     
-    for OF in clist: cmd.append(f"./bin/gr -i ./input/test.json -w true -l false -h 0 -n 100 -p 'PP[CON]<F> -> pi+ pi- {OF}' -o test3")
+    for OF in clist: cmd.append(f"./bin/gr -i gencard/test.json -w true -l false -h 0 -n 100 -p 'PP[CON]<F> -> pi+ pi- {OF}' -o test3")
     execute(cmd)
 
     # Spin parameters
@@ -190,14 +190,14 @@ def test_otf():
     clist += ['@R[f2_1270]{JZ0:0.5, JZ1:0.0, JZ2:0.5}']
     clist += ['@JMAX:4']
     
-    for OF in clist: cmd.append(f"./bin/gr -i ./input/test.json -w true -l false -h 0 -n 100 -p 'PP[CON]<F> -> pi+ pi- {OF}' -o test4")
+    for OF in clist: cmd.append(f"./bin/gr -i gencard/test.json -w true -l false -h 0 -n 100 -p 'PP[CON]<F> -> pi+ pi- {OF}' -o test4")
     execute(cmd)
 
     # Tensor Pomeron parameters
     clist  = ['@R[f0_980]{g0:1.0, g1:0.2}']
     clist += ['@R[f0_1270]{g0:1.0, g1:0.1, g2:0.4, g3:0.3, g4:0.2, g5:0.1, g6:0.0}']
 
-    for OF in clist: cmd.append(f"./bin/gr -i ./input/test.json -w true -l false -h 0 -n 100 -p 'PP[CON]<F> -> pi+ pi- {OF}' -o test5")
+    for OF in clist: cmd.append(f"./bin/gr -i gencard/test.json -w true -l false -h 0 -n 100 -p 'PP[CON]<F> -> pi+ pi- {OF}' -o test5")
     execute(cmd)
 
 
@@ -213,7 +213,7 @@ def test_PP():
     cmd = []
     for proc in proclist:
         for fs in ['pi+ pi-', 'K+ K-']:
-            cmd.append(f"./bin/gr -i ./input/test.json -w true -l false -h 0 -n 100 -p '{proc}<F> -> {fs}' -o test_{proc}")
+            cmd.append(f"./bin/gr -i gencard/test.json -w true -l false -h 0 -n 100 -p '{proc}<F> -> {fs}' -o test_{proc}")
     execute(cmd)
 
 
@@ -227,7 +227,7 @@ def test_yP():
     cmd = []
     for proc in proclist:
         for fs in ['pi+ pi-']:
-            cmd.append(f"./bin/gr -i ./input/test.json -w true -l false -h 0 -n 100 -p '{proc}<F> -> {fs} {RES}' -o test_yP")
+            cmd.append(f"./bin/gr -i gencard/test.json -w true -l false -h 0 -n 100 -p '{proc}<F> -> {fs} {RES}' -o test_yP")
     execute(cmd)
 
 
@@ -259,6 +259,6 @@ def test_yy():
     cmd = []
     for proc in proclist:
         for fs in ['e+ e-', 'mu+ mu-']:
-            cmd.append(f"./bin/gr -i ./input/test.json -w true -l false -h 0 -n 100 -p '{proc}<F> -> {fs} {RES}' -o test_yy")
+            cmd.append(f"./bin/gr -i gencard/test.json -w true -l false -h 0 -n 100 -p '{proc}<F> -> {fs} {RES}' -o test_yy")
     execute(cmd)
 

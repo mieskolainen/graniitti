@@ -74,7 +74,7 @@ def test_integrators():
 			
 			print(f'Generating events with weightmode <{w}> and integrator <{g}> ...')
 			
-			cmd = f"make -j4 && ./bin/gr -i ./input/test.json -p 'PP[CON]<C> -> pi+ pi-' -l false -h 0 -w {w} -n {N} -g {g} -o {g}_w_{w}"
+			cmd = f"make -j4 && ./bin/gr -i gencard/test.json -p 'PP[CON]<C> -> pi+ pi-' -l false -h 0 -w {w} -n {N} -g {g} -o {g}_w_{w}"
 			execute(cmd)
 	
 	cmd = f"python ./python/iceshot --hepmc3 VEGAS_w_false VEGAS_w_true FLAT_w_false --unit ub --pid '{pid}' --output testbench_integrators"
@@ -94,7 +94,7 @@ def test_hfast():
 	modes = ['VEGAS', 'FLAT']
 
 	for mode in modes:
-		cmd = f"make -j4 && ./bin/gr -i ./input/test.json -p 'PP[CON]<C> -> pi+ pi-' -w true -l false -h 1 -n 0 -o {mode} -g {mode}"
+		cmd = f"make -j4 && ./bin/gr -i gencard/test.json -p 'PP[CON]<C> -> pi+ pi-' -w true -l false -h 1 -n 0 -o {mode} -g {mode}"
 		execute(cmd)
 	
 	## Read fast histogram output

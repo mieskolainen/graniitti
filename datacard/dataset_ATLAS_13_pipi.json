@@ -5,7 +5,7 @@
 "TYPE"     : "RAW_SCALAR",
 "DATAPATH" : "/HEPData/CD/",
 
-"GENCARD"  : ["/fitcard/ATLAS_13_pipi.json"],
+"GENCARD"  : ["/gencard/ATLAS_13_pipi.json"],
 
 "PID"      : [211, -211],
 

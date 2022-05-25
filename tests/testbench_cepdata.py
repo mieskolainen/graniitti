@@ -2,7 +2,7 @@
 #
 # Run with: pytest ./tests/{filename} -s
 # 
-# (c) 2017-2021 Mikael Mieskolainen
+# (c) 2017-2022 Mikael Mieskolainen
 # Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 
@@ -21,7 +21,7 @@ def test_cepdata(POMLOOP, NEVENTS, MODELPARAM):
 
     cdir      = os.getcwd()
     
-    # Filenames under /fitcard/
+    # Filenames under /gencard/
     filenames = ['STAR_1792394_pipi_less_90', 'STAR_1792394_KK_less_90', 'STAR_1792394_ppbar_less_90',
                  'STAR_1792394_pipi_more_90', 'STAR_1792394_KK_more_90', 'STAR_1792394_ppbar_more_90',
                  'STAR_1792394_pipi', 'STAR_1792394_KK', 'STAR_1792394_ppbar']
@@ -36,7 +36,7 @@ def test_cepdata(POMLOOP, NEVENTS, MODELPARAM):
     for name in filenames:
             
         datasetfile = f'dataset_{name}'
-        with open(f'{cdir}/fitcard/{datasetfile}.json', 'r') as file:
+        with open(f'{cdir}/datacard/{datasetfile}.json', 'r') as file:
             json_data = json5.load(file)
         
         pid       = json_data['PID']
@@ -56,5 +56,5 @@ def test_cepdata(POMLOOP, NEVENTS, MODELPARAM):
         execute(cmd)
         
         ### Produce comparison figures
-        cmd = f"python ./python/iceshot --pid '[{pid}]' --hepmc3 {output} --hepdata {datasetfile} --mcscale {S2_factor} --chi2 --unit nb --mclabel 'GRANIITTI'"
+        cmd = f"python python/iceshot --pid '[{pid}]' --hepmc3 {output} --hepdata {datasetfile} --mcscale {S2_factor} --chi2 --unit nb --mclabel 'GRANIITTI'"
         execute(cmd, expect="[iceshot: done]")

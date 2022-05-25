@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
 
       std::cout << options.help({""}) << std::endl;
       std::cout << rang::style::bold << "Example:" << rang::style::reset << std::endl;
-      std::cout << "  " << argv[0] << " -i ./input/test.json -e 500,2760,7000,13000,100000 -l false"
+      std::cout << "  " << argv[0] << " -i gencard/test.json -e 500,2760,7000,13000,100000 -l false"
                 << std::endl
                 << std::endl;
       aux::CheckUpdate();

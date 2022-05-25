@@ -2,7 +2,7 @@
 #
 # Be careful with parameter names, i.e. no extra white space etc.
 #
-# (c) 2021 Mikael Mieskolainen
+# (c) 2022 Mikael Mieskolainen
 # Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 
@@ -30,7 +30,7 @@ SET = 0
 
 
 if   SET == 0:
-  fitcardfile = '{ \
+  datacards = '{ \
     dataset_STAR_1792394_pipi_1--1.5.json, \
     dataset_STAR_1792394_KK.json, \
     dataset_STAR_1792394_KK_less_90.json, \
@@ -41,7 +41,7 @@ if   SET == 0:
     mc_steer['kfactor'] = 0.3 # Simple fast approximation
 
 elif SET == 1:
-  fitcardfile = '{ \
+  datacards = '{ \
     dataset_STAR_1792394_KK.json, \
     dataset_STAR_1792394_KK_less_90.json}'
   
@@ -49,19 +49,19 @@ elif SET == 1:
     mc_steer['kfactor'] = 0.3
 
 elif SET == 2:
-  fitcardfile = '{dataset_STAR_1792394_pipi*, dataset_STAR_1792394_KK*}'
+  datacards = '{dataset_STAR_1792394_pipi*, dataset_STAR_1792394_KK*}'
   
   if mc_steer['POMLOOP'] == False:
     mc_steer['kfactor'] = 0.3
 
 elif SET == 3:
-  fitcardfile = '{dataset_ALICE*, dataset_ATLAS*}'
+  datacards = '{dataset_ALICE*, dataset_ATLAS*}'
 
   if mc_steer['POMLOOP'] == False:
     mc_steer['kfactor'] = 0.15
 
 elif SET == 4:
-  fitcardfile = '{ \
+  datacards = '{ \
     dataset_ALICE*, dataset_ATLAS*, \
     dataset_STAR_1792394_pipi_1--1.5.json, \
     dataset_STAR_1792394_KK.json, \
@@ -84,19 +84,19 @@ else:
 config = {
   
   ### Pomeron trajectory
-  'REGGE|a0[0]':        tune.uniform(1.05, 1.15),
-  'REGGE|ap[0]':        tune.uniform(0.05, 0.30),
+  #'REGGE|a0[0]':        tune.uniform(1.05, 1.15),
+  #'REGGE|ap[0]':        tune.uniform(0.05, 0.30),
 
   ### Offshell meson form factors
   #'REGGE|offshellFF':   "EXP",
   #'REGGE|b_EXP':        tune.uniform(0.1, 3.0),
 
-  'REGGE|offshellFF':   "POW",
-  'REGGE|b_POW':        tune.uniform(0.1, 1.5),
+  #'REGGE|offshellFF':   "POW",
+  #'REGGE|b_POW':        tune.uniform(0.1, 1.5),
 
-  #'REGGE|offshellFF':  "OREAR",
-  #'REGGE|a_OREAR':     tune.uniform(0.1, 3.0),
-  #'REGGE|b_OREAR':     tune.uniform(0.1, 3.0)
+  'REGGE|offshellFF':  "OREAR",
+  'REGGE|a_OREAR':     tune.uniform(0.1, 3.0),
+  'REGGE|b_OREAR':     tune.uniform(0.1, 3.0)
 }
 
 
@@ -107,7 +107,6 @@ config = {
 
 # Set here the resonances which are subject to the fit (process cards can contain also other resonances)
 free_resonances = ['f0_500', 'f0_980', 'f2_1270', 'f0_1500', 'f2_1525', 'f0_1710']
-#free_resonances = ['f0_1500', 'f2_1525', 'f0_1710']
 #free_resonances = []
 
 

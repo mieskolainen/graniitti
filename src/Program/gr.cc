@@ -133,20 +133,20 @@ int main(int argc, char *argv[]) {
       std::cout << rang::style::bold << rang::fg::green
                 << " A steering card example with no additional input:" << rang::style::reset
                 << std::endl;
-      std::cout << "  " << argv[0] << " -i ./input/test.json" << std::endl << std::endl;
+      std::cout << "  " << argv[0] << " -i gencard/test.json" << std::endl << std::endl;
 
       std::cout << rang::style::bold << rang::fg::red
                 << " A steering card example with commandline input override:" << rang::style::reset
                 << std::endl;
-      std::cout << "  " << argv[0] << " -i ./input/test.json -p \"yy[QED]<F> -> e+ e-\""
+      std::cout << "  " << argv[0] << " -i gencard/test.json -p \"yy[QED]<F> -> e+ e-\""
                 << std::endl
                 << std::endl;
-
+      
       std::cout << rang::style::bold << rang::fg::green
                 << " A steering card example with pre-computed MC integration array and custom "
                    "random seed (for e.g. GRID computing):"
                 << rang::style::reset << std::endl;
-      std::cout << "  " << argv[0] << " -i ./input/test.json -d ./vgrid/test.vgrid -r 12345"
+      std::cout << "  " << argv[0] << " -i gencard/test.json -d vgrid/test.vgrid -r 12345"
                 << std::endl
                 << std::endl;
 

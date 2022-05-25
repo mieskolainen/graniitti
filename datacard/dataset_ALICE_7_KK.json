@@ -5,7 +5,7 @@
 "TYPE"     : "RAW_SCALAR",
 "DATAPATH" : "/HEPData/CD/",
 
-"GENCARD"  : ["/fitcard/ALICE_7_KK.json"],
+"GENCARD"  : ["/gencard/ALICE_7_KK.json"],
 
 "PID"      : [321, -321],
 

@@ -10,37 +10,31 @@ https://arxiv.org/abs/1910.06300
 
 <img width="600px" src="docs/img/dsigmadt.png">
 
-See VERSION.json for the version information
+See `VERSION.json` for the latest version information.
 
 
-## Physics introduction at
-## https://mieskolainen.github.io
+## Physics introduction
 
-</br>
+See the page: https://mieskolainen.github.io
 
 
-## Fast instructions on Ubuntu 20.x
+## Installation
 
-Compile C++ code
+1. Pull the repository and autoinstall IO-format dependencies
 ```
-sudo apt install cmake g++ python3-dev curl
 git clone --depth 1 https://github.com/mieskolainen/graniitti && cd graniitti
+sudo apt install cmake g++ python3-dev curl [this works on Ubuntu]
+
 cd install && source autoinstall.sh && cd ..
+```
+
+2. Set the environment variables and compile the generator C++ code
+```
 source install/setenv.sh 
 make -j4
 ```
 
-Commands and guidance
-```
-Run ./bin/gr and see /docs/FAQ
-```
-
-Simulate MC events
-```
-./bin/gr -i ./fitcard/STAR_1792394_pipi.json -w true -l true -n 50000
-```
-
-Setup virtual Python environment via Conda
+3. For the analysis tools, setup virtual Python environment via Conda
 ```
 wget https://repo.anaconda.com/archive/Anaconda3-2022.05-Linux-x86_64.sh
 chmod +x and execute the installer
@@ -50,7 +44,29 @@ conda activate graniitti
 pip install -r requirements.txt
 ```
 
-(Python) Analyze MC events and data
+
+## First run
+
+Set the environment variables, then execute the main generator program
+```
+source install/setenv.sh
+./bin/gr
+```
+
+See `/docs/FAQ` for more information.
+
+
+## Event generation
+
+Simulate MC events
+```
+./bin/gr -i gencard/STAR_1792394_pipi.json -w true -l true -n 50000
+```
+
+
+## Analysis
+
+(Python) Analyze MC and data
 ```
 python python/iceshot --hepmc3 STAR_1792394_pipi --hepdata dataset_STAR_1792394_pipi --pid '[[211,-211]]'
 ```
@@ -67,7 +83,12 @@ ray start --head
 python python/icetune --tuneset default
 ```
 
-(Python) Unit and integration tests
+For C++ (ROOT) based analysis tools, see `/docs/FAQ` and examples under `/tests`.
+
+
+## Code quality assurance
+
+Unit and integration tests
 ```
 make -j4 TEST=TRUE && ./bin/testbench*
 pytest tests/testbench_*.py -s

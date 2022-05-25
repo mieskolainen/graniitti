@@ -58,7 +58,7 @@ def test_exloop(POMLOOP, datacard='/HEPData/LHC_TEVATRON_RHIC.json', ASSERT_ON=F
     # Read in JSON data
     
     cdir    = os.getcwd()
-    SYS_FOLDERS = ['/fitcard/', '/tests/LHC_TEVATRON_RHIC', '/tests/processes']
+    SYS_FOLDERS = ['/gencard/', '/tests/LHC_TEVATRON_RHIC', '/tests/processes']
     
     with open(f'{cdir}/{datacard}', 'r') as file:
         j = json5.load(file)

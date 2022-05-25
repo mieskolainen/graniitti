@@ -1,7 +1,7 @@
 {
  "name": "GRANIITTI",
- "version": 1.081,
+ "version": 1.082,
  "type": "pre-release",
- "date": "18.05.2022",
- "update": "python plotting tool bugfixes"
+ "date": "25.05.2022",
+ "update": "re-organization of folder structure"
 }

@@ -85,9 +85,9 @@ def get_ip():
     return IP
 
 
-def compute(thread_id, fitcardfile, obs_module, mc_steer, compare_steer, cdir=None):
+def compute(thread_id, datacards, obs_module, mc_steer, compare_steer, cdir=None):
     """
-    Compute MC sample and compare with HEPData over all fitcardfile input
+    Compute MC sample and compare with HEPData over all datacards input
     """
     
     print(__name__ + f'.compute: Running with thread_id = {thread_id} ...')
@@ -103,15 +103,15 @@ def compute(thread_id, fitcardfile, obs_module, mc_steer, compare_steer, cdir=No
 
     ### Loop over all datasets of the card
     datasets    = []
-    fitcardfile = list(braceexpand(fitcardfile.replace(" ", "")))
+    datacards = list(braceexpand(datacards.replace(" ", "")))
 
-    for k in range(len(fitcardfile)):
+    for k in range(len(datacards)):
 
         # Do wildcard expansion
         #print(path)
-        this_ = glob(cdir + '/fitcard/' + fitcardfile[k])
+        this_ = glob(cdir + '/datacard/' + datacards[k])
         #print(this_)
-
+        
         for j in range(len(this_)):
             with open(this_[j], 'r') as file:
                 json_data = json5.load(file)
@@ -132,7 +132,7 @@ def compute(thread_id, fitcardfile, obs_module, mc_steer, compare_steer, cdir=No
             
             # ========================================================================
             ### Read input and initialize
-
+            
             inputfile = cdir + datasets[i]["GENCARD"][0] # Take the first one here only
 
             with open(inputfile, 'r') as file:

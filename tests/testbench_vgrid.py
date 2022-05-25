@@ -53,7 +53,7 @@ def test_vgrid():
     ## Execute MC generator
     print(__name__ + ': Generating events ...')
 
-    cmd = f"make -j4 && ./bin/gr -i ./input/test.json -p 'PP[CON]<F> -> pi+ pi-' -w true -l false -h 0 -n 0"
+    cmd = f"make -j4 && ./bin/gr -i gencard/test.json -p 'PP[CON]<F> -> pi+ pi-' -w true -l false -h 0 -n 0"
     execute(cmd)
 
     ## Read integration output

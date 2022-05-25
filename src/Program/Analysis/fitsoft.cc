@@ -47,7 +47,7 @@ namespace fitsoft {
 const int NumberBT  = 500;
 const int NumberKT2 = 500;
 
-const std::string INPUTFILE = gra::aux::GetBasePath(2) + "/fitcard/" + "EL.json";
+const std::string INPUTFILE = gra::aux::GetBasePath(2) + "/gencard/" + "EL.json";
 
 int iter = 0;
 

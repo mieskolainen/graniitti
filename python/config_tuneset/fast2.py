@@ -30,7 +30,7 @@ SET = 0
 
 
 if   SET == 0:
-  fitcardfile = '{ \
+  datacards = '{ \
     dataset_STAR_1792394_pipi_1--1.5.json, \
     dataset_STAR_1792394_KK.json, \
     dataset_STAR_1792394_KK_less_90.json, \
@@ -41,7 +41,7 @@ if   SET == 0:
     mc_steer['kfactor'] = 0.3 # Simple fast approximation
 
 elif SET == 1:
-  fitcardfile = '{ \
+  datacards = '{ \
     dataset_STAR_1792394_KK.json, \
     dataset_STAR_1792394_KK_less_90.json}'
   
@@ -49,19 +49,19 @@ elif SET == 1:
     mc_steer['kfactor'] = 0.3
 
 elif SET == 2:
-  fitcardfile = '{dataset_STAR_1792394_pipi*, dataset_STAR_1792394_KK*}'
+  datacards = '{dataset_STAR_1792394_pipi*, dataset_STAR_1792394_KK*}'
   
   if mc_steer['POMLOOP'] == False:
     mc_steer['kfactor'] = 0.3
 
 elif SET == 3:
-  fitcardfile = '{dataset_ALICE*, dataset_ATLAS*}'
+  datacards = '{dataset_ALICE*, dataset_ATLAS*}'
 
   if mc_steer['POMLOOP'] == False:
     mc_steer['kfactor'] = 0.15
 
 elif SET == 4:
-  fitcardfile = '{ \
+  datacards = '{ \
     dataset_ALICE*, dataset_ATLAS*, \
     dataset_STAR_1792394_pipi_1--1.5.json, \
     dataset_STAR_1792394_KK.json, \

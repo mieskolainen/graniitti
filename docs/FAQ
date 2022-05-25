@@ -49,7 +49,8 @@ SOURCE
 ├── docs/               - Documentation
 ├── eikonal/            - Eikonal screening amplitude and proton density arrays
 ├── figs/               - Figure output directory
-├── fitcard/            - Steering cards for fitting programs
+├── gencard/            - Steering cards for event generation
+├── datacard/           - Steering cards for plotting and fitting against data (HEPData)
 ├── HEPData/            - Measurement data
 |   ├── CD/             - Central Diffraction
 |   └── EL/             - Elastic scattering
@@ -57,7 +58,6 @@ SOURCE
 |   └── Graniitti/
 |      ├── Amplitude/   - MadGraph amplitude headers
 |      └── Analysis/    - ROOT dependent analysis header files
-├── input/              - Default steering card input folder
 ├── install/            - Installation scripts and packages
 ├── libs/               - External libraries (C++)
 ├── MG5cards/           - MadGraph amplitude parameter cards
@@ -177,7 +177,7 @@ A:  Always remember the environment setup: 'source ./install/setenv.sh'
 
 
 Q:  Where are the examples of .json steering cards?
-A:  Under /tests/processes folder. Make a copy and modify.
+A:  Under /gencard and /tests/processes folder. Make a copy and modify.
 
 
 Q:  How do I choose the final state?

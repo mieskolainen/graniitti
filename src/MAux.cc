@@ -53,11 +53,11 @@ namespace aux {
 // -------------------------------------------------------
 // FIXED HERE manually
 
-double      GetVersion() { return 1.081; }
+double      GetVersion() { return 1.082; }
 std::string GetVersionType() { return "pre-release"; }
-std::string GetVersionDate() { return "18.05.2022"; }
+std::string GetVersionDate() { return "25.05.2022"; }
 std::string GetVersionUpdate() {
-  return "python plotting tool bugfixes";
+  return "re-organization of folder structure";
 }
 
 void PrintVersion() {

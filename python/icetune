@@ -13,7 +13,7 @@
 #    python ./python/icetune --address=192.168.10.201:6379 --cdir=$PWD --libdir=$HOME/local
 #
 #
-# (c) 2021 Mikael Mieskolainen
+# (c) 2022 Mikael Mieskolainen
 # Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 __VERSION__ = (0,0,2)
@@ -52,7 +52,7 @@ parser = argparse.ArgumentParser(description=f"%(prog)s {__VERSION__} {__RELEASE
 parser.add_argument("--cdir",           type=str, default=os.getcwd())
 parser.add_argument("--libdir",         type=str, default=os.environ['HOME'] + '/local')
 parser.add_argument("--address",        type=str, default=icetune.get_ip() + ':6379')
-parser.add_argument("--max_concurrent", type=int, default=32, help="example: --max_concurrent 32")
+parser.add_argument("--max_concurrent", type=int, default=256, help="example: --max_concurrent 256")
 
 
 parser.add_argument("--algorithm",  type=str, default='optuna',  help="example: --algorithm optuna")
@@ -145,7 +145,7 @@ Config = import_module('config_tuneset.' + args.tuneset)
 # ============================================================================
 # Compute once with the current input parameter values
 
-chi2, ndf = icetune.compute(thread_id=0, fitcardfile=Config.fitcardfile, \
+chi2, ndf = icetune.compute(thread_id=0, datacards=Config.datacards, \
     mc_steer=Config.mc_steer, obs_module=args.obs, cdir=args.cdir, compare_steer=compare_steer)
 
 print("")
@@ -178,7 +178,7 @@ def objective(param):
         mysteer['plot'] = False
 
     ### Generate and compare
-    chi2,ndf = icetune.compute(thread_id=thread_id, fitcardfile=Config.fitcardfile, \
+    chi2,ndf = icetune.compute(thread_id=thread_id, datacards=Config.datacards, \
         mc_steer=Config.mc_steer, obs_module=args.obs, cdir=args.cdir, compare_steer=mysteer)
 
     # We choose global chi2 minimization (alternative options here TBD)

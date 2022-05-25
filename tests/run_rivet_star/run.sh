@@ -12,7 +12,7 @@ then
 
 EVENTS=50000
 
-./bin/gr -i ./fitcard/STAR_1792394_pipi.json -n $EVENTS -w true -l true  \
+./bin/gr -i ./gencard/STAR_1792394_pipi.json -n $EVENTS -w true -l true  \
 -o "STAR_1792394_pipi_screened" -f "hepmc3"
 
 fi

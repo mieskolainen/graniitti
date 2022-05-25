@@ -23,6 +23,6 @@ source installLHAPDF6.sh
 source installPDFSET.sh
 
 echo # New line
-echo "Installation done. Now run: source setenv.sh"
+echo "Installation done. Now run: source install/setenv.sh"
 
-fi
+fi-

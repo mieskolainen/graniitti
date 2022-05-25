@@ -12,7 +12,7 @@ from ray import tune
 
 # Event generation setup
 mc_steer = {
-  'NEVENTS' : 10000,     # At least ~ 30k to 50k events per parameter space trial
+  'NEVENTS' : 30000,     # At least ~ 30k to 50k events per parameter space trial
   'POMLOOP' : False,     # Screening on/off (set False for fast test trials, True for precision tuning)
   'XSMODE'  : 'sample',  # Cross section normalization mode:
                          # -- 'reset'   compute full cross section initialization (vgrid file) for every parameter trial
@@ -30,7 +30,7 @@ SET = 0
 
 
 if   SET == 0:
-  fitcardfile = '{ \
+  datacards = '{ \
     dataset_STAR_1792394_pipi_1--1.5.json, \
     dataset_STAR_1792394_KK.json, \
     dataset_STAR_1792394_KK_less_90.json, \
@@ -41,7 +41,7 @@ if   SET == 0:
     mc_steer['kfactor'] = 0.3 # Simple fast approximation
 
 elif SET == 1:
-  fitcardfile = '{ \
+  datacards = '{ \
     dataset_STAR_1792394_KK.json, \
     dataset_STAR_1792394_KK_less_90.json}'
   
@@ -49,19 +49,19 @@ elif SET == 1:
     mc_steer['kfactor'] = 0.3
 
 elif SET == 2:
-  fitcardfile = '{dataset_STAR_1792394_pipi*, dataset_STAR_1792394_KK*}'
+  datacards = '{dataset_STAR_1792394_pipi*, dataset_STAR_1792394_KK*}'
   
   if mc_steer['POMLOOP'] == False:
     mc_steer['kfactor'] = 0.3
 
 elif SET == 3:
-  fitcardfile = '{dataset_ALICE*, dataset_ATLAS*}'
+  datacards = '{dataset_ALICE*, dataset_ATLAS*}'
 
   if mc_steer['POMLOOP'] == False:
     mc_steer['kfactor'] = 0.15
 
 elif SET == 4:
-  fitcardfile = '{ \
+  datacards = '{ \
     dataset_ALICE*, dataset_ATLAS*, \
     dataset_STAR_1792394_pipi_1--1.5.json, \
     dataset_STAR_1792394_KK.json, \
@@ -84,7 +84,7 @@ else:
 config = {
   
   ### Pomeron trajectory
-  'REGGE|a0[0]':        tune.uniform(1.05, 1.15),
+  #'REGGE|a0[0]':        tune.uniform(1.05, 1.15),
   'REGGE|ap[0]':        tune.uniform(0.05, 0.30),
 
   ### Offshell meson form factors
@@ -128,9 +128,9 @@ for res in free_resonances:
   config[f'RES|{res}:g_A']   = tune.uniform(0.0001, 1.0)
 
 # Production coupling phases
-#for res in free_resonances:
+for res in free_resonances:
   #if res in ['f0_980', 'f2_1270']:
-  #config[f'RES|{res}:g_phi'] = tune.uniform(-3.14159, 3.14159) # Continuum phase
+  config[f'RES|{res}:g_phi'] = tune.uniform(-3.14159, 3.14159) # Continuum phase
   #config[f'RES|{res}:g_phi'] = tune.choice(np.array([-3.14159, -1.57, 0.0, 1.57])) # Quantized phase
   #config[f'RES|{res}:g_phi'] = tune.choice(np.linspace(-np.pi, np.pi, 17)[:-1]) # Quantized phase
 
@@ -139,6 +139,6 @@ raytune_setup = {
    'config'      : config,
    'metric'      : "chi2",
    'mode'        : "min",
-   'num_samples' : 20
+   'num_samples' : 5000
 }
 

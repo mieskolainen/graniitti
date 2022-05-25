@@ -10,10 +10,10 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
 # Generate
-./bin/gr -i ./input/test.json -p "PP[CON]<C> -> pi+ pi-"     -o continuum1    -f hepmc3 -n 5800 -r 222
-./bin/gr -i ./input/test.json -p "PP[CON]<C> -> pi+ pi-"     -o continuum2    -f hepmc3 -n 5900 -r 333
-./bin/gr -i ./input/test.json -p "PP[RES+CON]<C> -> pi+ pi-" -o fullspectrum1 -f hepmc3 -n 6100 -r 555
-./bin/gr -i ./input/test.json -p "PP[RES+CON]<C> -> pi+ pi-" -o fullspectrum2 -f hepmc3 -n 6000 -r 777
+./bin/gr -i gencard/test.json -p "PP[CON]<C> -> pi+ pi-"     -o continuum1    -f hepmc3 -n 5800 -r 222
+./bin/gr -i gencard/test.json -p "PP[CON]<C> -> pi+ pi-"     -o continuum2    -f hepmc3 -n 5900 -r 333
+./bin/gr -i gencard/test.json -p "PP[RES+CON]<C> -> pi+ pi-" -o fullspectrum1 -f hepmc3 -n 6100 -r 555
+./bin/gr -i gencard/test.json -p "PP[RES+CON]<C> -> pi+ pi-" -o fullspectrum2 -f hepmc3 -n 6000 -r 777
 fi
 
 # Analyze

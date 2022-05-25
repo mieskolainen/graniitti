@@ -154,7 +154,7 @@ def main():
         except:
             t = str(args.hepdata[i])
 
-        filename = f'{args.cdir}/fitcard/{args.hepdata[i]}.json'
+        filename = f'{args.cdir}/datacard/{args.hepdata[i]}.json'
 
         ### Read out the datasets
         with open(filename, 'r') as file:

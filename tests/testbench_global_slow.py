@@ -24,7 +24,7 @@ def test_PP():
     cmd = []
     for proc in proclist:
         for fs in ['pi+ pi-', 'K+ K-']:
-            cmd.append(f"./bin/gr -i ./input/test.json -w true -l false -h 0 -n 100 -p '{proc}<F> -> {fs} @RES{{rho_770:1, f0_980:1, f2_1270:1}}' -o test_PP_{proc}")
+            cmd.append(f"./bin/gr -i gencard/test.json -w true -l false -h 0 -n 100 -p '{proc}<F> -> {fs} @RES{{rho_770:1, f0_980:1, f2_1270:1}}' -o test_PP_{proc}")
     execute(cmd)
 
 
@@ -52,7 +52,7 @@ def test_gg():
 def test_pomloop():
     cmd = []
     for screening in ['false', 'true']:
-        cmd.append(f"./bin/gr -i ./input/test.json -w true -l {screening} -h 0 -n 0 -p 'PP[CON]<C> -> pi+ pi-'")
+        cmd.append(f"./bin/gr -i gencard/test.json -w true -l {screening} -h 0 -n 0 -p 'PP[CON]<C> -> pi+ pi-'")
     execute(cmd)
 
 
