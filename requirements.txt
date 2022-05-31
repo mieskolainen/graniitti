@@ -4,6 +4,8 @@
 #hepmc3==3.2.3
 #lhapdf==6.3.0
 
+protobuf==3.20.0
+
 # Generic python
 cmake
 maketools
