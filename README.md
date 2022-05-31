@@ -39,7 +39,7 @@ make -j4
 wget https://repo.anaconda.com/archive/Anaconda3-2022.05-Linux-x86_64.sh
 chmod +x and execute the installer
 
-conda create -y --name graniitti python==3.8.5
+conda create -y --name graniitti python==3.8.13
 conda activate graniitti
 pip install -r requirements.txt
 ```
