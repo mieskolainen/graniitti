@@ -17,7 +17,7 @@ termcolor
 tqdm
 
 # ray + raytune algorithms
-ray[default]
+ray[default]==1.12.0
 pandas
 tabulate
 HEBO

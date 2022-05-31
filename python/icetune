@@ -31,6 +31,7 @@ import socket
 from importlib import import_module
 import subprocess
 from termcolor import colored
+import pickle
 
 import ray
 from ray import tune
@@ -52,7 +53,7 @@ parser = argparse.ArgumentParser(description=f"%(prog)s {__VERSION__} {__RELEASE
 parser.add_argument("--cdir",           type=str, default=os.getcwd())
 parser.add_argument("--libdir",         type=str, default=os.environ['HOME'] + '/local')
 parser.add_argument("--address",        type=str, default=icetune.get_ip() + ':6379')
-parser.add_argument("--max_concurrent", type=int, default=256, help="example: --max_concurrent 256")
+parser.add_argument("--max_concurrent", type=int, default=32, help="example: --max_concurrent 32")
 
 
 parser.add_argument("--algorithm",  type=str, default='optuna',  help="example: --algorithm optuna")
@@ -139,51 +140,79 @@ set(ray.get([f.remote() for _ in range(1000)]))
 # ============================================================================
 # ** Import tune setup **
 
-Config = import_module('config_tuneset.' + args.tuneset)
+tuneset = import_module('config_tuneset.' + args.tuneset)
 
 
 # ============================================================================
 # Compute once with the current input parameter values
-
-chi2, ndf = icetune.compute(thread_id=0, datacards=Config.datacards, \
-    mc_steer=Config.mc_steer, obs_module=args.obs, cdir=args.cdir, compare_steer=compare_steer)
+"""
+chi2, ndf = icetune.compute(thread_id=0, datacards=tuneset.datacards, \
+    mc_steer=tuneset.mc_steer, obs_module=args.obs, cdir=args.cdir, compare_steer=compare_steer)
 
 print("")
 print(colored(__name__ + f'.icetune: Initial chi2 / ndf = {np.sum(chi2):0.1f} / {np.sum(ndf)} = {np.sum(chi2) / np.sum(ndf):0.1f} | <chi2/ndf> = {np.mean(chi2/ndf):0.1f}\n', 'red'))
-
+"""
 
 if args.nofit: # No fitting, exit now
     exit(0)
 
-time.sleep(3)
+
+# ============================================================================
+### Get initial parameter values
+def get_initial_param(config, cdir):
+
+    param = dict.fromkeys(config.keys(), 0.0)
+    orig_param_values = icetune.update_all(thread_id=0, param=param, cdir=cdir)
+
+    return orig_param_values
+
+print('Initial parameter values:')
+initial_param = get_initial_param(config=tuneset.raytune_setup['config'], cdir=args.cdir)
+print(initial_param)
 
 
 # ============================================================================
 ### Loss function
 
-def objective(param):
-
+def objective(config, checkpoint_dir=None):
+    
     # This needs to be here for raytune (cannot find otherwise HepMC3.so, pyHepMC3 etc.)
     icetune.setpaths(cdir=args.cdir, libdir=args.libdir)
 
     # Slightly dirty unique ID set here
     thread_id = np.random.randint(low=1, high=1000000000000000000)
 
-    ### Update all parameters
-    icetune.update_all(thread_id=thread_id, param=param, cdir=args.cdir)
+    if checkpoint_dir:
+        with open(os.path.join(checkpoint_dir, "checkpoint"), 'rb') as handle:
+            config = pickle.load(handle)
 
+    ### Update all parameters
+    orig_param_values = icetune.update_all(thread_id=thread_id, param=config, cdir=args.cdir)
+    
     ### Plotting only on the head node
     mysteer = copy.deepcopy(compare_steer)
     if icetune.get_ip() != HEAD_IP:
         mysteer['plot'] = False
 
     ### Generate and compare
-    chi2,ndf = icetune.compute(thread_id=thread_id, datacards=Config.datacards, \
-        mc_steer=Config.mc_steer, obs_module=args.obs, cdir=args.cdir, compare_steer=mysteer)
-
-    # We choose global chi2 minimization (alternative options here TBD)
-    cost = np.sum(chi2) / np.sum(ndf) # division by ndf just for convinience
+    chi2,ndf = icetune.compute(thread_id=thread_id, datacards=tuneset.datacards, \
+        mc_steer=tuneset.mc_steer, obs_module=args.obs, cdir=args.cdir, compare_steer=mysteer)
     
+    # We choose global chi2 minimization
+    if tuneset.loss_avg == 'global-mean':
+        cost = np.sum(chi2) / np.sum(ndf)
+    elif tuneset.loss_avg == 'local-mean':
+        cost = np.mean(chi2 / ndf)
+    elif tuneset.loss_avg == 'local-median':
+        cost = np.median(chi2 / ndf)
+    else:
+        raise Exception(f'icetune: Error: Unknown tuneset.loss_avg = {tuneset.loss_avg}')
+
+    with tune.checkpoint_dir(step=0) as checkpoint_dir:
+        path = os.path.join(checkpoint_dir, "checkpoint")
+        with open(path, 'wb') as handle:
+            pickle.dump(config, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
     tune.report(chi2=cost)
 
 
@@ -196,6 +225,10 @@ def objective(param):
 #hyperband = HyperBandScheduler(metric="chi2", mode="min")
 
 
+common_param = {'points_to_evaluate': [initial_param]}
+
+print(common_param)
+
 start = time.time()
 
 if args.algorithm == 'bayesopt':
@@ -204,22 +237,22 @@ if args.algorithm == 'bayesopt':
         "kind": "ucb",
         "kappa": 2.5,
         "xi": 0.0
-    })
+    }, **common_param)
 
 elif args.algorithm == 'hebo':
     from ray.tune.suggest.hebo import HEBOSearch
     from ray.tune.schedulers import AsyncHyperBandScheduler
     
-    algo = HEBOSearch(max_concurrent=args.max_concurrent)
+    algo = HEBOSearch(**common_param)
     #scheduler = AsyncHyperBandScheduler()
 
 elif args.algorithm == 'optuna':
     from ray.tune.suggest.optuna import OptunaSearch
-    algo = OptunaSearch()
+    algo = OptunaSearch(**common_param)
 
 elif args.algorithm == 'ax':
     from ray.tune.suggest.ax import AxSearch
-    algo = AxSearch()
+    algo = AxSearch(**common_param)
 
 elif args.algorithm == 'nevergrad':
     from ray.tune.suggest.nevergrad import NevergradSearch
@@ -227,17 +260,18 @@ elif args.algorithm == 'nevergrad':
     algo = NevergradSearch(
         optimizer=ng.optimizers.OnePlusOne,
         metric="chi2",
-        mode="min")
+        mode="min",
+        **common_param)
 elif args.algorithm == 'basic':
     from ray.tune.suggest.basic_variant import BasicVariantGenerator
-    algo = BasicVariantGenerator()
+    algo = BasicVariantGenerator(**common_param)
 
 else:
     raise Exception("Unknown optimizer <algorithm> chosen!")
 
 
 # Launch
-analysis = tune.run(objective, search_alg=algo, **Config.raytune_setup)
+analysis = tune.run(objective, local_dir=f'{args.cdir}/tmp/ray/local_dir', search_alg=algo, **tuneset.raytune_setup)
 
 # resources_per_trial = {"cpu": 8}
 

@@ -88,15 +88,17 @@ config = {
   #'REGGE|ap[0]':        tune.uniform(0.05, 0.30),
 
   ### Offshell meson form factors
-  #'REGGE|offshellFF':   "EXP",
+  # N.B. Change "offshellFF" in TUNE0/GENERAL.json correspondingly for the initialization!
+  
+  #'REGGE|offshellFF':   tune.choice(["EXP"]),
   #'REGGE|b_EXP':        tune.uniform(0.1, 3.0),
 
-  #'REGGE|offshellFF':   "POW",
-  #'REGGE|b_POW':        tune.uniform(0.1, 1.5),
-
-  'REGGE|offshellFF':  "OREAR",
-  'REGGE|a_OREAR':     tune.uniform(0.1, 3.0),
-  'REGGE|b_OREAR':     tune.uniform(0.1, 3.0)
+  'REGGE|offshellFF':   tune.choice(["POW"]),
+  'REGGE|b_POW':        tune.uniform(0.1, 1.5),
+  
+  #'REGGE|offshellFF':  tune.choice(["OREAR"]),
+  #'REGGE|a_OREAR':     tune.uniform(0.1, 1.5),
+  #'REGGE|b_OREAR':     tune.uniform(0.1, 3.0)
 }
 
 
@@ -133,6 +135,7 @@ for res in free_resonances:
   #config[f'RES|{res}:g_phi'] = tune.choice(np.array([-3.14159, -1.57, 0.0, 1.57])) # Quantized phase
   #config[f'RES|{res}:g_phi'] = tune.choice(np.linspace(-np.pi, np.pi, 17)[:-1]) # Quantized phase
 
+loss_avg = 'local-mean' # 'global-mean', 'local-mean', 'local-median'
 
 raytune_setup = {
    'config'      : config,

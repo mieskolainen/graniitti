@@ -24,9 +24,9 @@ jobs:
 
       # Python plots
       - run: source install/setenv.sh && python python/iceshot --hepmc3 test --chunksize 299
-
+      
       # Ray tuning
-      - run: source install/setenv.sh && ray start --head && python python/icetune --tuneset fast
+      - run: source install/setenv.sh && ray start --head --temp-dir=/tmp/ray && python python/icetune --tuneset test
       
       # C++ tests
       - run: source install/setenv.sh && for i in {0,1,2,3}; do "./bin/testbench$i"; done

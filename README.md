@@ -79,7 +79,7 @@ pytest tests/testbench_cepdata.py -s --POMLOOP true
 
 (Python) MC model tuning via HPC-distributed Bayesian / evolutionary optimization
 ```
-ray start --head
+ray start --head --temp-dir=/tmp/ray
 python python/icetune --tuneset default
 ```
 

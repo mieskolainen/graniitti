@@ -1,4 +1,4 @@
-# GRANIITTI comparison with data
+# GRANIITTI comparison with HEPData
 #
 # Run with: pytest ./tests/{filename} -s
 # 
@@ -42,7 +42,7 @@ def test_cepdata(POMLOOP, NEVENTS, MODELPARAM):
         pid       = json_data['PID']
         
         inputcard = f"{cdir}/{json_data['GENCARD'][0]}"
-        output    = f'{name}_POMLOOP_{POMLOOP}'
+        output    = f'{name}_POMLOOP_{POMLOOP}_MODELPARAM_{MODELPARAM}'
         gridfile  = f'{cdir}/vgrid/{output}.vgrid'       
         
         # ----------------------------------------------------------------
@@ -50,11 +50,11 @@ def test_cepdata(POMLOOP, NEVENTS, MODELPARAM):
         ### Compute MC grids
         cmd = f"./bin/gr -i {inputcard} -m {MODELPARAM} -l {'true' if POMLOOP else 'false'} -h 0 -n 0 -o {output}"
         execute(cmd)
-
+        
         ### Generate events with pre-computed MC grids
         cmd = f"./bin/gr -i {inputcard} -m {MODELPARAM} -l {'true' if POMLOOP else 'false'} -h 0 -n {NEVENTS} -w true -d {gridfile} -o {output}"
         execute(cmd)
         
         ### Produce comparison figures
-        cmd = f"python python/iceshot --pid '[{pid}]' --hepmc3 {output} --hepdata {datasetfile} --mcscale {S2_factor} --chi2 --unit nb --mclabel 'GRANIITTI'"
+        cmd = f"python python/iceshot --pid '[{pid}]' --hepmc3 {output} --hepdata {datasetfile} --mcscale {S2_factor} --datalabel '{name}' --mclabel 'GRANIITTI' --chi2 --unit nb"
         execute(cmd, expect="[iceshot: done]")

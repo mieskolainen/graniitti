@@ -274,17 +274,19 @@ def update_all(thread_id, param, cdir=None):
     cmd = f'cp {cdir}/modeldata/TUNE0/* {cdir}/modeldata/TUNE-icetune-{thread_id}/'
     result = subprocess.check_output(cmd, shell=True, text=True)
     # --------------------------------------------------------------------
-    
+
+    path = f'{cdir}/modeldata/TUNE-icetune-{thread_id}'
+
     # General parameters
-    update_general_param(thread_id=thread_id, param=param, cdir=cdir)
+    orig_gen_values = update_general_param(path=path, param=param)
 
     # Resonance parameters
-    update_resonance_param(thread_id=thread_id, param=param, cdir=cdir)
+    orig_res_values = update_resonance_param(path=path, param=param)
 
     # Branching parameters, TBD!
-    #update_branching_param(thread_id=thread_id, param=param, cdir=cdir)
+    #orig_br_values = update_branching_param(thread_id=thread_id, param=param, cdir=cdir)
 
-    return
+    return {**orig_gen_values, **orig_res_values}
 
 
 def find_str_between(s, start, end):
@@ -305,7 +307,12 @@ def string_to_index(s, delim):
 
 
 def update_block(parname, blockname, new_value, json_data):
-
+    """
+    Updates parameters in json
+    
+    Returns:
+        old_value from json
+    """
     # Vector parameter: parname[index]
     if '[' in parname and ']' in parname:
 
@@ -315,9 +322,16 @@ def update_block(parname, blockname, new_value, json_data):
         if parname in json_data[blockname]:
 
             if   len(index) == 1: # Vector
+                old_value = json_data[blockname][parname][index[0]]
                 json_data[blockname][parname][index[0]]           = new_value
+
+                return old_value
+
             elif len(index) == 2: # Matrix
+                old_value = json_data[blockname][parname][index[0]][index[1]]
                 json_data[blockname][parname][index[0]][index[1]] = new_value
+
+                return old_value
             else:
                 raise Exception(__name__ + f'.update_block: Too many [] indices with {parname}')
         else:
@@ -326,23 +340,28 @@ def update_block(parname, blockname, new_value, json_data):
     # Scalar parameter: parname
     else:
         if parname in json_data[blockname]:
+            old_value = json_data[blockname][parname]
             json_data[blockname][parname] = new_value
+
+            return old_value
         else:
             raise Exception(__name__ + f'.update_block: Unknown parameter {parname}')
 
 
-def update_general_param(thread_id, param, cdir):
+def update_general_param(path, param):
     """
     Update general parameters.
     
     Tune parameter string format is: CLASS|parameter[index]
     """
 
-    filename = f'{cdir}/modeldata/TUNE-icetune-{thread_id}/GENERAL.json'
+    filename = f'{path}/GENERAL.json'
 
     # 1. READ
     with open(filename, 'r') as file:
         json_data = json5.load(file)
+
+    orig_values = {}
 
     # 2. UPDATE PARAMETERS
     for par in param.keys():
@@ -353,17 +372,17 @@ def update_general_param(thread_id, param, cdir):
         ### Resonance or branching parameters not treated here
         if CLASS == 'RES' or CLASS == 'BR': continue
 
-        parname = substring_after(s=par, delim='|')
-        update_block(parname=parname, blockname=f'PARAM_{CLASS}', new_value=param[par], json_data=json_data)
+        parname   = substring_after(s=par, delim='|')
+        orig_values[par] = update_block(parname=parname, blockname=f'PARAM_{CLASS}', new_value=param[par], json_data=json_data)
 
     # 3. WRITE
     with open(filename, 'w') as file:
         json.dump(json_data, file, indent=2)
 
-    return
+    return orig_values
 
 
-def update_resonance_param(thread_id, param, cdir):
+def update_resonance_param(path, param):
     """
     Update resonance parameters.
     
@@ -376,12 +395,14 @@ def update_resonance_param(thread_id, param, cdir):
         if "RES|" in par:
             RES.add(find_str_between(s=par, start='|', end=':'))
 
+    orig_values = {}
+
     # Loop over resonances found associated with the free parameters
     for res in RES:
 
         # ----------------------------------------------------------
         # Open up file
-        filename = f'{cdir}/modeldata/TUNE-icetune-{thread_id}/RES_{res}.json'
+        filename = f'{path}/RES_{res}.json'
 
         # 1. READ
         with open(filename, 'r') as file:
@@ -393,34 +414,34 @@ def update_resonance_param(thread_id, param, cdir):
 
             # Update the parameter
             parname = substring_after(s=par, delim=':')
-            update_block(parname=parname, blockname='PARAM_RES', new_value=param[par], json_data=json_data)
+            orig_values[par] = update_block(parname=parname, blockname='PARAM_RES', new_value=param[par], json_data=json_data)
 
         # 3. WRITE
         with open(filename, 'w') as file:
             json.dump(json_data, file, indent=2)
 
-    return
+    return orig_values
 
 
-def update_branching_param(thread_id, param, cdir):
+def update_branching_param(path, param):
 
     """
     # TBD
-
-    filename = f'{cdir}/modeldata/TUNE-icetune-{thread_id}/BRANCHING.json'
+    
+    filename = f'{path}/BRANCHING.json'
     
     # 1. READ
     with open(filename, 'r') as file:
         json_data = json5.load(file)
-
+    
     # 2. UPDATE PARAMETERS (if any)
     #
     # ...
-    
+        
     # 3. WRITE
     with open(filename, 'w') as file:
         json.dump(json_data, file, indent=2)
-
+    
     """
     return
 

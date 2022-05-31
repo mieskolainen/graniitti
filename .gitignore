@@ -2,7 +2,7 @@
 __pycache__/
 *.py[cod]
 .pytest_cache
-
+/tmp
 
 scan.*
 scan_screening*
@@ -10,6 +10,7 @@ scan_screening*
 
 # Tuning
 TUNE-icetune-*
+TUNE_DEV*
 
 # Output
 *.lhe
