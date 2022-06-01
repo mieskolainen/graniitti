@@ -85,7 +85,7 @@ def get_ip():
     return IP
 
 
-def compute(thread_id, datacards, obs_module, mc_steer, compare_steer, cdir=None):
+def compute(thread_id, datacards, obs_module, mc_steer, compare_steer, cdir=None, best_cost=None):
     """
     Compute MC sample and compare with HEPData over all datacards input
     """
@@ -126,6 +126,8 @@ def compute(thread_id, datacards, obs_module, mc_steer, compare_steer, cdir=None
 
 
     ### Loop over different datasets
+    plot_index = 0
+
     for i in range(len(datasets)):
 
         if datasets[i]['ACTIVE']:
@@ -213,7 +215,7 @@ def compute(thread_id, datacards, obs_module, mc_steer, compare_steer, cdir=None
             
 
             # ========================================================================
-            ### Cost function
+            ### Cost per histogram
 
             ### Loop over observables
             for OBS in all_obs.keys():
@@ -222,24 +224,31 @@ def compute(thread_id, datacards, obs_module, mc_steer, compare_steer, cdir=None
                 ### Chi2 for this observable
                 chi2_  = iceplot.chi2_cost(h_mc=mc[OBS]['hdata'], h_data=data[OBS]['hdata'])
                 ndf_   = len(mc[OBS]['hdata'].counts) # Count here only the number of bins (not parameters)
-                # --------------------------------------------------------------------
-                
-                if compare_steer['plot']: # Only if plot output asked
-                    hist_objs = [data[OBS], mc[OBS]] # Create a list, data first!
-
-                    for yscale in ['linear', 'log']:
-                        fig, ax = iceplot.superplot(hist_objs, observable=all_obs[OBS], yscale=yscale)
-
-                        # Create path and save
-                        ax[0].set_title(f'$\\chi^2$ / ndf = {chi2_:0.1f} / {ndf_:0.0f} = {chi2_/ndf_:0.1f}')
-                        fullpath = f'{cdir}/figs/icetune--{output}'
-                        pathlib.Path(fullpath).mkdir(parents=True, exist_ok=True)
-                        fig.savefig(f"{fullpath}/hplot__{all_obs[OBS]['tag']}_{yscale}.pdf", bbox_inches='tight')
-                        plt.close()
                 
                 chi2.append(chi2_)
                 ndf.append(ndf_)
-            
+                # --------------------------------------------------------------------
+                
+                # ========================================================================
+                ### Plotting function
+
+                if compare_steer['plot'] and best_cost is not None: # Only if plot output asked
+
+                    if chi2[plot_index] < best_cost[plot_index]:
+
+                        hist_objs = [data[OBS], mc[OBS]] # Create a list, data first!
+
+                        for yscale in ['linear', 'log']:
+                            fig, ax = iceplot.superplot(hist_objs, observable=all_obs[OBS], yscale=yscale)
+
+                            # Create path and save
+                            ax[0].set_title(f'$\\chi^2$ / ndf = {chi2_:0.1f} / {ndf_:0.0f} = {chi2_/ndf_:0.1f}')
+                            fullpath = f'{cdir}/figs/icetune--{output}'
+                            pathlib.Path(fullpath).mkdir(parents=True, exist_ok=True)
+                            fig.savefig(f"{fullpath}/hplot__{all_obs[OBS]['tag']}_{yscale}.pdf", bbox_inches='tight')
+                            plt.close()            
+
+                plot_index += 1
 
             # ========================================================================
             # ** Remove temporary outputfile **

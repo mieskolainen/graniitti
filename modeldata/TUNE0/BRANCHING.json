@@ -1,7 +1,7 @@
 // Resonance branching ratio PDG tables. Particles are identified by their PDG IDs.
 // Add new particles here as you wish.
 //
-// m.mieskolainen@imperial.ac.uk, 2021
+// m.mieskolainen@imperial.ac.uk, 2022
 
 // Helicity decay amplitude ls-couplings with a matrix format:
 // alpha_ls = [l,s, Real part, Imag part],
@@ -113,17 +113,17 @@
   "9010221" : {
 
     "0" : { // pi+pi-
-      "PDG" : [211, -211], "BR" : 0.500,  // Ansatz, PDGlive 16.04.21 no data
+      "PDG" : [211, -211], "BR" : 0.500,  // Ansatz, PDGlive 31.5.22 no proper data
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     },
     "1" : { // K+ K-
-      "PDG" : [321, -321], "BR" : 0.345,  // K+K-/pi+pi- ~= 0.69 +- 0.32 from https://arxiv.org/abs/hep-ex/0605003
+      "PDG" : [321, -321], "BR" : 0.145,  // Ansatz (PDG has K+K-/pi+pi- ~= 0.69 +- 0.32)
       "alpha_ls" : [ [0,0, 1.0, 0.0] ],
       "P_conservation" : true,
     }
   },
-
+  
   // phi(1020) |s\bar{s}>
   "333" : {
     

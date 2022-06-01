@@ -22,10 +22,18 @@ def test_cepdata(POMLOOP, NEVENTS, MODELPARAM):
     cdir      = os.getcwd()
     
     # Filenames under /gencard/
-    filenames = ['STAR_1792394_pipi_less_90', 'STAR_1792394_KK_less_90', 'STAR_1792394_ppbar_less_90',
-                 'STAR_1792394_pipi_more_90', 'STAR_1792394_KK_more_90', 'STAR_1792394_ppbar_more_90',
-                 'STAR_1792394_pipi', 'STAR_1792394_KK', 'STAR_1792394_ppbar']
-    
+    filenames = ['STAR_1792394_KK',
+                 'STAR_1792394_KK_less_90',
+                 'STAR_1792394_KK_more_90',
+                 'STAR_1792394_pipi_less_90', 
+                 'STAR_1792394_pipi_more_90',
+                 'STAR_1792394_pipi',
+                 'STAR_1792394_pipi_0--1',
+                 'STAR_1792394_pipi_1--1-5',
+                 'STAR_1792394_pipi_1-5--inf',
+                 'STAR_1792394_ppbar',
+                 'STAR_1792394_ppbar_less_90',
+                 'STAR_1792394_ppbar_more_90']
 
     # Apply fast screening (absorption) factor at \sqrt{s} = 200 GeV
     # (applied to plots)

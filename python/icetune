@@ -65,7 +65,6 @@ parser.add_argument("--density",    type=bool, default=False, help="example: --d
 parser.add_argument("--plot",       action='store_true',      help="example: --plot")
 parser.add_argument("--nofit",      action='store_true',      help="example: --nofit")
 
-
 args = parser.parse_args()
 
 print(colored(__name__ + f'.icetune: IP = {icetune.get_ip()}', 'yellow'))
@@ -97,11 +96,31 @@ class MyCallback(Callback):
             icetune.update_all(thread_id='best', param=param, cdir=args.cdir)
 """
 
+@ray.remote
+class GlobalState:
+    def __init__(self):
+        self.chi2 = None
+
+    def best_cost(self):
+        return self.chi2
+
+    def update_cost(self, chi2):
+        if self.chi2 is None:
+            self.chi2 = chi2.copy() # copy is needed for Ray
+
+        for i in range(len(chi2)):
+            if chi2[i] < self.chi2[i]:
+                self.chi2[i] = chi2[i].copy()
+        return
+
+
 # ========================================================================
 # Initialize ray
 
 if not args.nofit:
     ray.init(address=args.address)
+
+global_state = GlobalState.remote()
 
 
 # ========================================================================
@@ -175,7 +194,22 @@ print(initial_param)
 ### Loss function
 
 def objective(config, checkpoint_dir=None):
-    
+        
+    def cost_func(chi2_array, ndf_array):
+
+        if   tuneset.loss_avg == 'global-mean':
+            cost = np.sum(chi2_array) / np.sum(ndf_array)
+        elif tuneset.loss_avg == 'local-mean':
+            cost = np.mean(chi2_array / ndf_array)
+        elif tuneset.loss_avg == 'local-median':
+            cost = np.median(chi2_array / ndf_array)
+        elif tuneset.loss_avg == 'local-max':
+            cost = np.max(chi2_array / ndf_array)
+        else:
+            raise Exception(f'icetune: Error: Unknown tuneset.loss_avg = {tuneset.loss_avg}')
+        return cost
+
+
     # This needs to be here for raytune (cannot find otherwise HepMC3.so, pyHepMC3 etc.)
     icetune.setpaths(cdir=args.cdir, libdir=args.libdir)
 
@@ -195,18 +229,16 @@ def objective(config, checkpoint_dir=None):
         mysteer['plot'] = False
 
     ### Generate and compare
+    best_cost = ray.get(global_state.best_cost.remote()) # Global RAY variable
+
     chi2,ndf = icetune.compute(thread_id=thread_id, datacards=tuneset.datacards, \
-        mc_steer=tuneset.mc_steer, obs_module=args.obs, cdir=args.cdir, compare_steer=mysteer)
-    
-    # We choose global chi2 minimization
-    if tuneset.loss_avg == 'global-mean':
-        cost = np.sum(chi2) / np.sum(ndf)
-    elif tuneset.loss_avg == 'local-mean':
-        cost = np.mean(chi2 / ndf)
-    elif tuneset.loss_avg == 'local-median':
-        cost = np.median(chi2 / ndf)
-    else:
-        raise Exception(f'icetune: Error: Unknown tuneset.loss_avg = {tuneset.loss_avg}')
+        mc_steer=tuneset.mc_steer, obs_module=args.obs, cdir=args.cdir, compare_steer=mysteer, \
+        best_cost=best_cost)
+
+    global_state.update_cost.remote(chi2=chi2) # Global RAY variable
+
+    # Evaluate total cost
+    cost = cost_func(chi2_array=chi2, ndf_array=ndf)
 
     with tune.checkpoint_dir(step=0) as checkpoint_dir:
         path = os.path.join(checkpoint_dir, "checkpoint")

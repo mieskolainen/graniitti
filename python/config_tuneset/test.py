@@ -31,7 +31,7 @@ SET = 0
 
 if   SET == 0:
   datacards = '{ \
-    dataset_STAR_1792394_pipi_1--1.5.json, \
+    dataset_STAR_1792394_pipi_1--1-5.json, \
     dataset_STAR_1792394_KK.json, \
     dataset_STAR_1792394_KK_less_90.json, \
     dataset_STAR_1792394_pipi.json, \
@@ -136,7 +136,7 @@ for res in free_resonances:
   #config[f'RES|{res}:g_phi'] = tune.choice(np.array([-3.14159, -1.57, 0.0, 1.57])) # Quantized phase
   #config[f'RES|{res}:g_phi'] = tune.choice(np.linspace(-np.pi, np.pi, 17)[:-1]) # Quantized phase
 
-loss_avg = 'local-mean' # 'global-mean', 'local-mean', 'local-median'
+loss_avg = 'local-mean' # local-mean', 'local-max', 'local-median', 'global-mean'
 
 raytune_setup = {
    'config'      : config,

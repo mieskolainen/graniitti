@@ -13,7 +13,7 @@ from ray import tune
 # Event generation setup
 mc_steer = {
   'NEVENTS' : 30000,     # At least ~ 30k to 50k events per parameter space trial
-  'POMLOOP' : True,      # Screening on/off (set False for fast test trials, True for precision tuning)
+  'POMLOOP' : False,      # Screening on/off (set False for fast test trials, True for precision tuning)
   'XSMODE'  : 'sample',  # Cross section normalization mode:
                          # -- 'reset'   compute full cross section initialization (vgrid file) for every parameter trial
                          # -- 'vgrid'   use once pre-computed value from .vgrid file (use this if parameters under tune do not impact the integrated xs)
@@ -31,11 +31,11 @@ SET = 0
 
 if   SET == 0:
   datacards = '{ \
-    dataset_STAR_1792394_pipi_1--1.5.json, \
-    dataset_STAR_1792394_KK.json, \
     dataset_STAR_1792394_KK_less_90.json, \
-    dataset_STAR_1792394_pipi.json, \
-    dataset_STAR_1792394_pipi_less_90.json }'
+    dataset_STAR_1792394_pipi_less_90.json}'
+  
+    #dataset_STAR_1792394_KK_more_90.json \
+    #dataset_STAR_1792394_pipi_more_90.json
 
   if mc_steer['POMLOOP'] == False:
     mc_steer['kfactor'] = 0.3 # Simple fast approximation
@@ -107,11 +107,6 @@ config = {
 # SYNTAX EXAMPLE: 'RES|resname:param[1,1]', where [] are used only with vector (matrix) parameters
 
 
-# Set here the resonances which are subject to the fit (process cards can contain also other resonances)
-free_resonances = ['f0_500', 'f0_980', 'f2_1270', 'f0_1500', 'f2_1525', 'f0_1710']
-#free_resonances = []
-
-
 ## Masses and widths
 """
 config['RES|f0_500:M'] = tune.uniform(0.4, 0.7)
@@ -123,24 +118,29 @@ config['RES|f0_980:M'] = tune.uniform(0.950, 1.0)
 config['RES|f0_980:W'] = tune.uniform(0.05, 0.20)
 """
 
+
 # Production coupling amplitudes
+free_resonances = ['f0_500', 'f0_980', 'f2_1270', 'f0_1500', 'f2_1525', 'f0_1710']
 for res in free_resonances:
   #if res not in ['rho_770']:
   config[f'RES|{res}:g_A']   = tune.uniform(0.0001, 1.0)
 
+
 # Production coupling phases
-#for res in free_resonances:
+free_resonances = ['f0_500', 'f2_1270', 'f0_1500', 'f2_1525', 'f0_1710']
+for res in free_resonances:
   #if res in ['f0_980', 'f2_1270']:
-  #config[f'RES|{res}:g_phi'] = tune.uniform(-3.14159, 3.14159) # Continuum phase
+  config[f'RES|{res}:g_phi'] = tune.uniform(-3.14159, 3.14159) # Continuum phase
   #config[f'RES|{res}:g_phi'] = tune.choice(np.array([-3.14159, -1.57, 0.0, 1.57])) # Quantized phase
   #config[f'RES|{res}:g_phi'] = tune.choice(np.linspace(-np.pi, np.pi, 17)[:-1]) # Quantized phase
 
-loss_avg = 'local-mean' # 'global-mean', 'local-mean', 'local-median'
+
+loss_avg = 'local-mean' # local-mean', 'local-max', 'local-median', 'global-mean'
 
 raytune_setup = {
    'config'      : config,
    'metric'      : "chi2",
    'mode'        : "min",
-   'num_samples' : 5000
+   'num_samples' : 50000
 }
 

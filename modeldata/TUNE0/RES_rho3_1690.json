@@ -33,7 +33,7 @@
     
     // Production coupling constant at amplitude level
     "g_A"   :  0.1,  // Ansatz value (no fit)
-    "g_phi" :  3.1415,
+    "g_phi" :  -3.1415,
     
     // Production form factor parameter (GeV)
     "g_FF"  :  1.0,
