@@ -12,7 +12,7 @@ maketools
 pyjson5
 matplotlib
 numba==0.53.0
-numpy==1.21.4
+numpy==1.22.0
 iminuit
 braceexpand
 termcolor
