@@ -46,7 +46,7 @@ def datasets():
 
     return sets,labels,pids
 
-def test_generate_analyze(POMLOOP, NEVENTS, GENERATE, ANALYZE):
+def test_generate_analyze(POMLOOP, NEVENTS, GENERATE=True, ANALYZE=True):
 
     # Event generation parameters
     WEIGHTED = 'true' # (lowercase string)! Weighted events is faster (we do not need unweighted events here)
