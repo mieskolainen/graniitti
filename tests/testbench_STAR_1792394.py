@@ -11,6 +11,9 @@
 import os
 import argparse
 
+from test_helpers import *
+
+
 def datasets():
     """
     Labelling and filenames
@@ -58,9 +61,8 @@ def test_generate_analyze(POMLOOP, NEVENTS, GENERATE=True, ANALYZE=True):
             for i in range(len(SETS[channel])):
                 cmd = f"./bin/gr -i gencard/{HEPDATA}_{SETS[channel][i]}.json -w {WEIGHTED} -l {'true' if POMLOOP else 'false'} -n {NEVENTS}"
 
-                print(f'Executing: {cmd}')
-                os.system(cmd)
-
+                execute(cmd)
+    
     if ANALYZE:
         for channel in SETS.keys():
             for i in range(len(SETS[channel])):
@@ -69,8 +71,7 @@ def test_generate_analyze(POMLOOP, NEVENTS, GENERATE=True, ANALYZE=True):
                 cmd += f" --datalabel 'STAR ({LABELS[channel][i]}), $\\sqrt{{s}}=0.2$ TeV'"
                 cmd += f" --chi2"
 
-                print(f'Executing: {cmd}')
-                os.system(cmd)
+                execute(cmd, expect="[iceshot: done]")
 
 if __name__ == "__main__":
     test_generate_analyze(POMLOOP=True, NEVENTS=1000000)
