@@ -61,7 +61,7 @@ parser.add_argument("--obs",        type=str, default='default', help="example: 
 parser.add_argument("--tuneset",    type=str, default='default', help="example: --tuneset default")
 
 
-parser.add_argument("--density",    type=bool, default=False, help="example: --density true")
+parser.add_argument("--density",    action='store_true',      help="example: --density")
 parser.add_argument("--plot",       action='store_true',      help="example: --plot")
 parser.add_argument("--nofit",      action='store_true',      help="example: --nofit")
 

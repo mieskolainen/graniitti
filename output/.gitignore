@@ -1,4 +1,4 @@
-*.hepmc3
-*.hepmc2
-*.hepevt
-*.lhe
+# Ignore everything in this directory
+*
+# Except this file
+!.gitignore

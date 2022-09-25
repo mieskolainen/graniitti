@@ -65,7 +65,7 @@ def main():
     
     
     parser.add_argument("--unit",      type=str,  default='pb',           help="example: --unit ub (b, mb, ub, nb, pb, fb)")
-    parser.add_argument("--density",   type=bool, default=False,          help="example: --density true")
+    parser.add_argument("--density",   action='store_true',               help="example: --density")
     parser.add_argument("--maxevents", type=int,  default=None,           help="example: --maxevents 1000")
     parser.add_argument("--chi2",      action='store_true',               help="example: --chi2")
     parser.add_argument("--chunksize", type=int,  default=int(1E4),       help="example: --chunksize 10000")
