@@ -32,7 +32,7 @@ jobs:
       - run: source install/setenv.sh && for i in {0,1,2,3}; do "./bin/testbench$i"; done
         
       # Python driven tests (fast mode --> POMLOOP False)
-      - run: source install/setenv.sh && pytest tests/testbench_STAR_1792394.py -s --POMLOOP false --NEVENTS 2000
+      - run: source install/setenv.sh && pytest tests/testbench_STAR_1792394.py -s --POMLOOP false --NEVENTS 2000 --GENERATE true --ANALYZE true
       - run: source install/setenv.sh && pytest tests/testbench_cepdata.py -s --POMLOOP false --NEVENTS 2000
       - run: source install/setenv.sh && pytest tests/testbench_exloop.py  -s --POMLOOP false
       - run: source install/setenv.sh && pytest tests/testbench_vgrid.py -s
