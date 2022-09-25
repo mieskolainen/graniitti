@@ -62,7 +62,7 @@ def test_generate_analyze(POMLOOP, NEVENTS, GENERATE=True, ANALYZE=True):
                 cmd = f"./bin/gr -i gencard/{HEPDATA}_{SETS[channel][i]}.json -w {WEIGHTED} -l {'true' if POMLOOP else 'false'} -n {NEVENTS}"
 
                 execute(cmd)
-    
+
     if ANALYZE:
         for channel in SETS.keys():
             for i in range(len(SETS[channel])):

@@ -10,7 +10,7 @@
     
   "GENERALPARAM" : {
  
-    "OUTPUT"     : "STAR_1792394_pipi_1--15", // Output filename
+    "OUTPUT"     : "STAR_1792394_pipi_1--1-5", // Output filename
     "FORMAT"     : "hepmc3",     // hepmc3, hepmc2, hepevt
     "CORES"      : 0,            // Number of CPU threads (0 for automatic)
     "NEVENTS"    : 0,            // Number of unweighted (weight = 1) events
