@@ -22,26 +22,26 @@ def datasets():
     
     # pipi
     sets['pipi']    = ['pipi', 'pipi_0--1', 'pipi_1--1-5', 'pipi_1-5--inf', 'pipi_less_90', 'pipi_more_90']
-    labels['pipi']  = ['$\\pi^+\\pi^-$',
-                       '$\\pi^+\\pi^-, M_{{X}} < 1$ GeV',
-                       '$\\pi^+\\pi^-, 1 < M_{{X}} < 1.5$ GeV',
-                       '$\\pi^+\\pi^-, M_{{X}} > 1.5$ GeV',
-                       '$\\pi^+\\pi^-, \\Delta \\phi_{{pp}} < 90^{\\circ}$',
-                       '$\\pi^+\\pi^-, \\Delta \\phi_{{pp}} > 90^{\\circ}$']
+    labels['pipi']  = ['$pp \\rightarrow p + \\pi^+\\pi^- + p$ (fid. cuts)',
+                       '$pp \\rightarrow p + \\pi^+\\pi^- + p$ (fid. cuts & $M_{{X}} < 1$ GeV)',
+                       '$pp \\rightarrow p + \\pi^+\\pi^- + p$ (fid. cuts & $1 < M_{{X}} < 1.5$ GeV)',
+                       '$pp \\rightarrow p + \\pi^+\\pi^- + p$ (fid. cuts & $M_{{X}} > 1.5$ GeV)',
+                       '$pp \\rightarrow p + \\pi^+\\pi^- + p$ (fid. cuts & $\\Delta \\phi_{{pp}} < 90^{\\circ})$',
+                       '$pp \\rightarrow p + \\pi^+\\pi^- + p$ (fid. cuts & $\\Delta \\phi_{{pp}} > 90^{\\circ})$']
     pids['pipi']    = f'[[211,-211]]'
 
     # KK
     sets['KK']      = ['KK', 'KK_less_90', 'KK_more_90']
-    labels['KK']    = ['$K^+K^-$',
-                       '$K^+K^-, \\Delta \\phi_{{pp}} < 90^{\\circ}$',
-                       '$K^+K^-, \\Delta \\phi_{{pp}} > 90^{\\circ}$']
+    labels['KK']    = ['$pp \\rightarrow p + K^+K^- + p$ (fid. cuts)',
+                       '$pp \\rightarrow p + K^+K^- + p$ (fid. cuts & $\\Delta \\phi_{{pp}} < 90^{\\circ})$',
+                       '$pp \\rightarrow p + K^+K^- + p$ (fid. cuts & $\\Delta \\phi_{{pp}} > 90^{\\circ})$']
     pids['KK']      = f'[[321,-321]]'
 
     # ppbar
     sets['ppbar']   = ['ppbar', 'ppbar_less_90', 'ppbar_more_90']
-    labels['ppbar'] = ['$p\\bar{p}$',
-                       '$p\\bar{p}, \\Delta \\phi_{{pp}} < 90^{\\circ}$',
-                       '$p\\bar{p}, \\Delta \\phi_{{pp}} > 90^{\\circ}$']
+    labels['ppbar'] = ['$pp \\rightarrow p + p\\bar{p} + p$ (fid. cuts)',
+                       '$pp \\rightarrow p + p\\bar{p} + p$ (fid. cuts & $\\Delta \\phi_{{pp}} < 90^{\\circ})$',
+                       '$pp \\rightarrow p + p\\bar{p} + p$ (fid. cuts & $\\Delta \\phi_{{pp}} > 90^{\\circ})$']
     pids['ppbar']   = f'[[2212,-2212]]'
 
     return sets,labels,pids
@@ -68,10 +68,12 @@ def test_generate_analyze(POMLOOP, NEVENTS, GENERATE=True, ANALYZE=True):
             for i in range(len(SETS[channel])):
                 cmd  = f"python python/iceshot --hepmc3 {HEPDATA}_{SETS[channel][i]} --hepdata dataset_{HEPDATA}_{SETS[channel][i]} --pid '{PIDS[channel]}' "
                 cmd += f" --mclabel 'GRANIITTI MC'"
-                cmd += f" --datalabel 'STAR ({LABELS[channel][i]}), $\\sqrt{{s}}=0.2$ TeV'"
-                cmd += f" --chi2"
-
+                cmd += f" --datalabel 'STAR, $\\sqrt{{s}}=0.2$ TeV'"
+                cmd += f" --title '{LABELS[channel][i]}'"
+                #cmd += f" --maxevents 10000"
+                
                 execute(cmd, expect="[iceshot: done]")
 
 if __name__ == "__main__":
     test_generate_analyze(POMLOOP=True, NEVENTS=1000000, GENERATE=True, ANALYZE=True)
+    #test_generate_analyze(POMLOOP=True, NEVENTS=1000000, GENERATE=False, ANALYZE=True)

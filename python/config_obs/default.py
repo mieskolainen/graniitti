@@ -22,7 +22,8 @@ obs_M = {
 'figsize' : (4, 3.75),
 
 # Ratio
-'ylim_ratio' : (0.7, 1.3),
+'ylim_ratio' : (0.0, 2.0),
+'ytick_ratio_step': 0.5,
 
 # Default histogramming
 'bins'    : np.linspace(0, 3, 50),
@@ -47,7 +48,8 @@ obs_Abs_t1t2 = {
 'figsize' : (4, 3.75),
 
 # Ratio
-'ylim_ratio' : (0.7, 1.3),
+'ylim_ratio' : (0.0, 2.0),
+'ytick_ratio_step': 0.5,
 
 # Default histogramming
 'bins'    : np.linspace(0, 2, 50),
@@ -72,7 +74,8 @@ obs_Rap = {
 'figsize' : (4, 3.75),
 
 # Ratio
-'ylim_ratio' : (0.7, 1.3),
+'ylim_ratio' : (0.0, 2.0),
+'ytick_ratio_step': 0.5,
 
 # Default histogramming
 'bins'    : np.linspace(-3, 3, 50),
@@ -97,7 +100,8 @@ obs_dPhi_pp = {
 'figsize' : (4, 3.75),
 
 # Ratio
-'ylim_ratio' : (0.7, 1.3),
+'ylim_ratio' : (0.0, 2.0),
+'ytick_ratio_step': 0.5,
 
 # Default histogramming
 'bins'    : np.linspace(0, 180, 50),
@@ -122,7 +126,8 @@ obs_costheta_CS = {
 'figsize' : (4, 3.75),
 
 # Ratio
-'ylim_ratio' : (0.7, 1.3),
+'ylim_ratio' : (0.0, 2.0),
+'ytick_ratio_step': 0.5,
 
 # Default histogramming
 'bins'    : np.linspace(-1, 1, 50),
@@ -147,7 +152,8 @@ obs_phi_CS = {
 'figsize' : (4, 3.75),
 
 # Ratio
-'ylim_ratio' : (0.7, 1.3),
+'ylim_ratio' : (0.0, 2.0),
+'ytick_ratio_step': 0.5,
 
 # Default histogramming
 'bins'    : np.linspace(0, 180, 50),

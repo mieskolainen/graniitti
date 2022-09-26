@@ -77,7 +77,8 @@ def main():
 
     parser.add_argument("--datalabel", nargs='+', help="example: --datalabel 'CMS 13 TeV' 'ATLAS 13 TeV'")
     parser.add_argument("--mclabel",   nargs='+', help="example: --mclabel 'GRANIITTI pi+pi-' 'GRANIITTI K+K-'")
-    parser.add_argument("--title",     type=str,  default=f'iceshot', help="example: --title 'LHC analysis'")
+    parser.add_argument("--title",     type=str,  default='',      help="example: --title 'LHC analysis'")
+    parser.add_argument("--title_loc", type=str,  default='left',  help="example: --title_loc 'right'")
     
     
     parser.add_argument("--datascale", nargs='+', help="example: --datascale 1.1")
@@ -286,16 +287,16 @@ def main():
         for yscale in ['linear', 'log']:
             fig, ax = iceplot.superplot(hist_objs, observable=all_obs[OBS], yscale=yscale)
             
-            ### Chi2 for this observable
+            ### Compute chi2 for this observable
             if (len(data_obj) > 0) and (len(mc_obj) > 0) and args.chi2:
                 i,j   = 0,0 # Use the first pair
                 chi2  = iceplot.chi2_cost(h_mc=mc_obj[i]['hdata'], h_data=data_obj[j]['hdata'])
                 ndf   = len(mc_obj[i]['hdata'].counts) # Count here only the number of bins (not parameters)
                 args.title = f'$\\chi^2$ / ndf = {chi2:0.1f} / {ndf:0.0f} = {chi2/ndf:0.1f}'
-                ax[0].set_title(args.title)
+                ax[0].set_title(args.title, fontsize=9)
             else:
-                ax[0].set_title('$\\it{' + args.title + '}$', loc='right')
-
+                ax[0].set_title(args.title, loc=args.title_loc, fontsize=9)
+            
             # Create path and save
             fullpath = f'{args.cdir}/figs/{args.output}'
             pathlib.Path(fullpath).mkdir(parents=True, exist_ok=True)

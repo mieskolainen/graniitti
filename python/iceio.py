@@ -242,11 +242,17 @@ def orthogonal_error(data):
     Total orthogonal error combined from different sources
     """
     total_error = None
-    for key in data.keys():
+    for key in data.keys(): # Loop over stat, syst ...
         if total_error is None: # Not yet initialized
             total_error = np.zeros(len(data[key]))
 
-        total_error += (data[key][:,1] - data[key][:,0])**2
+        # Take symmetric
+        lower = np.abs(data[key][:,0]) # Absolute lower
+        upper = data[key][:,1]         # Absolute upper
+        err   = (lower + upper) / 2.0  # Take mean
+        
+        # Add in quadrature
+        total_error += err**2
 
     return np.sqrt(total_error)
 
