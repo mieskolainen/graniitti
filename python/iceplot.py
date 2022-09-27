@@ -217,10 +217,9 @@ def create_axes(xlabel='$x$', ylabel=r'Counts', ylabel_ratio='Ratio',
         ax[1].set_ylabel(ylabel_ratio, fontsize=fontsize)
 
     # Setup ticks
-    print('HEPHEPHEP')
-    print(kwargs)
+    #print(kwargs)
     ax = tick_creator(ax=ax, ratio_plot=ratio_plot, **kwargs)
-
+    
     return fig, ax
 
 
@@ -346,7 +345,7 @@ def hist_filled_error(ax, bins, cbins, y, err, color, **kwargs):
 
 
 def superplot(data, observable=None, ratio_plot=True, yscale='linear', ratio_error_plot=True, \
-    legend_counts=False, color=None, legend_properties={'fontsize': 9}, bottom_PRC=5, EPS=1E-12):
+    legend_counts=False, color=None, legend_properties={'fontsize': 8}, bottom_PRC=5, EPS=1E-12):
     """ Superposition (overlaid) plotting
     """
     if observable == None:
