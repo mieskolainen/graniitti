@@ -142,6 +142,6 @@ raytune_setup = {
    'config'      : config,
    'metric'      : "chi2",
    'mode'        : "min",
-   'num_samples' : 5000
+   'num_samples' : 5
 }
 
