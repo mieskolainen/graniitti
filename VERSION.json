@@ -1,7 +1,7 @@
 {
  "name": "GRANIITTI",
- "version": 1.082,
+ "version": 1.083,
  "type": "pre-release",
- "date": "25.05.2022",
- "update": "re-organization of folder structure"
+ "date": "03.10.2022",
+ "update": "spin-code update: allow J=0 system (grand) daughters to have spin correlations, limit spin-recursion depth to level 2 [arbitrary deep re-enabled in the future update]"
 }
