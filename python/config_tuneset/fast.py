@@ -93,12 +93,12 @@ config = {
   #'REGGE|offshellFF':   tune.choice(["EXP"]),
   #'REGGE|b_EXP':        tune.uniform(0.1, 3.0),
 
-  'REGGE|offshellFF':   tune.choice(["POW"]),
-  'REGGE|b_POW':        tune.uniform(0.1, 1.5),
+  #'REGGE|offshellFF':   tune.choice(["POW"]),
+  #'REGGE|b_POW':        tune.uniform(0.1, 1.5),
   
-  #'REGGE|offshellFF':  tune.choice(["OREAR"]),
-  #'REGGE|a_OREAR':     tune.uniform(0.1, 1.5),
-  #'REGGE|b_OREAR':     tune.uniform(0.1, 3.0)
+  'REGGE|offshellFF':  tune.choice(["OREAR"]),
+  'REGGE|a_OREAR':     tune.uniform(0.1, 1.5),
+  'REGGE|b_OREAR':     tune.uniform(0.1, 3.0)
 }
 
 
