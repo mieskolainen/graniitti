@@ -31,8 +31,8 @@
     "random_rho" : 0,
 
     // Production coupling constant at amplitude level
-    "g_A"   :  0.1,  // Ansatz (no fit)
-    "g_phi" :  1.57,
+    "g_A"   :  0.01,  // Ansatz (no fit)
+    "g_phi" :  0.0,
     
     // Production form factor parameter (GeV)
     "g_FF"  : 1.0,

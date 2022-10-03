@@ -73,6 +73,10 @@
     // Set 0 for for charged (determinant like) +- combinations, 1 for all combinations
     "ampcombs" : 0,
     
+    // Poisson suppression factor (NOT IMPLEMENTED CURRENTLY)
+    // "poisson_scale": 0.7,
+    // "poisson_s0": 1.3,
+
     // -----------------------------------------------------------------
     // IMPACT: [non-tensor pomeron AND tensor pomeron models]
     
@@ -80,15 +84,15 @@
     //
     // Note that with (interfering) resonances, the continuum parameters
     // should be fitted together with the resonances + screening loop on.
-    "offshellFF" : "POW", // "EXP", "OREAR" or "POW"
+    "offshellFF" : "OREAR", // "OREAR", "POW", "EXP"
     
     // Form factor parameters
-    "b_EXP"   : 1.0,       // GeV^-2
+    "a_OREAR" : 0.45,   // [GeV^1]
+    "b_OREAR" : 1.37,   // [GeV^-1]
 
-    "a_OREAR" : 0.8,       // GeV^1
-    "b_OREAR" : 1.8,       // GeV^-1
-
-    "b_POW"   : 0.5,       // GeV^2
+    "b_POW"   : 1.5,    // [GeV^2]
+    
+    "b_EXP"   : 0.5,    // [GeV^-2] 
   },
   
   // ---------------------------------------------------------------------
@@ -122,9 +126,9 @@
     "active" : [true, true, true]
   },
 
-  // proton (ansatz) (here one can compare with gN_P above)
+  // proton (ansatz)
   "PARAM_P" : {
-    "c" : [27.0, 0, 0],
+    "c" : [35.00184, 81.63672, 10.86264],
     "active" : [true, false, false]
   },
 

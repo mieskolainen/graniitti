@@ -63,7 +63,7 @@ elif SET == 3:
 elif SET == 4:
   datacards = '{ \
     dataset_ALICE*, dataset_ATLAS*, \
-    dataset_STAR_1792394_pipi_1--1.5.json, \
+    dataset_STAR_1792394_pipi_1--1-5.json, \
     dataset_STAR_1792394_KK.json, \
     dataset_STAR_1792394_KK_less_90.json, \
     dataset_STAR_1792394_pipi.json, \

@@ -39,7 +39,7 @@ def parallel_wrapper(param):
     # Read event data
     mcdata = iceio.read_hepmc3(chunk_range=param['chunk_range'], \
         hepmc3file=param['hepmc3file'], all_obs=param['all_obs'], pid=param['pid'], cuts='config_cuts.' + param['cuts'])
-
+    
     # Histogram it
     hist = iceplot.histmc(mcdata=mcdata, all_obs=param['all_obs'], scale=param['scale'], \
         density=param['density'], color=iceplot.colors(param['k']), label=param['label'])
@@ -112,7 +112,7 @@ def main():
             raise Exception('iceshot: Possible scale factors should be provided for each HepMC3 file')
 
     if len(args.pid) != len(args.hepmc3):
-        raise Exception('iceshot: Give final state PID array for each HepMC3 file!')
+        raise Exception('iceshot: Give final state PID array for each HepMC3 file, e.g. [[211,-211]]!')
 
 
     # ========================================================================

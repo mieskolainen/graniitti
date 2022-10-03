@@ -27,6 +27,7 @@ PDG_K       = 321
 
 # PDG (HepMC) status codes
 INITIAL_STATE = 4
+DECAYED_STATE = 2
 FINAL_STATE   = 1
 
 
@@ -84,6 +85,71 @@ def proj_1D_CS(event, beam_eta=6):
 ## Observables
 #
 #
+
+def proj_1D_phi12(event, beam_eta=6, target_m=0.775):
+    """
+    
+    """
+
+    # Pions
+    pi_pos = filter(lambda p: p.status() == FINAL_STATE and p.pid() == PDG_PI \
+        and np.abs(p.momentum().eta()) < beam_eta, event.evt.particles())
+    pi_pos_p4 = [hepmc2vec4(p.momentum()) for p in pi_pos]
+    
+    # Anti-pions
+    pi_neg = filter(lambda p: p.status() == FINAL_STATE and p.pid() == -PDG_PI \
+        and np.abs(p.momentum().eta()) < beam_eta, event.evt.particles())    
+    pi_neg_p4 = [hepmc2vec4(p.momentum()) for p in pi_neg]
+
+    # Find the closest combination
+    Pe   = [ [[0,0],
+              [1,1]],
+             [[0,1],
+              [1,0]] ]
+    loss = np.zeros(len(Pe))
+    
+    for n in range(len(Pe)):
+
+        i,j,k,l = Pe[n][0][0],Pe[n][0][1],Pe[n][1][0],Pe[n][1][1]
+
+        mA      = (pi_pos_p4[i] + pi_neg_p4[j]).m
+        mB      = (pi_pos_p4[k] + pi_neg_p4[l]).m
+        loss[n] = (target_m - mA)**2 + (target_m - mB)**2
+
+    # Pick the solution
+    n = np.argmin(loss)
+
+    i,j,k,l   = Pe[n][0][0],Pe[n][0][1],Pe[n][1][0],Pe[n][1][1]
+    particles = [ [pi_pos_p4[i], pi_neg_p4[j]], [pi_pos_p4[k], pi_neg_p4[l]] ]
+
+    # Beams
+    beam = [hepmc2vec4(p.momentum()) for p in filter(lambda p: p.status() == INITIAL_STATE, event.evt.particles())]
+    obs  = 0.0
+
+    # Over both systems
+    pions = []
+    for n in range(2):
+
+        X = particles[n][0] + particles[n][1]
+        
+        # Boost to the mother helicity frame 'HX'
+        pb1boost,pb2boost,pfboost = LorentFramePrepare(pbeam1=beam[0], pbeam2=beam[1], particles=particles[n], X=X)
+        pfout = LorentzFrame(pb1boost=pb1boost, pb2boost=pb2boost, pfboost=pfboost, frametype="HX")
+
+        # Get the first daughter
+        pions.append(pfout[0])
+
+    return rad2deg(pions[0].phi + pions[1].phi)
+
+
+def proj_1D_costheta12(event):
+    """
+    
+    """
+
+    return 0.0
+
+
 def proj_1D_M(event):
     """
     Central system invariant mass (GeV)
@@ -174,6 +240,7 @@ def LorentzFrame(pb1boost, pb2boost, pfboost, frametype='CS', direction=1):
     """
     Rotated Lorentz frame transformation
     
+    "CM" : No-rotation, just boost
     "CS" : Collins-Soper
     "AH" : Anti-Helicity (Anti-CS)
     "HE" : Helicity
@@ -195,9 +262,9 @@ def LorentzFrame(pb1boost, pb2boost, pfboost, frametype='CS', direction=1):
 
     # @@ NON-ROTATED FRAME AXIS DEFINITION @@
     if   (frametype == "CM"):
-        zaxis = np.array([0, 0, 1])
-        yaxis = np.array([0, 1, 0])
-
+        zaxis = np.array([0.0, 0.0, 1.0],dtype=float)
+        yaxis = np.array([0.0, 1.0, 0.0],dtype=float)
+    
     # @@ COLLINS-SOPER FRAME POLARIZATION AXIS DEFINITION @@
     elif (frametype == "CS" or frametype == "G1"):
         zaxis = unitvec(unitvec(pb1boost3) - unitvec(pb2boost3))

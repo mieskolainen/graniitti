@@ -13,7 +13,7 @@ from ray import tune
 # Event generation setup
 mc_steer = {
   'NEVENTS' : 30000,     # At least ~ 30k to 50k events per parameter space trial
-  'POMLOOP' : False,      # Screening on/off (set False for fast test trials, True for precision tuning)
+  'POMLOOP' : True,      # Screening on/off (set False for fast test trials, True for precision tuning)
   'XSMODE'  : 'sample',  # Cross section normalization mode:
                          # -- 'reset'   compute full cross section initialization (vgrid file) for every parameter trial
                          # -- 'vgrid'   use once pre-computed value from .vgrid file (use this if parameters under tune do not impact the integrated xs)
@@ -25,7 +25,6 @@ mc_steer = {
 
 # ** Data input collection **
 # Use glob wildcard / braces here
-
 SET = 0
 
 
@@ -63,11 +62,17 @@ elif SET == 3:
 elif SET == 4:
   datacards = '{ \
     dataset_ALICE*, dataset_ATLAS*, \
-    dataset_STAR_1792394_pipi_1--1.5.json, \
+    dataset_STAR_1792394_pipi_1--1-5.json, \
     dataset_STAR_1792394_KK.json, \
     dataset_STAR_1792394_KK_less_90.json, \
     dataset_STAR_1792394_pipi.json, \
     dataset_STAR_1792394_pipi_less_90.json }'
+
+elif SET == 5:
+  datacards = '{ \
+    dataset_STAR_1792394_pipi.json, \
+    dataset_STAR_1792394_pipi_less_90.json, \
+    dataset_STAR_1792394_pipi_more_90.json}'
 
 else:
   raise Exception(__name__ + 'Unknown dataset chosen !')
@@ -84,8 +89,8 @@ else:
 config = {
   
   ### Pomeron trajectory
-  #'REGGE|a0[0]':        tune.uniform(1.05, 1.15),
-  #'REGGE|ap[0]':        tune.uniform(0.05, 0.30),
+  'REGGE|a0[0]':        tune.uniform(1.08, 1.10),
+  'REGGE|ap[0]':        tune.uniform(0.05, 0.30),
 
   ### Offshell meson form factors
   # N.B. Change "offshellFF" in TUNE0/GENERAL.json correspondingly for the initialization!
@@ -93,12 +98,12 @@ config = {
   #'REGGE|offshellFF':   tune.choice(["EXP"]),
   #'REGGE|b_EXP':        tune.uniform(0.1, 3.0),
 
-  'REGGE|offshellFF':   tune.choice(["POW"]),
-  'REGGE|b_POW':        tune.uniform(0.1, 1.5),
+  #'REGGE|offshellFF':   tune.choice(["POW"]),
+  #'REGGE|b_POW':        tune.uniform(0.1, 1.5),
   
-  #'REGGE|offshellFF':  tune.choice(["OREAR"]),
-  #'REGGE|a_OREAR':     tune.uniform(0.1, 1.5),
-  #'REGGE|b_OREAR':     tune.uniform(0.1, 3.0)
+  'REGGE|offshellFF':  tune.choice(["OREAR"]),
+  'REGGE|a_OREAR':     tune.uniform(0.1, 1.5),
+  'REGGE|b_OREAR':     tune.uniform(0.1, 2.5)
 }
 
 
@@ -120,22 +125,23 @@ config['RES|f0_980:W'] = tune.uniform(0.05, 0.20)
 
 
 # Production coupling amplitudes
-free_resonances = ['f0_500', 'f0_980', 'f2_1270', 'f0_1500', 'f2_1525', 'f0_1710']
+free_resonances = ['f0_500']#, 'f0_980', 'f2_1270', 'f0_1500', 'f2_1525', 'f0_1710']
 for res in free_resonances:
   #if res not in ['rho_770']:
   config[f'RES|{res}:g_A']   = tune.uniform(0.0001, 1.0)
 
 
 # Production coupling phases
+"""
 free_resonances = ['f0_500', 'f2_1270', 'f0_1500', 'f2_1525', 'f0_1710']
 for res in free_resonances:
   #if res in ['f0_980', 'f2_1270']:
   config[f'RES|{res}:g_phi'] = tune.uniform(-3.14159, 3.14159) # Continuum phase
   #config[f'RES|{res}:g_phi'] = tune.choice(np.array([-3.14159, -1.57, 0.0, 1.57])) # Quantized phase
   #config[f'RES|{res}:g_phi'] = tune.choice(np.linspace(-np.pi, np.pi, 17)[:-1]) # Quantized phase
+"""
 
-
-loss_avg = 'local-mean' # local-mean', 'local-max', 'local-median', 'global-mean'
+loss_avg = 'global-mean' # local-mean', 'local-max', 'local-median', 'global-mean'
 
 raytune_setup = {
    'config'      : config,

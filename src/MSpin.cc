@@ -12,7 +12,7 @@
 // combinations, together with Breit-Wigner weights at amplitude level.
 //
 //
-// (c) 2017-2021 Mikael Mieskolainen
+// (c) 2017-2022 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++ standard
@@ -450,8 +450,13 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &res)
 }
 
 
-// Recursive decay chain with spin correlations:
-// X -> A > {A1 + A2} B > {B1 > {C1 + C2} + B2} ...
+// [Recursive] decay chain with spin correlations:
+// X -> A B
+// X -> A > {A1 A2} B > {B1 B2}
+// 
+// TBD: Arbitrary deep correlation chains with backward tree traversal
+// (currently treat the two first levels)
+//
 //
 std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
   // Apply coupling first
@@ -463,54 +468,48 @@ std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
   // This function handles only 2-body decays
   if (lts.decaytree.size() != 2) { return A0; }
 
-  // --------------------------------------------------
-  // Scalar J^P = 0^+, easy special case
-  if (res.p.spinX2 == 0 && res.p.P == 1) {
-    return res.hel.T[0][0] * A0;  // (l,s) = (0,0)
-  }
-  // --------------------------------------------------
-
+  // ---------------------------------------------------------------------
   // Transition amplitude matrix f for X -> A + B in the X rest frame
   // Daughter spins
   const double s1 = lts.decaytree[0].p.spinX2 / 2.0;
   const double s2 = lts.decaytree[1].p.spinX2 / 2.0;
 
-  // Boost daughter A to the X-rest frame
+  // Boost daughter A to the system X-rest frame (pfinal[0] == central system)
   M4Vec boosted_daughter = lts.decaytree[0].p4;
   gra::kinematics::LorentzBoost(lts.pfinal[0], lts.pfinal[0].M(), boosted_daughter, -1);
 
-  MMatrix<std::complex<double>> fX = fMatrix(res.hel.T, res.p.spinX2 / 2.0, s1, s2,
+  // Get the transition amplitude matrix of size [(2s1 + 1)x(2s2 + 1)] x (2J + 1)
+  MMatrix<std::complex<double>> f = fMatrix(res.hel.T, res.p.spinX2 / 2.0, s1, s2,
                                              boosted_daughter.Theta(), boosted_daughter.Phi());
 
-  // Now go through the decay tree leaves recursively
-  TreeRecursion(lts.decaytree[0]);
-  TreeRecursion(lts.decaytree[1]);
+  // ---------------------------------------------------------------------
+  // X -> A > {A1 A2} B > {B1 B2} type cascaded decay
+  //
+  // TBD: Generalize to arbitrary shaped nested trees (via binary tree backward traversal)
+  //
+  if (lts.decaytree[0].legs.size() == 2 && lts.decaytree[1].legs.size() == 2) {
 
-  // Get tensor products back
-  MMatrix<std::complex<double>> fA;
-  TensorTree(lts.decaytree[0], fA);
+    TreeRecursion(lts.decaytree[0]);
+    const MMatrix<std::complex<double>> f0 = lts.decaytree[0].f;
+    
+    TreeRecursion(lts.decaytree[1]);
+    const MMatrix<std::complex<double>> f1 = lts.decaytree[1].f;
 
-  MMatrix<std::complex<double>> fB;
-  TensorTree(lts.decaytree[1], fB);
-
-  // f matrices have dimensions: [(2s1 + 1)x(2s2 + 1)] x (2J + 1)
-
-  // Total transition amplitude matrix as a tensor product
-  MMatrix<std::complex<double>> f;
-  if (lts.decaytree[0].legs.size() == 0 && lts.decaytree[1].legs.size() == 0) {
-    f = fX;  // No recursion
-  } else {
-    f = gra::matoper::TensorProd(fA, fB) * fX;  // Matrix x Matrix product
+    // Total transition amplitude matrix as a tensor product
+    f = gra::matoper::TensorProd(f0, f1) * f;  // Matrix x Matrix product
   }
-
-  MMatrix<std::complex<double>> fA_D = fA.Dagger();
 
   // ------------------------------------------------------------------
   // Rotation does mixing of spin states. N.B. Eigenvalues do not change in
   // rotation.
   MMatrix<std::complex<double>> fRfd;
 
-  if (res.p.spinX2 != 0) {
+  if (res.p.spinX2 == 0) {
+    // X == Scalar 0+ or Pseudoscalar 0^- will end up here
+    fRfd = f * f.Dagger();
+
+  } else {
+
     // ------------------------------------------------------------------
     // Construct the D-matrix for an event-by-event spin space density operator
     // rotation
@@ -526,10 +525,6 @@ std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
     // Weight (amplitude squared) of the event by the density matrix formalism:
     // Tr[f*rho*f^dagger]
     fRfd = f * rho_ROT * f.Dagger();
-
-  } else {
-    // Pseudoscalar 0^- can end up here
-    fRfd = f * f.Dagger();
   }
 
   // (2J+1) is normalization to match production coupling with spin-0
@@ -543,6 +538,16 @@ std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
   return A0;
 }
 
+// Forward traverse the decay tree for 1 -> 2 decays
+//
+//
+void TreeRecursion(MDecayBranch &branch) {
+  if (branch.legs.size() == 2) {
+    branch.f = CalculateFMatrix(branch);
+    // Infinite recursion
+    for (const auto &i : aux::indices(branch.legs)) { TreeRecursion(branch.legs[i]); }
+  }
+}
 
 // Decay amplitude matrix X -> A + B
 //
@@ -557,53 +562,14 @@ MMatrix<std::complex<double>> CalculateFMatrix(const MDecayBranch &branch) {
   std::vector<M4Vec> daughter = {branch.legs[A].p4, branch.legs[B].p4};
   
   // Rotate and boost daughters to the frame where
-  // z-spanned by X-flight direction (X-helicity rest frame)
+  // z-axis is spanned by mother X flight direction (X-helicity rest frame)
   gra::kinematics::HXframe(daughter, branch.p4);
   
-  /*
-  // Boost daughters to the non-rotated rest frame (test/debug reservation)
-  gra::kinematics::LorentzBoost(branch.p4, branch.p4.M(), daughter[0], -1);
-  gra::kinematics::LorentzBoost(branch.p4, branch.p4.M(), daughter[1], -1);
-  */
-
+  // Boost daughter to the (non-rotated) rest frame (debug/test reservation)
+  //gra::kinematics::LorentzBoost(branch.p4, branch.p4.M(), daughter[A], -1);
+  
   return fMatrix(branch.hel.T, branch.p.spinX2 / 2.0, s1, s2, daughter[A].Theta(),
                  daughter[A].Phi());
-}
-
-// Forward traverse the decay tree
-//
-//
-void TreeRecursion(MDecayBranch &branch) {
-  if (branch.legs.size() == 2) {
-    branch.f = CalculateFMatrix(branch);
-    // Infinite recursion
-    for (const auto &i : aux::indices(branch.legs)) { TreeRecursion(branch.legs[i]); }
-  }
-}
-
-
-// Reverse traverse the sequential decay tree
-//
-//
-void TensorTree(const MDecayBranch &branch, MMatrix<std::complex<double>> &out) {
-  if (branch.legs.size() == 2) {
-    MMatrix<std::complex<double>> f0;
-    MMatrix<std::complex<double>> f1;
-
-    TensorTree(branch.legs[0], f0);
-    TensorTree(branch.legs[1], f1);
-
-    // Now we are traversing backwards the binary tree at branch points
-    if (branch.legs[0].legs.size() == 0 && branch.legs[1].legs.size() == 0) {
-      out = branch.f;
-    } else {
-      out = matoper::TensorProd(f0, f1) * branch.f;
-    }
-
-    // Last leg unit vector
-  } else {
-    out = MMatrix<std::complex<double>>(1, branch.p.spinX2 + 1, 1.0);
-  }
 }
 
 

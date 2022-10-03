@@ -20,7 +20,6 @@ namespace spin {
 
 MMatrix<std::complex<double>> CalculateFMatrix(const MDecayBranch &branch);
 void                          TreeRecursion(MDecayBranch &branch);
-void TensorTree(const MDecayBranch &branch, MMatrix<std::complex<double>> &out);
 
 std::complex<double> ProdAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &res);
 std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res);
