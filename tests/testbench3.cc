@@ -239,7 +239,7 @@ TEST_CASE("gra::kinematics::LorentzFrame versus PGframe, HEframe, CSframe", "[Lo
 			std::vector<M4Vec> pfout;
 			gra::kinematics::LorentzFrame(pfout, pb1boost, pb2boost, pfboost, frametype[k], direction);
 
-			// Pseudo-Gottfried-Jackson frame test
+			// Pseudo-Gottfried-Jackson frame standalone function test
 			if (frametype[k] == "PG") {
 				//printf("PG[0]:      "); pfout[0].Print();
 				//printf("PG[1]:      "); pfout[1].Print();				
@@ -254,7 +254,7 @@ TEST_CASE("gra::kinematics::LorentzFrame versus PGframe, HEframe, CSframe", "[Lo
 				REQUIRE( gra::math::CheckEMC(pfout[1] - pfPG[1], EPS) );		
 			}
 
-			// Helicity frame test
+			// Helicity frame standalone function test
 			if (frametype[k] == "HX") {
 				//printf("HX[0]:      "); pfout[0].Print();
 				//printf("HX[1]:      "); pfout[1].Print();				
@@ -269,7 +269,7 @@ TEST_CASE("gra::kinematics::LorentzFrame versus PGframe, HEframe, CSframe", "[Lo
 				REQUIRE( gra::math::CheckEMC(pfout[1] - pfHX[1], EPS) );	
 			}
 
-			// Collins-Soper frame test
+			// Collins-Soper frame function standalone test
 			if (frametype[k] == "CS") {
 				//printf("CS[0]:      "); pfout[0].Print();
 				//printf("CS[1]:      "); pfout[1].Print();				

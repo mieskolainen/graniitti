@@ -1195,7 +1195,7 @@ inline void LorentzFrame(std::vector<T> &pfout, const T &pb1boost, const T &pb2b
 
 // From lab to Anti-Helicity frame
 // Quantization z-axis is defined as the bisector of two beams, in the rest
-// frame of the resonance
+// frame of the system X
 //
 // Input:     p  =  Set of 4-momentum to be transformed
 //            X  =  System 4-momentum
@@ -1212,7 +1212,7 @@ inline void AHframe(std::vector<T> &p, const T &X, const T &p1, const T &p2, boo
   }
   // ********************************************************************
 
-  // Boost particles to the central system rest frame
+  // Boost particles to the system X rest frame
   for (const auto &i : gra::aux::indices(p)) {
     gra::kinematics::LorentzBoost(X, X.M(), p[i], -1);  // Note the minus sign
   }
@@ -1262,7 +1262,7 @@ inline void AHframe(std::vector<T> &p, const T &X, const T &p1, const T &p2, boo
 
 // From lab to Collins-Soper frame
 // Quantization z-axis is defined as the bisector of two beams, in the rest
-// frame of the resonance
+// frame of the system X
 //
 // Input:     p  =  Set of 4-momentum to be transformed
 //            X  =  System 4-momentum
@@ -1278,8 +1278,8 @@ inline void CSframe(std::vector<T> &p, const T &X, const T &p1, const T &p2, boo
     for (const auto &i : gra::aux::indices(p)) { p[i].Print(); }
   }
   // ********************************************************************
-
-  // Boost particles to the central system rest frame
+  
+  // Boost particles to the system X rest frame
   for (const auto &i : gra::aux::indices(p)) {
     gra::kinematics::LorentzBoost(X, X.M(), p[i], -1);  // Note the minus sign
   }
@@ -1346,7 +1346,7 @@ inline void CSframe(std::vector<T> &p, const T &X, const T &p1, const T &p2, boo
 
 // From lab to Gottfried-Jackson frame
 // Quantization z-axis spanned by the propagator (momentum transfer vector)
-// momentum in the rest frame of the central system
+// momentum in the rest frame of the system X
 //
 // Input:  p         = Set of 4-momentum to be transformed
 //         X         = System 4-momentum
@@ -1366,7 +1366,7 @@ inline void GJframe(std::vector<T> &p, const T &X, int direction, const T &q1, c
   }
   // ********************************************************************
 
-  // Boost particles to the central system rest frame
+  // Boost particles to the system X rest frame
   for (const auto &i : gra::aux::indices(p)) {
     gra::kinematics::LorentzBoost(X, X.M(), p[i], -1);  // Note the minus sign
   }
@@ -1421,7 +1421,7 @@ inline void GJframe(std::vector<T> &p, const T &X, int direction, const T &q1, c
 
 // From lab to Pseudo-Gottfried-Jackson frame
 // Quantization z-axis spanned by the beam proton +z (or -z) momentum
-// in the rest frame of the central system
+// in the rest frame of the system X
 //
 // Input:  p            = Set of 4-momentum to be transformed
 //         X            = System 4-momentum
@@ -1441,12 +1441,12 @@ inline void PGframe(std::vector<T> &p, const T &X, const int direction, const T 
   }
   // ********************************************************************
 
-  // Boost particles to the central system rest frame
+  // Boost particles to the system X rest frame
   for (const auto &i : gra::aux::indices(p)) {
     gra::kinematics::LorentzBoost(X, X.M(), p[i], -1);  // Note the minus sign
   }
 
-  // Boost initial state protons to the central system rest frame
+  // Boost initial state protons to the system X rest frame
   T proton_p = p_beam_plus;
   T proton_m = p_beam_minus;
 
@@ -1505,7 +1505,7 @@ inline void PGframe(std::vector<T> &p, const T &X, const int direction, const T 
 
 
 // From lab to the Helicity frame
-// Quantization z-axis as the direction of the resonance in the lab frame
+// Quantization z-axis as the direction of the system X in the lab frame
 //
 // Input:  p = Set of 4-momentum to be transformed
 //         X = System 4-momentum
@@ -1520,10 +1520,10 @@ inline void HXframe(std::vector<T> &p, const T &X, bool DEBUG = false) {
   }
   // ********************************************************************
 
-  // Rotation angles, note the minus
+  // ZYZ-sequence rotation angles as defined by the system X, note the minus
   const double Z_angle = -X.Phi();
   const double Y_angle = -X.Theta();
-
+  
   const auto rotate = [&](T &p) {
     gra::kinematics::RotateZ(p, Z_angle);
     gra::kinematics::RotateY(p, Y_angle);
@@ -1554,11 +1554,11 @@ inline void HXframe(std::vector<T> &p, const T &X, bool DEBUG = false) {
   }
   // ********************************************************************
 
-  // Construct the central system 4-momentum in ROTATED FRAME
+  // Construct the system X 4-momentum in ROTATED FRAME
   T XNEW = X;
   rotate(XNEW);
 
-  // Boost particles to the central system rest frame
+  // Boost particles to the system X rest frame
   // -> Helicity frame obtained
   for (const auto &i : gra::aux::indices(p)) {
     gra::kinematics::LorentzBoost(XNEW, XNEW.M(), p[i], -1);  // Note the minus sign
@@ -1569,10 +1569,10 @@ inline void HXframe(std::vector<T> &p, const T &X, bool DEBUG = false) {
     printf("HXframe:: Daughters after boost in HELICITY FRAME: \n");
     for (const auto &i : gra::aux::indices(p)) { p[i].Print(); }
 
-    printf("HXframe:: Central system in LAB FRAME: \n");
+    printf("HXframe:: System X in LAB FRAME: \n");
     X.Print();
 
-    printf("HXframe:: Central system in ROTATED LAB FRAME: \n");
+    printf("HXframe:: System X in ROTATED LAB FRAME: \n");
     XNEW.Print();
 
     printf("\n");
@@ -1582,6 +1582,7 @@ inline void HXframe(std::vector<T> &p, const T &X, bool DEBUG = false) {
 
 
 // "Rest frame" (no boost, beam axis as z-axis / spin quantization axis)
+// of system X
 //
 // Input:  p = Set of 4-momentum to be transformed
 //         X = System 4-momentum
@@ -1596,8 +1597,8 @@ inline void CMframe(std::vector<T> &p, const T &X, bool DEBUG = false) {
     for (const auto &i : gra::aux::indices(p)) { p[i].Print(); }
   }
   // ********************************************************************
-
-  // Boost particles to the central system rest frame
+  
+  // Boost particles to the system X rest frame
   for (const auto &i : gra::aux::indices(p)) {
     gra::kinematics::LorentzBoost(X, X.M(), p[i], -1);  // Note the minus sign
   }

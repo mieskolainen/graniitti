@@ -81,14 +81,10 @@ def proj_1D_CS(event, beam_eta=6):
 
     return pfout
 
-
-## Observables
-#
-#
-
-def proj_1D_phi12(event, beam_eta=6, target_m=0.775):
+#@icecache
+def proj_1D_4body(event, beam_eta=6, target_m=0.775):
     """
-    
+    Sequential 2-body projector, e.g. resonance -> rho > {pi+ pi-} rho > {pi+ pi-}
     """
 
     # Pions
@@ -130,24 +126,39 @@ def proj_1D_phi12(event, beam_eta=6, target_m=0.775):
     pions = []
     for n in range(2):
 
+        # Mother system X
         X = particles[n][0] + particles[n][1]
         
         # Boost to the mother helicity frame 'HX'
         pb1boost,pb2boost,pfboost = LorentFramePrepare(pbeam1=beam[0], pbeam2=beam[1], particles=particles[n], X=X)
+
+        # Apply rotation
         pfout = LorentzFrame(pb1boost=pb1boost, pb2boost=pb2boost, pfboost=pfboost, frametype="HX")
 
-        # Get the first daughter
+        # Get the first (positive) daughter
         pions.append(pfout[0])
 
-    return rad2deg(pions[0].phi + pions[1].phi)
+    return pions
 
 
-def proj_1D_costheta12(event):
+## Observables
+#
+#
+
+def proj_1D_4body_cos1(event):
     """
-    
+    X -> A > {A1 + A2} B > {B1 + B2}, angle cos(theta_{A1})
     """
+    p = proj_1D_4body(event=event)
+    return p[0].costheta
 
-    return 0.0
+
+def proj_1D_4body_phi12(event):
+    """
+    X -> A > {A1 + A2} B > {B1 + B2}, sum angle (phi_{A1} + phi_{B1})
+    """
+    p = proj_1D_4body(event=event)
+    return rad2deg(p[0].phi + p[1].phi)
 
 
 def proj_1D_M(event):

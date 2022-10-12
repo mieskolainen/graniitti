@@ -53,9 +53,9 @@ namespace aux {
 // -------------------------------------------------------
 // FIXED HERE manually
 
-double      GetVersion() { return 1.083; }
+double      GetVersion() { return 1.084; }
 std::string GetVersionType() { return "pre-release"; }
-std::string GetVersionDate() { return "03.10.2022"; }
+std::string GetVersionDate() { return "12.10.2022"; }
 std::string GetVersionUpdate() {
   return "spin-code update: allow J=0 system (grand) daughters to have spin correlations, limit spin-recursion depth to level 2 [arbitrary deep re-enabled in the future update]";
 }

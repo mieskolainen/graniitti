@@ -18,8 +18,8 @@
 namespace gra {
 namespace spin {
 
-MMatrix<std::complex<double>> CalculateFMatrix(const MDecayBranch &branch);
-void                          TreeRecursion(MDecayBranch &branch);
+MMatrix<std::complex<double>> CalculateFMatrix(const MDecayBranch &branch, const gra::LORENTZSCALAR &lts);
+void                          TreeRecursion(MDecayBranch &branch, const gra::LORENTZSCALAR &lts);
 
 std::complex<double> ProdAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &res);
 std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res);

@@ -119,11 +119,11 @@ void MUserHistograms::FillCosThetaPhi(double totalweight, const gra::LORENTZSCAL
       if (frames[k] == "GJ" || frames[k] == "LA") {
         continue;  // Treated outside this loop
       }
-
+      
       // Transform and histogram
       std::vector<M4Vec> pfout;
       gra::kinematics::LorentzFrame(pfout, pb1boost, pb2boost, pfboost, frames[k], direction);
-
+      
       const double costheta = pfout[0].CosTheta();
       const double phi      = gra::math::Rad2Deg(pfout[1].Phi());
 
