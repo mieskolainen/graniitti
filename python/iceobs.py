@@ -133,7 +133,7 @@ def proj_1D_4body_helicity(event, central_eta=6, target_m=0.775):
         # Intermediate system X_i
         X_i = particles[i][0] + particles[i][1]
         
-        # Boost to the intermediate mother X_i frame and transform to the helicity frame 'HX'
+        # Boost & rotate to the intermediate mother system X_i helicity frame
         pb1boost,pb2boost,pfboost = LorentFramePrepare(pbeam1=beam[0], pbeam2=beam[1], particles=particles[i], X=X_i)
         pfout = LorentzFrame(pb1boost=pb1boost, pb2boost=pb2boost, pfboost=pfboost, frametype="HX")
 
