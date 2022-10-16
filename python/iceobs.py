@@ -84,9 +84,9 @@ def proj_1D_CS(event, beam_eta=6):
 #@icecache
 def proj_1D_4body(event, beam_eta=6, target_m=0.775):
     """
-    Sequential 2-body projector, e.g. resonance -> rho > {pi+ pi-} rho > {pi+ pi-}
+    Sequential 2->2 body projector, e.g. resonance -> rho > {pi+ pi-} rho > {pi+ pi-}
     """
-
+    
     # Pions
     pi_pos = filter(lambda p: p.status() == FINAL_STATE and p.pid() == PDG_PI \
         and np.abs(p.momentum().eta()) < beam_eta, event.evt.particles())
@@ -97,16 +97,17 @@ def proj_1D_4body(event, beam_eta=6, target_m=0.775):
         and np.abs(p.momentum().eta()) < beam_eta, event.evt.particles())    
     pi_neg_p4 = [hepmc2vec4(p.momentum()) for p in pi_neg]
 
-    # Find the closest combination
-    Pe   = [ [[0,0],
-              [1,1]],
-             [[0,1],
-              [1,0]] ]
+    # Find the closest combination (two combinations)
+    Pe   = [ [[0,0],    # A- C1
+              [1,1]],   # B- C1
+             [[0,1],    # A- C2
+              [1,0]] ]  # B- C2
     loss = np.zeros(len(Pe))
     
+    A,B  = 0,1
     for n in range(len(Pe)):
 
-        i,j,k,l = Pe[n][0][0],Pe[n][0][1],Pe[n][1][0],Pe[n][1][1]
+        i,j,k,l = Pe[n][A][0],Pe[n][A][1], Pe[n][B][0],Pe[n][B][1]
 
         mA      = (pi_pos_p4[i] + pi_neg_p4[j]).m
         mB      = (pi_pos_p4[k] + pi_neg_p4[l]).m
@@ -115,24 +116,22 @@ def proj_1D_4body(event, beam_eta=6, target_m=0.775):
     # Pick the solution
     n = np.argmin(loss)
 
-    i,j,k,l   = Pe[n][0][0],Pe[n][0][1],Pe[n][1][0],Pe[n][1][1]
-    particles = [ [pi_pos_p4[i], pi_neg_p4[j]], [pi_pos_p4[k], pi_neg_p4[l]] ]
+    i,j,k,l   = Pe[n][A][0],Pe[n][A][1], Pe[n][B][0],Pe[n][B][1]
+    particles = [ [pi_pos_p4[i], pi_neg_p4[j]],
+                  [pi_pos_p4[k], pi_neg_p4[l]] ]
 
     # Beams
     beam = [hepmc2vec4(p.momentum()) for p in filter(lambda p: p.status() == INITIAL_STATE, event.evt.particles())]
-    obs  = 0.0
-
-    # Over both systems
+    
+    # Over both intermediate systems
     pions = []
-    for n in range(2):
-
-        # Mother system X
-        X = particles[n][0] + particles[n][1]
+    for i in range(2):
         
-        # Boost to the mother helicity frame 'HX'
-        pb1boost,pb2boost,pfboost = LorentFramePrepare(pbeam1=beam[0], pbeam2=beam[1], particles=particles[n], X=X)
-
-        # Apply rotation
+        # Intermediate system X_i
+        X_i = particles[i][0] + particles[i][1]
+        
+        # Boost to the intermediate mother X_i frame and transform to the helicity frame 'HX'
+        pb1boost,pb2boost,pfboost = LorentFramePrepare(pbeam1=beam[0], pbeam2=beam[1], particles=particles[i], X=X_i)
         pfout = LorentzFrame(pb1boost=pb1boost, pb2boost=pb2boost, pfboost=pfboost, frametype="HX")
 
         # Get the first (positive) daughter
@@ -256,6 +255,11 @@ def LorentzFrame(pb1boost, pb2boost, pfboost, frametype='CS', direction=1):
     "AH" : Anti-Helicity (Anti-CS)
     "HE" : Helicity
     "PG" : Pseudo-Gottfried-Jackson
+    
+    For more description, see MKinematics.h (LorentzFramePrepare function)
+    
+    N.B. For the helicity frame, this function is compatible with symmetric beam energies
+    (LHC proton-proton type)
     
     Args:
         pb1boost,pb2boost : Boosted beam 4-momenta

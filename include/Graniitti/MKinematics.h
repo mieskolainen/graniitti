@@ -1107,7 +1107,11 @@ inline void OffShell2LightCone(M4Vec &p1, M4Vec &p2, std::vector<M4Vec> &p) {
 //
 // Pseudo-Gottfried-Jackson: Quantization axis defined by the initial state
 // proton p1 (or p2) 3-momentum vector in the (resonance) system rest frame.
-//
+// 
+// 
+// N.B. For the helicity frame, this function is compatible with symmetric beam energies
+// (LHC proton-proton type)
+// 
 
 template <typename T>
 inline void LorentFramePrepare(const std::vector<T> &p, const T &X, const T &pbeam1,

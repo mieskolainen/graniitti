@@ -46,6 +46,7 @@ TEST_CASE("MRegge", "[gra::MRegge]") {
 
 // Test initializing Durham model amplitudes
 //
+/*
 TEST_CASE("MDurham", "[gra::MDurham]") {
 
 	gra::LORENTZSCALAR lts;
@@ -53,6 +54,7 @@ TEST_CASE("MDurham", "[gra::MDurham]") {
 	lts.LHAPDFSET = "CT10nlo";
 	MDurham a(lts, modelfile);	
 }
+*/
 
 // Test initializing gamma-gamma amplitudes
 //
@@ -180,8 +182,8 @@ TEST_CASE("MMatrix:: Dagger and Trace", "[MMatrix]") {
 
 
 // Test Lorentz frame transformation functions
-// 
-TEST_CASE("gra::kinematics::LorentzFrame versus PGframe, HEframe, CSframe", "[Lorentz Frames]") {
+//
+TEST_CASE("gra::kinematics::LorentzFrame versus PGframe, HXframe, CSframe", "[Lorentz Frames]") {
 	
 	const bool DEBUG = false;
 
@@ -197,7 +199,7 @@ TEST_CASE("gra::kinematics::LorentzFrame versus PGframe, HEframe, CSframe", "[Lo
 
 	int repeat = 0;
 	do {
-		const int direction = 1; // GJ and PG frames
+		const int direction = -1; // GJ and PG frames
 
 		if (repeat % 10000 == 0)
 		std::cout << repeat << " / " << N << std::endl;
@@ -218,9 +220,11 @@ TEST_CASE("gra::kinematics::LorentzFrame versus PGframe, HEframe, CSframe", "[Lo
  		x = gra::kinematics::TwoBodyPhaseSpace(mother, M0, {mpion, mpion}, pf, rng);
 
 		// Proton beams
-	    const double PZ = rng.U(50, 7000); // GeV
-		const M4Vec p1(0,0, PZ, sqrt( pow2(mproton) + pow2(PZ)));
-		const M4Vec p2(0,0,-PZ, sqrt( pow2(mproton) + pow2(PZ)));
+	    const double PZ1 = rng.U(50, 7000); // z-momentum
+		M4Vec p1; p1.SetPxPyPzM(0,0,PZ1, mproton);
+
+		const double PZ2 = -PZ1;
+		M4Vec p2; p2.SetPxPyPzM(0,0,PZ2, mproton);
 
 		// --------------------------------------------------------------------
 		// ** TRANSFORM TO DIFFERENT LORENTZ FRAMES **
@@ -239,6 +243,9 @@ TEST_CASE("gra::kinematics::LorentzFrame versus PGframe, HEframe, CSframe", "[Lo
 			std::vector<M4Vec> pfout;
 			gra::kinematics::LorentzFrame(pfout, pb1boost, pb2boost, pfboost, frametype[k], direction);
 
+			// pb1boost.Print("pb1boost");
+			// pb2boost.Print("pb2boost");
+
 			// Pseudo-Gottfried-Jackson frame standalone function test
 			if (frametype[k] == "PG") {
 				//printf("PG[0]:      "); pfout[0].Print();
@@ -256,13 +263,13 @@ TEST_CASE("gra::kinematics::LorentzFrame versus PGframe, HEframe, CSframe", "[Lo
 
 			// Helicity frame standalone function test
 			if (frametype[k] == "HX") {
-				//printf("HX[0]:      "); pfout[0].Print();
-				//printf("HX[1]:      "); pfout[1].Print();				
+				// printf("HX[0]:      "); pfout[0].Print();
+				// printf("HX[1]:      "); pfout[1].Print();				
 
 		  		std::vector<M4Vec> pfHX = pf;
 		  		gra::kinematics::HXframe(pfHX, X, DEBUG);
-				//printf("HXframe[0]: "); pfHX[0].Print();
-				//printf("HXframe[1]: "); pfHX[1].Print();				
+				// printf("HXframe[0]: "); pfHX[0].Print();
+				// printf("HXframe[1]: "); pfHX[1].Print();				
 
 				// Difference
 				REQUIRE( gra::math::CheckEMC(pfout[0] - pfHX[0], EPS) );
