@@ -52,4 +52,3 @@ def test_2to4_spin(POMLOOP, NEVENTS, GENERATE=True, ANALYZE=True):
 
 if __name__ == "__main__":
     test_2to4_spin(POMLOOP=False, NEVENTS=int(1E4), GENERATE=True, ANALYZE=True)
-

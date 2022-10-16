@@ -212,6 +212,7 @@ namespace form {
 
 // Read resonance parameters
 gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
+
   // =====================================================================
   // Find global resonance parameters
 
@@ -240,6 +241,18 @@ gra::PARAM_RES ReadResonance(const std::string &resparam_str, MRandom &rng) {
     SPINDEC = j.at("PARAM_SPIN").at("SPINDEC");
     FRAME   = j.at("PARAM_SPIN").at("FRAME");
     JMAX    = j.at("PARAM_SPIN").at("JMAX");
+
+    std::cout << "gra::form::ReadResonance: General parameters:" << std::endl;
+    std::cout << std::endl;
+    std::cout << "- SPINGEN = " << std::boolalpha << SPINGEN << std::noboolalpha <<
+      "\t(generation 2 -> 1 spin correlations active)" << std::endl;
+    std::cout << "- SPINDEC = " << std::boolalpha << SPINDEC << std::noboolalpha <<
+      "\t(decay      1 -> 2 spin correlations active)" << std::endl;
+    std::cout << "- FRAME   = " << FRAME   <<
+      "\t(central system polarization frame)"          << std::endl;
+    std::cout << "- JMAX    = " << JMAX    <<
+      "\t(maximum ang. momentum of sliding Pomeron)"   << std::endl;
+    std::cout << std::endl;
   }
 
   // =====================================================================

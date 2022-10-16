@@ -345,7 +345,7 @@ def hist_filled_error(ax, bins, cbins, y, err, color, **kwargs):
 
 
 def superplot(data, observable=None, ratio_plot=True, yscale='linear', ratio_error_plot=True, \
-    legend_counts=False, color=None, legend_properties={'fontsize': 8}, bottom_PRC=5, EPS=1E-12):
+    legend_counts=False, color=None, legend_properties={'fontsize': 7}, bottom_PRC=5, EPS=1E-12):
     """ Superposition (overlaid) plotting
     """
     if observable == None:

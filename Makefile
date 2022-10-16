@@ -1,6 +1,6 @@
 # GRANIITTI Makefile
 #
-# (c) 2017-2021 Mikael Mieskolainen.
+# (c) 2017-2022 Mikael Mieskolainen.
 # Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 # -----------------------------------------------------------------------
 #
@@ -390,7 +390,7 @@ endif
 
 PROGRAM_TEST   =
 ifeq ($(TEST),TRUE)
-EXE_TEST_NAMES = testbench0 testbench1 testbench2 testbench3
+EXE_TEST_NAMES = testbench0 testbench1 testbench2 testbench3 testbench4
 PROGRAM_TEST   = $(EXE_TEST_NAMES:%=$(BIN_DIR)/%)
 endif
 

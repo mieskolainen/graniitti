@@ -29,7 +29,7 @@ jobs:
       - run: source install/setenv.sh && ray start --head --temp-dir=/tmp/ray && python python/icetune --tuneset fast
       
       # C++ tests
-      - run: source install/setenv.sh && for i in {0,1,2,3}; do "./bin/testbench$i"; done
+      - run: source install/setenv.sh && for i in {0,1,2,3,4}; do "./bin/testbench$i"; done
       
       # Python driven tests (fast mode --> POMLOOP False)
       - run: source install/setenv.sh && pytest tests/testbench_2to4_spin.py -s --POMLOOP false --NEVENTS 2000

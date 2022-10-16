@@ -283,7 +283,7 @@ def main():
         data_obj  = [datalist[i][OBS] for i in range(len(datalist))]
         mc_obj    = [mclist[i][OBS] for i in range(len(mclist))]
         hist_objs = data_obj + mc_obj # Fuse lists
-
+        
         for yscale in ['linear', 'log']:
             fig, ax = iceplot.superplot(hist_objs, observable=all_obs[OBS], yscale=yscale)
             
@@ -293,9 +293,9 @@ def main():
                 chi2  = iceplot.chi2_cost(h_mc=mc_obj[i]['hdata'], h_data=data_obj[j]['hdata'])
                 ndf   = len(mc_obj[i]['hdata'].counts) # Count here only the number of bins (not parameters)
                 args.title = f'$\\chi^2$ / ndf = {chi2:0.1f} / {ndf:0.0f} = {chi2/ndf:0.1f}'
-                ax[0].set_title(args.title, fontsize=9)
+                ax[0].set_title(args.title, fontsize=8)
             else:
-                ax[0].set_title(args.title, loc=args.title_loc, fontsize=9)
+                ax[0].set_title(args.title, loc=args.title_loc, fontsize=8)
             
             # Create path and save
             fullpath = f'{args.cdir}/figs/{args.output}'

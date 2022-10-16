@@ -1,6 +1,6 @@
 # MC observables constructions
 #
-# (c) 2021 Mikael Mieskolainen
+# (c) 2022 Mikael Mieskolainen
 # Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 from functools import lru_cache
@@ -55,20 +55,20 @@ def deg2rad(x):
 #
 #
 @icecache
-def proj_central_particles(event, beam_eta=6):
+def proj_central_particles(event, central_eta=6):
     return filter(lambda p: p.status() == FINAL_STATE and p.pid() in event.pid \
-        and np.abs(p.momentum().eta()) < beam_eta, event.evt.particles())
+        and np.abs(p.momentum().eta()) < central_eta, event.evt.particles())
 
 @icecache
 def sum_4_momenta(particles):
     return reduce(lambda a,b: a.momentum() + b.momentum(), particles)
 
 @icecache
-def proj_1D_CS(event, beam_eta=6):
+def proj_1D_CS(event, central_eta=6):
     
     # Central system sum 4-momentum
     plist     = filter(lambda p: p.status() == FINAL_STATE and p.pid() in event.pid \
-        and np.abs(p.momentum().eta()) < beam_eta, event.evt.particles())
+        and np.abs(p.momentum().eta()) < central_eta, event.evt.particles())
     particles = [hepmc2vec4(p.momentum()) for p in plist]
     X         = reduce(lambda a,b: a + b, particles)
     
@@ -81,20 +81,23 @@ def proj_1D_CS(event, beam_eta=6):
 
     return pfout
 
-#@icecache
-def proj_1D_4body(event, beam_eta=6, target_m=0.775):
+#@icecache (icecache does not work for this)
+def proj_1D_4body_helicity(event, central_eta=6, target_m=0.775):
     """
     Sequential 2->2 body projector, e.g. resonance -> rho > {pi+ pi-} rho > {pi+ pi-}
+
+    Returns:
+        pi+ 4-momentum in the helicity frame of the intermediate mother, respectively.
     """
     
     # Pions
     pi_pos = filter(lambda p: p.status() == FINAL_STATE and p.pid() == PDG_PI \
-        and np.abs(p.momentum().eta()) < beam_eta, event.evt.particles())
+        and np.abs(p.momentum().eta()) < central_eta, event.evt.particles())
     pi_pos_p4 = [hepmc2vec4(p.momentum()) for p in pi_pos]
     
     # Anti-pions
     pi_neg = filter(lambda p: p.status() == FINAL_STATE and p.pid() == -PDG_PI \
-        and np.abs(p.momentum().eta()) < beam_eta, event.evt.particles())    
+        and np.abs(p.momentum().eta()) < central_eta, event.evt.particles())    
     pi_neg_p4 = [hepmc2vec4(p.momentum()) for p in pi_neg]
 
     # Find the closest combination (two combinations)
@@ -146,18 +149,39 @@ def proj_1D_4body(event, beam_eta=6, target_m=0.775):
 
 def proj_1D_4body_cos1(event):
     """
-    X -> A > {A1 + A2} B > {B1 + B2}, angle cos(theta_{A1})
+    X -> A > {A1 + A2} B > {B1 + B2}
+
+    Returns:
+        angle cos(theta_{A1}) [-1,1] in the mother A helicity frame
     """
-    p = proj_1D_4body(event=event)
+    p = proj_1D_4body_helicity(event=event)
     return p[0].costheta
 
+def proj_1D_4body_cos2(event):
+    """
+    X -> A > {A1 + A2} B > {B1 + B2}
+
+    Returns:
+        angle cos(theta_{B1}) [-1,1] in the mother B helicity frame
+    """
+    p = proj_1D_4body_helicity(event=event)
+    return p[1].costheta
 
 def proj_1D_4body_phi12(event):
     """
-    X -> A > {A1 + A2} B > {B1 + B2}, sum angle (phi_{A1} + phi_{B1})
+    X -> A > {A1 + A2} B > {B1 + B2}
+
+    Returns:
+        sum angle (phi_{A1} + phi_{B1})
+    
+    Notes:
+        phi_{A1} and phi_{A2} defined in the mother A and B helicity frames, respectively
     """
-    p = proj_1D_4body(event=event)
-    return rad2deg(p[0].phi + p[1].phi)
+    p = proj_1D_4body_helicity(event=event)
+    angle = p[0].phi + p[1].phi
+
+    return rad2deg(np.arctan2(np.sin(angle), np.cos(angle))) # Wrap to [-pi,pi]
+    #return rad2deg(angle) # raw [-2pi, 2pi] (gives ~ sin/cos modulated 'triangle')
 
 
 def proj_1D_M(event):
@@ -180,12 +204,12 @@ def proj_1D_Rap(event):
     return X.rap()
 
 
-def proj_1D_Abs_t1t2(event, beam_eta=6):
+def proj_1D_Abs_t1t2(event, central_eta=6):
     """
     |t1 + t2| (GeV^2)
     """
-    forward  = filter(lambda p: p.pid() == PDG_PROTON and p.momentum().eta() >  beam_eta, event.evt.particles())
-    backward = filter(lambda p: p.pid() == PDG_PROTON and p.momentum().eta() < -beam_eta, event.evt.particles())
+    forward  = filter(lambda p: p.pid() == PDG_PROTON and p.momentum().eta() >  central_eta, event.evt.particles())
+    backward = filter(lambda p: p.pid() == PDG_PROTON and p.momentum().eta() < -central_eta, event.evt.particles())
 
     # Mandelstam invariants
     t1 = reduce(lambda a,b: (a.momentum() - b.momentum()).m2(), forward)
@@ -215,13 +239,13 @@ def proj_1D_phi_CS(event, in_deg=True):
     return rad2deg(phi) if in_deg else phi
 
 
-def proj_1D_dPhi_pp(event, beam_eta=6):
+def proj_1D_dPhi_pp(event, central_eta=6):
     """
     Forward proton pair deltaphi in the lab frame (in deg [0,180])
     """
     
     plist = filter(lambda p: p.status() == FINAL_STATE and p.pid() == PDG_PROTON \
-        and np.abs(p.momentum().eta()) > beam_eta, event.evt.particles())
+        and np.abs(p.momentum().eta()) > central_eta, event.evt.particles())
     beam  = [hepmc2vec4(p.momentum()) for p in plist]
     
     return rad2deg(beam[0].abs_delta_phi(beam[1]))
@@ -232,10 +256,10 @@ def proj_1D_dPhi_pp(event, beam_eta=6):
 
 def LorentFramePrepare(pbeam1, pbeam2, particles, X):
     """
-    Lorentz Transform prepatation function for LorentzFrame()
+    Lorentz Transform preparation function for LorentzFrame()
     """
 
-    # Boost each particle to the system rest frame
+    # Boost each particle to the system X rest frame
     for i in range(len(particles)):
         particles[i].boost(b=X, sign=-1)
 
@@ -265,7 +289,8 @@ def LorentzFrame(pb1boost, pb2boost, pfboost, frametype='CS', direction=1):
         pb1boost,pb2boost : Boosted beam 4-momenta
         pfboost           : Boosted 4-momenta
         frametype         : Lorentz frame type
-    
+        direction         : Forward/backward direction choice for PG-frame
+
     Returns:
         rotated 4-momenta
     """
