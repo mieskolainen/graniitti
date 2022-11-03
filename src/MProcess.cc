@@ -419,7 +419,7 @@ void MProcess::SetDecayMode(std::string str) {
   // ** Read decay by recursion **
   lts.PDG.TokenizeProcess(str, 0, lts.decaytree);
   // ===================================================================
-
+  
   // Save decaymode string
   DECAYMODE = str;
 

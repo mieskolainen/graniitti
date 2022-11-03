@@ -93,8 +93,8 @@ void InitTMatrix(gra::HELMatrix &hc, const gra::MParticle &p, const gra::MPartic
   // Construct T-matrix (2s1 + 1) x (2s2 + 1) elements
   std::cout << std::endl;
   std::cout << "gra::spin:: "
-            << " Particle 1: " << (is_boson1 ? "boson" : "fermion")
-            << " , Particle 2: " << (is_boson2 ? "boson" : "fermion") << std::endl;
+            << " Particle 1: " << (is_boson1 ? "boson" : "fermion") << " (s1 = " << s1 << ")"
+            << " , Particle 2: " << (is_boson2 ? "boson" : "fermion") << " (s2 = " << s2 << ")" << std::endl;
 
   if (hc.P_conservation) {
     std::cout << "Parity conservation: P = P1 x P2 x (-1)^l  [P = " << P << ", P1 = " << P1
@@ -450,15 +450,14 @@ std::complex<double> ProdAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &res)
 }
 
 
-// [Recursive] decay chain with spin correlations:
+// [Recursive] 2-body decay chain with spin correlations to arbitrary depth
 // X -> A B
 // X -> A > {A1 A2} B > {B1 B2}
-// 
-// TBD: Arbitrary deep correlation chains with backward tree traversal
-// (currently treat the two first levels)
-//
+// ..
+// X -> A > {A1 > {C1 C2} A2} B > ... 
 //
 std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
+
   // Apply coupling first
   double A0 = res.hel.g_decay;
 
@@ -469,7 +468,9 @@ std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
   if (lts.decaytree.size() != 2) { return A0; }
 
   // ---------------------------------------------------------------------
-  // Transition amplitude matrix f for X0 -> A + B in the X0 (central system) rest frame
+  // 1. Transition amplitude matrix f for X0 -> A + B in the X0 (central system) rest frame
+  // (no frame rotation here, it will be done with the final sandwich product)
+  
   // Daughter spins
   const double s1 = lts.decaytree[0].p.spinX2 / 2.0;
   const double s2 = lts.decaytree[1].p.spinX2 / 2.0;
@@ -483,24 +484,75 @@ std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
                                              boosted_daughter.Theta(), boosted_daughter.Phi());
 
   // ---------------------------------------------------------------------
-  // X -> A > {A1 A2} B > {B1 B2} type cascaded decay
-  //
-  // TBD: Generalize to arbitrary shaped nested trees (via binary tree backward traversal)
+  // 2. Generic arbitrary tree depth cascaded decay
+  
+  // Compute branch decay amplitudes
+  TreeRecursion(lts.decaytree[0], lts, "X", "<");
+  TreeRecursion(lts.decaytree[1], lts, "X", ">");
+  
+  // Construct root node
+  MDecayBranch root;
+  root.name = "X";
+  root.f    = f;
+  root.legs.push_back(lts.decaytree[0]);
+  root.legs.push_back(lts.decaytree[1]);
+
+  // Post order backward traversal
+  std::vector<MDecayBranch> stack; // Empty stack
+  postOrder(root, stack);
+  
+  // ----------------
+  // DEBUG DIAGNOSTICS
+  /*
+  std::cout << std::endl;
+  for (std::size_t i = 0; i < stack.size(); ++i) {
+    std::cout << "after post-order [" << i << "]: name: " << stack[i].name
+      << " | level: " << stack[i].level << " | mother: " << stack[i].mother << std::endl;
+  //  stack[i].f.Print();
+  } */
+  // ----------------
+  
+  // Get the total decay amplitude of the cascade (made of kronecker and matrix products)
+  backward_traverse_amplitude(stack);
+  
+  // ----------------
+  // DEBUG DIAGNOSTICS
+  /*
+  std::cout << "after backward_traverse: stack.size() = " << stack.size() << std::endl;
+  for (std::size_t i = 0; i < stack.size(); ++i) {
+    std::cout << stack[i].name << std::endl;
+  }*/
+  // ----------------
+
+  if (stack.size() != 1) {
+    throw std::invalid_argument("MSpin: Recursive decaytree did not contract -- check the input!");
+  }
+  
+  // ** Update total amplitude **
+  f = stack[0].f;
+  
+  // ---------------------------------------------------------------------
+
+  // ---------------------------------------------------------------------
+  // SPECIAL CASE (DEBUG TEST)
+  /*
+  // X -> A > {A1 A2} B > {B1 B2} type cascaded two-level decay
   //
   if (lts.decaytree[0].legs.size() == 2 && lts.decaytree[1].legs.size() == 2) {
-
-    TreeRecursion(lts.decaytree[0], lts);
+    
+    TreeRecursion(lts.decaytree[0], lts, "X", "<");
     const MMatrix<std::complex<double>> f0 = lts.decaytree[0].f;
     
-    TreeRecursion(lts.decaytree[1], lts);
+    TreeRecursion(lts.decaytree[1], lts, "X", ">");
     const MMatrix<std::complex<double>> f1 = lts.decaytree[1].f;
 
     // Total transition amplitude matrix as a tensor product
     f = gra::matoper::TensorProd(f0, f1) * f;  // Matrix x Matrix product
   }
+  */  
 
   // ------------------------------------------------------------------
-  // Rotation does mixing of spin states. N.B. Eigenvalues do not change in
+  // 3. Rotation does mixing of spin states. N.B. Eigenvalues do not change in
   // rotation.
   MMatrix<std::complex<double>> fRfd;
 
@@ -541,11 +593,20 @@ std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
 // Forward traverse the decay tree for 1 -> 2 decays
 //
 //
-void TreeRecursion(MDecayBranch &branch, const gra::LORENTZSCALAR &lts) {
+void TreeRecursion(MDecayBranch &branch, const gra::LORENTZSCALAR &lts, const std::string& mother, const std::string& dir) {
+
+  branch.mother = mother; // Here, outside if-condition
+
   if (branch.legs.size() == 2) {
+
+    // Compute branch decay amplitude
     branch.f = CalculateFMatrix(branch, lts);
+
     // Infinite recursion
-    for (const auto &i : aux::indices(branch.legs)) { TreeRecursion(branch.legs[i], lts); }
+    // -> left branch  '<'
+    TreeRecursion(branch.legs[0], lts, dir + branch.name, "<");
+    // -> right branch '>'
+    TreeRecursion(branch.legs[1], lts, dir + branch.name, ">"); 
   }
 }
 
@@ -554,8 +615,8 @@ void TreeRecursion(MDecayBranch &branch, const gra::LORENTZSCALAR &lts) {
 // where X_i is the intermediate system decaying to A + B and X0 is the grandmother
 //
 MMatrix<std::complex<double>> CalculateFMatrix(const MDecayBranch &branch, const gra::LORENTZSCALAR &lts) {
-  const unsigned int A = 0;
-  const unsigned int B = 1;
+  const unsigned int A = 0; // left  '<'
+  const unsigned int B = 1; // right '>'
 
   // Get daughter spins
   const double s1 = branch.legs[A].p.spinX2 / 2.0;
@@ -570,6 +631,154 @@ MMatrix<std::complex<double>> CalculateFMatrix(const MDecayBranch &branch, const
   return fMatrix(branch.hel.T, branch.p.spinX2 / 2.0, s1, s2, p[A].Theta(), p[A].Phi());
 }
 
+// "Post Order" backward traversal of a binary tree
+//
+void postOrder(const MDecayBranch& root, std::vector<MDecayBranch>& stack, const std::string dir) {
+
+  const int h = tree_height(root);
+
+  if (root.legs.size() != 0) {
+
+    // Traverse left  '<' subtree
+    postOrder(root.legs[0], stack, "<");
+
+    // Traverse right '>' subtree
+    postOrder(root.legs[1], stack, ">");
+  }
+
+  // Collect
+  MDecayBranch branch; // = root; // Speed up, do not copy everything (not needed)
+  
+  branch.name   = dir + root.name; // New name
+  branch.mother = root.mother;     // Mother name
+  branch.f      = root.f;          // Decay amplitude
+  branch.level  = h;               // Technical recursion level
+  
+  stack.push_back(branch);
+
+  return;
+}
+
+// Compute the height of a tree. The number of 
+// nodes along the deepest path from the root node
+// down to the most far away leaf.
+int tree_height(const MDecayBranch& node) {
+
+  if (node.f.isEmpty()) {
+    return 1;
+
+  } else {
+    // Compute the height of each subtree
+    const int lheight = tree_height(node.legs[0]);
+    const int rheight = tree_height(node.legs[1]);
+    
+    // Use the larger one
+    if (lheight > rheight) {
+      return lheight + 1;
+    } else {
+      return rheight + 1;
+    }
+  }
+}
+
+// Return amplitude of a triplet (i,j,k), where k is the mother
+//
+void get_ijk_amplitude(const MDecayBranch& i, const MDecayBranch& j, const MDecayBranch& k,
+  MMatrix<std::complex<double>>& amplitude, std::string& name) {
+
+    // Both legs of k have no daughters)
+    if ((i.f.isEmpty()) && (j.f.isEmpty())) {
+      amplitude = k.f;
+      name      = k.name;
+
+    // Leg-i is terminal, Leg-j has daughters
+    } else if (i.f.isEmpty()) {
+      amplitude = j.f * k.f;
+      name      = "(" + j.name + " " + k.name + ")";
+
+    // Leg-i has daughters, Leg-j is terminal
+    } else if (j.f.isEmpty()) {        
+      amplitude = i.f * k.f;
+      name      = "(" + i.name + " " + k.name + ")";
+
+    // Both legs have daughters
+    } else {
+      amplitude = gra::matoper::TensorProd(i.f, j.f) * k.f;
+      name      = "[(" + i.name + " (kron) " + j.name + ") " + k.name + "]";
+    }
+    return;
+}
+
+// Count number of marker characters in string s
+//
+int count_cmark(const std::string& s, const char marker) {
+  return std::count(s.begin(),s.end(), marker);
+}
+
+// "Normal ordering" of (i,j)-indices such that particles with
+// < "marker" (left decay branch) are sorted to be on "left side".
+// 
+// This is required because the tensor (kronecker) product does not commute
+// (not catched either by pure dimension analysis)
+std::vector<std::size_t> normal_order(const std::vector<MDecayBranch>& stack, std::size_t i, std::size_t j) {
+
+  std::size_t ind_A = i;
+  std::size_t ind_B = j;
+
+  if ((count_cmark(stack[i].name, '<') < count_cmark(stack[j].name, '<')) ) {
+    ind_A = j; // Reverse
+    ind_B = i;
+  }
+  return {ind_A, ind_B};
+}
+
+// Backward traverse and collect decay amplitudes from a stack,
+// which is post order constructed.
+//
+void backward_traverse_amplitude(std::vector<MDecayBranch>& stack) {
+
+  for (std::size_t i=0; i < stack.size(); ++i) {
+    for (std::size_t j=i+1; j < stack.size()-1; ++j) {
+
+      if (stack[i].mother == stack[j].mother && stack[j].level == 1) {
+        for (std::size_t k=j+1; k < stack.size(); ++k) {
+
+          if (stack[j].mother == stack[k].name) {
+
+            MMatrix<std::complex<double>> amplitude;
+            std::string name;
+
+            // "Normal Ordering" due to Kronecker (non-commutative) product
+            const std::vector<std::size_t> ind = normal_order(stack, i, j);
+            get_ijk_amplitude(stack[ind[0]], stack[ind[1]], stack[k], amplitude, name);
+            
+            MDecayBranch entry;
+            entry.name   = name;
+            entry.mother = stack[k].mother;
+            entry.level  = 1;
+            entry.f      = amplitude;
+
+            // Reverse order pop
+            stack.erase(stack.begin() + k);
+            stack.erase(stack.begin() + j);
+            stack.erase(stack.begin() + i);
+
+            // Insert in front
+            stack.insert(stack.begin(), entry);
+
+            // Recursion
+            backward_traverse_amplitude(stack);
+
+          } // if
+        } // k-loop
+      } // if
+    } // j-loop
+  } // i-loop
+
+  return;
+}
+
+// -------------------------------------------------------
 
 // Rotation angles to rotate the density matrix
 //

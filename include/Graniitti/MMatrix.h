@@ -264,6 +264,14 @@ class MMatrix {
     return sum;
   }
 
+  bool isEmpty() const {
+    if ((size_row() == 0) && (size_col() == 0)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   // Frobenius norm
   double FrobNorm() const { return std::sqrt(FrobNorm2()); }
 

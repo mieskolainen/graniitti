@@ -1,6 +1,6 @@
-# GRANIITTI comparisons
+# GRANIITTI comparisons for cascaded X > A > {A1 A2} B > {B1 B2} spin correlations
 #
-# Run with: pytest ./tests/{filename} -s
+# Run with: pytest tests/{filename} -s
 # 
 # (c) 2017-2022 Mikael Mieskolainen
 # Licensed under the MIT License <http://opensource.org/licenses/MIT>.
@@ -20,12 +20,12 @@ def test_2to4_spin(POMLOOP, NEVENTS, GENERATE=True, ANALYZE=True):
     cdir      = os.getcwd()    
     inputcard = f"{cdir}/tests/LHC_TEVATRON_RHIC/full_solid_angle.json"
 
-    #RESOS    = ['f0_1500_neg_P', 'f2_1525']
-    RESOS    = ['f0_1500', 'f0_1500_neg_P']
+    #RESOS    = ['f0_1710_neg_P', 'f2_1525']
+    RESOS    = ['f0_1710', 'f0_1710_neg_P']
     
     PID      = '211,-211, 211,-211'
     WEIGHTED = 'false'
-
+    
     if GENERATE:
 
         # Pure phase space
@@ -33,7 +33,8 @@ def test_2to4_spin(POMLOOP, NEVENTS, GENERATE=True, ANALYZE=True):
             cmd = f"./bin/gr -p 'PP[RES]<F> -> rho(770)0 > {{pi+ pi-}} rho(770)0 > {{pi+ pi-}} @RES{{{RES}:1}} @SPINDEC:false' -o '{RES}@SPINDEC:false' -i {inputcard} -l {'true' if POMLOOP else 'false'} -h 0 -n {NEVENTS} -w {WEIGHTED}"
             print(cmd)
             os.system(cmd)
-
+        
+        # Spin correlations
         for RES in RESOS:
             if 'f_2' in RES:
                 EXTRA = '@R[{RES}]{{JZ0:0.0, JZ1:0.0, JZ2:1.0}} @FRAME:CM'

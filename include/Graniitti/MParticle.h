@@ -63,9 +63,12 @@ struct MParticle {
 // Recursive decay tree branch
 struct MDecayBranch {
   MDecayBranch() {
-    f = MMatrix<std::complex<double>>(1, 1, 1.0);  // Unit element
+    // f matrix by default empty, no need to initialize here (nullptr)
+    level  = -1;
+    mother = "null";
+    name   = "null";
   }
-
+  
   // Offshell mass picked event by event
   double m_offshell = 0.0;
 
@@ -75,8 +78,13 @@ struct MDecayBranch {
   M4Vec                     decay_position;  // Decay 4-position
   gra::HELMatrix            hel;             // Decay helicity information
 
-  // Used with helicity amplitudes
-  MMatrix<std::complex<double>> f;
+  // ----------------------------------------
+  // Used with JW-helicity amplitudes
+  MMatrix<std::complex<double>> f; // decay amplitude
+  int level;                       // backward recursion level
+  std::string mother;              // mother name
+  std::string name;                // name
+  // ----------------------------------------
 
   // MC weight container
   gra::kinematics::MCW W;

@@ -13,7 +13,7 @@ then
 # Not set
 if [ -z "$EVENTS" ]
 then
-	EVENTS=10000
+	EVENTS=100000
 fi
 
 ./bin/gr -i ./tests/processes/CMSCUTS.json -p "PP[RES]<F> -> pi+ pi- @RES{f0_980:1}  " \

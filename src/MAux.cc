@@ -1,6 +1,6 @@
 // I/O aux functions
 //
-// (c) 2017-2021 Mikael Mieskolainen
+// (c) 2017-2022 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -53,11 +53,11 @@ namespace aux {
 // -------------------------------------------------------
 // FIXED HERE manually
 
-double      GetVersion() { return 1.084; }
+double      GetVersion() { return 1.085; }
 std::string GetVersionType() { return "pre-release"; }
-std::string GetVersionDate() { return "12.10.2022"; }
+std::string GetVersionDate() { return "02.11.2022"; }
 std::string GetVersionUpdate() {
-  return "spin-code update: allow J=0 system (grand) daughters to have spin correlations, limit spin-recursion depth to level 2 [arbitrary deep re-enabled in the future update]";
+  return "spin-code extension: arbitrary deep spin correlation chains via post order backward recursion";
 }
 
 void PrintVersion() {

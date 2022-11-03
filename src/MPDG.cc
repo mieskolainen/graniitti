@@ -450,8 +450,7 @@ void MPDG::ReadParticleData(const std::string &filepath) {
 // Recursive function to read the decay process string
 void MPDG::TokenizeProcess(const std::string &str, int depth,
                            std::vector<gra::MDecayBranch> &branches) const {
-  std::string mother;
-  int         aM = 0;
+  int aM = 0;
 
   for (std::string::size_type i = 0; i < str.size(); ++i) {
     // printf("[%d,%d] \n", depth, i);
@@ -459,7 +458,7 @@ void MPDG::TokenizeProcess(const std::string &str, int depth,
     // If no subdecays left, extract particles directly
     std::string substr = str.substr(i, str.size() - i);
     if (!IsDecay(substr)) {
-      std::vector<std::string> particles = gra::aux::Extract(substr);
+      const std::vector<std::string> particles = gra::aux::Extract(substr);
       for (std::size_t k = 0; k < particles.size(); ++k) {
         // std::cout << "L" << depth << " " <<
         // particles[k] << std::endl;
@@ -470,6 +469,8 @@ void MPDG::TokenizeProcess(const std::string &str, int depth,
 
         branch.p     = FindByPDGName(particles[k]);
         branch.depth = depth;
+        branch.name  = std::to_string(branch.p.pdg) + "#" + std::to_string(depth);
+
         branches.push_back(branch);
         // **************
       }
@@ -478,13 +479,14 @@ void MPDG::TokenizeProcess(const std::string &str, int depth,
 
     // Found sub decay '>', then find closing brackets
     if (str[i] == '>') {
-      mother = str.substr(aM, i - aM);
+      const std::string mother_candidate = str.substr(aM, i - aM);
 
       // Check if mother is actually several particles,
       // only the last is mother, others before the last are
       // not
-      // (say e+ e- rho0 > (pi+ pi-) ), mother is rho0
-      std::vector<std::string> particles = gra::aux::Extract(mother);
+      // (say -> e+ e- rho0 > {pi+ pi-} ), mother is rho0
+      const std::vector<std::string> particles = gra::aux::Extract(mother_candidate);
+      
       for (std::size_t k = 0; k < particles.size(); ++k) {
         std::cout << "L" << depth << " " << particles[k] << std::endl;
 
@@ -494,11 +496,11 @@ void MPDG::TokenizeProcess(const std::string &str, int depth,
 
         branch.p     = FindByPDGName(particles[k]);
         branch.depth = depth;
+        branch.name  = std::to_string(branch.p.pdg) + "#" + std::to_string(depth);
+
         branches.push_back(branch);
         // **************
       }
-
-      mother = particles[particles.size() - 1];  // Choose the last one
 
       // Find brackets (  )
       std::vector<std::string::size_type> L;
@@ -539,15 +541,16 @@ bool MPDG::IsDecay(const std::string &str) const {
 // Print out PDG table
 void MPDG::PrintPDGTable() const {
   std::cout << "MPDG::PrintPDGTable:" << std::endl << std::endl;
-  printf("\t\tpdg\tmass\t\twidth\t\tcharge\tJ^PC\tname\n");
+  printf("\t\tpdg\tmass\t\twidth\t\tctau\t\tcharge\tJ^PC\tname\n");
 
   std::map<int, gra::MParticle>::const_iterator it = PDG_table.begin();
 
   unsigned int counter = 0;
   while (it != PDG_table.end()) {
     const gra::MParticle p = it->second;
-
-    printf("%d\t%10d\t%0.6f\t%0.6f\t%2s\t%s%s%s\t%s \n", ++counter, p.pdg, p.mass, p.width,
+    
+    printf("%d\t%10d\t%0.6f\t%0.3E\t%0.1E\t\t%2s\t%s%s%s\t%s \n", ++counter, p.pdg, p.mass,
+           p.width, PDG::c * p.tau,
            gra::aux::Charge3XtoString(p.chargeX3).c_str(),
            gra::aux::Spin2XtoString(p.spinX2).c_str(), gra::aux::ParityToString(p.P).c_str(),
            gra::aux::ParityToString(p.C).c_str(), p.name.c_str());

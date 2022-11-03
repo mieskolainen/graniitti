@@ -1,6 +1,6 @@
 // Spin polarization and correlation functions
 //
-// (c) 2017-2021 Mikael Mieskolainen
+// (c) 2017-2022 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 #ifndef MSPIN_H
@@ -18,8 +18,21 @@
 namespace gra {
 namespace spin {
 
+// ---------
+// Recursive
+
+void postOrder(const MDecayBranch& root, std::vector<MDecayBranch>& stack, const std::string dir = "");
+int  tree_height(const MDecayBranch& node);
+void get_ijk_amplitude(const MDecayBranch& i, const MDecayBranch& j, const MDecayBranch& k,
+    MMatrix<std::complex<double>>& amplitude, std::string& name);
+void backward_traverse_amplitude(std::vector<MDecayBranch>& stack);
+int  count_cmark(const std::string& s, const char marker);
+std::vector<std::size_t> normal_order(const std::vector<MDecayBranch>& stack, std::size_t i, std::size_t j);
+
+void TreeRecursion(MDecayBranch &branch, const gra::LORENTZSCALAR &lts,
+    const std::string& mother, const std::string& dir);
 MMatrix<std::complex<double>> CalculateFMatrix(const MDecayBranch &branch, const gra::LORENTZSCALAR &lts);
-void                          TreeRecursion(MDecayBranch &branch, const gra::LORENTZSCALAR &lts);
+// ---------
 
 std::complex<double> ProdAmp(const gra::LORENTZSCALAR &lts, gra::PARAM_RES &res);
 std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res);

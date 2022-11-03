@@ -258,6 +258,16 @@
     }
   },
   
+  // "f(0)(1710)" (negative parity version)
+  "10332" : {
+    "0" : { // rho0rho0
+      "PDG" : [113, 113], "BR" : 0.01,    // https://pdg.lbl.gov/2018/listings/pdf-files/m068.pdf, no data
+      "alpha_ls" : [[1,1, 1.0, 0.0]],
+      "P_conservation" : true,
+      "g_decay_tensor" : [1.0, 0.0],      // Tensor Pomeron decay coupling
+    }
+  },
+  
   // f(2)(1950)
   "9050225" : {
       
