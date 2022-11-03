@@ -2,8 +2,6 @@
 # 
 # Run all simulations and produce comparison plots with HEPData
 # for Low-x and Diffraction 2022.
-#
-# Run e.g. with "pytest filename.py --POMLOOP False --NEVENTS 1000"
 # 
 # (c) 2017-2022 Mikael Mieskolainen
 # Licensed under the MIT License <http://opensource.org/licenses/MIT>.

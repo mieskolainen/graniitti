@@ -37,5 +37,5 @@ fi
 -P "95, 0.0, 2.0" \
 -u ub \
 -R false \
--t "#sqrt{s} = 13 TeV, |#eta| < 2.5, p_{T} > 0.15 GeV"
+-t "#sqrt{s} = 13 TeV, |#eta| < 0.9, p_{T} > 0.15 GeV"
 #-X 1000
