@@ -53,9 +53,9 @@ namespace aux {
 // -------------------------------------------------------
 // FIXED HERE manually
 
-double      GetVersion() { return 1.085; }
+double      GetVersion() { return 1.086; }
 std::string GetVersionType() { return "pre-release"; }
-std::string GetVersionDate() { return "02.11.2022"; }
+std::string GetVersionDate() { return "06.11.2022"; }
 std::string GetVersionUpdate() {
   return "spin-code extension: arbitrary deep spin correlation chains via post order backward recursion";
 }

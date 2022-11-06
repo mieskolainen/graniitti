@@ -1,7 +1,7 @@
 {
  "name": "GRANIITTI",
- "version": 1.085,
+ "version": 1.086,
  "type": "pre-release",
- "date": "02.11.2022",
+ "date": "06.11.2022",
  "update": "spin-code extension: arbitrary deep spin correlation chains via post order backward recursion"
 }

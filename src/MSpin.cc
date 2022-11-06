@@ -709,26 +709,36 @@ void get_ijk_amplitude(const MDecayBranch& i, const MDecayBranch& j, const MDeca
     return;
 }
 
-// Count number of marker characters in string s
+// Find the last occurance of a character in string s
 //
+// Return -1 if not found
 int count_cmark(const std::string& s, const char marker) {
-  return std::count(s.begin(),s.end(), marker);
+
+  const std::size_t found = s.find_last_of(marker);
+  if (found == std::string::npos) {
+    return -1;
+  } else {
+    return found;
+  }
 }
 
 // "Normal ordering" of (i,j)-indices such that particles with
-// < "marker" (left decay branch) are sorted to be on "left side".
+// < "marker" (left decay branch) are sorted to be on the left side.
 // 
 // This is required because the tensor (kronecker) product does not commute
 // (not catched either by pure dimension analysis)
 std::vector<std::size_t> normal_order(const std::vector<MDecayBranch>& stack, std::size_t i, std::size_t j) {
-
+  
   std::size_t ind_A = i;
   std::size_t ind_B = j;
-
-  if ((count_cmark(stack[i].name, '<') < count_cmark(stack[j].name, '<')) ) {
-    ind_A = j; // Reverse
+  
+  if ((count_cmark(stack[i].name, '<') < count_cmark(stack[i].name, '>')) ) { // both from [i]
+    ind_A = j; // Reverse order
     ind_B = i;
   }
+  
+  // std::cout << stack[ind_A].name << " | " << stack[ind_B].name << std::endl;
+  
   return {ind_A, ind_B};
 }
 
