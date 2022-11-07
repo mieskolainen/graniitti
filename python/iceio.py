@@ -12,9 +12,10 @@ from pyHepMC3 import HepMC3 as hepmc3
 
 # Object wrapper (for icecache)
 class ice_event:
-    def __init__(self, evt, pid):
+    def __init__(self, evt, pid, cut_module):
         self.evt = evt
         self.pid = pid
+        self.cut_module = cut_module
 
 def generate_partitions(totalsize, chunksize):
     """
@@ -63,14 +64,10 @@ def read_hepmc3(hepmc3file, all_obs, pid, cuts=None, maxevents=None, chunk_range
     mc_trials        = 0
 
     # --------------------------------------------------------------------
-    def identity_cut(event):
-        return True
-
     if cuts is not None:
         MySelection = import_module(cuts)
-        cut_func = MySelection.cut_func
     else:
-        cut_func = identity_cut
+        MySelection = import_module('config_cuts.null')
     # --------------------------------------------------------------------
 
     # Open HepMC3 file
@@ -103,22 +100,24 @@ def read_hepmc3(hepmc3file, all_obs, pid, cuts=None, maxevents=None, chunk_range
         mc_xsec_pb_err = float(evt.cross_section().xsec_err())
         mc_trials      = float(evt.cross_section().get_attempted_events())
 
-        event = ice_event(evt=evt, pid=pid)
+        event = ice_event(evt=evt, pid=pid, cut_module=MySelection)
 
         # -------------------------------
-        # Apply additional fiducial cuts here ...
-        if not cut_func(event):
+        # Apply fiducial cuts
+        if not MySelection.cut_func(event):
             continue;
         # -------------------------------
-
+        
         # Construct all observables
         for OBS in all_obs.keys():
             try:
-                value = all_obs[OBS]['func'](event=event)
+                value = all_obs[OBS]['func'](event) # do not put event=event (due to icecache)
                 mc_data[OBS].append(value)
-            except:
+            except Exception as e:
+                print(__name__ + f'.read_hepmc3: Problem with observable "{OBS}" (check e.g. icecache syntax)')
+                print(e)
                 continue;
-
+        
         # Event weight for passed events
         mc_weights.append(w)
 
@@ -128,7 +127,7 @@ def read_hepmc3(hepmc3file, all_obs, pid, cuts=None, maxevents=None, chunk_range
     # --------------------------------------------------------------------
     # Compute cross section from the sample weights (works with weighted events)
     if xsmode == 'sample':
-        SCALE          = 1E12
+        SCALE          = 1E12 # HepMC convention is pb
         N              = mc_trials
         W              = np.sum(mc_weights_tot)
         W2             = np.sum(mc_weights_tot**2)

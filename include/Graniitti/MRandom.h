@@ -70,7 +70,10 @@ class MRandom {
   // [REFERENCE: Luscher, https://arxiv.org/abs/hep-lat/9309020]
   std::ranlux48 rng;
 
-
+  std::ranlux48 get_generator() {
+    return rng;
+  }  
+  
   // Distribution engines
   std::uniform_real_distribution<double> flat;
   std::normal_distribution<double>       gaussian;

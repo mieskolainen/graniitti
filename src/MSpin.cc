@@ -686,27 +686,27 @@ int tree_height(const MDecayBranch& node) {
 void get_ijk_amplitude(const MDecayBranch& i, const MDecayBranch& j, const MDecayBranch& k,
   MMatrix<std::complex<double>>& amplitude, std::string& name) {
 
-    // Both legs of k have no daughters)
-    if ((i.f.isEmpty()) && (j.f.isEmpty())) {
-      amplitude = k.f;
-      name      = k.name;
+  // Both legs of k have no daughters)
+  if ((i.f.isEmpty()) && (j.f.isEmpty())) {
+    amplitude = k.f;
+    name      = k.name;
 
-    // Leg-i is terminal, Leg-j has daughters
-    } else if (i.f.isEmpty()) {
-      amplitude = j.f * k.f;
-      name      = "(" + j.name + " " + k.name + ")";
+  // Leg-i is terminal, Leg-j has daughters
+  } else if (i.f.isEmpty()) {
+    amplitude = j.f * k.f;
+    name      = "(" + j.name + " " + k.name + ")";
 
-    // Leg-i has daughters, Leg-j is terminal
-    } else if (j.f.isEmpty()) {        
-      amplitude = i.f * k.f;
-      name      = "(" + i.name + " " + k.name + ")";
+  // Leg-i has daughters, Leg-j is terminal
+  } else if (j.f.isEmpty()) {        
+    amplitude = i.f * k.f;
+    name      = "(" + i.name + " " + k.name + ")";
 
-    // Both legs have daughters
-    } else {
-      amplitude = gra::matoper::TensorProd(i.f, j.f) * k.f;
-      name      = "[(" + i.name + " (kron) " + j.name + ") " + k.name + "]";
-    }
-    return;
+  // Both legs have daughters
+  } else {
+    amplitude = gra::matoper::TensorProd(i.f, j.f) * k.f;
+    name      = "[(" + i.name + " (kron) " + j.name + ") " + k.name + "]";
+  }
+  return;
 }
 
 // Find the last occurance of a character in string s

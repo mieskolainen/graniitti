@@ -8,6 +8,7 @@
 
 import subprocess
 import pytest
+import copy
 import os
 import pyjson5 as json5
 
@@ -20,17 +21,16 @@ def test_2to4_spin(POMLOOP, NEVENTS, GENERATE=True, ANALYZE=True):
     cdir      = os.getcwd()    
     inputcard = f"{cdir}/tests/LHC_TEVATRON_RHIC/full_solid_angle.json"
 
-    #RESOS    = ['f0_1710_neg_P', 'f2_1525']
+    PROCESS  = 'PP[RES]<F> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-}'
     RESOS    = ['f0_1710', 'f0_1710_neg_P']
-    
-    PID      = '211,-211, 211,-211'
+    PID      = '[211,-211, 211,-211]'
     WEIGHTED = 'false'
     
     if GENERATE:
 
         # Pure phase space
         for RES in RESOS:
-            cmd = f"./bin/gr -p 'PP[RES]<F> -> rho(770)0 > {{pi+ pi-}} rho(770)0 > {{pi+ pi-}} @RES{{{RES}:1}} @SPINDEC:false' -o '{RES}@SPINDEC:false' -i {inputcard} -l {'true' if POMLOOP else 'false'} -h 0 -n {NEVENTS} -w {WEIGHTED}"
+            cmd = f"./bin/gr -p '{PROCESS} @RES{{{RES}:1}} @SPINDEC:false' -o '{RES}@SPINDEC:false' -i {inputcard} -l {'true' if POMLOOP else 'false'} -h 0 -n {NEVENTS} -w {WEIGHTED}"
             print(cmd)
             os.system(cmd)
         
@@ -40,13 +40,29 @@ def test_2to4_spin(POMLOOP, NEVENTS, GENERATE=True, ANALYZE=True):
                 EXTRA = '@R[{RES}]{{JZ0:0.0, JZ1:0.0, JZ2:1.0}} @FRAME:CM'
             else:
                 EXTRA = ''
-            cmd = f"./bin/gr -p 'PP[RES]<F> -> rho(770)0 > {{pi+ pi-}} rho(770)0 > {{pi+ pi-}} @RES{{{RES}:1}} {EXTRA}' -o '{RES}' -i {inputcard} -l {'true' if POMLOOP else 'false'} -h 0 -n {NEVENTS} -w {WEIGHTED}"
+            cmd = f"./bin/gr -p '{PROCESS} @RES{{{RES}:1}} {EXTRA}' -o '{RES}' -i {inputcard} -l {'true' if POMLOOP else 'false'} -h 0 -n {NEVENTS} -w {WEIGHTED}"
             print(cmd)
             os.system(cmd)
 
     if ANALYZE:
 
-        cmd = f"python python/iceshot --obs '4body' --title 'PP[RES]<F> -> rho(770)0 > {{pi+ pi-}} rho(770)0 > {{pi+ pi-}}' --density --pid '[[{PID}], [{PID}], [{PID}], [{PID}]]' --hepmc3 '{RESOS[0]}@SPINDEC:false' '{RESOS[1]}@SPINDEC:false' '{RESOS[0]}' '{RESOS[1]}' --unit nb"
+        # ----------------------------
+        # Generate steering txt
+        RESOS_txt = ''
+        for i in range(len(RESOS)):
+            RESOS_txt += f"'{RESOS[i]}@SPINDEC:false' "
+        for i in range(len(RESOS)):
+            RESOS_txt += f"'{RESOS[i]}' "
+
+        PID_txt = copy.deepcopy(PID)
+        for i in range(len(RESOS)*2 - 1):
+            PID_txt += f', {PID}'
+        PID_txt = f"'{PID_txt}'"
+        # ----------------------------
+
+        cmd  = f"python python/iceshot --obs 4body --cuts null"
+        cmd += f" --title '{PROCESS}' --density --unit nb"
+        cmd += f" --pid {PID_txt} --hepmc3 {RESOS_txt}"
         
         print(cmd)
         os.system(cmd)

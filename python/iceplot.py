@@ -295,6 +295,9 @@ def hist(x, bins=30, density=False, weights=None):
 
     weights = np.array(weights)
 
+    if len(weights) != len(x):
+        raise Exception(f'iceplot.hist: len(weights) = {len(weights)} != len(x) = {len(x)}')
+    
     counts, bins = np.histogram(x, bins=bins, weights=weights)
     cbins = edge2centerbins(bins)
 

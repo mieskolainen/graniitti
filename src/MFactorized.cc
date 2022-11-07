@@ -261,12 +261,19 @@ bool MFactorized::B51RandomKin(const std::vector<double> &randvec) {
   // Pick daughter masses, can fail due to off-shelliness, then
   // retry
   unsigned int       trials   = 0;
-  const unsigned int MAXTRIAL = 1e5;
+  const unsigned int MAXTRIAL = 1e7;
+  
+  std::vector<std::size_t> ind(lts.decaytree.size());
+  std::iota(ind.begin(), ind.end(), 0); // Running indices    
+  
   while (true) {
     double M_sum = 0.0;
 
     // ==============================================================
-    for (const auto &i : indices(lts.decaytree)) {
+    // Randomize index order (avoid order bias in near threshold off-shell decays)
+    std::shuffle(ind.begin(), ind.end(), random.get_generator());
+
+    for (const auto &i : ind) {
       GetOffShellMass(lts.decaytree[i], lts.decaytree[i].m_offshell);
       M_sum += lts.decaytree[i].m_offshell;
     }

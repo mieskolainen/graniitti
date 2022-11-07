@@ -1230,17 +1230,35 @@ void MProcess::PrintPhaseSpace(const gra::MDecayBranch &branch, double &product,
 // Recursive decay tree kinematics (called event by event from inhereting
 // classes)
 bool MProcess::ConstructDecayKinematics(gra::MDecayBranch &branch) {
+
+  const int MAX_TRIALS = 1E7;
+
   // This leg has any daughters
   if (branch.legs.size() != 0) {
     // Generate decay product masses
     std::vector<double> m(branch.legs.size(), 0.0);
+    
+    std::vector<std::size_t> ind(branch.legs.size());
+    std::iota(ind.begin(), ind.end(), 0); // Running indices
+    
+    int trials = 0;
     while (true) {
-      for (const auto &i : indices(branch.legs)) {
+
+      // Randomize index order (avoid order bias in near threshold off-shell decays)
+      std::shuffle(ind.begin(), ind.end(), random.get_generator());
+
+      // Get off-shell masses
+      for (const auto &i : ind) {
         GetOffShellMass(branch.legs[i], branch.legs[i].m_offshell);
         m[i] = branch.legs[i].m_offshell;
       }
-      // Check decay products masses are not over mother mass
+      ++trials;
+
+      // Check decay products masses are not over the mother mass
       if (branch.p4.M() < std::accumulate(m.rbegin(), m.rend(), 0.0)) {
+        if (trials > MAX_TRIALS) {
+          throw std::invalid_argument("MProcess::ConstructDecayKinematics: Maximum number of trials exceeded.");
+        }
         continue;
       } else {
         break;
