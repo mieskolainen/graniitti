@@ -8,6 +8,7 @@
 "GENCARD"  : ["/gencard/STAR_1792394_pipi_1--1-5.json"],
 
 "PID"      : [211, -211],
+"CUTS"     : "STAR_none",
 
 "HIST" : [
 

@@ -8,6 +8,7 @@
 "GENCARD"  : ["/gencard/ALICE_7_KK.json"],
 
 "PID"      : [321, -321],
+"CUTS"     : "STAR_none",
 
 "HIST" : [
   {"FILE" : "ALICE_KK_7_TeV.raw",  "OBS" : "M", "SCALE" : 1, "NBINS" : 40, "XMIN" : 1.0, "XMAX" : 2.4 },

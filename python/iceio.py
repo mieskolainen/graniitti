@@ -69,7 +69,7 @@ def read_hepmc3(hepmc3file, all_obs, pid, cuts=None, maxevents=None, chunk_range
     else:
         MySelection = import_module('config_cuts.null')
     # --------------------------------------------------------------------
-
+    
     # Open HepMC3 file
     t    = time.time()
     file = hepmc3.ReaderAscii(hepmc3file)

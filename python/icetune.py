@@ -181,11 +181,11 @@ def compute(thread_id, datacards, obs_module, mc_steer, compare_steer, cdir=None
             outputfile  = f'{cdir}/output/' + hepmc3output
             hepmc3file  = outputfile + '.hepmc3'
             pid         = datasets[i]['PID']
-            
+            cuts        = 'config_cuts.' + datasets[i]['CUTS']
             
             # ========================================================================
             ### Get observables
-
+            
             all_obs = get_observables(obs_module)
             if len(all_obs) == 0: raise Exception(__name__ + '.compute: Observables not found!')
 
@@ -194,7 +194,7 @@ def compute(thread_id, datacards, obs_module, mc_steer, compare_steer, cdir=None
 
             # Read in MC observables
             xsmode  = 'sample' if mc_steer['XSMODE'] == 'sample' else 'header'
-            mcdata           = iceio.read_hepmc3(hepmc3file=hepmc3file, all_obs=all_obs, pid=pid, xsmode=xsmode)     
+            mcdata           = iceio.read_hepmc3(hepmc3file=hepmc3file, all_obs=all_obs, pid=pid, cuts=cuts, xsmode=xsmode)     
             
             
             # ========================================================================

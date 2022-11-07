@@ -1,9 +1,9 @@
 # Unit test MC integrators, weighted/unweighted event generation etc.
 #
 #
-# Run with: pytest ./tests/{filename} -s
-#
-# (c) 2017-2021 Mikael Mieskolainen
+# Run with: pytest tests/{filename} -s -rP
+# 
+# (c) 2017-2022 Mikael Mieskolainen
 # Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 import json

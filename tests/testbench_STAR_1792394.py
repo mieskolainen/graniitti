@@ -3,6 +3,8 @@
 # Run all simulations and produce comparison plots with HEPData
 # for Low-x and Diffraction 2022.
 # 
+# Run with: pytest tests/{filename} -s -rP
+# 
 # (c) 2017-2022 Mikael Mieskolainen
 # Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
@@ -57,8 +59,8 @@ def datasets():
     return sets,labels,pids,names
 
 
-def test_generate_analyze(POMLOOP, NEVENTS, GENERATE=True, ANALYZE=True):
-
+def test_generate_analyze(POMLOOP, NEVENTS, GENERATE, ANALYZE):
+    
     # Event generation parameters
     WEIGHTED = 'true' # (lowercase string)! Weighted events is faster (we do not need unweighted events here)
     
@@ -89,7 +91,7 @@ def test_generate_analyze(POMLOOP, NEVENTS, GENERATE=True, ANALYZE=True):
                 #cmd  = f"python python/iceshot --hepmc3 {HEPDATA}_{SETS[channel][i]} {HEPDATA}_{SETS[channel][i]}_CON --hepdata dataset_{HEPDATA}_{SETS[channel][i]} --pid '{PIDS[channel]}'"
                 #cmd += f" --mclabel 'GRANIITTI [RES+CON]' 'GRANIITTI [CON]'"
                 
-                cmd  = f"python python/iceshot --hepmc3 {HEPDATA}_{SETS[channel][i]} --hepdata dataset_{HEPDATA}_{SETS[channel][i]} --pid '{PIDS[channel]}'"
+                cmd  = f"python python/iceshot  --cuts STAR_none --hepmc3 {HEPDATA}_{SETS[channel][i]} --hepdata dataset_{HEPDATA}_{SETS[channel][i]} --pid '{PIDS[channel]}'"
                 cmd += f" --mclabel 'GRANIITTI [RES+CON]'"
                 
                 cmd += f" --datalabel 'STAR, $\\sqrt{{s}}=0.2$ TeV'"
@@ -98,6 +100,3 @@ def test_generate_analyze(POMLOOP, NEVENTS, GENERATE=True, ANALYZE=True):
                 
                 print(cmd)
                 execute(cmd, expect="[iceshot: done]")
-
-if __name__ == "__main__":
-    test_generate_analyze(POMLOOP=True, NEVENTS=int(2E5), GENERATE=True, ANALYZE=True)

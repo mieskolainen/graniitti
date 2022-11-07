@@ -1,9 +1,9 @@
 # Global tests (fast process tests)
 #
 # 
-# Run with: pytest ./tests/{filename} -s
+# Run with: pytest tests/{filename} -s -rP
 # 
-# (c) 2017-2021 Mikael Mieskolainen
+# (c) 2017-2022 Mikael Mieskolainen
 # Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 

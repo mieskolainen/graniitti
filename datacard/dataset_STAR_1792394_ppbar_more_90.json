@@ -8,6 +8,7 @@
 "GENCARD"  : ["/gencard/STAR_1792394_ppbar_more_90.json"],
 
 "PID"      : [2212, -2212],
+"CUTS"     : "STAR_none",
 
 "HIST" : [
   {"FILE" : "Figure12(bottom,right).csv",           "OBS" : "M",            "SCALE" : 1E-12  }

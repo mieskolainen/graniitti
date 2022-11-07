@@ -246,6 +246,18 @@ def proj_1D_Abs_t1t2(event):
     return np.abs(t1 + t2)
 
 
+def proj_1D_dPhi_pp(event):
+    """
+    Forward proton pair deltaphi in the lab frame (in deg [0,180])
+    """
+    
+    plist = filter(lambda p: p.status() == pdg.FINAL_STATE and p.pid() == pdg.PDG_PROTON \
+        and np.abs(p.momentum().eta()) > event.cut_module.CENTRAL_ETA, event.evt.particles())
+    beam  = [hepmc2vec4(p.momentum()) for p in plist]
+    
+    return rad2deg(beam[0].abs_delta_phi(beam[1]))
+
+
 def proj_1D_costheta_CS(event):
     """
     Cos(theta) angle of pi+(K+) in the Collins-Soper rest frame [-1,1]
@@ -265,18 +277,6 @@ def proj_1D_phi_CS(event, in_deg=True):
     phi = pfout[0].phi
 
     return rad2deg(phi) if in_deg else phi
-
-
-def proj_1D_dPhi_pp(event):
-    """
-    Forward proton pair deltaphi in the lab frame (in deg [0,180])
-    """
-    
-    plist = filter(lambda p: p.status() == pdg.FINAL_STATE and p.pid() == pdg.PDG_PROTON \
-        and np.abs(p.momentum().eta()) > event.cut_module.CENTRAL_ETA, event.evt.particles())
-    beam  = [hepmc2vec4(p.momentum()) for p in plist]
-    
-    return rad2deg(beam[0].abs_delta_phi(beam[1]))
 
 
 # ------------------------------------------------------------------------

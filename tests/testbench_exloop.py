@@ -1,10 +1,10 @@
 # Loop over fiducial measurements and construct MC & data comparison tex array,
 # together with asserted tests comparing cross sections
 # 
+# Run with: pytest tests/{filename} -s -rP
 # 
-# Run with: pytest ./tests/{filename} -s
-# 
-# m.mieskolainen@imperial.ac.uk, 2021
+# (c) 2017-2022 Mikael Mieskolainen
+# Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 
 import pyjson5 as json5

@@ -10,7 +10,8 @@ import pdg
 from icevec import *
 
 # ------------------------------------
-# Define cut parameters here (used in projectors in iceobs)
+# Define cut parameters here
+# (used in projectors in iceobs -- pay attention to forward observables)
 CENTRAL_ETA = 999
 CENTRAL_PT  = 0
 

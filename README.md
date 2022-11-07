@@ -68,13 +68,13 @@ Simulate MC events
 
 (Python) Analyze MC and data
 ```
-python python/iceshot --hepmc3 STAR_1792394_pipi --hepdata dataset_STAR_1792394_pipi --pid '[[211,-211]]'
+python python/iceshot --hepmc3 STAR_1792394_pipi --hepdata dataset_STAR_1792394_pipi --pid '[[211,-211]]' --cuts STAR_none
 ```
 
 (Python) Compare MC with differential fiducial measurements made at RHIC/Tevatron/LHC
 ```
+pytest tests/testbench_STAR_1792394.py -s --POMLOOP true
 pytest tests/testbench_exloop.py -s --POMLOOP true
-pytest tests/testbench_cepdata.py -s --POMLOOP true
 ```
 
 (Python) MC model tuning via HPC-distributed Bayesian / evolutionary optimization
