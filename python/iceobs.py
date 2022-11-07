@@ -138,9 +138,9 @@ def proj_1D_4body_helicity(event, target_m=0.775):
         pb1boost,pb2boost,pfboost = LorentFramePrepare(pbeam1=beam[0], pbeam2=beam[1], particles=particles[i], X=X_i)
         pfout = LorentzFrame(pb1boost=pb1boost, pb2boost=pb2boost, pfboost=pfboost, frametype="HX")
 
-        # Get the first (positive) daughter
+        # Get the pions
         pions_in_HX.append(pfout)
-
+    
     return pions_in_HX, system_in_lab
 
 
