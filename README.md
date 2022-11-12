@@ -1,5 +1,7 @@
 # GRANIITTI
 https://arxiv.org/abs/1910.06300
+</br>
+https://indico.cern.ch/event/1148802/contributions/5004853 -- Diffraction and Low-x 2022 talk
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
