@@ -9,7 +9,10 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
-      
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
       # HepMC3 and LHAPDF6 install
       - run: cd install && yes y | source autoinstall.sh && cd ..
 
