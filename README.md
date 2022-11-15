@@ -43,6 +43,7 @@ chmod +x and execute the installer
 
 conda create -y --name graniitti python==3.8.13
 conda activate graniitti
+conda install -c conda-forge gxx_linux-64==11.1.0
 pip install -r requirements.txt
 ```
 

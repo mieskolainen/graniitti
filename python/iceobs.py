@@ -235,16 +235,16 @@ def proj_1D_4body_cos1_dotprod(event):
         angle cos(theta_{A1}) [-1,1] in the mother A helicity frame
     """
     _, _, p = proj_1D_4body_helicity(event)
-
+    
     A,B,A1,A2,B1,B2 = 0,1,0,1,0,1
-
+    
     X = p[A][A1] + p[A][A2] + p[B][B1] + p[B][B2]
-
+    
     # Boost final states to the central system X-rest frame
     S_in_X = copy.deepcopy(p[A])
     for i in range(len(S_in_X)):
         S_in_X[i].boost(b=X, sign=-1)
-
+    
     V_in_X = S_in_X[A1] + S_in_X[A2]
     
     # Boost V daughters to the V-rest frame
@@ -252,7 +252,7 @@ def proj_1D_4body_cos1_dotprod(event):
     S_in_V = copy.deepcopy(p[A])
     for i in range(len(S_in_V)):
         S_in_V[i].boost(b=V_in_lab, sign=-1)
-
+    
     # Take cos(theta) angle between S in the V-frame and V in the X-frame
     # (V ~ A and S ~ A1)
     costheta = np.cos(S_in_V[A1].angle(V_in_X))

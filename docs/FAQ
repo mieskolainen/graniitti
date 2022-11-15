@@ -23,7 +23,7 @@ Above, you may use also CXX=clang, but there can be problems with ROOT (which is
 COMPILING UNDER CONDA VIRTUAL ENVIRONMENT
 -----------
 
-Under the Conda virtual environment:
+Under the Conda virtual environment, this has been tested to work:
 
 ```
 conda install -c anaconda cmake
