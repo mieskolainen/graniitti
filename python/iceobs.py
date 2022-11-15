@@ -80,8 +80,9 @@ def proj_1D_4body_helicity(event, target_m=0.775):
     Sequential 2->2 body projector, e.g. resonance -> rho > {pi+ pi-} rho > {pi+ pi-}
     
     Returns:
-        pions  4-momentum per system in mother helicity frames
-        system 4-momentum in the lab frame
+        pions:      4-momentum per system in mother helicity frames
+        system:     intermediate system 4-momentum in the lab frame
+        particles:  matched particles in the lab frame (two pairs)
     """
     
     # Pions
@@ -124,30 +125,77 @@ def proj_1D_4body_helicity(event, target_m=0.775):
                   [pi_pos_p4[ind_B[0]], pi_neg_p4[ind_B[1]]] ]
 
     # -----------------------------------------------------
+    X = particles[0][0] + particles[0][1] + particles[1][0] + particles[1][1]
 
     # Over both intermediate systems
     pions_in_HX   = []
     system_in_lab = []
     for i in range(len(particles)):
         
-        # Intermediate system X_i in the lab
-        X_i = particles[i][0] + particles[i][1]
-        system_in_lab.append(X_i)
+        # Intermediate system Xi in the lab
+        Xi_in_lab = particles[i][0] + particles[i][1]
+        system_in_lab.append(Xi_in_lab)
 
-        # Boost & rotate to the intermediate mother system X_i helicity frame
-        pb1boost,pb2boost,pfboost = LorentFramePrepare(pbeam1=beam[0], pbeam2=beam[1], particles=particles[i], X=X_i)
-        pfout = LorentzFrame(pb1boost=pb1boost, pb2boost=pb2boost, pfboost=pfboost, frametype="HX")
+        # Intermediate system Xi in the central system resonance X rest frame
+        Xi_in_X_frame = copy.deepcopy(Xi_in_lab)
+        Xi_in_X_frame.boost(b=X, sign=-1)
+
+        # Transform to the Helicity Frame
+        pfout = HXFrame(p=particles[i], X=Xi_in_X_frame)
 
         # Get the pions
         pions_in_HX.append(pfout)
+            
+    return pions_in_HX, system_in_lab, particles
+
+
+def HXFrame(p, X):
+    """
+    From lab to the "Helicity frame"
+    Quantization z-axis as the direction spanned by X in the frame of reference.
     
-    return pions_in_HX, system_in_lab
+    Be careful with the frame definitions in multibody cascaded decays, i.e.
+    then the intermediate X typically is defined in _its_ own mother frame.
+    
+    Args:
+        p = Set of 4-momentum in the lab to be transformed
+            (N.B. sum over [rotated] p is used to define the boost to their rest frame)
+        X = Helicity direction 4-momentum
+            (N.B. this vector defines only the helicity direction but not the boost here)
+    
+    This function is identical to HXFrame() in MKinematics.h, which is used
+    in the generator (Jacob-Wick 2-body [sequential] amplitudes).
+    """
+
+    # ZYZ-sequence rotation angles as defined by the system X direction, note the minus
+    Z_angle = -X.phi
+    Y_angle = -X.theta
+
+    def rotate(particle):
+        particle.rotateZ(Z_angle)
+        particle.rotateY(Y_angle)
+        particle.rotateZ(np.pi)  # Reflection
+
+    # Rotate particles
+    pout = copy.deepcopy(p)
+    for i in range(len(pout)):
+        rotate(pout[i])
+
+    # Boost direction defined as a sum over the rotated particles
+    p_boost = vec4()
+    for i in range(len(pout)):
+        p_boost += pout[i]
+
+    # Boost each particle
+    for i in range(len(pout)):
+        pout[i].boost(b=p_boost, sign=-1)
+
+    return pout
 
 
 ## Observables
 #
 #
-
 
 def proj_1D_4body_DeltaM_AB(event):
     """
@@ -156,7 +204,7 @@ def proj_1D_4body_DeltaM_AB(event):
     Returns:
         invariant mass difference between intermediate mothers A - B
     """
-    pions_in_HX, system_in_lab = proj_1D_4body_helicity(event)
+    _, system_in_lab, _ = proj_1D_4body_helicity(event)
     return system_in_lab[0].m - system_in_lab[1].m
 
 
@@ -167,8 +215,49 @@ def proj_1D_4body_Deltacos_12(event):
     Returns:
         angle difference between A1 and B2
     """
-    pions_in_HX, system_in_lab = proj_1D_4body_helicity(event)
+    pions_in_HX, _, _ = proj_1D_4body_helicity(event)
     return pions_in_HX[0][0].costheta - pions_in_HX[1][0].costheta
+
+
+def proj_1D_4body_cos1_dotprod(event):
+    """
+    X -> A > {A1 + A2} B > {B1 + B2}
+    
+    X-check routine
+    
+    Gives identical answer to proj_1D_4body_cos1(),
+    but using an implicit rotation (i.e. boosts + dot product)
+    instead of an explicit frame transform made in HXFrame().
+    
+    See also: https://en.wikipedia.org/wiki/Wigner_rotation
+    
+    Returns:
+        angle cos(theta_{A1}) [-1,1] in the mother A helicity frame
+    """
+    _, _, p = proj_1D_4body_helicity(event)
+
+    A,B,A1,A2,B1,B2 = 0,1,0,1,0,1
+
+    X = p[A][A1] + p[A][A2] + p[B][B1] + p[B][B2]
+
+    # Boost all 4 final states to the central system X-rest frame
+    S_in_X = copy.deepcopy(p[A])
+    for i in range(len(S_in_X)):
+        S_in_X[i].boost(b=X, sign=-1)
+
+    V_in_X = S_in_X[A1] + S_in_X[A2]
+    
+    # Boost V daughters to the V-rest frame
+    V_in_lab = p[A][A1] + p[A][A2] 
+    S_in_V = copy.deepcopy(p[A])
+    for i in range(len(S_in_V)):
+        S_in_V[i].boost(b=V_in_lab, sign=-1)
+
+    # Take cos(theta) angle between S in the V-frame and V in the X-frame
+    # (V ~ A and S ~ A1)
+    costheta = np.cos(S_in_V[A].angle(V_in_X))
+
+    return costheta
 
 
 def proj_1D_4body_cos1(event):
@@ -178,7 +267,7 @@ def proj_1D_4body_cos1(event):
     Returns:
         angle cos(theta_{A1}) [-1,1] in the mother A helicity frame
     """
-    pions_in_HX, system_in_lab = proj_1D_4body_helicity(event)
+    pions_in_HX, _, _ = proj_1D_4body_helicity(event)
     return pions_in_HX[0][0].costheta
 
 
@@ -189,7 +278,7 @@ def proj_1D_4body_cos2(event):
     Returns:
         angle cos(theta_{B1}) [-1,1] in the mother B helicity frame
     """
-    pions_in_HX, system_in_lab = proj_1D_4body_helicity(event)
+    pions_in_HX, _, _ = proj_1D_4body_helicity(event)
     return pions_in_HX[1][0].costheta
 
 
@@ -203,7 +292,7 @@ def proj_1D_4body_phi12(event):
     Notes:
         phi_{A1} and phi_{A2} defined in the mother A and B helicity frames, respectively
     """
-    pions_in_HX, system_in_lab = proj_1D_4body_helicity(event)
+    pions_in_HX, _, _ = proj_1D_4body_helicity(event)
     angle = pions_in_HX[0][0].phi + pions_in_HX[1][0].phi
 
     return rad2deg(np.arctan2(np.sin(angle), np.cos(angle))) # Wrap to [-pi,pi]
@@ -315,7 +404,8 @@ def LorentzFrame(pb1boost, pb2boost, pfboost, frametype='CS', direction=1):
     For more description, see MKinematics.h (LorentzFramePrepare function)
     
     N.B. For the helicity frame, this function is compatible with symmetric beam energies
-    (LHC proton-proton type)
+    (LHC proton-proton type). Use HXFrame() for generic helicity frame transforms
+    necessary e.g. in cascaded 2-body decays.
     
     Args:
         pb1boost,pb2boost : Boosted beam 4-momenta

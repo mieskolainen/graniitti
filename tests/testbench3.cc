@@ -85,7 +85,7 @@ TEST_CASE("gra::kinematics::LorentzFrame versus PGframe, HXframe, CSframe", "[Lo
 
 		const double PZ2 = -PZ1;
 		M4Vec p2; p2.SetPxPyPzM(0,0,PZ2, mproton);
-
+		
 		// --------------------------------------------------------------------
 		// ** TRANSFORM TO DIFFERENT LORENTZ FRAMES **
 		const M4Vec X = pf[0] + pf[1];

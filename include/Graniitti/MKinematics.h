@@ -1103,15 +1103,16 @@ inline void OffShell2LightCone(M4Vec &p1, M4Vec &p2, std::vector<M4Vec> &p) {
 // where p1 and p2 are the initial state proton 3-momentum.
 //
 // Helicity: Quantization axis defined by the resonance system
-// 3-momentum vector in the colliding beams frame (lab frame).
+// 3-momentum vector in the colliding beams frame (lab frame). Use HXFrame() for
+// generic helicity frame transforms.
 //
 // Pseudo-Gottfried-Jackson: Quantization axis defined by the initial state
 // proton p1 (or p2) 3-momentum vector in the (resonance) system rest frame.
 // 
 // 
 // N.B. For the helicity frame, this function is compatible with symmetric beam energies
-// (LHC proton-proton type)
-// 
+// (LHC proton-proton type).
+//
 
 template <typename T>
 inline void LorentFramePrepare(const std::vector<T> &p, const T &X, const T &pbeam1,
@@ -1508,11 +1509,17 @@ inline void PGframe(std::vector<T> &p, const T &X, const int direction, const T 
 }
 
 
-// From lab to the Helicity frame
-// Quantization z-axis as the direction of the system X in the lab frame
+// From lab to the "Helicity frame"
+// Quantization z-axis as the direction spanned by X in the frame of reference.
+// 
+// Be careful with the frame definitions in multibody cascaded decays, i.e.
+// then the intermediate X is typically defined in _its_ own mother frame.
 //
-// Input:  p = Set of 4-momentum to be transformed
-//         X = System 4-momentum
+//
+// Input:  p = Set of 4-momentum in the lab to be transformed
+//             (N.B. sum over [rotated] p is used to define the boost to their rest frame)
+//         X = Helicity direction 4-momentum
+//             (N.B. this vector defines only the helicity direction but not the boost here)
 //
 template <typename T>
 inline void HXframe(std::vector<T> &p, const T &X, bool DEBUG = false) {
@@ -1558,14 +1565,14 @@ inline void HXframe(std::vector<T> &p, const T &X, bool DEBUG = false) {
   }
   // ********************************************************************
 
-  // Construct the system X 4-momentum in ROTATED FRAME
-  T XNEW = X;
-  rotate(XNEW);
+  // Boost direction defined as a sum over the rotated particles
+  T B;
+  for (const auto &i : gra::aux::indices(p)) { B += p[i]; }
 
   // Boost particles to the system X rest frame
   // -> Helicity frame obtained
   for (const auto &i : gra::aux::indices(p)) {
-    gra::kinematics::LorentzBoost(XNEW, XNEW.M(), p[i], -1);  // Note the minus sign
+    gra::kinematics::LorentzBoost(B, B.M(), p[i], -1);  // Note the minus sign
   }
 
   // ********************************************************************
@@ -1573,12 +1580,12 @@ inline void HXframe(std::vector<T> &p, const T &X, bool DEBUG = false) {
     printf("HXframe:: Daughters after boost in HELICITY FRAME: \n");
     for (const auto &i : gra::aux::indices(p)) { p[i].Print(); }
 
-    printf("HXframe:: System X in LAB FRAME: \n");
+    printf("HXframe:: Helicity rotation direction X: \n");
     X.Print();
 
-    printf("HXframe:: System X in ROTATED LAB FRAME: \n");
-    XNEW.Print();
-
+    printf("HXframe:: Boost direction B: \n");
+    B.Print();
+    
     printf("\n");
   }
   // ********************************************************************

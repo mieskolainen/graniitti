@@ -49,15 +49,14 @@
 namespace gra {
 namespace aux {
 
-
 // -------------------------------------------------------
 // FIXED HERE manually
 
-double      GetVersion() { return 1.088; }
+double      GetVersion()     { return 1.089; }
 std::string GetVersionType() { return "pre-release"; }
-std::string GetVersionDate() { return "07.11.2022"; }
+std::string GetVersionDate() { return "15.11.2022"; }
 std::string GetVersionUpdate() {
-  return "spin-code extension: arbitrary deep spin correlation chains via post order backward recursion";
+  return "spin-code update: correct helicity reference frame in cascaded decays";
 }
 
 void PrintVersion() {

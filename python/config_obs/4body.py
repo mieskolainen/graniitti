@@ -84,6 +84,32 @@ obs_M = {
 'func'    : iceobs.proj_1D_M
 }
 
+obs_4body_cos1_dotprod = {
+
+'tag'     : '4body_cos1_dotprod',
+
+# Axis limits
+'xlim'    : (-1, 1),
+'ylim'    : None,
+'xlabel'  : r'$\cos \theta_{1}$ [boost + dot product]',
+'ylabel'  : r'$d\sigma/d\cos \theta_{1}$',
+'units'   : {'x': r'unit', 'y': r'pb'},
+'label'   : r'Angle',
+'figsize' : (4, 3.75),
+
+# Ratio
+'ylim_ratio' : (0.0, 2.0),
+'ytick_ratio_step': 0.5,
+
+# Default histogramming
+'bins'    : np.linspace(-1, 1, 40),
+'density' : False,
+
+# Function to calculate
+'func'    : iceobs.proj_1D_4body_cos1_dotprod
+}
+
+
 obs_4body_cos1 = {
 
 'tag'     : '4body_cos1',

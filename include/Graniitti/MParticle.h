@@ -84,8 +84,9 @@ struct MDecayBranch {
   int level;                       // backward recursion level
   std::string mother;              // mother name
   std::string name;                // name
+  M4Vec p4_in_mother_frame;        // 4-momentum in the mother rest frame
   // ----------------------------------------
-
+  
   // MC weight container
   gra::kinematics::MCW W;
 

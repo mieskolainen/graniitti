@@ -1,6 +1,6 @@
 # Simple Lorentz vectors with HEP metric (+,---)
 #
-# (c) 2021 Mikael Mieskolainen
+# (c) 2022 Mikael Mieskolainen
 # Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 import numpy as np
@@ -78,6 +78,16 @@ class vec4:
         # 3-vector dot product
         return self.x*other.x + self.y*other.y + self.z*other.z
 
+    def angle(self, other):
+        # Return angle between 3-vectors
+        norm = self.p3mod * other.p3mod
+        if norm <= 0:
+            return 0.0
+        else:
+            arg = self.dot3(other) / norm
+            if (arg >  1.0): arg =  1.0
+            if (arg < -1.0): arg = -1.0
+        return np.arccos(arg)
 
     def setX(self, x):
         self._x = x
@@ -91,7 +101,6 @@ class vec4:
         self._x = x
         self._y = y
         self._z = z
-    
 
     def setPt2RapPhiM2(self, pt2, rap, phi, m2):
 
@@ -291,7 +300,6 @@ class vec4:
     def e(self):
         return self._t
 
-
     def rotateSO3(self, R):
         v = np.dot(R, self.p3)
         self._x = v[0]
@@ -327,8 +335,8 @@ class vec4:
         """
         Lorentz boost
         Args:
-                   b : Boost 4-momentum (e.g. system)
-                sign : 1 or -1 (direction of the boost, into the rest (-1) or out (1))
+            b:    Boost 4-momentum (e.g. system)
+            sign: 1 or -1 (direction of the boost, into the rest (-1) or out (1))
         """
         if np.isclose(b.e, 0.0):
             raise Exception(__name__ + '.boost: Input boost 4-momentum with e = 0')

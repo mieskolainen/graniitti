@@ -474,15 +474,20 @@ std::complex<double> DecayAmp(gra::LORENTZSCALAR &lts, gra::PARAM_RES &res) {
   // Daughter spins
   const double s1 = lts.decaytree[0].p.spinX2 / 2.0;
   const double s2 = lts.decaytree[1].p.spinX2 / 2.0;
-
-  // Boost daughter A to the system X0-rest frame (pfinal[0] == central system)
-  M4Vec boosted_daughter = lts.decaytree[0].p4;
-  gra::kinematics::LorentzBoost(lts.pfinal[0], lts.pfinal[0].M(), boosted_daughter, -1);
-
+  
+  // Boost daughters A and B the system X-rest frame (pfinal[0] == central system)
+  std::vector<M4Vec> p = {lts.decaytree[0].p4, lts.decaytree[1].p4};
+  for (const auto &i : gra::aux::indices(p)) {
+    gra::kinematics::LorentzBoost(lts.pfinal[0], lts.pfinal[0].M(), p[i], -1); // Note the minus sign
+    lts.decaytree[i].p4_in_mother_frame = p[i]; // ! Important for recursion
+  }
+  
   // Get the transition amplitude matrix of size [(2s1 + 1)x(2s2 + 1)] x (2J + 1)
+  const unsigned int A = 0; // left '<'
+  
   MMatrix<std::complex<double>> f = fMatrix(res.hel.T, res.p.spinX2 / 2.0, s1, s2,
-                                             boosted_daughter.Theta(), boosted_daughter.Phi());
-
+                                             p[A].Theta(), p[A].Phi());
+  
   // ---------------------------------------------------------------------
   // 2. Generic arbitrary tree depth cascaded decay
   
@@ -601,7 +606,15 @@ void TreeRecursion(MDecayBranch &branch, const gra::LORENTZSCALAR &lts, const st
 
     // Compute branch decay amplitude
     branch.f = CalculateFMatrix(branch, lts);
-
+    
+    // Boost daughters to the system X_i rest frame (see Amsler & Bizot)
+    //
+    std::vector<M4Vec> p = {branch.legs[0].p4, branch.legs[1].p4};
+    for (const auto &i : gra::aux::indices(p)) {
+      gra::kinematics::LorentzBoost(branch.p4, branch.p4.M(), p[i], -1); // Note the minus sign
+      branch.legs[i].p4_in_mother_frame = p[i]; // ! Important for recursion
+    }
+    
     // Infinite recursion
     // -> left branch  '<'
     TreeRecursion(branch.legs[0], lts, dir + branch.name, "<");
@@ -613,21 +626,28 @@ void TreeRecursion(MDecayBranch &branch, const gra::LORENTZSCALAR &lts, const st
 // Sequential decay sub-amplitude matrix of the decay chain X0 > ... {branch X_i -> A + B},
 // 
 // where X_i is the intermediate system decaying to A + B and X0 is the grandmother
-//
+// 
+// See Helicity frame definitions (from R. McNulty) in sequential 2-body, should be compatible:
+// 
+// [REFERENCE: Trueman, https://journals.aps.org/prd/abstract/10.1103/PhysRevD.18.3423]
+// [REFERENCE: WA102 Collab., https://inspirehep.net/literature/470667]
+// [REFERENCE: WA76 Collab., https://cds.cern.ch/record/199226/files/198908354.pdf]
+// [REFERENCE: DM2 Collab., https://inspirehep.net/literature/239487]
+// 
 MMatrix<std::complex<double>> CalculateFMatrix(const MDecayBranch &branch, const gra::LORENTZSCALAR &lts) {
   const unsigned int A = 0; // left  '<'
   const unsigned int B = 1; // right '>'
-
+  
   // Get daughter spins
   const double s1 = branch.legs[A].p.spinX2 / 2.0;
   const double s2 = branch.legs[B].p.spinX2 / 2.0;
-
+  
   std::vector<M4Vec> p = {branch.legs[A].p4, branch.legs[B].p4};
   
   // Rotate and boost daughters to the frame where
-  // z-axis is spanned by mother X_i flight direction (X_i helicity rest frame)
-  gra::kinematics::HXframe(p, branch.p4);
-
+  // z-axis is spanned by mother X_i flight direction in _its_ mother frame (X_i helicity rest frame)
+  gra::kinematics::HXframe(p, branch.p4_in_mother_frame);
+  
   return fMatrix(branch.hel.T, branch.p.spinX2 / 2.0, s1, s2, p[A].Theta(), p[A].Phi());
 }
 

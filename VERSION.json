@@ -1,7 +1,7 @@
 {
  "name": "GRANIITTI",
- "version": 1.088,
+ "version": 1.089,
  "type": "pre-release",
- "date": "07.11.2022",
- "update": "spin-code extension: arbitrary deep spin correlation chains via post order backward recursion"
+ "date": "15.11.2022",
+ "update": "spin-code update: correct helicity reference frame in cascaded decays"
 }
