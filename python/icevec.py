@@ -148,7 +148,7 @@ class vec4:
         self._z = p3[2]        
 
     def setPtEtaPhiM(self, pt, eta, phi, m):
-        self.setPtEtaPhi(pt, eta, phi)
+        self.setPtEtaPhi(pt=pt, eta=eta, phi=phi)
         self.setE(np.sqrt(m**2 + self.x**2 + self.y**2 + self.z**2))
     
 
@@ -209,7 +209,6 @@ class vec4:
         else:
             return np.sqrt(self.p3mod2)
     
-
     @property
     # Lorentz beta
     def beta(self):
@@ -301,7 +300,7 @@ class vec4:
         return self._t
 
     def rotateSO3(self, R):
-        v = np.dot(R, self.p3)
+        v = R @ self.p3 # @ gives matrix * vector product
         self._x = v[0]
         self._y = v[1]
         self._z = v[2]
@@ -309,26 +308,29 @@ class vec4:
     def rotateX(self, angle):
         s = np.sin(angle)
         c = np.cos(angle)
-        y = self.y
-        
-        self._y = c*y - s*self.z
-        self._z = s*y + c*self.z
+        y = self.y # this is copy (float are not referenced)
+        z = self.z
+
+        self._y = c*y - s*z
+        self._z = s*y + c*z
     
     def rotateY(self, angle):
         s = np.sin(angle)
         c = np.cos(angle)
+        x = self.x # this is copy (float are not referenced)
         z = self.z
-        
-        self._z = c*z - s*self.x
-        self._x = s*z + c*self.x
 
+        self._x =  c*x + s*z
+        self._z = -s*x + c*z
+        
     def rotateZ(self, angle):
         s = np.sin(angle)
         c = np.cos(angle)
-        x = self.x
+        x = self.x # this is copy (float are not referenced)
+        y = self.y
         
-        self._x = c*x - s*self.y
-        self._y = s*x + c*self.y
+        self._x = c*x - s*y
+        self._y = s*x + c*y
 
 
     def boost(self, b, sign=-1):
@@ -355,5 +357,4 @@ class vec4:
         self._x = self.px + aux2*betaX
         self._y = self.py + aux2*betaY
         self._z = self.pz + aux2*betaZ
-        self._e = gamma*(self.e + aux1)
-
+        self._t = gamma*(self.e + aux1)
