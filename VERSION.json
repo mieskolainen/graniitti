@@ -1,7 +1,7 @@
 {
  "name": "GRANIITTI",
- "version": 1.089,
+ "version": 1.090,
  "type": "pre-release",
- "date": "15.11.2022",
- "update": "spin-code update: correct helicity reference frame in cascaded decays"
+ "date": "06.06.2023",
+ "update": "Update installation scripts and LHAPDF to 6.5.4"
 }

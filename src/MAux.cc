@@ -1,6 +1,6 @@
 // I/O aux functions
 //
-// (c) 2017-2022 Mikael Mieskolainen
+// (c) 2017-2023 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
@@ -52,11 +52,11 @@ namespace aux {
 // -------------------------------------------------------
 // FIXED HERE manually
 
-double      GetVersion()     { return 1.089; }
+double      GetVersion()     { return 1.090; }
 std::string GetVersionType() { return "pre-release"; }
-std::string GetVersionDate() { return "15.11.2022"; }
+std::string GetVersionDate() { return "06.06.2023"; }
 std::string GetVersionUpdate() {
-  return "spin-code update: correct helicity reference frame in cascaded decays";
+  return "Update installation scripts and LHAPDF to 6.5.4";
 }
 
 void PrintVersion() {
@@ -64,9 +64,9 @@ void PrintVersion() {
   std::cout << rang::style::bold << "<github.com/mieskolainen/graniitti>" << rang::style::reset
             << std::endl
             << std::endl;
-  std::cout << "References: arXiv:1910.06300 [hep-ph]" << std::endl;
+  std::cout << "References: arXiv:1910.06300, arXiv:2304.06010 [hep-ph]" << std::endl;
   std::cout << std::endl;
-  std::cout << "(c) 2017-2022 Mikael Mieskolainen" << std::endl;
+  std::cout << "(c) 2017-2023 Mikael Mieskolainen" << std::endl;
   std::cout << "<m.mieskolainen@imperial.ac.uk>" << std::endl;
   std::cout << std::endl;
   std::cout << "<opensource.org/licenses/GPL-3.0>" << std::endl;

@@ -1,5 +1,5 @@
 GRANIITTI Monte Carlo event generator FAQ
-19/05/2022
+06/06/2023
 
 m.mieskolainen@imperial.ac.uk
 -----------
@@ -26,9 +26,7 @@ COMPILING UNDER CONDA VIRTUAL ENVIRONMENT
 Under the Conda virtual environment, this has been tested to work:
 
 ```
-conda install -c anaconda cmake
-conda install gcc_linux-64=9.3.0
-conda install gxx_linux-64=9.3.0
+conda install -c conda-forge cmake==3.26.4 gxx_linux-64==10.3.0 sysroot_linux-64==2.17
 
 ln -s $CONDA_PREFIX/bin/x86_64-conda-linux-gnu-gcc $CONDA_PREFIX/bin/gcc
 ln -s $CONDA_PREFIX/bin/x86_64-conda-linux-gnu-g++ $CONDA_PREFIX/bin/g++

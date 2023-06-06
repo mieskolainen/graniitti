@@ -1,13 +1,13 @@
 # GRANIITTI python tools requirements
 
 # These are installed manually
-#hepmc3==3.2.3
-#lhapdf==6.3.0
+#hepmc3==3.2.5
+#lhapdf==6.4.5
 
 protobuf==3.20.2
 
 # Generic python
-cmake
+make
 maketools
 pyjson5
 matplotlib

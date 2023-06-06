@@ -1,6 +1,7 @@
 # GRANIITTI
-https://arxiv.org/abs/1910.06300
-</br>
+https://arxiv.org/abs/2304.06010 <br>
+https://arxiv.org/abs/1910.06300 <br>
+<br>
 https://indico.cern.ch/event/1148802/contributions/5004853 -- Diffraction and Low-x 2022 talk
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -14,43 +15,60 @@ https://indico.cern.ch/event/1148802/contributions/5004853 -- Diffraction and Lo
 
 See `VERSION.json` for the latest version information.
 
+<br>
 
 ## Physics introduction
 
 See the page: https://mieskolainen.github.io
 
+<br>
 
 ## Installation
 
-1. Pull the repository and autoinstall IO-format dependencies
+### 1. Pull the repository
+
 ```
 git clone --depth 1 https://github.com/mieskolainen/graniitti && cd graniitti
-sudo apt install cmake g++ python3-dev curl [this works on Ubuntu]
-
-cd install && source autoinstall.sh && cd ..
 ```
 
-2. Set the environment variables and compile the generator C++ code
+### 2. Environment setup
+
+Standalone Ubuntu
 ```
-source install/setenv.sh 
-make -j4
+sudo apt install cmake g++ python3-dev curl
 ```
 
-3. For the analysis tools, setup virtual Python environment via Conda
+CERN lxplus (CVMFS) environment
 ```
-wget https://repo.anaconda.com/archive/Anaconda3-2022.05-Linux-x86_64.sh
+source /cvmfs/sft.cern.ch/lcg/views/setupViews.sh LCG_98python3 x86_64-centos7-gcc9-opt
+```
+
+Conda environment with C++ compilation and Python analysis tools
+```
+wget https://repo.anaconda.com/archive/Anaconda3-2023.03-Linux-x86_64.sh
 chmod +x and execute the installer
 
-conda create -y --name graniitti python==3.8.13
+conda env create -f environment.yml
 conda activate graniitti
-conda install -c conda-forge gxx_linux-64==11.1.0
 pip install -r requirements.txt
 ```
 
+### 3. Autoinstall IO-format dependencies
+```
+cd install && source autoinstall.sh && cd ..
+```
+
+### 4. Set environment variables and compile the generator C++ code
+```
+source install/setenv.sh
+make -j4
+```
+
+<br>
 
 ## First run
 
-Set the environment variables, then execute the main generator program
+Set environment variables, then execute the main generator program
 ```
 source install/setenv.sh
 ./bin/gr
@@ -58,6 +76,7 @@ source install/setenv.sh
 
 See `/docs/FAQ` for more information.
 
+<br>
 
 ## Event generation
 
@@ -65,6 +84,8 @@ Simulate MC events
 ```
 ./bin/gr -i gencard/STAR_1792394_pipi.json -w true -l true -n 50000
 ```
+
+<br>
 
 
 ## Analysis
@@ -88,6 +109,7 @@ python python/icetune --tuneset default
 
 For C++ (ROOT) based analysis tools, see `/docs/FAQ` and examples under `/tests`.
 
+<br>
 
 ## Code quality assurance
 
@@ -97,6 +119,7 @@ make -j4 TEST=TRUE && ./bin/testbench*
 pytest tests/testbench_*.py -s
 ```
 
+<br>
 
 ## Reference
 

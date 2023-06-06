@@ -11,9 +11,9 @@
 #   source installLHAPDF6.sh
 #
 
-#wget http://www.hepforge.org/archive/lhapdf/LHAPDF-6.5.3.tar.gz
-tar -xf LHAPDF-6.5.3.tar.gz
-cd LHAPDF-6.5.3
+#wget http://www.hepforge.org/archive/lhapdf/LHAPDF-6.5.4.tar.gz
+tar -xf LHAPDF-6.5.4.tar.gz
+cd LHAPDF-6.5.4
 
 # Remove old
 rm ${INSTALLPATH}/LHAPDF -f -r
@@ -24,5 +24,5 @@ make -j4
 make install
 cd ..
 sleep 3
-rm LHAPDF-6.5.3 -f -r
+rm LHAPDF-6.5.4 -f -r
 
