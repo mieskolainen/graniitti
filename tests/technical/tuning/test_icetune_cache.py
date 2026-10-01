@@ -4,6 +4,7 @@
 # Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 import hashlib
+import json
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -39,22 +40,27 @@ def test_bootstrap_stages_literal_process_names(tmp_path, monkeypatch, tar_optio
     assert (root / relative).read_bytes() == output.read_bytes()
 
 
-# Reuse verified amplitude files under another run name and worker checkout
+# Reuse shared amplitude references under another run name and worker checkout
 def test_amp_bootstrap_rebases_run_worker(tmp_path):
+    from core.tune.drivers.graniitti.ampfit.amplitude import bank_files
     from core.tune.drivers.graniitti.driver import GraniittiDriver
     from core.tune.drivers.graniitti.runtime import allowed_bootstrap_path
 
     source = tmp_path / "source"
-    relative = Path("runs/icetune/initial/results/amplitude/sample/amplitudes.bin")
+    relative = Path("runs/icetune/initial/results/amplitude/0/nominal")
     payload = bytes(range(256))
-    output = source / relative
+    output = source / relative / "amplitudes.bin"
     output.parent.mkdir(parents=True)
     output.write_bytes(payload)
+    for name in ("request.json", "steering.json", "amplitudes.bin.json"):
+        (output.parent / name).write_text("{}")
+    (output.parent / "events.hepmc3").touch()
+    files = bank_files(source / relative.parents[1])
     temporary = tmp_path / "publish"
     temporary.mkdir()
     bootstrap = icetune_cache.publish_content_archive(
         cache_base_url=str(tmp_path / "cache"), kind="graniitti", fingerprint=FINGERPRINT,
-        root=source, records=icetune_cache.file_records([output], root=source, allowed=allowed_bootstrap_path),
+        root=source, records=icetune_cache.file_records(files, root=source, allowed=allowed_bootstrap_path),
         temporary_dir=temporary, schema_version=GraniittiDriver.BOOTSTRAP_SCHEMA_VERSION, label="GRANIITTI",
     )
     for name in ("head", "worker"):
@@ -71,11 +77,14 @@ def test_amp_bootstrap_rebases_run_worker(tmp_path):
         assert (previous / ".gitignore").read_text() == "*\n!.gitignore\n"
         assert not (previous / "other.json").exists()
         directory = driver.amplitude_directory(cdir=str(root), run_name="resumed")
-        assert (directory / "sample/amplitudes.bin").read_bytes() == payload
+        metadata = json.loads((directory / "0/nominal/amplitudes.bin.json").read_text())
+        assert (Path(metadata["directory"]) / "amplitudes.bin").read_bytes() == payload
+        assert not list(directory.rglob("*.bin"))
         driver.stage_bootstrap(cdir=str(root), bootstrap=bootstrap)
         files = driver.runtime_files({"cdir": str(root), "run_name": "resumed",
                                       "optimization": {"optimizer": "ampfit"}})
-        assert files == [relative.as_posix()]
+        assert set(files) == {(relative / name).as_posix() for name in
+                              ("request.json", "steering.json", "events.hepmc3", "amplitudes.bin.json")}
 
 
 # Check immutable publication copies bytes and permits only one concurrent writer

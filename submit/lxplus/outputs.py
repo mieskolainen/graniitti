@@ -119,7 +119,7 @@ def read_stable_file(path: pathlib.Path, revision: tuple[int, int]) -> bytes:
 def pack_runtime_outputs(*, figure_dir: pathlib.Path | None, result_files: list[pathlib.Path], run_name: str,
     state_files: list[pathlib.Path] | None = None,
     state_payloads: dict[pathlib.Path, tuple[bytes, tuple[int, int]]] | None = None,
-    state_root: pathlib.Path | None = None, ) -> bytes | None:
+    state_root: pathlib.Path | None = None, exclude_figures: tuple[str, ...] = (), ) -> bytes | None:
     state_files = list(state_files or [])
     state_payloads = dict(state_payloads or {})
     if (figure_dir is None or not figure_dir.is_dir()) and not result_files and not state_files and not state_payloads:
@@ -127,7 +127,13 @@ def pack_runtime_outputs(*, figure_dir: pathlib.Path | None, result_files: list[
     output = io.BytesIO()
     with tarfile.open(fileobj=output, mode="w:gz") as archive:
         if figure_dir is not None and figure_dir.is_dir():
-            archive.add(figure_dir, arcname=(pathlib.Path("figs") / "icetune" / run_name).as_posix(), recursive=True)
+            root = pathlib.PurePosixPath("figs", "icetune", run_name)
+
+            # Exclude independently published history files only at the figure root
+            def include(info: tarfile.TarInfo) -> tarfile.TarInfo | None:
+                return None if pathlib.PurePosixPath(info.name).relative_to(root).as_posix() in exclude_figures else info
+
+            archive.add(figure_dir, arcname=root.as_posix(), recursive=True, filter=include)
         for path in result_files:
             archive.add(path, arcname=(pathlib.Path("runs") / "icetune" / run_name / "results" / path.name).as_posix(),
                 recursive=False, )
@@ -290,9 +296,9 @@ def snapshot_live_figures(*, figure_dir: pathlib.Path, run_name: str, figure_rev
         accepted.pop("best", None)
     elif best_revision != previous.get("best"):
         try:
-            full_revision = output_tree_revision(figure_dir)
-            output = pack_runtime_outputs(figure_dir=figure_dir, result_files=[], run_name=run_name)
-            if output_tree_revision(figure_dir) != full_revision:
+            output = pack_runtime_outputs(figure_dir=figure_dir, result_files=[], run_name=run_name,
+                                          exclude_figures=HISTORY_FIGURES)
+            if output_tree_revision(figure_dir, exclude_files=set(HISTORY_FIGURES)) != best_revision:
                 raise RuntimeError(f"Ray lxplus figures changed while snapshotting: {figure_dir}")
         except (OSError, RuntimeError):
             output = None
@@ -523,6 +529,9 @@ def publish_output_dir(*, source: pathlib.Path, target: pathlib.Path) -> None:
         prepared = stage / "new"
         backup = stage / "previous"
         shutil.copytree(source, prepared)
+        for name in HISTORY_FIGURES:
+            if (target / name).is_file() and not (prepared / name).exists():
+                shutil.copy2(target / name, prepared / name)
         if target.exists():
             target.replace(backup)
         try:

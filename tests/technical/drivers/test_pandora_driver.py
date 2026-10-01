@@ -35,7 +35,7 @@ ROOT = Path(__file__).resolve().parents[3]
 
 # Load the real parameter catalog and steering surface once for this module
 @pytest.fixture(scope="module")
-def tunesetup():
+def tunesetup(pandora_inputs):
     return load_tunesetup(cdir=ROOT, simdriver="PANDORA", name=campaign_source("tune-pandora-v0"))
 
 
@@ -1063,7 +1063,7 @@ def _assert_json_xml(path, card, bound):
 
 # Close the JSON-to-XML and wrapper loop through the real readers and writers at both range limits
 @pytest.mark.parametrize("bound", [0, 1])
-def test_json_xml_wrapper_roundtrip(tmp_path, bound):
+def test_json_xml_wrapper_roundtrip(tmp_path, bound, pandora_inputs):
     source = campaign_source("tune-pandora-v0")
     card = pyjson5.loads(Path(source).read_text())
     study = load_tunesetup(cdir=ROOT, simdriver="PANDORA", name=source)

@@ -37,6 +37,7 @@ ray[default,tune]==2.58.0
 opentelemetry-proto==1.44.0
 
 # Optimization
+ax-platform==1.2.4
 scikit-optimize==0.10.2
 optuna==4.9.0
 optunahub==0.4.1

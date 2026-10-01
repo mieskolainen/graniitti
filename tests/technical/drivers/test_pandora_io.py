@@ -21,7 +21,7 @@ from submit.lxplus import cluster, nodes
 
 # Load the production Pandora catalog before exercising runtime I/O failures
 @pytest.fixture
-def pandora_aux():
+def pandora_aux(pandora_inputs):
     return load_tunesetup(cdir=Path(__file__).resolve().parents[3], simdriver="PANDORA",
                          name=campaign_source("tune-pandora-v0")).aux_param_space
 

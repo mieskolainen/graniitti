@@ -81,19 +81,22 @@ def test_shell_launcher_requires_exact_prefix(tmp_path):
 
 # Activate the real installation from PATH or its explicit executable
 @pytest.mark.parametrize("discovery", ["path", "executable", "missing"])
-def test_lxplus_conda_discovery(discovery):
+def test_lxplus_conda_discovery(discovery, tmp_path):
     executable = os.environ.get("CONDA_EXE") or shutil.which("conda")
     assert executable, "Run launcher tests in the graniitti Conda environment"
     environment = {key: value for key, value in os.environ.items()
-                   if not key.startswith("CONDA_") and key != "GRANIITTI_ENV"}
+                   if not key.startswith(("CONDA_", "BASH_FUNC_", "ICETUNE_CONDA_"))
+                   and key not in {"GRANIITTI_ENV", "BASH_ENV", "ENV"}}
     environment["PATH"] = "/usr/bin:/bin"
     environment["ICETUNE_CONDA_ENV"] = sys.prefix
     if discovery == "path":
         environment["PATH"] = f"{Path(executable).parent}:{environment['PATH']}"
     elif discovery == "executable":
         environment["CONDA_EXE"] = executable
+    else:
+        environment["PATH"] = str(tmp_path)
     result = subprocess.run(
-        ["bash", "-c", "source install/setconda_lxplus.sh || exit $?\n"
+        [shutil.which("bash"), "-c", "source install/setconda_lxplus.sh || exit $?\n"
          'python -c \'import os, sys; assert sys.prefix == os.environ["ICETUNE_CONDA_ENV"]\''],
         cwd=ROOT, env=environment, capture_output=True, text=True)
     if discovery == "missing":

@@ -9,10 +9,12 @@ channels:
 
 dependencies:
   - conda-forge::python==3.12.13
+  - conda-forge::pip==26.2.1
   - conda-forge::cmake==4.4.2
   - conda-forge::make==4.4.1
   - conda-forge::ccache==4.13.6
   - conda-forge::clang-tools==22.1.8  # Provides clang-tidy required by WITH_TEST=ON
+  - conda-forge::clang-22==22.1.8     # Matching builtin headers for clang-tidy
   - conda-forge::gcc_linux-64==16.1.0
   - conda-forge::gxx_linux-64==16.1.0
   

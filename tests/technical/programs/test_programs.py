@@ -138,6 +138,7 @@ def test_benchmark_invalid_input(program, arguments, workdir):
 
 
 # Fit weighted HepMC events through both estimators with scaled response weights
+@pytest.mark.skipif(not (ROOT / "bin/fitharmonic").is_file(), reason="Requires a build with ROOT support")
 @pytest.mark.parametrize("estimator", ["ALGEBRAIC", "EML"])
 def test_harmonic_weighted_measurement(workdir, estimator):
     source = workdir / "pions.csv"

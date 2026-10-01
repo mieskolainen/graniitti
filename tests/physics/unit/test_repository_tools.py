@@ -34,6 +34,20 @@ ROOT = Path(__file__).resolve().parents[3]
 TOOLS = ROOT / "develop" / "tools"
 
 
+# Require supported measurements for the complete HERA derivation
+@pytest.fixture(scope="module")
+def hera_channels():
+    try:
+        return hera_couplings.channels()
+    except ValueError as error:
+        if str(error) in {
+            "Measurement unavailable: a supported HEPData JSON input is required",
+            "H1 covariance fit unavailable: a supported HEPData JSON covariance input is required",
+        }:
+            pytest.skip(str(error))
+        raise
+
+
 # Load the actual tool module with fresh module state for each test
 def load_tool(name):
     return importlib.reload(importlib.import_module(f"develop.tools.{name}"))
@@ -898,7 +912,9 @@ def test_dl_push_decline_general_card(tmp_path, push_args, reply):
 
 # Check one CLI confirmation updates real cards with the stated pole strength
 @pytest.mark.parametrize(("name", "shape"), [("DL_couplings", "preserve"), ("DL_couplings", "lowest"), ("HERA_couplings", None)])
-def test_coupling_push_residues(tmp_path, name, shape):
+def test_coupling_push_residues(tmp_path, name, shape, request):
+    if name == "HERA_couplings":
+        request.getfixturevalue("hera_channels")
     json5 = pytest.importorskip("pyjson5")
     tool = load_tool(name)
     tune_dir = tmp_path / "TUNE0"
@@ -1069,6 +1085,7 @@ def test_dl_exchange_phases():
 
 
 # Check the amplitude-level HERA fit point and J/psi steering rows
+@pytest.mark.usefixtures("hera_channels")
 def test_hera_jpsi_coupling_reconstructs_forward_xs():
     channel = next(row for row in hera_couplings.channels() if row.pdg == 443)
     residue = hera_model.load_proton(ROOT / "modeldata" / "TUNE0" / "GENERAL.json")
@@ -1158,7 +1175,7 @@ def test_hera_jpsi_coupling_reconstructs_forward_xs():
 @pytest.mark.parametrize("scale", [0.5, 1.5])
 def test_hera_norm_scale_relative_coupling_errors(scale):
     residue = hera_model.load_proton(ROOT / "modeldata" / "TUNE0" / "GENERAL.json")
-    channel = hera_couplings.channels()[0]
+    channel = hera_inputs.light()[0]
     original = hera_model.derive(channel, residue)
     changed = hera_model.derive(
         replace(channel, normalization_scale=scale * channel.normalization_scale), residue
@@ -1175,6 +1192,7 @@ def test_hera_norm_scale_relative_coupling_errors(scale):
 
 
 # Check elastic and dissociative HERA cross sections stay fixed when the SOFT proton vertex changes
+@pytest.mark.usefixtures("hera_channels")
 def test_hera_dissociation_norm():
     residue = hera_model.load_proton(ROOT / "modeldata" / "TUNE0" / "GENERAL.json")
     scaled = replace(residue, beam_residue_per_gev=1.5 * residue.beam_residue_per_gev)
@@ -1211,6 +1229,7 @@ def test_hera_dissociation_norm():
 # Check inherited proton transitions preserve forward ratios and the relative energy dependence
 @pytest.mark.parametrize("pdg", [100443, 553, 100553, 200553])
 @pytest.mark.parametrize("curve", [None, (11.0, 1.7)])
+@pytest.mark.usefixtures("hera_channels")
 def test_hera_dissociation_transfer(pdg, curve):
     residue = hera_model.load_proton(ROOT / "modeldata" / "TUNE0" / "GENERAL.json")
     channels = {channel.pdg: channel for channel in hera_couplings.channels()}
@@ -1248,7 +1267,7 @@ def test_hera_dissociation_transfer(pdg, curve):
 # Check every HERA production model stores only the physical coupling magnitude
 def test_hera_model_helicity_rows_physical_norm():
     physical = 0.42
-    channel = next(row for row in hera_couplings.channels() if row.pdg == 113)
+    channel = next(row for row in hera_inputs.light() if row.pdg == 113)
     models = hera_couplings.production(channel, physical)
 
     for model_name, first_pdg, second_pdg in channel.production_channels:
@@ -1259,6 +1278,7 @@ def test_hera_model_helicity_rows_physical_norm():
 
 
 # Check DL continuum and HERA transitions share one active bare proton scale
+@pytest.mark.usefixtures("hera_channels")
 def test_dl_hera_share_active_bare_pomeron_residue():
     dl = load_tool("DL_couplings")
     general_path = ROOT / "modeldata" / "TUNE0" / "GENERAL.json"
@@ -1365,6 +1385,7 @@ def test_hera_rho_slope():
 
 
 # Check the measured excited-state ratio and integrated bottomonium energy power with actual profiles
+@pytest.mark.usefixtures("hera_channels")
 def test_hera_excited_states():
     channels = {row.pdg: row for row in hera_couplings.channels()}
     residue = hera_model.load_proton(ROOT / "modeldata" / "TUNE0" / "GENERAL.json")
@@ -1429,6 +1450,7 @@ def test_hera_proton_profile(transition):
 
 
 # Check HERA push updates trajectory and coupling magnitudes without touching phases
+@pytest.mark.usefixtures("hera_channels")
 def test_hera_push_tune_card_comments_phases_format(tmp_path):
     json5 = pytest.importorskip("pyjson5")
     tune_dir = tmp_path / "TUNE0"
@@ -1506,18 +1528,12 @@ def test_hera_push_tune_card_comments_phases_format(tmp_path):
     assert original_phase in rho_path.read_text(encoding="utf-8")
 
 
-# Check declining the HERA CLI preview leaves every tune card byte identical
+# Reject unavailable measurements before the HERA CLI can modify any tune card
 @pytest.mark.parametrize("push_args", [(), ("--push",)])
-@pytest.mark.parametrize("reply", ["cancel\n", "", "preserve\nno\n", "lowest\nno\n"])
-def test_hera_push_decline_all_tune_cards(tmp_path, push_args, reply):
-    json5 = pytest.importorskip("pyjson5")
+def test_hera_missing_inputs_preserve_tune_cards(tmp_path, push_args):
     tune_dir = tmp_path / "TUNE0"
     shutil.copytree(ROOT / "modeldata" / "TUNE0", tune_dir)
     general_path = tune_dir / "GENERAL.json"
-    mutated = re.sub(r'("photoprod"\s*:\s*\[\s*\[\s*113\s*,\s*)[0-9.]+',
-                     r'\g<1>41.0', general_path.read_text(encoding="utf-8"), count=1)
-    assert json5.loads(mutated)["PARAM_REGGE"]["photoprod"][0][1] == pytest.approx(41.0)
-    general_path.write_text(mutated, encoding="utf-8")
     before = {path: path.read_bytes() for path in tune_dir.rglob("*.json")}
     command = [
         sys.executable,
@@ -1529,15 +1545,17 @@ def test_hera_push_decline_all_tune_cards(tmp_path, push_args, reply):
         str(general_path),
     ]
 
-    subprocess.run(
+    result = subprocess.run(
         command,
         cwd=ROOT,
-        input=reply,
-        check=True,
+        input="yes\n",
+        check=False,
         capture_output=True,
         text=True,
     )
 
+    assert result.returncode == 1
+    assert "Measurement unavailable: a supported HEPData JSON input is required" in result.stderr
     after = {path: path.read_bytes() for path in tune_dir.rglob("*.json")}
     assert after == before
 
@@ -2014,7 +2032,9 @@ def test_res_builder_rejects_xp_photon_scalar_j0():
         ),
     ],
 )
-def test_card_tool_output_is_valid_json(name, arguments, required_key):
+def test_card_tool_output_is_valid_json(name, arguments, required_key, request):
+    if name == "HERA_couplings":
+        request.getfixturevalue("hera_channels")
     payload = json.loads(run_tool(name, *arguments).stdout)
 
     assert required_key in payload
@@ -2108,6 +2128,11 @@ def test_hera_zeus_covariance():
         assert data["bins"][0] == pytest.approx(0.0, abs=1e-14)
         original = hepdata.read_table(data["source"])
         np.testing.assert_allclose(data["x"], [hepdata.number(row["x"][0]["value"]) for row in original["values"]])
+
+
+# Check the joint fit retains the measured ZEUS normalization constraints
+@pytest.mark.usefixtures("hera_channels")
+def test_hera_zeus_fit():
     fit = hera_fit.jpsi(hera_model.load_proton(ROOT / "modeldata/TUNE0/GENERAL.json"))
     assert {"zeus_muon", "zeus_electron"}.issubset(fit["nuisance_pulls"])
     assert not fit["energy_used_in_fit"]
@@ -2116,6 +2141,7 @@ def test_hera_zeus_covariance():
 
 
 # Transpose the original two-dimensional H1 measurement without duplicating or changing values
+@pytest.mark.usefixtures("hera_channels")
 def test_hera_h1_differential_reader():
     import numpy as np
 
@@ -2135,9 +2161,18 @@ def test_hera_h1_differential_reader():
         np.testing.assert_allclose(covariance, data["stat_cov"] + shift @ shift.T)
 
 
+# Reject unsupported covariance inputs instead of substituting independent errors
+@pytest.mark.parametrize("reader", [hera_fit.h1_spectra, hera_fit.h1_wt_spectra,
+                                    hera_fit.jpsi_energy, hera_fit.jpsi_dissociation])
+def test_hera_missing_covariance(reader):
+    with pytest.raises(ValueError, match="H1 covariance fit unavailable: a supported HEPData JSON covariance input is required"):
+        reader()
+
+
 
 
 # Reconstruct every fitted integrated cross section from the physical amplitude
+@pytest.mark.usefixtures("hera_channels")
 def test_hera_jpsi_energy_amplitude_normalization():
     import numpy as np
     from scipy.integrate import quad
@@ -2165,6 +2200,7 @@ def test_hera_jpsi_energy_amplitude_normalization():
 
 
 # Check the fitted histogram prediction against independent integration of the physical vertex
+@pytest.mark.usefixtures("hera_channels")
 def test_hera_jpsi_bin_integrals():
     import numpy as np
     from scipy.integrate import quad
@@ -2220,6 +2256,7 @@ def test_tool_json_finite():
 
 
 # Check derived energy curvature is inserted, updated and removed with the corresponding couplings
+@pytest.mark.usefixtures("hera_channels")
 def test_hera_push_curvature(tmp_path):
     json5 = pytest.importorskip('pyjson5')
     tune = tmp_path / 'tune'

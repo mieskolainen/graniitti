@@ -43,7 +43,7 @@ else:
 
 # Run the real transferred INIT shell and load its published point on the fit head
 # Reconstruction files are frozen as archive inputs but no reconstruction is requested
-def test_batch_init(tmp_path):
+def test_batch_init(tmp_path, pandora_inputs):
     environment = campaign.resolve(campaign.load_campaign_catalog(CAMPAIGN_DIR / "campaigns.yml"),
         campaign_name="tune-pandora-v0", run_name="PANDORA_V0", repo_dir=ROOT)
     tunesetup = load_tunesetup(cdir=ROOT, simdriver="PANDORA", name=campaign_source("tune-pandora-v0"),

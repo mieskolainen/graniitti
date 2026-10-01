@@ -31,6 +31,8 @@ def preflight_numba_runtime() -> None:
 
         typed_runtime = (Dict, dictimpl, typeddict)
         result = stable_l2_norm(np.asarray([3.0, 4.0], dtype=np.float64))
+    except TimeoutError:
+        raise
     except Exception as exc:
         raise RuntimeError(f"Numba runtime preflight failed: {exc}") from exc
     if any(symbol is None for symbol in typed_runtime):

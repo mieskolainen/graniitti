@@ -62,10 +62,9 @@ def test_photon_form(inputs, form):
 
 
 # Exercise the real icepack reader, unit conversion, quadrature and pp photon directions
-@pytest.mark.parametrize('index', [0, 1])
-def test_pp_spectrum(inputs, index):
+def test_pp_spectrum(inputs):
     proton, general, config, physics = inputs
-    spec = config['channels'][index]
+    spec = config['channels'][0]
     measurement = MeasurementPP(spec, proton, general, config['quadrature'], physics)
     row = next(row for row in general['PARAM_REGGE']['photoprod'] if row[0] == spec['pdg'])
     _, w0, slope, alpha0, ap = row
@@ -92,3 +91,10 @@ def test_pp_spectrum(inputs, index):
     free = Spectrum(spectrum.energy, rapidity, measurement.mass, replace(proton, beam_residue_per_gev=0),
                     general, config['quadrature'], physics)
     np.testing.assert_allclose(free.predict(1, slope, 4*(alpha0-1), ap, w0), born, rtol=1e-12)
+
+
+# Reject the unavailable Upsilon measurement before evaluating its pp spectrum
+def test_pp_missing_measurement(inputs):
+    proton, general, config, physics = inputs
+    with pytest.raises(ValueError, match="Measurement unavailable: a supported HEPData JSON input is required"):
+        MeasurementPP(config['channels'][1], proton, general, config['quadrature'], physics)

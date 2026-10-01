@@ -124,6 +124,7 @@ def test_con_cartesian_domains_normalize(phase, magnitude):
         parameters, continuum_model="MP", exchange="990", pair_key="[211,-211]", sector="direct",
         block={"basis": "crossed_auto_min_L", "g": [magnitude, phase]},
         mode="mag_phase_cartesian", relative_range=1.0, equal_gp_m=False, geometry="direct",
+        active_only=True, projections=None,
     )
     normalized = normalize_param_space(parameters)
     assert len(normalized) == (2 if magnitude > 0.0 else 0)

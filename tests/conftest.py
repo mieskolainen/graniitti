@@ -233,3 +233,17 @@ def tuning_context():
     settings = load_json_file(CAMPAIGN_DIR / "tunecards/graniitti/_defaults.json")
     with context(cdir=PROJECT_ROOT, model_path=PROJECT_ROOT / "modeldata/TUNE0", settings=settings):
         yield
+
+
+# Require the real external Pandora steering files for installation-dependent tests
+@pytest.fixture(scope="session")
+def pandora_inputs():
+    from submit import campaign_source
+
+    card = json5.loads(pathlib.Path(campaign_source("tune-pandora-v0")).read_text())
+    paths = card["param_paths"]
+    root = pathlib.Path(os.environ.get("PANDORA_PFA_DIR", paths["pandora_dir"])).expanduser()
+    for field in ("pandora_default_xml", "pandora_reco_py"):
+        path = root / paths[field]
+        if not path.is_file():
+            pytest.skip(f"Pandora tests require PANDORA_PFA_DIR with {paths[field]}")

@@ -134,7 +134,7 @@ TEST_CASE("Steering comments preserve JSON strings and token boundaries", "[MAux
 
   SECTION("comments do not concatenate numeric tokens") {
     { std::ofstream out(path); out << "{\"value\":1/* separator */2}"; }
-    CHECK_THROWS(nlohmann::json::parse(gra::aux::GetInputData(path)));
+    CHECK_THROWS([&] { return nlohmann::json::parse(gra::aux::GetInputData(path)); }());
   }
   SECTION("unterminated comments are fatal input errors") {
     { std::ofstream out(path); out << "{\"value\":1} /* unclosed"; }
@@ -258,7 +258,7 @@ TEST_CASE("Steering trailing commas cannot create missing values", "[MAux][input
   const auto path = OutputPath("empty_comma.json");
   for (const auto &input : {"{,}", "[, ]", "[/* comment */,]", "[1,,]"}) {
     { std::ofstream out(path); out << input; }
-    CHECK_THROWS(nlohmann::json::parse(gra::aux::GetInputData(path)));
+    CHECK_THROWS([&] { return nlohmann::json::parse(gra::aux::GetInputData(path)); }());
   }
 }
 

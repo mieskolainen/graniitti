@@ -127,7 +127,8 @@ echo ''
 
 printf '\033[33m%s\033[0m\n' '** System memory limits **'
 echo ''
-ulimit -s unlimited  # stack
-ulimit -u 65536      # num of processes
+# Keep existing limits when restricted runners do not permit changes
+ulimit -s unlimited 2>/dev/null || echo 'Stack limit unchanged (permission denied)'
+ulimit -u 65536 2>/dev/null || echo 'Process limit unchanged (permission denied)'
 ulimit -a
 echo ''

@@ -1679,7 +1679,7 @@ def test_ray_lxplus_head_loads_init_point(tmp_path, data_card):
 
 
 # Check the Pandora head restores its actual initialization record without reconstruction
-def test_lxplus_pandora_head_loads_init_point(tmp_path):
+def test_lxplus_pandora_head_loads_init_point(tmp_path, pandora_inputs):
     tunesetup = load_tunesetup(cdir=ROOT, simdriver="PANDORA", name=campaign_source("tune-pandora-v0"))
     driver = PandoraDriver()
     args = SimpleNamespace(cdir=str(tmp_path), obs_module="default", pickle_dump=False,
@@ -2320,6 +2320,7 @@ def test_lxplus_live_figures_final_checkpoint(tmp_path, monkeypatch):
     assert f"runs/icetune/run/results/{result_name}" not in names
     with tarfile.open(fileobj=io.BytesIO(first["figure_outputs"]), mode="r:gz") as archive:
         assert "figs/icetune/run/summary.json" in archive.getnames()
+        assert not {f"figs/icetune/run/{name}" for name in run_outputs.HISTORY_FIGURES} & set(archive.getnames())
     assert first["ray_resources"]["cluster"]["icetune_head"] == 1.0
     assert first["ray_resources_observed_at_unix"] == 122.0
     shared = tmp_path / "shared"
@@ -2372,6 +2373,9 @@ def test_lxplus_live_figures_final_checkpoint(tmp_path, monkeypatch):
         campaign_fingerprint=CAMPAIGN_FP,
     )
     assert (figure_output / "summary.json").is_file()
+    assert (figure_output / "cost_evolution.png").read_bytes() == (b"\x89PNG\r\n\x1a\nhistory-2")
+    run_outputs.restore_outputs(payload=first["figure_outputs"], shared_root=shared, run_name="run",
+                                campaign_fingerprint=CAMPAIGN_FP)
     assert (figure_output / "cost_evolution.png").read_bytes() == (b"\x89PNG\r\n\x1a\nhistory-2")
 
     (state / "status.json").write_text('{\n  "phase": "done"\n}\n', encoding="utf-8")
