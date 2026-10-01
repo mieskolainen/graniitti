@@ -1,0 +1,21 @@
+{
+  "driver": "graniitti",
+  "settings": {"$ref": "_defaults.json"},
+  "models": [
+    {
+      "model": "double",
+      "datasets": [
+        {"datacard": "icepack/ELASTIC/ISR_212895/dataset.json", "nevents": 200000, "weighted": true, "loopscreen": true, "xsmode": "reset", "elastic_model": "double", "integrator": "VEGAS"},
+        {"datacard": "icepack/ELASTIC/ISR_214689/dataset.json", "nevents": 200000, "weighted": true, "loopscreen": true, "xsmode": "reset", "elastic_model": "double", "integrator": "VEGAS"},
+        {"datacard": "icepack/ELASTIC/STAR_1791591/dataset.json", "nevents": 200000, "weighted": true, "loopscreen": true, "xsmode": "reset", "elastic_model": "double", "integrator": "VEGAS"},
+        {"datacard": "icepack/ELASTIC/D0_1117021/dataset.json", "nevents": 200000, "weighted": true, "loopscreen": true, "xsmode": "reset", "elastic_model": "double", "integrator": "VEGAS"},
+        {"datacard": "icepack/ELASTIC/TOTEM_922651/dataset.json", "nevents": 200000, "weighted": true, "loopscreen": true, "xsmode": "reset", "elastic_model": "double", "integrator": "VEGAS"},
+        {"datacard": "icepack/ELASTIC/TOTEM_1220862/dataset.json", "nevents": 200000, "weighted": true, "loopscreen": true, "xsmode": "reset", "elastic_model": "double", "integrator": "VEGAS"},
+        {"datacard": "icepack/ELASTIC/TOTEM_1489188/dataset.json", "nevents": 200000, "weighted": true, "loopscreen": true, "xsmode": "reset", "elastic_model": "double", "integrator": "VEGAS"},
+        {"datacard": "icepack/ELASTIC/TOTEM_1710340/dataset.json", "nevents": 200000, "weighted": true, "loopscreen": true, "xsmode": "reset", "elastic_model": "double", "integrator": "VEGAS"}
+      ],
+      "pFF": "DPOW",
+      "tune_reggeons": true
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+// Two pion resonances + continuum amplitude comparison
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "mp_res_con",
+      "label": "GRANIITTI MP[RES+CON]",
+      "gencard": "../_common/gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "MP[RES+CON]<F> -> pi+ pi- @RES{f0_980:1}"}
+    },
+    {
+      "name": "xp_res_con",
+      "label": "GRANIITTI XP[RES+CON]",
+      "gencard": "../_common/gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "XP[RES+CON]<F> -> pi+ pi- @RES{f0_980:1}"}
+    },
+    {
+      "name": "gp_res_con",
+      "label": "GRANIITTI GP[RES+CON]",
+      "gencard": "../_common/gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "GP[RES+CON]<F> -> pi+ pi- @RES{f0_980:1}"}
+    },
+    {
+      "name": "tp_res_con",
+      "label": "GRANIITTI TP[RES+CON]",
+      "gencard": "../_common/gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "TP[RES+CON]<F> -> pi+ pi- @RES{f0_980:1}"}
+    }
+  ],
+  "plot": {"normalization": "cross_section", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit":  {"normalization": "cross_section"},
+  "sets": [
+    {
+      "name": "Two pion processes",
+      "title": "Generation: $M_X<4$ GeV, $|y_X|<2.5$",
+      "plotname": "RES+CON_all_pipi",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SOFTCEP/processes/_common/obs.py",
+      "hist": [
+        {"obs": "M"},
+        {"obs": "Rap"},
+        {"obs": "Pt"},
+        {"obs": "t1"},
+        {"obs": "t2"},
+        {"obs": "Abs_t1t2"},
+        {"obs": "dPhi_pp"},
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"}
+      ]
+    }
+  ]
+}

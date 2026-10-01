@@ -1,0 +1,56 @@
+// VMD EPA flux with sigma_L/sigma_T = Q2/m_rho^2, calculated from the cuts and PDG masses by _common/flux.py
+// TP[PHOTO] retains the configured Q2 validity limit, no model changes or acceptance corrections are hidden
+// [REFERENCE: ZEUS, hep-ex/9507011, Sections 7.2 and 7.4, Figure 10]
+// The original degree coordinates describe d sigma/d phi per radian, convert only the coordinate
+{
+  "active": true,
+  "type": "HEPDATA_397423",
+  "reader": "./reader.py",
+  "datapath": "HEPData/PHOTOPROD/HEPData-ins397423-v1-json/",
+  "samples": [
+    {
+      "name": "total",
+      "label": "TP[PHOTO] + $\\rho+\\omega$",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[PHOTO]<F> -> pi+ pi- @RES{rho_770:1,omega_782:1}",
+        "SCATTERING.RES": ["rho_770","omega_782"]
+      }
+    },
+    {
+      "name": "gp",
+      "label": "GP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "GP[RES]<F> -> pi+ pi- @RES{rho_770:1}","SCATTERING.RES": ["rho_770"]}
+    }
+  ],
+  "plot": {
+    "normalization": "cross_section",
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "errorbar",
+    "unit": "ub"
+  },
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "loopscreen": 0,
+    "nevents": 50000,
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "measurement": {"$ref": "../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "ZEUS pion helicity angles",
+      "plotname": "ZEUS_397423_angles",
+      "title": "$60<W_{\\gamma p}<80$ GeV, $Q^2<4$ GeV$^2$, $|t|<0.5$ GeV$^2$, $0.55<M_{\\pi\\pi}<1$ GeV",
+      "pid": [211,-211],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"file": "Table4.json","obs": "costheta_HX","scale": 1e-06},
+        {"file": "Table5.json","obs": "phi_HX","scale": 1e-06}
+      ]
+    }
+  ]
+}

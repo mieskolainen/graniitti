@@ -1,0 +1,87 @@
+// Physical scalar diphoton decay with matched F/C fiducial phase space
+// Pure diphoton Dirac model: Gamma_total = Gamma_gammagamma = 10 GeV
+// The monopole mass solves the Coulombic diphoton coupling for this width, no measured branching fraction is claimed
+// [REFERENCE: arXiv:0809.0272, Eqs. (5) and (6)]
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "F",
+      "label": "monopolium gammagamma F",
+      "gencard": "icepack/GAMMA/continuum/_common/gencard_kt.json",
+      "parameters": {
+        "GENERIC.INTEGRATOR": "VEGAS",
+        "GENERIC.RNDSEED": 24681,
+        "SCATTERING.PROCESS": "yy[monopolium(0)]<F> -> gamma gamma @PDG[881]{M:527.57673,W:10.0} @PDG[882]{M:263.8218030240,W:0}",
+        "GENCUTS.<F>.M": [500.0, 600.0],
+        "GENCUTS.<F>.Rap": [-2.5, 2.5],
+        "FIDCUTS.active": true,
+        "FIDCUTS.CENTRAL[\"*\"].Eta": [-2.5, 2.5],
+        "FIDCUTS.CENTRAL[\"*\"].Rap": [-2.5, 2.5],
+        "FIDCUTS.CENTRAL[\"*\"].Pt": [0.15, 100000.0],
+        "FIDCUTS.CENTRAL[\"SYSTEM\"].M": [500.0, 600.0],
+        "FIDCUTS.CENTRAL[\"SYSTEM\"].Rap": [-2.5, 2.5],
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": true,
+        "DECAYS.json:[\"881\"]": {"[22,22]": {"BR": 1.0, "basis": "alpha_ls", "alpha_ls": [[0, 0, 1.0, 0.0]], "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, "CP": [true, true], "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}}},
+        "GENERAL.json:PARAM_MONOPOLE.coupling": "dirac"
+      }
+    },
+    {
+      "name": "C",
+      "label": "monopolium gammagamma C",
+      "gencard": "icepack/GAMMA/continuum/_common/gencard_kt.json",
+      "parameters": {
+        "GENERIC.INTEGRATOR": "VEGAS",
+        "GENERIC.RNDSEED": 32600,
+        "SCATTERING.PROCESS": "yy[monopolium(0)]<C> -> gamma gamma @PDG[881]{M:527.57673,W:10.0} @PDG[882]{M:263.8218030240,W:0}",
+        "GENCUTS.<C>.M": [500.0, 600.0],
+        "GENCUTS.<C>.Rap": [-2.5, 2.5],
+        "FIDCUTS.active": true,
+        "FIDCUTS.CENTRAL[\"*\"].Eta": [-2.5, 2.5],
+        "FIDCUTS.CENTRAL[\"*\"].Rap": [-2.5, 2.5],
+        "FIDCUTS.CENTRAL[\"*\"].Pt": [0.15, 100000.0],
+        "FIDCUTS.CENTRAL[\"SYSTEM\"].M": [500.0, 600.0],
+        "FIDCUTS.CENTRAL[\"SYSTEM\"].Rap": [-2.5, 2.5],
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": true,
+        "DECAYS.json:[\"881\"]": {"[22,22]": {"BR": 1.0, "basis": "alpha_ls", "alpha_ls": [[0, 0, 1.0, 0.0]], "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, "CP": [true, true], "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}}},
+        "GENERAL.json:PARAM_MONOPOLE.coupling": "dirac"
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "cross_section",
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "hist"
+  },
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "nevents": 50000,
+    "mc_reference": "F",
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "max_abs_integral_pull": 5.0,
+    "max_chi2_ndf": 3.0,
+    "max_shape_l1": 0.3,
+    "max_integral_factor": 1.12,
+    "min_mc_effective_events": 3000
+  },
+  "sets": [
+    {
+      "name": "monopolium_yy",
+      "title": "$|\\eta_{\\gamma}|<2.5$, $p_{T,\\gamma}>0.15$ GeV, $|y_{\\gamma}|<2.5$, $500<M_X<600$ GeV, $|y_X|<2.5$",
+      "data": false,
+      "pid": [22, 22],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "../_common/obs_monopolium.py",
+      "hist": [
+        {"obs": "cross_section"},
+        {"obs": "M"},
+        {"obs": "Rap"},
+        {"obs": "dPhi_pp"}
+      ]
+    }
+  ]
+}

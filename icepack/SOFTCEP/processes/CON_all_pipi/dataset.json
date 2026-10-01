@@ -1,0 +1,55 @@
+// Two pion continuum amplitude comparison
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "mp_con",
+      "label": "GRANIITTI MP[CON]",
+      "gencard": "../_common/gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "MP[CON]<F> -> pi+ pi-"}
+    },
+    {
+      "name": "xp_con",
+      "label": "GRANIITTI XP[CON]",
+      "gencard": "../_common/gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "XP[CON]<F> -> pi+ pi-"}
+    },
+    {
+      "name": "gp_con",
+      "label": "GRANIITTI GP[CON]",
+      "gencard": "../_common/gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "GP[CON]<F> -> pi+ pi-"}
+    },
+    {
+      "name": "tp_con",
+      "label": "GRANIITTI TP[CON]",
+      "gencard": "../_common/gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "TP[CON]<F> -> pi+ pi-"}
+    }
+  ],
+  "plot": {"normalization": "cross_section", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "sets": [
+    {
+      "name": "Two pion continuum amplitudes",
+      "title": "Generation: $M_X<4$ GeV, $|y_X|<2.5$",
+      "plotname": "CON_all_pipi",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SOFTCEP/processes/_common/obs.py",
+      "hist": [
+        {"obs": "M"},
+        {"obs": "Rap"},
+        {"obs": "Pt"},
+        {"obs": "t1"},
+        {"obs": "t2"},
+        {"obs": "Abs_t1t2"},
+        {"obs": "dPhi_pp"},
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+// ATLAS 13 TeV photon-induced WW fiducial cross section
+{
+  "active": false,
+  // Comparison inactive until an original HEPData table is available
+  "type": "INTEGRATED_LITERATURE",
+  "reader": "icepack/_common/reference_reader.py",
+  "datapath": "tests/references",
+  "samples": [
+    {
+      "name": "elastic",
+      "label": "GRANIITTI $k_T$-EPA $\\gamma\\gamma \\to W^+W^-$ (EL)",
+      "gencard": "./gencard_elastic.json",
+      "scale": 2.0,
+      "parameters": {
+        "SCATTERING.NSTARS": 0
+      },
+      "fragmentation": {
+        "engine": "pythia",
+        "card": "./pythia.cmnd",
+        "mode": "fragment",
+        "seed": 201001,
+        "attempts": 50
+      }
+    },
+    {
+      "name": "single",
+      "label": "GRANIITTI $k_T$-EPA $\\gamma\\gamma \\to W^+W^-$ (SD)",
+      "gencard": "./gencard_elastic.json",
+      "scale": 2.0,
+      "parameters": {
+        "SCATTERING.NSTARS": 1,
+        "SCATTERING.BEAMFRAG": "diquark"
+      },
+      "fragmentation": {
+        "engine": "pythia",
+        "card": "./pythia.cmnd",
+        "mode": "fragment",
+        "seed": 201002,
+        "attempts": 50
+      }
+    },
+    {
+      "name": "double",
+      "label": "GRANIITTI $k_T$-EPA $\\gamma\\gamma \\to W^+W^-$ (DD)",
+      "gencard": "./gencard_elastic.json",
+      "scale": 2.0,
+      "parameters": {
+        "SCATTERING.NSTARS": 2,
+        "SCATTERING.BEAMFRAG": "diquark"
+      },
+      "fragmentation": {
+        "engine": "pythia",
+        "card": "./pythia.cmnd",
+        "mode": "fragment",
+        "seed": 201003,
+        "attempts": 50
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "cross_section",
+    "ratio_uncertainty": "combined",
+    "stack": true,
+    "data_style": "hist"
+  },
+  "fit": {
+    "normalization": "cross_section"
+  },
+  "validation": {
+    "nevents": 30000,
+    "require_comparison": true,
+    "require_differential_comparison": false,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "ATLAS $pp$ 13 TeV ($e^\\pm\\mu^\\mp\\nu\\nu$)",
+      "plotname": "ATLAS_13TeV_WW_emu",
+      "title": "$|\\eta_\\ell|<2.5$, $p_{T,1}\\geq27$ GeV, $p_{T,2}>20$ GeV, $M_{e\\mu}>20$ GeV, $p_{T,e\\mu}>30$ GeV, $\\Delta R_{\\ell\\gamma}<0.1$, no extra track with $p_T>0.5$ GeV and $|\\eta|<2.5$",
+      "samples": ["elastic", "single", "double"],
+      "pid": [-11, 12, 13, -14],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "lhc_tevatron_rhic.json",
+          "file_filter": "ATLAS21_WW_emu",
+          "obs": "cross_section",
+          "differential": false,
+          "scale": 1e-15,
+          "unit": "fb"
+        }
+      ]
+    }
+  ]
+}

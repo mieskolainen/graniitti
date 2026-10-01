@@ -1,0 +1,140 @@
+// Process steering file for rho0 rho0 -> 4pi <C>/<F> phase-space comparison
+// JSON(5) + single line/multiline comments allowed, trailing comma allowed
+//
+// The <C> and <F> generation cuts are paired with fiducial cuts so that
+// both phase-space constructions are in the same accepted region
+//
+// mikael.mieskolainen@cern.ch, 2026
+{
+
+  // ----------------------------------------------------------------------
+  // Generic setup
+
+  "GENERIC" : {
+
+    "OUTPUT"  : "proc_rhorho_compare", // Output filename
+    "FORMAT"  : "hepmc3",              // hepmc3, hepmc2, hepevt
+    "CORES"   : 0,                     // Number of CPU threads (0 for automatic)
+    "NEVENTS" : 30000,                // Number of events
+    "INTEGRATOR" : "VEGAS",        // "VEGAS" (default), "NEUROJAC", "FLAT" (for debug)
+    "WEIGHTED": false,                 // Weighted events (default false)
+    "MODELPARAM" : "TUNE0",             // General model tune
+    "HIST"    : 0,                     // On-the-flight histograms (0 = off,1,2)
+    "RNDSEED" : 12468                  // Random seed (uint)
+  },
+
+  // ----------------------------------------------------------------------
+  // Scattering setup
+
+  "SCATTERING" : {
+
+
+    "BEAM" :    ["p+","p+"],            // Beam PDG-ID / Name
+    "ENERGY" :  [6500, 6500],           // Beam energy in the lab (GeV)
+    "PROCESS" : "GP[RES]<F> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-} @RES{f0_1710:1} @R[f0_1710]{M:2.5,W:0.15}", // Synthetic pole for the rho rho comparison
+    "RES" :     ["f0_1710"],
+    "LOOPSCREEN" : false,                 // Initial state event-by-event screening loop
+    "NSTARS"  : 0,  // Forward dissociation (0 = elastic, 1 = single, 2 = double)
+    "BEAMFRAG": "none",  // Forward dissociation particle production ('none', 'fewbody', 'cylinder', 'diquark')
+    "LHAPDF"  : "NNPDF31_lo_as_0118"             // LHAPDF parton distribution set
+  },
+
+  // ----------------------------------------------------------------------
+  // Monte Carlo integrator setup
+
+  "INTEGRATOR" : {
+
+    // Integration targets after adaptation
+    "min_samples" : 1000000,
+    "max_samples" : 100000000,
+    "precision"   : 0.01,
+
+    // Loop integration
+    "LOOPSCREEN" : {
+      "extra_kt" : 1,  // Extra kT points relative to NUMERICS.json default
+      "extra_phi" : 1   // Extra phi points relative to NUMERICS.json default
+    },
+
+    // VEGAS integrator
+    "VEGAS" : {
+
+      "bins" : 128,      // Maximum number of bins per dimension (NOTE: EVEN NUMBER)
+      "alpha" : 1.25,    // Grid adaptation damping exponent
+      "rounds" : 8,      // Number of adaptation iterations
+      "ncall" : 40000,   // Number of function calls per iteration
+
+      "debug" : -1       // Debug output (default -1)
+    },
+
+    // NEUROJAC integrator
+    "NEUROJAC" : {},
+
+    // FLAT integrator
+    "FLAT" : {},
+
+    // Unweighting max weight
+    "max_w_value"  : null  // user can set here (default automatic)
+  },
+
+  // ----------------------------------------------------------------------
+  // Generation cuts
+
+  "GENCUTS" : {
+
+    "<C>" : {
+      "M" : [0.0, 4.0],
+      "Rap" : [-0.9, 0.9],             // Rapidity boundaries of the generated rho branches (<C> class)
+    },
+    "<F>" : {
+      "Rap" : [-0.9, 0.9],             // Rapidity boundaries of the central system (<F> class)
+      "M"   : [0.0, 4.0]               // Mass boundaries of the central system (<F> class)
+    },
+    "<Q>" : {
+      "Xi" : [0.0, 0.05]               // Invariant scale M^2/s (forward excitation)
+    }
+  },
+
+  // ----------------------------------------------------------------------
+  // [Quasi]-fiducial cuts (AND between all the cuts)
+
+  "FIDCUTS" : {
+
+    "active" : true,
+
+    // "*" for any final state
+    // "SYSTEM" for the full central system
+    // "[22]" for gammas
+    // "[211,-211]" for a pion pair etc
+
+    "CENTRAL" : {
+
+      // Any central system final states
+      "*" : {
+
+        "Eta"  : [-5.5, 5.5],            // Pseudorapidity accepted by the bundled inclusive cuts
+        "Rap"  : [-0.9, 0.9],            // Rapidity, paired with <C> generation Rap
+        "Pt"   : [0.15, 100000.0],       // Transverse momentum
+        //"Et"   : [0.0, 100000.0]         // Transverse energy
+      },
+
+      // Central system
+      "SYSTEM" : {
+
+        "M"    : [0.0, 4.0],             // Mass, paired with <F> generation M
+        "Rap"  : [-0.9, 0.9],            // Rapidity, paired with <F> generation Rap
+        //"Pt"   : [0.0, 100000.0]         // Transverse momentum
+      },
+    },
+
+    // Forward system
+    "FORWARD" : {
+
+      //"M"    : [0.0, 100000.0],        // Mass
+      //"t"    : [0.0, 100000.0],        // Forward protons/N* Mandelstam t (absolute value) (GeV^2)
+    },
+
+    // Custom user cuts (default false, otherwise identifier ID)
+    "USERCUTS" : false,
+  }
+
+}

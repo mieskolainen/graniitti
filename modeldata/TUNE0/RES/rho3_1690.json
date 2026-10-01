@@ -1,0 +1,87 @@
+// rho3(1690) resonance, effective TP photoproduction fitted to H1 pion pairs
+
+{
+  "PARAM_RES": {
+    "name": "RES_rho3_1690",
+    "PDG": 117,
+    "spinX2": 6,
+    "P": -1,
+    "C": -1,
+    
+    "MODELS": {
+      "GP": {
+        "mass": 1.688,
+        "width": 0.161,
+        "BW": "fixed-width",
+        "phi": 0.0,
+        "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5000, "n": 1.0000},
+        "FF_prod": {"type": "gaussian", "norm": "pole", "Lambda2": 2.0},
+        "[22,990]": {
+          "basis": "helicity",
+          "CP": [true,true],
+          "helicity": [[-1,0,0.05163977794943224,0.0]]
+        }
+      },
+      "MP": {
+        "mass": 1.688,
+        "width": 0.161,
+        "BW": "fixed-width",
+        "phi": 0.0,
+        "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5000, "n": 1.0000},
+        "FF_prod": {"type": "gaussian", "norm": "pole", "Lambda2": 2.0},
+        "[22,991]": {
+          "basis": "auto_min_L", // 'auto_min_L', 'auto_min_S', 'auto_equal_ls', 'auto_equal_helicity', 'g_ls', 'helicity'
+          "Lambda": 1.0000,
+          "polarization": {
+            "mode": "a_Jz",
+            "a_Jz": [[0,1.0,0.0]],
+            "rho_mag":
+              [[0.0,0.0,0.0,0.0,0.0,0.0,0.0],
+               [0.0,0.0,0.0,0.0,0.0,0.0,0.0],
+               [0.0,0.0,0.0,0.0,0.0,0.0,0.0],
+               [0.0,0.0,0.0,1.0,0.0,0.0,0.0],
+               [0.0,0.0,0.0,0.0,0.0,0.0,0.0],
+               [0.0,0.0,0.0,0.0,0.0,0.0,0.0],
+               [0.0,0.0,0.0,0.0,0.0,0.0,0.0]],
+            "rho_phase":
+              [[0.0,0.0,0.0,0.0,0.0,0.0,0.0],
+               [0.0,0.0,0.0,0.0,0.0,0.0,0.0],
+               [0.0,0.0,0.0,0.0,0.0,0.0,0.0],
+               [0.0,0.0,0.0,0.0,0.0,0.0,0.0],
+               [0.0,0.0,0.0,0.0,0.0,0.0,0.0],
+               [0.0,0.0,0.0,0.0,0.0,0.0,0.0],
+               [0.0,0.0,0.0,0.0,0.0,0.0,0.0]],
+            "random_rho": false
+          },
+          "CP": [true,true],
+          "g": [0.0516397779494322,0.0]
+        }
+      },
+      "XP": {
+        "mass": 1.688,
+        "width": 0.161,
+        "BW": "fixed-width",
+        "phi": 0.0,
+        "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5000, "n": 1.0000},
+        "FF_prod": {"type": "gaussian", "norm": "pole", "Lambda2": 2.0},
+        "[22,991]": {
+          "basis": "helicity",
+          "Lambda": 1.0,
+          "CP": [true,true],
+          "helicity": [[-1,0,0.0516397779494322,0.0]]
+        }
+      },
+      "TP": {
+        "mass": 1.688,
+        "width": 0.161,
+        "phi": -2.7154,
+        "FF_transfer": {"type": "none"},
+        "FF_prod": {"type": "gaussian", "norm": "pole", "Lambda2": 0.487},
+        "[22,995]": {
+          // Effective dR F P coupling in GeV^-1, independent of spin-one VMD
+          "g_tensor": [1.0876]
+        }
+      }
+    }
+  }
+}

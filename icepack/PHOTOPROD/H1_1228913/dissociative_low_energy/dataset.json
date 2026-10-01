@@ -1,0 +1,101 @@
+// Published gamma p cross sections
+{
+  "active": true,
+  "type": "HEPDATA_1228913",
+  "reader": "icepack/PHOTOPROD/_common/diss_reader.py",
+  "datapath": "HEPData/PHOTOPROD/HEPData-ins1228913-v1-json/",
+  "samples": [
+    {
+      "name": "mp_res",
+      "label": "GRANIITTI MP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> mu+ mu- @RES{jpsi:1}"
+      }
+    },
+    {
+      "name": "xp_res",
+      "label": "GRANIITTI XP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "XP[RES]<F> -> mu+ mu- @RES{jpsi:1}"
+      }
+    },
+    {
+      "name": "gp_res",
+      "label": "GRANIITTI GP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "GP[RES]<F> -> mu+ mu- @RES{jpsi:1}"
+      }
+    },
+    {
+      "name": "jmrt",
+      "label": "GRANIITTI ygg[$J/\\psi$]",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "ygg[jpsi]<F> -> mu+ mu-"
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "cross_section",
+    "unit": "nb",
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "errorbar"
+  },
+  "fit": {
+    "normalization": "cross_section"
+  },
+  "validation": {
+    "loopscreen": 0,
+    "nevents": 100000,
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "H1 $e^+p \\to e^+J/\\psi Y$, $M_Y<10$ GeV",
+      "title": "$25<W_{\\gamma p}<80$ GeV, $Q^2<2.5$ GeV$^2$, $|t|<5$ GeV$^2$, $3<M_{\\mu\\mu}<3.2$ GeV, $m_p<M_Y<10$ GeV",
+      "pid": [-13, 13],
+      "cuts": "./cuts_t.py",
+      "obs": "../../_common/diss_obs.py",
+      "plotname": "H1_1228913_dissociative_low_energy_abs_t",
+      // BR_JPSI_MUMU is the PDG value for J/psi -> mu+ mu-
+      // 1 / BR_JPSI_MUMU = 1 / 0.05961
+      "mc_scale": 16.7757087736957,
+      "hist": [
+        {
+          "file": "Table8.json", "flux": "Table4.json",
+          "obs": "abs_t",
+          "scale": 1e-09,
+          "fitw": 1.0
+        }
+      ]
+    },
+    {
+      "name": "H1 $e^+p \\to e^+J/\\psi Y$, $M_Y<10$ GeV",
+      "title": "$25<W_{\\gamma p}<80$ GeV, $Q^2<2.5$ GeV$^2$, $|t|<8$ GeV$^2$, $3<M_{\\mu\\mu}<3.2$ GeV, $m_p<M_Y<10$ GeV",
+      "pid": [-13, 13],
+      "cuts": "./cuts.py",
+      "obs": "../../_common/diss_obs.py",
+      "plotname": "H1_1228913_dissociative_low_energy_w",
+      // BR_JPSI_MUMU is the PDG value for J/psi -> mu+ mu-
+      // 1 / BR_JPSI_MUMU = 1 / 0.05961
+      "mc_scale": 16.7757087736957,
+      "hist": [
+        {
+          "file": "Table4.json",
+          "obs": "w",
+          "scale": 1e-09,
+          "fitw": 1.0,
+          "file_filter": "W",
+          "differential": false
+        }
+      ]
+    }
+  ]
+}

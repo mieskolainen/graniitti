@@ -1,0 +1,21 @@
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {"name": "ipip_jj", "label": "GRANIITTI IPIP[jj]", "gencard": "./gencard_IPIP_jj.json", "parameters": {}}
+  ],
+  "plot": {"normalization": "cross_section", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {"nevents": 30000},
+  "sets": [
+    {
+      "name": "Hard diffractive parton dijets",
+      "title": "$|\\eta_{h}|<5$, $p_{T,h}>10$ GeV",
+      "data": false,
+      "pid": [1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 21],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [{"obs": "M"}, {"obs": "Rap"}]
+    }
+  ]
+}

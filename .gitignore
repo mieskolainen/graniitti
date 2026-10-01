@@ -1,43 +1,91 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+*.egg-info/
+/python/build/
 *.py[cod]
+*._old
 .pytest_cache
+/dev
+
+/bin
+/build
+/build-test
 /tmp
 
+/output
+/vgrid
+/runs
+/figs
+/eikonal
+/nuclear
+/sudakov
+/testfigs
+/tex
+
+AGENTS.md
+agents.md
+.aws
+.agents
+.claude
+.codex
+.pytest_cache
+.ruff_cache
 scan.*
 scan_screening*
+dev_*
 
+# Local settings and credentials
+.env
+.env.*
+.vscode/
+.DS_Store
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_dsa
+id_ecdsa
+id_ed25519
 
 # Tuning
-TUNE-icetune-*
+TUNE_icetune*
 TUNE_DEV*
 
-# Output
+# HTCondor transient files in the repository root
+/null
+/*.cc
+
+# Event output
+*.root
 *.lhe
 *.hepevt
 *.hepmc2
 *.hepmc3
 *.hfast
 *.vgrid
-testfigs
-
 
 # Compiler
 *.o
 *.d
+tests/external/pythia/pythia_lhe_hadronize
+tests/physics/studies/pileup_kron/hepmc3_to_hepmc2
+tests/physics/studies/pileup_kron/pythia_hepmc3
 
 # Text
+*.log
+*.err
+*.out
 *.raw
 *.pdf
 *.tex
 *.ascii
-*.out
 *.svg
-*.yoda
 
 # Profiler
 *.profile
 callgrind*
 
 # Rivet
+.local/
 rivetplots*

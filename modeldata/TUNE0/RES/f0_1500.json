@@ -1,0 +1,80 @@
+// Parametric resonance
+
+{
+  "PARAM_RES": {
+    "name": "RES_f0_1500",
+    "PDG": 9030221,
+    "spinX2": 0,
+    "P": 1,
+    "C": 1,
+
+    "MODELS": {
+      "GP": {
+        "mass": 1.522,
+        "width": 0.108,
+        "BW": "kinematic-width",
+        "phi": -1.636300655910342,
+        "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.30811445584319175, "n": 1.0000},
+        "FF_prod": {"type": "gaussian", "norm": "pole", "Lambda2": 1.3767831352197242},
+        "[990,990]": {
+          "basis": "g_ls",
+          "Lambda": 1.0000,
+          "CP": [true,true],
+          "g_ls":
+            [[0,0,0.23373329573759477,0.0],
+             [2,2,0.1628273915604597,0.0],
+             [4,4,0.1308726104566789,-3.141592653589793]]
+        }
+      },
+      "MP": {
+        "mass": 1.522,
+        "width": 0.108,
+        "BW": "kinematic-width",
+        "phi": 1.6963,
+        "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 12.9283, "n": 1.0000},
+        "FF_prod": {"type": "gaussian", "norm": "pole", "Lambda2": 10.5565},
+        "[995,995]": {
+          "basis": "auto_min_L",
+          "Lambda": 1.0000,
+          "polarization": {
+            "mode": "a_Jz",
+            "a_Jz": [[0,1.0000,0.0000]],
+            "rho_mag": [[1.0000]],
+            "rho_phase": [[0.0000]],
+            "random_rho": false
+          },
+          "CP": [true,true],
+          "g": [0.2500,0.0000]
+        }
+      },
+      "XP": {
+        "mass": 1.522,
+        "width": 0.108,
+        "BW": "kinematic-width",
+        "phi": -1.8530,
+        "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 2.4818, "n": 1.0000},
+        "FF_prod": {"type": "gaussian", "norm": "pole", "Lambda2": 3.4814},
+        "[995,995]": {
+          "basis": "g_ls",
+          "Lambda": 1.0000,
+          "CP": [true,true],
+          "g_ls":
+            [[0,0,0.9128,0.0000],
+             [2,2,5.5026,0.0000],
+             [4,4,1.9844,0.0000]]
+        }
+      },
+      "TP": {
+        "mass": 1.522,
+        "width": 0.108,
+        "phi": 0.0,
+        "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5000, "n": 1.0000},
+        "FF_prod":     {"type": "gaussian", "norm": "pole", "Lambda2": 1.0000},
+        "[995,995]": {
+          // [REFERENCE: arXiv: 1804.04706, Table II]
+          "g_tensor": [0.3500,1.7100]
+        }
+      }
+    }
+  }
+}

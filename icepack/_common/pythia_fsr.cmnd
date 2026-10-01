@@ -1,0 +1,10 @@
+! QED lepton FSR with the forward remnant shower and decays
+ParticleDecays:limitTau0 = on
+ParticleDecays:tau0Max = 10.0
+PartonLevel:ISR = on
+PartonLevel:FSR = on
+TimeShower:QEDshowerByL = on
+SpaceShower:pTmaxMatch = 1
+TimeShower:pTmaxMatch = 1
+PDF:pSet = LHAPDF6:NNPDF31_lo_as_0118
+PDF:PomSet = 13

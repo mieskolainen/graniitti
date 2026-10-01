@@ -1,0 +1,185 @@
+// Measured UPC rapidity cross sections
+{
+  "active": true,
+  "type": "HEPDATA_2666011",
+  "reader": "./reader.py",
+  "datapath": "HEPData/UPC/HEPData-ins2666011-v1-json/",
+  "samples": [
+    {
+      "name": "inclusive",
+      "label": "GRANIITTI GP[RES] (LTA)",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "GENERIC.RNDSEED": 2666011
+      }
+    },
+    {
+      "name": "inclusive_forward",
+      "label": "GRANIITTI GP[RES] (LTA)",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "GENERIC.RNDSEED": 2666012,
+        // Forward signal mass interval [REFERENCE: arXiv:2305.19060, Sec. 5.1]
+        "GENCUTS.<F>.M": [2.85,3.35],
+        "FIDCUTS.CENTRAL.SYSTEM.M": [2.85,3.35],
+        "GENCUTS.<F>.Rap": [2.5,4.0],
+        "FIDCUTS.CENTRAL.SYSTEM.Rap": [2.5,4.0]
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "cross_section",
+    "unit": "mb",
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "errorbar"
+  },
+  "fit": {
+    "normalization": "cross_section"
+  },
+  "validation": {
+    "loopscreen": 1,
+    "nevents": 100000,
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "ALICE $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($J/\\psi$, coherent, 0n0n, central)",
+      "title": "$-0.2<y<0.8$",
+      "plot_group": "ALICE_5p02TeV_coherent_Jpsi_0n0n_central",
+      "sample": "inclusive",
+      // BR_JPSI_MUMU is the PDG value for J/psi -> mu+ mu-
+      // 1 / BR_JPSI_MUMU = 1 / 0.05961
+      "mc_scale": 16.7757087736957,
+      "pid":
+          [-13, 13],
+      "cuts": "./cuts_0n0n.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table1.json",
+          "rows":
+              [0, 1],
+          "obs": "rap",
+          "scale": 0.001,
+          "fitw": 1.0
+        }
+      ]
+    },
+    {
+      "name": "ALICE $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($J/\\psi$, coherent, 0n0n, forward)",
+      "title": "$2.5<y<4$",
+      "plot_group": "ALICE_5p02TeV_coherent_Jpsi_0n0n_forward",
+      "sample": "inclusive_forward",
+      // BR_JPSI_MUMU is the PDG value for J/psi -> mu+ mu-
+      // 1 / BR_JPSI_MUMU = 1 / 0.05961
+      "mc_scale": 16.7757087736957,
+      "pid":
+          [-13, 13],
+      "cuts": "./cuts_0n0n.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table1.json",
+          "rows":
+              [2, 3, 4],
+          "obs": "rap",
+          "scale": 0.001,
+          "fitw": 1.0
+        }
+      ]
+    },
+    {
+      "name": "ALICE $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($J/\\psi$, coherent, 0nXn+Xn0n)",
+      "title": "$-0.2<y<0.8$",
+      "plot_group": "ALICE_5p02TeV_coherent_Jpsi_0nxn_central",
+      "pid":
+          [-13, 13],
+      "cuts": "./cuts_0nxn.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table2.json",
+          "obs": "rap_prod",
+          "scale": 0.001,
+          "fitw": 1.0
+        }
+      ],
+      "samples":
+          ["inclusive"],
+      // BR_JPSI_MUMU is the PDG value for J/psi -> mu+ mu-
+      // 1 / BR_JPSI_MUMU = 1 / 0.05961
+      "mc_scale": 16.7757087736957
+    },
+    {
+      "name": "ALICE $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($J/\\psi$, coherent, Xn0n, forward)",
+      "title": "$2.5<y<4$",
+      "plot_group": "ALICE_5p02TeV_coherent_Jpsi_xn0n_forward",
+      "sample": "inclusive_forward",
+      // BR_JPSI_MUMU is the PDG value for J/psi -> mu+ mu-
+      // 1 / BR_JPSI_MUMU = 1 / 0.05961
+      "mc_scale": 16.7757087736957,
+      "pid":
+          [-13, 13],
+      "cuts": "./cuts_xn0n.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table3.json",
+          "obs": "rap",
+          "scale": 0.001,
+          "fitw": 1.0
+        }
+      ]
+    },
+    {
+      "name": "ALICE $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($J/\\psi$, coherent, XnXn, central)",
+      "title": "$-0.2<y<0.8$",
+      "plot_group": "ALICE_5p02TeV_coherent_Jpsi_xnxn_central",
+      "sample": "inclusive",
+      // BR_JPSI_MUMU is the PDG value for J/psi -> mu+ mu-
+      // 1 / BR_JPSI_MUMU = 1 / 0.05961
+      "mc_scale": 16.7757087736957,
+      "pid":
+          [-13, 13],
+      "cuts": "./cuts_xnxn.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table4.json",
+          "rows":
+              [0, 1],
+          "obs": "rap",
+          "scale": 0.001,
+          "fitw": 1.0
+        }
+      ]
+    },
+    {
+      "name": "ALICE $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($J/\\psi$, coherent, XnXn, forward)",
+      "title": "$2.5<y<4$",
+      "plot_group": "ALICE_5p02TeV_coherent_Jpsi_xnxn_forward",
+      "sample": "inclusive_forward",
+      // BR_JPSI_MUMU is the PDG value for J/psi -> mu+ mu-
+      // 1 / BR_JPSI_MUMU = 1 / 0.05961
+      "mc_scale": 16.7757087736957,
+      "pid":
+          [-13, 13],
+      "cuts": "./cuts_xnxn.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table4.json",
+          "rows":
+              [2, 3, 4],
+          "obs": "rap",
+          "scale": 0.001,
+          "fitw": 1.0
+        }
+      ]
+    }
+  ]
+}

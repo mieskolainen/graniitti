@@ -1,0 +1,46 @@
+// Elastic and photon PDF monopole pair production
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "kt",
+      "label": "GRANIITTI $k_T$-EPA $\\gamma\\gamma \\to M\\bar{M}$",
+      "gencard": "../../continuum/_common/gencard_kt.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "yy[EPA]<F> -> 882 -882 @PDG[882]{M:1000,W:0}",
+        "GENCUTS.<F>.M": [2000.0, 5000.0],
+        "GENCUTS.<F>.Rap": [-5.0, 5.0],
+        "FIDCUTS.active": false
+      }
+    },
+    {
+      "name": "lux",
+      "label": "GRANIITTI LUXqed $\\gamma\\gamma \\to M\\bar{M}$",
+      "gencard": "../../continuum/_common/gencard_lux.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "yy_LUX[EPA]<P> -> 882 -882 @PDG[882]{M:1000,W:0}",
+        "SCATTERING.LOOPSCREEN": false,
+        "GENCUTS.<P>.M": [2000.0, 5000.0],
+        "GENCUTS.<P>.Rap": [-5.0, 5.0],
+        "FIDCUTS.active": false
+      }
+    }
+  ],
+  "plot": {"normalization": "cross_section", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "sets": [
+    {
+      "name": "Monopole pair production",
+      "title": "Generation: $2000<M_X<5000$ GeV, $|y_X|<5$",
+      "data": false,
+      "pid": [882, -882],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"obs": "M"},
+        {"obs": "Rap"}
+      ]
+    }
+  ]
+}

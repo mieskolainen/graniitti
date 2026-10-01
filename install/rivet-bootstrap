@@ -1,61 +1,71 @@
 #! /usr/bin/env bash
+#
+# https://gitlab.com/hepcedar/rivetbootstrap
+#
+# Rivet bootstrapping / installation script
 
-# Rivet bootstrapping / installation script for version 3.1.4
-
+test -z "$USE_CVMFS" && USE_CVMFS="0"
 test -z "$BUILD_PREFIX" && BUILD_PREFIX="$PWD"
 test -z "$INSTALL_PREFIX" && INSTALL_PREFIX="$PWD/local"
+test -z "$PYTHON_EXE" && PYTHON_EXE="python3"
+test -z "$USE_VENV" && USE_VENV="1"
 test -z "$MAKE" && MAKE="make -j3"
+test -z "$CMAKE" && CMAKE="cmake"
+test -z "$PLUGINMATCH" && PLUGINMATCH=""
+test -z "$PLUGINUNMATCH" && PLUGINUNMATCH=""
 
+test -z "$INSTALL_LHAPDF" && INSTALL_LHAPDF="0"
+test -z "$INSTALL_ONNXRT" && INSTALL_ONNXRT="0"
 test -z "$INSTALL_HEPMC" && INSTALL_HEPMC="1"
 test -z "$INSTALL_FASTJET" && INSTALL_FASTJET="1"
 test -z "$INSTALL_FJCONTRIB" && INSTALL_FJCONTRIB="1"
+test -z "$INSTALL_HDF5" && INSTALL_HDF5="1"
 test -z "$INSTALL_YODA" && INSTALL_YODA="1"
 test -z "$INSTALL_RIVET" && INSTALL_RIVET="1"
 
-test -z "$RIVET_VERSION" && RIVET_VERSION="3.1.4"
-test -z "$YODA_VERSION" && YODA_VERSION="1.9.0"
+test -z "$RIVET_VERSION" && RIVET_VERSION="4.1.3"
+test -z "$YODA_VERSION" && YODA_VERSION="2.1.3"
 
-test -z "$HEPMC_VERSION" && HEPMC_VERSION="2.06.11" #< TODO: update to v3
-test -z "$FASTJET_VERSION" && FASTJET_VERSION="3.3.4"
-test -z "$FJCONTRIB_VERSION" && FJCONTRIB_VERSION="1.045"
-test -z "$CYTHON_VERSION" && CYTHON_VERSION="0.29.21"
+test -z "$LHAPDF_VERSION" && LHAPDF_VERSION="6.5.5"
+test -z "$ONNXRT_VERSION" && ONNXRT_VERSION="1.22.0"
+test -z "$HEPMC_VERSION" && HEPMC_VERSION="3.3.1"
+test -z "$FASTJET_VERSION" && FASTJET_VERSION="3.5.1"
+test -z "$FJCONTRIB_VERSION" && FJCONTRIB_VERSION="1.101"
+test -z "$HDF5_VERSION" && HDF5_VERSION="1.14.6"
+#test -z "$CYTHON_VERSION" && CYTHON_VERSION="0.29.32"
 
 test -z "$INSTALL_CYTHON" && INSTALL_CYTHON="1"
 test -z "$INSTALL_AUTOTOOLS" && INSTALL_AUTOTOOLS="0"
 
 test -z "$INSTALL_RIVETDEV" && INSTALL_RIVETDEV="0"  #< mostly here just for documentation!
-test -z "$YODA_BRANCH" && YODA_BRANCH="release-1-9-x"
-test -z "$RIVET_BRANCH" && RIVET_BRANCH="release-3-1-x"
+test -z "$YODA_BRANCH" && YODA_BRANCH="release-2-1-x"
+test -z "$RIVET_BRANCH" && RIVET_BRANCH="release-4-1-x"
 
-
-## Rivet needs C++14 now: first run a simple test for that
-test -n "$CXX" || CXX="g++"
-CXXVERSION=$($CXX -dumpfullversion -dumpversion 2> /dev/null)
-test -n "$CXXVERSION" && CXXVERSION=" $CXXVERSION" #< get spacing right in printout below
-echo "int main() { return 0; }" > cxxtest.cc
-CXXDIALECT=c++14
-GOODCXX=1
-$CXX -std=$CXXDIALECT cxxtest.cc -o cxxtest &> /dev/null || GOODCXX=0
-rm -f cxxtest cxxtest.cc
-if [[ "$GOODCXX" -ne 1 ]]; then
-    echo "$CXX$CXXVERSION does not accept the -std=$CXXDIALECT flag. You need C++ to build Rivet: exiting installation :-("
-    exit 1
-else
-    echo "$CXX$CXXVERSION accepts the -std=$CXXDIALECT flag: hurrah! Continuing installation..."
-    echo
-fi
-
+test -z "$CXXDIALECT" && CXXDIALECT="c++17"
 
 ## Paths for the case of existing installations
+# TODO: shouldn't these be looking in /usr/local? ~Never system packages
+test -z "$LHAPDFPATH" && LHAPDFPATH="/usr"
 test -z "$HEPMCPATH" && HEPMCPATH="/usr"
 test -z "$FASTJETPATH" && FASTJETPATH="/usr"
+test -z "$HDF5PATH" && HDF5PATH="/usr"
 test -z "$YODAPATH" && YODAPATH="/usr"
 
 test -z "$RIVET_CONFFLAGS" && RIVET_CONFFLAGS="" #--enable-unvalidated
 test -z "$YODA_CONFFLAGS" && YODA_CONFFLAGS=""
 
 
-## Developer mode
+###############
+
+if [[ "$USE_CVMFS" -eq "1" ]]; then
+  # On CentOS/AlmaLinux platforms, set up newer build tools first,
+  # e.g. using LCG installations:
+  source /cvmfs/sft.cern.ch/lcg/releases/LCG_107a/Python/3.11.9/x86_64-el9-gcc13-opt/Python-env.sh
+  source /cvmfs/sft.cern.ch/lcg/releases/LCG_107a/CMake/3.30.6/x86_64-el9-gcc13-opt/CMake-env.sh
+fi
+
+
+## Adapt config for developer mode
 if [[ "$INSTALL_RIVETDEV" -eq "1" ]]; then
     ## For rivetdev we skip the normal yoda/rivet installation
     INSTALL_YODA="0"
@@ -83,104 +93,174 @@ if [[ "$INSTALL_RIVETDEV" -eq "1" ]]; then
 fi
 
 
-## Disable asserts for production running
-export CPPFLAGS="$CPPFLAGS -DNDEBUG"
-
-
-###############
-
 echo "Running Rivet bootstrap script"
 echo "Building Rivet $RIVET_VERSION, YODA $YODA_VERSION"
 echo
 
 ## Immediate exit on a command (group) failure and optional debug mode
-set -e
+set -eo pipefail
 test -n "$DEBUG" && set -x
 export PATH=$INSTALL_PREFIX/bin:$PATH
 
-function wget_untar { wget --no-check-certificate $1 -O- | tar --no-same-owner -xz; }
+if [[ -n $(which wget 2> /dev/null) ]]; then
+    function wget_untar { wget --no-verbose "$1" -O- | tar --no-same-owner -xz; }
+elif [[ -n $(which curl 2> /dev/null) ]]; then
+    function wget_untar { curl --fail --location --silent --show-error "$1" | tar --no-same-owner -xz; }
+fi
 function conf { ./configure --prefix=$INSTALL_PREFIX "$@"; }
 function mmi { $MAKE "$@" && $MAKE install; }
 
 
-## Make installation directory, with an etc subdir so Rivet etc. will install bash completion scripts
+## Make & activate installation directory as a Python venv, set up for bash completion scripts and multi-arch libs
+if [[ "$USE_VENV" == 1 ]]; then
+    $PYTHON_EXE -m venv $INSTALL_PREFIX
+    source $INSTALL_PREFIX/bin/activate
+    pip install --upgrade pip
+fi
 mkdir -p $INSTALL_PREFIX/etc/bash_completion.d
+mkdir -p $INSTALL_PREFIX/include
 mkdir -p $INSTALL_PREFIX/lib
 if [[ ! -e $INSTALL_PREFIX/lib64 ]]; then ln -s lib $INSTALL_PREFIX/lib64; fi
 
 
-## Install HepMC
-if [[ ${HEPMC_VERSION::1} = 2 ]]; then
-  HEPMC3=0
-  HEPMCNAME=hepmc
+## Rivet needs C++17: first run a simple test for that
+test -n "$CXX" || CXX="g++"
+CXXVERSION=$($CXX -dumpfullversion -dumpversion 2> /dev/null)
+test -n "$CXXVERSION" && CXXVERSION=" $CXXVERSION" #< get spacing right in printout below
+echo "int main() { return 0; }" > cxxtest.cc
+GOODCXX=1
+$CXX -std=$CXXDIALECT cxxtest.cc -o cxxtest &> /dev/null || GOODCXX=0
+if [[ "$GOODCXX" -ne 1 ]]; then
+    echo "$CXX$CXXVERSION does not accept the -std=$CXXDIALECT flag. You need C++ to build Rivet: exiting installation :-("
+    exit 1
 else
-  HEPMC3=1
-  HEPMCNAME=hepmc3
+    echo "$CXX$CXXVERSION accepts the -std=$CXXDIALECT flag: hurrah! Continuing installation..."
+    echo
 fi
-if [[ "$INSTALL_HEPMC" -eq "1" ]]; then
+## Disable asserts for production running
+export CPPFLAGS="$CPPFLAGS -DNDEBUG"
+
+
+## Install HepMC
+if [[ "$INSTALL_HEPMC" = 1 ]]; then
     echo "INSTALLING HEPMC $HEPMC_VERSION"
     cd $BUILD_PREFIX
-    if [[ $HEPMC3 = 1 ]]; then
-        test -d HepMC3-$HEPMC_VERSION || wget_untar http://hepmc.web.cern.ch/hepmc/releases/HepMC3-$HEPMC_VERSION.tar.gz
-        mkdir -p HepMC3-$HEPMC_VERSION-build && cd HepMC3-$HEPMC_VERSION-build
-        cmake ../HepMC3-$HEPMC_VERSION/ -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DHEPMC3_ENABLE_ROOTIO=OFF -DHEPMC3_ENABLE_PYTHON=OFF -Dmomentum=GEV -Dlength=MM
-    else
-        test -d HepMC-$HEPMC_VERSION || wget_untar http://hepmc.web.cern.ch/hepmc/releases/hepmc$HEPMC_VERSION.tgz
-        mkdir -p HepMC-$HEPMC_VERSION-build && cd HepMC-$HEPMC_VERSION-build
-        cmake ../HepMC-$HEPMC_VERSION/ -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -Dmomentum=GEV -Dlength=MM
-    fi
+    test -d HepMC3-$HEPMC_VERSION || wget_untar https://cedar-tools.web.cern.ch/downloads/HepMC3-$HEPMC_VERSION.tar.gz
+    mkdir -p HepMC3-$HEPMC_VERSION-build && cd HepMC3-$HEPMC_VERSION-build
+    test -n "$HEPMC_CMAKE_ADD" || HEPMC_CMAKE_ADD="-DHEPMC3_ENABLE_PYTHON=OFF"
+    $CMAKE ../HepMC3-$HEPMC_VERSION/ -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DHEPMC3_ENABLE_ROOTIO=OFF $HEPMC_CMAKE_ADD
     mmi
     HEPMCPATH=$INSTALL_PREFIX
     echo
 fi
 
-
-# ********************************************
-# FORCE HEPMC3
-HEPMCNAME=hepmc3
-HEPMCPATH=$HOME/local/HEPMC3
-# ********************************************
-
-
 ## Install FastJet
-if [[ "$INSTALL_FASTJET" -eq "1" ]]; then
+if [[ "$INSTALL_FASTJET" = 1 ]]; then
     echo "INSTALLING FASTJET $FASTJET_VERSION"
     cd $BUILD_PREFIX
-    test -d fastjet-$FASTJET_VERSION || wget_untar http://www.fastjet.fr/repo/fastjet-$FASTJET_VERSION.tar.gz
+    #test -d fastjet-$FASTJET_VERSION || wget_untar http://www.fastjet.fr/repo/fastjet-$FASTJET_VERSION.tar.gz
+    test -d fastjet-$FASTJET_VERSION || wget_untar https://cedar-tools.web.cern.ch/downloads/fastjet-$FASTJET_VERSION.tar.gz
     cd fastjet-$FASTJET_VERSION
-    conf --enable-shared --disable-auto-ptr --enable-allcxxplugins
+    conf --enable-shared --disable-static --disable-auto-ptr --enable-allcxxplugins
     mmi
     FASTJETPATH=$INSTALL_PREFIX
     echo
 fi
 
 ## Install fjcontrib
-if [[ "$INSTALL_FJCONTRIB" -eq "1" ]]; then
+if [[ "$INSTALL_FJCONTRIB" = 1 ]]; then
     echo "INSTALLING FASTJET CONTRIB $FJCONTRIB_VERSION"
     cd $BUILD_PREFIX
-    test -d fastjet-$FJCONTRIB_VERSION || wget_untar http://fastjet.hepforge.org/contrib/downloads/fjcontrib-$FJCONTRIB_VERSION.tar.gz
+    #test -d fastjet-$FJCONTRIB_VERSION || wget_untar http://fastjet.hepforge.org/contrib/downloads/fjcontrib-$FJCONTRIB_VERSION.tar.gz
+    test -d fastjet-$FJCONTRIB_VERSION || wget_untar https://cedar-tools.web.cern.ch/downloads/fjcontrib-$FJCONTRIB_VERSION.tar.gz
     cd fjcontrib-$FJCONTRIB_VERSION
-    ./configure --fastjet-config=$FASTJETPATH/bin/fastjet-config CXXFLAGS=-fPIC # fastjet-config already contains INSTALL_PREFIX
-    mmi fragile-shared-install
+    ./configure --fastjet-config=$FASTJETPATH/bin/fastjet-config CXXFLAGS="$CXXFLAGS -fPIC" # fastjet-config already contains INSTALL_PREFIX
+    mmi -j1 fragile-shared-install
     # does not need FJCONTRIBPATH because the relevant includes/libraries are merged with regular FastJet structure
     echo
 fi
 
-## Install Cython
-if [[ "$INSTALL_CYTHON" -eq "1" ]]; then
-    echo "INSTALLING CYTHON $CYTHON_VERSION"
+## Install HDF5
+if [[ "$INSTALL_HDF5" = 1 ]]; then
+    echo "INSTALLING HDF5 $HDF5_VERSION"
     cd $BUILD_PREFIX
-    test -d cython-$CYTHON_VERSION || { wget https://github.com/cython/cython/archive/$CYTHON_VERSION.tar.gz -O - | tar xz; }
-    export PATH=$BUILD_PREFIX/cython-$CYTHON_VERSION/bin:$PATH
-    export PYTHONPATH=$BUILD_PREFIX/cython-$CYTHON_VERSION:$PYTHONPATH
+    HDF5_VERSION_=${HDF5_VERSION//./_}
+    test -d hdf5-$HDF5_VERSION || wget_untar \
+        https://support.hdfgroup.org/releases/hdf5/v${HDF5_VERSION_::-2}/v${HDF5_VERSION_}/downloads/hdf5-${HDF5_VERSION}.tar.gz
+    # https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${HDF5_VERSION::-2}/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.gz
+    cd hdf5-$HDF5_VERSION
+    conf
+    mmi
+    HDF5PATH=$INSTALL_PREFIX
+fi
+
+## Install Cython
+if [[ "$INSTALL_CYTHON" = 1 ]]; then
+    #echo "INSTALLING CYTHON $CYTHON_VERSION"
+    #cd $BUILD_PREFIX
+    #test -d cython-$CYTHON_VERSION || { wget_untar https://github.com/cython/cython/archive/$CYTHON_VERSION.tar.gz ; }
+    #export PATH=$BUILD_PREFIX/cython-$CYTHON_VERSION/bin:$PATH
+    #export PYTHONPATH=$BUILD_PREFIX/cython-$CYTHON_VERSION:$PYTHONPATH
+    echo "INSTALLING LATEST CYTHON"
+    pip install Cython
     echo
 fi
 
-## Install YODA
-if [[ "$INSTALL_YODA" -eq "1" ]]; then
+## Install autotools
+if [[ "$INSTALL_AUTOTOOLS" = "1" ]]; then
+    cd $BUILD_PREFIX
+    function _build_autotool() {
+        name=$1-$2
+        if [ ! -e $name ]; then wget_untar https://ftpmirror.gnu.org/$1/$name.tar.gz; fi
+        cd $name
+        ./configure --prefix=$INSTALL_PREFIX
+        mmi
+        cd ..
+    }
+    test -e $INSTALL_PREFIX/bin/m4       || { echo; echo "Building m4"; _build_autotool m4 1.4.19; }
+    test -e $INSTALL_PREFIX/bin/autoconf || { echo; echo "Building autoconf"; _build_autotool autoconf 2.71; }
+    test -e $INSTALL_PREFIX/bin/automake || { echo; echo "Building automake"; _build_autotool automake 1.16.5; }
+    test -e $INSTALL_PREFIX/bin/libtool  || { echo; echo "Building libtool"; _build_autotool libtool 2.4.7; }
+    echo
+fi
+
+
+## Install LHAPDF from tarball
+if [[ "$INSTALL_LHAPDF" = 1 ]]; then
+    echo "INSTALLING LHAPDF $LHAPDF_VERSION"
+    cd $BUILD_PREFIX
+    test -d LHAPDF-$LHAPDF_VERSION || wget_untar https://cedar-tools.web.cern.ch/downloads/LHAPDF-$LHAPDF_VERSION.tar.gz
+    cd LHAPDF-$LHAPDF_VERSION
+    conf
+    mmi
+    LHAPDFPATH=$INSTALL_PREFIX
+    echo
+fi
+
+
+## Install ONNXruntime
+if [[ "$INSTALL_ONNXRT" = 1 ]]; then
+    echo "INSTALLING ONNXruntime $ONNXRT_VERSION"
+    cd $BUILD_PREFIX
+    os=linux
+    if [[ "`uname -s`" == *"Darwin"* ]]; then os=osx; fi
+    arch=$(uname -m | tr -d '\n')
+    if [[ "$os" = "linux" && "$arch" = "x86_64" ]]; then arch=x64; fi
+    onnxname=onnxruntime-${os}-${arch}-${ONNXRT_VERSION}
+    test -d ${onnxname} || wget_untar https://cedar-tools.web.cern.ch/downloads/${onnxname}.tgz
+    rm -rf ${INSTALL_PREFIX}/include/onnxruntime
+    cp -r ${onnxname}/include ${INSTALL_PREFIX}/include/onnxruntime
+    find ${onnxname}/lib -maxdepth 1 -type f,l | xargs -I {} cp {} ${INSTALL_PREFIX}/lib/
+    RIVET_CONFFLAGS=$RIVET_CONFFLAGS" --enable-onnxrt=${INSTALL_PREFIX}"
+    echo
+fi
+
+
+## Install YODA from tarball (dev mode is below)
+if [[ "$INSTALL_YODA" = 1 ]]; then
     echo "INSTALLING YODA $YODA_VERSION"
     cd $BUILD_PREFIX
-    test -d YODA-$YODA_VERSION || wget_untar http://www.hepforge.org/archive/yoda/YODA-$YODA_VERSION.tar.gz
+    test -d YODA-$YODA_VERSION || wget_untar https://cedar-tools.web.cern.ch/downloads/YODA-$YODA_VERSION.tar.gz
     cd YODA-$YODA_VERSION
     conf $YODA_CONFFLAGS
     mmi
@@ -189,16 +269,19 @@ if [[ "$INSTALL_YODA" -eq "1" ]]; then
     echo
 fi
 
-## Install Rivet
-if [[ "$INSTALL_RIVET" -eq "1" ]]; then
+## Install Rivet from tarball (dev mode is below)
+if [[ "$INSTALL_RIVET" = 1 ]]; then
     echo "INSTALLING RIVET $RIVET_VERSION"
     cd $BUILD_PREFIX
-    test -d Rivet-$RIVET_VERSION || wget_untar http://www.hepforge.org/archive/rivet/Rivet-$RIVET_VERSION.tar.gz
+    test -d Rivet-$RIVET_VERSION || wget_untar https://cedar-tools.web.cern.ch/downloads/Rivet-$RIVET_VERSION.tar.gz
     cd Rivet-$RIVET_VERSION
+    MATCHOPTS=""
+    if [[ ! -z "${PLUGINMATCH}" ]]; then MATCHOPTS="$MATCHOPTS --with-plugin-match=${PLUGINMATCH}"; fi
+    if [[ ! -z "${PLUGINUNMATCH}" ]]; then MATCHOPTS="$MATCHOPTS --with-plugin-unmatch=${PLUGINUNMATCH}"; fi
     conf $RIVET_CONFFLAGS \
         --with-yoda=$YODAPATH \
-        --with-$HEPMCNAME=$HEPMCPATH \
-        --with-fastjet=$FASTJETPATH
+        --with-hepmc3=$HEPMCPATH \
+        --with-fastjet=$FASTJETPATH $MATCHOPTS
     mmi
     cp rivetenv.sh rivetenv.csh $INSTALL_PREFIX/
     echo
@@ -206,34 +289,29 @@ fi
 
 
 ## Following block for dev mode only -- non-developers should ignore
-if [[ "$INSTALL_RIVETDEV" -eq "1" ]]; then
+if [[ "$INSTALL_RIVETDEV" = 1 ]]; then
 
     ## Install autotools
     if [[ "$INSTALL_AUTOTOOLS" -eq "1" ]]; then
         cd $BUILD_PREFIX
         function _build_autotool() {
             name=$1-$2
-            if [ ! -e $name ]; then wget_untar http://ftpmirror.gnu.org/$1/$name.tar.gz; fi
+            if [[ ! -e $name ]]; then wget_untar https://ftpmirror.gnu.org/$1/$name.tar.gz; fi
             cd $name
             ./configure --prefix=$INSTALL_PREFIX
             mmi
             cd ..
         }
-        test -e $INSTALL_PREFIX/bin/m4       || { echo; echo "Building m4"; _build_autotool m4 1.4.18; }
-        test -e $INSTALL_PREFIX/bin/autoconf || { echo; echo "Building autoconf"; _build_autotool autoconf 2.69; }
-        test -e $INSTALL_PREFIX/bin/automake || { echo; echo "Building automake"; _build_autotool automake 1.16.1; }
-        test -e $INSTALL_PREFIX/bin/libtool  || { echo; echo "Building libtool"; _build_autotool libtool 2.4.6; }
+        test -e $INSTALL_PREFIX/bin/m4       || { echo; echo "Building m4"; _build_autotool m4 1.4.19; }
+        test -e $INSTALL_PREFIX/bin/autoconf || { echo; echo "Building autoconf"; _build_autotool autoconf 2.71; }
+        test -e $INSTALL_PREFIX/bin/automake || { echo; echo "Building automake"; _build_autotool automake 1.16.5; }
+        test -e $INSTALL_PREFIX/bin/libtool  || { echo; echo "Building libtool"; _build_autotool libtool 2.4.7; }
         echo
     fi
 
     ## Install dev YODA
     cd $BUILD_PREFIX
     echo "INSTALLING YODA $YODA_VERSION"
-    # test -d yoda || hg clone https://phab.hepforge.org/source/yodahg/yoda -b release-1-7 --insecure
-    # cd yoda
-    # hg pull -u --insecure
-    #
-    #test -d yoda || git clone git@gitlab.com:hepcedar/yoda.git yoda
     test -d yoda || git clone https://gitlab.com/hepcedar/yoda.git yoda
     cd yoda
     git checkout $YODA_BRANCH
@@ -248,24 +326,53 @@ if [[ "$INSTALL_RIVETDEV" -eq "1" ]]; then
     ## Install dev Rivet
     cd $BUILD_PREFIX
     echo "INSTALLING RIVET $RIVET_VERSION"
-    # test -d rivet || hg clone https://phab.hepforge.org/source/rivethg/rivet -u release-3-0-x --insecure
-    # cd rivet
-    # hg pull -u --insecure
-    #
-    #test -d rivet || git clone git@gitlab.com:hepcedar/rivet.git rivet
     test -d rivet || git clone https://gitlab.com/hepcedar/rivet.git rivet
     cd rivet
     git checkout $RIVET_BRANCH
     git pull
     autoreconf -i
+    MATCHOPTS=""
+    if [[ ! -z "${PLUGINMATCH}" ]]; then MATCHOPTS="$MATCHOPTS --with-plugin-match=${PLUGINMATCH}"; fi
+    if [[ ! -z "${PLUGINUNMATCH}" ]]; then MATCHOPTS="$MATCHOPTS --with-plugin-unmatch=${PLUGINUNMATCH}"; fi
     conf $RIVET_CONFFLAGS \
         --with-yoda=$YODAPATH \
-        --with-$HEPMCNAME=$HEPMCPATH \
-        --with-fastjet=$FASTJETPATH
+        --with-hepmc3=$HEPMCPATH \
+        --with-fastjet=$FASTJETPATH $MATCHOPTS
     mmi
-    cp rivetenv.sh rivetenv.csh $INSTALL_PREFIX/
+    cp rivetenv.sh $INSTALL_PREFIX/
     echo
 fi
 
-## Announce the build success
-echo "All done. Now set some variables in your shell by sourcing $INSTALL_PREFIX/rivetenv.(c)sh"
+cd $BUILD_PREFIX
+
+
+## Install Python runtime deps, iff in venv mode
+if [[ "$USE_VENV" == 1 ]]; then
+    #$PYTHON_EXE -m venv $INSTALL_PREFIX
+    source $INSTALL_PREFIX/bin/activate
+    pip install pyyaml
+    pip install requests
+    pip install matplotlib
+    pip install tqdm
+    #pip install pydetex
+fi
+
+
+## Modify Rivet/venv setup scripts
+if [[ "$USE_VENV" == 1 ]]; then
+    echo 'source $VIRTUAL_ENV/yodaenv.sh' > $INSTALL_PREFIX/bin/postactivate
+    echo 'source $VIRTUAL_ENV/rivetenv.sh' >> $INSTALL_PREFIX/bin/postactivate
+    TMPFILE=tmp$$
+    printf 'unset PYTHONHOME PYTHONPATH\nsource "%s/bin/activate"\nexport TEXINPUTS="%s/share/texmf/tex/latex//:${TEXINPUTS:-}"\n' "$INSTALL_PREFIX" "$INSTALL_PREFIX" | \
+        cat - $INSTALL_PREFIX/rivetenv.sh > $TMPFILE && \
+        mv $TMPFILE $INSTALL_PREFIX/rivetenv.sh
+fi
+
+
+## Announce the build success (now for sh only)
+echo "All done. Now set some variables in your shell with"
+if [[ "$USE_VENV" == 1 ]]; then
+    echo "  source $INSTALL_PREFIX/bin/activate"
+    echo "  or"
+fi
+echo "  source $INSTALL_PREFIX/rivetenv.sh"

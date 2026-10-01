@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "search": {
+    "direction": "minimize",
+    "device": "auto",
+    "dtype": "float64",
+    "duplicate_tolerance": 1e-8
+  },
+  "gp": {
+    "kernel": "matern52",
+    "fit_steps": 100,
+    "fit_restarts": 3,
+    "learning_rate": 1.0,
+    "fit_tolerance_grad": 1e-7,
+    "fit_tolerance_change": 1e-9,
+    "gradient_clip": 20.0,
+    "initial_lengthscale": 0.2048,
+    "initial_outputscale": 1.0,
+    "initial_noise": 0.006737946999085467,
+    "lengthscale_prior_median": 4.1133,
+    "lengthscale_prior_log_std": 1.7321,
+    "outputscale_prior_median": 1.0,
+    "outputscale_prior_log_std": 1.0,
+    "noise_prior_median": 0.01831563888873418,
+    "noise_prior_log_std": 1.0,
+    "cholesky_attempts": 7,
+    "initial_jitter": 1e-8,
+    "jitter_multiplier": 10.0,
+    "posterior_variance_floor": 1e-12
+  },
+  "acquisition": {
+    "mc_samples": 256,
+    "raw_samples": 512,
+    "restarts": 4,
+    "gradient_steps": 50,
+    "optimization_batch_size": 64,
+    "mc_cholesky_jitter": 1e-6,
+    "lbfgs_tolerance_grad": 1e-7,
+    "lbfgs_tolerance_change": 1e-10,
+    "prune_baseline": true,
+    "tau_max": 0.01,
+    "tau_relu": 1e-6
+  },
+  "turbo": {
+    "enabled": false,
+    "length_initial": 0.8,
+    "length_min": 0.0078125,
+    "length_max": 1.6,
+    "success_tolerance": 3,
+    "failure_base": 4.0,
+    "failure_dimension_scale": 1.0,
+    "improvement_relative_tolerance": 0.001,
+    "success_length_multiplier": 2.0,
+    "failure_length_multiplier": 0.5,
+    "restart_points_per_dimension": 2,
+    "restart_min_points": 4
+  }
+}

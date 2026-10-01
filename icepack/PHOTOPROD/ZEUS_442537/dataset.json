@@ -1,0 +1,47 @@
+// [REFERENCE: ZEUS, hep-ex/9704013, Section 9.4, Figure 5]
+// Corrected e and mu shapes are combined, elastic and dissociative angles are assumed equal in the publication
+// The generated muon channel represents the combined lepton shape, no unreported t cut is applied
+{
+  "active": true,
+  "type": "HEPDATA_442537",
+  "reader": "icepack/PHOTOPROD/_common/hera_reader.py",
+  "datapath": "HEPData/PHOTOPROD/HEPData-ins442537-v1-json/",
+  "samples": [
+    {"name": "gp","label": "GP[RES]","gencard": "./gencard.json","parameters": {}},
+    {
+      "name": "jmrt",
+      "label": "ygg[$J/\\psi$]",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "ygg[jpsi]<F> -> mu+ mu-"}
+    }
+  ],
+  "plot": {
+    "normalization": "unit_density",
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "errorbar",
+    "density_uncertainty": "shape"
+  },
+  "fit": {"normalization": "unit_density"},
+  "validation": {
+    "loopscreen": 0,
+    "nevents": 50000,
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "measurement": {"$ref": "../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "ZEUS $J/\\psi$ helicity angles",
+      "plotname": "ZEUS_442537_angles",
+      "title": "$40<W_{\\gamma p}<140$ GeV, $Q^2<4$ GeV$^2$",
+      "pid": [-13,13],
+      "cuts": "./cuts.py",
+      "obs": "../_common/angles.py",
+      "hist": [
+        {"file": "Table8.json","obs": "costheta_HX","scale": 1.0},
+        {"file": "Table9.json","obs": "phi_HX","scale": 1.0}
+      ]
+    }
+  ]
+}

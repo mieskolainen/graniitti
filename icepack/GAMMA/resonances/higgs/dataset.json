@@ -1,0 +1,30 @@
+// Photon fusion Higgs resonance validation
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "higgs",
+      "label": "GRANIITTI $k_T$-EPA $\\gamma\\gamma \\to H \\to b\\bar{b}$",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "yy[Higgs]<F> &> b b~"}
+    }
+  ],
+  "plot": {"normalization": "cross_section", "ratio_uncertainty": "none", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {"nevents": 30000},
+  "sets": [
+    {
+      "name": "Photon fusion Higgs",
+      "title": "Generation: $124<M_X<126$ GeV, $|y_X|<9$",
+      "data": false,
+      "pid": [5, -5],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"obs": "M"},
+        {"obs": "Rap"}
+      ]
+    }
+  ]
+}

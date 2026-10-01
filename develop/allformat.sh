@@ -1,11 +1,12 @@
-# Run with: source ./develop/allformat.sh
+#!/usr/bin/env bash
+# Format repository C++ sources except generated MG5 amplitudes
+#
+# Run with: bash develop/allformat.sh
 
-source ./develop/format.sh ./src/*.cc
-source ./develop/format.sh ./src/Analysis/*.cc
-source ./develop/format.sh ./src/Amplitude/*.cc
-source ./develop/format.sh ./src/Program/*.cc
-source ./develop/format.sh ./src/Program/Analysis/*.cc
+set -euo pipefail
 
-source ./develop/format.sh ./include/Graniitti/*.h
-source ./develop/format.sh ./include/Graniitti/Analysis/*.h
-source ./develop/format.sh ./include/Graniitti/Amplitude/*.h
+mapfile -d '' files < <(find ./src ./include/Graniitti -type f \
+    \( -name '*.cc' -o -name '*.h' \) \
+    ! -path '*/Amplitude/MG5/*' ! -path '*._old*' -print0 | sort -z)
+wait "$!"
+bash ./develop/format.sh "${files[@]}"

@@ -1,0 +1,68 @@
+// LHCb exclusive J/psi photoproduction at sqrt(s) = 7 TeV
+{
+  "GENERIC" : {
+    "OUTPUT"     : "LHCb_1277076_jpsi",
+    "FORMAT"     : "hepmc3",
+    "CORES"      : 0,
+    "NEVENTS"    : 30000,
+    "INTEGRATOR" : "VEGAS",
+    "WEIGHTED"   : true,
+    "MODELPARAM" : "TUNE0",
+    "HIST"       : 0,
+    "RNDSEED"    : 1277076
+  },
+  
+  "SCATTERING" : {
+
+    "BEAM"    : ["p+","p+"],
+    "ENERGY"  : [3500,3500],
+    "PROCESS" : "ygg[jpsi]<F> -> mu+ mu-",
+    "RES"     : [],
+    "LOOPSCREEN" : true,
+    "NSTARS"  : 0,  // Forward dissociation (0 = elastic, 1 = single, 2 = double)
+    "BEAMFRAG": "none",  // Forward dissociation particle production ('none', 'fewbody', 'cylinder', 'diquark')
+    "LHAPDF"  : "NNPDF31_lo_as_0118"
+  },
+
+  "INTEGRATOR" : {
+
+    // Integration targets after adaptation
+    "min_samples" : 100000,
+    "max_samples" : 100000000,
+    "precision"   : 0.01,
+
+    "LOOPSCREEN" : {"extra_kt" : 1, "extra_phi" : 1},
+    // VEGAS integrator
+    "VEGAS" : {
+
+      "bins" : 128,      // Maximum number of bins per dimension (NOTE: EVEN NUMBER)
+      "alpha" : 1.25,    // Grid adaptation damping exponent
+      "rounds" : 8,      // Number of adaptation iterations
+      "ncall" : 50000,   // Number of function calls per iteration
+
+      "debug" : -1       // Debug output (default -1)
+    },
+
+    "NEUROJAC" : {},
+
+    "FLAT" : {},
+
+    // Unweighting max weight
+    "max_w_value"  : null  // user can set here (default automatic)
+  },
+
+  "GENCUTS" : {
+    "<C>" : {"M" : [3.0,3.8], "Rap" : [2.0,4.5]},
+    "<F>" : {"Rap" : [2.0,4.5], "M" : [3.0,3.8]},
+    "<Q>" : {"Xi" : [0,0.2]}
+  },
+
+  "FIDCUTS" : {
+    "active" : false,
+    "CENTRAL" : {},
+    "FORWARD" : {},
+    "USERCUTS" : false
+  },
+
+  "VETOCUTS" : {"active" : false}
+}

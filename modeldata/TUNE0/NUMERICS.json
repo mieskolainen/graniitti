@@ -1,0 +1,410 @@
+// Technical parameters
+//
+// Be careful:
+// - Certain observables can be very sensitive to (too crude) discretization (e.g. NumberLoopKT)
+// - Too high upper bounds may create numerical instabilities (e.g. with Bessel functions)
+//
+// (c) 2026 Mikael Mieskolainen
+// Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+
+{
+
+"NUMERICS_GLOBAL": {
+
+  // Minimum active LS or Tensor coupling magnitude, values below skipped
+  "coupling_min": 1.0e-5
+},
+
+"NUMERICS_SPIN": {
+
+  // Spin metrics
+  "metric_groups": 16,          // Independent equal-size jackknife groups
+  "metric_max_dimension": 256   // Maximum retained spin dimension including forward protons
+},
+
+"NUMERICS_RADIATIVE": {
+
+  // Exponentiated collinear radiation from charged lepton beams
+  "ISR_QED": {
+    "x_min": 1.0e-6,            // Minimum hard lepton energy fraction
+    "hard_collinear": true      // Include the finite first order splitting term
+  },
+
+  // Exclusive massive dipole radiation from final lepton pairs
+  "FSR_QED": {
+    "energy_min": 1.0e-3,       // Resolved photon energy in the pair rest frame [GeV]
+    "energy_max_fraction": 0.5, // Maximum photon energy divided by pair mass
+    "max_photons": 32,          // Maximum resolved photons at one vertex
+    "max_trials": 10000         // Angular and exact recoil sampling trials
+  }
+},
+
+"NUMERICS_NUCLEAR": {
+
+  "FRAGMENTATION": {
+    "decay_nodes": 128,         // Excitation intervals per evaporation channel
+    "decay_steps": 4096,        // Maximum emissions per cascade, a safety cap
+    "impulse_nodes": 128        // Fermi-momentum quadrature order for recoil normalization
+  },
+
+  // Dependency and workload labels identify where each control is used
+  // [pre-computed table]    ~ persistent lookup construction only
+  // [sampled event table]   ~ a table rebuilt for an event-local nuclear ensemble
+  // [screening loop]        ~ the transverse loop and hard-amplitude calls per event
+  // [event sampling]        ~ event-local nuclear or breakup sampling
+  // [photoproduction loop]  ~ affects each evaluated photonuclear transition
+  // [direct quadrature]     ~ affects numerical integration outside lookup coverage
+  // [runtime guard]         ~ changes a numerical acceptance threshold without adding nodes
+
+  // Impact space profile and transverse momentum UPC convolution
+  // Impact: gamma-gamma and photoproduction with nuclear survival or neutron tags
+  "IMPACT_PROFILE": {
+    "b_max": 40.0,              // [pre-computed table] [sampled event table] [screening loop] [direct quadrature] Impact transform limit [fm]
+    "smooth_b_nodes": 192,      // [pre-computed table] [direct quadrature] Smooth impact parameter nodes
+    "sample_b_nodes": 96,       // [pre-computed table] [sampled event table] Configuration lookup impact nodes
+    "b_phi_nodes": 13,          // [pre-computed table] [sampled event table] [screening loop] Impact azimuthal harmonics
+    "smooth_kt_nodes": 256,     // [pre-computed table] Smooth radial lookup nodes
+    "sample_kt_nodes": 96,      // [pre-computed table] [sampled event table] Configuration lookup radial transform nodes
+
+    // Open local Gauss-Legendre radial rule and periodic midpoint azimuthal rule
+    "log_kt": true,             // [pre-computed table] [sampled event table] [screening loop] Use logarithmic radial lookup coordinates
+    "kt_min": 1.0e-6,           // [pre-computed table] [sampled event table] [screening loop] Minimum convolution momentum [GeV]
+    "kt_max": 2.0,              // [pre-computed table] [sampled event table] [screening loop] Maximum convolution momentum [GeV]
+    "kt_nodes": 12,             // [pre-computed table] [sampled event table] [screening loop] Focused local radial nodes
+    "phi_nodes": 12             // [pre-computed table] [sampled event table] [screening loop] Focused azimuthal nodes
+  },
+  
+  // Shared Gamma distribution controls for hadronic and photonuclear fluctuations
+  "FLUCTUATION": {
+    "cdf_tol": 1.0e-8,            // Gamma series/root and moment tolerance
+    "cdf_max_iter": 10000,        // Safety cap per Gamma series or root solve
+    "normal_shape_min": 100.0     // Use Wilson-Hilferty approximate quantiles above this Gamma shape
+  },
+
+  // Hadronic nucleus overlap, absorption and GGCF survival amplitudes
+  // Impact: gamma-gamma and photoproduction with active nuclear survival
+  "GLAUBER": {
+    "b_max": 40.0,                 // [pre-computed table] Impact parameter limit [fm]
+    "b_nodes": 256,                // [pre-computed table] Impact parameter nodes
+    "profile_nodes": 512,          // [pre-computed table] pp eikonal profile intervals
+    "q_max": 4.0,                  // [pre-computed table] Fourier-Bessel limit [GeV]
+    "q_nodes": 192,                // [pre-computed table] Fourier-Bessel momentum nodes
+    "ggcf_nodes": 8                // [pre-computed table] [sampled event table] Optical and configuration GGCF eigenstates
+  },
+
+  // Nuclear density tables, form factors and current moments
+  "STRUCTURE": {
+    "density_nodes": 96,              // [pre-computed table] [event sampling] [direct quadrature] Density and direct high-q radial nodes
+    "tail_skin": 16.0,                // [pre-computed table] [direct quadrature] Density support in skin lengths
+    "cdf_nodes": 2048,                // [pre-computed table] Inverse-CDF intervals
+    "form_q_max": 8.0,                // [pre-computed table] [direct quadrature] Form-factor lookup limit [GeV]
+    "form_nodes": 4097,               // [pre-computed table] Uniform cubic-interpolation nodes
+    "form_abs_tol": 1.0e-7            // [pre-computed table] [runtime guard] Absolute error in dimensionless F(q), also bounds the high-q remainder
+  },
+
+  // Sampled nucleon and hotspot ensembles
+  "SAMPLING": {
+    "current_samples": 4,                  // [event sampling] [screening loop] [photoproduction loop] Current-only configurations
+    "config_samples": 16,                  // [event sampling] [sampled event table] [screening loop] [photoproduction loop] Nucleon or hotspot configurations
+    "hard_core_sweeps": 8,                 // [event sampling] Nucleon hard-core sweeps
+    "placement_trials": 10000,             // [event sampling] Placement trials per nucleon
+    "neutron_nodes": 4096,                 // [pre-computed table] Neutron-density intervals
+    "neutron_density_rel_tol": 1.0e-6,     // [pre-computed table] [runtime guard] Relative negative-density tolerance
+    "neutron_negative_norm_tol": 1.0e-7,   // [pre-computed table] [runtime guard] Integrated negative-density tolerance
+    "neutron_norm_tol": 2.0e-5             // [pre-computed table] [runtime guard] Density normalization tolerance
+  },
+  
+  // Photonuclear target shadowing integrals and cross section fluctuations
+  // Impact: photoproduction, minimum Gauss orders use STRUCTURE.density_nodes
+  "PHOTOPROD": {
+    // The radial integration covers the matter density support
+    "phase_scale": 1.5000,          // [pre-computed table] [photoproduction loop] [direct quadrature] Gauss order relative to half the maximum Fourier phase
+    "table_qt_max": 2.5000,         // [pre-computed table] [direct quadrature] Lookup transverse coverage [GeV]
+    "table_qz_max": 0.2500,         // [pre-computed table] [direct quadrature] Lookup longitudinal coverage [GeV]
+    "table_qt_nodes": 513,          // [pre-computed table] Uniform transverse response nodes
+    "table_qz_nodes": 65,           // [pre-computed table] Uniform nonnegative longitudinal nodes
+    "table_series_terms": 40,       // [pre-computed table] [photoproduction loop] [direct quadrature] Maximum optical-depth series terms
+    "table_series_abs_tol": 1.0e-6, // [photoproduction loop] [direct quadrature] [runtime guard] Accepted series tail
+    "lta_x_nodes": 131,             // [pre-computed table] Log x nodes including FGS transition points
+    "lta_q2_nodes": 65,             // [pre-computed table] Logarithmic leading twist Q2 nodes
+    "lta_integral_nodes": 64,       // [pre-computed table] Diffractive x_P Gauss-Legendre nodes
+    "cf_nodes": 8                   // [pre-computed table] [photoproduction loop] Equal-weight cross-section eigenstates
+  },
+
+  // Electromagnetic nuclear excitation and neutron emission probabilities
+  // Impact: neutron-tagged gamma-gamma and photoproduction
+  "EMD": {
+    "sampling": {
+      "focus_fraction": 0.9000,  // Survival and absorption focused history mixture, retain all channels with fraction < 1
+      "nonzero_photons": true    // Sample N_gamma >= 1 on coherent Xn legs, normalize the complete history proposal
+    },
+    "response": {
+      "nodes": 32,               // Initial Gauss order per log-energy interval, doubled until rel_tol is met
+      "rel_tol": 1.0e-3,         // [pre-computed table] [runtime guard] [direct quadrature] Relative fine/coarse tolerance for three absorption integrals
+      "tail_rel_tol": 1.0e-3     // [pre-computed table] Stop after two high-energy shells each below this fraction of the accumulated integral
+    },
+    "profile": {
+      "nodes": 1024,             // Log-impact response and excitation-amplitude nodes, independent of energy quadrature
+      "b_min": 0.0010            // Table lower bound [fm], direct integration below preserves small-b support
+    },
+    "proton_emitter": {
+      "q_max": 20.0000,          // [pre-computed table] Form-factor transform limit [GeV]
+      "q_nodes": 512             // [pre-computed table] Form-factor transform nodes
+    }
+  }
+},
+
+
+"NUMERICS_EIKONAL" : {
+
+  // S-matrix contractivity validation
+  "strict_unitarity": false,
+  "unitarity_tolerance": 1E-4,
+
+  // Impact parameter space density lookup array
+  "MinBT" :    1E-15,      // [fm]
+  "MaxBT" :      7.0,      // [fm] Divided in the program by / PDG::GeV2fm (~ 0.2)
+  "NumberBT" :  8000,      // Number of eikonal density discretizations
+  "logBT" :    false,      // Logarithmic grid
+
+  // Momentum space amplitude lookup array
+  "MinKT2":     1E-15,     // [GeV^2]
+  "MaxKT2":      10.0,     // [GeV^2]
+  "NumberKT2" :  8000,     // Number of screening amplitude discretizations
+  "logKT2" :    false,     // Logarithmic grid
+
+  // Fourier-Bessel integral from A_el(s,t) --> Omega(s,bt)
+  "FBIntegralMinKT": 1E-9, // [GeV]
+  "FBIntegralMaxKT": 15.0, // [GeV]
+  "FBIntegralN":     8000, // Number of integrand intervals
+
+  // Coulomb-Nuclear Interference (for ultra low-|t| elastic scattering process)
+  "CNI": {
+    "NumberKT2": 8000,
+    "logKT2": true,
+    "FBIntegralMaxKT": 15.0, // [GeV]
+    "FBIntegralN": 8000,
+    "TailIntegralN": 8192,
+    "tail_order": 8,        // Gauss Legendre nodes per panel
+    "tail_split_qb": 1.0,   // Transition from logarithmic to linear x = q*b integration
+    "tail_max_qb": 2048.0,   // Maximum dimensionless x = q*b
+    "interp_rel_tol": 5E-5
+  },
+
+  // Event-by-Event screening loop 2D-integral
+  "LOOP_INTEGRAL": {
+    
+    // kT integrator: "GL" (Gauss-Legendre), "1/3" (2nd order Newton-Cotes), "3/8" (3rd order NC), "Boole" (4th order NC)
+    // phi integrator: "Trap" (periodic midpoint trapezoid)
+    "kT_integrator":  "GL",
+    "phi_integrator": "Trap",
+    "log_kT":      false,  // Integrate on a logarithmic log(kt) grid (true)
+    
+    "MinLoopKT":    0.0,   // Minimum loop kt; may be 0 for linear kT, must be >0 for log_kT
+    "MaxLoopKT":    1.25,  // Maximum loop kt
+    
+    // Discretization (8 x 8 ~ 1% accurate)
+    "NumberLoopKT":  8,    // GL: number of kt nodes, Newton-Cotes: number of intervals (modulo requirement)
+    "NumberLoopPHI": 8     // Periodic phi nodes
+  }
+},
+
+"NUMERICS_REGGE": {
+
+  // Transfer step for the elementary photoproduction slope [GeV^2]
+  "photo_dt": 1.0e-5,
+
+  // GP angular trajectory floor, -0.5 < GP_alpha_min <= 1, propagators keep the full trajectory
+  "GP_alpha_min": -0.4900,
+
+  // Maximum retained integer GP exchange helicity
+  "MMAX": 2,
+
+  // Internal transverse convolution of simultaneous
+  // Regge production ladders
+  "LOOP_INTEGRAL": {
+    
+    // kT integrator: "GL", "1/3", "3/8" or "Boole"
+    // phi integrator: "Trap" for the periodic midpoint trapezoid rule
+    "kT_integrator":  "GL",
+    "phi_integrator": "Trap",
+    "log_kT":        false,
+
+    "MinKT":          0.0,  // [GeV]
+    "MaxKT":         2.25,  // [GeV]
+    "NumberKT":        6,
+    "NumberPHI":       6,
+
+    // Impact parameter quadrature used by the
+    // three ladder Fourier product
+    "MaxBT":         7.0, // [fm]
+    "NumberBT":       96
+  }
+},
+
+"NUMERICS_SUDAKOV" : {
+
+  // Sudakov radiator array -log(T)/log^2(mu^2/q2)
+  "SUDA" : {
+    "log_ON" : [true, true],  // Logarithmic grid
+    "N"      : [500, 500],    // Number of discretizations
+    "N_int"  : 1000           // Simpson integration intervals
+  },
+  
+  // Shuvaev pdf array H(q2,x)
+  "SHUV" : {
+    "log_ON" : [true, true],
+    "N"      : [500, 500],
+    "N_int"  : 400
+  },
+
+  "q2_MAX" : 125.0,      // Maximum Q^2 [GeV^2]
+  "DEBUG" : false
+},
+
+"NUMERICS_DURHAM": {
+  
+  // Gluon loop integral upper momentum bound
+  "qt2_MAX" : 100.0,     // GeV^2
+
+  // qt integrator: "GL_IR" (infrared-resolved Gauss-Legendre), "GL" (linear Gauss-Legendre), "1/3", "3/8" or "Boole"
+  // Rules split at the virtuality cuts and flux matching scales
+  // phi integrator: "GL" or "Trap"
+  "qt_integrator":  "GL_IR",
+  "phi_integrator": "GL",
+  "log_qt": true,        // Integrate in log(Q_t) from sqrt(loop_q2_cut)
+  
+  // Hard subprocess helicity contraction (transverse, jzp)
+  "HELICITY_PROJECTOR": "transverse",
+
+  // Processes can be sensitive to these (test!)
+  "N_qt"  : 16,          // GL order per radial interval, NC subintervals
+  "N_phi" : 8,           // Nodes per azimuth interval
+  "N_x"   : 48           // Meson distribution quadrature nodes
+},
+
+"NUMERICS_PHOTOZ": {
+
+  // Loop integral bounds
+  "kappa2_MIN"   : 2.0,    // [GeV^2]
+  "kappa2_MAX"   : 100.0,  // [GeV^2], at most NUMERICS_SUDAKOV q2_MAX
+  "k2_MIN"       : 1e-4,   // [GeV^2]
+  "k2_MAX"       : 100.0,  // [GeV^2]
+  "k2_MAX_use_q2": true,   // Use max(k2_MAX, M^2) as the active upper k^2 bound
+
+  // Gauss-Legendre node counts
+  "N_kappa" : 24,
+  "N_k"     : 24
+},
+
+"NUMERICS_PHOTOVM": {
+
+  // Last-step integral bounds and derivative scale
+  "jmrt_k2_max"      : 125.0, // [GeV^2], keep inside NUMERICS_SUDAKOV q2 range
+  "jmrt_lambda_step" : 0.05,  // ln(1/x) derivative step
+  "N_k"              : 48
+},
+
+// Adaptive MC importance sampler (dim-by-dim factorized)
+"NUMERICS_VEGAS" : {
+  
+  "uniform_mix"      : 0.05,     // Fraction of uniform sampling, to avoid null regions
+  "min_support"      : 10,       // Minimum nonzero calls in an accepted adaptation round
+  "max_support_calls": 1000000,  // Maximum low-support adaptation call target
+  "max_rounds"       : 30,       // Maximum number of automatic adaptation rounds
+  "convergence_window": 3,       // Number of rounds used to identify an ESS plateau
+  "ess_rel_tolerance": 0.10,     // Relative ESS improvement tolerance
+  "best_grid_choice": "best",    // Best grid choice during adaptation, "last", "best"
+  "automatic_convergence": true  // Extend primary VEGAS adaptation until converged
+},
+
+// Adaptive neural importance sampler (neural network)
+"NUMERICS_NEUROJAC" : {
+
+  "uniform_mix"         : 0.05,   // Fraction of uniform sampling, to avoid null regions
+  
+  // Maximum number of stagewise (boosting) spline flows
+  // aka superposition flows
+  "flow_components"     : 1,
+
+  "vegas_init"          : true,   // Use adapted VEGAS as the initial training presampler
+  "vegas_spline_init"   : false,  // Initialize spline knots from the VEGAS grid
+  "vegas_ncall"         : 20000,  // Number of calls per VEGAS initialization round
+  "vegas_rounds"        : 6,      // Number of VEGAS initialization rounds
+  "vegas_sampler_rounds": 3,      // Initial neural rounds sampled from frozen VEGAS
+
+  // Bounded rational-quadratic spline coupling flow
+  "layers" : 4,
+  "bins"   : 8,
+  "hidden" : [32,32],
+  "activation" : "silu",          // 'silu', 'relu' or 'tanh'
+  
+  // Monotonic-spline numerical floors
+  "min_bin"        : 1e-3,
+  "min_derivative" : 1e-3,
+  "density_tol"    : 1e-6,        // Maximum forward/inverse log density discrepancy in proposal validation
+
+  // Coordinate mixing: 'none', deterministic 'interleave' or seeded 'random'
+  "permutation" : "interleave",
+  
+  // Within-round replay: reuse the current buffer_size for multiple epochs. epochs = 1 means no reuse
+  // Cross-round replay:  retain events from earlier proposals and mix them with newly generated events
+
+  // On-the-flight adaptation followed by a frozen integration pass
+  "buffer_size"   : 8192,
+  "batch_size"    : 512,
+  "val_size"      : 4096,        // held-out events collected before each optimizer round
+  "val_patience"  : 25,          // stale validation rounds before early stopping, 0 disables
+  "val_min_delta" : 1e-3,        // minimum absolute held-out ESS/N improvement
+  "replay_frac"   : 0.25,        // target old-event fraction after the first round
+  "replay_cap"    : 16384,       // maximum retained replay events
+  "rounds"        : 50,          // number of adaptation rounds
+  "epochs"        : 6,           // number of training epochs per round without calling the integrand
+
+  // Annealed Renyi starts with mass coverage (forward_kl)
+  // and ends at variance minimization (chi2)
+  "loss" : {
+    "name"        : "renyi",     // 'forward_kl', 'chi2' or 'renyi'
+    "alpha"       : [1.0, 2.0],  // initial and final Renyi order
+    "anneal_frac" : 0.7          // fraction of training used for cosine annealing
+  },
+  
+  // AdamW optimizer with bias correction, decoupled decay and global clipping
+  "learning_rate"      : 5e-4,
+  "final_learning_rate": 5e-5,
+  "lr_schedule"        : "none", // 'none', 'cosine' or 'exponential'
+  "gradient_clip"      : 10.0,
+  "adamw_beta1"        : 0.9,
+  "adamw_beta2"        : 0.999,
+  "adamw_epsilon"      : 1e-8,
+  "adamw_weight_decay" : 1e-2,
+  "adamw_decay_biases" : 1e-5    // bias parameter decay coefficient, 0 disables
+},
+
+"NUMERICS_MC" : {
+  
+  "thread_seeds": "increment",   // "increment" (fully controlled)
+                                 // "random"    (a unique random set, slightly higher entropy)
+  
+  // This skips the screening loop during IS proposal grid adaptation
+  "fast_adaptation": true,
+  
+  // the option "increment" is safe for distributed (grid/cluster)
+  // environments, where different runs use different seeds, so no
+  // threads over the cluster use the same seeds
+
+  "increment_factor": 100,     // for the method "increment"
+  
+  "width_min": 1e-12,          // [GeV] particle with full widths below this are treated as zero width
+  "offshell_max": 5.0,         // Mass window in units of Gamma for tree sampling
+  
+  // Maximum weight technicalities for unweighted generation
+  "MAX_WEIGHT" : {
+    "safety_factor"    : 1.5,
+    "max_overflow_prob": 1e-4,
+    "confidence_level" : 0.99,
+    "overflow_action"  : "keep_as_weighted" // "keep_as_weighted", "break"
+  }
+}
+
+}

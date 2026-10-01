@@ -1,0 +1,30 @@
+{
+    "defaults": {
+        "request_cpus": 1,
+        "request_memory": "4GB",
+        "request_disk": "16GB"
+    },
+    "jobs": {
+        "work": {},
+        "build": {
+            "request_cpus": 8,
+            "request_memory": "8GB",
+            "request_disk": "8GB"
+        },
+        "verifier": {
+            "request_memory": "1GB",
+            "request_disk": "1GB"
+        },
+        "icepacks": {
+            "request_cpus": 8,
+            "request_memory": "8GB",
+            "request_disk": "20GB",
+            "+MaxRuntime": 28800
+        },
+        "summary": {
+            "request_memory": "8GB",
+            "request_disk": "20GB",
+            "+MaxRuntime": 28800
+        }
+    }
+}

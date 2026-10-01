@@ -1,0 +1,40 @@
+{
+  "source": {
+    "a/b": {
+      "~key": [
+        false,
+        null,
+        3
+      ]
+    },
+    "": "empty",
+    "01": "object key"
+  },
+  "object": {
+    "enabled": true,
+    "rows": [
+      [
+        1,
+        2
+      ],
+      [
+        3,
+        4
+      ]
+    ]
+  },
+  "array": [
+    3,
+    4
+  ],
+  "boolean": false,
+  "null": null,
+  "empty": "empty",
+  "number": 2.5,
+  "string": "shared string",
+  "numeric_key": "object key",
+  "escaped": 3,
+  "whole": "shared string",
+  "forward": 17,
+  "last": 17
+}

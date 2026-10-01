@@ -1,0 +1,579 @@
+{
+  "TOTEM_inclusive_0": {
+    "type": "integrated",
+    "result": "measurement",
+    "unit": 3,
+    "sqrts": 7.0,
+    "channel": "total",
+    "measurement": {
+      "value": 98.3,
+      "stat": [0.2, 0.2],
+      "syst": [2.8, 2.8],
+      "lumi": null
+    },
+    "source": "Antchev et al., Europhys. Lett. 96 (2011) 21002, arXiv:1110.1395, DOI 10.1209/0295-5075/96/21002",
+    "series": {
+      "channel": "inclusive",
+      "experiment": "TOTEM",
+      "collision": "pp",
+      "label": "LHC (TOTEM)",
+      "marker": "k.",
+      "source": "Antchev et al., Europhys. Lett. 96 (2011) 21002, arXiv:1110.1395, DOI 10.1209/0295-5075/96/21002"
+    }
+  },
+  "TOTEM_inclusive_1": {
+    "type": "integrated",
+    "result": "measurement",
+    "unit": 3,
+    "sqrts": 7.0,
+    "channel": "inelastic",
+    "measurement": {
+      "value": 73.5,
+      "stat": [0.6, 0.6],
+      "syst": [1.3, 1.8],
+      "lumi": null
+    },
+    "source": "Antchev et al., Europhys. Lett. 96 (2011) 21002, arXiv:1110.1395, DOI 10.1209/0295-5075/96/21002",
+    "series": {
+      "channel": "inclusive",
+      "experiment": "TOTEM",
+      "collision": "pp",
+      "label": "LHC (TOTEM)",
+      "marker": "k.",
+      "source": "Antchev et al., Europhys. Lett. 96 (2011) 21002, arXiv:1110.1395, DOI 10.1209/0295-5075/96/21002"
+    }
+  },
+  "TOTEM_inclusive_2": {
+    "type": "integrated",
+    "result": "measurement",
+    "unit": 3,
+    "sqrts": 7.0,
+    "channel": "elastic",
+    "measurement": {
+      "value": 24.8,
+      "stat": [0.2, 0.2],
+      "syst": [1.2, 1.2],
+      "lumi": null
+    },
+    "source": "Antchev et al., Europhys. Lett. 96 (2011) 21002, arXiv:1110.1395, DOI 10.1209/0295-5075/96/21002",
+    "series": {
+      "channel": "inclusive",
+      "experiment": "TOTEM",
+      "collision": "pp",
+      "label": "LHC (TOTEM)",
+      "marker": "k.",
+      "source": "Antchev et al., Europhys. Lett. 96 (2011) 21002, arXiv:1110.1395, DOI 10.1209/0295-5075/96/21002"
+    }
+  },
+  "CDF_inclusive_0": {
+    "type": "integrated",
+    "result": "measurement",
+    "unit": 3,
+    "sqrts": 1.8,
+    "channel": "total",
+    "measurement": {
+      "value": 80.03,
+      "stat": null,
+      "syst": null,
+      "lumi": null,
+      "total": [2.24, 2.24]
+    },
+    "source": "Abe et al., Phys. Rev. D50 (1994) 5550, DOI 10.1103/PhysRevD.50.5550, with the elastic result from Phys. Rev. D50 (1994) 5518, DOI 10.1103/PhysRevD.50.5518",
+    "series": {
+      "channel": "inclusive",
+      "experiment": "CDF",
+      "collision": "pbar p",
+      "label": "Tevatron (CDF)",
+      "marker": "ko",
+      "source": "Abe et al., Phys. Rev. D50 (1994) 5550, DOI 10.1103/PhysRevD.50.5550, with the elastic result from Phys. Rev. D50 (1994) 5518, DOI 10.1103/PhysRevD.50.5518"
+    }
+  },
+  "CDF_inclusive_1": {
+    "type": "integrated",
+    "result": "measurement",
+    "unit": 3,
+    "sqrts": 1.8,
+    "channel": "inelastic",
+    "measurement": {
+      "value": 60.33,
+      "stat": null,
+      "syst": null,
+      "lumi": null,
+      "total": [1.4, 1.4]
+    },
+    "source": "Abe et al., Phys. Rev. D50 (1994) 5550, DOI 10.1103/PhysRevD.50.5550, with the elastic result from Phys. Rev. D50 (1994) 5518, DOI 10.1103/PhysRevD.50.5518",
+    "series": {
+      "channel": "inclusive",
+      "experiment": "CDF",
+      "collision": "pbar p",
+      "label": "Tevatron (CDF)",
+      "marker": "ko",
+      "source": "Abe et al., Phys. Rev. D50 (1994) 5550, DOI 10.1103/PhysRevD.50.5550, with the elastic result from Phys. Rev. D50 (1994) 5518, DOI 10.1103/PhysRevD.50.5518"
+    }
+  },
+  "CDF_inclusive_2": {
+    "type": "integrated",
+    "result": "measurement",
+    "unit": 3,
+    "sqrts": 1.8,
+    "channel": "elastic",
+    "measurement": {
+      "value": 19.7,
+      "stat": null,
+      "syst": null,
+      "lumi": null,
+      "total": [0.85, 0.85]
+    },
+    "source": "Abe et al., Phys. Rev. D50 (1994) 5550, DOI 10.1103/PhysRevD.50.5550, with the elastic result from Phys. Rev. D50 (1994) 5518, DOI 10.1103/PhysRevD.50.5518",
+    "series": {
+      "channel": "inclusive",
+      "experiment": "CDF",
+      "collision": "pbar p",
+      "label": "Tevatron (CDF)",
+      "marker": "ko",
+      "source": "Abe et al., Phys. Rev. D50 (1994) 5550, DOI 10.1103/PhysRevD.50.5550, with the elastic result from Phys. Rev. D50 (1994) 5518, DOI 10.1103/PhysRevD.50.5518"
+    }
+  },
+  "ISR_sd_0": {
+    "type": "integrated",
+    "result": "measurement",
+    "unit": 3,
+    "sqrts": 0.02345207879911715,
+    "channel": "sd",
+    "measurement": {
+      "value": 6.5,
+      "stat": null,
+      "syst": null,
+      "lumi": null,
+      "total": [0.2, 0.2]
+    },
+    "source": "Armitage et al., Nucl. Phys. B194 (1982) 365, DOI 10.1016/0550-3213(82)90014-1, HEPData 10.17182/hepdata.7553",
+    "series": {
+      "channel": "SD",
+      "experiment": "ISR",
+      "label": "ISR, $M_X^2/s < 0.05$ [fit]",
+      "marker": "k.",
+      "selection": "M_X^2 / s < 0.05, integrated over t, both dissociation arms",
+      "source": "Armitage et al., Nucl. Phys. B194 (1982) 365, DOI 10.1016/0550-3213(82)90014-1, HEPData 10.17182/hepdata.7553",
+      "fit_observable": "sd_xi_005",
+      "collision": "pp"
+    }
+  },
+  "ISR_sd_1": {
+    "type": "integrated",
+    "result": "measurement",
+    "unit": 3,
+    "sqrts": 0.06228964600958974,
+    "channel": "sd",
+    "measurement": {
+      "value": 7.5,
+      "stat": null,
+      "syst": null,
+      "lumi": null,
+      "total": [0.3, 0.3]
+    },
+    "source": "Armitage et al., Nucl. Phys. B194 (1982) 365, DOI 10.1016/0550-3213(82)90014-1, HEPData 10.17182/hepdata.7553",
+    "series": {
+      "channel": "SD",
+      "experiment": "ISR",
+      "label": "ISR, $M_X^2/s < 0.05$ [fit]",
+      "marker": "k.",
+      "selection": "M_X^2 / s < 0.05, integrated over t, both dissociation arms",
+      "source": "Armitage et al., Nucl. Phys. B194 (1982) 365, DOI 10.1016/0550-3213(82)90014-1, HEPData 10.17182/hepdata.7553",
+      "fit_observable": "sd_xi_005",
+      "collision": "pp"
+    }
+  },
+  "UA4_sd_0": {
+    "type": "integrated",
+    "result": "measurement",
+    "unit": 3,
+    "sqrts": 0.546,
+    "channel": "sd",
+    "measurement": {
+      "value": 9.4,
+      "stat": null,
+      "syst": null,
+      "lumi": null,
+      "total": [0.7, 0.7]
+    },
+    "source": "Bernard et al., Phys. Lett. B186 (1987) 227, DOI 10.1016/0370-2693(87)90285-1",
+    "series": {
+      "channel": "SD",
+      "experiment": "UA4",
+      "label": "UA4, $M_X^2/s < 0.05$ [fit]",
+      "marker": "k^",
+      "selection": "M_X^2 / s <= 0.05, both dissociation arms",
+      "source": "Bernard et al., Phys. Lett. B186 (1987) 227, DOI 10.1016/0370-2693(87)90285-1",
+      "fit_observable": "sd_xi_005",
+      "collision": "ppbar"
+    }
+  },
+  "E710_sd_0": {
+    "type": "integrated",
+    "result": "measurement",
+    "unit": 3,
+    "sqrts": 1.8,
+    "channel": "sd",
+    "measurement": {
+      "value": 9.4,
+      "stat": null,
+      "syst": null,
+      "lumi": null,
+      "total": [1.4, 1.4]
+    },
+    "source": "Amos et al., Phys. Lett. B301 (1993) 313, DOI 10.1016/0370-2693(93)90707-O",
+    "series": {
+      "channel": "SD",
+      "experiment": "E710",
+      "label": "E710, $2 < M_X^2 < 0.05s$ [different fiducial]",
+      "marker": "ks",
+      "selection": "combined E710 result, including 2 < M_X^2 < 0.05s",
+      "source": "Amos et al., Phys. Lett. B301 (1993) 313, DOI 10.1016/0370-2693(93)90707-O",
+      "fit_observable": null,
+      "collision": "ppbar"
+    }
+  },
+  "CDF_sd_0": {
+    "type": "integrated",
+    "result": "measurement",
+    "unit": 3,
+    "sqrts": 0.546,
+    "channel": "sd",
+    "measurement": {
+      "value": 7.89,
+      "stat": null,
+      "syst": null,
+      "lumi": null,
+      "total": [0.33, 0.33]
+    },
+    "source": "Abe et al., Phys. Rev. D50 (1994) 5535, DOI 10.1103/PhysRevD.50.5535",
+    "series": {
+      "channel": "SD",
+      "experiment": "CDF",
+      "label": "CDF, $1.5 < M_X^2 < 0.15s$ [different fiducial]",
+      "marker": "ko",
+      "selection": "1.5 GeV^2 < M_X^2 < 0.15s, both dissociation arms",
+      "source": "Abe et al., Phys. Rev. D50 (1994) 5535, DOI 10.1103/PhysRevD.50.5535",
+      "fit_observable": null,
+      "collision": "ppbar"
+    }
+  },
+  "CDF_sd_1": {
+    "type": "integrated",
+    "result": "measurement",
+    "unit": 3,
+    "sqrts": 1.8,
+    "channel": "sd",
+    "measurement": {
+      "value": 9.46,
+      "stat": null,
+      "syst": null,
+      "lumi": null,
+      "total": [0.44, 0.44]
+    },
+    "source": "Abe et al., Phys. Rev. D50 (1994) 5535, DOI 10.1103/PhysRevD.50.5535",
+    "series": {
+      "channel": "SD",
+      "experiment": "CDF",
+      "label": "CDF, $1.5 < M_X^2 < 0.15s$ [different fiducial]",
+      "marker": "ko",
+      "selection": "1.5 GeV^2 < M_X^2 < 0.15s, both dissociation arms",
+      "source": "Abe et al., Phys. Rev. D50 (1994) 5535, DOI 10.1103/PhysRevD.50.5535",
+      "fit_observable": null,
+      "collision": "ppbar"
+    }
+  },
+  "ALICE_sd_0": {
+    "type": "integrated",
+    "result": "measurement",
+    "unit": 3,
+    "sqrts": 0.9,
+    "channel": "sd",
+    "measurement": {
+      "value": 11.2,
+      "stat": null,
+      "syst": [2.1, 1.6],
+      "lumi": null
+    },
+    "source": "Abelev et al., Eur. Phys. J. C73 (2013) 2456, arXiv:1208.4968, DOI 10.1140/epjc/s10052-013-2456-0",
+    "series": {
+      "channel": "SD",
+      "experiment": "ALICE",
+      "label": "ALICE, $M_X < 200$ GeV [different fiducial]",
+      "marker": "rs",
+      "selection": "M_X < 200 GeV",
+      "source": "Abelev et al., Eur. Phys. J. C73 (2013) 2456, arXiv:1208.4968, DOI 10.1140/epjc/s10052-013-2456-0",
+      "fit_observable": null,
+      "collision": "pp"
+    }
+  },
+  "ALICE_sd_1": {
+    "type": "integrated",
+    "result": "measurement",
+    "unit": 3,
+    "sqrts": 2.76,
+    "channel": "sd",
+    "measurement": {
+      "value": 12.2,
+      "stat": null,
+      "syst": [5.3, 3.9],
+      "lumi": [0.2, 0.2]
+    },
+    "source": "Abelev et al., Eur. Phys. J. C73 (2013) 2456, arXiv:1208.4968, DOI 10.1140/epjc/s10052-013-2456-0",
+    "series": {
+      "channel": "SD",
+      "experiment": "ALICE",
+      "label": "ALICE, $M_X < 200$ GeV [different fiducial]",
+      "marker": "rs",
+      "selection": "M_X < 200 GeV",
+      "source": "Abelev et al., Eur. Phys. J. C73 (2013) 2456, arXiv:1208.4968, DOI 10.1140/epjc/s10052-013-2456-0",
+      "fit_observable": null,
+      "collision": "pp"
+    }
+  },
+  "ALICE_sd_2": {
+    "type": "integrated",
+    "result": "measurement",
+    "unit": 3,
+    "sqrts": 7.0,
+    "channel": "sd",
+    "measurement": {
+      "value": 14.9,
+      "stat": null,
+      "syst": [5.9, 3.4],
+      "lumi": [0.5, 0.5]
+    },
+    "source": "Abelev et al., Eur. Phys. J. C73 (2013) 2456, arXiv:1208.4968, DOI 10.1140/epjc/s10052-013-2456-0",
+    "series": {
+      "channel": "SD",
+      "experiment": "ALICE",
+      "label": "ALICE, $M_X < 200$ GeV [different fiducial]",
+      "marker": "rs",
+      "selection": "M_X < 200 GeV",
+      "source": "Abelev et al., Eur. Phys. J. C73 (2013) 2456, arXiv:1208.4968, DOI 10.1140/epjc/s10052-013-2456-0",
+      "fit_observable": null,
+      "collision": "pp"
+    }
+  },
+  "CMS_sd_0": {
+    "type": "integrated",
+    "result": "measurement",
+    "unit": 3,
+    "sqrts": 7.0,
+    "channel": "sd",
+    "measurement": {
+      "value": 8.84,
+      "stat": [0.08, 0.08],
+      "syst": [1.38, 1.49],
+      "lumi": null,
+      "extrap": [0.37, 1.17]
+    },
+    "source": "Khachatryan et al., Phys. Rev. D92 (2015) 012003, arXiv:1503.08689, DOI 10.1103/PhysRevD.92.012003",
+    "series": {
+      "channel": "SD",
+      "experiment": "CMS",
+      "label": "CMS, $\\xi_X < 0.05$ [fit]",
+      "marker": "kx",
+      "selection": "xi_X < 0.05, extrapolated with PYTHIA 8 MBR, both dissociation arms",
+      "source": "Khachatryan et al., Phys. Rev. D92 (2015) 012003, arXiv:1503.08689, DOI 10.1103/PhysRevD.92.012003",
+      "fit_observable": "sd_xi_005",
+      "collision": "pp"
+    }
+  },
+  "UA5_dd_0": {
+    "type": "integrated",
+    "result": "measurement",
+    "unit": 3,
+    "sqrts": 0.2,
+    "channel": "dd",
+    "measurement": {
+      "value": 3.5,
+      "stat": null,
+      "syst": null,
+      "lumi": null,
+      "total": [2.2, 2.2]
+    },
+    "source": "Ansorge et al., Z. Phys. C33 (1986) 175, DOI 10.1007/BF01411134, HEPData 10.17182/hepdata.15812",
+    "series": {
+      "channel": "DD",
+      "experiment": "UA5",
+      "label": "UA5 topology estimate [different fiducial]",
+      "marker": "ks",
+      "selection": "UA5 two-arm topology estimate",
+      "source": "Ansorge et al., Z. Phys. C33 (1986) 175, DOI 10.1007/BF01411134, HEPData 10.17182/hepdata.15812",
+      "fit_observable": null,
+      "collision": "ppbar"
+    }
+  },
+  "UA5_dd_1": {
+    "type": "integrated",
+    "result": "measurement",
+    "unit": 3,
+    "sqrts": 0.9,
+    "channel": "dd",
+    "measurement": {
+      "value": 4.0,
+      "stat": null,
+      "syst": null,
+      "lumi": null,
+      "total": [2.5, 2.5]
+    },
+    "source": "Ansorge et al., Z. Phys. C33 (1986) 175, DOI 10.1007/BF01411134, HEPData 10.17182/hepdata.15812",
+    "series": {
+      "channel": "DD",
+      "experiment": "UA5",
+      "label": "UA5 topology estimate [different fiducial]",
+      "marker": "ks",
+      "selection": "UA5 two-arm topology estimate",
+      "source": "Ansorge et al., Z. Phys. C33 (1986) 175, DOI 10.1007/BF01411134, HEPData 10.17182/hepdata.15812",
+      "fit_observable": null,
+      "collision": "ppbar"
+    }
+  },
+  "CDF_dd_0": {
+    "type": "integrated",
+    "result": "measurement",
+    "unit": 3,
+    "sqrts": 0.63,
+    "channel": "dd",
+    "measurement": {
+      "value": 3.42,
+      "stat": [0.01, 0.01],
+      "syst": [1.09, 1.09],
+      "lumi": null
+    },
+    "source": "Affolder et al., Phys. Rev. Lett. 87 (2001) 141802, arXiv:hep-ex/0107070, DOI 10.1103/PhysRevLett.87.141802",
+    "series": {
+      "channel": "DD",
+      "experiment": "CDF",
+      "label": "CDF, $\\Delta\\eta^0 > 3$ [different fiducial]",
+      "marker": "ko",
+      "selection": "central pseudorapidity gap Delta eta^0 > 3",
+      "source": "Affolder et al., Phys. Rev. Lett. 87 (2001) 141802, arXiv:hep-ex/0107070, DOI 10.1103/PhysRevLett.87.141802",
+      "fit_observable": null,
+      "collision": "ppbar"
+    }
+  },
+  "CDF_dd_1": {
+    "type": "integrated",
+    "result": "measurement",
+    "unit": 3,
+    "sqrts": 1.8,
+    "channel": "dd",
+    "measurement": {
+      "value": 4.43,
+      "stat": [0.02, 0.02],
+      "syst": [1.18, 1.18],
+      "lumi": null
+    },
+    "source": "Affolder et al., Phys. Rev. Lett. 87 (2001) 141802, arXiv:hep-ex/0107070, DOI 10.1103/PhysRevLett.87.141802",
+    "series": {
+      "channel": "DD",
+      "experiment": "CDF",
+      "label": "CDF, $\\Delta\\eta^0 > 3$ [different fiducial]",
+      "marker": "ko",
+      "selection": "central pseudorapidity gap Delta eta^0 > 3",
+      "source": "Affolder et al., Phys. Rev. Lett. 87 (2001) 141802, arXiv:hep-ex/0107070, DOI 10.1103/PhysRevLett.87.141802",
+      "fit_observable": null,
+      "collision": "ppbar"
+    }
+  },
+  "ALICE_dd_0": {
+    "type": "integrated",
+    "result": "measurement",
+    "unit": 3,
+    "sqrts": 0.9,
+    "channel": "dd",
+    "measurement": {
+      "value": 5.6,
+      "stat": null,
+      "syst": [2.0, 2.0],
+      "lumi": null
+    },
+    "source": "Abelev et al., Eur. Phys. J. C73 (2013) 2456, arXiv:1208.4968, DOI 10.1140/epjc/s10052-013-2456-0",
+    "series": {
+      "channel": "DD",
+      "experiment": "ALICE",
+      "label": "ALICE, $\\Delta\\eta > 3$ [different fiducial]",
+      "marker": "rs",
+      "selection": "pseudorapidity gap Delta eta > 3",
+      "source": "Abelev et al., Eur. Phys. J. C73 (2013) 2456, arXiv:1208.4968, DOI 10.1140/epjc/s10052-013-2456-0",
+      "fit_observable": null,
+      "collision": "pp"
+    }
+  },
+  "ALICE_dd_1": {
+    "type": "integrated",
+    "result": "measurement",
+    "unit": 3,
+    "sqrts": 2.76,
+    "channel": "dd",
+    "measurement": {
+      "value": 7.8,
+      "stat": null,
+      "syst": [3.2, 3.2],
+      "lumi": [0.2, 0.2]
+    },
+    "source": "Abelev et al., Eur. Phys. J. C73 (2013) 2456, arXiv:1208.4968, DOI 10.1140/epjc/s10052-013-2456-0",
+    "series": {
+      "channel": "DD",
+      "experiment": "ALICE",
+      "label": "ALICE, $\\Delta\\eta > 3$ [different fiducial]",
+      "marker": "rs",
+      "selection": "pseudorapidity gap Delta eta > 3",
+      "source": "Abelev et al., Eur. Phys. J. C73 (2013) 2456, arXiv:1208.4968, DOI 10.1140/epjc/s10052-013-2456-0",
+      "fit_observable": null,
+      "collision": "pp"
+    }
+  },
+  "ALICE_dd_2": {
+    "type": "integrated",
+    "result": "measurement",
+    "unit": 3,
+    "sqrts": 7.0,
+    "channel": "dd",
+    "measurement": {
+      "value": 9.0,
+      "stat": null,
+      "syst": [2.6, 2.6],
+      "lumi": [0.3, 0.3]
+    },
+    "source": "Abelev et al., Eur. Phys. J. C73 (2013) 2456, arXiv:1208.4968, DOI 10.1140/epjc/s10052-013-2456-0",
+    "series": {
+      "channel": "DD",
+      "experiment": "ALICE",
+      "label": "ALICE, $\\Delta\\eta > 3$ [different fiducial]",
+      "marker": "rs",
+      "selection": "pseudorapidity gap Delta eta > 3",
+      "source": "Abelev et al., Eur. Phys. J. C73 (2013) 2456, arXiv:1208.4968, DOI 10.1140/epjc/s10052-013-2456-0",
+      "fit_observable": null,
+      "collision": "pp"
+    }
+  },
+  "CMS_dd_0": {
+    "type": "integrated",
+    "result": "measurement",
+    "unit": 3,
+    "sqrts": 7.0,
+    "channel": "dd",
+    "measurement": {
+      "value": 5.17,
+      "stat": [0.08, 0.08],
+      "syst": [0.57, 0.55],
+      "lumi": null,
+      "extrap": [0.51, 1.62]
+    },
+    "source": "Khachatryan et al., Phys. Rev. D92 (2015) 012003, arXiv:1503.08689, DOI 10.1103/PhysRevD.92.012003",
+    "series": {
+      "channel": "DD",
+      "experiment": "CMS",
+      "label": "CMS, $\\Delta\\eta > 3$ [different fiducial]",
+      "marker": "kx",
+      "selection": "pseudorapidity gap Delta eta > 3, PYTHIA 8 MBR extrapolation",
+      "source": "Khachatryan et al., Phys. Rev. D92 (2015) 012003, arXiv:1503.08689, DOI 10.1103/PhysRevD.92.012003",
+      "fit_observable": null,
+      "collision": "pp"
+    }
+  }
+}

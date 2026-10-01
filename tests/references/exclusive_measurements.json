@@ -1,0 +1,383 @@
+{
+  "cms_quasiexclusive_ww_8tev": {
+    "type": "integrated",
+    "result": "unavailable",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": null,
+    "channel": null,
+    "bibtex": null,
+    "measurement": {
+      "value": null,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": null,
+    "sqrts": 8.0,
+    "reference": {
+      "title": "Evidence for exclusive gamma gamma to W+W- production and constraints on anomalous quartic gauge couplings at sqrt(s)=8 TeV",
+      "journal": "JHEP 08 (2016) 119",
+      "arxiv": "1604.04464",
+      "hepdata": "10.17182/hepdata.74707.v1"
+    },
+    "source": "https://arxiv.org/abs/1604.04464",
+    "comparison": false,
+    "note": "The measured e-mu sample includes proton dissociation selected by a charged-track veto, while the SuperChic and GRANIITTI benchmark is elastic pp to pWWp"
+  },
+  "cms_totem_exclusive_ww_13tev": {
+    "type": "integrated",
+    "result": "upper_limit",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": null,
+    "channel": null,
+    "bibtex": null,
+    "measurement": {
+      "value": 67.0,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 15,
+    "sqrts": 13.0,
+    "reference": {
+      "title": "Search for high-mass exclusive gamma gamma to WW and gamma gamma to ZZ production in proton-proton collisions at sqrt(s)=13 TeV",
+      "journal": "JHEP 07 (2023) 229",
+      "arxiv": "2211.16320",
+      "hepdata": "10.17182/hepdata.135991.v1"
+    },
+    "source": "https://arxiv.org/abs/2211.16320",
+    "comparison": false,
+    "note": "The published limit is explicitly valid for AQGC-like mass and xi dependence and HEPData contains coupling-limit surfaces rather than an unfolded Standard Model WW spectrum",
+    "confidence_level": 0.95,
+    "fiducial": {
+      "mass_min_gev": 1000.0,
+      "proton_xi":
+        [0.04, 0.2]
+    }
+  },
+  "cms_totem_single_diffractive_dijets_8tev": {
+    "type": "integrated",
+    "result": "unavailable",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": null,
+    "channel": null,
+    "bibtex": null,
+    "measurement": {
+      "value": null,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": null,
+    "sqrts": 8.0,
+    "reference": {
+      "title": "Measurement of single-diffractive dijet production in proton-proton collisions at sqrt(s)=8 TeV with the CMS and TOTEM experiments",
+      "journal": "Eur. Phys. J. C 80 (2020) 1164",
+      "arxiv": "2002.12146",
+      "hepdata": "10.17182/hepdata.94257.v1"
+    },
+    "source": "https://arxiv.org/abs/2002.12146",
+    "comparison": false,
+    "note": "This is pp to pX single-diffractive production with a Pomeron remnant, not central exclusive pp to p plus dijets plus p production"
+  },
+  "CDF08_jets_et10": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "CDF exclusive dijet selection",
+    "channel": "dijets",
+    "bibtex": null,
+    "measurement": {
+      "value": 1100.0,
+      "stat":
+        [40.0, 40.0],
+      "syst":
+        [540.0, 1290.0],
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 1.96,
+    "reference": {
+      "title": "Observation of exclusive dijet production at the Fermilab Tevatron p-pbar collider",
+      "journal": "Phys. Rev. D 77 (2008) 052004",
+      "arxiv": "0712.0604",
+      "hepdata": null
+    },
+    "source": "https://arxiv.org/abs/0712.0604",
+    "comparison": false,
+    "note": "The published cross sections use Roman-pot xi acceptance, a forward gap, calorimeter jets, hadronization and an exclusive-signal fit; no machine-readable HEPData submission was found",
+    "fiducial": {
+      "jet_et_min_gev": 10.0
+    }
+  },
+  "CDF08_jets_et15": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "CDF exclusive dijet selection",
+    "channel": "dijets",
+    "bibtex": null,
+    "measurement": {
+      "value": 112.0,
+      "stat":
+        [7.0, 7.0],
+      "syst":
+        [49.0, 84.0],
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 1.96,
+    "reference": {
+      "title": "Observation of exclusive dijet production at the Fermilab Tevatron p-pbar collider",
+      "journal": "Phys. Rev. D 77 (2008) 052004",
+      "arxiv": "0712.0604",
+      "hepdata": null
+    },
+    "source": "https://arxiv.org/abs/0712.0604",
+    "comparison": false,
+    "note": "The published cross sections use Roman-pot xi acceptance, a forward gap, calorimeter jets, hadronization and an exclusive-signal fit; no machine-readable HEPData submission was found",
+    "fiducial": {
+      "jet_et_min_gev": 15.0
+    }
+  },
+  "CDF08_jets_et20": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "CDF exclusive dijet selection",
+    "channel": "dijets",
+    "bibtex": null,
+    "measurement": {
+      "value": 15.7,
+      "stat":
+        [2.0, 2.0],
+      "syst":
+        [9.6, 15.5],
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 1.96,
+    "reference": {
+      "title": "Observation of exclusive dijet production at the Fermilab Tevatron p-pbar collider",
+      "journal": "Phys. Rev. D 77 (2008) 052004",
+      "arxiv": "0712.0604",
+      "hepdata": null
+    },
+    "source": "https://arxiv.org/abs/0712.0604",
+    "comparison": false,
+    "note": "The published cross sections use Roman-pot xi acceptance, a forward gap, calorimeter jets, hadronization and an exclusive-signal fit; no machine-readable HEPData submission was found",
+    "fiducial": {
+      "jet_et_min_gev": 20.0
+    }
+  },
+  "CDF08_jets_et25": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "CDF exclusive dijet selection",
+    "channel": "dijets",
+    "bibtex": null,
+    "measurement": {
+      "value": 4.84,
+      "stat":
+        [0.96, 0.96],
+      "syst":
+        [3.28, 4.11],
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 1.96,
+    "reference": {
+      "title": "Observation of exclusive dijet production at the Fermilab Tevatron p-pbar collider",
+      "journal": "Phys. Rev. D 77 (2008) 052004",
+      "arxiv": "0712.0604",
+      "hepdata": null
+    },
+    "source": "https://arxiv.org/abs/0712.0604",
+    "comparison": false,
+    "note": "The published cross sections use Roman-pot xi acceptance, a forward gap, calorimeter jets, hadronization and an exclusive-signal fit; no machine-readable HEPData submission was found",
+    "fiducial": {
+      "jet_et_min_gev": 25.0
+    }
+  },
+  "CDF08_jets_et35": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "CDF exclusive dijet selection",
+    "channel": "dijets",
+    "bibtex": null,
+    "measurement": {
+      "value": 1.37,
+      "stat":
+        [0.49, 0.49],
+      "syst":
+        [1.01, 1.08],
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 1.96,
+    "reference": {
+      "title": "Observation of exclusive dijet production at the Fermilab Tevatron p-pbar collider",
+      "journal": "Phys. Rev. D 77 (2008) 052004",
+      "arxiv": "0712.0604",
+      "hepdata": null
+    },
+    "source": "https://arxiv.org/abs/0712.0604",
+    "comparison": false,
+    "note": "The published cross sections use Roman-pot xi acceptance, a forward gap, calorimeter jets, hadronization and an exclusive-signal fit; no machine-readable HEPData submission was found",
+    "fiducial": {
+      "jet_et_min_gev": 35.0
+    }
+  },
+  "oxford_chic1_90cl": {
+    "type": "integrated",
+    "result": "interval",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "Both final state muons satisfy 2 < eta < 4.5 and photon conversion and detector efficiencies are corrected in the quoted cross sections",
+    "channel": "chic1",
+    "bibtex": null,
+    "measurement": {
+      "value": 19.5,
+      "stat":
+        [15.0, 15.0],
+      "syst":
+        [15.4, 15.4],
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "title": "Central exclusive production of chi_c mesons in sqrt(s)=13 TeV proton-proton collisions",
+      "type": "University of Oxford doctoral thesis",
+      "year": 2021,
+      "cds": "CERN-THESIS-2021-222",
+      "hepdata": null
+    },
+    "source": "https://inspirehep.net/files/8f61908b470075954f6f8c73f67f0593",
+    "fiducial": {
+      "integrated_luminosity_pb_inverse": 711.0,
+      "decay": "chi_cJ to J/psi gamma, J/psi to mu+mu-, converted gamma",
+      "muon_eta":
+        [2.0, 4.5]
+    },
+    "confidence_level": 0.9
+  },
+  "oxford_chic2": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": "icepack/DURHAM/_common/gencard.json",
+    "python_cuts": "icepack/DURHAM/_common/cuts_inclusive.py",
+    "pid":
+      [-13, 13, 22],
+    "cuts": "Both final state muons satisfy 2 < eta < 4.5 and photon conversion and detector efficiencies are corrected in the quoted cross sections",
+    "channel": "chic2",
+    "bibtex": null,
+    "measurement": {
+      "value": 99.6,
+      "stat":
+        [12.7, 12.7],
+      "syst":
+        [27.7, 27.7],
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "title": "Central exclusive production of chi_c mesons in sqrt(s)=13 TeV proton-proton collisions",
+      "type": "University of Oxford doctoral thesis",
+      "year": 2021,
+      "cds": "CERN-THESIS-2021-222",
+      "hepdata": null
+    },
+    "source": "https://inspirehep.net/files/8f61908b470075954f6f8c73f67f0593",
+    "fiducial": {
+      "integrated_luminosity_pb_inverse": 711.0,
+      "decay": "chi_cJ to J/psi gamma, J/psi to mu+mu-, converted gamma",
+      "muon_eta":
+        [2.0, 4.5]
+    },
+    "dataset": "icepack/DURHAM/chic_oxford_thesis/dataset.json"
+  },
+  "cms_totem_charged_hadron_pairs_13tev": {
+    "type": "integrated",
+    "result": "unavailable",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": null,
+    "channel": null,
+    "bibtex": null,
+    "measurement": {
+      "value": null,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": null,
+    "sqrts": 13.0,
+    "reference": {
+      "title": "Nonresonant central exclusive production of charged-hadron pairs in proton-proton collisions at sqrt(s)=13 TeV",
+      "journal": "Phys. Rev. D 109 (2024) 112013",
+      "arxiv": "2401.14494",
+      "hepdata": "10.17182/hepdata.145998.v1"
+    },
+    "source": "https://arxiv.org/abs/2401.14494",
+    "comparison": false,
+    "note": "The proton-tagged pi+pi- measurement probes the low-mass nonresonant soft double-Pomeron regime and is compared to DIME/Regge models, not the large-angle hard gg to meson-pair kernel"
+  },
+  "oxford_chic1": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": "icepack/DURHAM/_common/gencard.json",
+    "python_cuts": "icepack/DURHAM/_common/cuts_inclusive.py",
+    "pid":
+      [-13, 13, 22],
+    "cuts": "Both final state muons satisfy 2 < eta < 4.5 and photon conversion and detector efficiencies are corrected in the quoted cross sections",
+    "channel": "chic1",
+    "bibtex": null,
+    "measurement": {
+      "value": 13.9,
+      "stat":
+        [10.7, 10.7],
+      "syst":
+        [11.0, 11.0],
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "title": "Central exclusive production of chi_c mesons in sqrt(s)=13 TeV proton-proton collisions",
+      "type": "University of Oxford doctoral thesis",
+      "year": 2021,
+      "cds": "CERN-THESIS-2021-222",
+      "hepdata": null
+    },
+    "source": "https://inspirehep.net/files/8f61908b470075954f6f8c73f67f0593",
+    "fiducial": {
+      "integrated_luminosity_pb_inverse": 711.0,
+      "decay": "chi_cJ to J/psi gamma, J/psi to mu+mu-, converted gamma",
+      "muon_eta":
+        [2.0, 4.5]
+    },
+    "dataset": "icepack/DURHAM/chic_oxford_thesis/dataset.json"
+  }
+}

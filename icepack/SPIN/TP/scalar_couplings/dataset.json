@@ -1,0 +1,70 @@
+// Pure Tensor Pomeron couplings for the scalar f0(980)
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "g0",
+      "label": "GRANIITTI TP[RES] $g_0$",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[RES]<F> -> pi+ pi- @RES{f0_980:1}",
+        "f0_980.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[0]": 1.0,
+        "f0_980.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[1]": 0.0
+      }
+    },
+    {
+      "name": "g1",
+      "label": "GRANIITTI TP[RES] $g_1$",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[RES]<F> -> pi+ pi- @RES{f0_980:1}",
+        "f0_980.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[0]": 0.0,
+        "f0_980.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[1]": 1.0
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "unit_density",
+    "density_uncertainty": "shape",
+    "ratio_plot": true,
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "hist"
+  },
+  "fit": {"normalization": "unit_density"},
+  "sets": [
+    {
+      "name": "f0(980), g0",
+      "sample": "g0",
+      "plot_group": "TP_scalar_couplings",
+      "title": "TP f0(980) couplings",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "f0(980), g1",
+      "sample": "g1",
+      "plot_group": "TP_scalar_couplings",
+      "title": "TP f0(980) couplings",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    }
+  ]
+}

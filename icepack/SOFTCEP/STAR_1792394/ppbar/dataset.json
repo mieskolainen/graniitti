@@ -1,0 +1,57 @@
+{
+  // This card uses post-generator fiducial cuts in the python code
+  "active": true,
+  "type": "HEPDATA_1792394",
+  "reader": "../_common/reader.py",
+  "datapath": "HEPData/CEP/HEPData-ins1792394-v1-json/",
+  "samples": [
+    {"name": "nominal", "label": "GRANIITTI GP[CON]", "gencard": "./gencard.json", "parameters": {}}
+  ],
+  "plot": {"normalization": "cross_section", "unit": "pb", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "STAR $pp$ 0.2 TeV ($p\\bar{p}$)",
+      "title": "$|\\eta_{p}|<0.7$, $p_{T,p}>0.4$ GeV, $\\min(p_{T,1},p_{T,2})<1.1$ GeV, proton acceptance",
+      "pid": [2212, -2212],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"file": "Figure9(right).json", "obs": "M", "scale": 1E-12, "fitw": 1.0},
+        {"file": "Figure11(top,right).json", "obs": "dPhi_pp", "scale": 1E-12, "fitw": 1.0},
+        {"file": "Figure11(bottom,right).json", "obs": "Abs_t1t2", "scale": 1E-12, "fitw": 1.0},
+        {"file": "Figure10(right).json", "obs": "Rap", "scale": 1E-12, "fitw": 1.0},
+        {"file": "Figure14(top,right).json", "obs": "costheta_CS", "scale": 1E-12, "fitw": 1.0},
+        {"file": "Figure14(bottom,right).json", "obs": "phi_CS", "scale": 1E-12, "fitw": 1.0}
+      ]
+    },
+    {
+      // DeltaPhi(pp) > 90 deg
+      "name": "STAR $pp$ 0.2 TeV ($p\\bar{p}$, $\\Delta\\phi > 90^\\circ$)",
+      "title": "$\\Delta\\phi_{pp}>90^\\circ$, $|\\eta_{p}|<0.7$, $p_{T,p}>0.4$ GeV, $\\min(p_{T,1},p_{T,2})<1.1$ GeV, proton acceptance",
+      "pid": [2212, -2212],
+      "cuts": "../_common/cuts_dPhi_pp_above_90.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"file": "Figure12(bottom,right).json", "obs": "M", "scale": 1E-12, "fitw": 1.0}
+      ]
+    },
+    {
+      // DeltaPhi(pp) < 90 deg
+      "name": "STAR $pp$ 0.2 TeV ($p\\bar{p}$, $\\Delta\\phi < 90^\\circ$)",
+      "title": "$\\Delta\\phi_{pp}<90^\\circ$, $|\\eta_{p}|<0.7$, $p_{T,p}>0.4$ GeV, $\\min(p_{T,1},p_{T,2})<1.1$ GeV, proton acceptance",
+      "pid": [2212, -2212],
+      "cuts": "../_common/cuts_dPhi_pp_below_90.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"file": "Figure12(bottom,left).json", "obs": "M", "scale": 1E-12, "fitw": 1.0}
+      ]
+    }
+  ]
+}

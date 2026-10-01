@@ -1,0 +1,655 @@
+{
+  "STAR_1792394_pipi_below_90": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": "icepack/SOFTCEP/integrated/STAR_2020/gencard_pipi.json",
+    "python_cuts": "icepack/SOFTCEP/STAR_1792394/_common/cuts_dPhi_pp_below_90.py",
+    "pid":
+      [211, -211],
+    "cuts": "STAR, $\\Delta \\phi < 90^{\\circ}$",
+    "channel": "$\\pi^+\\pi^-$",
+    "bibtex": "Adam:2020sap",
+    "measurement": {
+      "value": 44.1,
+      "stat":
+        [0.2, 0.2],
+      "syst":
+        [4.2, 4.6],
+      "lumi": null
+    },
+    "unit": 9,
+    "sqrts": 0.2,
+    "source": "https://arxiv.org/abs/2004.11078",
+    "dataset": "icepack/SOFTCEP/integrated/STAR_2020/dataset.json"
+  },
+  "STAR_1792394_pipi_above_90": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": "icepack/SOFTCEP/integrated/STAR_2020/gencard_pipi.json",
+    "python_cuts": "icepack/SOFTCEP/STAR_1792394/_common/cuts_dPhi_pp_above_90.py",
+    "pid":
+      [211, -211],
+    "cuts": "STAR, $\\Delta \\phi > 90^{\\circ}$",
+    "channel": "$\\pi^+\\pi^-$",
+    "bibtex": "Adam:2020sap",
+    "measurement": {
+      "value": 21.1,
+      "stat":
+        [0.2, 0.2],
+      "syst":
+        [1.9, 2.1],
+      "lumi": null
+    },
+    "unit": 9,
+    "sqrts": 0.2,
+    "source": "https://arxiv.org/abs/2004.11078",
+    "dataset": "icepack/SOFTCEP/integrated/STAR_2020/dataset.json"
+  },
+  "STAR_1792394_KK_below_90": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": "icepack/SOFTCEP/integrated/STAR_2020/gencard_KK.json",
+    "python_cuts": "icepack/SOFTCEP/STAR_1792394/_common/cuts_dPhi_pp_below_90.py",
+    "pid":
+      [321, -321],
+    "cuts": "STAR, $\\Delta \\phi < 90^{\\circ}$",
+    "channel": "$K^+K^-$",
+    "bibtex": "Adam:2020sap",
+    "measurement": {
+      "value": 1090.0,
+      "stat":
+        [60.0, 60.0],
+      "syst":
+        [150.0, 170.0],
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 0.2,
+    "source": "https://arxiv.org/abs/2004.11078",
+    "dataset": "icepack/SOFTCEP/integrated/STAR_2020/dataset.json"
+  },
+  "STAR_1792394_KK_above_90": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": "icepack/SOFTCEP/integrated/STAR_2020/gencard_KK.json",
+    "python_cuts": "icepack/SOFTCEP/STAR_1792394/_common/cuts_dPhi_pp_above_90.py",
+    "pid":
+      [321, -321],
+    "cuts": "STAR, $\\Delta \\phi > 90^{\\circ}$",
+    "channel": "$K^+K^-$",
+    "bibtex": "Adam:2020sap",
+    "measurement": {
+      "value": 570.0,
+      "stat":
+        [40.0, 40.0],
+      "syst":
+        [90.0, 100.0],
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 0.2,
+    "source": "https://arxiv.org/abs/2004.11078",
+    "dataset": "icepack/SOFTCEP/integrated/STAR_2020/dataset.json"
+  },
+  "STAR_1792394_ppbar_below_90": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": "icepack/SOFTCEP/integrated/STAR_2020/gencard_ppbar.json",
+    "python_cuts": "icepack/SOFTCEP/STAR_1792394/_common/cuts_dPhi_pp_below_90.py",
+    "pid":
+      [2212, -2212],
+    "cuts": "STAR, $\\Delta \\phi < 90^{\\circ}$",
+    "channel": "$p\\bar{p}$",
+    "bibtex": "Adam:2020sap",
+    "measurement": {
+      "value": 17.4,
+      "stat":
+        [4.7, 4.7],
+      "syst":
+        [2.7, 2.9],
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 0.2,
+    "source": "https://arxiv.org/abs/2004.11078",
+    "dataset": "icepack/SOFTCEP/integrated/STAR_2020/dataset.json"
+  },
+  "STAR_1792394_ppbar_above_90": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": "icepack/SOFTCEP/integrated/STAR_2020/gencard_ppbar.json",
+    "python_cuts": "icepack/SOFTCEP/STAR_1792394/_common/cuts_dPhi_pp_above_90.py",
+    "pid":
+      [2212, -2212],
+    "cuts": "STAR, $\\Delta \\phi > 90^{\\circ}$",
+    "channel": "$p\\bar{p}$",
+    "bibtex": "Adam:2020sap",
+    "measurement": {
+      "value": 31.8,
+      "stat":
+        [6.2, 6.2],
+      "syst":
+        [4.3, 4.6],
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 0.2,
+    "source": "https://arxiv.org/abs/2004.11078",
+    "dataset": "icepack/SOFTCEP/integrated/STAR_2020/dataset.json"
+  },
+  "CDF14_2pi": {
+    "type": "integrated",
+    "result": "unavailable",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "CDF",
+    "channel": "$\\pi^+\\pi^-$",
+    "bibtex": "aaltonen2015measurement",
+    "measurement": {
+      "value": null,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 6,
+    "sqrts": 1.96
+  },
+  "CMS17_2pi_E0": {
+    "type": "integrated",
+    "result": "unavailable",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "CMS",
+    "channel": "$\\pi^+\\pi^-_{EL}$",
+    "bibtex": null,
+    "measurement": {
+      "value": null,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 6,
+    "sqrts": 7.0
+  },
+  "CMS17_2pi_E1": {
+    "type": "integrated",
+    "result": "unavailable",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "$|y| < 2, p_t > 0.2, M_{1} < 5$ GeV",
+    "channel": "$\\pi^+\\pi^-_{SD}$",
+    "bibtex": null,
+    "measurement": {
+      "value": null,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 6,
+    "sqrts": 7.0
+  },
+  "CMS17_2pi_E2": {
+    "type": "integrated",
+    "result": "unavailable",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "$|y| < 2, p_t > 0.2, M_{1,2} < 5$ GeV",
+    "channel": "$\\pi^+\\pi^-_{DD}$",
+    "bibtex": null,
+    "measurement": {
+      "value": null,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 6,
+    "sqrts": 7.0
+  },
+  "CMS17_2pi_E0_E1_E2": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": "icepack/SOFTCEP/integrated/CMS_2017/gencard_E0.json",
+    "python_cuts": "icepack/SOFTCEP/integrated/CMS_2017/cuts.py",
+    "pid":
+      [211, -211],
+    "cuts": "CMS",
+    "channel": "$\\pi^+\\pi^-_{EL+SD+DD}$",
+    "bibtex": "khachatryan2017exclusive",
+    "measurement": {
+      "value": 26.5,
+      "stat":
+        [0.3, 0.3],
+      "syst":
+        [5.0, 5.0],
+      "lumi":
+        [1.1, 1.1]
+    },
+    "unit": 6,
+    "sqrts": 7.0,
+    "prediction_components":
+      ["CMS17_2pi_E0", "CMS17_2pi_E1", "CMS17_2pi_E2"],
+    "source": "https://arxiv.org/abs/1706.08310",
+    "dataset": "icepack/SOFTCEP/integrated/CMS_2017/dataset.json"
+  },
+  "CMS19_2pi_E0": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": "icepack/SOFTCEP/integrated/CMS_2019/gencard_E0.json",
+    "python_cuts": "icepack/_common/cuts_inclusive.py",
+    "pid":
+      [211, -211],
+    "cuts": "CMS",
+    "channel": "$\\pi^+\\pi^-_{EL}$",
+    "bibtex": "CMS-PAS-FSQ-16-006",
+    "measurement": {
+      "value": 19.0,
+      "stat":
+        [0.6, 0.6],
+      "syst":
+        [3.2, 3.2],
+      "lumi": null
+    },
+    "unit": 6,
+    "sqrts": 13.0,
+    "dataset": "icepack/SOFTCEP/integrated/CMS_2019/dataset.json"
+  },
+  "CMS19_2pi_E1": {
+    "type": "integrated",
+    "result": "unavailable",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "$|\\eta| < 2.4, p_t > 0.2, M_{1} < 5$ GeV",
+    "channel": "$\\pi^+\\pi^-_{SD}$",
+    "bibtex": null,
+    "measurement": {
+      "value": null,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 6,
+    "sqrts": 13.0
+  },
+  "CMS19_2pi_E2": {
+    "type": "integrated",
+    "result": "unavailable",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "$|\\eta| < 2.4, p_t > 0.2, M_{1,2} < 5$ GeV",
+    "channel": "$\\pi^+\\pi^-_{DD}$",
+    "bibtex": null,
+    "measurement": {
+      "value": null,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 6,
+    "sqrts": 13.0
+  },
+  "ATLAS17_2pi": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": "icepack/SOFTCEP/integrated/ATLAS_2017/gencard_2pi.json",
+    "python_cuts": "icepack/_common/cuts_inclusive.py",
+    "pid":
+      [211, -211],
+    "cuts": "ATLAS [Thesis]",
+    "channel": "$\\pi^+\\pi^-$",
+    "bibtex": "Bols:2288372",
+    "measurement": {
+      "value": 18.75,
+      "stat":
+        [0.048, 0.048],
+      "syst":
+        [0.77, 0.77],
+      "lumi": null
+    },
+    "unit": 6,
+    "sqrts": 13.0,
+    "dataset": "icepack/SOFTCEP/integrated/ATLAS_2017/dataset.json"
+  },
+  "ATLAS17_4pi_0": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": "icepack/SOFTCEP/integrated/ATLAS_2017/gencard_4pi.json",
+    "python_cuts": "icepack/_common/cuts_inclusive.py",
+    "pid":
+      [211, -211, 211, -211],
+    "cuts": "ATLAS [Thesis]",
+    "channel": "$4\\pi^{\\pm}$",
+    "bibtex": "Bols:2288372",
+    "measurement": {
+      "value": 3.575,
+      "stat":
+        [0.065, 0.065],
+      "syst":
+        [0.338, 0.338],
+      "lumi": null
+    },
+    "unit": 6,
+    "sqrts": 13.0,
+    "dataset": "icepack/SOFTCEP/integrated/ATLAS_2017/dataset.json"
+  },
+  "CDF07_ee": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": "icepack/GAMMA/integrated/CDF_2007/gencard.json",
+    "python_cuts": "icepack/_common/cuts_inclusive.py",
+    "pid":
+      [-11, 11],
+    "cuts": "CDF",
+    "channel": "$e^+e^-$",
+    "bibtex": "abulencia2007observation",
+    "measurement": {
+      "value": 1.6,
+      "stat":
+        [0.3, 0.5],
+      "syst":
+        [0.3, 0.3],
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 1.96,
+    "source": "https://arxiv.org/abs/hep-ex/0611040",
+    "dataset": "icepack/GAMMA/integrated/CDF_2007/dataset.json"
+  },
+  "CDF11_ee": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": "icepack/GAMMA/integrated/CDF_2012/gencard.json",
+    "python_cuts": "icepack/_common/cuts_inclusive.py",
+    "pid":
+      [-11, 11],
+    "cuts": "CDF",
+    "channel": "$e^+e^-$",
+    "bibtex": "aaltonen2012observation",
+    "measurement": {
+      "value": 2.88,
+      "stat":
+        [0.48, 0.57],
+      "syst":
+        [0.63, 0.63],
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 1.96,
+    "source": "https://arxiv.org/abs/1112.0858",
+    "dataset": "icepack/GAMMA/integrated/CDF_2012/dataset.json"
+  },
+  "CMS11_mumu": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": "icepack/GAMMA/integrated/CMS_2012/gencard.json",
+    "python_cuts": "icepack/_common/cuts_inclusive.py",
+    "pid":
+      [-13, 13],
+    "cuts": "CMS",
+    "channel": "$\\mu^+\\mu^-$",
+    "bibtex": "chatrchyan2012exclusive",
+    "measurement": {
+      "value": 3.38,
+      "stat":
+        [0.55, 0.58],
+      "syst":
+        [0.16, 0.16],
+      "lumi":
+        [0.14, 0.14]
+    },
+    "unit": 12,
+    "sqrts": 7.0,
+    "source": "https://arxiv.org/abs/1111.5536",
+    "dataset": "icepack/GAMMA/integrated/CMS_2012/dataset.json"
+  },
+  "ATLAS15_ee": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": "icepack/GAMMA/integrated/ATLAS_2015/gencard_ee.json",
+    "python_cuts": "icepack/_common/cuts_inclusive.py",
+    "pid":
+      [-11, 11],
+    "cuts": "ATLAS",
+    "channel": "$e^+e^-$",
+    "bibtex": "atlas2015measurement",
+    "measurement": {
+      "value": 0.428,
+      "stat":
+        [0.035, 0.035],
+      "syst":
+        [0.018, 0.018],
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 7.0,
+    "reference": {
+      "title": "Measurement of exclusive gamma gamma to l+l- production in proton-proton collisions at sqrt(s)=7 TeV with the ATLAS detector",
+      "journal": "Phys. Lett. B 749 (2015) 242",
+      "arxiv": "1506.07098",
+      "hepdata": "10.17182/hepdata.69286.v1"
+    },
+    "dataset": "icepack/GAMMA/integrated/ATLAS_2015/dataset.json"
+  },
+  "ATLAS15_mumu": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": "icepack/GAMMA/integrated/ATLAS_2015/gencard_mumu.json",
+    "python_cuts": "icepack/_common/cuts_inclusive.py",
+    "pid":
+      [-13, 13],
+    "cuts": "ATLAS",
+    "channel": "$\\mu^+\\mu^-$",
+    "bibtex": "atlas2015measurement",
+    "measurement": {
+      "value": 0.628,
+      "stat":
+        [0.032, 0.032],
+      "syst":
+        [0.021, 0.021],
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 7.0,
+    "reference": {
+      "title": "Measurement of exclusive gamma gamma to l+l- production in proton-proton collisions at sqrt(s)=7 TeV with the ATLAS detector",
+      "journal": "Phys. Lett. B 749 (2015) 242",
+      "arxiv": "1506.07098",
+      "hepdata": "10.17182/hepdata.69286.v1"
+    },
+    "dataset": "icepack/GAMMA/integrated/ATLAS_2015/dataset.json"
+  },
+  "ATLAS17_mumu": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": "icepack/GAMMA/integrated/ATLAS_2018/gencard.json",
+    "python_cuts": "icepack/_common/cuts_inclusive.py",
+    "pid":
+      [-13, 13],
+    "cuts": "ATLAS",
+    "channel": "$\\mu^+\\mu^-$",
+    "bibtex": "aaboud2018measurement",
+    "measurement": {
+      "value": 3.12,
+      "stat":
+        [0.07, 0.07],
+      "syst":
+        [0.14, 0.14],
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "dataset": "icepack/GAMMA/integrated/ATLAS_2018/dataset.json"
+  },
+  "ATLAS21_WW_emu": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": "icepack/GAMMA/integrated/ATLAS_2021/gencard_elastic.json",
+    "python_cuts": "icepack/GAMMA/integrated/ATLAS_2021/cuts.py",
+    "pid":
+      [-11, 12, 13, -14],
+    "cuts": "ATLAS fiducial photon-induced WW",
+    "channel": "$e^\\pm\\mu^\\mp\\nu\\nu$",
+    "bibtex": "aad2021photoninducedww",
+    "measurement": {
+      "value": 3.13,
+      "stat":
+        [0.31, 0.31],
+      "syst":
+        [0.28, 0.28],
+      "lumi": null
+    },
+    "unit": 15,
+    "sqrts": 13.0,
+    "source": "https://arxiv.org/abs/2010.04019",
+    "dataset": "icepack/GAMMA/integrated/ATLAS_2021/dataset.json"
+  },
+  "ATLAS17_4pi_1_2f0500": {
+    "type": "integrated",
+    "result": "unavailable",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "$|\\eta| < 2.5, p_t > 0.1$ GeV",
+    "channel": "$2f_0 > \\pi^+\\pi^-$",
+    "bibtex": null,
+    "measurement": {
+      "value": null,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 6,
+    "sqrts": 13.0
+  },
+  "ALICE19_2pi_E0": {
+    "type": "integrated",
+    "result": "unavailable",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "$|\\eta| < 0.9, p_t > 0.15$ GeV",
+    "channel": "$\\pi^+\\pi^-_{EL}$",
+    "bibtex": null,
+    "measurement": {
+      "value": null,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 6,
+    "sqrts": 7.0
+  },
+  "ALICE19_2pi_E1": {
+    "type": "integrated",
+    "result": "unavailable",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "$|\\eta| < 0.9, p_t > 0.15, M_{1} < 5$ GeV",
+    "channel": "$\\pi^+\\pi^-_{SD}$",
+    "bibtex": null,
+    "measurement": {
+      "value": null,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 6,
+    "sqrts": 7.0
+  },
+  "ALICE19_2pi_E2": {
+    "type": "integrated",
+    "result": "unavailable",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "$|\\eta| < 0.9, p_t > 0.15, M_{1,2} < 5$ GeV",
+    "channel": "$\\pi^+\\pi^-_{DD}$",
+    "bibtex": null,
+    "measurement": {
+      "value": null,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 6,
+    "sqrts": 7.0
+  },
+  "ALICE19_2pi_PWA": {
+    "type": "integrated",
+    "result": "unavailable",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "$|Y_X| < 0.9$",
+    "channel": "$\\pi^+\\pi^-$ ",
+    "bibtex": null,
+    "measurement": {
+      "value": null,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 6,
+    "sqrts": 7.0
+  },
+  "STAR18_2pi": {
+    "type": "integrated",
+    "result": "unavailable",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "$|\\eta| < 0.7, p_t > 0.2$ GeV",
+    "channel": "$\\pi^+\\pi^-$",
+    "bibtex": null,
+    "measurement": {
+      "value": null,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 6,
+    "sqrts": 0.2
+  },
+  "gg2gg": {
+    "type": "integrated",
+    "result": "unavailable",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "$|y| < 2.5, p_t > 20$ GeV",
+    "channel": "$gg$",
+    "bibtex": null,
+    "measurement": {
+      "value": null,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 9,
+    "sqrts": 13.0
+  },
+  "WW7TeV": {
+    "type": "integrated",
+    "result": "unavailable",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "Full $4\\pi$",
+    "channel": "$W^+W^-$",
+    "bibtex": null,
+    "measurement": {
+      "value": null,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 15,
+    "sqrts": 7.0
+  }
+}

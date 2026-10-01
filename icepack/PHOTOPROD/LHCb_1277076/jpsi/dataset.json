@@ -1,0 +1,47 @@
+{
+  "active": true,
+  "type": "HEPDATA_1277076",
+  "reader": "../reader.py",
+  "datapath": "HEPData/CEP/HEPData-ins1277076-v1-json/",
+  "samples": [
+    {
+      "name": "gp_res",
+      "label": "GRANIITTI GP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "GP[RES]<F> -> mu+ mu- @RES{jpsi:1}"},
+      "scale": 1.0
+    },
+    {
+      "name": "jmrt",
+      "label": "GRANIITTI ygg[$J/\\psi$]",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "ygg[jpsi]<F> -> mu+ mu-"},
+      "scale": 1.0
+    }
+  ],
+  "plot": {"normalization": "cross_section", "unit": "pb", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "LHCb $pp$ 7 TeV ($J/\\psi \\to \\mu^+\\mu^-$)",
+      "plotname": "LHCb_7TeV_exclusive_Jpsi_to_mumu_fiducial",
+      "title": "Fiducial: $2.0 < Y(J/\\psi) < 4.5$, $2.0 < \\eta(\\mu^\\pm) < 4.5$",
+      "state": "J/psi",
+      "region": "fiducial",
+      // Fiducial dimuon data and generated final state use the same decay normalization
+      "mc_scale": 1.0,
+      "pid": [-13, 13],
+      "cuts": "../cuts.py",
+      "obs": "../obs.py",
+      "hist": [
+        {"file": "Table2.json", "obs": "Rap", "scale": 1e-12, "fitw": 1.0}
+      ]
+    }
+  ]
+}

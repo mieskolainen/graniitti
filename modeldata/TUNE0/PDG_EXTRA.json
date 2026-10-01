@@ -1,0 +1,378 @@
+// Extra PDG identifiers with quantum numbers,
+// add new ones here for processes, e.g. for intermediate
+// cascaded decays -> A > {pi+ pi-} A > {pi+ pi-},
+// where A could be new
+// 
+// Resonance properties should be steered
+// via RES/*.json cards under the tune folder
+//
+// (c) 2026 Mikael Mieskolainen
+// Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+
+{
+
+"PARAM_PDG": {
+
+  // Bare lead-208 AME2020 mass including the atomic electron binding correction
+  "Pb208": {
+    "PDG": 1000822080,
+    "name": "Pb208",
+    "mass": 193.6876912282,
+    "width": 0.0,
+    "chargeX3": 246,
+    "spinX2": 0,
+    "isospinX2": -1,
+    "P": 1,
+    "C": 0,
+    "G": 0,
+    "L": 0,
+    "color": 0
+  },
+
+  // Bare O16 AME2020 mass including the atomic electron binding correction
+  "O16": {
+    "PDG": 1000080160,
+    "name": "O16",
+    "mass": 14.8950827242,
+    "width": 0.0,
+    "chargeX3": 24,
+    "spinX2": 0,
+    "isospinX2": -1,
+    "P": 1,
+    "C": 0,
+    "G": 0,
+    "L": 0,
+    "color": 0
+  },
+
+  // Bare Au197 AME2020 mass including the atomic electron binding correction
+  "Au197": {
+    "PDG": 1000791970,
+    "name": "Au197",
+    "mass": 183.4333468523,
+    "width": 0.0,
+    "chargeX3": 237,
+    "spinX2": 3,
+    "isospinX2": -1,
+    "P": 1,
+    "C": 0,
+    "G": 0,
+    "L": 0,
+    "color": 0
+  },
+
+  // Spin-0 monopole-antimonopole bound state
+  // Physical pole mass and total width used by the production amplitude
+  "monopolium": {
+    "PDG": 881,
+    "name": "monopolium(0)",
+    "mass": 527.57673,
+    "width": 10.0,
+    "chargeX3": 0,
+    "spinX2": 0,
+    "isospinX2": -1,
+    "P": 1,
+    "C": 1,
+    "G": 0,
+    "L": 0,
+    "color": 0
+  },
+
+  // Spin-1/2 fundamental monopole
+  "dirac-monopole": {
+    "PDG": 882,
+    "name": "dirac-monopole",
+    "mass": 2000.0,
+    "width": 0.0,
+    "chargeX3": 0,
+    "spinX2": 1,
+    "isospinX2": -1,
+    "P": 1,
+    "C": 0,
+    "G": 0,
+    "L": 0,
+    "color": 0
+  },
+
+  // Inclusive hard quark (jet) joker
+  // resolved to a physical flavour before output
+  "hard_jet": {
+    "PDG": 89,
+    "name": "j",
+    "mass": 0.0,
+    "width": 0.0,
+    "chargeX3": 0,
+    "spinX2": 1,
+    "isospinX2": -1,
+    "P": 1,
+    "C": 0,
+    "G": 0,
+    "L": 0,
+    "color": 3
+  },
+  
+  // -------------------------------------------------
+
+  // The final digit is nJ = 2J + 1 for fixed spin exchanges
+  // A final digit 0 denotes an analytic Regge trajectory
+  
+  // Continuum-spin Pomeron trajectory
+  "pomeron_analytic": {
+    "PDG": 990,
+    "name": "P(a)",
+    "mass": 0.0,
+    "width": 0.0,
+    "chargeX3": 0,
+    "spinX2": -1, // null fixed spin; trajectory spin is a(t)
+    "isospinX2": 0,
+    "P": 1,
+    "C": 1,
+    "G": 1,
+    "L": 0,
+    "color": 0
+  },
+
+  // Continuum-spin Odderon trajectory
+  "odderon_analytic": {
+    "PDG": 9990,
+    "name": "O(a)",
+    "mass": 0.0,
+    "width": 0.0,
+    "chargeX3": 0,
+    "spinX2": -1, // null fixed spin; trajectory spin is a(t)
+    "isospinX2": 0,
+    "P": -1,
+    "C": -1,
+    "G": -1,
+    "L": 0,
+    "color": 0
+  },
+
+  // Continuum-spin Reggeon trajectory
+  "f2_reggeon_analytic": {
+    "PDG": 9910,
+    "name": "R_f2(a)",
+    "mass": 0.0,
+    "width": 0.0,
+    "chargeX3": 0,
+    "spinX2": -1, // null fixed spin; trajectory spin is a(t)
+    "isospinX2": 0,
+    "P": 1,
+    "C": 1,
+    "G": 1,
+    "L": 0,
+    "color": 0
+  },
+
+  // Continuum-spin Reggeon trajectory
+  "a2_reggeon_analytic": {
+    "PDG": 9920,
+    "name": "R_a2(a)",
+    "mass": 0.0,
+    "width": 0.0,
+    "chargeX3": 0,
+    "spinX2": -1, // null fixed spin; trajectory spin is a(t)
+    "isospinX2": 2,
+    "P": 1,
+    "C": 1,
+    "G": -1,
+    "L": 0,
+    "color": 0
+  },
+
+  // Continuum-spin Reggeon trajectory
+  "rho_reggeon_analytic": {
+    "PDG": 9930,
+    "name": "R_rho(a)",
+    "mass": 0.0,
+    "width": 0.0,
+    "chargeX3": 0,
+    "spinX2": -1, // null fixed spin; trajectory spin is a(t)
+    "isospinX2": 2,
+    "P": -1,
+    "C": -1,
+    "G": 1,
+    "L": 0,
+    "color": 0
+  },
+  
+  // Continuum-spin Reggeon trajectory
+  "omega_reggeon_analytic": {
+    "PDG": 9940,
+    "name": "R_omega(a)",
+    "mass": 0.0,
+    "width": 0.0,
+    "chargeX3": 0,
+    "spinX2": -1, // null fixed spin; trajectory spin is a(t)
+    "isospinX2": 0,
+    "P": -1,
+    "C": -1,
+    "G": -1,
+    "L": 0,
+    "color": 0
+  },
+
+  // -------------------------------------------------
+
+  // Fixed spin scalar pomeron
+  "pomeron_0": {
+    "PDG": 991,
+    "name": "P(0)",
+    "mass": 0.0,
+    "width": 0.0,
+    "chargeX3": 0,
+    "spinX2": 0,
+    "isospinX2": 0,
+    "P": 1,
+    "C": 1,
+    "G": 1,
+    "L": 0,
+    "color": 0
+  },
+
+  // Fixed spin vector Pomeron
+  "pomeron_1": {
+    "PDG": 993,
+    "name": "P(1)",
+    "mass": 0.0,
+    "width": 0.0,
+    "chargeX3": 0,
+    "spinX2": 2,
+    "isospinX2": 0,
+    "P": -1,
+    "C": 1,
+    "G": 1,
+    "L": 0,
+    "color": 0
+  },
+
+  // Fixed spin tensor Pomeron
+  "pomeron_2": {
+    "PDG": 995,
+    "name": "P(2)",
+    "mass": 0.0,
+    "width": 0.0,
+    "chargeX3": 0,
+    "spinX2": 4,
+    "isospinX2": 0,
+    "P": 1,
+    "C": 1,
+    "G": 1,
+    "L": 0,
+    "color": 0
+  },
+
+  // Fixed spin scalar Odderon
+  "odderon_0": {
+    "PDG": 9991,
+    "name": "O(0)",
+    "mass": 0.0,
+    "width": 0.0,
+    "chargeX3": 0,
+    "spinX2": 0,
+    "isospinX2": 0,
+    "P": 1,
+    "C": -1,
+    "G": -1,
+    "L": 0,
+    "color": 0
+  },
+
+  // Fixed spin vector Odderon
+  "odderon_1": {
+    "PDG": 9993,
+    "name": "O(1)",
+    "mass": 0.0,
+    "width": 0.0,
+    "chargeX3": 0,
+    "spinX2": 2,
+    "isospinX2": 0,
+    "P": -1,
+    "C": -1,
+    "G": -1,
+    "L": 0,
+    "color": 0
+  },
+
+  // Fixed spin rank-three vector Odderon
+  "odderon_3": {
+    "PDG": 9997,
+    "name": "O(3)",
+    "mass": 0.0,
+    "width": 0.0,
+    "chargeX3": 0,
+    "spinX2": 6,
+    "isospinX2": 0,
+    "P": -1,
+    "C": -1,
+    "G": -1,
+    "L": 0,
+    "color": 0
+  },
+
+  // Fixed spin Reggeon
+  "f2_reggeon_2": {
+    "PDG": 9915,
+    "name": "R_f2(2)",
+    "mass": 0.0,
+    "width": 0.0,
+    "chargeX3": 0,
+    "spinX2": 4,
+    "isospinX2": 0,
+    "P": 1,
+    "C": 1,
+    "G": 1,
+    "L": 0,
+    "color": 0
+  },
+
+  // Fixed spin Reggeon
+  "a2_reggeon_2": {
+    "PDG": 9925,
+    "name": "R_a2(2)",
+    "mass": 0.0,
+    "width": 0.0,
+    "chargeX3": 0,
+    "spinX2": 4,
+    "isospinX2": 2,
+    "P": 1,
+    "C": 1,
+    "G": -1,
+    "L": 0,
+    "color": 0
+  },
+
+  // Fixed spin reggeon
+  "rho_reggeon_1": {
+    "PDG": 9933,
+    "name": "R_rho(1)",
+    "mass": 0.0,
+    "width": 0.0,
+    "chargeX3": 0,
+    "spinX2": 2,
+    "isospinX2": 2,
+    "P": -1,
+    "C": -1,
+    "G": 1,
+    "L": 0,
+    "color": 0
+  },
+
+  // Fixed spin reggeon
+  "omega_reggeon_1": {
+    "PDG": 9943,
+    "name": "R_omega(1)",
+    "mass": 0.0,
+    "width": 0.0,
+    "chargeX3": 0,
+    "spinX2": 2,
+    "isospinX2": 0,
+    "P": -1,
+    "C": -1,
+    "G": -1,
+    "L": 0,
+    "color": 0
+  }
+}
+
+}

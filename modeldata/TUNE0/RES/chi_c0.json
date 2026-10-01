@@ -1,0 +1,80 @@
+// Parametric resonance  (parameters not set)
+// Note Durham QCD model does not use these parameters
+
+{
+  "PARAM_RES": {
+    "name": "RES_chi_c0",
+    "PDG": 10441,
+    "spinX2": 0,
+    "P": 1,
+    "C": 1,
+    
+    "MODELS": {
+      "GP": {
+        "mass": 3.41471,
+        "width": 0.0108,
+        "BW": "fixed-width",
+        "phi": 0.0,
+        "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5000, "n": 1.0000},
+        "FF_prod": {"type": "gaussian", "norm": "pole", "Lambda2": 2.0},
+        "[990,990]": {
+          "basis": "g_ls",
+          "Lambda": 1.0,
+          "CP": [true,true],
+          "g_ls":
+           [[0,0,0.1,0.0],
+            [2,2,0.0,0.0],
+            [4,4,0.0,0.0]]
+        }
+      },
+      "MP": {
+        "mass": 3.41471,
+        "width": 0.0108,
+        "BW": "fixed-width",
+        "phi": 0.0,
+        "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5000, "n": 1.0000},
+        "FF_prod": {"type": "gaussian", "norm": "pole", "Lambda2": 2.0},
+        "[995,995]": {
+          "basis": "auto_min_L", // 'auto_min_L', 'auto_min_S', 'auto_equal_ls', 'auto_equal_helicity', 'g_ls', 'helicity'
+          "Lambda": 1.0000,
+          "polarization": {
+            "mode": "a_Jz",
+            "a_Jz": [[0,1.0000,0.0000]],
+            "rho_mag": [[1.0000]],
+            "rho_phase": [[0.0000]],
+            "random_rho": false
+          },
+          "CP": [true,true],
+          "g": [0.1,0.0]
+        }
+      },
+      "XP": {
+        "mass": 3.41471,
+        "width": 0.0108,
+        "BW": "fixed-width",
+        "phi": 0.0,
+        "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5000, "n": 1.0000},
+        "FF_prod": {"type": "gaussian", "norm": "pole", "Lambda2": 2.0},
+        "[995,995]": {
+          "basis": "g_ls",
+          "Lambda": 1.0,
+          "CP": [true,true],
+          "g_ls":
+           [[0,0,0.1,0.0],
+            [2,2,0.0,0.0],
+            [4,4,0.0,0.0]]
+        }
+      },
+      "TP": {
+        "mass": 3.41471,
+        "width": 0.0108,
+        "phi": 0.0,
+        "FF_transfer": {"type": "none"},
+        "FF_prod": {"type": "gaussian", "norm": "pole", "Lambda2": 2.0},
+        "[995,995]": {
+          "g_tensor": [0.0,0.0]
+        }
+      }
+    }
+  }
+}

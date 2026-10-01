@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "process": "g g > s s~ QED=0",
+  "incoming_pdgs": [
+    21,
+    21
+  ],
+  "final_pdgs": [
+    3,
+    -3
+  ],
+  "final_color_representations": [
+    3,
+    -3
+  ],
+  "ncolor": 2,
+  "rank": 1,
+  "basis_sha256": "3c36a7cd5e8518a91f6c801439c06acc732790d1dfeb5fb8efe8523477a2e56d",
+  "factorization_residual": 0.0,
+  "projectors": [
+    [
+      [
+        0.816496580927726,
+        0.0
+      ],
+      [
+        0.816496580927726,
+        0.0
+      ]
+    ]
+  ],
+  "flow_candidates": [
+    [
+      [
+        501,
+        0
+      ],
+      [
+        0,
+        501
+      ]
+    ]
+  ],
+  "flow_weights": [
+    [
+      1.0,
+      1.0
+    ]
+  ]
+}

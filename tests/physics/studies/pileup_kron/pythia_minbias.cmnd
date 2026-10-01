@@ -1,0 +1,21 @@
+! Minimum-bias pp events at sqrt(s) = 13 TeV
+Beams:idA = 2212
+Beams:idB = 2212
+Beams:eCM = 13000.0
+
+! Inelastic soft-QCD minimum-bias mixture used as pile-up
+SoftQCD:nonDiffractive = on
+SoftQCD:singleDiffractive = on
+SoftQCD:doubleDiffractive = on
+
+! Use the same local LHAPDF stack as the GRANIITTI Pythia examples
+PDF:pSet = LHAPDF6:NNPDF31_lo_as_0118
+
+! Keep the full visible final state for pile-up overlay
+PartonLevel:ISR = on
+PartonLevel:FSR = on
+PartonLevel:MPI = on
+HadronLevel:all = on
+ParticleDecays:limitTau0 = on
+ParticleDecays:tau0Max = 10.0
+Print:quiet = on

@@ -1,0 +1,185 @@
+// Controlled synthetic JPC comparison with common parent mass, width, production form factors and vector daughters
+// The resonance card names supply spin and parity only, these are not physical chi_c pole predictions
+// Pure allowed decay LS waves: 0++ (0,0), 0-+ (1,1), 1++ (2,2), 2++ (0,2)
+// Unit-density shapes use a common illustrative VV branching fraction and full decay acceptance
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "flat",
+      "label": "MP synthetic pole, spin decay off",
+      "gencard": "icepack/SPIN/_common/gencard_4body.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> phi(1020)0 > {mu+ mu-} phi(1020)0 > {mu+ mu-} @R[f0_1710]{M:2.7,W:0.15} @RES{f0_1710:1} @SPINDEC:false",
+        "GENCUTS.<F>.M": [2.25, 3.15],
+        "FIDCUTS.active": false,
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": true,
+        "f0_1710.json:PARAM_RES.MODELS.MP.BW": "fixed-width",
+        "f0_1710.json:PARAM_RES.MODELS.MP.FF_transfer": {
+          "type": "power",
+          "norm": "zero",
+          "Lambda2": 0.5,
+          "n": 1.0
+        },
+        "f0_1710.json:PARAM_RES.MODELS.MP.FF_prod": {
+          "type": "gaussian",
+          "norm": "pole",
+          "Lambda2": 2.0
+        },
+        "f0_1710.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_min_L",
+        "f0_1710.json:PARAM_RES.MODELS.MP[\"[995,995]\"].polarization.mode": "none",
+        "f0_1710.json:PARAM_RES.MODELS.MP[\"[995,995]\"].g": [1.0, 0.0],
+        "DECAYS.json:[\"10331\"][\"[113,113]\"].BR": 0.01,
+        "DECAYS.json:[\"10331\"][\"[113,113]\"].alpha_ls": [[0, 0, 1.0, 0.0]],
+        "DECAYS.json:[\"10331\"][\"[113,113]\"].@key": "[333,333]"
+      }
+    },
+    {
+      "name": "jp0p",
+      "label": "MP synthetic pole, $0^{++}$",
+      "gencard": "icepack/SPIN/_common/gencard_4body.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> phi(1020)0 > {mu+ mu-} phi(1020)0 > {mu+ mu-} @R[f0_1710]{M:2.7,W:0.15} @RES{f0_1710:1}",
+        "GENCUTS.<F>.M": [2.25, 3.15],
+        "FIDCUTS.active": false,
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": true,
+        "f0_1710.json:PARAM_RES.MODELS.MP.BW": "fixed-width",
+        "f0_1710.json:PARAM_RES.MODELS.MP.FF_transfer": {
+          "type": "power",
+          "norm": "zero",
+          "Lambda2": 0.5,
+          "n": 1.0
+        },
+        "f0_1710.json:PARAM_RES.MODELS.MP.FF_prod": {
+          "type": "gaussian",
+          "norm": "pole",
+          "Lambda2": 2.0
+        },
+        "f0_1710.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_min_L",
+        "f0_1710.json:PARAM_RES.MODELS.MP[\"[995,995]\"].polarization.mode": "none",
+        "f0_1710.json:PARAM_RES.MODELS.MP[\"[995,995]\"].g": [1.0, 0.0],
+        "DECAYS.json:[\"10331\"][\"[113,113]\"].BR": 0.01,
+        "DECAYS.json:[\"10331\"][\"[113,113]\"].alpha_ls": [[0, 0, 1.0, 0.0]],
+        "DECAYS.json:[\"10331\"][\"[113,113]\"].@key": "[333,333]"
+      }
+    },
+    {
+      "name": "jp0m",
+      "label": "MP synthetic pole, $0^{-+}$",
+      "gencard": "icepack/SPIN/_common/gencard_4body.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> phi(1020)0 > {mu+ mu-} phi(1020)0 > {mu+ mu-} @R[f0_1710_neg_P]{M:2.7,W:0.15} @RES{f0_1710_neg_P:1}",
+        "GENCUTS.<F>.M": [2.25, 3.15],
+        "FIDCUTS.active": false,
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": true,
+        "f0_1710_neg_P.json:PARAM_RES.MODELS.MP.BW": "fixed-width",
+        "f0_1710_neg_P.json:PARAM_RES.MODELS.MP.FF_transfer": {
+          "type": "power",
+          "norm": "zero",
+          "Lambda2": 0.5,
+          "n": 1.0
+        },
+        "f0_1710_neg_P.json:PARAM_RES.MODELS.MP.FF_prod": {
+          "type": "gaussian",
+          "norm": "pole",
+          "Lambda2": 2.0
+        },
+        "f0_1710_neg_P.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_min_L",
+        "f0_1710_neg_P.json:PARAM_RES.MODELS.MP[\"[995,995]\"].polarization.mode": "none",
+        "f0_1710_neg_P.json:PARAM_RES.MODELS.MP[\"[995,995]\"].g": [1.0, 0.0],
+        "DECAYS.json:[\"10332\"][\"[113,113]\"].BR": 0.01,
+        "DECAYS.json:[\"10332\"][\"[113,113]\"].alpha_ls": [[1, 1, 1.0, 0.0]],
+        "DECAYS.json:[\"10332\"][\"[113,113]\"].@key": "[333,333]"
+      }
+    },
+    {
+      "name": "jp1p",
+      "label": "MP synthetic pole, $1^{++}$",
+      "gencard": "icepack/SPIN/_common/gencard_4body.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> phi(1020)0 > {mu+ mu-} phi(1020)0 > {mu+ mu-} @R[chi_c1]{M:2.7,W:0.15} @RES{chi_c1:1}",
+        "GENCUTS.<F>.M": [2.25, 3.15],
+        "FIDCUTS.active": false,
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": true,
+        "chi_c1.json:PARAM_RES.MODELS.MP.BW": "fixed-width",
+        "chi_c1.json:PARAM_RES.MODELS.MP.FF_transfer": {
+          "type": "power",
+          "norm": "zero",
+          "Lambda2": 0.5,
+          "n": 1.0
+        },
+        "chi_c1.json:PARAM_RES.MODELS.MP.FF_prod": {
+          "type": "gaussian",
+          "norm": "pole",
+          "Lambda2": 2.0
+        },
+        "chi_c1.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_min_L",
+        "chi_c1.json:PARAM_RES.MODELS.MP[\"[995,995]\"].polarization.mode": "none",
+        "chi_c1.json:PARAM_RES.MODELS.MP[\"[995,995]\"].g": [1.0, 0.0],
+        "DECAYS.json:[\"20443\"][\"[333,333]\"].BR": 0.01,
+        "DECAYS.json:[\"20443\"][\"[333,333]\"].alpha_ls": [[2, 2, 1.0, 0.0]]
+      }
+    },
+    {
+      "name": "jp2p",
+      "label": "MP synthetic pole, $2^{++}$",
+      "gencard": "icepack/SPIN/_common/gencard_4body.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> phi(1020)0 > {mu+ mu-} phi(1020)0 > {mu+ mu-} @R[chi_c2]{M:2.7,W:0.15} @RES{chi_c2:1}",
+        "GENCUTS.<F>.M": [2.25, 3.15],
+        "FIDCUTS.active": false,
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": true,
+        "chi_c2.json:PARAM_RES.MODELS.MP.BW": "fixed-width",
+        "chi_c2.json:PARAM_RES.MODELS.MP.FF_transfer": {
+          "type": "power",
+          "norm": "zero",
+          "Lambda2": 0.5,
+          "n": 1.0
+        },
+        "chi_c2.json:PARAM_RES.MODELS.MP.FF_prod": {
+          "type": "gaussian",
+          "norm": "pole",
+          "Lambda2": 2.0
+        },
+        "chi_c2.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_min_L",
+        "chi_c2.json:PARAM_RES.MODELS.MP[\"[995,995]\"].polarization.mode": "none",
+        "chi_c2.json:PARAM_RES.MODELS.MP[\"[995,995]\"].g": [1.0, 0.0],
+        "DECAYS.json:[\"445\"][\"[333,333]\"].BR": 0.01,
+        "DECAYS.json:[\"445\"][\"[333,333]\"].alpha_ls": [[0, 2, 1.0, 0.0]]
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "unit_density",
+    "density_uncertainty": "shape",
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "hist"
+  },
+  "fit": {"normalization": "unit_density"},
+  "sets": [
+    {
+      "name": "Two to four body dimuon spin",
+      "title": "MP spin comparison, common $M=2.7$ GeV, $\\Gamma=0.15$ GeV",
+      "data": false,
+      "pid": [13, -13, 13, -13],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "core.analysis.observables.four_body",
+      "hist": [
+        {
+          "obs": "4body_cos1",
+          "args": {"target_m": 1.01946}
+        },
+        {
+          "obs": "4body_cos2",
+          "args": {"target_m": 1.01946}
+        },
+        {
+          "obs": "4body_phi12",
+          "args": {"target_m": 1.01946}
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "models": {
+    "sm": {
+      "import": "sm-lepton_masses",
+      "alpha_qed": {"charge": "mdl_ee", "charge_square": "mdl_ee__exp__2", "inverse_alpha_zero": 137.03599908},
+      "particle_pdgs": {"a": 22, "z": 23, "w+": 24, "w-": -24, "g": 21, "ve": 12, "ve~": -12, "vm": 14, "vm~": -14, "vt": 16, "vt~": -16, "u": 2, "u~": -2, "c": 4, "c~": -4, "t": 6, "t~": -6, "d": 1, "d~": -1, "s": 3, "s~": -3, "b": 5, "b~": -5, "h": 25, "e-": 11, "e+": -11, "mu-": 13, "mu+": -13, "ta-": 15, "ta+": -15}
+    },
+    "sm_cms": {
+      "import": "sm-lepton_masses",
+      "complex_mass_scheme": true,
+      "alpha_qed": {"charge": "mdl_ee", "charge_square": "mdl_ee__exp__2", "inverse_alpha_zero": 137.03599908},
+      "particle_pdgs": {"a": 22, "z": 23, "w+": 24, "w-": -24, "g": 21, "ve": 12, "ve~": -12, "vm": 14, "vm~": -14, "vt": 16, "vt~": -16, "u": 2, "u~": -2, "c": 4, "c~": -4, "t": 6, "t~": -6, "d": 1, "d~": -1, "s": 3, "s~": -3, "b": 5, "b~": -5, "h": 25, "e-": 11, "e+": -11, "mu-": 13, "mu+": -13, "ta-": 15, "ta+": -15}
+    }
+  },
+  "processes": [
+    {"name": "gg_ddbar", "model": "sm", "process": "g g > d d~ QED=0", "projection": "durham"},
+    {"name": "gg_ssbar", "model": "sm", "process": "g g > s s~ QED=0", "projection": "durham"},
+    {"name": "gg_ccbar", "model": "sm", "process": "g g > c c~ QED=0", "projection": "durham"},
+    {"name": "gg_bbbar", "model": "sm", "process": "g g > b b~ QED=0", "projection": "durham"},
+    {"name": "gg_uubar", "model": "sm", "process": "g g > u u~ QED=0", "projection": "durham"},
+    {"name": "gg_uubarg", "model": "sm", "process": "g g > u u~ g QED=0", "projection": "durham"},
+    {"name": "gg_ddbarg", "model": "sm", "process": "g g > d d~ g QED=0", "projection": "durham"},
+    {"name": "gg_ssbarg", "model": "sm", "process": "g g > s s~ g QED=0", "projection": "durham"},
+    {"name": "gg_ccbarg", "model": "sm", "process": "g g > c c~ g QED=0", "projection": "durham"},
+    {"name": "gg_bbbarg", "model": "sm", "process": "g g > b b~ g QED=0", "projection": "durham"},
+    {"name": "gg_gg", "model": "sm", "process": "g g > g g QED=0", "projection": "durham"},
+    {"name": "gg_ggg", "model": "sm", "process": "g g > g g g QED=0", "projection": "durham"},
+    {"name": "yy_ll", "model": "sm", "process": "a a > e+ e- QED=2 QCD=0", "projection": "photon"},
+    {"name": "yy_uubarg", "model": "sm", "process": "a a > u u~ g QED=2 QCD=1", "projection": "photon"},
+    {"name": "gg_gggg", "model": "sm", "process": "g g > g g g g QED=0", "projection": "durham"},
+    {"name": "yy_uubargg", "model": "sm", "process": "a a > u u~ g g QED=2 QCD=2", "projection": "photon"}
+  ],
+  "families": [
+    {
+      "name": "MG5_PP_Z",
+      "model": "sm",
+      "definitions": ["define p = g u d s c b u~ d~ s~ c~ b~", "define j = g u d s c b u~ d~ s~ c~ b~"],
+      "processes": ["p p > e+ e- / h", "p p > mu+ mu- / h", "p p > ta+ ta- / h", "p p > z, z > e+ e-", "p p > z, z > mu+ mu-", "p p > z, z > ta+ ta-"],
+      "process_names": ["pp_z_epem", "pp_z_mupmum", "pp_z_taptam", "pp_z_decay_epem", "pp_z_decay_mupmum", "pp_z_decay_taptam"],
+      "projection": "parton",
+      "channel": "Z",
+      "mass_overrides": {"5": 0.0}
+    },
+    {
+      "name": "MG5_PP_ZJ",
+      "model": "sm",
+      "definitions": ["define p = g u d s c b u~ d~ s~ c~ b~", "define j = g u d s c b u~ d~ s~ c~ b~"],
+      "processes": ["p p > z j, z > e+ e-", "p p > z j, z > mu+ mu-", "p p > z j, z > ta+ ta-"],
+      "process_names": ["pp_zj_epem", "pp_zj_mupmum", "pp_zj_taptam"],
+      "projection": "parton",
+      "channel": "Zj",
+      "mass_overrides": {"5": 0.0}
+    },
+    {
+      "name": "MG5_PP_JJ",
+      "model": "sm",
+      "definitions": ["define p = g u d s c b u~ d~ s~ c~ b~", "define j = g u d s c b u~ d~ s~ c~ b~"],
+      "processes": ["p p > j j QED=0"],
+      "process_names": ["pp_jj"],
+      "projection": "parton",
+      "channel": "jj",
+      "mass_overrides": {"5": 0.0}
+    },
+    {
+      "name": "MG5_PP_W",
+      "model": "sm",
+      "definitions": ["define p = g u d s c b u~ d~ s~ c~ b~", "define j = g u d s c b u~ d~ s~ c~ b~"],
+      "processes": ["p p > e+ ve", "p p > e- ve~", "p p > mu+ vm", "p p > mu- vm~", "p p > ta+ vt", "p p > ta- vt~"],
+      "process_names": ["pp_w_epve", "pp_w_emvebar", "pp_w_mupvm", "pp_w_mumvmbar", "pp_w_tapvt", "pp_w_tamvtbar"],
+      "projection": "parton",
+      "channel": "W",
+      "mass_overrides": {"5": 0.0}
+    },
+    {
+      "name": "MG5_YY_JJ",
+      "model": "sm",
+      "definitions": ["define j = g u d s c b u~ d~ s~ c~ b~"],
+      "processes": ["a a > j j QED=2 QCD=0"],
+      "process_names": ["yy_jj"],
+      "projection": "photon",
+      "channel": "jj"
+    },
+    {
+      "name": "MG5_YY_WW",
+      "model": "sm_cms",
+      "definitions": [],
+      "processes": ["a a > w+ w-, w+ > e+ ve, w- > e- ve~ QED=4 QCD=0", "a a > w+ w-, w+ > e+ ve, w- > mu- vm~ QED=4 QCD=0", "a a > w+ w-, w+ > e+ ve, w- > ta- vt~ QED=4 QCD=0", "a a > w+ w-, w+ > mu+ vm, w- > e- ve~ QED=4 QCD=0", "a a > w+ w-, w+ > mu+ vm, w- > mu- vm~ QED=4 QCD=0", "a a > w+ w-, w+ > mu+ vm, w- > ta- vt~ QED=4 QCD=0", "a a > w+ w-, w+ > ta+ vt, w- > e- ve~ QED=4 QCD=0", "a a > w+ w-, w+ > ta+ vt, w- > mu- vm~ QED=4 QCD=0", "a a > w+ w-, w+ > ta+ vt, w- > ta- vt~ QED=4 QCD=0"],
+      "process_names": ["yy_ww_epveemvebar", "yy_ww_epvemumvmbar", "yy_ww_epvetamvtbar", "yy_ww_mupvmemvebar", "yy_ww_mupvmmumvmbar", "yy_ww_mupvmtamvtbar", "yy_ww_tapvtemvebar", "yy_ww_tapvtmumvmbar", "yy_ww_tapvttamvtbar"],
+      "projection": "photon",
+      "channel": "WW"
+    },
+    {
+      "name": "MG5_YY_ZJJ",
+      "model": "sm",
+      "definitions": [],
+      "processes": ["a a > z u u~, z > e+ e- QED=4 QCD=0", "a a > z u u~, z > mu+ mu- QED=4 QCD=0", "a a > z u u~, z > ta+ ta- QED=4 QCD=0", "a a > z d d~, z > e+ e- QED=4 QCD=0", "a a > z d d~, z > mu+ mu- QED=4 QCD=0", "a a > z d d~, z > ta+ ta- QED=4 QCD=0", "a a > z s s~, z > e+ e- QED=4 QCD=0", "a a > z s s~, z > mu+ mu- QED=4 QCD=0", "a a > z s s~, z > ta+ ta- QED=4 QCD=0", "a a > z c c~, z > e+ e- QED=4 QCD=0", "a a > z c c~, z > mu+ mu- QED=4 QCD=0", "a a > z c c~, z > ta+ ta- QED=4 QCD=0", "a a > z b b~, z > e+ e- QED=4 QCD=0", "a a > z b b~, z > mu+ mu- QED=4 QCD=0", "a a > z b b~, z > ta+ ta- QED=4 QCD=0"],
+      "process_names": ["yy_zjj_epemuubar", "yy_zjj_mupmumuubar", "yy_zjj_taptamuubar", "yy_zjj_epemddbar", "yy_zjj_mupmumddbar", "yy_zjj_taptamddbar", "yy_zjj_epemssbar", "yy_zjj_mupmumssbar", "yy_zjj_taptamssbar", "yy_zjj_epemccbar", "yy_zjj_mupmumccbar", "yy_zjj_taptamccbar", "yy_zjj_epembbbar", "yy_zjj_mupmumbbbar", "yy_zjj_taptambbbar"],
+      "projection": "photon",
+      "channel": "Zjj"
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+// ISR elastic pp and ppbar scattering through the diffraction dip at 53 GeV
+// Published low and high bin edges determine the generation cuts
+//
+// (c) 2026 Mikael Mieskolainen
+// Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+{
+  "active": true,
+  "validation": {
+    "loopscreen": 1,
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../_common/SETTINGS.json#/measurement"}
+  },
+  "type": "HEPDATA_212895",
+  "reader": "./reader.py",
+  "datapath": "HEPData/EL/HEPData-ins212895-v1-json/",
+  "samples": [
+    {
+      "name": "pp_single",
+      "label": "GRANIITTI X[EL] (single)",
+      "gencard": "../_common/gencard.json",
+      "parameters": {
+        "GENERAL.json:PARAM_SOFT.active_model": "single",
+        "SCATTERING.BEAM": ["p+", "p+"],
+        "SCATTERING.ENERGY": [26.5000, 26.5000],
+        "GENCUTS.<Q>.t": [0.6000, 3.5000]
+      }
+    },
+    {
+      "name": "pp_double",
+      "label": "GRANIITTI X[EL] (double)",
+      "gencard": "../_common/gencard.json",
+      "parameters": {
+        "GENERAL.json:PARAM_SOFT.active_model": "double",
+        "SCATTERING.BEAM": ["p+", "p+"],
+        "SCATTERING.ENERGY": [26.5000, 26.5000],
+        "GENCUTS.<Q>.t": [0.6000, 3.5000]
+      }
+    },
+    {
+      "name": "ppbar_single",
+      "label": "GRANIITTI X[EL] (single)",
+      "gencard": "../_common/gencard.json",
+      "parameters": {
+        "GENERAL.json:PARAM_SOFT.active_model": "single",
+        "SCATTERING.BEAM": ["p+", "p-"],
+        "SCATTERING.ENERGY": [26.5000, 26.5000],
+        "GENCUTS.<Q>.t": [0.5000, 4.0000]
+      }
+    },
+    {
+      "name": "ppbar_double",
+      "label": "GRANIITTI X[EL] (double)",
+      "gencard": "../_common/gencard.json",
+      "parameters": {
+        "GENERAL.json:PARAM_SOFT.active_model": "double",
+        "SCATTERING.BEAM": ["p+", "p-"],
+        "SCATTERING.ENERGY": [26.5000, 26.5000],
+        "GENCUTS.<Q>.t": [0.5000, 4.0000]
+      }
+    }
+  ],
+  "plot": {"normalization": "cross_section", "unit": "mb", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "sets": [
+    {
+      "name": "ISR $pp$ 53 GeV ($pp$)",
+      "title": "$0.6<|t|<3.5$ GeV$^2$",
+      "samples": ["pp_single", "pp_double"],
+      "pid": [2212, 2212],
+      "cuts": "../_common/cuts.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {"file": "Table1.json", "obs": "mandelstam_t", "scale": 1E-3, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "ISR $p\\bar{p}$ 53 GeV ($p\\bar{p}$)",
+      "title": "$0.5<|t|<4$ GeV$^2$",
+      "samples": ["ppbar_single", "ppbar_double"],
+      "pid": [2212, -2212],
+      "cuts": "../_common/cuts.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {"file": "Table2.json", "obs": "mandelstam_t", "scale": 1E-3, "fitw": 1.0}
+      ]
+    }
+  ]
+}

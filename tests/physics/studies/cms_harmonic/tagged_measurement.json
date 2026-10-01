@@ -1,0 +1,69 @@
+{
+  "schema": "GRANIITTI_HARMONIC_ANALYSIS_V1",
+  "measurement": "TAGGED",
+  "frame": "GJ",
+  "sqrt_s": 7000.0,
+  "maximum": 1000000,
+  "seed": 12345,
+  "event_weight_index": 0,
+  "fiducial": {
+    "central": {
+      "pion_eta": [-2.5, 2.5],
+      "pion_pt": [0.15, 100.0]
+    },
+    "forward": {
+      "proton_xi": [0.0, 0.2],
+      "proton_abs_t": [0.0, 4.0]
+    }
+  },
+  "detector_selection": {
+    "pt_balance_max": 0.2,
+    "mass_match_relative_max": 0.1,
+    "rapidity_match_max": 0.1
+  },
+  "axes": [
+    {"coordinate": "M",       "bins": 4, "min": 0.28, "max": 2.0},
+    {"coordinate": "Y",       "bins": 1, "min": -2.5, "max": 2.5},
+    {"coordinate": "ABST1",   "bins": 1, "min": 0.0,  "max": 4.0},
+    {"coordinate": "ABST2",   "bins": 1, "min": 0.0,  "max": 4.0},
+    {"coordinate": "DPHI_PP", "bins": 4, "min": -3.141592653589793, "max": 3.141592653589793}
+  ],
+  "fit": {
+    "estimator": "ALGEBRAIC",
+    "lmax": 4,
+    "remove_odd": false,
+    "remove_negative_m": false,
+    "svd_relative_cut": 1e-5,
+    "response_jackknife_bins": 16,
+    "max_parameters": 1000
+  },
+  "responses": [
+    {
+      "name": "CMS_TAGGED_FULLSIM",
+      "mode": "PAIRED",
+      "samples": [
+        {"truth": "output/SH_2pi_J0_CMS.hepmc3",
+        "reco": "input/SH_2pi_J0_CMS_tagged_fullsim.hepmc3",
+        "reference": "ANGULAR_FLAT",
+        "scale": 1.0}
+      ]
+    }
+  ],
+  "samples": [
+    {
+      "name": "CMS_TAGGED_DATA",
+      "type": "DATA",
+      "response": "CMS_TAGGED_FULLSIM",
+      "normalization": "EVENT_YIELD",
+      "paths": ["input/CMS_tagged_exclusive_pipi_data.hepmc3"]
+    },
+    {
+      "name": "PIPI_TAGGED_CLOSURE",
+      "type": "CLOSURE_MC",
+      "response": "CMS_TAGGED_FULLSIM",
+      "normalization": "EVENT_YIELD",
+      "paths": ["input/SH_2pi_CMS_tagged_fullsim.hepmc3"]
+    }
+  ],
+  "output": "output/cms_harmonic_tagged_GJ.json"
+}

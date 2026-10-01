@@ -1,0 +1,110 @@
+// Rho pair continuum and resonance production comparison
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "mp_con",
+      "label": "GRANIITTI MP[CON]",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[CON]<F> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-}",
+        "SCATTERING.RES": [],
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": true
+      }
+    },
+    {
+      "name": "xp_con",
+      "label": "GRANIITTI XP[CON]",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "XP[CON]<F> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-}",
+        "SCATTERING.RES": [],
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": true
+      }
+    },
+    {
+      "name": "gp_con",
+      "label": "GRANIITTI GP[CON]",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "GP[CON]<F> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-}",
+        "SCATTERING.RES": [],
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": true
+      }
+    },
+    {
+      "name": "tp_con",
+      "label": "GRANIITTI TP[CON]",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[CON]<F> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-}",
+        "SCATTERING.RES": [],
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": true
+      }
+    },
+    {
+      "name": "mp_res",
+      "label": "GRANIITTI MP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-} @RES{f0_1710:1} @R[f0_1710]{M:2.5,W:0.15}", // Synthetic pole for the rho rho production comparison
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": true
+      }
+    },
+    {
+      "name": "xp_res",
+      "label": "GRANIITTI XP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "XP[RES]<F> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-} @RES{f0_1710:1} @R[f0_1710]{M:2.5,W:0.15}", // Synthetic pole for the rho rho production comparison
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": true
+      }
+    },
+    {
+      "name": "gp_res",
+      "label": "GRANIITTI GP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "GP[RES]<F> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-} @RES{f0_1710:1} @R[f0_1710]{M:2.5,W:0.15}", // Synthetic pole for the rho rho production comparison
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": true
+      }
+    },
+    {
+      "name": "tp_res",
+      "label": "GRANIITTI TP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[RES]<F> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-} @RES{f0_1710:1} @R[f0_1710]{M:2.5,W:0.15}", // Synthetic pole for the rho rho production comparison
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": true
+      }
+    }
+  ],
+  "plot": {"normalization": "cross_section", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "sets": [
+    {
+      "name": "Rho pair production",
+      "title": "$|\\eta_{h}|<5.5$, $|y_{h}|<0.9$, $p_{T,h}>0.15$ GeV, $M_X<4$ GeV, $|y_X|<0.9$",
+      "data": false,
+      "pid": [
+        [211, -211],
+        [211, -211]
+      ],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SOFTCEP/processes/_common/obs.py",
+      "hist": [
+        {"obs": "M"},
+        {"obs": "Rap"},
+        {"obs": "Pt"},
+        {"obs": "t1"},
+        {"obs": "t2"},
+        {"obs": "Abs_t1t2"},
+        {"obs": "dPhi_pp"},
+        {"obs": "4body_M_A"},
+        {"obs": "4body_M_B"},
+        {"obs": "4body_phi12"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,160 @@
+// Matched F/C truth-level charged-lepton fiducial cuts, neutrinos unrestricted
+// C samples W rapidities to |y_W|<5, covering the F support with OFFSHELL:3 and M_X<300 GeV
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "F_BW",
+      "label": "mg5_ww F_BW",
+      "gencard": "icepack/SPIN/_common/gencard_4body.json",
+      "parameters": {
+        "GENERIC.INTEGRATOR": "VEGAS",
+        "GENERIC.RNDSEED": 24681,
+        "SCATTERING.PROCESS": "yy[WW]<F> -> W+ > {mu+ vm} W- > {e- ve~} @OFFSHELL:3 @FLATMASS2:false",
+        "GENCUTS.<F>.M": [150.0, 300.0],
+        "GENCUTS.<F>.Rap": [-2.5, 2.5],
+        "FIDCUTS.active": true,
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": true,
+        "FIDCUTS.CENTRAL": {
+          "-13": {
+            "Eta": [-2.5, 2.5],
+            "Pt": [20.0, 100000.0]
+          },
+          "11": {
+            "Eta": [-2.5, 2.5],
+            "Pt": [20.0, 100000.0]
+          },
+          "SYSTEM": {
+            "M": [150.0, 300.0],
+            "Rap": [-2.5, 2.5]
+          }
+        }
+      }
+    },
+    {
+      "name": "C_BW",
+      "label": "mg5_ww C_BW",
+      "gencard": "icepack/SPIN/_common/gencard_4body.json",
+      "parameters": {
+        "GENERIC.INTEGRATOR": "VEGAS",
+        "GENERIC.RNDSEED": 32600,
+        "SCATTERING.PROCESS": "yy[WW]<C> -> W+ > {mu+ vm} W- > {e- ve~} @OFFSHELL:3 @FLATMASS2:false",
+        "GENCUTS.<C>.M": [150.0, 300.0],
+        "GENCUTS.<C>.Rap": [-5.0, 5.0],
+        "FIDCUTS.active": true,
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": true,
+        "FIDCUTS.CENTRAL": {
+          "-13": {
+            "Eta": [-2.5, 2.5],
+            "Pt": [20.0, 100000.0]
+          },
+          "11": {
+            "Eta": [-2.5, 2.5],
+            "Pt": [20.0, 100000.0]
+          },
+          "SYSTEM": {
+            "M": [150.0, 300.0],
+            "Rap": [-2.5, 2.5]
+          }
+        }
+      }
+    },
+    {
+      "name": "F_flat",
+      "label": "mg5_ww F_flat",
+      "gencard": "icepack/SPIN/_common/gencard_4body.json",
+      "parameters": {
+        "GENERIC.INTEGRATOR": "VEGAS",
+        "GENERIC.RNDSEED": 40519,
+        "SCATTERING.PROCESS": "yy[WW]<F> -> W+ > {mu+ vm} W- > {e- ve~} @OFFSHELL:3 @FLATMASS2:true",
+        "GENCUTS.<F>.M": [150.0, 300.0],
+        "GENCUTS.<F>.Rap": [-2.5, 2.5],
+        "FIDCUTS.active": true,
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": true,
+        "FIDCUTS.CENTRAL": {
+          "-13": {
+            "Eta": [-2.5, 2.5],
+            "Pt": [20.0, 100000.0]
+          },
+          "11": {
+            "Eta": [-2.5, 2.5],
+            "Pt": [20.0, 100000.0]
+          },
+          "SYSTEM": {
+            "M": [150.0, 300.0],
+            "Rap": [-2.5, 2.5]
+          }
+        }
+      }
+    },
+    {
+      "name": "C_flat",
+      "label": "mg5_ww C_flat",
+      "gencard": "icepack/SPIN/_common/gencard_4body.json",
+      "parameters": {
+        "GENERIC.INTEGRATOR": "VEGAS",
+        "GENERIC.RNDSEED": 48438,
+        "SCATTERING.PROCESS": "yy[WW]<C> -> W+ > {mu+ vm} W- > {e- ve~} @OFFSHELL:3 @FLATMASS2:true",
+        "GENCUTS.<C>.M": [150.0, 300.0],
+        "GENCUTS.<C>.Rap": [-5.0, 5.0],
+        "FIDCUTS.active": true,
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": true,
+        "FIDCUTS.CENTRAL": {
+          "-13": {
+            "Eta": [-2.5, 2.5],
+            "Pt": [20.0, 100000.0]
+          },
+          "11": {
+            "Eta": [-2.5, 2.5],
+            "Pt": [20.0, 100000.0]
+          },
+          "SYSTEM": {
+            "M": [150.0, 300.0],
+            "Rap": [-2.5, 2.5]
+          }
+        }
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "cross_section",
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "hist"
+  },
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "nevents": 50000,
+    "mc_reference": "F_BW",
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "max_abs_integral_pull": 5.0,
+    "max_chi2_ndf": 3.0,
+    "max_shape_l1": 0.3,
+    "max_integral_factor": 1.12,
+    "min_mc_effective_events": 3000
+  },
+  "sets": [
+    {
+      "name": "mg5_ww",
+      "title": "$|\\eta_{e,\\mu}|<2.5$, $p_{T,e,\\mu}>20$ GeV, $150<M_X<300$ GeV, $|y_X|<2.5$",
+      "data": false,
+      "pid": [-13, 14, 11, -12],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "../_common/obs_ww.py",
+      "hist": [
+        {"obs": "cross_section"},
+        {"obs": "M"},
+        {"obs": "Rap"},
+        {"obs": "dPhi_pp"},
+        {"obs": "4body_M_A"},
+        {"obs": "4body_M_B"},
+        {"obs": "4body_cos1"},
+        {"obs": "4body_cos2"},
+        {"obs": "4body_phi12"}
+      ]
+    }
+  ]
+}

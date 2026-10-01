@@ -1,0 +1,1081 @@
+// X-Pomeron continuum couplings and form factor parameters
+//
+// Explicit operators use absolute g_ls or helicity couplings
+// Compact positive PDG pair keys identify unordered particle families
+// The signed physical outgoing pair selects same, opposite or self before crossing
+// 
+// Parity symmetric rows are automatically treated in the code
+//
+// Couplings produced with `develop/tools/DL_couplings.py
+//
+// (c) 2026 Mikael Mieskolainen
+// Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+
+{
+  "991": {
+    "[2212,2212]": { // [p,p]
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[0,0,7.77209673,0.0]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,1,7.77209673,0.0]]
+      },
+      "FF_transfer": {"type": "dirac", "norm": "zero", "EM": "DIPOLE"},
+      "FF_offshell": {"type": "exp", "norm": "pole", "b": 1.0},
+      "reggeize": {"active": false, "freeze_scale2": 1.0000},
+      "pveto": {"active": false, "M0": 2.5, "c": 0.5}
+    },
+    "[2112,2112]": { // [n,n]
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[0,0,7.77209673,0.0]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,1,7.77209673,0.0]]
+      },
+      "FF_transfer": {"type": "dirac", "norm": "zero", "EM": "DIPOLE"},
+      "FF_offshell": {"type": "exp", "norm": "pole", "b": 1.0},
+      "reggeize": {"active": false, "freeze_scale2": 1.0000},
+      "pveto": {"active": false, "M0": 2.5, "c": 0.5}
+    },
+    "[211,211]": {
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[0,0,4.881736333,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[0,0,4.881736333,0.0000]]
+      },
+      "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 14.9585, "n": 1.0},
+      "FF_offshell": {"type": "logexp", "norm": "pole", "b": 1.5328, "Lambda2": 0.1686},
+      "reggeize": {"active": false, "freeze_scale2": 1.0000},
+      "pveto": {"active": true, "M0": 1.1050, "c": 1.1135}
+    },
+    "[111,111]": {
+      "self": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[0,0,4.881736333,0.0000]]
+      },
+      "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5, "n": 1.0},
+      "FF_offshell": {"type": "exp", "norm": "pole", "b": 1.0},
+      "reggeize": {"active": false, "freeze_scale2": 1.0000},
+      "pveto": {"active": false, "M0": 2.5, "c": 0.5}
+    },
+    "[321,321]": {
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[0,0,4.272862396,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[0,0,4.272862396,0.0000]]
+      },
+      "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.1494, "n": 1.0},
+      "FF_offshell": {"type": "logexp", "norm": "pole", "b": 1.4633, "Lambda2": 0.039562},
+      "reggeize": {"active": false, "freeze_scale2": 1.0000},
+      "pveto": {"active": true, "M0": 1.2913, "c": 2.7558}
+    },
+    "[311,311]": {
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[0,0,4.272862396,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[0,0,4.272862396,0.0000]]
+      },
+      "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5, "n": 1.0},
+      "FF_offshell": {"type": "exp", "norm": "pole", "b": 1.0},
+      "reggeize": {"active": false, "freeze_scale2": 1.0000},
+      "pveto": {"active": false, "M0": 2.5, "c": 0.5}
+    },
+    "[113,113]": { // [rho0,rho0]
+      "self": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[0,0,4.881736333,0.0],
+          [2,2,0.0,0.0]]
+      },
+      "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5, "n": 1.0},
+      "FF_offshell": {"type": "exp", "norm": "pole", "b": 1.0},
+      "reggeize": {"active": false, "freeze_scale2": 1.0000},
+      "pveto": {"active": false, "M0": 2.5, "c": 0.5}
+    },
+    "[333,333]": { // [phi,phi]
+      "self": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[0,0,3.663988459,0.0],
+          [2,2,0.0,0.0]]
+      },
+      "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5, "n": 1.0},
+      "FF_offshell": {"type": "exp", "norm": "pole", "b": 1.0},
+      "reggeize": {"active": false, "freeze_scale2": 1.0000},
+      "pveto": {"active": false, "M0": 2.5, "c": 0.5}
+    }
+  },
+  "993": {
+    "[2212,2212]": { // [p,p]
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[1,0,7.77209673,0.0],
+          [1,1,0.0,0.0]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[0,1,4.487222139,0.0],
+          [2,1,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[2212,2212]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[2212,2212]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[2212,2212]/reggeize"},
+      "pveto": {"$ref": "#/991/[2212,2212]/pveto"}
+    },
+    "[2112,2112]": { // [n,n]
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[1,0,7.77209673,0.0],
+          [1,1,0.0,0.0]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[0,1,4.487222139,0.0],
+          [2,1,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[2112,2112]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[2112,2112]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[2112,2112]/reggeize"},
+      "pveto": {"$ref": "#/991/[2112,2112]/pveto"}
+    },
+    "[211,211]": {
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,0,4.881736333,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,0,4.881736333,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/991/[211,211]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/991/[211,211]/FF_transfer"},
+      "reggeize": {"$ref": "#/991/[211,211]/reggeize"},
+      "pveto": {"$ref": "#/991/[211,211]/pveto"}
+    },
+    "[321,321]": {
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,0,4.272862396,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,0,4.272862396,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/991/[321,321]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/991/[321,321]/FF_transfer"},
+      "reggeize": {"$ref": "#/991/[321,321]/reggeize"},
+      "pveto": {"$ref": "#/991/[321,321]/pveto"}
+    },
+    "[311,311]": {
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,0,4.272862396,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/991/[311,311]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/991/[311,311]/FF_transfer"},
+      "reggeize": {"$ref": "#/991/[311,311]/reggeize"},
+      "pveto": {"$ref": "#/991/[311,311]/pveto"}
+    },
+    "[113,113]": { // [rho0,rho0]
+      "self": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,1,4.227707679,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[113,113]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[113,113]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[113,113]/reggeize"},
+      "pveto": {"$ref": "#/991/[113,113]/pveto"}
+    },
+    "[333,333]": { // [phi,phi]
+      "self": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,1,3.173107084,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[333,333]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[333,333]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[333,333]/reggeize"},
+      "pveto": {"$ref": "#/991/[333,333]/pveto"}
+    }
+  },
+  "995": {
+    "[2212,2212]": { // [p,p]
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[2,0,9.518835611,0.0],
+          [2,1,0.0,0.0]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[1,1,6.02024024,0.0],
+          [3,1,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[2212,2212]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[2212,2212]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[2212,2212]/reggeize"},
+      "pveto": {"$ref": "#/991/[2212,2212]/pveto"}
+    },
+    "[2112,2112]": { // [n,n]
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[2,0,9.518835611,0.0],
+          [2,1,0.0,0.0]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[1,1,6.02024024,0.0],
+          [3,1,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[2112,2112]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[2112,2112]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[2112,2112]/reggeize"},
+      "pveto": {"$ref": "#/991/[2112,2112]/pveto"}
+    },
+    "[211,211]": {
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[2,0,5.978881538,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[2,0,5.978881538,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/991/[211,211]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/991/[211,211]/FF_transfer"},
+      "reggeize": {"$ref": "#/991/[211,211]/reggeize"},
+      "pveto": {"$ref": "#/991/[211,211]/pveto"}
+    },
+    "[111,111]": {
+      "self": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[2,0,5.978881538,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/991/[111,111]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/991/[111,111]/FF_transfer"},
+      "reggeize": {"$ref": "#/991/[111,111]/reggeize"},
+      "pveto": {"$ref": "#/991/[111,111]/pveto"}
+    },
+    "[321,321]": {
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[2,0,5.233166306,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[2,0,5.233166306,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/991/[321,321]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/991/[321,321]/FF_transfer"},
+      "reggeize": {"$ref": "#/991/[321,321]/reggeize"},
+      "pveto": {"$ref": "#/991/[321,321]/pveto"}
+    },
+    "[311,311]": {
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[2,0,5.233166306,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[2,0,5.233166306,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/991/[311,311]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/991/[311,311]/FF_transfer"},
+      "reggeize": {"$ref": "#/991/[311,311]/reggeize"},
+      "pveto": {"$ref": "#/991/[311,311]/pveto"}
+    },
+    "[113,113]": { // [rho0,rho0]
+      "self": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[0,2,3.781376704,0.0],
+          [2,0,0.0,0.0],
+          [2,2,0.0,0.0],
+          [4,2,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[113,113]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[113,113]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[113,113]/reggeize"},
+      "pveto": {"$ref": "#/991/[113,113]/pveto"}
+    },
+    "[333,333]": { // [phi,phi]
+      "self": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[0,2,2.838113256,0.0],
+          [2,0,0.0,0.0],
+          [2,2,0.0,0.0],
+          [4,2,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[333,333]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[333,333]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[333,333]/reggeize"},
+      "pveto": {"$ref": "#/991/[333,333]/pveto"}
+    }
+  },
+  "9915": {
+    "[2212,2212]": { // [p,p]
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[2,0,17.748070327,0.0],
+          [2,1,0.0,0.0]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[1,1,11.224865261,0.0],
+          [3,1,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[2212,2212]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[2212,2212]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[2212,2212]/reggeize"},
+      "pveto": {"$ref": "#/991/[2212,2212]/pveto"}
+    },
+    "[2112,2112]": { // [n,n]
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[2,0,17.748070327,0.0],
+          [2,1,0.0,0.0]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[1,1,11.224865261,0.0],
+          [3,1,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[2112,2112]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[2112,2112]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[2112,2112]/reggeize"},
+      "pveto": {"$ref": "#/991/[2112,2112]/pveto"}
+    },
+    "[211,211]": {
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[2,0,7.305122751,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[2,0,7.305122751,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/991/[211,211]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/991/[211,211]/FF_transfer"},
+      "reggeize": {"$ref": "#/991/[211,211]/reggeize"},
+      "pveto": {"$ref": "#/991/[211,211]/pveto"}
+    },
+    "[111,111]": {
+      "self": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[2,0,7.305122751,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/991/[111,111]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/991/[111,111]/FF_transfer"},
+      "reggeize": {"$ref": "#/991/[111,111]/reggeize"},
+      "pveto": {"$ref": "#/991/[111,111]/pveto"}
+    },
+    "[321,321]": {
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[2,0,3.781245513,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[2,0,3.781245513,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/991/[321,321]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/991/[321,321]/FF_transfer"},
+      "reggeize": {"$ref": "#/991/[321,321]/reggeize"},
+      "pveto": {"$ref": "#/991/[321,321]/pveto"}
+    },
+    "[311,311]": {
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[2,0,3.236635859,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[2,0,3.236635859,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/991/[311,311]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/991/[311,311]/FF_transfer"},
+      "reggeize": {"$ref": "#/991/[311,311]/reggeize"},
+      "pveto": {"$ref": "#/991/[311,311]/pveto"}
+    },
+    "[113,113]": { // [rho0,rho0]
+      "self": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[0,2,4.620165296,0.0],
+          [2,0,0.0,0.0],
+          [2,2,0.0,0.0],
+          [4,2,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[113,113]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[113,113]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[113,113]/reggeize"},
+      "pveto": {"$ref": "#/991/[113,113]/pveto"}
+    },
+    "[333,333]": { // [phi,phi]
+      "self": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[0,2,0.16277399,0.0],
+          [2,0,0.0,0.0],
+          [2,2,0.0,0.0],
+          [4,2,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[333,333]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[333,333]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[333,333]/reggeize"},
+      "pveto": {"$ref": "#/991/[333,333]/pveto"}
+    }
+  },
+  "9925": {
+    "[2212,2212]": { // [p,p]
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[2,0,17.748070327,0.0],
+          [2,1,0.0,0.0]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[1,1,11.224865261,0.0],
+          [3,1,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[2212,2212]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[2212,2212]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[2212,2212]/reggeize"},
+      "pveto": {"$ref": "#/991/[2212,2212]/pveto"}
+    },
+    "[2112,2112]": { // [n,n]
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[2,0,17.748070327,0.0],
+          [2,1,0.0,0.0]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[1,1,11.224865261,0.0],
+          [3,1,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[2112,2112]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[2112,2112]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[2112,2112]/reggeize"},
+      "pveto": {"$ref": "#/991/[2112,2112]/pveto"}
+    },
+    "[211,211]": {
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[2,0,7.305122751,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[2,0,7.305122751,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/991/[211,211]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/991/[211,211]/FF_transfer"},
+      "reggeize": {"$ref": "#/991/[211,211]/reggeize"},
+      "pveto": {"$ref": "#/991/[211,211]/pveto"}
+    },
+    "[111,111]": {
+      "self": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[2,0,7.305122751,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/991/[111,111]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/991/[111,111]/FF_transfer"},
+      "reggeize": {"$ref": "#/991/[111,111]/reggeize"},
+      "pveto": {"$ref": "#/991/[111,111]/pveto"}
+    },
+    "[321,321]": {
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[2,0,3.781245513,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[2,0,3.781245513,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/991/[321,321]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/991/[321,321]/FF_transfer"},
+      "reggeize": {"$ref": "#/991/[321,321]/reggeize"},
+      "pveto": {"$ref": "#/991/[321,321]/pveto"}
+    },
+    "[311,311]": {
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[2,0,3.236635859,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[2,0,3.236635859,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/991/[311,311]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/991/[311,311]/FF_transfer"},
+      "reggeize": {"$ref": "#/991/[311,311]/reggeize"},
+      "pveto": {"$ref": "#/991/[311,311]/pveto"}
+    },
+    "[113,113]": { // [rho0,rho0]
+      "self": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[0,2,4.620165296,0.0],
+          [2,0,0.0,0.0],
+          [2,2,0.0,0.0],
+          [4,2,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[113,113]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[113,113]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[113,113]/reggeize"},
+      "pveto": {"$ref": "#/991/[113,113]/pveto"}
+    },
+    "[333,333]": { // [phi,phi]
+      "self": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[0,2,0.16277399,0.0],
+          [2,0,0.0,0.0],
+          [2,2,0.0,0.0],
+          [4,2,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[333,333]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[333,333]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[333,333]/reggeize"},
+      "pveto": {"$ref": "#/991/[333,333]/pveto"}
+    }
+  },
+  "9933": {
+    "[2212,2212]": { // [p,p]
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[1,0,8.956886581,0.0],
+          [1,1,0.0,0.0]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[0,1,5.171260879,0.0],
+          [2,1,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[2212,2212]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[2212,2212]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[2212,2212]/reggeize"},
+      "pveto": {"$ref": "#/991/[2212,2212]/pveto"}
+    },
+    "[2112,2112]": { // [n,n]
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[1,0,8.956886581,0.0],
+          [1,1,0.0,0.0]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[0,1,5.171260879,0.0],
+          [2,1,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[2112,2112]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[2112,2112]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[2112,2112]/reggeize"},
+      "pveto": {"$ref": "#/991/[2112,2112]/pveto"}
+    },
+    "[211,211]": {
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,0,1.790953923,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,0,1.790953923,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/991/[211,211]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/991/[211,211]/FF_transfer"},
+      "reggeize": {"$ref": "#/991/[211,211]/reggeize"},
+      "pveto": {"$ref": "#/991/[211,211]/pveto"}
+    },
+    "[321,321]": {
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,0,3.757616091,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,0,3.757616091,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/991/[321,321]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/991/[321,321]/FF_transfer"},
+      "reggeize": {"$ref": "#/991/[321,321]/reggeize"},
+      "pveto": {"$ref": "#/991/[321,321]/pveto"}
+    },
+    "[311,311]": {
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,0,2.119083779,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/991/[311,311]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/991/[311,311]/FF_transfer"},
+      "reggeize": {"$ref": "#/991/[311,311]/reggeize"},
+      "pveto": {"$ref": "#/991/[311,311]/pveto"}
+    },
+    "[113,113]": { // [rho0,rho0]
+      "self": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,1,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[113,113]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[113,113]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[113,113]/reggeize"},
+      "pveto": {"$ref": "#/991/[113,113]/pveto"}
+    },
+    "[333,333]": { // [phi,phi]
+      "self": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,1,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[333,333]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[333,333]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[333,333]/reggeize"},
+      "pveto": {"$ref": "#/991/[333,333]/pveto"}
+    }
+  },
+  "9943": {
+    "[2212,2212]": { // [p,p]
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[1,0,8.956886581,0.0],
+          [1,1,0.0,0.0]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[0,1,5.171260879,0.0],
+          [2,1,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[2212,2212]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[2212,2212]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[2212,2212]/reggeize"},
+      "pveto": {"$ref": "#/991/[2212,2212]/pveto"}
+    },
+    "[2112,2112]": { // [n,n]
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[1,0,8.956886581,0.0],
+          [1,1,0.0,0.0]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[0,1,5.171260879,0.0],
+          [2,1,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[2112,2112]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[2112,2112]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[2112,2112]/reggeize"},
+      "pveto": {"$ref": "#/991/[2112,2112]/pveto"}
+    },
+    "[211,211]": {
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,0,1.790953923,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,0,1.790953923,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/991/[211,211]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/991/[211,211]/FF_transfer"},
+      "reggeize": {"$ref": "#/991/[211,211]/reggeize"},
+      "pveto": {"$ref": "#/991/[211,211]/pveto"}
+    },
+    "[321,321]": {
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,0,3.757616091,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,0,3.757616091,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/991/[321,321]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/991/[321,321]/FF_transfer"},
+      "reggeize": {"$ref": "#/991/[321,321]/reggeize"},
+      "pveto": {"$ref": "#/991/[321,321]/pveto"}
+    },
+    "[311,311]": {
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,0,2.119083779,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/991/[311,311]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/991/[311,311]/FF_transfer"},
+      "reggeize": {"$ref": "#/991/[311,311]/reggeize"},
+      "pveto": {"$ref": "#/991/[311,311]/pveto"}
+    },
+    "[113,113]": { // [rho0,rho0]
+      "self": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,1,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[113,113]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[113,113]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[113,113]/reggeize"},
+      "pveto": {"$ref": "#/991/[113,113]/pveto"}
+    },
+    "[333,333]": { // [phi,phi]
+      "self": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,1,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[333,333]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[333,333]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[333,333]/reggeize"},
+      "pveto": {"$ref": "#/991/[333,333]/pveto"}
+    }
+  },
+  "9991": {
+    "[2212,2212]": { // [p,p]
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[0,0,0.0,0.0]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,1,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[2212,2212]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[2212,2212]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[2212,2212]/reggeize"},
+      "pveto": {"$ref": "#/991/[2212,2212]/pveto"}
+    },
+    "[2112,2112]": { // [n,n]
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[0,0,0.0,0.0]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,1,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[2112,2112]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[2112,2112]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[2112,2112]/reggeize"},
+      "pveto": {"$ref": "#/991/[2112,2112]/pveto"}
+    },
+    "[211,211]": {
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[0,0,0.0,0.0]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[0,0,0.0,0.0]]
+      },
+      "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5, "n": 1.0},
+      "FF_offshell": {"type": "logexp", "norm": "pole", "b": 1.0, "Lambda2": 1.0000},
+      "reggeize": {"$ref": "#/991/[211,211]/reggeize"},
+      "pveto": {"$ref": "#/991/[211,211]/pveto"}
+    },
+    "[111,111]": {
+      "self": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[0,0,0.0,0.0]]
+      },
+      "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5, "n": 1.0},
+      "FF_offshell": {"type": "exp", "norm": "pole", "b": 1.0},
+      "reggeize": {"$ref": "#/991/[111,111]/reggeize"},
+      "pveto": {"$ref": "#/991/[111,111]/pveto"}
+    },
+    "[321,321]": { // [K,K]
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[0,0,0.0,0.0]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[0,0,0.0,0.0]]
+      },
+      "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5, "n": 1.0},
+      "FF_offshell": {"type": "logexp", "norm": "pole", "b": 1.0, "Lambda2": 1.0000},
+      "reggeize": {"$ref": "#/991/[321,321]/reggeize"},
+      "pveto": {"$ref": "#/991/[321,321]/pveto"}
+    },
+    "[113,113]": { // [rho0,rho0]
+      "self": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[0,0,0.0,0.0],
+          [2,2,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[113,113]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[113,113]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[113,113]/reggeize"},
+      "pveto": {"$ref": "#/991/[113,113]/pveto"}
+    },
+    "[333,333]": { // [phi,phi]
+      "self": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[0,0,0.0,0.0],
+          [2,2,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[333,333]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[333,333]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[333,333]/reggeize"},
+      "pveto": {"$ref": "#/991/[333,333]/pveto"}
+    }
+  },
+  "9993": {
+    "[2212,2212]": { // [p,p]
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[1,0,0.0,0.0],
+          [1,1,0.0,0.0]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[0,1,0.0,0.0],
+          [2,1,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[2212,2212]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[2212,2212]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[2212,2212]/reggeize"},
+      "pveto": {"$ref": "#/991/[2212,2212]/pveto"}
+    },
+    "[2112,2112]": { // [n,n]
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[1,0,0.0,0.0],
+          [1,1,0.0,0.0]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls":
+         [[0,1,0.0,0.0],
+          [2,1,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[2112,2112]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[2112,2112]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[2112,2112]/reggeize"},
+      "pveto": {"$ref": "#/991/[2112,2112]/pveto"}
+    },
+    "[211,211]": {
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,0,0.0,0.0]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,0,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/9991/[211,211]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/9991/[211,211]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[211,211]/reggeize"},
+      "pveto": {"$ref": "#/991/[211,211]/pveto"}
+    },
+    "[321,321]": { // [K,K]
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,0,0.0,0.0]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,0,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/9991/[321,321]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/9991/[321,321]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[321,321]/reggeize"},
+      "pveto": {"$ref": "#/991/[321,321]/pveto"}
+    },
+    "[113,113]": { // [rho0,rho0]
+      "self": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,1,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[113,113]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[113,113]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[113,113]/reggeize"},
+      "pveto": {"$ref": "#/991/[113,113]/pveto"}
+    },
+    "[333,333]": { // [phi,phi]
+      "self": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[1,1,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[333,333]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[333,333]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[333,333]/reggeize"},
+      "pveto": {"$ref": "#/991/[333,333]/pveto"}
+    }
+  },
+  "9997": {
+    "[2212,2212]": { // [p,p]
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[3,1,0.0,0.0]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[3,1,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[2212,2212]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[2212,2212]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[2212,2212]/reggeize"},
+      "pveto": {"$ref": "#/991/[2212,2212]/pveto"}
+    },
+    "[2112,2112]": { // [n,n]
+      "same": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[3,1,0.0,0.0]]
+      },
+      "opposite": {
+        "basis": "crossed_ls",
+        "CP": [true,true],
+        "g_ls": [[3,1,0.0,0.0]]
+      },
+      "FF_transfer": {"$ref": "#/991/[2112,2112]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/991/[2112,2112]/FF_offshell"},
+      "reggeize": {"$ref": "#/991/[2112,2112]/reggeize"},
+      "pveto": {"$ref": "#/991/[2112,2112]/pveto"}
+    }
+  }
+}

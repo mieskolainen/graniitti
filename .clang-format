@@ -1,12 +1,13 @@
-﻿---
+---
 BasedOnStyle: Google
-AlignAfterOpenBracket: 'true'
-AlignConsecutiveAssignments: 'true'
-AlignConsecutiveDeclarations: 'true'
-AlignEscapedNewlinesLeft: 'true'
-AlignTrailingComments: 'true'
-AllowShortBlocksOnASingleLine: 'true'
-AllowShortFunctionsOnASingleLine: 'true'
-ColumnLimit: '100'
-MaxEmptyLinesToKeep: '2'
-Language: 'Cpp'
+AlignAfterOpenBracket: true
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignEscapedNewlines: Left
+AlignTrailingComments: true
+AllowShortBlocksOnASingleLine: true
+AllowShortFunctionsOnASingleLine: true
+ColumnLimit: 120
+CommentPragmas: '^ \[REFERENCE:'
+MaxEmptyLinesToKeep: 2
+Language: Cpp

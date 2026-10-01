@@ -1,0 +1,386 @@
+{
+  "schema": 1,
+  "family": "MG5_YY_WW",
+  "generation_setup": {
+    "model": "sm_cms",
+    "model_import": "sm-lepton_masses",
+    "complex_mass_scheme": true,
+    "definitions": [],
+    "processes": ["a a > w+ w-, w+ > e+ ve, w- > e- ve~ QED=4 QCD=0", "a a > w+ w-, w+ > e+ ve, w- > mu- vm~ QED=4 QCD=0", "a a > w+ w-, w+ > e+ ve, w- > ta- vt~ QED=4 QCD=0", "a a > w+ w-, w+ > mu+ vm, w- > e- ve~ QED=4 QCD=0", "a a > w+ w-, w+ > mu+ vm, w- > mu- vm~ QED=4 QCD=0", "a a > w+ w-, w+ > mu+ vm, w- > ta- vt~ QED=4 QCD=0", "a a > w+ w-, w+ > ta+ vt, w- > e- ve~ QED=4 QCD=0", "a a > w+ w-, w+ > ta+ vt, w- > mu- vm~ QED=4 QCD=0", "a a > w+ w-, w+ > ta+ vt, w- > ta- vt~ QED=4 QCD=0"],
+    "particle_pdgs": {"a": 22, "b": 5, "b~": -5, "c": 4, "c~": -4, "d": 1, "d~": -1, "e+": -11, "e-": 11, "g": 21, "h": 25, "mu+": -13, "mu-": 13, "s": 3, "s~": -3, "t": 6, "ta+": -15, "ta-": 15, "t~": -6, "u": 2, "u~": -2, "ve": 12, "ve~": -12, "vm": 14, "vm~": -14, "vt": 16, "vt~": -16, "w+": 24, "w-": -24, "z": 23},
+    "alpha_qed": {"charge": "mdl_ee", "charge_square": "mdl_ee__exp__2", "inverse_alpha_zero": 137.03599908},
+    "mass_overrides": {}
+  },
+  "mg5_source": {"mg5_version": "2.9.27", "source_digest": "3ce8470c44752a91a437d6d8604bf8af62324f9045fed2dd8f3edbd40b648d3f"},
+  "subprocesses": [
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_aa_epveemvex",
+      "channels": [
+        {
+          "initial": [22, 22],
+          "final": [-11, 12, 11, -12],
+          "topology": [
+            {
+              "pdg": 24,
+              "daughters": [
+                {
+                  "pdg": -11,
+                  "daughters": []
+                },
+                {
+                  "pdg": 12,
+                  "daughters": []
+                }
+              ]
+            },
+            {
+              "pdg": -24,
+              "daughters": [
+                {
+                  "pdg": 11,
+                  "daughters": []
+                },
+                {
+                  "pdg": -12,
+                  "daughters": []
+                }
+              ]
+            }
+          ],
+          "external_color_representations": [1, 1, 1, 1, 1, 1],
+          "external_color_flows": [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P2_Sigma_sm_lepton_masses_aa_epvemumvmx",
+      "channels": [
+        {
+          "initial": [22, 22],
+          "final": [-11, 12, 13, -14],
+          "topology": [
+            {
+              "pdg": 24,
+              "daughters": [
+                {
+                  "pdg": -11,
+                  "daughters": []
+                },
+                {
+                  "pdg": 12,
+                  "daughters": []
+                }
+              ]
+            },
+            {
+              "pdg": -24,
+              "daughters": [
+                {
+                  "pdg": 13,
+                  "daughters": []
+                },
+                {
+                  "pdg": -14,
+                  "daughters": []
+                }
+              ]
+            }
+          ],
+          "external_color_representations": [1, 1, 1, 1, 1, 1],
+          "external_color_flows": [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P3_Sigma_sm_lepton_masses_aa_epvetamvtx",
+      "channels": [
+        {
+          "initial": [22, 22],
+          "final": [-11, 12, 15, -16],
+          "topology": [
+            {
+              "pdg": 24,
+              "daughters": [
+                {
+                  "pdg": -11,
+                  "daughters": []
+                },
+                {
+                  "pdg": 12,
+                  "daughters": []
+                }
+              ]
+            },
+            {
+              "pdg": -24,
+              "daughters": [
+                {
+                  "pdg": 15,
+                  "daughters": []
+                },
+                {
+                  "pdg": -16,
+                  "daughters": []
+                }
+              ]
+            }
+          ],
+          "external_color_representations": [1, 1, 1, 1, 1, 1],
+          "external_color_flows": [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P4_Sigma_sm_lepton_masses_aa_mupvmemvex",
+      "channels": [
+        {
+          "initial": [22, 22],
+          "final": [-13, 14, 11, -12],
+          "topology": [
+            {
+              "pdg": 24,
+              "daughters": [
+                {
+                  "pdg": -13,
+                  "daughters": []
+                },
+                {
+                  "pdg": 14,
+                  "daughters": []
+                }
+              ]
+            },
+            {
+              "pdg": -24,
+              "daughters": [
+                {
+                  "pdg": 11,
+                  "daughters": []
+                },
+                {
+                  "pdg": -12,
+                  "daughters": []
+                }
+              ]
+            }
+          ],
+          "external_color_representations": [1, 1, 1, 1, 1, 1],
+          "external_color_flows": [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P5_Sigma_sm_lepton_masses_aa_mupvmmumvmx",
+      "channels": [
+        {
+          "initial": [22, 22],
+          "final": [-13, 14, 13, -14],
+          "topology": [
+            {
+              "pdg": 24,
+              "daughters": [
+                {
+                  "pdg": -13,
+                  "daughters": []
+                },
+                {
+                  "pdg": 14,
+                  "daughters": []
+                }
+              ]
+            },
+            {
+              "pdg": -24,
+              "daughters": [
+                {
+                  "pdg": 13,
+                  "daughters": []
+                },
+                {
+                  "pdg": -14,
+                  "daughters": []
+                }
+              ]
+            }
+          ],
+          "external_color_representations": [1, 1, 1, 1, 1, 1],
+          "external_color_flows": [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P6_Sigma_sm_lepton_masses_aa_mupvmtamvtx",
+      "channels": [
+        {
+          "initial": [22, 22],
+          "final": [-13, 14, 15, -16],
+          "topology": [
+            {
+              "pdg": 24,
+              "daughters": [
+                {
+                  "pdg": -13,
+                  "daughters": []
+                },
+                {
+                  "pdg": 14,
+                  "daughters": []
+                }
+              ]
+            },
+            {
+              "pdg": -24,
+              "daughters": [
+                {
+                  "pdg": 15,
+                  "daughters": []
+                },
+                {
+                  "pdg": -16,
+                  "daughters": []
+                }
+              ]
+            }
+          ],
+          "external_color_representations": [1, 1, 1, 1, 1, 1],
+          "external_color_flows": [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P7_Sigma_sm_lepton_masses_aa_tapvtemvex",
+      "channels": [
+        {
+          "initial": [22, 22],
+          "final": [-15, 16, 11, -12],
+          "topology": [
+            {
+              "pdg": 24,
+              "daughters": [
+                {
+                  "pdg": -15,
+                  "daughters": []
+                },
+                {
+                  "pdg": 16,
+                  "daughters": []
+                }
+              ]
+            },
+            {
+              "pdg": -24,
+              "daughters": [
+                {
+                  "pdg": 11,
+                  "daughters": []
+                },
+                {
+                  "pdg": -12,
+                  "daughters": []
+                }
+              ]
+            }
+          ],
+          "external_color_representations": [1, 1, 1, 1, 1, 1],
+          "external_color_flows": [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P8_Sigma_sm_lepton_masses_aa_tapvtmumvmx",
+      "channels": [
+        {
+          "initial": [22, 22],
+          "final": [-15, 16, 13, -14],
+          "topology": [
+            {
+              "pdg": 24,
+              "daughters": [
+                {
+                  "pdg": -15,
+                  "daughters": []
+                },
+                {
+                  "pdg": 16,
+                  "daughters": []
+                }
+              ]
+            },
+            {
+              "pdg": -24,
+              "daughters": [
+                {
+                  "pdg": 13,
+                  "daughters": []
+                },
+                {
+                  "pdg": -14,
+                  "daughters": []
+                }
+              ]
+            }
+          ],
+          "external_color_representations": [1, 1, 1, 1, 1, 1],
+          "external_color_flows": [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P9_Sigma_sm_lepton_masses_aa_tapvttamvtx",
+      "channels": [
+        {
+          "initial": [22, 22],
+          "final": [-15, 16, 15, -16],
+          "topology": [
+            {
+              "pdg": 24,
+              "daughters": [
+                {
+                  "pdg": -15,
+                  "daughters": []
+                },
+                {
+                  "pdg": 16,
+                  "daughters": []
+                }
+              ]
+            },
+            {
+              "pdg": -24,
+              "daughters": [
+                {
+                  "pdg": 15,
+                  "daughters": []
+                },
+                {
+                  "pdg": -16,
+                  "daughters": []
+                }
+              ]
+            }
+          ],
+          "external_color_representations": [1, 1, 1, 1, 1, 1],
+          "external_color_flows": [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          ]
+        }
+      ]
+    }
+  ]
+}

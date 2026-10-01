@@ -1,0 +1,6 @@
+{
+    // References are relative to this file
+    "number": 2.5,
+    "object": {"enabled": true, "rows": [[1,2], [3,4]]},
+    "scalar": {"$ref": "../scalar.json"}
+}

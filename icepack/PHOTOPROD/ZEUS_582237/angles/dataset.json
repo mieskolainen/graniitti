@@ -1,0 +1,68 @@
+// ZEUS helicity frame J/psi decay distributions
+{
+  "active": true,
+  "type": "HEPDATA_582237",
+  "reader": "icepack/PHOTOPROD/_common/hera_reader.py",
+  "datapath": "HEPData/PHOTOPROD/HEPData-ins582237-v1-json/",
+  // [REFERENCE: ZEUS, arXiv:hep-ex/0201043, Sections 2 and 8, Figure 3]
+  // The published shapes retain proton dissociation and psi(2S) feeddown, assumed to have equal decay angles
+  // Compare elastic production under that explicit assumption, normalizing over the tabulated angular range
+  "samples": [
+    {
+      "name": "gp_mu", "label": "GRANIITTI GP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {"GENCUTS.<F>.Rap": [-10.0,10.0]}
+    },
+    {
+      "name": "jmrt_mu", "label": "GRANIITTI ygg[$J/\\psi$]",
+      "gencard": "./gencard.json",
+      "parameters": {"GENCUTS.<F>.Rap": [-10.0,10.0], "SCATTERING.PROCESS": "ygg[jpsi]<F> -> mu+ mu-"}
+    },
+    {
+      "name": "gp_e", "label": "GRANIITTI GP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "GENCUTS.<F>.Rap": [-10.0,10.0], "SCATTERING.ENERGY": [27.5,920.0],
+        "SCATTERING.PROCESS": "GP[RES]<F> -> e+ e- @RES{jpsi:1}"
+      }
+    },
+    {
+      "name": "jmrt_e", "label": "GRANIITTI ygg[$J/\\psi$]",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "GENCUTS.<F>.Rap": [-10.0,10.0], "SCATTERING.ENERGY": [27.5,920.0],
+        "SCATTERING.PROCESS": "ygg[jpsi]<F> -> e+ e-"
+      }
+    }
+  ],
+  "plot": {"normalization": "unit_density", "density_uncertainty": "shape", "ratio_uncertainty": "combined", "stack": false, "data_style": "errorbar"},
+  "fit": {"normalization": "unit_density"},
+  "validation": {
+    "loopscreen": 0, "nevents": 50000, "require_comparison": true, "require_differential_comparison": true,
+    "measurement": {"$ref": "../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "ZEUS $e^+p$ 300 GeV ($J/\\psi \\to \\mu^+\\mu^-$)",
+      "plotname": "ZEUS_582237_helicity_mu",
+      "title": "$30<W_{\\gamma p}<170$ GeV, $Q^2<1$ GeV$^2$, $|t|<1$ GeV$^2$",
+      "samples": ["gp_mu","jmrt_mu"], "pid": [-13,13],
+      "cuts": "./cuts.py", "obs": "../../_common/angles.py",
+      "hist": [
+        {"file": "Table4.json", "obs": "costheta_HX", "scale": 1.0},
+        {"file": "Table6.json", "obs": "phi_HX", "scale": 1.0}
+      ]
+    },
+    {
+      "name": "ZEUS $e^+p$ 318 GeV ($J/\\psi \\to e^+e^-$)",
+      "plotname": "ZEUS_582237_helicity_e",
+      "title": "$30<W_{\\gamma p}<170$ GeV, $Q^2<1$ GeV$^2$, $|t|<1$ GeV$^2$",
+      "samples": ["gp_e","jmrt_e"], "pid": [-11,11],
+      "cuts": "./cuts.py", "obs": "../../_common/angles.py",
+      "hist": [
+        {"file": "Table5.json", "obs": "costheta_HX", "scale": 1.0},
+        {"file": "Table7.json", "obs": "phi_HX", "scale": 1.0}
+      ]
+    }
+  ]
+}

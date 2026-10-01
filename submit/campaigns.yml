@@ -1,0 +1,376 @@
+# icetune runs and computing resources
+# Physics selections are defined by the selected JSON tune card
+# Command line overrides use section.field=value
+
+schema_version: 1
+
+defaults:
+  optimizer:
+    num_trials: 3000
+    rand_trials: 1000
+    rngseed: 1538
+    algorithm: hebo
+    hebo_config: package:tune/settings/hebo.json
+    icebo_config: package:tune/settings/icebo.json
+    ampfit_config: package:tune/settings/ampfit.json
+    lbfgs_config: package:tune/settings/lbfgs.json
+    proposal_batch_size: 0
+    proposal_batch_fraction: 0.1
+
+  fit:
+    tune_default: TUNE0
+    cost: ratio2           # chi2, ratio2, wasserstein
+    cost_avg: global-mean  # dataset-mean, global-mean, local-mean
+    plot: 1
+    full_output: 1
+    save_events: 0        # Retain complete GRANIITTI trial samples for generative model training
+    precompute: 1
+    data_covariance_mode: diagonal
+
+  ray:
+    # lxplus steering allocation
+    steer_request_memory: 4GB
+    
+    # Resources and runtime per physics trial
+    cpu_per_trial: 8
+    gpu_per_trial: 0
+    max_t: 7200
+    trial_retry_limit: 3
+
+    # Initialization allocation
+    init_cpu: 8
+    init_gpu: 0
+    init_jobs: 1
+    init_request_memory: 4GB
+    init_request_disk: 20GB
+    init_max_runtime_s: 14400
+
+    # Fitting head allocation
+    head_cpu: 8
+    head_gpu: 0
+    head_request_memory: 8GB
+
+    # Ray worker allocations, each using one HTCondor slot on lxplus
+    # A physical node can host several allocations, each running several trials
+    # worker_cpu and worker_gpu are per allocation, not the full physical node
+    workers: 128
+    worker_cpu: 8
+    worker_gpu: 0
+    request_memory: 12GB
+    request_disk: 40GB
+    max_runtime_s: 57600
+    worker_shutdown_timeout_s: 60
+    
+    # Ray startup and worker admission
+    startup_timeout_s: 10800
+    raylet_start_timeout_s: 600
+    worker_admission_timeout_s: 600
+    worker_poll_interval_s: 60
+
+    # Worker recovery and campaign restore
+    worker_failure_limit: 2
+    worker_recovery_timeout_s: 600
+    worker_replacement_limit: 2
+    restore_retry_limit: 2
+    restore_retry_delay_s: 10
+
+    # Fit history and resource monitoring
+    history_interval_s: 60
+    resource_status_interval_s: 5
+    status_interval_s: 60
+
+    # lxplus worker startup
+    lxplus_death_timeout_s: 60
+    lxplus_join_retry_limit: 3
+    lxplus_max_starting: 16
+    lxplus_node_start_timeout_s: 1200
+    lxplus_start_interval_s: 2
+
+    # lxplus output transfer and allocation control
+    lxplus_poll_interval_s: 60
+    lxplus_shutdown_timeout_s: 120
+    condor_command_timeout_s: 30
+
+    # Ray network ports for the standard launcher, 0 omits the option and uses the Ray default
+    # lxplus reserves ports separately in the CERN range 10000:10100
+    port: 60010
+    node_manager_port: 0
+    object_manager_port: 0
+    runtime_env_agent_port: 0
+    dashboard_agent_listen_port: 0
+    dashboard_agent_grpc_port: 0
+    metrics_export_port: 0
+    client_server_port: 0
+    min_worker_port: 0
+    max_worker_port: 0
+
+  runtime:
+    conda_env: graniitti  # Conda environment name or absolute path, adjustable per campaign
+    # shared_output_dir defaults to --repo-dir, or the directory where submission starts
+    # shared_output_dir: /path/to/shared/output
+    lcg_view: /cvmfs/sft.cern.ch/lcg/views/LCG_110/x86_64-el9-gcc13-opt/setup.sh
+
+campaigns:
+  tune-gpom-star-cms-ampfit:
+    description: Fit screened GP production couplings and form factors to STAR.
+    driver: graniitti
+    tunesetup: tunecards/graniitti/tune-gpom-star-cms-ampfit.json
+    optimizer:
+      algorithm: ampfit
+      ampfit_config: tunecards/graniitti/tune-gpom-star-cms-ampfit.json#/optimizer/ampfit
+      num_trials: 96000 # caps the total parameter-point evaluations across all ampfit starts
+      rand_trials: 0
+    fit:
+      tune_default: TUNE0
+      cost: chi2
+      cost_avg: global-mean
+      data_covariance_mode: diagonal
+      plot: 1
+      full_output: 0
+    ray:
+      cpu_per_trial: 8
+      init_cpu: 8
+      init_jobs: 64
+      head_cpu: 2
+      workers: 128
+      worker_cpu: 8
+      max_t: 14400
+      init_max_runtime_s: 14400
+      steer_request_memory: 16GB
+      head_request_memory: 16GB
+      init_request_memory: 16GB
+      request_memory: 16GB
+
+
+
+  tune-gpom-star-cms-ampfit-orear:
+    description: Fit screened GP amplitudes with pion and kaon Orear form factors to STAR.
+    driver: graniitti
+    tunesetup: tunecards/graniitti/tune-gpom-star-cms-ampfit-orear.json
+    optimizer:
+      algorithm: ampfit
+      ampfit_config: tunecards/graniitti/tune-gpom-star-cms-ampfit-orear.json#/optimizer/ampfit
+      num_trials: 96000 # caps the total parameter-point evaluations across all ampfit starts
+      rand_trials: 0
+    fit:
+      tune_default: TUNE0
+      cost: chi2
+      cost_avg: global-mean
+      data_covariance_mode: diagonal
+      plot: 1
+      full_output: 0
+    ray:
+      cpu_per_trial: 8
+      init_cpu: 8
+      init_jobs: 32
+      head_cpu: 2
+      workers: 128
+      worker_cpu: 8
+      max_t: 14400
+      init_max_runtime_s: 14400
+      steer_request_memory: 16GB
+      head_request_memory: 16GB
+      init_request_memory: 16GB
+      request_memory: 16GB
+
+  tune-gpom-xpom-ampfit:
+    description: Fit screened GP and XP resonance and continuum amplitudes to STAR data.
+    driver: graniitti
+    tunesetup: tunecards/graniitti/tune-gpom-xpom-ampfit.json
+    optimizer:
+      algorithm: ampfit
+      num_trials: 10000
+      rand_trials: 0
+    fit:
+      cost: chi2
+      cost_avg: global-mean
+      data_covariance_mode: diagonal
+    ray:
+      init_max_runtime_s: 172800
+      steer_request_memory: 16GB
+      init_request_memory: 16GB
+      request_memory: 16GB
+
+  tune-elastic-single:
+    description: Tune the 1-channel eikonal model using the elastic scattering datasets.
+    driver: graniitti
+    tunesetup: tunecards/graniitti/tune-elastic-single.json
+    fit:
+      precompute: 0
+    ray:
+      workers: 300
+    optimizer:
+      num_trials: 3500
+      rand_trials: 1000
+      rngseed: 1835
+  
+  tune-elastic-double:
+    description: Tune the 2-channel eikonal model using the elastic scattering datasets.
+    driver: graniitti
+    tunesetup: tunecards/graniitti/tune-elastic-double.json
+    fit:
+      precompute: 0
+    ray:
+      workers: 300
+    optimizer:
+      num_trials: 3500
+      rand_trials: 1000
+      rngseed: 1835
+
+  tune-elastic-triple:
+    description: Tune the 3-channel eikonal model using the elastic scattering datasets.
+    driver: graniitti
+    tunesetup: tunecards/graniitti/tune-elastic-triple.json
+    fit:
+      precompute: 0
+
+  tune-gpom-res:
+    description: Tune GP resonance production couplings, resonance phases, and decay zeta phases with the continuum fixed.
+    driver: graniitti
+    tunesetup: tunecards/graniitti/tune-gpom-res.json
+
+  tune-gpom-con:
+    description: Tune GP continuum parameters together with f0(500), f2(1950).
+    driver: graniitti
+    tunesetup: tunecards/graniitti/tune-gpom-con.json
+
+  tune-gpom-con-ppbar:
+    description: Tune GP proton-antiproton continuum parameters to STAR data.
+    driver: graniitti
+    tunesetup: tunecards/graniitti/tune-gpom-con-ppbar.json
+    ray:
+      workers: 64
+      worker_cpu: 8
+      cpu_per_trial: 8
+      init_cpu: 8
+
+  tune-gpom-res-con:
+    description: Tune the GP resonance and continuum parameter sets jointly.
+    driver: graniitti
+    tunesetup: tunecards/graniitti/tune-gpom-res-con.json
+    fit:
+      cost_avg: dataset-mean
+    ray:
+      workers: 300
+    optimizer:
+      num_trials: 3500
+      rand_trials: 1000
+      rngseed: 1835
+
+
+  tune-gpom-res-con-orear:
+    description: Tune GP resonances and continuum with pion and kaon Orear form factors.
+    driver: graniitti
+    tunesetup: tunecards/graniitti/tune-gpom-res-con-orear.json
+    fit:
+      cost_avg: dataset-mean
+    ray:
+      workers: 300
+    optimizer:
+      num_trials: 3500
+      rand_trials: 1000
+      rngseed: 1835
+
+  tune-gpom-res-f2-1270:
+    description: Tune only GP f2(1270) resonance parameters to STAR data.
+    driver: graniitti
+    tunesetup: tunecards/graniitti/tune-gpom-res-f2-1270.json
+    fit:
+      cost_avg: dataset-mean
+    ray:
+      workers: 300
+    optimizer:
+      num_trials: 3500
+      rand_trials: 1000
+      rngseed: 1835
+
+  tune-gpom-res-con-highmass:
+    description: Tune f2(1950) production and pion continuum parameters to STAR data.
+    driver: graniitti
+    tunesetup: tunecards/graniitti/tune-gpom-res-con-highmass.json
+    fit:
+      cost_avg: dataset-mean
+    ray:
+      workers: 32
+      worker_cpu: 16
+      cpu_per_trial: 16
+      init_cpu: 16
+    optimizer:
+      algorithm: hebo
+      num_trials: 3500
+      rand_trials: 1000
+      rngseed: 1835
+
+  tune-tpom-res-con:
+    description: Tune Tensor Pomeron resonance couplings and continuum form factors jointly with STAR data.
+    driver: graniitti
+    tunesetup: tunecards/graniitti/tune-tpom-res-con.json
+    fit:
+      cost_avg: dataset-mean
+    ray:
+      workers: 300
+    optimizer:
+      num_trials: 3500
+      rand_trials: 1000
+      rngseed: 1835
+
+  tune-xpom-res-con:
+    description: Tune XP resonance and continuum parameters with STAR data.
+    driver: graniitti
+    tunesetup: tunecards/graniitti/tune-xpom-res-con.json
+    ray:
+      workers: 300
+    optimizer:
+      num_trials: 3500
+      rand_trials: 1000
+      rngseed: 1835
+
+  tune-mpom-res-con-coh:
+    description: Tune coherent MP resonance and continuum parameters with STAR data.
+    driver: graniitti
+    tunesetup: tunecards/graniitti/tune-mpom-res-con-coh.json
+    ray:
+      workers: 300
+    optimizer:
+      num_trials: 3500
+      rand_trials: 1000
+      rngseed: 1835
+
+  tune-mpom-res-con-incoh:
+    description: Tune incoherent MP resonance and continuum parameters with STAR data.
+    driver: graniitti
+    tunesetup: tunecards/graniitti/tune-mpom-res-con-incoh.json
+    ray:
+      workers: 300
+    optimizer:
+      num_trials: 3500
+      rand_trials: 1000
+      rngseed: 1835
+
+  tune-elastic-gpom:
+    description: Tune the elastic + central GP model.
+    driver: graniitti
+    tunesetup: tunecards/graniitti/tune-elastic-gpom.json
+
+  tune-pandora-v0:
+    description: Tune PANDORA particle flow reconstruction model.
+    driver: pandora
+    tunesetup: tunecards/pandora/tune-pandora-v0.json
+    fit:
+      cost: pflow
+      full_output: 0
+    ray:
+      cpu_per_trial: 2
+      max_t: 28800
+      worker_cpu: 8
+      request_memory: 12GB
+      init_cpu: 1
+      workers: 300
+    runtime:
+      pfa_dir: ../PandoraPFA
+      key4hep_setup: /cvmfs/sw-nightlies.hsf.org/key4hep/setup.sh
+      key4hep_release: '2026-09-20'
+    optimizer:
+      num_trials: 3500
+      rand_trials: 1000
+      rngseed: 1835

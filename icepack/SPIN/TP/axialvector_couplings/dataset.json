@@ -1,0 +1,156 @@
+// Charge conjugate Kstar K cascades are separate spin controls, not a summed KKpi amplitude
+// CS angles use the reconstructed Kpi vector, with identical cuts on both charge channels
+// Pure Tensor Pomeron couplings for the axial vector f1(1420)
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "g0",
+      "label": "GRANIITTI TP[RES] $g_0$, $K^{*+}K^-$",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[RES]<F> -> K*(892)+ > {K+ pi0} K- @RES{f1_1420:1}",
+        "f1_1420.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[0]": 1.0,
+        "f1_1420.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[1]": 0.0,
+        "GENCUTS.<F>.M": [1.3174, 1.5354]
+      }
+    },
+    {
+      "name": "g1",
+      "label": "GRANIITTI TP[RES] $g_1$, $K^{*+}K^-$",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[RES]<F> -> K*(892)+ > {K+ pi0} K- @RES{f1_1420:1}",
+        "f1_1420.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[0]": 0.0,
+        "f1_1420.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[1]": 1.0,
+        "GENCUTS.<F>.M": [1.3174, 1.5354]
+      }
+    },
+    {
+      "name": "g0_cc",
+      "label": "GRANIITTI TP[RES] $g_0$, $K^{*-}K^+$",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[RES]<F> -> K*(892)- > {K- pi0} K+ @RES{f1_1420:1}",
+        "f1_1420.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[0]": 1.0,
+        "f1_1420.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[1]": 0.0,
+        "GENCUTS.<F>.M": [1.3174, 1.5354],
+        "DECAYS.json:[\"20333\"][\"[-323,321]\"]": {"$ref": "../../../../modeldata/TUNE0/DECAYS.json#/20333/[323,-321]"},
+        "DECAYS.json:[\"-323\"]": {"[-321,111]": {"$ref": "../../../../modeldata/TUNE0/DECAYS.json#/323/[321,111]"}}
+      }
+    },
+    {
+      "name": "g1_cc",
+      "label": "GRANIITTI TP[RES] $g_1$, $K^{*-}K^+$",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[RES]<F> -> K*(892)- > {K- pi0} K+ @RES{f1_1420:1}",
+        "f1_1420.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[0]": 0.0,
+        "f1_1420.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[1]": 1.0,
+        "GENCUTS.<F>.M": [1.3174, 1.5354],
+        "DECAYS.json:[\"20333\"][\"[-323,321]\"]": {"$ref": "../../../../modeldata/TUNE0/DECAYS.json#/20333/[323,-321]"},
+        "DECAYS.json:[\"-323\"]": {"[-321,111]": {"$ref": "../../../../modeldata/TUNE0/DECAYS.json#/323/[321,111]"}}
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "unit_density",
+    "density_uncertainty": "shape",
+    "ratio_plot": true,
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "hist"
+  },
+  "fit": {"normalization": "unit_density"},
+  "sets": [
+    {
+      "name": "f1(1420), g0 Kstar+",
+      "sample": "g0",
+      "plot_group": "TP_axialvector_couplings",
+      "title": "Reconstructed $K^*(892)\\to K\\pi^0$ CS angles in $f_1(1420)$ decay",
+      "data": false,
+      "pid": [321, 111, -321],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {
+          "obs": "costheta_CS",
+          "args": {"daughter": [321, 111]}
+        },
+        {
+          "obs": "phi_CS",
+          "args": {"daughter": [321, 111]}
+        },
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "f1(1420), g0 Kstar-",
+      "sample": "g0_cc",
+      "plot_group": "TP_axialvector_couplings",
+      "title": "Reconstructed $K^*(892)\\to K\\pi^0$ CS angles in $f_1(1420)$ decay",
+      "data": false,
+      "pid": [321, 111, -321],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {
+          "obs": "costheta_CS",
+          "args": {"daughter": [-321, 111]}
+        },
+        {
+          "obs": "phi_CS",
+          "args": {"daughter": [-321, 111]}
+        },
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "f1(1420), g1 Kstar+",
+      "sample": "g1",
+      "plot_group": "TP_axialvector_couplings",
+      "title": "Reconstructed $K^*(892)\\to K\\pi^0$ CS angles in $f_1(1420)$ decay",
+      "data": false,
+      "pid": [321, 111, -321],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {
+          "obs": "costheta_CS",
+          "args": {"daughter": [321, 111]}
+        },
+        {
+          "obs": "phi_CS",
+          "args": {"daughter": [321, 111]}
+        },
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "f1(1420), g1 Kstar-",
+      "sample": "g1_cc",
+      "plot_group": "TP_axialvector_couplings",
+      "title": "Reconstructed $K^*(892)\\to K\\pi^0$ CS angles in $f_1(1420)$ decay",
+      "data": false,
+      "pid": [321, 111, -321],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {
+          "obs": "costheta_CS",
+          "args": {"daughter": [-321, 111]}
+        },
+        {
+          "obs": "phi_CS",
+          "args": {"daughter": [-321, 111]}
+        },
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+// ZEUS phi photoproduction with 27.5 GeV positrons and 820 GeV protons
+{
+  "GENERIC": {
+    "OUTPUT": "ZEUS_415642",
+    "FORMAT": "hepmc3",
+    "CORES": 0,
+    "NEVENTS": 30000,
+    "INTEGRATOR": "VEGAS",
+    "WEIGHTED": true,
+    "MODELPARAM": "TUNE0",
+    "HIST": 0,
+    "RNDSEED": 415642
+  },
+  "SCATTERING": {
+    "BEAM": ["e+","p+"],
+    "ENERGY": [27.5,820.0],
+    "PROCESS": "GP[RES]<F> -> K+ K- @RES{phi_1020:1}",
+    "RES": [],
+    "LOOPSCREEN": false,
+    "NSTARS": 0,
+    "BEAMFRAG": "none",
+    "LHAPDF": "NNPDF31_lo_as_0118"
+  },
+  "INTEGRATOR": {
+    "min_samples": 100000,
+    "max_samples": 100000000,
+    "precision": 0.02,
+    "LOOPSCREEN": {"extra_kt": 0, "extra_phi": 0},
+    "VEGAS": {"bins": 128, "alpha": 1.25, "rounds": 8, "ncall": 40000, "debug": -1},
+    "NEUROJAC": {},
+    "FLAT": {},
+    "max_w_value": null
+  },
+  // Full lab rapidity support, exact photoproduction cuts are applied by the Python selection
+  "GENCUTS": {
+    "<C>": {"M": [0.98,1.15], "Rap": [-10.0,10.0]},
+    "<F>": {"M": [0.98,1.15], "Rap": [-10.0,10.0]}
+  },
+  "FIDCUTS": {"active": false, "CENTRAL": {}, "FORWARD": {}, "USERCUTS": false},
+  "VETOCUTS": {"active": false}
+}

@@ -1,0 +1,26 @@
+{
+  "driver": "graniitti",
+  "settings": {"$ref": "_defaults.json"},
+  "models": [
+    {
+      "model": "MP",
+      "exclude": ["rho_770", "phi_1020"],
+      "production": {"coherence": "coherent", "mode": "magnitude", "geometry": "spherical", "relative_bounds": {"$ref": "_defaults.json#/icetune/resonance/production/relative_bounds"}},
+      "continuum_options": {"FF_offshell": true, "FF_transfer": true, "ff_type": "logexp", "tune_couplings": true, "production_mode": "magnitude", "pveto": true, "production_geometry": "direct", "production_relative_range": 1.0},
+      "decay": {
+        "branching": [{"$ref": "_defaults.json#/icetune/resonance/decay/branching/f0_980"}, {"$ref": "_defaults.json#/icetune/resonance/decay/branching/f0_1710"}, {"$ref": "_defaults.json#/icetune/resonance/decay/branching/f2_1950"}],
+        "zeta": {"mode": "phase_raw", "resonances": ["f0_980", "f2_1270", "f0_1500", "f2_1525", "f0_1710", "f2_1950"], "final_states": [[321, -321]]}
+      },
+      "phi": {"mode": "phase_raw"},
+      "vary": ["mass_width", "omega"],
+      "res_fields": ["FF_prod"],
+      "datasets": [
+        {"datacard": "icepack/SOFTCEP/STAR_1792394/pipi/dataset.json", "nevents": 50000, "weighted": true, "loopscreen": true, "xsmode": "sample", "swap_process": "MP[RES+CON]<F>", "integrator": "VEGAS"},
+        {"datacard": "icepack/SOFTCEP/STAR_1792394/KK/dataset.json", "nevents": 50000, "weighted": true, "loopscreen": true, "xsmode": "sample", "swap_process": "MP[RES+CON]<F>", "integrator": "VEGAS"},
+        {"datacard": "icepack/SOFTCEP/STAR_3075716/pipi/dataset.json", "nevents": 50000, "weighted": true, "loopscreen": true, "xsmode": "sample", "swap_process": "MP[RES+CON]<F>", "integrator": "VEGAS"},
+        {"datacard": "icepack/SOFTCEP/STAR_3075716/KK/dataset.json", "nevents": 50000, "weighted": true, "loopscreen": true, "xsmode": "sample", "swap_process": "MP[RES+CON]<F>", "integrator": "VEGAS"},
+        {"datacard": "icepack/SOFTCEP/CMS_2752118/dataset_icetune.json", "nevents": 100000, "weighted": true, "loopscreen": true, "xsmode": "sample", "swap_process": "MP[RES+CON]<F>", "integrator": "VEGAS"}
+      ]
+    }
+  ]
+}

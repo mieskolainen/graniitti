@@ -1,0 +1,62 @@
+// [REFERENCE: ZEUS, hep-ex/9712020, Section 7.2.4, Table 3 in HEPData]
+// Inferred transfer bins use published point coordinates and contiguous midpoint boundaries
+// The photon flux uses VMD, Eqs. (10)-(13), with xi^2 = 1
+{
+  "active": true,
+  "type": "HEPDATA_452353",
+  "reader": "./reader.py",
+  "datapath": "HEPData/PHOTOPROD/HEPData-ins452353-v1-json/",
+  "samples": [
+    {
+      "name": "ds",
+      "label": "TP[PHOTO]",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "TP[PHOTO]<F> -> pi+ pi-","SCATTERING.RES": []}
+    },
+    {
+      "name": "total",
+      "label": "TP[PHOTO] + $\\rho+\\omega$",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[PHOTO]<F> -> pi+ pi- @RES{rho_770:1,omega_782:1}",
+        "SCATTERING.RES": ["rho_770","omega_782"]
+      }
+    },
+    {
+      "name": "rho3_ds",
+      "label": "TP[PHOTO] + $\\rho+\\omega+\\rho_3$",
+      "gencard": "./gencard.json",
+      // Effective spin-three contribution to the dipion spectrum
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[PHOTO]<F> -> pi+ pi- @RES{rho_770:1,omega_782:1,rho3_1690:1}",
+        "SCATTERING.RES": ["rho_770","omega_782","rho3_1690"]
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "cross_section",
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "errorbar",
+    "unit": "ub"
+  },
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "loopscreen": 0,
+    "nevents": 50000,
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "measurement": {"$ref": "../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "ZEUS $\\pi^+\\pi^-$ photoproduction",
+      "plotname": "ZEUS_452353_t",
+      "title": "$50<W_{\\gamma p}<100$ GeV, $Q^2<4$ GeV$^2$, $|t|<0.5$ GeV$^2$, $0.55<M_{\\pi\\pi}<1.2$ GeV",
+      "pid": [211,-211],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [{"file": "Table3.json","obs": "t","scale": 1e-06}]
+    }
+  ]
+}

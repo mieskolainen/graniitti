@@ -1,0 +1,17 @@
+{
+  "driver": "graniitti",
+  "settings": {"$ref": "_defaults.json"},
+  "parameters": {"RES|f2_1950:GP:width": {"type": "uniform", "lower": {"$ref": "_defaults.json#/bounds/resonance/PARAM_RES/f2_1950/width/0"}, "upper": {"$ref": "_defaults.json#/bounds/resonance/PARAM_RES/f2_1950/width/1"}}},
+  "models": [
+    {
+      "model": "GP",
+      "exclude": ["rho_770", "phi_1020"],
+      "select": ["f0_500", "f2_1950"],
+      "production": {"mode": "magnitude", "geometry": "projective", "relative_bounds": {"$ref": "_defaults.json#/icetune/resonance/production/relative_bounds"}, "active_only": true},
+      "continuum_options": {"FF_offshell": true, "FF_transfer": true, "ff_type": "logexp", "tune_couplings": true, "production_mode": "magnitude", "pveto": true, "production_geometry": "projective", "production_active_only": false, "production_m": [0,1,2], "production_relative_range": 0.25},
+      "decay": {"branching": [{"$ref": "_defaults.json#/icetune/resonance/decay/branching/f2_1950"}], "zeta": {"mode": "phase_raw", "resonances": ["f2_1950"], "final_states": [[321, -321]]}},
+      "phi": {"mode": "phase_raw", "resonances": ["f0_500", "f2_1950"]},
+      "datasets": {"$ref": "tune-gpom-res-con.json#/models/0/datasets"}
+    }
+  ]
+}

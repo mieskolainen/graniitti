@@ -1,0 +1,7 @@
+{
+  "measurement": {
+    "alpha": 0.01,
+    "max_mc_error_ratio": 0.5,
+    "max_mc_rel_uncertainty": 0.2
+  }
+}

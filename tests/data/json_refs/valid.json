@@ -1,0 +1,47 @@
+{
+  "source": {
+    "a/b": {
+      "~key": [
+        false,
+        null,
+        3
+      ]
+    },
+    "": "empty",
+    "01": "object key"
+  },
+  "object": {
+    "$ref": "nested/shared.json#/object"
+  },
+  "array": {
+    "$ref": "#/object/rows/1"
+  },
+  "boolean": {
+    "$ref": "#/source/a~1b/~0key/0"
+  },
+  "null": {
+    "$ref": "#/source/a~1b/~0key/1"
+  },
+  "empty": {
+    "$ref": "#/source/"
+  },
+  "number": {
+    "$ref": "nested/shared.json#/number"
+  },
+  "string": {
+    "$ref": "nested/shared.json#/scalar"
+  },
+  "numeric_key": {
+    "$ref": "#/source/01"
+  },
+  "escaped": {
+    "$ref": "#/%73ource/a~1b/~0key/2"
+  },
+  "whole": {
+    "$ref": "scalar.json"
+  },
+  "forward": {
+    "$ref": "#/last"
+  },
+  "last": 17
+}

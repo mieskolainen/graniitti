@@ -1,0 +1,82 @@
+// Parametric vector meson via Odderon-Pomeron (parameters not set)
+
+{
+  "PARAM_RES": {
+    "name": "RES_rho_770",
+    "PDG": 113,
+    "spinX2": 2,
+    "P": -1,
+    "C": -1,
+    
+    "MODELS": {
+      "GP": {
+        "mass": 0.77526,
+        "width": 0.1491,
+        "BW": "fixed-width",
+        "phi": 0.0,
+        "FF_transfer": {"type": "none"},
+        "FF_prod": {"type": "gaussian", "norm": "pole", "Lambda2": 2.0},
+        "[990,9990]": {
+          "basis": "g_ls",
+          "Lambda": 1.0,
+          "CP": [true,true],
+          "g_ls":
+           [[0,1,0.01,0.0],
+            [2,1,0.0,0.0],
+            [2,2,0.0,0.0],
+            [2,3,0.0,0.0],
+            [4,3,0.0,0.0]]
+        }
+      },
+      "MP": {
+        "mass": 0.77526,
+        "width": 0.1491,
+        "BW": "fixed-width",
+        "phi": 0.0,
+        "FF_transfer": {"type": "none"},
+        "FF_prod": {"type": "gaussian", "norm": "pole", "Lambda2": 2.0},
+        "[995,9993]": {
+          "basis": "helicity",
+          "Lambda": 1.0000,
+          "polarization": {"mode": "none"},
+          "CP": [true,true],
+          "helicity":
+            [[-2,-1,0.01,0.0],
+             [-1,-1,0.007071067812,0.0],
+             [-1,0,0.007071067812,-3.141592653589793],
+             [0,-1,0.004082482905,0.0],
+             [0,0,0.008164965809,-3.141592653589793]]
+        }
+      },
+      "XP": {
+        "mass": 0.77526,
+        "width": 0.1491,
+        "BW": "fixed-width",
+        "phi": 0.0,
+        "FF_transfer": {"type": "none"},
+        "FF_prod": {"type": "gaussian", "norm": "pole", "Lambda2": 2.0},
+        "[995,9993]": {
+          "basis": "g_ls",
+          "Lambda": 1.0,
+          "CP": [true,true],
+          "g_ls":
+           [[0,1,0.01,0.0],
+            [2,1,0.0,0.0],
+            [2,2,0.0,0.0],
+            [2,3,0.0,0.0],
+            [4,3,0.0,0.0]]
+        }
+      },
+      "TP": {
+        "mass": 0.77526,
+        "width": 0.1491,
+        "phi": 0.0,
+        "FF_transfer": {"type": "none"},
+        "FF_prod": {"type": "gaussian", "norm": "pole", "Lambda2": 2.0},
+        "[22,995]": {
+          "g_tensor": [0.0,0.0]
+        }
+      }
+    }
+  }
+}

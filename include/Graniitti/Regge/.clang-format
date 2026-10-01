@@ -1,0 +1,13 @@
+---
+BasedOnStyle: Google
+AlignAfterOpenBracket: true
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignEscapedNewlines: Left
+AlignTrailingComments: true
+AllowShortBlocksOnASingleLine: true
+AllowShortFunctionsOnASingleLine: true
+ColumnLimit: 240
+CommentPragmas: '^ \[REFERENCE:'
+MaxEmptyLinesToKeep: 2
+Language: Cpp

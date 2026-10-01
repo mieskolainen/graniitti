@@ -1,0 +1,55 @@
+{
+  "schema": "GRANIITTI_HARMONIC_ANALYSIS_V1",
+  "measurement": "CENTRAL",
+  "frame": "CS",
+  "sqrt_s": 7000.0,
+  "maximum": 1000000,
+  "seed": 12345,
+  "event_weight_index": 0,
+  "fiducial": {
+    "central": {
+      "pion_eta": [-0.9, 0.9],
+      "pion_pt": [0.15, 100.0]
+    }
+  },
+  "axes": [
+    {"coordinate": "M", "bins": 8, "min": 0.28, "max": 2.0},
+    {"coordinate": "PT", "bins": 1, "min": 0.0, "max": 10.0},
+    {"coordinate": "Y", "bins": 1, "min": -0.9, "max": 0.9}
+  ],
+  "fit": {
+    "estimator": "ALGEBRAIC",
+    "lmax": 4,
+    "remove_odd": false,
+    "remove_negative_m": false,
+    "svd_relative_cut": 1e-5,
+    "response_jackknife_bins": 16,
+    "max_parameters": 1000
+  },
+  "responses": [
+    {
+      "name": "ALICE_FULLSIM",
+      "mode": "PAIRED",
+      "samples": [
+        {"truth": "output/SH_2pi_J0_ALICE.hepmc3", "reco": "input/SH_2pi_J0_ALICE_fullsim.hepmc3", "reference": "ANGULAR_FLAT", "scale": 1.0}
+      ]
+    }
+  ],
+  "samples": [
+    {
+      "name": "ALICE_DATA",
+      "type": "DATA",
+      "response": "ALICE_FULLSIM",
+      "normalization": "EVENT_YIELD",
+      "paths": ["input/ALICE_exclusive_pipi_data.hepmc3"]
+    },
+    {
+      "name": "PIPI_CLOSURE",
+      "type": "CLOSURE_MC",
+      "response": "ALICE_FULLSIM",
+      "normalization": "EVENT_YIELD",
+      "paths": ["input/SH_2pi_ALICE_fullsim.hepmc3"]
+    }
+  ],
+  "output": "output/alice_harmonic_CS.json"
+}

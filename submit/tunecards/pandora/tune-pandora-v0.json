@@ -1,0 +1,390 @@
+{
+  // icetune Pandora steering, energies in GeV and distances in mm unless noted
+  "driver": "pandora",
+
+  // C++ defaults for missing XML fields
+  // Set overrides in param_tuning_tables
+  "param_optional_xml_numeric_defaults": {
+    "PhotonReconstruction": {"MinPeakEnergy": 0.0, "MaxPeakRms": 5.0, "MaxLongProfileStart": 10.0, "MaxLongProfileDiscrepancy": 0.8, "MinDistanceToTrackCutLow": 2.0, "MinDistanceToTrackCutHigh": 200.0, "EnergyCutForPid1": 0.2, "PidCut1": 1.0, "EnergyCutForPid2": 0.5, "PidCut2": 0.6, "PidCut3": 0.4, "MinDistanceToTrackDivisionCut": 3.0},
+    "PfoCreation": {"MinClusterHadronicEnergy": 0.25, "MinClusterElectromagneticEnergy": 0.0, "MinHitsInCluster": 5.0},
+    "TrackClusterAssociation": {"MaxTrackClusterDistance": 10.0, "LowEnergyCut": 0.2, "MaxSearchLayer": 9.0, "ParallelDistanceCut": 100.0},
+    "MainFragmentRemoval": {"Chi2Base": 5.0, "MinDaughterCaloHits": 5.0, "MinDaughterHadronicEnergy": 0.025, "MaxGlobalChi2": 9.0, "MaxChi2": 16.0, "ContactCutMaxDistance": 750.0, "MinRequiredEvidence": 0.5},
+    "SoftClusterMerging": {"MaxHitsInSoftCluster": 5.0, "MaxLayersSpannedBySoftCluster": 3.0, "MaxHadEnergyForSoftClusterNoTrack": 2.0, "MinClusterHadEnergy": 0.25, "MinClusterEMEnergy": 0.025, "MinHitsInCluster": 5.0, "ClosestDistanceCut0": 50.0, "ClosestDistanceCut1": 100.0, "ClosestDistanceCut2": 250.0, "InnerLayerCut1": 20.0, "InnerLayerCut2": 40.0, "MaxClusterDistanceFine": 100.0, "MaxClusterDistanceCoarse": 250.0},
+    "IsolatedHitMerging": {"MinHitsInCluster": 4.0, "MaxRecombinationDistance": 250.0, "MinCosOpeningAngle": 0.0},
+    "NeutralFragmentRemoval": {"NMaxPasses": 200.0, "MinDaughterCaloHits": 5.0, "MinDaughterHadronicEnergy": 0.025, "PhotonLikeMaxInnerLayer": 10.0, "PhotonLikeMinDCosR": 0.5, "ContactCutMaxDistance": 500.0, "ContactCutNLayers": 2.0, "MinEvidence": 2.0, "ContactCutConeFraction1": 0.5, "ContactCutCloseHitFraction1": 0.5, "ContactCutCloseHitFraction2": 0.5, "PhotonLikeMaxShowerStart": 5.0, "PhotonLikeMaxProfileDiscrepancy": 0.75, "ContactCutNearbyDistance": 100.0, "ContactCutNearbyCloseHitFraction2": 0.25},
+    "PhotonFragmentRemoval": {"NMaxPasses": 200.0, "MinDaughterCaloHits": 5.0, "MinDaughterHadronicEnergy": 0.025, "PhotonLikeMaxInnerLayer": 10.0, "PhotonLikeMinDCosR": 0.5, "ContactCutMaxDistance": 20.0, "ContactCutNLayers": 2.0, "MinEvidence": 2.0, "ContactCutConeFraction1": 0.5, "ContactCutCloseHitFraction1": 0.5, "ContactCutCloseHitFraction2": 0.2, "PhotonLikeMaxShowerStart": 5.0, "PhotonLikeMaxProfileDiscrepancy": 0.75, "InnerLayerTolerance": 5.0, "MinCosOpeningAngle": 0.95},
+    "PhotonRecovery": {"MinElectromagneticEnergy": 1.5, "SoftPhotonMaxCaloHits": 25.0, "SoftPhotonMaxEnergy": 1.0, "SoftPhotonMaxDCosR": 0.9, "SoftPhotonLowEnergyCut": 0.5, "SoftPhotonLowEnergyMaxDCosR": 0.8, "ProfileStartCut1": 4.1, "ProfileStartCut2": 5.1, "ProfileStartCut3": 2.75, "ProfileDiscrepancyCut1": 0.4, "ProfileDiscrepancyCut2": 0.5},
+    "ConeClustering": {"ConeApproachMaxSeparation": 1000.0, "TanConeAngleCoarse": 0.5, "AdditionalPadWidthsCoarse": 2.5, "TanConeAngleFine": 0.3, "AdditionalPadWidthsFine": 2.5, "SameLayerPadWidthsFine": 2.8, "SameLayerPadWidthsCoarse": 1.8},
+    "TrackRecovery": {"MaxAbsoluteTrackClusterChi": 2.0, "BarrelMaxTrackClusterDistance": 10.0, "MaxSearchLayer": 19.0},
+    "LCEmShowerId": {"MipCut_0": 0.9, "MipCut_1": 0.3, "MipCut_2": 0.4, "MipCut_3": 0.6, "MipCut_4": 0.7, "MipCutEnergy_1": 15.0, "MipCutEnergy_2": 7.5, "MipCutEnergy_3": 3.0, "MipCutEnergy_4": 1.5, "DCosRLowECut": 0.94, "DCosRHighECut": 0.95, "RmsLowECut": 40.0, "RmsHighECut": 90.0, "MaxInnerLayerRadLengths": 10.0, "MinLayer90RadLengths": 4.0, "MaxLayer90RadLengths": 30.0, "MaxShowerMaxRadLengths": 25.0, "MaxHighRadLengthEnergyFraction": 0.04, "MaxRadial90": 40.0},
+    "LCElectronId": {"MaxProfileStart": 4.5, "MaxProfileDiscrepancy": 0.6, "ProfileDiscrepancyForAutoId": 0.5, "MaxResidualEOverP": 0.2},
+    "ShowerProfilePlugin": {"ShowerStartMipFraction": 0.8, "ShowerStartNonMipLayers": 2.0, "TransProfileMinTrackToPeakCut": 1.6, "TransProfileMinDisTrackMatch": 1.6},
+    "PhotonFragmentMerging": {"MaxWeightedLayerSeparation": 80.0, "LowEnergyOfCandidateClusterThreshold": 1.0, "WeightedLayerSeparationPhotonNeutralThresholdLow1": 20.0, "CentroidSeparationPhotonNeutralThresholdLow1": 40.0, "WeightedLayerSeparationPhotonNeutralThresholdLow2": 50.0, "ClosestDistanceSeparationPhotonNeutralThresholdLow2": 50.0, "NCaloHitsCandidatePhotonNeutralThresholdLow2": 10.0, "ClosestDistanceSeparationPhotonNeutralThresholdLow3": 15.0, "EnergyRatioCandidateToMainNeutralThresholdLow3": 0.01, "WeightedLayerSeparationPhotonNeutralThresholdLow3": 40.0, "ClosestDistanceSeparationPhotonNeutralThresholdHigh2": 20.0, "EnergyRatioCandidateToMainNeutralThresholdHigh2": 0.02, "WeightedLayerSeparationPhotonNeutralThresholdHigh2": 40.0}
+  },
+
+  // Defaults for pandora.Parameters
+  // Resolution terms set PFO covariance, track matching uses XML HadronicEnergyResolution
+  "param_wrapper_defaults": {
+    "ECalMipThreshold": [0.0],
+    "HCalMipThreshold": [0.0],
+    "ECalToHadGeVCalibrationBarrel": [1.1927],
+    "HCalToHadGeVCalibration": [1.1945],
+    "ECalToMipCalibration": [100.0],
+    "HCalToMipCalibration": [100.0],
+    "MuonToMipCalibration": [50.0],
+    "ECalToEMGeVCalibration": [1.0],
+    "HCalToEMGeVCalibration": [1.0],
+    "EMStochasticTerm": [0.08],
+    "EMConstantTerm": [0.008],
+    "HadConstantTerm": [0.035],
+    "HadStochasticTerm": [0.41]
+  },
+  
+  // Hard bounds, integer sampling where tune_dtype is int
+  // Fixed parameters use equal bounds and are saved with the fit
+  // Initial values use source defaults clipped to bounds unless initial is set
+  "param_tuning_tables": {
+    // Soft photon recovery, profile starts in radiation lengths
+    // Both MaxDCosR fields are lower cosine cuts
+    // Energy branches and cosine cuts follow param_ordered
+    "PhotonRecovery": {
+      "MinElectromagneticEnergy": {"bounds": [0.2, 0.7], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "SoftPhotonMaxCaloHits": {"bounds": [18, 35], "sampling": ["between_bounds"], "tune_dtype": "int"},
+      "SoftPhotonMaxEnergy": {"bounds": [0.7, 1.0], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "SoftPhotonMaxDCosR": {"bounds": [0.9, 0.98], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "SoftPhotonLowEnergyCut": {"bounds": [0.5, 0.5], "sampling": ["fixed"], "tune_dtype": "float"},
+      "SoftPhotonLowEnergyMaxDCosR": {"bounds": [0.7, 0.88], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "ProfileStartCut1": {"bounds": [4.1, 4.1], "sampling": ["fixed"], "tune_dtype": "float"},
+      "ProfileStartCut2": {"bounds": [5.1, 5.1], "sampling": ["fixed"], "tune_dtype": "float"},
+      "ProfileStartCut3": {"bounds": [2.75, 2.75], "sampling": ["fixed"], "tune_dtype": "float"},
+      "ProfileDiscrepancyCut1": {"bounds": [0.4, 0.4], "sampling": ["fixed"], "tune_dtype": "float"},
+      "ProfileDiscrepancyCut2": {"bounds": [0.5, 0.5], "sampling": ["fixed"], "tune_dtype": "float"}
+    },
+
+    // Photon likelihood cuts within the trained PDF support
+    // Energy cuts increase, PID cuts decrease
+    // Peak RMS uses cell units, profile start uses radiation lengths
+    // Isolation saturates at 200 mm, including the populated PDF overflow
+    "PhotonReconstruction": {
+      "MinPeakEnergy": {"bounds": [0.0, 0.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MaxPeakRms": {"bounds": [4.0, 5.0], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "MaxLongProfileStart": {"bounds": [8.0, 10.0], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "MaxLongProfileDiscrepancy": {"bounds": [0.65, 0.8], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "EnergyCutForPid1": {"bounds": [0.2, 0.2], "sampling": ["fixed"], "tune_dtype": "float"},
+      "PidCut1": {"bounds": [0.7, 0.95], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "EnergyCutForPid2": {"bounds": [0.5, 0.5], "sampling": ["fixed"], "tune_dtype": "float"},
+      "PidCut2": {"bounds": [0.5, 0.7], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "PidCut3": {"bounds": [0.3, 0.5], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "MinDistanceToTrackCutLow": {"bounds": [2.0, 2.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MinDistanceToTrackDivisionCut": {"bounds": [3.0, 3.0], "sampling": ["fixed"], "tune_dtype": "float"}
+    },
+
+    // Neutral PFO creation before the analysis fiducial cuts
+    // Hadronic energy cut applies to non-photons, hit cut also applies to photons
+    "PfoCreation": {
+      "MinClusterHadronicEnergy": {"bounds": [0.25, 0.25], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MinHitsInCluster": {"bounds": [5, 5], "sampling": ["fixed"], "tune_dtype": "int"}
+    },
+
+    // Track to cluster association
+    "TrackPreparation/TrackClusterAssociation": {
+      "MaxTrackClusterDistance": {"bounds": [5.0, 30.0], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "LowEnergyCut": {"bounds": [0.2, 0.2], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MaxSearchLayer": {"bounds": [9, 9], "sampling": ["fixed"], "tune_dtype": "int"},
+      "ParallelDistanceCut": {"bounds": [100.0, 100.0], "sampling": ["fixed"], "tune_dtype": "float"}
+    },
+
+    // Merge fragments into charged showers using contact and energy agreement
+    // Chi2Base <= MaxGlobalChi2 <= MaxChi2
+    "MainFragmentRemoval": {
+      "Chi2Base": {"bounds": [2.0, 8.0], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "MinDaughterCaloHits": {"bounds": [2, 2], "sampling": ["fixed"], "tune_dtype": "int"},
+      "MinDaughterHadronicEnergy": {"bounds": [0.025, 0.025], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MaxGlobalChi2": {"bounds": [9.0, 9.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MaxChi2": {"bounds": [16.0, 16.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "ContactCutMaxDistance": {"bounds": [750.0, 750.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MinRequiredEvidence": {"bounds": [0.25, 1.0], "sampling": ["between_bounds"], "tune_dtype": "float"}
+    },
+
+    // Soft cluster merging, layer cuts use pseudo layers
+    // Ordered distance cuts must fit inside both search radii
+    "ClusteringParent/TopologicalAssociationParent/SoftClusterMerging": {
+      "MaxHitsInSoftCluster": {"bounds": [5, 8], "sampling": ["between_bounds"], "tune_dtype": "int"},
+      "MaxHadEnergyForSoftClusterNoTrack": {"bounds": [1.0, 3.0], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "MinClusterHadEnergy": {"bounds": [0.25, 0.25], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MinClusterEMEnergy": {"bounds": [0.025, 0.025], "sampling": ["fixed"], "tune_dtype": "float"},
+      "ClosestDistanceCut0": {"bounds": [35.0, 70.0], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "ClosestDistanceCut1": {"bounds": [80.0, 140.0], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "ClosestDistanceCut2": {"bounds": [180.0, 320.0], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "MinHitsInCluster": {"bounds": [5, 5], "sampling": ["fixed"], "tune_dtype": "int"},
+      "MaxLayersSpannedBySoftCluster": {"bounds": [3, 3], "sampling": ["fixed"], "tune_dtype": "int"},
+      "InnerLayerCut1": {"bounds": [20, 20], "sampling": ["fixed"], "tune_dtype": "int"},
+      "InnerLayerCut2": {"bounds": [40, 40], "sampling": ["fixed"], "tune_dtype": "int"},
+      "MaxClusterDistanceFine": {"bounds": [320.0, 320.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MaxClusterDistanceCoarse": {"bounds": [400.0, 400.0], "sampling": ["fixed"], "tune_dtype": "float"}
+    },
+
+    // Neutral fragment merging, daughter cuts stay below PFO cuts
+    // Inner layers are pseudo layers, shower start is in radiation lengths
+    // Photonlike veto is covered by PhotonFragmentRemoval
+    // Contact layer criterion: nLayers > ContactCutNLayers
+    "NeutralFragmentRemoval": {
+      "MinDaughterCaloHits": {"bounds": [2, 2], "sampling": ["fixed"], "tune_dtype": "int"},
+      "ContactCutMaxDistance": {"bounds": [400.0, 600.0], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "MinEvidence": {"bounds": [1.5, 2.5], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "MinDaughterHadronicEnergy": {"bounds": [0.025, 0.025], "sampling": ["fixed"], "tune_dtype": "float"},
+      "ContactCutNLayers": {"bounds": [2, 2], "sampling": ["fixed"], "tune_dtype": "int"},
+      "ContactCutConeFraction1": {"bounds": [0.5, 0.5], "sampling": ["fixed"], "tune_dtype": "float"},
+      "ContactCutCloseHitFraction1": {"bounds": [0.5, 0.5], "sampling": ["fixed"], "tune_dtype": "float"},
+      "ContactCutCloseHitFraction2": {"bounds": [0.5, 0.5], "sampling": ["fixed"], "tune_dtype": "float"},
+      "PhotonLikeMaxShowerStart": {"bounds": [5.0, 5.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "PhotonLikeMaxProfileDiscrepancy": {"bounds": [0.75, 0.75], "sampling": ["fixed"], "tune_dtype": "float"},
+      "ContactCutNearbyDistance": {"bounds": [100.0, 100.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "ContactCutNearbyCloseHitFraction2": {"bounds": [0.15, 0.35], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "PhotonLikeMaxInnerLayer": {"bounds": [10, 10], "sampling": ["fixed"], "tune_dtype": "int"},
+      "PhotonLikeMinDCosR": {"bounds": [0.5, 0.5], "sampling": ["fixed"], "tune_dtype": "float"}
+    },
+
+    // Merge photonlike fragments into photons
+    // Inner layers are pseudo layers, shower start is in radiation lengths
+    "PhotonFragmentRemoval": {
+      "MinDaughterCaloHits": {"bounds": [2, 2], "sampling": ["fixed"], "tune_dtype": "int"},
+      "ContactCutMaxDistance": {"bounds": [15.0, 30.0], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "MinEvidence": {"bounds": [1.5, 2.5], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "MinDaughterHadronicEnergy": {"bounds": [0.025, 0.025], "sampling": ["fixed"], "tune_dtype": "float"},
+      "ContactCutNLayers": {"bounds": [2, 2], "sampling": ["fixed"], "tune_dtype": "int"},
+      "ContactCutConeFraction1": {"bounds": [0.5, 0.5], "sampling": ["fixed"], "tune_dtype": "float"},
+      "ContactCutCloseHitFraction1": {"bounds": [0.5, 0.5], "sampling": ["fixed"], "tune_dtype": "float"},
+      "ContactCutCloseHitFraction2": {"bounds": [0.2, 0.2], "sampling": ["fixed"], "tune_dtype": "float"},
+      "PhotonLikeMaxShowerStart": {"bounds": [5.0, 5.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "PhotonLikeMaxProfileDiscrepancy": {"bounds": [0.75, 0.75], "sampling": ["fixed"], "tune_dtype": "float"},
+      "InnerLayerTolerance": {"bounds": [5, 5], "sampling": ["fixed"], "tune_dtype": "int"},
+      "MinCosOpeningAngle": {"bounds": [0.95, 0.95], "sampling": ["fixed"], "tune_dtype": "float"},
+      "PhotonLikeMaxInnerLayer": {"bounds": [10, 10], "sampling": ["fixed"], "tune_dtype": "int"},
+      "PhotonLikeMinDCosR": {"bounds": [0.5, 0.5], "sampling": ["fixed"], "tune_dtype": "float"}
+    },
+
+    // Standalone photon clustering separation
+    "PhotonReconstruction/ConeClustering": {
+      "ConeApproachMaxSeparation": {"bounds": [220.0, 300.0], "sampling": ["between_bounds"], "tune_dtype": "float"}
+    },
+
+    // Primary cone clustering, pad widths in cell units
+    // Fine <= coarse for cone slopes and added pad widths
+    "ClusteringParent/ConeClustering": {
+      "TanConeAngleCoarse": {"bounds": [0.42, 0.58], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "AdditionalPadWidthsCoarse": {"bounds": [2.5, 3.0], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "TanConeAngleFine": {"bounds": [0.3, 0.3], "sampling": ["fixed"], "tune_dtype": "float"},
+      "AdditionalPadWidthsFine": {"bounds": [2.5, 2.5], "sampling": ["fixed"], "tune_dtype": "float"},
+      "SameLayerPadWidthsFine": {"bounds": [2.8, 2.8], "sampling": ["fixed"], "tune_dtype": "float"},
+      "SameLayerPadWidthsCoarse": {"bounds": [1.8, 1.8], "sampling": ["fixed"], "tune_dtype": "float"}
+    },
+
+    // Calorimeter calibration via pandora.Parameters, MIP scales in 1/GeV
+    "wrapper": {
+      "ECalToHadGeVCalibrationBarrel": {"bounds": [1.13, 1.25], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "HCalToHadGeVCalibration": {"bounds": [1.13, 1.25], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "ECalToEMGeVCalibration": {"bounds": [0.97, 1.03], "sampling": ["between_bounds"], "tune_dtype": "float"},
+      "ECalToMipCalibration": {"bounds": [100.0, 100.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "HCalToMipCalibration": {"bounds": [100.0, 100.0], "sampling": ["fixed"], "tune_dtype": "float"}
+    },
+
+    // Clusters with hits <= MinHitsInCluster are dissolved
+    // Keep this below the PFO hit threshold to limit hit loss
+    "ClusteringParent/TopologicalAssociationParent/IsolatedHitMerging": {
+      "MinHitsInCluster": {"bounds": [1, 1], "sampling": ["fixed"], "tune_dtype": "int"},
+      "MaxRecombinationDistance": {"bounds": [250.0, 250.0], "sampling": ["fixed"], "tune_dtype": "float"}
+    },
+
+    // Barrel track recovery using spatial and energy agreement
+    "TrackPreparation/TrackRecovery": {
+      "MaxAbsoluteTrackClusterChi": {"bounds": [2.0, 2.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "BarrelMaxTrackClusterDistance": {"bounds": [10.0, 10.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MaxSearchLayer": {"bounds": [19, 19], "sampling": ["fixed"], "tune_dtype": "int"}
+    },
+
+    // Photon and electron preselection
+    // RadLengths fields use radiation lengths, RMS and radial cuts use mm
+    "LCEmShowerId": {
+      "MipCut_0": {"bounds": [0.9, 0.9], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MipCut_1": {"bounds": [0.3, 0.3], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MipCut_2": {"bounds": [0.4, 0.4], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MipCut_3": {"bounds": [0.6, 0.6], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MipCut_4": {"bounds": [0.7, 0.7], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MipCutEnergy_1": {"bounds": [15.0, 15.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MipCutEnergy_2": {"bounds": [7.5, 7.5], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MipCutEnergy_3": {"bounds": [3.0, 3.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MipCutEnergy_4": {"bounds": [1.5, 1.5], "sampling": ["fixed"], "tune_dtype": "float"},
+      "DCosRLowECut": {"bounds": [0.94, 0.94], "sampling": ["fixed"], "tune_dtype": "float"},
+      "DCosRHighECut": {"bounds": [0.95, 0.95], "sampling": ["fixed"], "tune_dtype": "float"},
+      "RmsLowECut": {"bounds": [40.0, 40.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "RmsHighECut": {"bounds": [90.0, 90.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MaxInnerLayerRadLengths": {"bounds": [10.0, 10.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MinLayer90RadLengths": {"bounds": [4.0, 4.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MaxLayer90RadLengths": {"bounds": [30.0, 30.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MaxShowerMaxRadLengths": {"bounds": [25.0, 25.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MaxHighRadLengthEnergyFraction": {"bounds": [0.04, 0.04], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MaxRadial90": {"bounds": [40.0, 40.0], "sampling": ["fixed"], "tune_dtype": "float"}
+    },
+
+    // Electron identification using shower profile and E/p cuts
+    "LCElectronId": {
+      "MaxProfileStart": {"bounds": [4.5, 4.5], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MaxProfileDiscrepancy": {"bounds": [0.6, 0.6], "sampling": ["fixed"], "tune_dtype": "float"},
+      "ProfileDiscrepancyForAutoId": {"bounds": [0.5, 0.5], "sampling": ["fixed"], "tune_dtype": "float"},
+      "MaxResidualEOverP": {"bounds": [0.2, 0.2], "sampling": ["fixed"], "tune_dtype": "float"}
+    },
+
+    // Shower start and transverse profile cuts
+    // NonMipLayers counts occupied layers, transverse distances are in cells
+    "ShowerProfilePlugin": {
+      "ShowerStartMipFraction": {"bounds": [0.8, 0.8], "sampling": ["fixed"], "tune_dtype": "float"},
+      "ShowerStartNonMipLayers": {"bounds": [2, 2], "sampling": ["fixed"], "tune_dtype": "int"},
+      "TransProfileMinTrackToPeakCut": {"bounds": [1.6, 1.6], "sampling": ["fixed"], "tune_dtype": "float"},
+      "TransProfileMinDisTrackMatch": {"bounds": [1.6, 1.6], "sampling": ["fixed"], "tune_dtype": "float"}
+    },
+
+    // Merge neutral fragments near photons
+    // Local layer separation cuts <= MaxWeightedLayerSeparation
+    "PhotonFragmentMerging": {
+      "MaxWeightedLayerSeparation": {"bounds": [80.0, 80.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "LowEnergyOfCandidateClusterThreshold": {"bounds": [1.0, 1.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "WeightedLayerSeparationPhotonNeutralThresholdLow1": {"bounds": [20.0, 20.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "CentroidSeparationPhotonNeutralThresholdLow1": {"bounds": [40.0, 40.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "WeightedLayerSeparationPhotonNeutralThresholdLow2": {"bounds": [50.0, 50.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "ClosestDistanceSeparationPhotonNeutralThresholdLow2": {"bounds": [50.0, 50.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "NCaloHitsCandidatePhotonNeutralThresholdLow2": {"bounds": [10, 10], "sampling": ["fixed"], "tune_dtype": "int"},
+      "ClosestDistanceSeparationPhotonNeutralThresholdLow3": {"bounds": [15.0, 15.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "EnergyRatioCandidateToMainNeutralThresholdLow3": {"bounds": [0.01, 0.01], "sampling": ["fixed"], "tune_dtype": "float"},
+      "WeightedLayerSeparationPhotonNeutralThresholdLow3": {"bounds": [40.0, 40.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "ClosestDistanceSeparationPhotonNeutralThresholdHigh2": {"bounds": [20.0, 20.0], "sampling": ["fixed"], "tune_dtype": "float"},
+      "EnergyRatioCandidateToMainNeutralThresholdHigh2": {"bounds": [0.02, 0.02], "sampling": ["fixed"], "tune_dtype": "float"},
+      "WeightedLayerSeparationPhotonNeutralThresholdHigh2": {"bounds": [40.0, 40.0], "sampling": ["fixed"], "tune_dtype": "float"}
+    }
+  },
+
+  // Each row enforces a <= b <= ... for all bounds and trial values
+  // Algorithm execution order comes from the source XML
+  "param_ordered":
+    [["MainFragmentRemoval/MinDaughterCaloHits", "PfoCreation/MinHitsInCluster"],
+     ["MainFragmentRemoval/MinDaughterHadronicEnergy", "PfoCreation/MinClusterHadronicEnergy"],
+     ["NeutralFragmentRemoval/MinDaughterCaloHits", "PfoCreation/MinHitsInCluster"],
+     ["NeutralFragmentRemoval/MinDaughterHadronicEnergy", "PfoCreation/MinClusterHadronicEnergy"],
+     ["PhotonFragmentRemoval/MinDaughterCaloHits", "PfoCreation/MinHitsInCluster"],
+     ["PhotonFragmentRemoval/MinDaughterHadronicEnergy", "PfoCreation/MinClusterHadronicEnergy"],
+     ["MainFragmentRemoval/Chi2Base", "MainFragmentRemoval/MaxGlobalChi2", "MainFragmentRemoval/MaxChi2"],
+     ["NeutralFragmentRemoval/ContactCutNearbyDistance", "NeutralFragmentRemoval/ContactCutMaxDistance"],
+     ["ClusteringParent/TopologicalAssociationParent/SoftClusterMerging/MinHitsInCluster", "ClusteringParent/TopologicalAssociationParent/SoftClusterMerging/MaxHitsInSoftCluster"],
+     ["ClusteringParent/TopologicalAssociationParent/SoftClusterMerging/InnerLayerCut1", "ClusteringParent/TopologicalAssociationParent/SoftClusterMerging/InnerLayerCut2"],
+     ["ClusteringParent/TopologicalAssociationParent/SoftClusterMerging/ClosestDistanceCut0", "ClusteringParent/TopologicalAssociationParent/SoftClusterMerging/ClosestDistanceCut1", "ClusteringParent/TopologicalAssociationParent/SoftClusterMerging/ClosestDistanceCut2", "ClusteringParent/TopologicalAssociationParent/SoftClusterMerging/MaxClusterDistanceFine", "ClusteringParent/TopologicalAssociationParent/SoftClusterMerging/MaxClusterDistanceCoarse"],
+     ["ClusteringParent/TopologicalAssociationParent/SoftClusterMerging/MinClusterHadEnergy", "ClusteringParent/TopologicalAssociationParent/SoftClusterMerging/MaxHadEnergyForSoftClusterNoTrack"],
+     ["PfoCreation/MinHitsInCluster", "ClusteringParent/TopologicalAssociationParent/SoftClusterMerging/MaxHitsInSoftCluster"],
+     ["ClusteringParent/TopologicalAssociationParent/IsolatedHitMerging/MinHitsInCluster", "PfoCreation/MinHitsInCluster"],
+     ["PhotonReconstruction/MinDistanceToTrackCutLow", "PhotonReconstruction/MinDistanceToTrackDivisionCut"],
+     ["PhotonReconstruction/MinPeakEnergy", "PhotonReconstruction/EnergyCutForPid1", "PhotonReconstruction/EnergyCutForPid2"],
+     ["PhotonReconstruction/PidCut3", "PhotonReconstruction/PidCut2", "PhotonReconstruction/PidCut1"],
+     ["PhotonRecovery/SoftPhotonLowEnergyCut", "PhotonRecovery/SoftPhotonMaxEnergy"],
+     ["PhotonRecovery/SoftPhotonLowEnergyMaxDCosR", "PhotonRecovery/SoftPhotonMaxDCosR"],
+     ["PhotonRecovery/ProfileStartCut3", "PhotonRecovery/ProfileStartCut1", "PhotonRecovery/ProfileStartCut2"],
+     ["PhotonRecovery/ProfileDiscrepancyCut1", "PhotonRecovery/ProfileDiscrepancyCut2"],
+     ["LCEmShowerId/MipCut_1", "LCEmShowerId/MipCut_2", "LCEmShowerId/MipCut_3", "LCEmShowerId/MipCut_4", "LCEmShowerId/MipCut_0"],
+     ["LCEmShowerId/MipCutEnergy_4", "LCEmShowerId/MipCutEnergy_3", "LCEmShowerId/MipCutEnergy_2", "LCEmShowerId/MipCutEnergy_1"],
+     ["LCEmShowerId/DCosRLowECut", "LCEmShowerId/DCosRHighECut"],
+     ["LCEmShowerId/RmsLowECut", "LCEmShowerId/RmsHighECut"],
+     ["LCEmShowerId/MinLayer90RadLengths", "LCEmShowerId/MaxLayer90RadLengths"],
+     ["LCElectronId/ProfileDiscrepancyForAutoId", "LCElectronId/MaxProfileDiscrepancy"],
+     ["PhotonFragmentMerging/WeightedLayerSeparationPhotonNeutralThresholdLow1", "PhotonFragmentMerging/MaxWeightedLayerSeparation"],
+     ["PhotonFragmentMerging/WeightedLayerSeparationPhotonNeutralThresholdLow2", "PhotonFragmentMerging/MaxWeightedLayerSeparation"],
+     ["PhotonFragmentMerging/WeightedLayerSeparationPhotonNeutralThresholdLow3", "PhotonFragmentMerging/MaxWeightedLayerSeparation"],
+     ["PhotonFragmentMerging/WeightedLayerSeparationPhotonNeutralThresholdHigh2", "PhotonFragmentMerging/MaxWeightedLayerSeparation"],
+     ["PhotonFragmentMerging/EnergyRatioCandidateToMainNeutralThresholdLow3", "PhotonFragmentMerging/EnergyRatioCandidateToMainNeutralThresholdHigh2"],
+     ["NeutralFragmentRemoval/PhotonLikeMaxInnerLayer", "PhotonFragmentRemoval/PhotonLikeMaxInnerLayer"],
+     ["NeutralFragmentRemoval/PhotonLikeMaxShowerStart", "PhotonFragmentRemoval/PhotonLikeMaxShowerStart"],
+     ["NeutralFragmentRemoval/PhotonLikeMaxProfileDiscrepancy", "PhotonFragmentRemoval/PhotonLikeMaxProfileDiscrepancy"],
+     ["PhotonFragmentRemoval/PhotonLikeMinDCosR", "NeutralFragmentRemoval/PhotonLikeMinDCosR"],
+     ["ClusteringParent/ConeClustering/TanConeAngleFine", "ClusteringParent/ConeClustering/TanConeAngleCoarse"],
+     ["ClusteringParent/ConeClustering/AdditionalPadWidthsFine", "ClusteringParent/ConeClustering/AdditionalPadWidthsCoarse"],
+     ["PhotonRecovery/MinElectromagneticEnergy", "PhotonRecovery/SoftPhotonMaxEnergy"],
+     ["PfoCreation/MinClusterHadronicEnergy", "ClusteringParent/TopologicalAssociationParent/SoftClusterMerging/MaxHadEnergyForSoftClusterNoTrack"]],
+
+  // Pandora installation and runtime inputs
+  "param_paths": {
+    // Override with PANDORA_PFA_DIR
+    "pandora_dir": "../PandoraPFA",
+    // XML and Python steering paths relative to pandora_dir
+    "pandora_default_xml": "run/PandoraSettings_v6.xml",
+    "pandora_reco_py": "run/run_reco_pandora.py",
+    // Worker runtime paths relative to pandora_dir
+    "runtime_paths": [
+      "PandoraSDK/install",
+      "k4geo/install",
+      "k4RecTracker/install",
+      "LCContent/install",
+      "DDMarlinPandora/install",
+      "PandoraSDK/build/CMakeCache.txt",
+      "k4geo/build/CMakeCache.txt",
+      "k4RecTracker/build/CMakeCache.txt",
+      "LCContent/build/CMakeCache.txt",
+      "DDMarlinPandora/build/CMakeCache.txt",
+      "k4geo/FCCee",
+      "k4geo/detectorCommon",
+      "k4geo/fieldmaps",
+      "run/run_reco_pandora.py",
+      "run/PandoraSettings_v6.xml",
+      "run/PandoraLikelihoodDataALLEGRO.xml"
+    ]
+  },
+
+  // Samples, fiducial cuts and matching
+  "param_selection": {
+    "matching_max_angle_rad": 0.2,        // Maximum 3D matching angle (rad)
+    
+    // Simulated samples and parton acceptance
+    "generator": {
+      
+      // Hard parton |cos(theta)| limit
+      "max_abs_parton_costheta": 0.4,
+      
+      // Datasets used in the fit
+      "active_datasets": ["zuds_91p2"],
+
+      // File ranges are inclusive, nevents=-1 reads all events
+      "datasets": {
+          "zuds_91p2": {
+          "process": "zuds",
+          "sqrts_gev": 91.1876,
+          "input_dir": "run/condor_outputs",
+          "file_template": "ALLEGRO_ddsim_job_{index:03d}.root",
+          "file_ranges": [[0, 19]], "nevents": -1, "weight": 1.0
+        }
+      }
+    },
+    // Analysis cuts on truth particles and PFOs, angles in degrees
+    "fiducial": {
+      
+      // Stable visible truth particles
+      "gen": {"gen_status": 1, "final_state_energy_gev": [0.1, null], "final_state_theta_deg": [50.0, 130.0], "excluded_abs_pdgs": [12, 14, 16]},
+      
+      // Reconstructed PFOs
+      "reco": {"final_state_energy_gev": [0.1, null], "final_state_theta_deg": [50.0, 130.0], "excluded_abs_pdgs": [12, 14, 16]}
+    }
+  },
+  
+  // Particle flow objective
+  "param_loss": {
+    "epsilon": 1e-12,                         // Numerical floor for logs and denominators
+
+    "energy_bias_target": 0.005,              // Mean energy bias penalty scale
+    "energy_bias_tolerance": 0.01,            // Allowed mean energy bias for diagnostics
+    "energy_resolution_target": 0.03,         // Target relative event energy resolution
+    
+    // Particle identification and multiplicity penalties
+    "confusion_energy_fraction_target": 0.08, // Scale for misidentified and unmatched energy fractions
+    "multiplicity_target": 1.0,               // RMS count error per class and event after fiducial cuts
+    "matched_momentum_response_target": 0.16, // Momentum residual scale after event energy rescaling
+    
+    // Matched energy residual scales by particle class
+    "matched_energy_response_target":
+      {"charged_hadron": 0.16, "photon": 0.16, "neutral_hadron": 0.16, "electron": 0.16, "muon": 0.16}
+  }
+}

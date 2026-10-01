@@ -1,4 +1,4 @@
-# Github actions CI (continous integration) setup
+# GitHub Actions continuous integration
 
 name: graniitti-install-generate-test
 
@@ -6,39 +6,55 @@ on: [push]
 
 jobs:
   graniitti-install-generate-test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        shell: bash -el -o pipefail {0}
+    env:
+      CONDA_CXX_ABI: '1'
+      MPLBACKEND: Agg
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v7
+      - uses: conda-incubator/setup-miniconda@v4
         with:
-          python-version: '3.8'
+          miniforge-version: latest
+          environment-file: environment.yml
+          activate-environment: graniitti
 
-      # HepMC3 and LHAPDF6 install
-      - run: cd install && yes y | source autoinstall.sh && cd ..
+      - name: Install Python tools
+        run: |
+          conda activate graniitti
+          python -m pip install -r requirements.txt
+          python -m pip install --no-deps --no-build-isolation hebo
 
-      # Compile C++
-      - run: source install/setenv.sh && make -j8 TEST=TRUE
+      - name: Install HepMC3 and LHAPDF6
+        run: |
+          conda activate graniitti
+          source install/setenv.sh
+          bash install/autoinstall.sh <<< y
 
-      # Install (python tools)
-      - run: pip install -r requirements.txt
+      - name: Compile C++ and tests
+        run: |
+          conda activate graniitti
+          source install/setenv.sh
+          cmake -S . -B build -DWITH_TEST=ON
+          cmake --build build -j4
 
-      # Event generation
-      - run: source install/setenv.sh && ./bin/gr -i gencard/test.json -h 0 -w true -l false -n 1500
+      - name: Generate events and plot
+        run: |
+          conda activate graniitti
+          source install/setenv.sh
+          ./bin/gr -i gencard/test.json -h 0 -w true -l false -n 1500
+          python -m core.iceplot --hepmc3 output/test.hepmc3
 
-      # Python plots
-      - run: source install/setenv.sh && python python/iceshot --hepmc3 test --chunksize 299
+      - name: C++ tests and clang-tidy
+        run: |
+          conda activate graniitti
+          source install/setenv.sh
+          ctest --test-dir build --output-on-failure
       
-      # Ray tuning
-      - run: source install/setenv.sh && ray start --head --temp-dir=/tmp/ray && python python/icetune --tuneset fast
-      
-      # C++ tests
-      - run: source install/setenv.sh && for i in {0,1,2,3,4}; do "./bin/testbench$i"; done
-      
-      # Python driven tests (fast mode --> POMLOOP False)
-      - run: source install/setenv.sh && pytest tests/testbench_2to4_spin.py -s --POMLOOP false --NEVENTS 2000
-      - run: source install/setenv.sh && pytest tests/testbench_STAR_1792394.py -s --POMLOOP false --NEVENTS 2000
-      - run: source install/setenv.sh && pytest tests/testbench_exloop.py  -s --POMLOOP false
-      - run: source install/setenv.sh && pytest tests/testbench_vgrid.py -s
-      - run: source install/setenv.sh && pytest tests/testbench_integrators.py -s
-      - run: source install/setenv.sh && pytest tests/testbench_global_fast.py -s
-      - run: source install/setenv.sh && pytest tests/testbench_global_slow.py -s
+      - name: Fast Python tests
+        run: |
+          conda activate graniitti
+          source install/setenv.sh
+          pytest -q -s -rP tests/technical tests/physics/unit -m "not integration and not physics"

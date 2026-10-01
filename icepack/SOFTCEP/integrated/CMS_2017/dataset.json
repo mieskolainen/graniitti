@@ -1,0 +1,64 @@
+// CMS 7 TeV publication integrated pion pair cross section
+// SD and DD samples cover only M_Y < 5 GeV, so high-mass proton dissociation is absent
+{
+  "active": false,
+  // Comparison inactive until an original HEPData table is available
+  "type": "INTEGRATED_LITERATURE",
+  "reader": "icepack/_common/reference_reader.py",
+  "datapath": "tests/references",
+  "samples": [
+    {
+      "name": "elastic",
+      "label": "GRANIITTI GP[RES+CON] (EL)",
+      "gencard": "./gencard_E0.json",
+      "parameters": {}
+    },
+    {
+      "name": "single",
+      "label": "GRANIITTI GP[RES+CON] (SD, $M_Y<5$ GeV)",
+      "gencard": "./gencard_E1.json",
+      "parameters": {}
+    },
+    {
+      "name": "double",
+      "label": "GRANIITTI GP[RES+CON] (DD, $M_Y<5$ GeV)",
+      "gencard": "./gencard_E2.json",
+      "parameters": {}
+    }
+  ],
+  "plot": {
+    "normalization": "cross_section",
+    "ratio_uncertainty": "combined",
+    "stack": true,
+    "data_style": "hist"
+  },
+  "fit": {
+    "normalization": "cross_section"
+  },
+  "validation": {
+    "loopscreen": 1,
+    "require_comparison": true,
+    "require_differential_comparison": false,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "CMS $pp$ 7 TeV ($\\pi^+\\pi^-$, EL+SD+DD)",
+      "title": "$p_{T,\\pi}>0.2$ GeV, $|\\eta_{\\pi}|<2.4$, $|y_{\\pi}|<2$",
+      "pid": [211, -211],
+      "cuts": "./cuts.py",
+      "obs": "../../../_common/obs.py",
+      "hist": [
+        {
+          "file": "lhc_tevatron_rhic.json",
+          "file_filter": "CMS17_2pi_E0_E1_E2",
+          "obs": "cross_section",
+          "differential": false,
+          "scale": 1e-06,
+          "unit": "ub"
+        }
+      ]
+    }
+  ]
+}

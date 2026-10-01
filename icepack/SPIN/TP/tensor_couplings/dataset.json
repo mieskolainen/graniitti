@@ -1,0 +1,235 @@
+// Pure Tensor Pomeron couplings for the tensor f2(1270)
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "g0",
+      "label": "GRANIITTI TP[RES] $g_0$",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[RES]<F> -> pi+ pi- @RES{f2_1270:1}",
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[0]": 1.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[1]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[2]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[3]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[4]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[5]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[6]": 0.0
+      }
+    },
+    {
+      "name": "g1",
+      "label": "GRANIITTI TP[RES] $g_1$",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[RES]<F> -> pi+ pi- @RES{f2_1270:1}",
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[0]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[1]": 1.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[2]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[3]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[4]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[5]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[6]": 0.0
+      }
+    },
+    {
+      "name": "g2",
+      "label": "GRANIITTI TP[RES] $g_2$",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[RES]<F> -> pi+ pi- @RES{f2_1270:1}",
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[0]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[1]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[2]": 1.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[3]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[4]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[5]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[6]": 0.0
+      }
+    },
+    {
+      "name": "g3",
+      "label": "GRANIITTI TP[RES] $g_3$",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[RES]<F> -> pi+ pi- @RES{f2_1270:1}",
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[0]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[1]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[2]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[3]": 1.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[4]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[5]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[6]": 0.0
+      }
+    },
+    {
+      "name": "g4",
+      "label": "GRANIITTI TP[RES] $g_4$",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[RES]<F> -> pi+ pi- @RES{f2_1270:1}",
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[0]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[1]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[2]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[3]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[4]": 1.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[5]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[6]": 0.0
+      }
+    },
+    {
+      "name": "g5",
+      "label": "GRANIITTI TP[RES] $g_5$",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[RES]<F> -> pi+ pi- @RES{f2_1270:1}",
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[0]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[1]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[2]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[3]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[4]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[5]": 1.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[6]": 0.0
+      }
+    },
+    {
+      "name": "g6",
+      "label": "GRANIITTI TP[RES] $g_6$",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[RES]<F> -> pi+ pi- @RES{f2_1270:1}",
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[0]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[1]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[2]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[3]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[4]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[5]": 0.0,
+        "f2_1270.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[6]": 1.0
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "unit_density",
+    "density_uncertainty": "shape",
+    "ratio_plot": true,
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "hist"
+  },
+  "fit": {"normalization": "unit_density"},
+  "sets": [
+    {
+      "name": "f2(1270), g0",
+      "sample": "g0",
+      "plot_group": "TP_tensor_couplings",
+      "title": "TP f2(1270) couplings",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "f2(1270), g1",
+      "sample": "g1",
+      "plot_group": "TP_tensor_couplings",
+      "title": "TP f2(1270) couplings",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "f2(1270), g2",
+      "sample": "g2",
+      "plot_group": "TP_tensor_couplings",
+      "title": "TP f2(1270) couplings",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "f2(1270), g3",
+      "sample": "g3",
+      "plot_group": "TP_tensor_couplings",
+      "title": "TP f2(1270) couplings",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "f2(1270), g4",
+      "sample": "g4",
+      "plot_group": "TP_tensor_couplings",
+      "title": "TP f2(1270) couplings",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "f2(1270), g5",
+      "sample": "g5",
+      "plot_group": "TP_tensor_couplings",
+      "title": "TP f2(1270) couplings",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "f2(1270), g6",
+      "sample": "g6",
+      "plot_group": "TP_tensor_couplings",
+      "title": "TP f2(1270) couplings",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    }
+  ]
+}

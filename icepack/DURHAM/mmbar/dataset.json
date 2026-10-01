@@ -1,0 +1,183 @@
+// Durham perturbative meson pair spectra compared with SuperChic Figure 9
+{
+  "active": true,
+  "type": "SUPERCHIC_1105_1626_FIGURE9",
+  "reader": "icepack/_common/reference_reader.py",
+  "datapath": "tests/references",
+  "reference_sample": "SuperChic Figure 9 with MRST99",
+  "sqrts": 1960,
+  "samples": [
+    {
+      "name": "pi0pi0",
+      "label": "GRANIITTI $\\pi^0\\pi^0$",
+      "gencard": "../_common/gencard.json",
+      "parameters": {
+        "SCATTERING.BEAM": ["p+", "p-"],
+        "SCATTERING.ENERGY": [980, 980],
+        "SCATTERING.PROCESS": "gg[MM]<F> -> pi0 pi0",
+        "SCATTERING.LHAPDF": "MSTW2008lo68cl",
+        "GENERIC.RNDSEED": 12868,
+        "GENCUTS.<F>.M": [3.5, 20.5],
+        "GENCUTS.<F>.Rap": [-1.8, 1.8],
+        "FIDCUTS.CENTRAL[\"*\"].Pt": [2.0, 100000.0],
+        "FIDCUTS.CENTRAL[\"*\"].Eta": [-1.8, 1.8],
+        "FIDCUTS.CENTRAL[\"SYSTEM\"].M": [3.5, 20.5],
+        "GENERAL.json:PARAM_DURHAM.MAXCOS": 0.999999,
+        "GENERAL.json:PARAM_DURHAM.MESON_pt_min": 2.0,
+        "GENERAL.json:PARAM_DURHAM.f_pi": 0.09404520189781082,
+        "GENERAL.json:PARAM_DURHAM.eta_theta8_deg": -15.0,
+        "GENERAL.json:PARAM_DURHAM.eta_theta1_deg": -15.0,
+        "GENERAL.json:PARAM_DURHAM.f_eta8_over_fpi": 1.0,
+        "GENERAL.json:PARAM_DURHAM.f_eta0_over_fpi": 1.0
+      }
+    },
+    {
+      "name": "etaeta",
+      "label": "GRANIITTI $\\eta\\eta$",
+      "gencard": "../_common/gencard.json",
+      "parameters": {
+        "SCATTERING.BEAM": ["p+", "p-"],
+        "SCATTERING.ENERGY": [980, 980],
+        "SCATTERING.PROCESS": "gg[MM]<F> -> eta0 eta0",
+        "SCATTERING.LHAPDF": "MSTW2008lo68cl",
+        "GENERIC.RNDSEED": 12869,
+        "GENCUTS.<F>.M": [3.5, 20.5],
+        "GENCUTS.<F>.Rap": [-1.8, 1.8],
+        "FIDCUTS.CENTRAL[\"*\"].Pt": [2.0, 100000.0],
+        "FIDCUTS.CENTRAL[\"*\"].Eta": [-1.8, 1.8],
+        "FIDCUTS.CENTRAL[\"SYSTEM\"].M": [3.5, 20.5],
+        "GENERAL.json:PARAM_DURHAM.MAXCOS": 0.999999,
+        "GENERAL.json:PARAM_DURHAM.MESON_pt_min": 2.0,
+        "GENERAL.json:PARAM_DURHAM.f_pi": 0.09404520189781082,
+        "GENERAL.json:PARAM_DURHAM.eta_theta8_deg": -15.0,
+        "GENERAL.json:PARAM_DURHAM.eta_theta1_deg": -15.0,
+        "GENERAL.json:PARAM_DURHAM.f_eta8_over_fpi": 1.0,
+        "GENERAL.json:PARAM_DURHAM.f_eta0_over_fpi": 1.0
+      }
+    },
+    {
+      "name": "etaetap",
+      "label": "GRANIITTI $\\eta\\eta\\prime$",
+      "gencard": "../_common/gencard.json",
+      "parameters": {
+        "SCATTERING.BEAM": ["p+", "p-"],
+        "SCATTERING.ENERGY": [980, 980],
+        "SCATTERING.PROCESS": "gg[MM]<F> -> eta0 eta'(958)0",
+        "SCATTERING.LHAPDF": "MSTW2008lo68cl",
+        "GENERIC.RNDSEED": 12870,
+        "GENCUTS.<F>.M": [3.5, 20.5],
+        "GENCUTS.<F>.Rap": [-1.8, 1.8],
+        "FIDCUTS.CENTRAL[\"*\"].Pt": [2.0, 100000.0],
+        "FIDCUTS.CENTRAL[\"*\"].Eta": [-1.8, 1.8],
+        "FIDCUTS.CENTRAL[\"SYSTEM\"].M": [3.5, 20.5],
+        "GENERAL.json:PARAM_DURHAM.MAXCOS": 0.999999,
+        "GENERAL.json:PARAM_DURHAM.MESON_pt_min": 2.0,
+        "GENERAL.json:PARAM_DURHAM.f_pi": 0.09404520189781082,
+        "GENERAL.json:PARAM_DURHAM.eta_theta8_deg": -15.0,
+        "GENERAL.json:PARAM_DURHAM.eta_theta1_deg": -15.0,
+        "GENERAL.json:PARAM_DURHAM.f_eta8_over_fpi": 1.0,
+        "GENERAL.json:PARAM_DURHAM.f_eta0_over_fpi": 1.0
+      }
+    },
+    {
+      "name": "etapetap",
+      "label": "GRANIITTI $\\eta\\prime\\eta\\prime$",
+      "gencard": "../_common/gencard.json",
+      "parameters": {
+        "SCATTERING.BEAM": ["p+", "p-"],
+        "SCATTERING.ENERGY": [980, 980],
+        "SCATTERING.PROCESS": "gg[MM]<F> -> eta'(958)0 eta'(958)0",
+        "SCATTERING.LHAPDF": "MSTW2008lo68cl",
+        "GENERIC.RNDSEED": 12871,
+        "GENCUTS.<F>.M": [3.5, 20.5],
+        "GENCUTS.<F>.Rap": [-1.8, 1.8],
+        "FIDCUTS.CENTRAL[\"*\"].Pt": [2.0, 100000.0],
+        "FIDCUTS.CENTRAL[\"*\"].Eta": [-1.8, 1.8],
+        "FIDCUTS.CENTRAL[\"SYSTEM\"].M": [3.5, 20.5],
+        "GENERAL.json:PARAM_DURHAM.MAXCOS": 0.999999,
+        "GENERAL.json:PARAM_DURHAM.MESON_pt_min": 2.0,
+        "GENERAL.json:PARAM_DURHAM.f_pi": 0.09404520189781082,
+        "GENERAL.json:PARAM_DURHAM.eta_theta8_deg": -15.0,
+        "GENERAL.json:PARAM_DURHAM.eta_theta1_deg": -15.0,
+        "GENERAL.json:PARAM_DURHAM.f_eta8_over_fpi": 1.0,
+        "GENERAL.json:PARAM_DURHAM.f_eta0_over_fpi": 1.0
+      }
+    }
+  ],
+  "plot": {"normalization": "cross_section", "ratio_uncertainty": "numerator", "stack": false, "data_style": "hist", "data_linestyle": "--", "mc_linestyle": "-", "match_colors": true, "mc_first": true},
+  "fit": {"normalization": "cross_section"},
+  "sets": [
+    {
+      "name": "SuperChic (arXiv:1105.1626) $\\pi^0\\pi^0$",
+      "title": "$|\\eta_{h}|<1.8$, $p_{T,h}>2$ GeV, $3.5<M_X<20.5$ GeV",
+      "plotname": "SuperChic_Figure9_pi0pi0",
+      "sample": "pi0pi0",
+      "pid": [111, 111],
+      "cuts": "../_common/cuts_inclusive.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {
+          "file": "superchic_mmbar_1105_1626.json",
+          "file_filter": "figure9_pi0pi0",
+          "obs": "M",
+          "scale": 1e-12,
+          "fitw": 1.0
+        }
+      ]
+    },
+    {
+      "name": "SuperChic (arXiv:1105.1626) $\\eta\\eta$",
+      "title": "$|\\eta_{h}|<1.8$, $p_{T,h}>2$ GeV, $3.5<M_X<20.5$ GeV",
+      "plotname": "SuperChic_Figure9_etaeta",
+      "sample": "etaeta",
+      "pid": [221, 221],
+      "cuts": "../_common/cuts_inclusive.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {
+          "file": "superchic_mmbar_1105_1626.json",
+          "file_filter": "figure9_etaeta",
+          "obs": "M",
+          "scale": 1e-12,
+          "fitw": 1.0
+        }
+      ]
+    },
+    {
+      "name": "SuperChic (arXiv:1105.1626) $\\eta\\eta\\prime$",
+      "title": "$|\\eta_{h}|<1.8$, $p_{T,h}>2$ GeV, $3.5<M_X<20.5$ GeV",
+      "plotname": "SuperChic_Figure9_etaetap",
+      "sample": "etaetap",
+      "pid": [221, 331],
+      "cuts": "../_common/cuts_inclusive.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {
+          "file": "superchic_mmbar_1105_1626.json",
+          "file_filter": "figure9_etaetap",
+          "obs": "M",
+          "scale": 1e-12,
+          "fitw": 1.0
+        }
+      ]
+    },
+    {
+      "name": "SuperChic (arXiv:1105.1626) $\\eta\\prime\\eta\\prime$",
+      "title": "$|\\eta_{h}|<1.8$, $p_{T,h}>2$ GeV, $3.5<M_X<20.5$ GeV",
+      "plotname": "SuperChic_Figure9_etapetap",
+      "sample": "etapetap",
+      "pid": [331, 331],
+      "cuts": "../_common/cuts_inclusive.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {
+          "file": "superchic_mmbar_1105_1626.json",
+          "file_filter": "figure9_etapetap",
+          "obs": "M",
+          "scale": 1e-12,
+          "fitw": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+! Inclusive pp -> gamma*/Z -> mu+ mu- at sqrt(s) = 13 TeV
+Beams:idA = 2212
+Beams:idB = 2212
+Beams:eCM = 13000.0
+
+! Allow radiation into the final dimuon Z mass window
+WeakSingleBoson:ffbar2gmZ = on
+PhaseSpace:mHatMin = 80.0
+PhaseSpace:mHatMax = 13000.0
+
+! Keep only Z decays to muons; the gamma* contribution is kept by the hard process
+23:onMode = off
+23:onIfAny = 13
+
+! Match the GRANIITTI LO proton PDF
+PDF:pSet = LHAPDF6:NNPDF31_lo_as_0118
+
+! Keep the full inclusive event for charged-multiplicity observables
+PartonLevel:ISR = on
+PartonLevel:FSR = on
+TimeShower:QEDshowerByL = on
+PartonLevel:MPI = on
+HadronLevel:all = on
+ParticleDecays:limitTau0 = on
+ParticleDecays:tau0Max = 10.0
+Print:quiet = on

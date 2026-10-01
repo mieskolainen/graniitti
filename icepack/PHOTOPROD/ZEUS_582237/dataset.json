@@ -1,0 +1,48 @@
+// ZEUS elastic J/psi photoproduction near W = 100 GeV
+{
+  "active": true,
+  "type": "HEPDATA_582237",
+  "reader": "icepack/PHOTOPROD/_common/hera_reader.py",
+  "datapath": "HEPData/PHOTOPROD/HEPData-ins582237-v1-json/",
+  "samples": [
+    {
+      "name": "gp_res",
+      "label": "GRANIITTI GP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "GP[RES]<F> -> mu+ mu- @RES{jpsi:1}"}
+    },
+    {
+      "name": "jmrt",
+      "label": "GRANIITTI ygg[$J/\\psi$]",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "ygg[jpsi]<F> -> mu+ mu-"}
+    }
+  ],
+  "plot": {"normalization": "cross_section", "unit": "nb", "ratio_uncertainty": "combined", "stack": false, "data_style": "errorbar"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "loopscreen": 0,
+    "nevents": 100000,
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "ZEUS $e^+p$ 300 GeV ($\\gamma p \\to J/\\psi p$)",
+      "plotname": "ZEUS_582237_90_110_elastic_Jpsi_abs_t",
+      "title": "$90<W_{\\gamma p}<110$ GeV, $Q^2<1$ GeV$^2$, $|t|<1.8$ GeV$^2$",
+      // [REFERENCE: ZEUS Eur. Phys. J. C24 (2002) 345, https://arxiv.org/pdf/hep-ex/0201043, Eq. (5) and Tables 1, 9]
+      // PHOTON_FLUX is integrated over the selected W interval, BR_JPSI_MUMU is the PDG value for J/psi -> mu+ mu-
+      // 1 / (PHOTON_FLUX * BR_JPSI_MUMU) = 1 / (0.01585 * 0.05961)
+      "mc_scale": 1058.40433903443,
+      "pid": [-13,13],
+      "cuts": "./cuts.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {"file": "Table9.json", "file_filter": "90 TO 110 GEV", "obs": "abs_t", "scale": 1e-9, "fitw": 1.0}
+      ]
+    }
+  ]
+}

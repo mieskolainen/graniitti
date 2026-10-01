@@ -1,44 +1,20 @@
 #!/usr/bin/env bash
+# Format the requested C++ files
 #
-# clang-tidy and clang-format based automatic style processing
-#
-# Use with: ./format.sh sourcefile.cc
-# -------------------------------------------------------------------
+# Run with: bash develop/format.sh sourcefile.cc
 
-# -------------------------------------------------------------------
+set -euo pipefail
 
-##TIDY="clang-tidy"
-##
-##if [ -f /usr/local/opt/llvm/bin/clang-tidy ]; then
-##    TIDY="/usr/local/opt/llvm/bin/clang-tidy"
-##fi
-
-
-##echo "clang-tidy processing "$*" ..."
-##sleep 1
-##
-##$TIDY \
-##    -fix \
-##    -fix-errors \
-##    -header-filter=.* \
-##    --checks=readability-braces-around-statements,misc-macro-parentheses \
-##    $*
-##    #\
-##    #-- -I.
-##echo "clang-tidy done!"
-
-# -------------------------------------------------------------------
+if (( $# == 0 )); then
+    echo "Usage: bash develop/format.sh sourcefile.cc [...]" >&2
+    exit 2
+fi
 
 FORMAT="clang-format"
-
-if [ -f /usr/local/bin/clang-format ]; then
+if [[ -x /usr/local/bin/clang-format ]]; then
     FORMAT="/usr/local/bin/clang-format"
 fi
 
-echo "clang-format processing "$*" ..."
-sleep 1
-
-# -sort-includes
-$FORMAT -fallback-style=none -i $*
-
+printf 'clang-format processing %s files ...\n' "$#"
+"$FORMAT" -fallback-style=none -i "$@"
 echo "clang-format done!"

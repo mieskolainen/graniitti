@@ -1,0 +1,68 @@
+// ALICE exclusive and proton-dissociative J/psi cross sections in pPb UPCs
+{
+  "active": true,
+  "type": "HEPDATA_2654315_JPSI",
+  "reader": "icepack/UPC/_common/upc_reader.py",
+  "datapath": "HEPData/UPC/HEPData-ins2654315-v1-json/",
+  "samples": [
+    {
+      "name": "exclusive",
+      "label": "GRANIITTI GP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {}
+    },
+    {
+      "name": "dissociative",
+      "label": "GRANIITTI GP[RES] ($M_Y<10$ GeV)",
+      "gencard": "./gencard.json",
+      // Use the mass interval of the HERA proton transition fit
+      "parameters": {
+        "SCATTERING.NSTARS": 1,
+        "NUCLEAR.structure": "smooth",
+        "GENCUTS.<F>.Xi": [0.0,0.00000001],
+        "GENCUTS.<F>.Pt": [0.0,5.0],
+        "FIDCUTS.FORWARD.M": [0.0,10.0]
+      }
+    }
+  ],
+  "plot": {"normalization": "cross_section", "unit": "ub", "ratio_uncertainty": "combined", "stack": false, "data_style": "errorbar"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "loopscreen": 1,
+    "nevents": 100000,
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "ALICE $p\\mathrm{Pb}$ $\\sqrt{s_{\\mathrm{NN}}}=8.16$ TeV ($J/\\psi$, exclusive)",
+      "plotname": "ALICE_8p16TeV_pPb_exclusive_Jpsi_rapidity",
+      "title": "$2.5<y_{J/\\psi}<4.0$, $p_{T,J/\\psi}<3$ GeV",
+      // BR_JPSI_MUMU is the PDG value for J/psi -> mu+ mu-
+      // 1 / BR_JPSI_MUMU = 1 / 0.05961
+      "mc_scale": 16.7757087736957,
+      "pid": [-13,13],
+      "sample": "exclusive",
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"file": "Table2.json", "rows": [1,2], "obs": "rap", "scale": 1e-6, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "ALICE $p\\mathrm{Pb}$ $\\sqrt{s_{\\mathrm{NN}}}=8.16$ TeV ($J/\\psi$, proton-dissociative)",
+      "plotname": "ALICE_8p16TeV_pPb_dissociative_Jpsi_rapidity",
+      "title": "$2.5<y_{J/\\psi}<4.0$, $p_{T,J/\\psi}<3$ GeV",
+      "mc_scale": 16.7757087736957,
+      "sample": "dissociative",
+      "pid": [-13,13],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"file": "Table3.json", "rows": [1,2], "obs": "rap", "scale": 1e-6, "fitw": 1.0}
+      ]
+    }
+  ]
+}

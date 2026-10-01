@@ -1,0 +1,50 @@
+// H1 low-energy elastic J/psi photoproduction
+// Published HEPData JSON marginal uncertainties with diagonal covariance
+{
+  "active": true,
+  "type": "HEPDATA_1228913",
+  "reader": "icepack/PHOTOPROD/_common/hera_reader.py",
+  "datapath": "HEPData/PHOTOPROD/HEPData-ins1228913-v1-json/",
+  "samples": [
+    {
+      "name": "gp_res",
+      "label": "GRANIITTI GP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "GP[RES]<F> -> mu+ mu- @RES{jpsi:1}"}
+    },
+    {
+      "name": "jmrt",
+      "label": "GRANIITTI ygg[$J/\\psi$]",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "ygg[jpsi]<F> -> mu+ mu-"}
+    }
+  ],
+  "plot": {"normalization": "cross_section", "unit": "nb", "ratio_uncertainty": "combined", "stack": false, "data_style": "errorbar"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "loopscreen": 0,
+    "nevents": 100000,
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "H1 $e^+p$ 225 GeV ($\\gamma p \\to J/\\psi p$)",
+      "plotname": "H1_1228913_low_energy_elastic_Jpsi_abs_t",
+      "title": "$25<W_{\\gamma p}<80$ GeV, $Q^2<2.5$ GeV$^2$, $|t|<1.2$ GeV$^2$",
+      // [REFERENCE: H1 Eur. Phys. J. C73 (2013) 2466, arXiv:1304.5162, Table 7]
+
+      // BR_JPSI_MUMU is the PDG value for J/psi -> mu+ mu-
+      // 1 / BR_JPSI_MUMU = 1 / 0.05961
+      "mc_scale": 16.7757087736957,
+      "pid": [-13,13],
+      "cuts": "./cuts.py",
+      "obs": "../../_common/obs.py",
+      "hist": [
+        {"file": "Table7.json", "flux": "Table3.json", "obs": "abs_t", "scale": 1e-9, "fitw": 1.0}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+// ALICE exclusive dimuon generation in pPb UPCs at sqrt(sNN) = 8.16 TeV
+{
+  "GENERIC" : {
+    "OUTPUT"     : "UPC_ALICE_2654315_mumu",
+    "FORMAT"     : "hepmc3",
+    "CORES"      : 0,
+    "NEVENTS"    : 30000,
+    "INTEGRATOR" : "VEGAS",
+    "WEIGHTED"   : true,
+    "MODELPARAM" : "TUNE0",
+    "HIST"       : 0,
+    "RNDSEED"    : 2654315
+  },
+
+  "SCATTERING" : {
+
+    "BEAM"    : ["p+","Pb208"],
+    "ENERGY"  : [6500,2560],
+
+    // Pair cuts are acceptance corrected, keep the full single-muon angular range
+    "PROCESS" : "yy[EPA]<C> -> mu+ mu-",
+    "RES"     : [],
+    "LOOPSCREEN" : true,
+    "NSTARS"  : 0,  // Forward dissociation (0 = elastic, 1 = single, 2 = double)
+    "BEAMFRAG": "none",  // Forward dissociation particle production ('none', 'fewbody', 'cylinder', 'diquark')
+    "LHAPDF"  : "NNPDF31_lo_as_0118"
+  },
+
+  "RADIATIVE" : {
+    "ISR_QED" : "none",
+    "FSR_QED" : "YFS"
+  },
+
+  "NUCLEAR" : {
+    "emd": true,
+    "fragmentation": "internal",
+    "screening"     : "optical",
+    "sigma_NN"     : null,
+    
+    "emission"     : ["coherent","coherent"],
+    // Neutron classes are determined after nuclear breakup and decay, using the emitted neutrons
+    // n == 0 = no neutrons, n > 0 = at least one neutron, * = unrestricted
+    // Supported comparisons: == (or =), !=, >, >=, <, <= with a nonnegative integer
+    // Neutron emission does not determine whether hard production is coherent or incoherent
+    "neutron_class": ["*","*"],
+    
+    "structure"    : "nucleon",
+    "photoproduction": {
+      "target": ["coherent","coherent"],
+      "target_model" : "LTA"
+    }
+  },
+  
+  "INTEGRATOR" : {
+    "min_samples" : 10000,
+    "max_samples" : 10000000,
+    "precision"   : 0.05,
+    "LOOPSCREEN"  : {"extra_kt" : 1, "extra_phi" : 1},
+    "VEGAS" : {
+      "bins"  : 64,
+      "alpha" : 1.25,
+      "rounds": 8,
+      "ncall" : 10000,
+      "debug" : -1
+    },
+    "NEUROJAC" : {},
+    "FLAT"     : {},
+    "max_w_value" : null
+  },
+
+  // Generator and fiducial rapidities use the laboratory frame
+  // Technical mass envelope includes radiative migration beyond the measured pair region
+  "GENCUTS" : {
+    "<C>" : {"M" : [1.0,200.0], "Rap" : [-17.0,17.0]},
+    "<F>" : {"M" : [1.0,200.0], "Rap" : [-17.0,17.0]},
+    "<Q>" : {"Xi" : [0.0,0.1]}
+  },
+  
+  "FIDCUTS" : {
+    "active" : true,
+    "CENTRAL" : {
+      "[13,-13]" : {"M" : [1.0,2.5], "Rap" : [2.5,4.0], "Pt" : [0.0,3.0]}
+    },
+    "FORWARD"  : {},
+    "USERCUTS" : false
+  },
+
+  "VETOCUTS" : {"active" : false}
+}

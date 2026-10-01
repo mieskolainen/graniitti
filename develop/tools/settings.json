@@ -1,0 +1,27 @@
+{
+  "hera": {
+    "physics": {
+      "xi_max": 0.15,
+      "dipole_scale2": 0.71,
+      "kelly":
+          [[-0.24,10.98,12.82,21.97],
+           [0.12,10.97,18.86,6.55]]
+    },
+    "quadrature": {
+      "rapidity": 4,
+      "momentum": 128,
+      "momentum_max": 4.0,
+      "impact": 64,
+      "impact_max": 35.0,
+      "angle": 48,
+      "soft_nodes": 1025,
+      "flux_atol": 1e-10
+    },
+    "diagnostics": {"energy_points": 240},
+    "fit": {"ftol": 1e-7, "xtol": 1e-7, "gtol": 1e-7, "max_nfev": 300, "curvature_max": 10.0},
+    "channels": [
+      {"pdg": 443, "dataset": "icepack/PHOTOPROD/LHCb_2825384/jpsi/dataset.json", "set": 0, "samples": ["gp_res"]},
+      {"pdg": 553, "dataset": "icepack/PHOTOPROD/LHCb_1373746/dataset.json", "set": 1, "samples": ["gp_res_7tev","gp_res_8tev"]}
+    ]
+  }
+}

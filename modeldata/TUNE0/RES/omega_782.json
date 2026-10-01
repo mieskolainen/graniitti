@@ -1,0 +1,65 @@
+// Omega photoproduction with coherent rho-omega propagation
+//
+// (c) 2026 Mikael Mieskolainen
+// Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+
+{
+  "PARAM_RES": {
+    "name": "RES_omega_782",
+    "PDG": 223,
+    "spinX2": 2,
+    "P": -1,
+    "C": -1,
+    "MODELS": {
+      "GP": {
+        "mass": 0.78266, "width": 0.00868, "BW": "fixed-width", "phi": 0.0,
+        "FF_transfer": {"type": "none"}, "FF_prod": {"type": "none"},
+        "[22,990]": {
+          "basis": "helicity", "CP": [true,true],
+          "helicity": [[-1,0,0.0,0.0]]
+        }
+      },
+      "MP": {
+        "mass": 0.78266, "width": 0.00868, "BW": "fixed-width", "phi": 0.0,
+        "FF_transfer": {"type": "none"}, "FF_prod": {"type": "none"},
+        "[22,991]": {
+          "basis": "helicity", "Lambda": 1.0, "polarization": {"mode": "none"}, "CP": [true,true],
+          "helicity": [[-1,0,0.0,0.0]]
+        }
+      },
+      "XP": {
+        "mass": 0.78266, "width": 0.00868, "BW": "fixed-width", "phi": 0.0,
+        "FF_transfer": {"type": "none"}, "FF_prod": {"type": "none"},
+        "[22,991]": {
+          "basis": "helicity", "Lambda": 1.0, "CP": [true,true],
+          "helicity": [[-1,0,0.0,0.0]]
+        }
+      },
+      "TP": {
+        "mass": 0.78266,
+        "width": 0.00868,
+        "phi": 0.0,
+        "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5000, "n": 1.0000},
+        // [REFERENCE: arXiv: 2609.01285, Eq. (3.1)]
+        "FF_prod": {"type": "vector", "norm": "pole", "Lambda2": 1.4992, "n": 2.0000},
+        // [REFERENCE: arXiv: 2508.06334v2, Eqs. (2.26)-(2.28), isospin equality and set A]
+        "[22,995]": {
+          "g_tensor": [0.4389,6.3391]
+        },
+        "[22,9915]": {
+          "g_tensor": [2.8477,4.8957]
+        },
+        "[22,9925]": {
+          "g_tensor": [0.0000,0.0000],
+          "VMD_MIXING": [
+            {
+              "PDG": 113,
+              // [REFERENCE: arXiv: 1409.8483, Eq. (B.94), positive benchmark]
+              "g_tensor": [2.4966,4.5642]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

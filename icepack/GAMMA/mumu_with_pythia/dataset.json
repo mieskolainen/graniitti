@@ -1,0 +1,43 @@
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "single",
+      "label": "GRANIITTI gamma gamma to dimuons + Pythia",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.NSTARS": 1,
+        "SCATTERING.BEAMFRAG": "diquark"
+      },
+      "fragmentation": {
+        "engine": "pythia",
+        "card": "icepack/_common/pythia_fsr.cmnd",
+        "mode": "fragment",
+        "seed": 12345,
+        "attempts": 50
+      }
+    }
+  ],
+  "plot": {"normalization": "cross_section", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {"nevents": 30000},
+  "sets": [
+    {
+      "name": "Dimuons with forward dissociation",
+      "title": "$|\\eta_\\mu|<2.4$, $p_{T,\\mu}>10$ GeV, $20<M_{\\mu\\mu}<200$ GeV, $M_{\\mu\\mu}\\notin[70,105]$ GeV, $p_{T,\\mu\\mu}<1.5$ GeV",
+      "data": false,
+      "pid": [-13, 13],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"obs": "m_mumu"},
+        {"obs": "pt_mumu"},
+        {"obs": "abs_y_mumu"},
+        {"obs": "acoplanarity"},
+        {"obs": "n_charged_central"},
+        {"obs": "n_charged_forward"}
+      ]
+    }
+  ]
+}

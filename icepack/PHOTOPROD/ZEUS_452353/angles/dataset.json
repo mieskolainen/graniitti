@@ -1,0 +1,67 @@
+// [REFERENCE: ZEUS, hep-ex/9712020, Section 7.2.5, Figure 14]
+// Published normalized pion pair spectra include resonance, continuum and interference
+{
+  "active": true,
+  "type": "HEPDATA_452353",
+  "reader": "icepack/PHOTOPROD/_common/hera_reader.py",
+  "datapath": "HEPData/PHOTOPROD/HEPData-ins452353-v1-json/",
+  "samples": [
+    {
+      "name": "ds",
+      "label": "TP[PHOTO]",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[PHOTO]<F> -> pi+ pi-",
+        "SCATTERING.RES": []
+      }
+    },
+    {
+      "name": "total",
+      "label": "TP[PHOTO] + $\\rho+\\omega$",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[PHOTO]<F> -> pi+ pi- @RES{rho_770:1,omega_782:1}",
+        "SCATTERING.RES": ["rho_770","omega_782"]
+      }
+    },
+    {
+      "name": "rho3_ds",
+      "label": "TP[PHOTO] + $\\rho+\\omega+\\rho_3$",
+      "gencard": "./gencard.json",
+      // Effective spin-three contribution to the dipion spectrum
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[PHOTO]<F> -> pi+ pi- @RES{rho_770:1,omega_782:1,rho3_1690:1}",
+        "SCATTERING.RES": ["rho_770","omega_782","rho3_1690"]
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "unit_density",
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "errorbar",
+    "density_uncertainty": "shape"
+  },
+  "fit": {"normalization": "unit_density"},
+  "validation": {
+    "loopscreen": 0,
+    "nevents": 50000,
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "measurement": {"$ref": "../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "ZEUS $\\pi^+\\pi^-$ helicity angles",
+      "plotname": "ZEUS_452353_angles",
+      "title": "$50<W_{\\gamma p}<100$ GeV, $Q^2<4$ GeV$^2$, $|t|<0.5$ GeV$^2$, $0.55<M_{\\pi\\pi}<1.2$ GeV",
+      "pid": [211,-211],
+      "cuts": "../cuts.py",
+      "obs": "../../_common/angles.py",
+      "hist": [
+        {"file": "Table9.json","obs": "costheta_HX","scale": 1.0},
+        {"file": "Table10.json","obs": "phi_HX","scale": 1.0}
+      ]
+    }
+  ]
+}

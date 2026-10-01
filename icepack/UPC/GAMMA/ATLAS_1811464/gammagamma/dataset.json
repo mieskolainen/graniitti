@@ -1,0 +1,81 @@
+// ATLAS PbPb light-by-light differential cross sections
+{
+  "active": true,
+  "type": "HEPDATA_1811464",
+  "reader": "./reader.py",
+  "datapath": "HEPData/UPC/HEPData-ins1811464-v1-json/",
+  "samples": [
+    {
+      "name": "optical",
+      "label": "GRANIITTI $k_T$-EPA $\\gamma\\gamma \\to \\gamma\\gamma$ (optical survival)",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "NUCLEAR.survival": "optical"
+      }
+    },
+    {
+      "name": "optical_ggcf",
+      "label": "GRANIITTI $k_T$-EPA $\\gamma\\gamma \\to \\gamma\\gamma$ (optical GGCF survival)",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "NUCLEAR.survival": "optical_ggcf"
+      }
+    }
+  ],
+  "plot": {"normalization": "cross_section", "unit": "nb", "ratio_uncertainty": "combined", "stack": false, "data_style": "errorbar"},
+  "fit":  {"normalization": "cross_section"},
+  "validation": {
+    "loopscreen": 1,
+    "nevents": 30000,
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "ATLAS $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($\\gamma\\gamma \\to \\gamma\\gamma$)",
+      "title": "$|\\eta_{\\gamma}|<2.4$, $p_{T,\\gamma}>2.5$ GeV, $M_X>5$ GeV, $p_{T,X}<1$ GeV, $1-|\\Delta\\phi|/\\pi<0.01$",
+      "plotname": "ATLAS_5p02TeV_UPC_gammagamma_abs_costheta",
+      "pid": [22,22],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"file": "Table3.json", "file_filter": "Measured", "obs": "abs_costheta", "scale": 1e-9, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "ATLAS $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($\\gamma\\gamma \\to \\gamma\\gamma$)",
+      "title": "$|\\eta_{\\gamma}|<2.4$, $p_{T,\\gamma}>2.5$ GeV, $M_X>5$ GeV, $p_{T,X}<1$ GeV, $1-|\\Delta\\phi|/\\pi<0.01$",
+      "plotname": "ATLAS_5p02TeV_UPC_gammagamma_mean_pt",
+      "pid": [22,22],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"file": "Table5.json", "file_filter": "Measured", "obs": "mean_pt", "scale": 1e-9, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "ATLAS $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($\\gamma\\gamma \\to \\gamma\\gamma$)",
+      "title": "$|\\eta_{\\gamma}|<2.4$, $p_{T,\\gamma}>2.5$ GeV, $M_X>5$ GeV, $p_{T,X}<1$ GeV, $1-|\\Delta\\phi|/\\pi<0.01$",
+      "plotname": "ATLAS_5p02TeV_UPC_gammagamma_abs_rapidity",
+      "pid": [22,22],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"file": "Table7.json", "file_filter": "Measured", "obs": "abs_rap", "scale": 1e-9, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "ATLAS $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($\\gamma\\gamma \\to \\gamma\\gamma$)",
+      "title": "$|\\eta_{\\gamma}|<2.4$, $p_{T,\\gamma}>2.5$ GeV, $M_X>5$ GeV, $p_{T,X}<1$ GeV, $1-|\\Delta\\phi|/\\pi<0.01$",
+      "plotname": "ATLAS_5p02TeV_UPC_gammagamma_cross_section",
+      "pid": [22,22],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"file": "Table11.json", "file_filter": "Measured", "obs": "cross_section", "differential": false, "scale": 1e-9, "fitw": 1.0}
+      ]
+    }
+  ]
+}

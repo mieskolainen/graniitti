@@ -1,0 +1,51 @@
+// Durham dijet generation card for Pythia showering
+//
+// (c) 2026 Mikael Mieskolainen
+// Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+
+{
+  "GENERIC": {
+    "OUTPUT": "DURHAM_QCD",
+    "FORMAT": "hepmc3",
+    "CORES": 0,
+    "NEVENTS": 30000,
+    "INTEGRATOR": "VEGAS",
+    "WEIGHTED": true,
+    "MODELPARAM": "TUNE0",
+    "HIST": 1,
+    "RNDSEED": 12468
+  },
+  "SCATTERING": {
+    "BEAM": ["p+","p+"],
+    "ENERGY": [6500,6500],
+    "PROCESS": "gg[QCD]<F> -> g g",
+    "RES": [],
+    "LOOPSCREEN": true,
+    "NSTARS": 0,  // Forward dissociation (0 = elastic, 1 = single, 2 = double)
+    "BEAMFRAG": "diquark",  // Forward dissociation particle production ('none', 'fewbody', 'cylinder', 'diquark')
+    "LHAPDF": "MMHT2014lo68cl"
+  },
+  "INTEGRATOR": {
+    "min_samples": 1000000,
+    "max_samples": 100000000,
+    "precision": 0.01,
+    "LOOPSCREEN": {"extra_kt": 1, "extra_phi": 1},
+    "VEGAS": {"bins": 128, "alpha": 1.25, "rounds": 8, "ncall": 40000, "debug": -1},
+    "NEUROJAC": {},
+    "FLAT": {},
+    "max_w_value": null
+  },
+  "GENCUTS": {
+    "<F>": {"M": [40.0,400.0], "Rap": [-3.5,3.5]}
+  },
+  "FIDCUTS": {
+    "active": true,
+    "CENTRAL": {
+      "*": {
+        "Pt":  [10.0,100000.0]},
+      "SYSTEM": {}
+    },
+    "FORWARD": {},
+    "USERCUTS": false
+  }
+}

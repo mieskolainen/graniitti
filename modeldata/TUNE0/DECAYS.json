@@ -1,0 +1,971 @@
+// MP, XP, GP and TP resonance decay steering
+// alpha_ls and helicity are relative complex angular parameters
+// The physical helicity tensor is normalized to sum |H|^2 = 1
+// BR and width fix the absolute decay coupling unless g_decay_TP specifies a TP value
+
+// Particles are identified by their PDG IDs
+// Add new particles and branchings here as you wish
+//
+//                / daughter 1
+//               /
+//  mother -----x----- daughter N
+//               \
+//                \ daughter 2
+//
+// 2-body helicity decay amplitude format:
+// 
+// - "[PDG1,PDG2,...]": compact signed daughter PDG key
+// - "BR":         branching ratio for the specified charge channel
+// - "basis":      "alpha_ls" or "helicity"; selects which coupling basis block is active
+// - "alpha_ls":   relative LS amplitudes [l,s,magnitude,phase [rad]]
+// - "helicity":   relative helicity amplitudes [lambda1,lambda2,magnitude,phase [rad]]
+// - "zeta":       MP, XP, GP and TP decay phases [rad], applied with exp(1j*zeta)
+// - "CP":         [C_symmetry, P_symmetry] flags charge-conjugation and parity conservation
+// - "FF_decay":   Decay vertex form factor
+// - "g_decay_TP": Tensor Pomeron model decay couplings
+
+// l is the relative angular momentum of daughters in the mother rest frame
+// s = |s1 - s2|, |s1 - s2| + 1, ..., s1 + s2 is the 'total spin' of daughters
+// |l - s| <= J <= l + s
+// 
+// l = 0  S-wave
+// l = 1  P-wave
+// l = 2  D-wave
+// l = 3  F-wave
+// l = 4  G-wave
+// l = 5  H-wave
+// l = 6  I-wave
+// 
+// Spectroscopic notation ^{2s+1}L_J:
+// s = total spin of daughters
+// L = S, P, D, F, ... from l
+// J = mother spin
+
+// BR values collected manually from PDGlive; BR = Gamma_partial / Gamma
+//
+// Example of isospin and PDG notation:
+//
+// Gamma(X -> \pi+\pi-) = 2 x Gamma(X -> \pi0 \pi0) = 2/3 Gamma(X -> \pi\pi)
+// Gamma(X -> K+K-)     = Gamma(X -> K0\bar{K0})    = 1/2 Gamma(X -> K\bar{K})
+// 
+// X above having isospin I = 0, ratios obtained with CG SU(2)-coefficients
+//
+// The channel key identifies the daughters in the stored leg order
+//
+// (c) 2026 Mikael Mieskolainen
+// Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+
+{
+
+// Flat 0+ [FOR DIAGNOSTICS]
+"0" : {
+  "[211,-211]" : { // pi+,pi-
+    "BR" : 1.0,
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[321,-321]" : { // K+,K-
+    "BR" : 1.0,
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  }
+},
+
+// pi0
+"111" : {
+
+  "[22,22]" : { // gamma,gamma
+    "BR" : 0.98823,   // PDGlive 21/04/24
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[1,1,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  }
+},
+
+// eta
+"221" : {
+
+  "[22,22]" : { // gamma,gamma
+    "BR" : 0.3936,    // PDGlive 21/04/24
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[1,1,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  }
+},
+
+// etaprime
+"331" : {
+
+  "[22,22]" : { // gamma,gamma
+    "BR" : 2.307E-2,  // PDGlive 21/04/24
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[1,1,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  }
+},
+
+// f0(500)
+"9000221" : {
+
+  // [REFERENCE: arXiv: 1601.04537]
+  
+  "[211,-211]" : { // pi+,pi-
+    "BR" : 0.6667, // BR(pipi) = 1 approximation, charged fraction 2/3 in the isospin limit
+    // [REFERENCE: arXiv: 1601.04537, Eqs. (4.10)-(4.14)]
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0000}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "gaussian", "norm": "pole", "Lambda2": 1.0}}
+  },
+  "[321,-321]" : { // K+,K-
+    "BR" : 0.1000, // Effective coupling ansatz at the reader's mass above KK threshold, not a pole BR
+    // No measured absolute KK branching fraction for this broad resonance
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "gaussian", "norm": "pole", "Lambda2": 1.0}}
+  }
+},
+
+// Omega pion decay with TP couplings supplied by the common dispersive model
+"223": {
+  "[211,-211]": {
+    // [REFERENCE: PDG 2025, omega(782) listing, pi+pi- branching fraction]
+    "BR": 0.0153,
+    "basis": "alpha_ls",
+    "alpha_ls": [[1,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0},
+    "CP": [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  }
+},
+
+// rho0(770) ( |u\bar{u}> - |d\bar{d}> ) / \sqrt{2}
+"113" : {
+
+  // [REFERENCE: arXiv: 1412.3677]
+
+  "[211,-211]" : { // pi+,pi-
+    "BR" : 1.0,  // PDGlive 21/04/24
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[1,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0000}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[321,-321]" : { // K+,K-
+    "BR" : 0.0,  // PDGlive 21/04/24
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[1,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[11,-11]" : { // e-,e+
+    "BR" : 4.72E-5, // PDG 2025
+
+    // Approximate electromagnetic decay structure
+    "basis": "helicity",
+    "helicity": [[-0.5,-0.5,0.0,0.0],
+                 [-0.5, 0.5,1.0,0.0]], // code generates parity partners
+
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[13,-13]" : { // mu-,mu+
+    "BR" : 4.55E-5, // PDG 2025, lepton universality
+
+    // Approximate electromagnetic decay structure
+    "basis": "helicity",
+    "helicity": [[-0.5,-0.5,0.0,0.0],
+                 [-0.5, 0.5,1.0,0.0]], // code generates parity partners
+
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  }
+},
+
+// K*(892)+
+"323" : {
+
+  "[321,111]" : { // K+,pi0
+    "BR" : 0.33334, // Isospin fraction of the K pi mode
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[1,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [false,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  }
+},
+
+// f(0)(980)
+"9010221" : {
+
+  // [REFERENCE: arXiv: 1601.04537]
+
+  "[211,-211]" : { // pi+,pi-
+    "BR" : 0.347,  // PDGlive 13/05/26 "SEEN"; Ansatz
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0000}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "gaussian", "norm": "pole", "Lambda2": 1.0}}
+  },
+  "[321,-321]" : { // K+,K-
+    "BR" : 0.35826846870051726, // Effective kaon coupling normalization from the STAR and CMS tune
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,0,1.0,0.0]],
+    "zeta": {"MP": -1.7475, "XP": -1.7126, "GP": -1.252950945597716, "TP": 0.0000}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "gaussian", "norm": "pole", "Lambda2": 1.0}}
+  }
+},
+
+// phi(1020) |s\bar{s}>
+"333" : {
+
+  // [REFERENCE: arXiv: 1804.04706]
+
+  "[321,-321]" : { // K+,K-
+    "BR" : 0.5010, // [REFERENCE: https://pdg.lbl.gov/2026/listings/rpp2026-list-phi-1020.pdf]
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[1,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0000}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "gaussian", "norm": "pole", "Lambda2": 1.0}}
+  },
+  "[130,310]" : { // K0L,K0S
+    "BR" : 0.336,  // PDGlive 2026
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[1,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "gaussian", "norm": "pole", "Lambda2": 1.0}}
+  },
+  "[211,-211]" : { // pi+,pi-
+    "BR" : 9.5E-5, // PDGlive 2026
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[1,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "gaussian", "norm": "pole", "Lambda2": 1.0}}
+  },
+
+  "[11,-11]" : {     // e-,e+
+    "BR" : 2.963E-4, // PDGlive 2026
+
+    // Approximate electromagnetic decay structure
+    "basis": "helicity",
+    "helicity": [[-0.5,-0.5,0.0,0.0],
+                 [-0.5, 0.5,1.0,0.0]], // code generates parity partners
+
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "gaussian", "norm": "pole", "Lambda2": 1.0}}
+  },
+
+  "[13,-13]" : {    // mu-,mu+
+    "BR" : 2.86E-4, // PDGlive 2026
+
+    // Approximate electromagnetic decay structure
+    "basis": "helicity",
+    "helicity": [[-0.5,-0.5,0.0,0.0],
+                 [-0.5, 0.5,1.0,0.0]], // code generates parity partners
+
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "gaussian", "norm": "pole", "Lambda2": 1.0}}
+  }
+},
+
+// f(2)(1270)
+"225" : {
+
+  // [REFERENCE: arXiv: 1601.04537]
+
+  "[22,22]" : { // gamma,gamma
+    "BR" : 1.42E-05, // [REFERENCE: Particle Data Group 2024 f2(1270) listing]
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,2,1.0,0.0]],
+    // [REFERENCE: arXiv: 1309.3478, Eqs. (3.39)-(3.40), a = 1.45 alpha, b = 2.49 alpha]
+    "g_decay_TP": [0.0106,0.0182],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0000}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "gaussian", "norm": "pole", "Lambda2": 1.0}}
+  },
+  "[211,-211]" : { // pi+,pi-
+    "BR" : 0.562,  // PDGlive 13/05/26, pipi * [2/3] = 0.843 * [2/3]
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[2,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0000}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "gaussian", "norm": "pole", "Lambda2": 1.0}}
+  },
+  "[321,-321]" : { // K+,K-
+    "BR" : 0.023,  // PDGlive 13/05/26, KKbar * [1/2]
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[2,0,1.0,0.0]],
+    "zeta": {"MP": 1.7291, "XP": 0.3579, "GP": 0.823480639930203, "TP": 0.0000}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "gaussian", "norm": "pole", "Lambda2": 1.0}}
+  },
+  "[211,-211,211,-211]" : { // pi+,pi-,pi+,pi-
+    "BR" : 0.0280, // Exclusive 2pi+2pi- fraction, no additional charge factor
+    // [REFERENCE: https://pdg.lbl.gov/2026/listings/rpp2026-list-f2-1270.pdf]
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "gaussian", "norm": "pole", "Lambda2": 1.0}}
+  }
+},
+
+// f(1)(1420)
+"20333" : {
+
+  "[323,-321]" : { // K*+,K-
+    "BR" : 0.1,           // Charge channel BR ansatz matched to K+K-pi0
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,1,1.0,0.0],
+                  [2,1,0.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[321,-321,111]" : { // K+,K-,pi0
+    "BR" : 0.1,       // PDGlive 21/04/24 "SEEN"
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[211,-211,211,-211]" : { // pi+,pi-,pi+,pi-
+    "BR" : 0.1,  // Exclusive 2pi+2pi- BR ansatz; PDGlive 21/04/24 lists the mode as "SEEN"
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  }
+},
+
+// f(0)(1500)
+"9030221" : {
+
+  // [REFERENCE: arXiv: 1804.04706]
+
+  "[211,-211]" : { // pi+,pi-
+    "BR" : 0.2300, // BR(pipi) * 2/3 = 0.345 * 2/3
+    // [REFERENCE: https://pdg.lbl.gov/2026/listings/rpp2026-list-f0-1500.pdf]
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "gaussian", "norm": "pole", "Lambda2": 1.0}}
+  },
+  "[321,-321]" : { // K+,K-
+    "BR" : 0.0425, // PDGlive 13/05/26, KKbar * [1/2]
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,0,1.0,0.0]],
+    "zeta": {"MP": 1.8281, "XP": 0.9121, "GP": 2.2566094974768047, "TP": 0.0000}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "gaussian", "norm": "pole", "Lambda2": 1.0}}
+  },
+  "[211,-211,211,-211]" : { // pi+,pi-,pi+,pi-
+    "BR" : 0.21734, // 4/9 x 0.489 inclusive 4pi from I=0 sigma-sigma charge combinatorics
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "gaussian", "norm": "pole", "Lambda2": 1.0}}
+  }
+},
+
+// f(2)'(1525)
+"335" : {
+
+  // [REFERENCE: arXiv: 1804.04706]
+
+  "[211,-211]" : { // pi+,pi-
+    "BR" : 0.00546, // PDGlive 13/05/26, pipi * [2/3] = 8.2e-3 * [2/3]
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[2,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "gaussian", "norm": "pole", "Lambda2": 1.0}}
+  },
+
+  "[321,-321]" : { // K+,K-
+    "BR" : 0.444,   // PDGlive 13/05/26, KKbar * [1/2] = 0.888 * [1/2]
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[2,0,1.0,0.0]],
+    "zeta": {"MP": 0.3469, "XP": -2.1331, "GP": 2.319048410915742, "TP": 0.0000}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "gaussian", "norm": "pole", "Lambda2": 1.0}}
+  }
+},
+
+// eta(2)(1645)
+"10225" : {
+
+  "[115,111]" : { // a2(1320)0,pi0
+    "BR" : 0.1, // Mode seen, no absolute branching fraction
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,2,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  }
+},
+
+// f(0)(1710)
+"10331" : {
+
+  // [REFERENCE: arXiv: 1804.04706]
+
+  "[211,-211]" : { // pi+,pi-
+    "BR" : 0.0552, // Charged pion normalization convention from 0.36 * 0.23 * 2/3
+    // [REFERENCE: https://pdg.lbl.gov/2026/listings/rpp2026-list-f0-1710.pdf]
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "gaussian", "norm": "pole", "Lambda2": 1.0}}
+  },
+  "[321,-321]" : { // K+,K-
+    "BR" : 0.052533910062113894,
+    // [REFERENCE: arXiv: 0801.4929]
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,0,1.0,0.0]],
+    "zeta": {"MP": -0.3840, "XP": -0.8569, "GP": 0.250150023709351, "TP": 0.0000}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "gaussian", "norm": "pole", "Lambda2": 1.0}}
+  },
+  "[113,113]" : { // rho0,rho0
+    "BR" : 0.01,  // https://pdg.lbl.gov/2018/listings/pdf-files/m068.pdf, no data
+    "basis" : "alpha_ls",              //
+    "alpha_ls" : [[0,0,1.0,0.0],       // (default ansatz)
+                  [2,2,1.0,0.0]],      //
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    // TP unit-coupling ansatz, no measured normalization
+    "g_decay_TP": [1.0000,0.0000],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "gaussian", "norm": "pole", "Lambda2": 1.0}}
+  }
+},
+
+// "f(0)(1710)" (negative parity version)
+"10332" : {
+  "[113,113]" : { // rho0,rho0
+    "BR" : 0.01,
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[1,1,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    // TP unit-coupling ansatz, no measured normalization
+    "g_decay_TP": [1.0000,0.0000],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  }
+},
+
+// f(2)(1950)
+"9050225" : {
+
+  // Pion normalization from Eq. (25), using the paper's total width 472 MeV
+  // These are model estimates, not measured absolute branching fractions
+  // [REFERENCE: arXiv: 1604.01689]
+  "[211,-211]" : { // pi+,pi-
+    "BR" : 0.1568, // 2 * Gamma(pi0 pi0)/Gamma = 2 * 37/472
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[2,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[321,-321]" : { // K+,K-
+    "BR" : 0.015038370952300633, // Charged kaon branching fraction from the STAR and CMS tune
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[2,0,1.0,0.0]],
+    "zeta": {"MP": 0.8286, "XP": 0.4295, "GP": 0.46656143240041237, "TP": -2.360444139943256e-05}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[211,-211,211,-211]" : { // pi+,pi-,pi+,pi-
+    "BR" : 0.1, // Exclusive 2pi+2pi- BR ansatz with no branching-fraction data
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  }
+},
+
+// f2(2150)
+"9080225" : {
+
+  "[211,-211]" : { // pi+,pi-
+    "BR" : 0.1,   // No data
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[2,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[321,-321]" : { // K+,K-
+    "BR" : 0.1,   // No data
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[2,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[2212,-2212]" : { // p,pbar
+    "BR" : 0.1, // No data
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[1,1,1.0,0.0],
+                  [3,1,0.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[113,113]" : { // rho0,rho0 // No data
+    "BR" : 0.1,
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,2,1.0,0.0],
+                   [2,0,1.0,0.0],
+                   [2,2,1.0,0.0],
+                   [4,2,1.0,0.0]],
+    "CP" : [true,true],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    // TP unit-coupling ansatz, no measured normalization
+    "g_decay_TP": [1.0000,0.0000],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  }
+},
+
+// f4(2300)
+"9100225" : {
+
+  "[211,-211]" : { // pi+,pi-
+    "BR" : 0.1,    // No data
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[4,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[321,-321]" : { // K+,K-
+    "BR" : 0.1,    // No data
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[4,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[2212,-2212]" : { // p,pbar
+    "BR" : 0.1,  // No data
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[3,1,1.0,0.0],
+                  [5,1,0.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  }
+},
+
+// f6(2510)
+"9120225" : {
+
+  "[211,-211]" : { // pi+,pi-
+    "BR" : 0.1,  // No data
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[6,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[321,-321]" : { // K+,K-
+    "BR" : 0.1,  // No data
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[6,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[2212,-2212]" : { // p,pbar
+    "BR" : 0.1, // No data
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[5,1,1.0,0.0],
+                  [7,1,0.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  }
+},
+
+// rho(3)(1690)
+"117" : {
+
+  "[211,-211]" : { // pi+,pi-
+    "BR" : 0.2360, // The neutral I=1 state has no pi0 pi0 decay
+    // [REFERENCE: https://pdg.lbl.gov/2025/listings/rpp2025-list-rho3-1690.pdf]
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[3,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[321,-321]" : { // K+,K-
+    "BR" : 0.0079,  // PDGlive 21/04/24, KK * [1/2]
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[3,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  }
+},
+
+// rho(5)(2350)
+"121" : {
+
+  "[211,-211]" : { // pi+,pi-
+    "BR" : 0.1,  // No data
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[5,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[321,-321]" : { // K+,K-
+    "BR" : 0.1,  // No data
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[5,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[2212,-2212]" : { // p,pbar
+    "BR" : 0.1, // No data
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[4,1,1.0,0.0],
+                  [6,1,0.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  }
+},
+
+// chi(c0)(1P)
+"10441" : {
+  "[443,22]" : { // J/psi,gamma
+    "BR" : 1.35e-2, // PDG 2026
+    // Only E1 is allowed; parity generates H(1,1) from the H(-1,-1) row
+    "basis" : "helicity",
+    "helicity" : [[-1,-1,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+
+  "[211,-211]" : { // pi+,pi-
+    "BR" : 5.7e-3, // (2/3) x BR(pipi), PDGlive 09/05/26
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+
+  "[321,-321]" : { // K+,K-
+    "BR" : 6.07e-3, // PDGlive 09/05/26
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  }
+},
+
+// chi(c1)(1P)
+"20443" : {
+
+  "[443,22]" : { // J/psi,gamma
+    "BR" : 0.339, // PDG 2026
+    // [REFERENCE: arXiv: 0910.0046, Eq. (5)]
+    // PDG 2026 a2=M2=-0.067 gives H(0,-1)/H(-1,-1)=1.143969456489363
+    "basis" : "helicity",
+    "helicity" : [[-1,-1,1.0,0.0],
+                  [ 0,-1,1.143969456489363,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+
+  "[333,333]" : { // phi,phi
+    "BR" : 4.26E-4, // PDGlive 10/05/26
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[2,2,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  }
+},
+
+// chi(c2)(1P)
+"445" : {
+
+  "[443,22]" : { // J/psi,gamma
+    "BR" : 0.190, // PDG 2026
+    // [REFERENCE: arXiv: 0910.0046, Eq. (6)]
+    // PDG 2026 a2=M2=-0.110, a3=E3=-0.003, referenced to H(-1,-1)=1
+    "basis" : "helicity",
+    "helicity" : [[-1,-1,1.0,0.0],
+                  [-1, 1,3.548705772852483,0.0],
+                  [ 0,-1,2.138190567790043,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+
+  "[333,333]" : { // phi,phi
+    "BR" : 1.23e-3, // PDGlive 10/05/26
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,2,1.0,0.0],
+                  [2,0,0.0,0.0],
+                  [2,2,0.0,0.0],
+                  [4,2,0.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  }
+},
+
+// J/psi |c\bar{c}>
+"443" : {
+
+  "[11,-11]" : { // e-,e+
+    "BR" : 5.971e-2,  // PDGlive 21/04/24
+    // Approximate electromagnetic decay structure
+    "basis" : "helicity",
+    "helicity" : [[-0.5,-0.5,0.0,0.0],[-0.5,0.5,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+
+  "[13,-13]" : { // mu-,mu+
+    "BR" : 5.961e-2,  // PDGlive 21/04/24
+    // Approximate electromagnetic decay structure
+    "basis" : "helicity",
+    "helicity" : [[-0.5,-0.5,0.0,0.0],[-0.5,0.5,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+
+  "[211,-211]" : { // pi+,pi-
+    "BR" : 1.47e-4, // PDGlive 21/04/24
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[1,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  }
+},
+
+// psi(2S) |c\bar{c}>
+// [REFERENCE: https://pdg.lbl.gov/2025/listings/rpp2025-list-psi-2S.pdf]
+"100443" : {
+
+  "[11,-11]" : { // e-,e+
+    "BR" : 7.94e-3, // PDG 2025
+    // Approximate electromagnetic decay structure
+    "basis" : "helicity",
+    "helicity" : [[-0.5,-0.5,0.0,0.0],[-0.5,0.5,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+
+  "[13,-13]" : { // mu-,mu+
+    "BR" : 8.00e-3, // PDGlive 21/04/24
+    // Approximate electromagnetic decay structure
+    "basis" : "helicity",
+    "helicity" : [[-0.5,-0.5,0.0,0.0],[-0.5,0.5,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  }
+},
+
+// Upsilon(1S) |b\bar{b}>
+"553" : {
+
+  "[11,-11]" : { // e-,e+
+    "BR" : 2.39e-2, // PDG 2025
+    // Approximate electromagnetic decay structure
+    "basis" : "helicity",
+    "helicity" : [[-0.5,-0.5,0.0,0.0],[-0.5,0.5,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+
+  "[13,-13]" : { // mu-,mu+
+    "BR" : 2.48e-2, // PDG 2025
+    // Approximate electromagnetic decay structure
+    "basis" : "helicity",
+    "helicity" : [[-0.5,-0.5,0.0,0.0],[-0.5,0.5,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  }
+},
+
+// Upsilon(2S) |b\bar{b}>
+"100553" : {
+
+  "[11,-11]" : { // e-,e+
+    "BR" : 1.91e-2, // PDG 2025
+    // Approximate electromagnetic decay structure
+    "basis" : "helicity",
+    "helicity" : [[-0.5,-0.5,0.0,0.0],[-0.5,0.5,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+
+  "[13,-13]" : { // mu-,mu+
+    "BR" : 1.93e-2, // PDG 2025
+    // Approximate electromagnetic decay structure
+    "basis" : "helicity",
+    "helicity" : [[-0.5,-0.5,0.0,0.0],[-0.5,0.5,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  }
+},
+
+// Upsilon(3S) |b\bar{b}>
+"200553" : {
+
+  "[11,-11]" : { // e-,e+
+    "BR" : 2.18e-2, // PDG 2025
+    // Approximate electromagnetic decay structure
+    "basis" : "helicity",
+    "helicity" : [[-0.5,-0.5,0.0,0.0],[-0.5,0.5,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+
+  "[13,-13]" : { // mu-,mu+
+    "BR" : 2.18e-2, // PDG 2025
+    // Approximate electromagnetic decay structure
+    "basis" : "helicity",
+    "helicity" : [[-0.5,-0.5,0.0,0.0],[-0.5,0.5,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  }
+},
+
+
+// Higgs(0) (125 GeV) (for testing, use MG5 to generate Higgs amplitudes)
+// https://pdg.lbl.gov/2020/reviews/rpp2020-rev-higgs-boson.pdf
+// W and Z have no separate C or P eigenvalues in the particle table
+// WW and ZZ fractions refer to off-shell vector decays at this Higgs mass
+"25" : {
+
+  "[5,-5]" : { // b,bbar
+    "BR" : 5.82E-01,
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[1,1,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[24,-24]" : { // W+,W-
+    "BR" : 2.14E-01,
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [false,false],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[21,21]" : { // g,g
+    "BR" : 8.18E-02,
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[15,-15]" : { // tau-,tau+
+    "BR" : 6.27E-02,
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[1,1,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[4,-4]" : { // c,cbar
+    "BR" : 2.89E-02,
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[1,1,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[23,23]" : { // Z,Z
+    "BR" : 2.62E-02,
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [false,false],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[22,22]" : { // gamma,gamma
+    "BR" : 2.27E-03,
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[23,22]" : { // Z,gamma
+    "BR" : 1.53E-03,
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[0,0,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [false,false],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  },
+  "[13,-13]" : { // mu-,mu+
+    "BR" : 2.18E-04,
+    "basis" : "alpha_ls",
+    "alpha_ls" : [[1,1,1.0,0.0]],
+    "zeta": {"MP": 0.0, "XP": 0.0, "GP": 0.0, "TP": 0.0}, // [rad]
+    "CP" : [true,true],
+    "FF_decay": {"MP": {"type": "none"}, "XP": {"type": "none"}, "GP": {"type": "none"}, "TP": {"type": "none"}}
+  }
+}
+
+}

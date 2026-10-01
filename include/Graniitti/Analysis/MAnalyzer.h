@@ -1,13 +1,15 @@
-// Fast analysis class
+// Fast ROOT analysis class
 //
-// (c) 2017-2021 Mikael Mieskolainen
+// (c) 2026 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 #ifndef MANALYZER_H
 #define MANALYZER_H
 
+#include <array>
 #include <complex>
 #include <memory>
+#include <string>
 #include <vector>
 
 // ROOT
@@ -27,7 +29,7 @@
 #include "TStyle.h"
 #include "TTree.h"
 
-// HepMC33
+// HepMC3
 #include "HepMC3/FourVector.h"
 #include "HepMC3/GenEvent.h"
 #include "HepMC3/GenParticle.h"
@@ -40,14 +42,16 @@
 
 // Own
 #include "Graniitti/Analysis/MMultiplet.h"
-#include "Graniitti/MAux.h"
+#include "Graniitti/Tech/MAux.h"
 
 namespace gra {
 
 namespace analyzer {
 
-// Different Lorentz frame labels
-const std::vector<std::string> FRAMES = {"CM", "HX", "CS", "PG", "GJ", "LAB"};
+// Compute the Lorentz frame labels without shared mutable state
+inline std::array<std::string, 6> Frames() {
+  return {"CM", "HX", "CS", "PG", "GJ", "LAB"};
+}
 
 }  // namespace analyzer
 
@@ -87,7 +91,7 @@ class MAnalyzer {
   std::shared_ptr<TH2D> h2Phi[NFR][NFR];
   // ----------------------------------------------------------
 
-  // HepMC3 reader
+  // Fill HepMC3 histograms and return the cross section per unit input weight
   double HepMC3_OracleFill(const std::string inputfile, unsigned int multiplicity, int finalPDG,
                            unsigned int                                            MAXEVENTS,
                            std::map<std::string, std::shared_ptr<h1Multiplet>> &   h1,
@@ -101,14 +105,17 @@ class MAnalyzer {
   double cross_section = 0;
 
   double CheckEnergyMomentum(HepMC3::GenEvent &evt) const;
-  void   FrameObservables(double W, HepMC3::GenEvent &evt, const M4Vec &p_beam_plus,
-                          const M4Vec &p_beam_minus, const M4Vec &p_final_plus,
-                          const M4Vec &p_final_minus, const std::vector<M4Vec> &pip,
-                          const std::vector<M4Vec> &pim);
+  void   FrameObservables(double W, const M4Vec &p_beam_plus, const M4Vec &p_beam_minus,
+                          const M4Vec &p_final_plus, const M4Vec &p_final_minus,
+                          const std::vector<M4Vec> &pip, const std::vector<M4Vec> &pim);
   void   NStarObservables(double W, HepMC3::GenEvent &evt);
 
  private:
+  // Configure collider-energy dependent histograms after reading the first event
+  void ConfigureColliderEnergy(const M4Vec &collision);
+
   double sqrts = 0.0;
+  bool   energy_range_initialized = false;
 
   // Name of the HepMC33 input
   std::string inputfile;

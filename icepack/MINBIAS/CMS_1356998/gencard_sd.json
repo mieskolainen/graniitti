@@ -1,0 +1,61 @@
+// CMS 7 TeV single-diffraction generation
+{
+  "GENERIC" : {
+    "OUTPUT" : "sd",
+    "FORMAT" : "hepmc2",
+    "CORES" : 0,
+    "NEVENTS" : 30000,
+    "INTEGRATOR" : "VEGAS",
+    "WEIGHTED" : false,
+    "MODELPARAM" : "TUNE0",
+    "HIST" : 0,
+    "RNDSEED" : 12468
+  },
+  "SCATTERING" : {
+    "BEAM" : ["p+","p+"],
+    "ENERGY" : [3500,3500],
+    "PROCESS" : "X[SD]<Q>",
+    "RES" : [],
+    "LOOPSCREEN" : false,
+    "NSTARS" : 0,  // Forward dissociation (0 = elastic, 1 = single, 2 = double)
+    "BEAMFRAG": "cylinder",  // Forward dissociation particle production ('none', 'fewbody', 'cylinder', 'diquark')
+    "LHAPDF" : "NNPDF31_lo_as_0118"
+  },
+  "INTEGRATOR" : {
+
+    // Integration targets after adaptation
+    "min_samples" : 1000000,
+    "max_samples" : 100000000,
+    "precision"   : 0.01,
+
+    "LOOPSCREEN" : {"extra_kt" : 1, "extra_phi" : 1},
+    // VEGAS integrator
+    "VEGAS" : {
+
+      "bins" : 128,      // Maximum number of bins per dimension (NOTE: EVEN NUMBER)
+      "alpha" : 1.25,    // Grid adaptation damping exponent
+      "rounds" : 8,      // Number of adaptation iterations
+      "ncall" : 40000,   // Number of function calls per iteration
+
+      "debug" : -1       // Debug output (default -1)
+    },
+
+    "NEUROJAC" : {},
+
+    "FLAT" : {},
+
+    // Unweighting max weight
+    "max_w_value"  : null  // user can set here (default automatic)
+  },
+  "GENCUTS" : {
+    "<C>" : {"M" : [0.0,1000000.0], "Rap" : [-2.5,2.5]},
+    "<F>" : {"M" : [0.0,1000000.0], "Rap" : [-9.0,9.0]},
+    "<Q>" : {"Xi" : [0,0.05], "t": [0, 5]}
+  },
+  "FIDCUTS" : {
+    "active" : true,
+    "CENTRAL" : {"*" : {}, "SYSTEM" : {}},
+    "FORWARD" : {},
+    "USERCUTS" : false
+  }
+}

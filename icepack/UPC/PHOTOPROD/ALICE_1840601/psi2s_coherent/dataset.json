@@ -1,0 +1,38 @@
+// ALICE coherent psi(2S) rapidity cross section at midrapidity
+{
+  "active": true,
+  "type": "HEPDATA_1840601_PSI2S",
+  "reader": "icepack/UPC/_common/upc_reader.py",
+  "datapath": "HEPData/UPC/HEPData-ins1840601-v1-json/",
+  "samples": [
+    {"name": "coherent", "label": "GRANIITTI GP[RES] (LTA)", "gencard": "./gencard.json", "parameters": {}}
+  ],
+  "plot": {"normalization": "cross_section", "unit": "mb", "ratio_uncertainty": "combined", "stack": false, "data_style": "errorbar"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "loopscreen": 1,
+    "nevents": 100000,
+    "require_comparison": true,
+    // Table4 has one rapidity bin, so validate its rate without a multi-bin shape requirement
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "ALICE $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($\\psi(2S)$, coherent)",
+      "title": "$0<y<0.8$",
+      "plot_group": "ALICE_5p02TeV_coherent_psi2S_rapidity",
+      "sample": "coherent",
+      // BR_PSI2S_MUMU is the PDG value for psi(2S) -> mu+ mu-
+      // 1 / BR_PSI2S_MUMU = 1 / 0.008
+      "mc_scale": 125,
+      "pid": [-13,13],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        // mc_scale divides the generated dimuon rate on one rapidity side by BR
+        {"file": "Table4.json", "obs": "rap", "scale": 1e-3, "fitw": 1.0}
+      ]
+    }
+  ]
+}

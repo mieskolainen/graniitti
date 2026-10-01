@@ -1,0 +1,69 @@
+// ZEUS elastic phi photoproduction
+// [REFERENCE: arXiv:hep-ex/9601009, Section 6.3]
+{
+  "active": true,
+  "type": "HEPDATA_415642",
+  "reader": "icepack/PHOTOPROD/_common/hera_reader.py",
+  "datapath": "HEPData/PHOTOPROD/HEPData-ins415642-v1-json/",
+  "samples": [
+    {
+      "name": "mp_res",
+      "label": "GRANIITTI MP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "MP[RES]<F> -> K+ K- @RES{phi_1020:1}"}
+    },
+    {
+      "name": "xp_res",
+      "label": "GRANIITTI XP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "XP[RES]<F> -> K+ K- @RES{phi_1020:1}"}
+    },
+    {
+      "name": "gp_res",
+      "label": "GRANIITTI GP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "GP[RES]<F> -> K+ K- @RES{phi_1020:1}"}
+    },
+    {
+      "name": "tp_res",
+      "label": "GRANIITTI TP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "TP[RES]<F> -> K+ K- @RES{phi_1020:1}"}
+    }
+  ],
+  "plot": {"normalization": "cross_section", "unit": "ub", "ratio_uncertainty": "combined", "stack": false, "data_style": "errorbar"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "loopscreen": 0,
+    "nevents": 100000,
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "ZEUS $e^+p$ 300 GeV ($\\gamma p \\to \\phi p$)",
+      "plotname": "ZEUS_415642_abs_t",
+      "title": "$60<W_{\\gamma p}<80$ GeV, $Q^2<4$ GeV$^2$, $0.1<|t|<0.5$ GeV$^2$",
+      // Unfold the published photon flux and the generator phi -> K+ K- branching fraction
+      // 1 / (PHOTON_FLUX * BR_PHI_KK) = 1 / (0.025 * 0.501)
+      "mc_scale": 79.84031936127744,
+      "pid": [321,-321],
+      "cuts": "./cuts.py",
+      "obs": "../_common/obs.py",
+      "hist": [{"file": "Table3.json", "obs": "abs_t", "scale": 1e-6, "fitw": 1.0}]
+    },
+    {
+      "name": "ZEUS $e^+p$ 300 GeV ($\\gamma p \\to \\phi p$)",
+      "plotname": "ZEUS_415642_w",
+      "title": "$60<W_{\\gamma p}<80$ GeV, $Q^2<4$ GeV$^2$, $|t|<0.5$ GeV$^2$",
+      // Table 1 includes the published extrapolation to t = 0
+      "mc_scale": 79.84031936127744,
+      "pid": [321,-321],
+      "cuts": "./cuts_total.py",
+      "obs": "./obs.py",
+      "hist": [{"file": "Table1.json", "obs": "w", "scale": 1e-6, "fitw": 0.0, "differential": false}]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "driver": "graniitti",
+  "settings": {"$ref": "_defaults.json"},
+  "models": [
+    {
+      "model": "MP",
+      "exclude": ["rho_770", "phi_1020"],
+      "production": {"coherence": "incoherent", "mode": "magnitude", "geometry": "direct", "relative_bounds": {"$ref": "_defaults.json#/icetune/resonance/production/relative_bounds"}},
+      "continuum_options": {"FF_offshell": true, "FF_transfer": true, "ff_type": "logexp", "tune_couplings": true, "production_mode": "magnitude", "pveto": true, "production_geometry": "direct", "production_relative_range": 1.0},
+      "decay": {"branching": [{"$ref": "_defaults.json#/icetune/resonance/decay/branching/f0_980"}, {"$ref": "_defaults.json#/icetune/resonance/decay/branching/f0_1710"}, {"$ref": "_defaults.json#/icetune/resonance/decay/branching/f2_1950"}]},
+      "vary": ["mass_width", "omega"],
+      "res_fields": ["FF_prod"],
+      "spin_basis": "rho",
+      "datasets": {"$ref": "tune-mpom-res-con-coh.json#/models/0/datasets"}
+    }
+  ]
+}

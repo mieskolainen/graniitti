@@ -1,0 +1,173 @@
+[
+  {
+    "name": "missing",
+    "input": {
+      "a": {
+        "$ref": "#/missing"
+      }
+    }
+  },
+  {
+    "name": "siblings",
+    "input": {
+      "a": 1,
+      "b": {
+        "$ref": "#/a",
+        "extra": 2
+      }
+    }
+  },
+  {
+    "name": "nonstring",
+    "input": {
+      "$ref": 3
+    }
+  },
+  {
+    "name": "direct cycle",
+    "input": {
+      "a": {
+        "$ref": "#/a"
+      }
+    }
+  },
+  {
+    "name": "indirect cycle",
+    "input": {
+      "a": {
+        "$ref": "#/b"
+      },
+      "b": {
+        "$ref": "#/a"
+      }
+    }
+  },
+  {
+    "name": "ancestor cycle",
+    "input": {
+      "a": {
+        "$ref": "#"
+      }
+    }
+  },
+  {
+    "name": "growing cycle",
+    "input": {
+      "a": {
+        "$ref": "#/a/x"
+      }
+    }
+  },
+  {
+    "name": "cross file cycle",
+    "input": {
+      "$ref": "cycle.json"
+    }
+  },
+  {
+    "name": "missing file",
+    "input": {
+      "$ref": "absent.json"
+    }
+  },
+  {
+    "name": "bad pointer",
+    "input": {
+      "$ref": "#missing"
+    }
+  },
+  {
+    "name": "bad tilde",
+    "input": {
+      "a": 3,
+      "b": {
+        "$ref": "#/a~2"
+      }
+    }
+  },
+  {
+    "name": "bad percent",
+    "input": {
+      "$ref": "#/%xx"
+    }
+  },
+  {
+    "name": "bad utf8",
+    "input": {
+      "$ref": "#/%FF"
+    }
+  },
+  {
+    "name": "remote file",
+    "input": {
+      "$ref": "https://example.invalid/card.json"
+    }
+  },
+  {
+    "name": "network file",
+    "input": {
+      "$ref": "//example.invalid/card.json"
+    }
+  },
+  {
+    "name": "query",
+    "input": {
+      "$ref": "scalar.json?x=1"
+    }
+  },
+  {
+    "name": "array index 01",
+    "input": {
+      "a": [
+        1
+      ],
+      "b": {
+        "$ref": "#/a/01"
+      }
+    }
+  },
+  {
+    "name": "array index -",
+    "input": {
+      "a": [
+        1
+      ],
+      "b": {
+        "$ref": "#/a/-"
+      }
+    }
+  },
+  {
+    "name": "array index +0",
+    "input": {
+      "a": [
+        1
+      ],
+      "b": {
+        "$ref": "#/a/+0"
+      }
+    }
+  },
+  {
+    "name": "array index -1",
+    "input": {
+      "a": [
+        1
+      ],
+      "b": {
+        "$ref": "#/a/-1"
+      }
+    }
+  },
+  {
+    "name": "array index 1",
+    "input": {
+      "a": [
+        1
+      ],
+      "b": {
+        "$ref": "#/a/1"
+      }
+    }
+  }
+]

@@ -1,0 +1,152 @@
+{
+  "figure8a_chic0": {
+    "type": "differential",
+    "result": "theory",
+    "gencard": "icepack/DURHAM/_common/gencard.json",
+    "python_cuts": "icepack/DURHAM/_common/cuts_chic_cdf.py",
+    "pid":
+      [-13, 13, 22],
+    "cuts": "SuperChic (arXiv:0909.4748) $\\chi_{c0}$",
+    "channel": "chic0",
+    "bibtex": null,
+    "measurement": {
+      "value":
+        [0.005694444444444445, 0.007361111111111111, 0.01, 0.014861111111111111, 0.02486111111111111, 0.05333333333333334, 0.09208333333333334, 0.11958333333333333, 0.1451388888888889, 0.15597222222222223, 0.15638888888888888, 0.14458333333333334, 0.12083333333333333, 0.09208333333333334, 0.05305555555555556, 0.024722222222222222, 0.014722222222222222, 0.01, 0.007222222222222222, 0.005833333333333334],
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": null,
+    "sqrts": 1.96,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze, M. G. Ryskin and W. J. Stirling",
+      "title": "Central exclusive chi_c meson production at the Tevatron revisited",
+      "arxiv": "0909.4748",
+      "version": 2,
+      "figure": "8a"
+    },
+    "source": "https://arxiv.org/abs/0909.4748",
+    "fiducial": {
+      "beams":
+        ["p", "pbar"],
+      "chi_rapidity": 0.0,
+      "angle_definition": "mu+ momentum in the J/psi rest frame relative to the J/psi lab boost direction",
+      "muon_pt_min_gev": 1.4,
+      "muon_absolute_eta_max": 0.6,
+      "text_acceptance": 0.16
+    },
+    "digitization": {
+      "provenance": "Step paths extracted from chiplots/fig8a.eps in the official arXiv:0909.4748v2 source archive",
+      "source_sha256": "0d2c25b1e7580a7ba04cfc671a8ae0f8f531795976da28d51ea1741443d6b82c",
+      "coordinate_mapping": {
+        "relative_density": "y_plot / 7200"
+      },
+      "y_plot":
+        [41, 53, 72, 107, 179, 384, 663, 861, 1045, 1123, 1126, 1041, 870, 663, 382, 178, 106, 72, 52, 42]
+    },
+    "bins":
+      [-1.0, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+    "observable": "relative_dsigma_fiducial_dcostheta",
+    "dataset": "icepack/DURHAM/chic/figure8a/dataset.json"
+  },
+  "figure8a_chic1": {
+    "type": "differential",
+    "result": "theory",
+    "gencard": "icepack/DURHAM/_common/gencard.json",
+    "python_cuts": "icepack/DURHAM/_common/cuts_chic_cdf.py",
+    "pid":
+      [-13, 13, 22],
+    "cuts": "SuperChic (arXiv:0909.4748) $\\chi_{c1}$",
+    "channel": "chic1",
+    "bibtex": null,
+    "measurement": {
+      "value":
+        [0.002916666666666667, 0.004166666666666667, 0.00625, 0.010277777777777778, 0.019444444444444445, 0.04958333333333333, 0.10208333333333333, 0.1451388888888889, 0.1823611111111111, 0.19833333333333333, 0.19805555555555557, 0.18041666666666667, 0.1438888888888889, 0.10277777777777777, 0.049444444444444444, 0.019444444444444445, 0.010277777777777778, 0.006388888888888889, 0.004166666666666667, 0.002916666666666667],
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": null,
+    "sqrts": 1.96,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze, M. G. Ryskin and W. J. Stirling",
+      "title": "Central exclusive chi_c meson production at the Tevatron revisited",
+      "arxiv": "0909.4748",
+      "version": 2,
+      "figure": "8a"
+    },
+    "source": "https://arxiv.org/abs/0909.4748",
+    "fiducial": {
+      "beams":
+        ["p", "pbar"],
+      "chi_rapidity": 0.0,
+      "angle_definition": "mu+ momentum in the J/psi rest frame relative to the J/psi lab boost direction",
+      "muon_pt_min_gev": 1.4,
+      "muon_absolute_eta_max": 0.6,
+      "text_acceptance": 0.17
+    },
+    "digitization": {
+      "provenance": "Step paths extracted from chiplots/fig8a.eps in the official arXiv:0909.4748v2 source archive",
+      "source_sha256": "0d2c25b1e7580a7ba04cfc671a8ae0f8f531795976da28d51ea1741443d6b82c",
+      "coordinate_mapping": {
+        "relative_density": "y_plot / 7200"
+      },
+      "y_plot":
+        [21, 30, 45, 74, 140, 357, 735, 1045, 1313, 1428, 1426, 1299, 1036, 740, 356, 140, 74, 46, 30, 21]
+    },
+    "bins":
+      [-1.0, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+    "observable": "relative_dsigma_fiducial_dcostheta",
+    "dataset": "icepack/DURHAM/chic/figure8a/dataset.json"
+  },
+  "figure8a_chic2": {
+    "type": "differential",
+    "result": "theory",
+    "gencard": "icepack/DURHAM/_common/gencard.json",
+    "python_cuts": "icepack/DURHAM/_common/cuts_chic_cdf.py",
+    "pid":
+      [-13, 13, 22],
+    "cuts": "SuperChic (arXiv:0909.4748) $\\chi_{c2}$",
+    "channel": "chic2",
+    "bibtex": null,
+    "measurement": {
+      "value":
+        [0.0019444444444444444, 0.0030555555555555557, 0.004027777777777778, 0.0075, 0.014444444444444444, 0.03791666666666667, 0.08541666666666667, 0.12069444444444444, 0.14333333333333334, 0.15597222222222223, 0.15458333333333332, 0.1425, 0.11708333333333333, 0.08833333333333333, 0.03833333333333333, 0.014166666666666666, 0.007361111111111111, 0.0044444444444444444, 0.0031944444444444446, 0.0020833333333333333],
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": null,
+    "sqrts": 1.96,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze, M. G. Ryskin and W. J. Stirling",
+      "title": "Central exclusive chi_c meson production at the Tevatron revisited",
+      "arxiv": "0909.4748",
+      "version": 2,
+      "figure": "8a"
+    },
+    "source": "https://arxiv.org/abs/0909.4748",
+    "fiducial": {
+      "beams":
+        ["p", "pbar"],
+      "chi_rapidity": 0.0,
+      "angle_definition": "mu+ momentum in the J/psi rest frame relative to the J/psi lab boost direction",
+      "muon_pt_min_gev": 1.4,
+      "muon_absolute_eta_max": 0.6,
+      "text_acceptance": 0.15
+    },
+    "digitization": {
+      "provenance": "Step paths extracted from chiplots/fig8a.eps in the official arXiv:0909.4748v2 source archive",
+      "source_sha256": "0d2c25b1e7580a7ba04cfc671a8ae0f8f531795976da28d51ea1741443d6b82c",
+      "coordinate_mapping": {
+        "relative_density": "y_plot / 7200"
+      },
+      "y_plot":
+        [14, 22, 29, 54, 104, 273, 615, 869, 1032, 1123, 1113, 1026, 843, 636, 276, 102, 53, 32, 23, 15]
+    },
+    "bins":
+      [-1.0, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+    "observable": "relative_dsigma_fiducial_dcostheta",
+    "dataset": "icepack/DURHAM/chic/figure8a/dataset.json"
+  }
+}

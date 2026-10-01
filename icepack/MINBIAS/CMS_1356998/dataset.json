@@ -1,0 +1,59 @@
+{
+  "active": false,
+  // Comparison inactive until an original HEPData table is available
+  "type": "RIVET_1356998",
+  "reader": "./reader.py",
+  "datapath": "HEPData/Rivet_1356998/",
+  "samples": [
+    {"name": "sd", "label": "GRANIITTI X[SD]", "gencard": "./gencard_sd.json", "parameters": {}},
+    {"name": "dd", "label": "GRANIITTI X[DD]", "gencard": "./gencard_dd.json", "parameters": {}},
+    {"name": "nd", "label": "GRANIITTI X[ND]", "gencard": "../nd/gencard.json", "parameters": {"SCATTERING.ENERGY": [3500,3500]}}
+  ],
+  // Tables 1 and 2 are inclusive gap cross sections before the model dependent subtraction in Sec. 9
+  "plot": {"normalization": "cross_section", "unit": "mb", "ratio_uncertainty": "combined", "stack": true, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "CMS $pp$ 7 TeV (SD-dominated forward gap)",
+      "plotname": "CMS_7TeV_SD_forward",
+      "samples": ["sd", "dd", "nd"],
+      "region": "sd_forward",
+      "pid": [],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"file": "CMS_2015_I1356998.yoda", "obs": "log10_xi_sd", "scale": 1e-3, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "CMS $pp$ 7 TeV (DD-dominated CASTOR gap)",
+      "plotname": "CMS_7TeV_DD_forward",
+      "samples": ["sd", "dd", "nd"],
+      "region": "dd_forward",
+      "pid": [],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"file": "CMS_2015_I1356998.yoda", "obs": "log10_xi_dd_forward", "scale": 1e-3, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "CMS $pp$ 7 TeV (DD-dominated central gap)",
+      "plotname": "CMS_7TeV_DD_central",
+      "samples": ["sd", "dd", "nd"],
+      "region": "dd_central",
+      "pid": [],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"file": "CMS_2015_I1356998.yoda", "obs": "delta_eta_dd_central", "scale": 1e-3, "fitw": 1.0}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+// Physical scalar diphoton decay with matched F/C fiducial phase space
+// Pure diphoton Dirac model: Gamma_total = Gamma_gammagamma = 10 GeV
+// The monopole mass solves the Coulombic diphoton coupling for this width, no measured branching fraction is claimed
+// [REFERENCE: Epele et al., arXiv:0809.0272, Eqs. (5) and (6)]
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "monopolium",
+      "label": "GRANIITTI $k_T$-EPA $\\gamma\\gamma \\to \\mathcal{M} \\to \\gamma\\gamma$",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "yy[monopolium(0)]<F> -> gamma gamma @PDG[881]{M:527.57673,W:10.0} @PDG[882]{M:263.8218030240,W:0}",
+        "GENERAL.json:PARAM_MONOPOLE.coupling": "dirac",
+        "DECAYS.json:[\"881\"]": {
+          "[22,22]": {
+            "BR": 1.0,
+            "basis": "alpha_ls",
+            "alpha_ls":
+              [[0, 0, 1.0, 0.0]],
+            "zeta": {
+              "MP": 0.0,
+              "XP": 0.0,
+              "GP": 0.0,
+              "TP": 0.0
+            },
+            "CP": [true, true]
+          }
+        }
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "cross_section",
+    "ratio_uncertainty": "none",
+    "stack": false,
+    "data_style": "hist"
+  },
+  "fit": {
+    "normalization": "cross_section"
+  },
+  "validation": {
+    "nevents": 30000
+  },
+  "sets": [
+    {
+      "name": "Photon fusion monopolium",
+      "title": "Generation: $M_X>500$ GeV, $|y_X|<9$",
+      "data": false,
+      "pid": [22, 22],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "obs": "M"
+        },
+        {
+          "obs": "Rap"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,789 @@
+// G-Pomeron continuum couplings and form factor parameters
+// 
+// Compact positive PDG pair keys identify unordered particle families
+// All particle sectors include zero m=-1 and m=-2 rows for optional tuning
+// 
+// The signed physical outgoing pair selects same, opposite or self before crossing
+// 
+// crossed_helicity: [lambda1,lambda2,m,magnitude,phase]
+// crossed_ls:       [L,S,m,magnitude,phase]
+//
+// Parity symmetric rows are automatically treated in the code
+//
+// Couplings produced with `develop/tools/DL_couplings.py
+//
+// (c) 2026 Mikael Mieskolainen
+// Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+
+{
+  // Pomeron
+  "990": {
+    "[2212,2212]": { // [p,p]
+      "same": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-0.5,-0.5,0,7.77209673,-3.141592653589793],
+           [-0.5,-0.5,-1,0.0000,0.0000],
+           [-0.5,-0.5,-2,0.0000,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-0.5,-0.5,0,4.915505573,0.0],
+           [-0.5,0.5,0,6.02024024,0.0],
+           [-0.5,-0.5,-1,0.0000,0.0000],
+           [-0.5,0.5,-1,0.0000,0.0000],
+           [-0.5,-0.5,-2,0.0000,0.0000],
+           [-0.5,0.5,-2,0.0000,0.0000]]
+      },
+      "FF_transfer": {"type": "dirac", "norm": "zero", "EM": "DIPOLE"},
+      "FF_offshell": {"type": "exp", "norm": "pole", "b": 1.0},
+      "reggeize": {"active": false, "freeze_scale2": 1.0000},
+      "pveto": {"active": false, "M0": 2.5, "c": 0.5}
+    },
+    "[2112,2112]": { // [n,n]
+      "same": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-0.5,-0.5,0,7.77209673,-3.141592653589793],
+           [-0.5,-0.5,-1,0.0000,0.0000],
+           [-0.5,-0.5,-2,0.0000,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-0.5,-0.5,0,4.915505573,0.0],
+           [-0.5,0.5,0,6.02024024,0.0],
+           [-0.5,-0.5,-1,0.0000,0.0000],
+           [-0.5,0.5,-1,0.0000,0.0000],
+           [-0.5,-0.5,-2,0.0000,0.0000],
+           [-0.5,0.5,-2,0.0000,0.0000]]
+      },
+      "FF_transfer": {"type": "dirac", "norm": "zero", "EM": "DIPOLE"},
+      "FF_offshell": {"type": "exp", "norm": "pole", "b": 1.0},
+      "reggeize": {"active": false, "freeze_scale2": 1.0000},
+      "pveto": {"active": false, "M0": 2.5, "c": 0.5}
+    },
+    "[211,211]": {
+      "same": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,4.881736333,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,5.8728420253914955,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.4592717194004637, "n": 1.0},
+      "FF_offshell": {"type": "logexp", "norm": "pole", "b": 1.4263757063307614, "Lambda2": 0.3266612375018745},
+      "reggeize": {"active": false, "freeze_scale2": 1.0000},
+      "pveto": {"active": true, "M0": 1.3089014550448295, "c": 0.8263361983212543}
+    },
+    "[111,111]": {
+      "self": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,4.881736333,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 1.3838, "n": 1.0},
+      "FF_offshell": {"type": "exp", "norm": "pole", "b": 1.0973},
+      "reggeize": {"active": false, "freeze_scale2": 1.0000},
+      "pveto": {"active": false, "M0": 2.5, "c": 0.5}
+    },
+    "[321,321]": {
+      "same": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,4.272862396,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,4.227259328158168,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.10241580633715314, "n": 1.0},
+      "FF_offshell": {"type": "logexp", "norm": "pole", "b": 0.4727166645541609, "Lambda2": 1.3855093630778492},
+      "reggeize": {"active": false, "freeze_scale2": 1.0000},
+      "pveto": {"active": true, "M0": 1.2560158333213276, "c": 1.1933333205283851}
+    },
+    "[311,311]": {
+      "same": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,4.272862396,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,4.272862396,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5, "n": 1.0},
+      "FF_offshell": {"type": "exp", "norm": "pole", "b": 1.0},
+      "reggeize": {"active": false, "freeze_scale2": 1.0000},
+      "pveto": {"active": false, "M0": 2.5, "c": 0.5}
+    },
+    "[113,113]": { // [rho0,rho0]
+      "self": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-1,-1,0,1.543740575,0.0],
+           [-1,0,0,2.67383711,0.0],
+           [-1,1,0,3.781376704,0.0],
+           [0,0,0,3.08748115,0.0],
+           [-1,-1,-1,0.0000,0.0000],
+           [-1,0,-1,0.0000,0.0000],
+           [-1,1,-1,0.0000,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [-1,-1,-2,0.0000,0.0000],
+           [-1,0,-2,0.0000,0.0000],
+           [-1,1,-2,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5, "n": 1.0},
+      "FF_offshell": {"type": "exp", "norm": "pole", "b": 1.0},
+      "reggeize": {"active": false, "freeze_scale2": 1.0000},
+      "pveto": {"active": false, "M0": 2.5, "c": 0.5}
+    },
+    "[333,333]": { // [phi,phi]
+      "self": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-1,-1,0,1.158654885,0.0],
+           [-1,0,0,2.006849129,0.0],
+           [-1,1,0,2.838113256,0.0],
+           [0,0,0,2.31730977,0.0],
+           [-1,-1,-1,0.0000,0.0000],
+           [-1,0,-1,0.0000,0.0000],
+           [-1,1,-1,0.0000,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [-1,-1,-2,0.0000,0.0000],
+           [-1,0,-2,0.0000,0.0000],
+           [-1,1,-2,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5, "n": 1.0},
+      "FF_offshell": {"type": "exp", "norm": "pole", "b": 1.0},
+      "reggeize": {"active": false, "freeze_scale2": 1.0000},
+      "pveto": {"active": false, "M0": 2.5, "c": 0.5}
+    },
+    "[9000221,9000221]": { // [f0,f0]
+      "self": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,4.272862396,0.0],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5, "n": 1.0},
+      "FF_offshell": {"type": "exp", "norm": "pole", "b": 1.0},
+      "reggeize": {"active": false, "freeze_scale2": 1.0000},
+      "pveto": {"active": false, "M0": 2.5, "c": 0.5}
+    }
+  },
+  // Reggeon
+  "9910": {
+    "[2212,2212]": { // [p,p]
+      "same": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-0.5,-0.5,0,14.49123874,-3.141592653589793],
+           [-0.5,-0.5,-1,0.0000,0.0000],
+           [-0.5,-0.5,-2,0.0000,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-0.5,-0.5,0,9.165064107,0.0],
+           [-0.5,0.5,0,11.224865261,0.0],
+           [-0.5,-0.5,-1,0.0000,0.0000],
+           [-0.5,0.5,-1,0.0000,0.0000],
+           [-0.5,-0.5,-2,0.0000,0.0000],
+           [-0.5,0.5,-2,0.0000,0.0000]]
+      },
+      "FF_transfer": {"$ref": "#/990/[2212,2212]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/990/[2212,2212]/FF_offshell"},
+      "reggeize": {"$ref": "#/990/[2212,2212]/reggeize"},
+      "pveto": {"$ref": "#/990/[2212,2212]/pveto"}
+    },
+    "[2112,2112]": { // [n,n]
+      "same": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-0.5,-0.5,0,14.49123874,-3.141592653589793],
+           [-0.5,-0.5,-1,0.0000,0.0000],
+           [-0.5,-0.5,-2,0.0000,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-0.5,-0.5,0,9.165064107,0.0],
+           [-0.5,0.5,0,11.224865261,0.0],
+           [-0.5,-0.5,-1,0.0000,0.0000],
+           [-0.5,0.5,-1,0.0000,0.0000],
+           [-0.5,-0.5,-2,0.0000,0.0000],
+           [-0.5,0.5,-2,0.0000,0.0000]]
+      },
+      "FF_transfer": {"$ref": "#/990/[2112,2112]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/990/[2112,2112]/FF_offshell"},
+      "reggeize": {"$ref": "#/990/[2112,2112]/reggeize"},
+      "pveto": {"$ref": "#/990/[2112,2112]/pveto"}
+    },
+    "[211,211]": {
+      "same": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,5.96460775,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,6.179060816307135,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/990/[211,211]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/990/[211,211]/FF_transfer"},
+      "reggeize": {"$ref": "#/990/[211,211]/reggeize"},
+      "pveto": {"$ref": "#/990/[211,211]/pveto"}
+    },
+    "[111,111]": {
+      "self": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,5.96460775,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/990/[111,111]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/990/[111,111]/FF_transfer"},
+      "reggeize": {"$ref": "#/990/[111,111]/reggeize"},
+      "pveto": {"$ref": "#/990/[111,111]/pveto"}
+    },
+    "[321,321]": {
+      "same": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,3.087374033,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,3.8607977201992716,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "FF_transfer": {"$ref": "#/990/[321,321]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/990/[321,321]/FF_offshell"},
+      "reggeize": {"$ref": "#/990/[321,321]/reggeize"},
+      "pveto": {"$ref": "#/990/[321,321]/pveto"}
+    },
+    "[311,311]": {
+      "same": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,2.642702112,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,2.642702112,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/990/[311,311]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/990/[311,311]/FF_transfer"},
+      "reggeize": {"$ref": "#/990/[311,311]/reggeize"},
+      "pveto": {"$ref": "#/990/[311,311]/pveto"}
+    },
+    "[113,113]": { // [rho0,rho0]
+      "self": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-1,-1,0,1.886174584,0.0],
+           [-1,0,0,3.266950211,0.0],
+           [-1,1,0,4.620165296,0.0],
+           [0,0,0,3.772349168,0.0],
+           [-1,-1,-1,0.0000,0.0000],
+           [-1,0,-1,0.0000,0.0000],
+           [-1,1,-1,0.0000,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [-1,-1,-2,0.0000,0.0000],
+           [-1,0,-2,0.0000,0.0000],
+           [-1,1,-2,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "FF_transfer": {"$ref": "#/990/[113,113]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/990/[113,113]/FF_offshell"},
+      "reggeize": {"$ref": "#/990/[113,113]/reggeize"},
+      "pveto": {"$ref": "#/990/[113,113]/pveto"}
+    },
+    "[333,333]": { // [phi,phi]
+      "self": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-1,-1,0,0.066452203,0.0],
+           [-1,0,0,0.115098592,0.0],
+           [-1,1,0,0.16277399,0.0],
+           [0,0,0,0.132904406,0.0],
+           [-1,-1,-1,0.0000,0.0000],
+           [-1,0,-1,0.0000,0.0000],
+           [-1,1,-1,0.0000,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [-1,-1,-2,0.0000,0.0000],
+           [-1,0,-2,0.0000,0.0000],
+           [-1,1,-2,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "FF_transfer": {"$ref": "#/990/[333,333]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/990/[333,333]/FF_offshell"},
+      "reggeize": {"$ref": "#/990/[333,333]/reggeize"},
+      "pveto": {"$ref": "#/990/[333,333]/pveto"}
+    }
+  },
+  "9920": {
+    "[2212,2212]": { // [p,p]
+      "same": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-0.5,-0.5,0,14.49123874,-3.141592653589793],
+           [-0.5,-0.5,-1,0.0000,0.0000],
+           [-0.5,-0.5,-2,0.0000,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-0.5,-0.5,0,9.165064107,0.0],
+           [-0.5,0.5,0,11.224865261,0.0],
+           [-0.5,-0.5,-1,0.0000,0.0000],
+           [-0.5,0.5,-1,0.0000,0.0000],
+           [-0.5,-0.5,-2,0.0000,0.0000],
+           [-0.5,0.5,-2,0.0000,0.0000]]
+      },
+      "FF_transfer": {"$ref": "#/990/[2212,2212]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/990/[2212,2212]/FF_offshell"},
+      "reggeize": {"$ref": "#/990/[2212,2212]/reggeize"},
+      "pveto": {"$ref": "#/990/[2212,2212]/pveto"}
+    },
+    "[2112,2112]": { // [n,n]
+      "same": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-0.5,-0.5,0,14.49123874,-3.141592653589793],
+           [-0.5,-0.5,-1,0.0000,0.0000],
+           [-0.5,-0.5,-2,0.0000,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-0.5,-0.5,0,9.165064107,0.0],
+           [-0.5,0.5,0,11.224865261,0.0],
+           [-0.5,-0.5,-1,0.0000,0.0000],
+           [-0.5,0.5,-1,0.0000,0.0000],
+           [-0.5,-0.5,-2,0.0000,0.0000],
+           [-0.5,0.5,-2,0.0000,0.0000]]
+      },
+      "FF_transfer": {"$ref": "#/990/[2112,2112]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/990/[2112,2112]/FF_offshell"},
+      "reggeize": {"$ref": "#/990/[2112,2112]/reggeize"},
+      "pveto": {"$ref": "#/990/[2112,2112]/pveto"}
+    },
+    "[211,211]": {
+      "same": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,5.96460775,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,5.96460775,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/990/[211,211]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/990/[211,211]/FF_transfer"},
+      "reggeize": {"$ref": "#/990/[211,211]/reggeize"},
+      "pveto": {"$ref": "#/990/[211,211]/pveto"}
+    },
+    "[111,111]": {
+      "self": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,5.96460775,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/990/[111,111]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/990/[111,111]/FF_transfer"},
+      "reggeize": {"$ref": "#/990/[111,111]/reggeize"},
+      "pveto": {"$ref": "#/990/[111,111]/pveto"}
+    },
+    "[321,321]": {
+      "same": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,3.087374033,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,3.087374033,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/990/[321,321]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/990/[321,321]/FF_transfer"},
+      "reggeize": {"$ref": "#/990/[321,321]/reggeize"},
+      "pveto": {"$ref": "#/990/[321,321]/pveto"}
+    },
+    "[311,311]": {
+      "same": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,2.642702112,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,2.642702112,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/990/[311,311]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/990/[311,311]/FF_transfer"},
+      "reggeize": {"$ref": "#/990/[311,311]/reggeize"},
+      "pveto": {"$ref": "#/990/[311,311]/pveto"}
+    },
+    "[113,113]": { // [rho0,rho0]
+      "self": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-1,-1,0,1.886174584,0.0],
+           [-1,0,0,3.266950211,0.0],
+           [-1,1,0,4.620165296,0.0],
+           [0,0,0,3.772349168,0.0],
+           [-1,-1,-1,0.0000,0.0000],
+           [-1,0,-1,0.0000,0.0000],
+           [-1,1,-1,0.0000,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [-1,-1,-2,0.0000,0.0000],
+           [-1,0,-2,0.0000,0.0000],
+           [-1,1,-2,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "FF_transfer": {"$ref": "#/990/[113,113]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/990/[113,113]/FF_offshell"},
+      "reggeize": {"$ref": "#/990/[113,113]/reggeize"},
+      "pveto": {"$ref": "#/990/[113,113]/pveto"}
+    },
+    "[333,333]": { // [phi,phi]
+      "self": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-1,-1,0,0.066452203,0.0],
+           [-1,0,0,0.115098592,0.0],
+           [-1,1,0,0.16277399,0.0],
+           [0,0,0,0.132904406,0.0],
+           [-1,-1,-1,0.0000,0.0000],
+           [-1,0,-1,0.0000,0.0000],
+           [-1,1,-1,0.0000,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [-1,-1,-2,0.0000,0.0000],
+           [-1,0,-2,0.0000,0.0000],
+           [-1,1,-2,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "FF_transfer": {"$ref": "#/990/[333,333]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/990/[333,333]/FF_offshell"},
+      "reggeize": {"$ref": "#/990/[333,333]/reggeize"},
+      "pveto": {"$ref": "#/990/[333,333]/pveto"}
+    }
+  },
+  "9930": {
+    "[2212,2212]": { // [p,p]
+      "same": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-0.5,-0.5,0,8.956886581,-3.141592653589793],
+           [-0.5,-0.5,-1,0.0000,0.0000],
+           [-0.5,-0.5,-2,0.0000,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-0.5,-0.5,0,5.171260879,0.0],
+           [-0.5,0.5,0,7.313267269,0.0],
+           [-0.5,-0.5,-1,0.0000,0.0000],
+           [-0.5,0.5,-1,0.0000,0.0000],
+           [-0.5,-0.5,-2,0.0000,0.0000],
+           [-0.5,0.5,-2,0.0000,0.0000]]
+      },
+      "FF_transfer": {"$ref": "#/990/[2212,2212]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/990/[2212,2212]/FF_offshell"},
+      "reggeize": {"$ref": "#/990/[2212,2212]/reggeize"},
+      "pveto": {"$ref": "#/990/[2212,2212]/pveto"}
+    },
+    "[2112,2112]": { // [n,n]
+      "same": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-0.5,-0.5,0,8.956886581,-3.141592653589793],
+           [-0.5,-0.5,-1,0.0000,0.0000],
+           [-0.5,-0.5,-2,0.0000,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-0.5,-0.5,0,5.171260879,0.0],
+           [-0.5,0.5,0,7.313267269,0.0],
+           [-0.5,-0.5,-1,0.0000,0.0000],
+           [-0.5,0.5,-1,0.0000,0.0000],
+           [-0.5,-0.5,-2,0.0000,0.0000],
+           [-0.5,0.5,-2,0.0000,0.0000]]
+      },
+      "FF_transfer": {"$ref": "#/990/[2112,2112]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/990/[2112,2112]/FF_offshell"},
+      "reggeize": {"$ref": "#/990/[2112,2112]/reggeize"},
+      "pveto": {"$ref": "#/990/[2112,2112]/pveto"}
+    },
+    "[211,211]": {
+      "same": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,1.790953923,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,1.790953923,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/990/[211,211]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/990/[211,211]/FF_transfer"},
+      "reggeize": {"$ref": "#/990/[211,211]/reggeize"},
+      "pveto": {"$ref": "#/990/[211,211]/pveto"}
+    },
+    "[321,321]": {
+      "same": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,3.757616091,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,3.757616091,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/990/[321,321]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/990/[321,321]/FF_transfer"},
+      "reggeize": {"$ref": "#/990/[321,321]/reggeize"},
+      "pveto": {"$ref": "#/990/[321,321]/pveto"}
+    },
+    "[311,311]": {
+      "opposite": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,2.119083779,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/990/[311,311]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/990/[311,311]/FF_transfer"},
+      "reggeize": {"$ref": "#/990/[311,311]/reggeize"},
+      "pveto": {"$ref": "#/990/[311,311]/pveto"}
+    }
+  },
+  "9940": {
+    "[2212,2212]": { // [p,p]
+      "same": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-0.5,-0.5,0,8.956886581,-3.141592653589793],
+           [-0.5,-0.5,-1,0.0000,0.0000],
+           [-0.5,-0.5,-2,0.0000,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-0.5,-0.5,0,5.171260879,0.0],
+           [-0.5,0.5,0,7.313267269,0.0],
+           [-0.5,-0.5,-1,0.0000,0.0000],
+           [-0.5,0.5,-1,0.0000,0.0000],
+           [-0.5,-0.5,-2,0.0000,0.0000],
+           [-0.5,0.5,-2,0.0000,0.0000]]
+      },
+      "FF_transfer": {"$ref": "#/990/[2212,2212]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/990/[2212,2212]/FF_offshell"},
+      "reggeize": {"$ref": "#/990/[2212,2212]/reggeize"},
+      "pveto": {"$ref": "#/990/[2212,2212]/pveto"}
+    },
+    "[2112,2112]": { // [n,n]
+      "same": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-0.5,-0.5,0,8.956886581,-3.141592653589793],
+           [-0.5,-0.5,-1,0.0000,0.0000],
+           [-0.5,-0.5,-2,0.0000,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[-0.5,-0.5,0,5.171260879,0.0],
+           [-0.5,0.5,0,7.313267269,0.0],
+           [-0.5,-0.5,-1,0.0000,0.0000],
+           [-0.5,0.5,-1,0.0000,0.0000],
+           [-0.5,-0.5,-2,0.0000,0.0000],
+           [-0.5,0.5,-2,0.0000,0.0000]]
+      },
+      "FF_transfer": {"$ref": "#/990/[2112,2112]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/990/[2112,2112]/FF_offshell"},
+      "reggeize": {"$ref": "#/990/[2112,2112]/reggeize"},
+      "pveto": {"$ref": "#/990/[2112,2112]/pveto"}
+    },
+    "[211,211]": {
+      "same": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,1.790953923,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,1.790953923,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/990/[211,211]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/990/[211,211]/FF_transfer"},
+      "reggeize": {"$ref": "#/990/[211,211]/reggeize"},
+      "pveto": {"$ref": "#/990/[211,211]/pveto"}
+    },
+    "[321,321]": {
+      "same": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,3.757616091,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "opposite": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,3.757616091,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/990/[321,321]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/990/[321,321]/FF_transfer"},
+      "reggeize": {"$ref": "#/990/[321,321]/reggeize"},
+      "pveto": {"$ref": "#/990/[321,321]/pveto"}
+    },
+    "[311,311]": {
+      "opposite": {
+        "basis": "crossed_helicity",
+        "CP": [true,true],
+        "helicity":
+          [[0,0,0,2.119083779,0.0000],
+           [0,0,-1,0.0000,0.0000],
+           [0,0,-2,0.0000,0.0000]]
+      },
+      "FF_offshell": {"$ref": "#/990/[311,311]/FF_offshell"},
+      "FF_transfer": {"$ref": "#/990/[311,311]/FF_transfer"},
+      "reggeize": {"$ref": "#/990/[311,311]/reggeize"},
+      "pveto": {"$ref": "#/990/[311,311]/pveto"}
+    }
+  }
+}

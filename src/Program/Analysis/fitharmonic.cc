@@ -1,524 +1,540 @@
-// GRANIITTI - Monte Carlo event generator for high energy diffraction
-// https://github.com/mieskolainen/graniitti
+// Detector-aware exclusive two-pion spherical harmonic measurement
 //
-// <Spherical Harmonic Moment t_LM Based (M,costheta,phi) Decomposition
-//  based efficiency inversion and expansion for 2-body final states>
-//
-// (c) 2017-2020 Mikael Mieskolainen
+// (c) 2026 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
-
 // C++
-#include <math.h>
-
 #include <algorithm>
-#include <chrono>
-#include <complex>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
-#include <mutex>
-#include <random>
+#include <iterator>
+#include <limits>
+#include <map>
+#include <memory>
+#include <set>
 #include <stdexcept>
-#include <thread>
+#include <string>
+#include <utility>
 #include <vector>
-
-// Own
-#include "Graniitti/Analysis/MHarmonic.h"
-#include "Graniitti/Analysis/MROOT.h"
-#include "Graniitti/MAux.h"
-#include "Graniitti/MKinematics.h"
-#include "Graniitti/MPDG.h"
 
 // Libraries
 #include "cxxopts.hpp"
 #include "json.hpp"
 #include "rang.hpp"
 
-// HepMC 3
-#include "HepMC3/FourVector.h"
-#include "HepMC3/GenEvent.h"
-#include "HepMC3/GenParticle.h"
-#include "HepMC3/GenVertex.h"
-#include "HepMC3/Print.h"
-#include "HepMC3/ReaderAscii.h"
-#include "HepMC3/Relatives.h"
-#include "HepMC3/Selector.h"
-#include "HepMC3/WriterAscii.h"
+// Own
+#include "Graniitti/Analysis/MHarmonic.h"
+#include "Graniitti/Program/Analysis/fitharmonic.h"
+#include "Graniitti/Analysis/MHarmonicHepMC.h"
+#include "Graniitti/Tech/MAux.h"
+#include "Graniitti/Math/MMath.h"
+#include "Graniitti/Analysis/MSpherical.h"
 
 using gra::aux::indices;
-using namespace gra;
+using gra::program::Count;
+using gra::program::WriteOutput;
 
-// Create Harmonic moment expansion object (needs to be global for TMinuit
-// reasons)
-gra::MHarmonic ha;
+namespace {
 
-// Random numbers for fast detector simulation
-gra::MRandom rrand;
+using gra::harmonic::Axis;
+using gra::harmonic::Cell;
+using gra::harmonic::CellEstimate;
+using gra::harmonic::DataEvent;
+using gra::harmonic::DetectorResponseModel;
+using gra::harmonic::FiducialCuts;
+using gra::harmonic::FiducialRange;
+using gra::harmonic::FitConfig;
+using gra::harmonic::HarmonicEstimator;
+using gra::harmonic::HarmonicMeasurement;
+using gra::harmonic::HepMCAnalysisReader;
+using gra::harmonic::HepMCReadConfig;
+using gra::harmonic::IdentityResponse;
+using gra::harmonic::MeasurementMode;
+using gra::harmonic::MeasurementResult;
+using gra::harmonic::PhaseSpaceGrid;
+using gra::harmonic::ResponseEvent;
+using gra::harmonic::SampleType;
+using gra::harmonic::ToyResponse;
+using gra::harmonic::ToyResponseConfig;
+using json = nlohmann::json;
 
-// Final state fiducial cuts
-struct FIDCUTS {
-  std::vector<double> ETA = {0.0, 0.0};
-  std::vector<double> PT  = {0.0, 0.0};
-};
-
-FIDCUTS fidcuts;
-
-// TMinuit fit wrapper calling the global object
-void fitwrapper(int &npar, double *gin, double &f, double *par, int iflag) {
-  ha.logLfunc(npar, gin, f, par, iflag);
+// Read and parse one analysis card
+json ReadCard(const std::string &path) {
+  return json::parse(gra::aux::GetInputData(path));
 }
 
-void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &events,
-            const std::string &FRAME, int MAXEVENTS, bool SIMULATE);
+// Parse one two-component finite interval
+FiducialRange ParseRange(const json &values, const std::string &name) {
+  if (!values.is_array() || values.size() != 2) {
+    throw std::invalid_argument("fitharmonic:: " + name +
+                                " must contain [min,max]");
+  }
+  const FiducialRange range{values.at(0).get<double>(),
+                            values.at(1).get<double>()};
+  range.Validate(name);
+  return range;
+}
 
-// Fast toy simulation pt-efficiency parameter (put infinite for perfect
-// pt-efficiency)
-const double pt_scale = 4.5;
+// Parse particle-level central and forward fiducial cuts
+FiducialCuts ParseFiducialCuts(const json &input, MeasurementMode mode) {
+  const json &central = input.at("central");
+  FiducialCuts cuts;
+  cuts.pion_eta = ParseRange(central.at("pion_eta"), "pion_eta");
+  cuts.pion_pt = ParseRange(central.at("pion_pt"), "pion_pt");
+  cuts.proton_xi = FiducialRange{0.0, 1.0};
+  cuts.proton_abs_t = FiducialRange{0.0, 1.0};
+  if (mode == MeasurementMode::Tagged) {
+    const json &forward = input.at("forward");
+    cuts.proton_xi = ParseRange(forward.at("proton_xi"), "proton_xi");
+    cuts.proton_abs_t = ParseRange(forward.at("proton_abs_t"), "proton_abs_t");
+  }
+  cuts.Validate(mode);
+  return cuts;
+}
 
-// Main function
+// Parse the canonical conditional-coordinate grid
+PhaseSpaceGrid ParseGrid(const json &input, MeasurementMode mode) {
+  if (!input.is_array()) {
+    throw std::invalid_argument("fitharmonic:: axes must be an array");
+  }
+  std::vector<Axis> axes;
+  axes.reserve(input.size());
+  for (const json &entry : input) {
+    Axis axis;
+    axis.coordinate = gra::harmonic::ParseCoordinate(
+        entry.at("coordinate").get<std::string>());
+    axis.bins = Count<std::size_t>(entry.at("bins"), "bins");
+    axis.min = entry.at("min").get<double>();
+    axis.max = entry.at("max").get<double>();
+    axes.push_back(axis);
+  }
+  return PhaseSpaceGrid(mode, axes);
+}
+
+// Parse harmonic truncation and response-inversion controls
+FitConfig ParseFitConfig(const json &input) {
+  FitConfig config;
+  config.estimator = gra::harmonic::ParseHarmonicEstimator(
+      input.at("estimator").get<std::string>());
+  config.lmax = Count<int>(input.at("lmax"), "lmax");
+  config.remove_odd = input.value("remove_odd", false);
+  config.remove_negative_m = input.value("remove_negative_m", false);
+  config.svd_relative_cut = input.at("svd_relative_cut").get<double>();
+  config.response_jackknife_bins =
+      Count<std::size_t>(input.value("response_jackknife_bins", json(16)), "response_jackknife_bins");
+  config.max_parameters = Count<std::size_t>(input.value("max_parameters", json(1500)), "max_parameters");
+  if (config.estimator == HarmonicEstimator::EML) {
+    const json &eml = input.at("eml");
+    config.eml_max_calls = Count<std::size_t>(eml.value("max_calls", json(100000)), "max_calls");
+    config.eml_positivity_costheta =
+        Count<std::size_t>(eml.value("positivity_costheta", json(24)), "positivity_costheta");
+    config.eml_positivity_phi = Count<std::size_t>(eml.value("positivity_phi", json(48)), "positivity_phi");
+    config.eml_min_intensity = eml.value("minimum_intensity", 1e-10);
+  }
+  config.Validate();
+  return config;
+}
+
+// Parse the common event-projection configuration
+HepMCReadConfig ParseReadConfig(const json &card, MeasurementMode mode,
+                                const FiducialCuts &cuts) {
+  HepMCReadConfig config;
+  config.mode = mode;
+  config.frame = gra::harmonic::ParseAngularFrame(card.value("frame", "CS"));
+  config.cuts = cuts;
+  if (mode == MeasurementMode::Tagged) {
+    const json &selection = card.at("detector_selection");
+    config.selection.pt_balance_max =
+        selection.at("pt_balance_max").get<double>();
+    config.selection.mass_match_relative_max =
+        selection.at("mass_match_relative_max").get<double>();
+    config.selection.rapidity_match_max =
+        selection.at("rapidity_match_max").get<double>();
+  }
+  config.sqrt_s = card.at("sqrt_s").get<double>();
+  config.max_records =
+      Count<std::uint64_t>(card.value("maximum", json(std::numeric_limits<std::uint64_t>::max())), "maximum");
+  config.seed = Count<std::uint64_t>(card.value("seed", json(1)), "seed");
+  config.weight_index = Count<std::size_t>(card.value("event_weight_index", json(0)), "event_weight_index");
+  config.Validate();
+  return config;
+}
+
+// Parse the closure-only analytic detector response
+ToyResponseConfig ParseToyResponse(const json &input, std::uint64_t seed) {
+  ToyResponseConfig config;
+  config.pion_efficiency = input.at("pion_efficiency").get<double>();
+  config.proton_efficiency = input.at("proton_efficiency").get<double>();
+  config.pion_logpt_sigma = input.at("pion_logpt_sigma").get<double>();
+  config.pion_eta_sigma = input.at("pion_eta_sigma").get<double>();
+  config.pion_phi_sigma = input.at("pion_phi_sigma").get<double>();
+  config.proton_pt_sigma = input.at("proton_pt_sigma").get<double>();
+  config.proton_logpz_sigma = input.at("proton_logpz_sigma").get<double>();
+  config.seed = Count<std::uint64_t>(input.value("seed", json(seed)), "seed");
+  config.Validate();
+  return config;
+}
+
+// Apply a positive sampling or importance-weight scale
+void ScaleResponse(std::vector<ResponseEvent> &events, double scale) {
+  if (!std::isfinite(scale) || scale <= 0.0) {
+    throw std::invalid_argument(
+        "fitharmonic:: response sample scale must be positive");
+  }
+  for (ResponseEvent &event : events) {
+    event.truth.weight *= scale;
+    if (event.reco.has_value()) {
+      event.reco->weight *= scale;
+    }
+  }
+}
+
+// Append one event vector without retaining an intermediate copy
+template <typename T>
+void Append(std::vector<T> &target, std::vector<T> source) {
+  target.reserve(target.size() + source.size());
+  std::move(source.begin(), source.end(), std::back_inserter(target));
+}
+
+// Read one named detector-response group from one or more MC samples
+std::pair<std::string, std::vector<ResponseEvent>>
+ReadResponseGroup(const json &definition, const HepMCAnalysisReader &reader,
+                  std::uint64_t seed) {
+  const std::string name = definition.at("name").get<std::string>();
+  const std::string mode = definition.at("mode").get<std::string>();
+  const json &samples = definition.at("samples");
+  if (name.empty() || !samples.is_array() || samples.empty()) {
+    throw std::invalid_argument(
+        "fitharmonic:: each response needs a name and samples");
+  }
+
+  std::unique_ptr<DetectorResponseModel> model;
+  if (mode == "IDENTITY") {
+    model = std::make_unique<IdentityResponse>();
+  } else if (mode == "TOY") {
+    model = std::make_unique<ToyResponse>(
+        ParseToyResponse(definition.at("toy"), seed));
+  } else if (mode != "PAIRED") {
+    throw std::invalid_argument(
+        "fitharmonic:: response mode must be IDENTITY, TOY or PAIRED");
+  }
+
+  std::vector<ResponseEvent> events;
+  for (const json &sample : samples) {
+    if (sample.at("reference").get<std::string>() != "ANGULAR_FLAT") {
+      throw std::invalid_argument(
+          "fitharmonic:: response samples must use ANGULAR_FLAT reference");
+    }
+    const std::string truth = sample.at("truth").get<std::string>();
+    std::vector<ResponseEvent> current;
+    if (mode == "PAIRED") {
+      current = reader.ReadPairedResponse(truth,
+                                          sample.at("reco").get<std::string>());
+    } else {
+      current = reader.ReadModelResponse(truth, *model);
+    }
+    ScaleResponse(current, sample.at("scale").get<double>());
+    Append(events, std::move(current));
+  }
+  return {name, std::move(events)};
+}
+
+// Read all selected detector-level files belonging to one data sample
+std::vector<DataEvent> ReadDataSample(const json &definition,
+                                      const HepMCAnalysisReader &reader) {
+  const json &paths = definition.at("paths");
+  if (!paths.is_array() || paths.empty()) {
+    throw std::invalid_argument(
+        "fitharmonic:: each measurement sample needs paths");
+  }
+  std::vector<DataEvent> events;
+  for (const json &path : paths) {
+    Append(events, reader.ReadData(path.get<std::string>()));
+  }
+  return events;
+}
+
+// Convert one project matrix to a rectangular JSON array
+json MatrixJSON(const gra::MMatrix<double> &matrix) {
+  json output = json::array();
+  for (std::size_t row = 0; row < matrix.size_row(); ++row) {
+    json values = json::array();
+    for (std::size_t col = 0; col < matrix.size_col(); ++col) {
+      values.push_back(matrix[row][col]);
+    }
+    output.push_back(std::move(values));
+  }
+  return output;
+}
+
+// Compute physical bounds for one regular-grid cell
+json CellBounds(const Cell &cell, const PhaseSpaceGrid &grid) {
+  json output = json::array();
+  for (const auto &axis : indices(cell)) {
+    const Axis &definition = grid.Axes()[axis];
+    const double width = (definition.max - definition.min) /
+                         static_cast<double>(definition.bins);
+    const double lower =
+        definition.min + width * static_cast<double>(cell[axis]);
+    const double upper =
+        cell[axis] + 1 == definition.bins ? definition.max :
+        definition.min + width * static_cast<double>(cell[axis] + 1);
+    output.push_back(
+        {{"coordinate", gra::harmonic::ToString(definition.coordinate)},
+         {"min", lower},
+         {"max", upper}});
+  }
+  return output;
+}
+
+// Convert one full-basis cell estimate to JSON
+json EstimateJSON(const CellEstimate &estimate) {
+  return {{"valid", estimate.valid},
+          {"coefficients", estimate.value},
+          {"covariance", MatrixJSON(estimate.covariance)},
+          {"entries", estimate.entries},
+          {"sum_weight", estimate.sum_weight},
+          {"sum_weight2", estimate.sum_weight2}};
+}
+
+// Convert one phase-space level to ordered JSON cells
+json LevelJSON(const std::vector<Cell> &cells,
+               const std::map<Cell, CellEstimate> &estimates,
+               const PhaseSpaceGrid &grid) {
+  json output = json::array();
+  for (const Cell &cell : cells) {
+    const auto estimate = estimates.find(cell);
+    if (estimate == estimates.end()) {
+      continue;
+    }
+    output.push_back({{"index", cell},
+                      {"bounds", CellBounds(cell, grid)},
+                      {"estimate", EstimateJSON(estimate->second)}});
+  }
+  return output;
+}
+
+// Compute the linear-index convention for all stored coefficients
+json CoefficientConvention(int lmax, const std::vector<std::size_t> &active) {
+  json output = json::array();
+  for (int l = 0; l <= lmax; ++l) {
+    for (int m = -l; m <= l; ++m) {
+      const std::size_t index =
+          static_cast<std::size_t>(gra::spherical::LinearInd(l, m));
+      output.push_back({{"index", index},
+                        {"l", l},
+                        {"m", m},
+                        {"production_active", std::find(active.begin(), active.end(),
+                                             index) != active.end()}});
+    }
+  }
+  return output;
+}
+
+// Compute the cell-major ordering of one global covariance matrix
+json GlobalCovarianceOrder(const std::vector<Cell> &cells,
+                           const std::vector<std::size_t> &active) {
+  json output = json::array();
+  for (const Cell &cell : cells) {
+    for (const std::size_t coefficient : active) {
+      output.push_back({{"cell", cell}, {"coefficient_index", coefficient}});
+    }
+  }
+  return output;
+}
+
+// Convert a complete three-level measurement to JSON
+json ResultJSON(const MeasurementResult &result, const PhaseSpaceGrid &grid,
+                const FitConfig &config) {
+  json estimator_diagnostics = json::object();
+  if (result.estimator == HarmonicEstimator::EML) {
+    estimator_diagnostics = {
+        {"objective", result.objective},
+        {"minimum_flat_intensity", result.minimum_flat_intensity},
+        {"minimum_detector_intensity", result.minimum_detector_intensity}};
+  }
+  return {
+      {"estimator", gra::harmonic::ToString(result.estimator)},
+      {"active_coefficients", result.active_coefficients},
+      {"coefficient_convention",
+       CoefficientConvention(config.lmax, result.active_indices)},
+      {"response_events", result.response_events},
+      {"response_rows", result.response_rows},
+      {"response_columns", result.response_columns},
+      {"response_rank", result.response_rank},
+      {"retained_singular_values", result.retained_singular_values},
+      {"response_condition_number", result.response_condition_number},
+      {"response_jackknife_replicas", result.response_jackknife_replicas},
+      {"data_events", result.data_events},
+      {"data_sum_weight", result.data_sum_weight},
+      {"data_sum_weight2", result.data_sum_weight2},
+      {"estimator_diagnostics", estimator_diagnostics},
+      {"angular_flat",
+       {{"cells", LevelJSON(result.truth_cells, result.flat, grid)},
+        {"global_covariance_order",
+         GlobalCovarianceOrder(result.truth_cells, result.active_indices)},
+        {"global_covariance", MatrixJSON(result.flat_covariance)}}},
+      {"fiducial",
+       {{"cells", LevelJSON(result.truth_cells, result.fiducial, grid)},
+        {"global_covariance_order",
+         GlobalCovarianceOrder(result.truth_cells, result.moment_indices)},
+        {"global_covariance", MatrixJSON(result.fiducial_covariance)}}},
+      {"detector",
+       {{"cells", LevelJSON(result.detector_cells, result.detector, grid)},
+        {"global_covariance_order",
+         GlobalCovarianceOrder(result.detector_cells, result.moment_indices)},
+        {"global_covariance", MatrixJSON(result.detector_covariance)}}}};
+}
+
+// Normalize one result by integrated luminosity when requested
+std::string ApplySampleNormalization(const json &definition,
+                                     MeasurementResult &result) {
+  const std::string normalization =
+      definition.at("normalization").get<std::string>();
+  if (normalization == "EVENT_YIELD") {
+    return "events";
+  }
+  if (normalization != "CROSS_SECTION_PB") {
+    throw std::invalid_argument(
+        "fitharmonic:: normalization must be EVENT_YIELD or CROSS_SECTION_PB");
+  }
+  const double luminosity =
+      definition.at("integrated_luminosity_pb").get<double>();
+  const double relative_uncertainty =
+      definition.value("luminosity_relative_uncertainty", 0.0);
+  gra::harmonic::ApplyNormalization(result, luminosity, relative_uncertainty);
+  return "pb";
+}
+
+} // namespace
+
+// Run one card-defined detector-aware harmonic measurement
 int main(int argc, char *argv[]) {
   gra::aux::PrintArgv(argc, argv);
-  gra::rootstyle::SetROOTStyle();
   gra::aux::PrintFlashScreen(rang::fg::blue);
-
-  std::cout << rang::style::bold << "GRANIITTI - Spherical Harmonics Inverse Expansion"
+  std::cout << rang::style::bold
+            << "GRANIITTI - Detector-aware spherical harmonic measurement"
             << rang::style::reset << std::endl
             << std::endl;
   gra::aux::PrintVersion();
 
-  // Save the number of input arguments
-  const int NARGC = argc - 1;
   try {
     cxxopts::Options options(argv[0], "");
-    options.add_options()("r,ref",
-                          "Reference MC (angular flat MC sample)     <filename> without .hepmc3",
+    options.add_options()("c,card", "Analysis card <path>",
                           cxxopts::value<std::string>())(
-        "i,input",
-        "Input sample                              <filename1,filename2,...> without .hepmc3",
-        cxxopts::value<std::string>())(
-        "t,titles", "Phase space titles (3 of them)            <detector,fiducial,flat>",
-        cxxopts::value<std::string>())(
-        "l,legend", "Legend text                               <title1,title2,...>",
-        cxxopts::value<std::string>())("w,yaxis",
-                                       "Y-axis text                               <label>",
-                                       cxxopts::value<std::string>())(
-        "d,mode", "Input mode                                <MC|DATA,...>      ",
-        cxxopts::value<std::string>())(
-        "c,cuts", "Fiducial cuts                             <ETAMIN,ETAMAX,PTMIN,PTMAX>",
-        cxxopts::value<std::string>())(
-        "S,scale", "Scale plots (set -1 for unit normalized)  <scale1,scale2,...>",
-        cxxopts::value<std::string>())(
-        "f,frame", "Lorentz rest frame                        <CM|HX|CS|AH|PG|GJ>",
-        cxxopts::value<std::string>())("g,lmax",
-                                       "Maximum angular order                     <1|2|3|4|...>",
-                                       cxxopts::value<unsigned int>())(
-        "o,removeodd", "Remove negative M                         <true|false>",
-        cxxopts::value<std::string>())("v,removenegative",
-                                       "Remove odd M                              <true|false>",
-                                       cxxopts::value<std::string>())(
-        "e,eml", "Extended Maximum Likelihood               <true|false>",
-        cxxopts::value<std::string>())(
-        "a,svdreg", "SVD regularization weight                 <value>", cxxopts::value<double>())(
-        "b,l1reg", "L1 regularization weight                  <value>", cxxopts::value<double>())(
-        "M,mass", "System mass binning                       <bins,min,max>",
-        cxxopts::value<std::string>())("P,momentum",
-                                       "System momentum (pt) binning              <bins,min,max>",
-                                       cxxopts::value<std::string>())(
-        "Y,rapidity", "System rapidity binning                   <bins,min,max>",
-        cxxopts::value<std::string>())("z,fastsim",
-                                       "Fast simulation of efficiency response    <true|false,...>",
-                                       cxxopts::value<std::string>())(
-        "X,maximum", "Maximum number of events                  <value>",
-        cxxopts::value<unsigned int>())("H,help", "Help");
-
-    auto r = options.parse(argc, argv);
-
-    if (r.count("help") || NARGC == 0) {
+        "X,maximum", "Maximum event records per input <value>",
+        cxxopts::value<std::uint64_t>())("H,help", "Help");
+    const auto parsed = options.parse(argc, argv);
+    if (parsed.count("help") || !parsed.count("card")) {
       std::cout << options.help({""}) << std::endl;
-      std::cout << rang::style::bold << "Example:" << rang::style::reset << std::endl;
-      std::cout << "  " << argv[0] << " -r SH_2pi_REF -i SH_2pi ..." << std::endl << std::endl;
-
-      gra::aux::CheckUpdate();
-      return EXIT_FAILURE;
+      return parsed.count("help") ? EXIT_SUCCESS : EXIT_FAILURE;
     }
 
-    // Fiducial cuts
-    if (r.count("cuts")) {
-      const std::string   str  = r["cuts"].as<std::string>();
-      std::vector<double> cuts = gra::aux::SplitStr(str, double(0), ',');
-      if (cuts.size() != 4) {
-        throw std::invalid_argument("fitharmonic:: cuts not size 4 <ETAMIN,ETAMAX,PTMIN,PTMAX>");
+    json card = ReadCard(parsed["card"].as<std::string>());
+    if (parsed.count("maximum")) {
+      const std::uint64_t maximum = parsed["maximum"].as<std::uint64_t>();
+      if (maximum == 0) {
+        throw std::invalid_argument("fitharmonic:: maximum must be positive");
       }
-      fidcuts.ETA = {cuts[0], cuts[1]};
-      fidcuts.PT  = {cuts[2], cuts[3]};
-    } else {
-      throw std::invalid_argument("fitharmonic:: cuts parameter not given");
+      card["maximum"] = maximum;
     }
-
-    MHarmonic::HPARAM hparam;
-
-    // Discretization
-    auto tripletfunc = [&](const std::string &str) {
-      const std::string         vecstr = r[str].as<std::string>();
-      const std::vector<double> vec    = gra::aux::SplitStr(vecstr, double(0), ',');
-      if (vec.size() != 3) {
-        throw std::invalid_argument("analyze:: " + str +
-                                    " discretization not size 3 <bins,min,max>");
-      }
-      return vec;
-    };
-
-    hparam.M  = tripletfunc("M");
-    hparam.PT = tripletfunc("P");
-    hparam.Y  = tripletfunc("Y");
-
-    // ------------------------------------------------------------------
-    // INITIALIZE HARMONIC EXPANSION PARAMETERS
-
-    hparam.LMAX            = r["lmax"].as<unsigned int>();
-    hparam.REMOVEODD       = r["removeodd"].as<std::string>() == "true" ? true : false;
-    hparam.REMOVENEGATIVEM = r["removenegative"].as<std::string>() == "true" ? true : false;
-    hparam.EML             = r["eml"].as<std::string>() == "true" ? true : false;
-    hparam.SVDREG          = r["svdreg"].as<double>();
-    hparam.L1REG           = r["l1reg"].as<double>();
-
-    // Check valid values
-    if (hparam.LMAX < 1) {
-      throw std::invalid_argument("fitharmonic: Parameter 'lmax' should be integer >= 1");
-    }
-    if (hparam.SVDREG < 0) {
-      throw std::invalid_argument("fitharmonic: Parameter 'svdreg' should be > 0");
-    }
-    if (hparam.L1REG < 0) {
-      throw std::invalid_argument("fitharmonic: Parameter 'l1reg' should be > 0");
-    }
-
-    ha.Init(hparam);
-
-    // ------------------------------------------------------------------
-    // INPUT
-    const std::string ref = r["ref"].as<std::string>();
-
-    // Lorentz frame
-    const std::string FRAME = r["frame"].as<std::string>();
-
-    // Maximum number of events
-    int MAXEVENTS = 1E9;
-    if (r.count("maximum")) { MAXEVENTS = r["maximum"].as<unsigned int>(); }
-
-    // Read in reference MC for detector expansion (needs to be the same FRAME
-    // for all)
-    std::vector<gra::spherical::Omega> REFMC;
-    ReadIn(ref, REFMC, FRAME, MAXEVENTS, true);  // Always simulate reference here
-
-    // Check dimensions
-    auto checkdim = [](const std::vector<std::vector<std::string>> &vec) {
-      std::vector<std::size_t> dim(vec.size(), 0);
-      for (const auto &i : indices(vec)) { dim[i] = vec[i].size(); }
-      if ((std::equal(dim.begin() + 1, dim.end(), dim.begin()))) {
-        return true;
-      } else {
-        return false;
-      }
-    };
-
-    // Read in real DATA/MC
-    const std::vector<std::string> input   = gra::aux::SplitStr2Str(r["input"].as<std::string>());
-    const std::vector<std::string> legend  = gra::aux::SplitStr2Str(r["legend"].as<std::string>());
-    const std::vector<std::string> mode    = gra::aux::SplitStr2Str(r["mode"].as<std::string>());
-    const std::vector<std::string> fastsim = gra::aux::SplitStr2Str(r["fastsim"].as<std::string>());
-
-    if (!checkdim({input, legend, mode, fastsim})) {
-      throw std::invalid_argument("fitharmonic:: Input list with different dimensions");
-    }
-
-    // Scaling
-    std::vector<double> scale(input.size(), 1.0);  // Default 1.0 for all
-    if (r.count("scale")) {
-      const std::vector<std::string> str_vals =
-          gra::aux::SplitStr2Str(r["scale"].as<std::string>());
-      if (str_vals.size() == input.size()) {
-        for (auto const &i : indices(str_vals)) { scale[i] = std::stod(str_vals[i]); }
-      } else {
-        throw std::invalid_argument("analyzer::scale input list needs to be of length 0 or N");
-      }
-    }
-
-    std::vector<gra::spherical::Data> DATA;
-    DATA.resize(input.size());
-
-    const std::vector<std::string> titles = gra::aux::SplitStr2Str(r["titles"].as<std::string>());
-    if (titles.size() != 3) {
+    if (card.at("schema").get<std::string>() !=
+        "GRANIITTI_HARMONIC_ANALYSIS_V1") {
       throw std::invalid_argument(
-          "fitharmonic:: 'titles' list should be of size 3 "
-          "(detector,fiducial,reference)");
+          "fitharmonic:: unsupported analysis-card schema");
+    }
+    const MeasurementMode mode = gra::harmonic::ParseMeasurementMode(
+        card.at("measurement").get<std::string>());
+    const FiducialCuts cuts = ParseFiducialCuts(card.at("fiducial"), mode);
+    const PhaseSpaceGrid grid = ParseGrid(card.at("axes"), mode);
+    const FitConfig fit_config = ParseFitConfig(card.at("fit"));
+    const HepMCReadConfig read_config = ParseReadConfig(card, mode, cuts);
+    const HepMCAnalysisReader reader(read_config);
+
+    std::map<std::string, std::vector<ResponseEvent>> responses;
+    const json &response_definitions = card.at("responses");
+    if (!response_definitions.is_array() || response_definitions.empty()) {
+      throw std::invalid_argument(
+          "fitharmonic:: responses must be a non-empty array");
+    }
+    for (const json &definition : response_definitions) {
+      auto [name, events] = ReadResponseGroup(
+          definition, reader, read_config.seed);
+      if (!responses.emplace(name, std::move(events)).second) {
+        throw std::invalid_argument(
+            "fitharmonic:: response names must be unique");
+      }
     }
 
-    // yaxis
-    std::string yaxis_label = "";
-    if (r.count("yaxis")) { yaxis_label = r["yaxis"].as<std::string>(); }
+    json output;
+    output["schema"] = "GRANIITTI_HARMONIC_MEASUREMENT_V1";
+    output["configuration"] = card;
+    output["measurement"] = gra::harmonic::ToString(mode);
+    output["frame"] = gra::harmonic::ToString(read_config.frame);
+    output["angular_daughter"] = "pi+";
+    output["coordinate_convention"] = {
+        {"ABST1", "positive z proton arm"},
+        {"ABST2", "negative z proton arm"},
+        {"DPHI_PP", "wrap(phi_positive_z - phi_negative_z) in (-pi,pi]"}};
+    output["samples"] = json::array();
 
-    for (const auto &i : indices(input)) {
-      // Read in data
-      gra::spherical::Data data;
-      data.META.NAME    = input[i];
-      data.META.LEGEND  = legend[i];
-      data.META.MODE    = mode[i];
-      data.META.FRAME   = FRAME;
-      data.META.FASTSIM = (fastsim[i] == "true") ? true : false;
-      data.META.SCALE   = scale[i];
-      data.META.YAXIS   = yaxis_label;
+    const json &samples = card.at("samples");
+    if (!samples.is_array() || samples.empty()) {
+      throw std::invalid_argument(
+          "fitharmonic:: samples must be a non-empty array");
+    }
+    std::set<std::string> sample_names;
+    for (const json &definition : samples) {
+      const std::string name = definition.at("name").get<std::string>();
+      if (name.empty() || !sample_names.insert(name).second) {
+        throw std::invalid_argument(
+            "fitharmonic:: sample names must be non-empty and unique");
+      }
+      const SampleType type = gra::harmonic::ParseSampleType(
+          definition.at("type").get<std::string>());
+      if (type == SampleType::ResponseMC) {
+        throw std::invalid_argument(
+            "fitharmonic:: RESPONSE_MC belongs under responses");
+      }
+      const std::string response_name =
+          definition.at("response").get<std::string>();
+      const auto response = responses.find(response_name);
+      if (response == responses.end()) {
+        throw std::invalid_argument(
+            "fitharmonic:: sample references an unknown response");
+      }
 
-      data.META.TITLES = titles;
-      ReadIn(data.META.NAME, data.EVENTS, data.META.FRAME, MAXEVENTS, data.META.FASTSIM);
-
-      // Set data
-      DATA[i] = data;
+      const std::vector<DataEvent> data = ReadDataSample(definition, reader);
+      const HarmonicMeasurement measurement(grid, fit_config);
+      MeasurementResult result = measurement.Fit(response->second, data);
+      const std::string unit = ApplySampleNormalization(definition, result);
+      output["samples"].push_back(
+          {{"name", name},
+           {"type", gra::harmonic::ToString(type)},
+           {"response", response_name},
+           {"coefficient_unit", unit},
+           {"bin_normalization", "BIN_INTEGRAL"},
+           {"result", ResultJSON(result, grid, fit_config)}});
     }
 
-    // LOOP OVER HYPERBINS
-    ha.HyperLoop(fitwrapper, REFMC, DATA, hparam);
-
-    // Print out results for external analysis
-    // ha.PrintLoop(outputname);
-
-    // Plot all
-    std::string inputstr = r["input"].as<std::string>();
-    gra::aux::TrimAllSpace(inputstr);
-    std::string outputpath = ref + "___";
-    for (std::size_t i = 0; i < input.size(); ++i) {
-      const std::string marker = (i < input.size() - 1) ? "+" : "";
-      outputpath += input[i] + marker;
-    }
-
-    ha.PlotAll(outputpath);
-
-  } catch (const std::invalid_argument &e) {
-    gra::aux::PrintGameOver();
-    std::cerr << rang::fg::red << "Exception catched: " << rang::fg::reset << e.what() << std::endl;
-    return EXIT_FAILURE;
-  } catch (const std::ios_base::failure &e) {
-    gra::aux::PrintGameOver();
-    std::cerr << rang::fg::red << "Exception catched: std::ios_base::failure: " << rang::fg::reset
-              << e.what() << std::endl;
-    return EXIT_FAILURE;
-  } catch (const cxxopts::OptionException &e) {
-    gra::aux::PrintGameOver();
-    std::cerr << rang::fg::red << "Exception catched: Commandline options: " << rang::fg::reset
-              << e.what() << std::endl;
-    return EXIT_FAILURE;
-  } catch (const nlohmann::json::exception &e) {
-    gra::aux::PrintGameOver();
-    std::cerr << rang::fg::red << "Exception catched: JSON input: " << rang::fg::reset << e.what()
+    WriteOutput(card.at("output").get<std::string>(), output);
+    std::cout << "Wrote " << card.at("output").get<std::string>() << std::endl;
+  } catch (const cxxopts::OptionException &error) {
+    std::cerr << "fitharmonic:: command-line error: " << error.what()
               << std::endl;
     return EXIT_FAILURE;
-  } catch (...) {
-    gra::aux::PrintGameOver();
-    std::cerr << rang::fg::red << "Exception catched: Unspecified (...) (Probably input)"
-              << rang::fg::reset << std::endl;
+  } catch (const json::exception &error) {
+    std::cerr << "fitharmonic:: JSON error: " << error.what() << std::endl;
+    return EXIT_FAILURE;
+  } catch (const std::exception &error) {
+    std::cerr << "fitharmonic:: error: " << error.what() << std::endl;
     return EXIT_FAILURE;
   }
 
-  std::cout << "[fitharmonic:: done]" << std::endl;
-
+  std::cout << "[fitharmonic: done]" << std::endl;
   return EXIT_SUCCESS;
-}
-
-// Read events in
-void ReadIn(const std::string inputfile, std::vector<gra::spherical::Omega> &events,
-            const std::string &FRAME, int MAXEVENTS, bool SIMULATE) {
-  const std::string total_input = gra::aux::GetBasePath(2) + "/output/" + inputfile + ".hepmc3";
-  printf("ReadIn:: Maximum event count %d \n", MAXEVENTS);
-  printf("Reading %s \n", total_input.c_str());
-
-  HepMC3::ReaderAscii input_file(total_input);
-  // Reading failed
-  if (input_file.failed()) {
-    throw std::invalid_argument("MHarmonic::ReadIn: Failed to open <" + total_input + ">");
-  }
-  // Event loop
-  int events_read = 0;
-
-  // Dummy vector
-  M4Vec            pvec;
-  HepMC3::GenEvent evt(HepMC3::Units::GEV, HepMC3::Units::MM);
-
-  // Allocate memory here for speed
-  events.resize((int)1e7);
-  printf("Memory allocated \n");
-
-  // Event loop
-  while (!input_file.failed()) {
-    if (events_read >= MAXEVENTS) { break; }
-
-    // Read event from input file
-    input_file.read_event(evt);
-
-    if (events_read == 0) {
-      HepMC3::Print::listing(evt);
-      HepMC3::Print::content(evt);
-    }
-
-    // Mesons
-    std::vector<M4Vec> pip;
-    std::vector<M4Vec> pim;
-
-    // Find out central particles
-    std::vector<HepMC3::GenParticlePtr> find_pip =
-        HepMC3::applyFilter(HepMC3::StandardSelector::PDG_ID == PDG::PDG_pip, evt.particles());
-
-    std::vector<HepMC3::GenParticlePtr> find_pim =
-        HepMC3::applyFilter(HepMC3::StandardSelector::PDG_ID == PDG::PDG_pim, evt.particles());
-
-    for (const HepMC3::GenParticlePtr &p1 : find_pip) {
-      pip.push_back(gra::aux::HepMC2M4Vec(p1->momentum()));
-    }
-    for (const HepMC3::GenParticlePtr &p1 : find_pim) {
-      pim.push_back(gra::aux::HepMC2M4Vec(p1->momentum()));
-    }
-
-    // CHECK CONDITION
-    if (!(pip.size() == 1 && pim.size() == 1)) {
-      // HepMC3::Print::listing(evt);
-      // HepMC3::Print::content(evt);
-      continue;  // skip event, something is wrong
-    } else {
-      // printf("Found valid \n");
-    }
-
-    // ------------------------------------------------------------------
-    // Valid events
-
-    // System
-    M4Vec sys_ = pip[0] + pim[0];
-
-    // Find out beam protons
-    M4Vec p_beam_plus;
-    M4Vec p_beam_minus;
-    M4Vec p_final_plus;
-    M4Vec p_final_minus;
-
-    // Beam protons needed
-    if (FRAME == "GJ" || FRAME == "PG" || FRAME == "CS" || FRAME == "AH") {
-      for (HepMC3::ConstGenParticlePtr p1 :
-           HepMC3::applyFilter(HepMC3::StandardSelector::STATUS == PDG::PDG_BEAM &&
-                                   HepMC3::StandardSelector::PDG_ID == PDG::PDG_p,
-                               evt.particles())) {
-        // Print::line(p1);
-        pvec = gra::aux::HepMC2M4Vec(p1->momentum());
-        if (pvec.Pz() > 0) {
-          p_beam_plus = pvec;
-        } else {
-          p_beam_minus = pvec;
-        }
-      }
-    }
-
-    // Final state protons
-    if (FRAME == "GJ") {
-      for (HepMC3::ConstGenParticlePtr p1 :
-           HepMC3::applyFilter(HepMC3::StandardSelector::STATUS == PDG::PDG_STABLE &&
-                                   HepMC3::StandardSelector::PDG_ID == PDG::PDG_p,
-                               evt.particles())) {
-        // Print::line(p1);
-        pvec = gra::aux::HepMC2M4Vec(p1->momentum());
-        if (pvec.Pz() > 0) {
-          p_final_plus = pvec;
-        } else {
-          p_final_minus = pvec;
-        }
-      }
-    }
-
-    // ------------------------------------------------------------------
-    // Do the frame transformations
-    std::vector<M4Vec> rf = {pip[0], pim[0]};
-
-    const int direction = 1;  // PG and GJ
-
-    const M4Vec X = pip[0] + pim[0];
-
-    // Non-rotated rest frame
-    if (FRAME == "CM") {
-      gra::kinematics::CMframe(rf, X);
-      // Helicity frame
-    } else if (FRAME == "HX") {
-      gra::kinematics::HXframe(rf, X);
-      // Pseudo GJ-frame
-    } else if (FRAME == "PG") {
-      gra::kinematics::PGframe(rf, X, direction, p_beam_plus, p_beam_minus);
-      // Collins-Soper frame
-    } else if (FRAME == "CS") {
-      gra::kinematics::CSframe(rf, X, p_beam_plus, p_beam_minus);
-      // Anti-Helicity frame
-    } else if (FRAME == "AH") {
-      gra::kinematics::AHframe(rf, X, p_beam_plus, p_beam_minus);
-      // Gottfried-Jackson frame
-    } else if (FRAME == "GJ") {
-      gra::kinematics::GJframe(rf, X, direction, p_beam_plus - p_final_plus,
-                               p_beam_minus - p_final_minus);
-    } else {
-      throw std::invalid_argument("MHarmonic::ReadIn: Unknown Lorentz frame: " + FRAME);
-    }
-
-    // ------------------------------------------------------------------
-    // Construct microevent structure
-    gra::spherical::Omega evt;
-
-    // Event data
-    evt.costheta = std::cos(rf[0].Theta());
-    evt.phi      = rf[0].Phi();
-    evt.M        = sys_.M();
-    evt.Pt       = sys_.Pt();
-    evt.Y        = sys_.Rap();
-    evt.fiducial = false;
-    evt.selected = false;
-
-    // ------------------------------------------------------------------
-    // FIDUCIAL CUTS
-
-    if (pip[0].Eta() > fidcuts.ETA[0] && pip[0].Eta() < fidcuts.ETA[1] &&
-        pip[0].Pt() > fidcuts.PT[0] && pip[0].Pt() < fidcuts.PT[1] &&
-
-        pim[0].Eta() > fidcuts.ETA[0] && pim[0].Eta() < fidcuts.ETA[1] &&
-        pim[0].Pt() > fidcuts.PT[0] && pim[0].Pt() < fidcuts.PT[1]) {
-      evt.fiducial = true;
-    }
-
-    // ------------------------------------------------------------------
-    // EFFICIENCY (FAST) SIMULATION
-
-    // This block can be replaced with FULL GEANT SIMULATION / DELPHES style
-    // fast
-    // simulation
-    // This is a simple parametrization to mimick pt-efficiency effects.
-
-    evt.selected = true;
-
-    // Fast simulate smooth detector pt-efficiency curve here by hyperbolic
-    // tangent per
-    // particle
-    if (SIMULATE) {
-      if ((std::tanh(pip[0].Pt() * pt_scale) > rrand.U(0, 1)) &&
-          (std::tanh(pim[0].Pt() * pt_scale) > rrand.U(0, 1))) {
-        // fine
-      } else {
-        evt.selected = false;
-      }
-    }
-    // ------------------------------------------------------------------
-
-    events[events_read] = evt;
-
-    ++events_read;
-    if (events_read % 500000 == 0) { printf("Event %d \n", events_read); }
-  }
-
-  // Remove empty memory
-  events.resize(events_read);
-  printf("Events read: %d \n\n", events_read);
-
-  // Close HepMC file
-  input_file.close();
 }

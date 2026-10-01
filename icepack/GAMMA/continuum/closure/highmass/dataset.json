@@ -1,0 +1,69 @@
+// Exact QED and kT EPA high mass dimuon closure
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "kt_epa",
+      "label": "GRANIITTI $k_T$-EPA $\\gamma\\gamma \\to \\mu^+\\mu^-$",
+      "gencard": "../../../integrated/ATLAS_2015/gencard_mumu.json",
+      "parameters": {
+        "RADIATIVE.FSR_QED": "none",
+        "SCATTERING.PROCESS": "yy[EPA]<F> -> mu+ mu-",
+        "GENERAL.json:PARAM_SPIN.FORWARD_NOFLIP": false,
+        "INTEGRATOR.LOOPSCREEN.extra_kt": 3,
+        "INTEGRATOR.LOOPSCREEN.extra_phi": 3,
+        "GENCUTS.<F>.M": [20.0, 200.0],
+        "GENCUTS.<F>.Rap": [-2.4, 2.4],
+        "FIDCUTS.active": true,
+        "FIDCUTS.CENTRAL[\"*\"].Eta": [-2.4, 2.4],
+        "FIDCUTS.CENTRAL[\"*\"].Pt": [10.0, 1000.0],
+        "FIDCUTS.CENTRAL[\"[13,-13]\"].M": [20.0, 200.0]
+      }
+    },
+    {
+      "name": "full_qed",
+      "label": "GRANIITTI exact QED $\\gamma\\gamma \\to \\mu^+\\mu^-$",
+      "gencard": "../../../integrated/ATLAS_2015/gencard_mumu.json",
+      "parameters": {
+        "RADIATIVE.FSR_QED": "none",
+        "SCATTERING.PROCESS": "yy[QED]<F> -> mu+ mu-",
+        "GENERAL.json:PARAM_SPIN.FORWARD_NOFLIP": false,
+        "INTEGRATOR.LOOPSCREEN.extra_kt": 3,
+        "INTEGRATOR.LOOPSCREEN.extra_phi": 3,
+        "GENCUTS.<F>.M": [20.0, 200.0],
+        "GENCUTS.<F>.Rap": [-2.4, 2.4],
+        "FIDCUTS.active": true,
+        "FIDCUTS.CENTRAL[\"*\"].Eta": [-2.4, 2.4],
+        "FIDCUTS.CENTRAL[\"*\"].Pt": [10.0, 1000.0],
+        "FIDCUTS.CENTRAL[\"[13,-13]\"].M": [20.0, 200.0]
+      }
+    }
+  ],
+  "plot": {"normalization": "cross_section", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "nevents": 30000,
+    "mc_reference": "full_qed",
+    "require_comparison": true,
+    "max_shape_l1": 0.15,
+    "max_integral_factor": 1.05
+  },
+  "sets": [
+    {
+      "name": "High mass dimuon closure",
+      "title": "$|\\eta_{\\mu}|<2.4$, $p_{T,\\mu}>10$ GeV, $20<M_X<200$ GeV",
+      "data": false,
+      "pid": [13, -13],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"obs": "M"},
+        {"obs": "Rap"},
+        {"obs": "Pt"},
+        {"obs": "acoplanarity"},
+        {"obs": "dPhi_pp"}
+      ]
+    }
+  ]
+}

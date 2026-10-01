@@ -1,0 +1,152 @@
+// Measured UPC rapidity cross sections
+{
+  "active": true,
+  "type": "HEPDATA_2648536",
+  "reader": "icepack/UPC/_common/upc_reader.py",
+  "datapath": "HEPData/UPC/HEPData-ins2648536-v2-json/",
+  "samples": [
+    {
+      "name": "anan_impulse",
+      "label": "GRANIITTI GP[RES] (impulse)",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "NUCLEAR.photoproduction.target_model": "impulse",
+        "GENERIC.RNDSEED": 2648536
+      }
+    },
+    {
+      "name": "anan_glauber",
+      "label": "GRANIITTI GP[RES] (Glauber)",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "NUCLEAR.photoproduction.target_model": "glauber",
+        "GENERIC.RNDSEED": 2648537
+      }
+    },
+    {
+      "name": "anan_lta",
+      "label": "GRANIITTI GP[RES] (LTA)",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "NUCLEAR.photoproduction.target_model": "LTA",
+        "GENERIC.RNDSEED": 2648538
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "cross_section",
+    "unit": "mb",
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "errorbar"
+  },
+  "fit": {
+    "normalization": "cross_section"
+  },
+  "validation": {
+    "loopscreen": 1,
+    "nevents": 100000,
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "CMS $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($J/\\psi$, coherent, AnAn)",
+      "title": "$1.6<|y|<2.4$",
+      "plot_group": "CMS_5p02TeV_coherent_Jpsi_anan",
+      "samples":
+          ["anan_impulse", "anan_glauber", "anan_lta"],
+      "region": "anan",
+      // Generation uses one rapidity side for d sigma/dy, BR_JPSI_MUMU is the PDG value for J/psi -> mu+ mu-
+      // 1 / BR_JPSI_MUMU = 1 / 0.05961
+      "mc_scale": 16.7757087736957,
+      "pid":
+          [-13, 13],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table1.json",
+          "file_filter": "AnAn",
+          "obs": "abs_rap",
+          "scale": 0.001,
+          "fitw": 1.0
+        }
+      ]
+    },
+    {
+      "name": "CMS $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($J/\\psi$, coherent, 0n0n)",
+      "title": "$1.6<|y|<2.4$",
+      "plot_group": "CMS_5p02TeV_coherent_Jpsi_0n0n",
+      "samples":
+          ["anan_impulse", "anan_glauber", "anan_lta"],
+      "region": "0n0n",
+      // Generation uses one rapidity side for d sigma/dy, BR_JPSI_MUMU is the PDG value for J/psi -> mu+ mu-
+      // 1 / BR_JPSI_MUMU = 1 / 0.05961
+      "mc_scale": 16.7757087736957,
+      "pid":
+          [-13, 13],
+      "cuts": "./cuts_0n0n.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table1.json",
+          "file_filter": "0n0n",
+          "obs": "abs_rap",
+          "scale": 0.001,
+          "fitw": 1.0
+        }
+      ]
+    },
+    {
+      "name": "CMS $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($J/\\psi$, coherent, 0nXn)",
+      "title": "$1.6<|y|<2.4$",
+      "plot_group": "CMS_5p02TeV_coherent_Jpsi_0nxn",
+      "samples":
+          ["anan_impulse", "anan_glauber", "anan_lta"],
+      "region": "0nxn",
+      // Generation uses one rapidity side for d sigma/dy, BR_JPSI_MUMU is the PDG value for J/psi -> mu+ mu-
+      // 1 / BR_JPSI_MUMU = 1 / 0.05961
+      "mc_scale": 16.7757087736957,
+      "pid":
+          [-13, 13],
+      "cuts": "./cuts_0nxn.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table1.json",
+          "file_filter": "0nXn",
+          "obs": "abs_rap",
+          "scale": 0.001,
+          "fitw": 1.0
+        }
+      ]
+    },
+    {
+      "name": "CMS $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($J/\\psi$, coherent, XnXn)",
+      "title": "$1.6<|y|<2.4$",
+      "plot_group": "CMS_5p02TeV_coherent_Jpsi_xnxn",
+      "samples":
+          ["anan_impulse", "anan_glauber", "anan_lta"],
+      "region": "xnxn",
+      // Generation uses one rapidity side for d sigma/dy, BR_JPSI_MUMU is the PDG value for J/psi -> mu+ mu-
+      // 1 / BR_JPSI_MUMU = 1 / 0.05961
+      "mc_scale": 16.7757087736957,
+      "pid":
+          [-13, 13],
+      "cuts": "./cuts_xnxn.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table1.json",
+          "file_filter": "XnXn",
+          "obs": "abs_rap",
+          "scale": 0.001,
+          "fitw": 1.0
+        }
+      ]
+    }
+  ]
+}

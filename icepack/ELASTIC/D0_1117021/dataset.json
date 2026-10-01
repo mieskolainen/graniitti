@@ -1,0 +1,51 @@
+{
+  "active": true,
+  "validation": {
+    "loopscreen": 1,
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../_common/SETTINGS.json#/measurement"}
+  },
+  "type": "HEPDATA_1117021",
+  "reader": "./reader.py",
+  "datapath": "HEPData/EL/HEPData-ins1117021-v1-json/",
+  "samples": [
+    {
+      "name": "single",
+      "label": "GRANIITTI X[EL] (single)",
+      "gencard": "../_common/gencard.json",
+      "parameters": {
+        "GENERAL.json:PARAM_SOFT.active_model": "single",
+        "SCATTERING.BEAM": ["p+", "p-"],
+        "SCATTERING.ENERGY": [980.0000, 980.0000],
+        "GENCUTS.<Q>.t": [0.2400, 2.0000],
+      }
+    },
+    {
+      "name": "double",
+      "label": "GRANIITTI X[EL] (double)",
+      "gencard": "../_common/gencard.json",
+      "parameters": {
+        "GENERAL.json:PARAM_SOFT.active_model": "double",
+        "SCATTERING.BEAM": ["p+", "p-"],
+        "SCATTERING.ENERGY": [980.0000, 980.0000],
+        "GENCUTS.<Q>.t": [0.2400, 2.0000],
+      }
+    }
+  ],
+  "plot": {"normalization": "cross_section", "unit": "mb", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "sets": [
+    {
+      "name": "D0 $p\\bar{p}$ 1.96 TeV ($p\\bar{p}$)",
+      "title": "$0.24<|t|<2$ GeV$^2$",
+      "pid": [2212, -2212],
+      "cuts": "../_common/cuts.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {"file": "Table1.json", "obs": "mandelstam_t", "scale": 1E-3, "fitw": 1.0}
+      ]
+    }
+  ]
+}

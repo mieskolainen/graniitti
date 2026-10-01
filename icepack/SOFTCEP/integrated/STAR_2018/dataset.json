@@ -1,0 +1,23 @@
+// STAR 200 GeV publication integrated pion pair sample
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {"name": "pipi", "label": "GRANIITTI GP[RES+CON]", "gencard": "./gencard.json", "parameters": {}}
+  ],
+  "plot": {"normalization": "cross_section", "ratio_uncertainty": "none", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "sets": [
+    {
+      "name": "STAR pi+pi- integrated sample",
+      "title": "$|\\eta_{\\pi}|<0.7$, $p_{T,\\pi}>0.2$ GeV, $|y_X|<0.9$",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "../../../_common/cuts_inclusive.py",
+      "obs": "../../../_common/obs.py",
+      "hist": [
+        {"obs": "cross_section"}
+      ]
+    }
+  ]
+}

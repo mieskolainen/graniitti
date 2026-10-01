@@ -1,0 +1,92 @@
+// Durham chi_c fiducial cross sections compared with the nominal thesis fits
+// [REFERENCE: CERN-THESIS-2021-222, Eqs. (7.8) and (7.9), before the 90 percent limit construction]
+{
+  "active": false,
+  // Comparison inactive until an original HEPData table is available
+  "type": "OXFORD_THESIS_2021_CHIC",
+  "reader": "icepack/_common/reference_reader.py",
+  "datapath": "tests/references",
+  "reference_sample": "CERN-THESIS-2021-222 fiducial cross sections",
+  "sqrts": 13000,
+  "samples": [
+    {
+      "name": "chic1",
+      "label": "GRANIITTI gg[$\\chi_{c1}$]",
+      "gencard": "../_common/gencard.json",
+      "parameters": {
+        "SCATTERING.ENERGY": [6500, 6500],
+        "SCATTERING.PROCESS": "gg[chic(1)]<F> -> J/psi(1S)0 > {mu+ mu-} gamma",
+        "SCATTERING.LHAPDF": "MMHT2014lo68cl",
+        "GENERIC.RNDSEED": 12769,
+        "GENCUTS.<F>.M": [3.0, 4.0],
+        "GENCUTS.<F>.Rap": [1.0, 5.0],
+        "FIDCUTS.active": true,
+        "FIDCUTS.CENTRAL": {"ABS(13)": {"Eta": [2.0, 4.5]}}
+      }
+    },
+    {
+      "name": "chic2",
+      "label": "GRANIITTI gg[$\\chi_{c2}$]",
+      "gencard": "../_common/gencard.json",
+      "parameters": {
+        "SCATTERING.ENERGY": [6500, 6500],
+        "SCATTERING.PROCESS": "gg[chic(2)]<F> -> J/psi(1S)0 > {mu+ mu-} gamma",
+        "SCATTERING.LHAPDF": "MMHT2014lo68cl",
+        "GENERIC.RNDSEED": 12770,
+        "GENCUTS.<F>.M": [3.0, 4.0],
+        "GENCUTS.<F>.Rap": [1.0, 5.0],
+        "FIDCUTS.active": true,
+        "FIDCUTS.CENTRAL": {"ABS(13)": {"Eta": [2.0, 4.5]}}
+      }
+    }
+  ],
+  "plot": {"normalization": "cross_section", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "loopscreen": 1,
+    "require_comparison": true,
+    "require_differential_comparison": false,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "LHCb $pp$ 13 TeV ($\\chi_{c1} \\to J/\\psi\\,\\gamma \\to \\mu^+\\mu^-\\gamma$)",
+      "title": "$2<\\eta_{h}<4.5$",
+      "plotname": "Oxford_Thesis_chic1",
+      "sample": "chic1",
+      "pid": [-13, 13, 22],
+      "cuts": "../_common/cuts_inclusive.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {
+          "file": "exclusive_measurements.json",
+          "file_filter": "oxford_chic1",
+          "obs": "cross_section",
+          "differential": false,
+          "scale": 1e-12,
+          "fitw": 1.0
+        }
+      ]
+    },
+    {
+      "name": "LHCb $pp$ 13 TeV ($\\chi_{c2} \\to J/\\psi\\,\\gamma \\to \\mu^+\\mu^-\\gamma$)",
+      "title": "$2<\\eta_{h}<4.5$",
+      "plotname": "Oxford_Thesis_chic2",
+      "sample": "chic2",
+      "pid": [-13, 13, 22],
+      "cuts": "../_common/cuts_inclusive.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {
+          "file": "exclusive_measurements.json",
+          "file_filter": "oxford_chic2",
+          "obs": "cross_section",
+          "differential": false,
+          "scale": 1e-12,
+          "fitw": 1.0
+        }
+      ]
+    }
+  ]
+}

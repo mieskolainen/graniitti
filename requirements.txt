@@ -1,34 +1,60 @@
 # GRANIITTI python tools requirements
+#
+# Note. If running out of disk space, set:
+# export TMPDIR=<PATH_WITH_SPACE>/tmp
 
-# These are installed manually
-#hepmc3==3.2.5
-#lhapdf==6.4.5
-
-protobuf==3.20.2
+# HEP
+pyhepmc==2.16.1
+uproot==5.7.5
+awkward==2.12.0
 
 # Generic python
-make
-maketools
-pyjson5
-matplotlib
-numba==0.53.0
-numpy==1.22.0
-iminuit
-braceexpand
-termcolor
-tqdm
+pyjson5==2.0.1
+jsonpointer==3.0.0
+PyYAML==6.0.3
+matplotlib==3.11.1
+numba==0.67.0
+numpy==2.5.2
+scipy==1.18.0
+pandas==3.0.5
+xgboost==3.4.0
+scikit-learn==1.9.0
+sympy==1.14.0
+jupyter==1.1.1
+torch==2.13.0
+
+# Utilities
+braceexpand==0.1.7
+termcolor==3.3.0
+tqdm==4.70.0
+tabulate==0.10.0
+pdf2image==1.17.0
+psutil==7.2.2
 
 # ray + raytune algorithms
-ray[default]==1.12.0
-pandas
-tabulate
-HEBO
-hyperopt
-optuna
-bayesian-optimization
-nevergrad
-tensorboard
-tensorboardX
+protobuf==6.33.6 # Ray dashboard requires protobuf < 7 with opentelemetry-proto 1.41
+ray[default,tune]==2.58.0
+opentelemetry-proto==1.44.0
+
+# Optimization
+scikit-optimize==0.10.2
+optuna==4.9.0
+optunahub==0.4.1
+hyperopt==0.3.0
+bayesian-optimization==3.3.0
+disjoint_set==0.9.0
+GPy==1.14.2
+gpytorch==1.15.2
+pymoo==0.6.2
+catboost==1.2.8
+
+# HEBO optimizer [manual install]
+# pip install --no-deps --no-build-isolation hebo
+
+# Visualization
+graphviz==0.21
+tensorboard==2.21.0
 
 # Unit tests
-pytest
+pytest==9.1.1
+ruff==0.16.2

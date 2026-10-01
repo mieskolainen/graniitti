@@ -1,0 +1,12 @@
+! Pythia final state QED shower and forward string fragmentation
+PartonLevel:ISR = off
+PartonLevel:FSR = on
+! Keep the phenomenological forward q-diquark strings free of hard QCD and quark-QED showers
+TimeShower:QCDshower = off
+TimeShower:QEDshowerByQ = off
+TimeShower:QEDshowerByL = on
+TimeShower:QEDshowerByGamma = off
+HadronLevel:Hadronize = on
+HadronLevel:Decay = on
+ParticleDecays:limitTau0 = on
+ParticleDecays:tau0Max = 9.0

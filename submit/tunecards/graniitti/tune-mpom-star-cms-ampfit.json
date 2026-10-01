@@ -1,0 +1,46 @@
+{
+  "driver": "graniitti",
+  "optimizer": {
+    "ampfit": {
+      "starts": 64,
+      "start_relative_range": 0.1,
+      "maxiter": 300,
+      "history_size": 20,
+      "gradient_tolerance": 1e-07,
+      "relative_gradient_tolerance": 1e-09,
+      "learning_rate": 1.0,
+      "line_search_steps": 30,
+      "line_search_decay": 0.5,
+      "line_search_armijo": 0.0001,
+      "retry_failed_search": true,
+      "covariance": false,
+      "covariance_interval": 300.0,
+      "bank": {
+        "nodes": 5,
+        "closure_rtol": 0.03,
+        "batch_events": 1024,
+        "decay_zero": 1e-12,
+        "decay_steps": 3,
+        "mc_stat": "source"
+      }
+    }
+  },
+  "settings": {"$ref": "_defaults.json"},
+  "parameters": {"RES|f2_1950:MP:width": {"type": "uniform", "lower": {"$ref": "_defaults.json#/bounds/resonance/PARAM_RES/f2_1950/width/0"}, "upper": {"$ref": "_defaults.json#/bounds/resonance/PARAM_RES/f2_1950/width/1"}}},
+  "models": [
+    {
+      "model": "MP",
+      "exclude": ["rho_770", "phi_1020"],
+      "production": {"coherence": "coherent", "mode": "magnitude", "geometry": "spherical", "relative_bounds": {"$ref": "_defaults.json#/icetune/resonance/production/relative_bounds"}, "active_only": true},
+      "continuum_options": {"FF_offshell": true, "FF_transfer": true, "ff_type": "logexp", "tune_couplings": true, "production_mode": "magnitude", "pveto": true, "production_geometry": "direct", "production_relative_range": 1.0},
+      "decay": {
+        "branching": [{"$ref": "_defaults.json#/icetune/resonance/decay/branching/f0_980"}, {"$ref": "_defaults.json#/icetune/resonance/decay/branching/f0_1710"}, {"$ref": "_defaults.json#/icetune/resonance/decay/branching/f2_1950"}],
+        "zeta": {"mode": "phase_raw", "resonances": ["f0_980", "f2_1270", "f0_1500", "f2_1525", "f0_1710", "f2_1950"], "final_states": [[321, -321]]}
+      },
+      "phi": {"mode": "phase_raw"},
+      "vary": ["FF_transfer", "FF_prod", "omega"],
+      "datasets": {"$ref": "tune-mpom-res-con-coh.json#/models/0/datasets"},
+      "form_factors": {"fields": ["FF_prod"], "resonances": ["rho_770", "phi_1020"]}
+    }
+  ]
+}

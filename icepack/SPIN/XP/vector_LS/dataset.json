@@ -1,0 +1,82 @@
+// Pure LS components for the 1^- rho_770 resonance in XP
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "ls_0_1",
+      "label": "GRANIITTI XP[RES] ($(\\ell,S)=(0,1)$)",
+      "gencard": "icepack/SPIN/_common/gencard_ls.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "XP[RES]<F> -> pi+ pi- @RES{rho_770:1}",
+        "GENCUTS.<F>.M": [0.47706,1.07346],
+        "rho_770.json:PARAM_RES.MODELS.XP[\"[22,991]\"]": {
+          "basis": "g_ls",
+          "Lambda": 1.0,
+          "CP": [true,true],
+          "g_ls":
+              [[0,1,1.0,0.0],
+               [2,1,0.0,0.0]]
+        }
+      }
+    },
+    {
+      "name": "ls_2_1",
+      "label": "GRANIITTI XP[RES] ($(\\ell,S)=(2,1)$)",
+      "gencard": "icepack/SPIN/_common/gencard_ls.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "XP[RES]<F> -> pi+ pi- @RES{rho_770:1}",
+        "GENCUTS.<F>.M": [0.47706,1.07346],
+        "rho_770.json:PARAM_RES.MODELS.XP[\"[22,991]\"]": {
+          "basis": "g_ls",
+          "Lambda": 1.0,
+          "CP": [true,true],
+          "g_ls":
+              [[0,1,0.0,0.0],
+               [2,1,1.0,0.0]]
+        }
+      }
+    }
+  ],
+  "validation": {
+    "nevents": 30000,
+    "loopscreen": 0
+  },
+  "plot": {
+    "normalization": "unit_density",
+    "density_uncertainty": "shape",
+    "ratio_plot": true,
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "hist"
+  },
+  "fit": {
+    "normalization": "unit_density"
+  },
+  "sets": [
+    {
+      "name": "XP vector LS",
+      "samples": ["ls_0_1","ls_2_1"],
+      "plot_group": "XP_vector_LS",
+      "title": "XP $\\rho(770)$, $J^P=1^-$ LS couplings",
+      "data": false,
+      "pid": [211,-211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {
+          "obs": "costheta_CS"
+        },
+        {
+          "obs": "phi_CS"
+        },
+        {
+          "obs": "dPhi_pp"
+        },
+        {
+          "obs": "glueball_filter"
+        }
+      ]
+    }
+  ]
+}

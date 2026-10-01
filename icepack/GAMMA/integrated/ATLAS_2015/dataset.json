@@ -1,0 +1,79 @@
+// ATLAS 7 TeV exclusive dilepton integrated cross sections
+{
+  "active": true,
+  "type": "INTEGRATED_HEPDATA",
+  "reader": "../../ATLAS_1377585/_common/reader.py",
+  "datapath": "HEPData/CEP/HEPData-ins1377585-v1-json",
+  "samples": [
+    {
+      "name": "ee",
+      "label": "GRANIITTI $k_T$-EPA $\\gamma\\gamma \\to e^+e^-$",
+      "gencard": "./gencard_ee.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "yy[EPA]<F> -> e+ e-"
+      }
+    },
+    {
+      "name": "mumu",
+      "label": "GRANIITTI $k_T$-EPA $\\gamma\\gamma \\to \\mu^+\\mu^-$",
+      "gencard": "./gencard_mumu.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "yy[EPA]<F> -> mu+ mu-"
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "cross_section",
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "hist"
+  },
+  "fit": {
+    "normalization": "cross_section"
+  },
+  "validation": {
+    "loopscreen": 1,
+    "require_comparison": true,
+    "require_differential_comparison": false,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "ATLAS $pp$ 7 TeV ($e^+e^-$)",
+      "title": "$|\\eta_{e}|<2.4$, $p_{T,e}>12$ GeV, $M_X>24$ GeV",
+      "sample": "ee",
+      "pid": [-11, 11],
+      "cuts": "../../../_common/cuts_inclusive.py",
+      "obs": "../../../_common/obs.py",
+      "hist": [
+        {
+          "file": "Table1.json",
+          "file_filter": "e+ e-",
+          "obs": "cross_section",
+          "differential": false,
+          "scale": 1e-12,
+          "unit": "pb"
+        }
+      ]
+    },
+    {
+      "name": "ATLAS $pp$ 7 TeV ($\\mu^+\\mu^-$)",
+      "title": "$|\\eta_{\\mu}|<2.4$, $p_{T,\\mu}>10$ GeV, $M_X>20$ GeV",
+      "sample": "mumu",
+      "pid": [-13, 13],
+      "cuts": "../../../_common/cuts_inclusive.py",
+      "obs": "../../../_common/obs.py",
+      "hist": [
+        {
+          "file": "Table1.json",
+          "file_filter": "mu+ mu-",
+          "obs": "cross_section",
+          "differential": false,
+          "scale": 1e-12,
+          "unit": "pb"
+        }
+      ]
+    }
+  ]
+}

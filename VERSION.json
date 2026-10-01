@@ -1,7 +1,7 @@
 {
  "name": "GRANIITTI",
- "version": 1.090,
- "type": "pre-release",
- "date": "06.06.2023",
- "update": "Update installation scripts and LHAPDF to 6.5.4"
+ "version": 1.500,
+ "type": "beta",
+ "date": "28.09.2026",
+ "update": "New end-to-end helicity-amplitudes; New multi-eikonals; New icetune code; Update Conda env, CMake setup, HepMC3, Eigen; Bugfixes"
 }

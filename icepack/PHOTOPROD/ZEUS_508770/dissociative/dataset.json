@@ -1,0 +1,58 @@
+// ZEUS proton dissociative phi photoproduction
+// [REFERENCE: arXiv:hep-ex/9910038, Eqs. (9), (11)-(12), Tables 6-7]
+{
+  "active": true,
+  "type": "HEPDATA_508770",
+  "reader": "../reader.py",
+  "datapath": "HEPData/PHOTOPROD/HEPData-ins508770-v1-json/",
+  "samples": [
+    {
+      "name": "mp_res",
+      "label": "GRANIITTI MP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "MP[RES]<F> -> K+ K- @RES{phi_1020:1}"}
+    },
+    {
+      "name": "xp_res",
+      "label": "GRANIITTI XP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "XP[RES]<F> -> K+ K- @RES{phi_1020:1}"}
+    },
+    {
+      "name": "gp_res",
+      "label": "GRANIITTI GP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "GP[RES]<F> -> K+ K- @RES{phi_1020:1}"}
+    },
+    {
+      "name": "tp_res",
+      "label": "GRANIITTI TP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "TP[RES]<F> -> K+ K- @RES{phi_1020:1}"}
+    }
+  ],
+  "plot": {"normalization": "cross_section", "unit": "ub", "ratio_uncertainty": "combined", "stack": false, "data_style": "errorbar"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "loopscreen": 0,
+    "nevents": 100000,
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "ZEUS $e^+p$ 300 GeV ($\\gamma p \\to \\phi Y$)",
+      "plotname": "ZEUS_508770_dissociative_abs_t",
+      "title": "$85<W_{\\gamma p}<105$ GeV, $\\theta_e<3$ mrad, $0.99<M_{KK}<1.06$ GeV, $M_Y^2<0.1W^2$",
+      // Unfold the published photon flux and the generator phi -> K+ K- branching fraction
+      // 1 / (PHOTON_FLUX * BR_PHI_KK) = 1 / (0.0121 * 0.501)
+      "mc_scale": 164.95933752330052,
+      "pid": [321,-321],
+      "cuts": "./cuts.py",
+      "obs": "../../_common/diss_obs.py",
+      "hist": [{"file": "Table6.json", "obs": "abs_t", "scale": 1e-6, "fitw": 1.0}]
+    }
+  ]
+}

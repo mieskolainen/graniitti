@@ -1,0 +1,45 @@
+// H1 quasi-elastic psi(2S) ep cross section, including proton dissociation
+{
+  "active": true,
+  "type": "INTEGRATED_HEPDATA",
+  "reader": "../_common/ep_reader.py",
+  "datapath": "HEPData/PHOTOPROD/HEPData-ins451266-v1-json",
+  "samples": [
+    {
+      "name": "elastic", "label": "GP[RES] elastic",
+      "gencard": "./gencard.json", "parameters": {}
+    },
+    {
+      "name": "dissociative", "label": "GP[RES] proton dissociation",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.NSTARS": 1,
+        "GENERIC.RNDSEED": 451267,
+        "GENCUTS.<F>.Pt": [0.0,40.0],
+        // z > 0.95 and W < 160 imply M_Y < 36 GeV, this Xi bound allows 42 GeV
+        "GENCUTS.<F>.Xi":
+          [0.0,0.02]
+      }
+    }
+  ],
+  "plot": {"normalization": "cross_section", "unit": "nb", "stack": true, "ratio_uncertainty": "combined", "data_style": "errorbar"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "loopscreen": 0, "nevents": 50000, "require_comparison": true,
+    "measurement": {"$ref": "../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "H1 $e^+p \\to e^+\\psi(2S)Y$",
+      "plotname": "H1_451266_psi2S_ep",
+      "title": "$40<W_{\\gamma p}<160$ GeV, $Q^2<4$ GeV$^2$, $z>0.95$",
+      // [REFERENCE: H1, arXiv:hep-ex/9711012, Section 6, HEPData Table 2 ep column]
+      // Production cross section is corrected for decays, divide MC by BR(psi(2S) -> mu+ mu-) = 0.008
+      "mc_scale": 125.0,
+      "pid": [-13,13], "cuts": "./cuts.py", "obs": "../../_common/obs.py",
+      "hist": [
+        {"file": "Table2.json", "file_filter": "E+ P --> E+ PSI(3685) X", "obs": "cross_section", "differential": false, "scale": 1e-9, "unit": "nb"}
+      ]
+    }
+  ]
+}

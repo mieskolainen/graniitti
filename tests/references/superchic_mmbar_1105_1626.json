@@ -1,0 +1,242 @@
+{
+  "figure9_pi0pi0": {
+    "type": "differential",
+    "result": "theory",
+    "gencard": "icepack/DURHAM/_common/gencard.json",
+    "python_cuts": "icepack/DURHAM/_common/cuts_inclusive.py",
+    "pid":
+      [111, 111],
+    "cuts": "SuperChic (arXiv:1105.1626) $\\pi^0\\pi^0$",
+    "channel": "pi0pi0",
+    "bibtex": null,
+    "measurement": {
+      "value":
+        [0.01173395570493071, 0.03162277660168379, 0.012115276586285877, 0.005360023165391796, 0.0020209499381910767, 0.000825404185268019, 0.00026101572156825384, 0.00011547819846894582, 5.027926135296767e-05, 2.1202588707518313e-05, 1.083233848480129e-05, 5.027926135296767e-06, 2.9663488391777313e-06, 1.8360685383587859e-06, 9.685256148599336e-07, 5.62341325190349e-07, 3.0627469151724117e-07],
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 1.96,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze, M. G. Ryskin and W. J. Stirling",
+      "title": "Central exclusive production of meson pairs in the perturbative regime",
+      "arxiv": "1105.1626",
+      "version": 2,
+      "figure": 9
+    },
+    "source": "https://arxiv.org/abs/1105.1626",
+    "fiducial": {
+      "observable_note": "The Figure 9 left panel is labelled dsigma/dMX [pb/GeV], although its LaTeX caption says dsigma/dln(MX^2)",
+      "beams":
+        ["p", "pbar"],
+      "pdf": "MRST99",
+      "meson_pt_min_gev": 2.0,
+      "meson_absolute_eta_max": 1.8,
+      "meson_masses_neglected": true,
+      "distribution_amplitude": "Chernyak-Zhitnitsky",
+      "paper_f_pi_gev": 0.133,
+      "paper_wavefunction_normalization": "integral_0^1 phi_M(x) dx = f_M / (2 sqrt(3))",
+      "superchic_wavefunction_normalization": "integral_0^1 phi_M(x) dx = f_M / (2 sqrt(6))",
+      "graniitti_equivalent_f_pi_gev": 0.09404520189781082,
+      "normalization_note": "SuperChic src/subamps/pipi.f and eta.f use an extra 1/sqrt(2) per meson relative to Eq. (3.4) of arXiv:1105.1626v2; steering GRANIITTI f_pi to 0.133/sqrt(2) reproduces the plotted implementation",
+      "f_eta8_over_fpi": 1.0,
+      "f_eta0_over_fpi": 1.0,
+      "eta_theta8_deg": -15.0,
+      "eta_theta1_deg": -15.0
+    },
+    "digitization": {
+      "provenance": "Step paths extracted from plots/tot99p.eps in the official arXiv:1105.1626v2 source archive",
+      "source_sha256": "1635aba51339f24c710121745090cc2a62e66228dcd746d4a357484b4c8fa436",
+      "coordinate_mapping": {
+        "log10_dsigma_pb_per_gev": "y_plot / 144 - 8"
+      },
+      "y_plot":
+        [874, 936, 876, 825, 764, 708, 636, 585, 533, 479, 437, 389, 356, 326, 286, 252, 214]
+    },
+    "bins":
+      [3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 10.5, 11.5, 12.5, 13.5, 14.5, 15.5, 16.5, 17.5, 18.5, 19.5, 20.5],
+    "observable": "dsigma_dmx",
+    "dataset": "icepack/DURHAM/mmbar/dataset.json"
+  },
+  "figure9_etaeta": {
+    "type": "differential",
+    "result": "theory",
+    "gencard": "icepack/DURHAM/_common/gencard.json",
+    "python_cuts": "icepack/DURHAM/_common/cuts_inclusive.py",
+    "pid":
+      [221, 221],
+    "cuts": "SuperChic (arXiv:1105.1626) $\\eta\\eta$",
+    "channel": "etaeta",
+    "bibtex": null,
+    "measurement": {
+      "value":
+        [0.05623413251903491, 0.9841369898850127, 0.47924275438848674, 0.23337565805823296, 0.12115276586285877, 0.06598488200835592, 0.02694980055906946, 0.011006941712522103, 0.004792427543884867, 0.002189161379132399, 0.0010491397291363092, 0.0005360023165391796, 0.00028274106458819746, 0.00015647481416580206, 8.941057521594816e-05, 5.191319731924577e-05, 3.11211441765873e-05],
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 1.96,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze, M. G. Ryskin and W. J. Stirling",
+      "title": "Central exclusive production of meson pairs in the perturbative regime",
+      "arxiv": "1105.1626",
+      "version": 2,
+      "figure": 9
+    },
+    "source": "https://arxiv.org/abs/1105.1626",
+    "fiducial": {
+      "observable_note": "The Figure 9 left panel is labelled dsigma/dMX [pb/GeV], although its LaTeX caption says dsigma/dln(MX^2)",
+      "beams":
+        ["p", "pbar"],
+      "pdf": "MRST99",
+      "meson_pt_min_gev": 2.0,
+      "meson_absolute_eta_max": 1.8,
+      "meson_masses_neglected": true,
+      "distribution_amplitude": "Chernyak-Zhitnitsky",
+      "paper_f_pi_gev": 0.133,
+      "paper_wavefunction_normalization": "integral_0^1 phi_M(x) dx = f_M / (2 sqrt(3))",
+      "superchic_wavefunction_normalization": "integral_0^1 phi_M(x) dx = f_M / (2 sqrt(6))",
+      "graniitti_equivalent_f_pi_gev": 0.09404520189781082,
+      "normalization_note": "SuperChic src/subamps/pipi.f and eta.f use an extra 1/sqrt(2) per meson relative to Eq. (3.4) of arXiv:1105.1626v2; steering GRANIITTI f_pi to 0.133/sqrt(2) reproduces the plotted implementation",
+      "f_eta8_over_fpi": 1.0,
+      "f_eta0_over_fpi": 1.0,
+      "eta_theta8_deg": -15.0,
+      "eta_theta1_deg": -15.0
+    },
+    "digitization": {
+      "provenance": "Step paths extracted from plots/tot99p.eps in the official arXiv:1105.1626v2 source archive",
+      "source_sha256": "1635aba51339f24c710121745090cc2a62e66228dcd746d4a357484b4c8fa436",
+      "coordinate_mapping": {
+        "log10_dsigma_pb_per_gev": "y_plot / 144 - 8"
+      },
+      "y_plot":
+        [972, 1151, 1106, 1061, 1020, 982, 926, 870, 818, 769, 723, 681, 641, 604, 569, 535, 503]
+    },
+    "bins":
+      [3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 10.5, 11.5, 12.5, 13.5, 14.5, 15.5, 16.5, 17.5, 18.5, 19.5, 20.5],
+    "observable": "dsigma_dmx",
+    "dataset": "icepack/DURHAM/mmbar/dataset.json"
+  },
+  "figure9_etaetap": {
+    "type": "differential",
+    "result": "theory",
+    "gencard": "icepack/DURHAM/_common/gencard.json",
+    "python_cuts": "icepack/DURHAM/_common/cuts_inclusive.py",
+    "pid":
+      [221, 331],
+    "cuts": "SuperChic (arXiv:1105.1626) $\\eta\\eta\\prime$",
+    "channel": "etaetap",
+    "bibtex": null,
+    "measurement": {
+      "value":
+        [1.421601188164629, 26.94980055906946, 13.123677681963649, 6.39080484186031, 3.3176711278428614, 1.8360685383587858, 0.7379986299046447, 0.3062746915172412, 0.1312367768196365, 0.05994842503189409, 0.029192936175372743, 0.014677992676220705, 0.007867438076599394, 0.004284937033794996, 0.002448436746822229, 0.0014216011881646262, 0.0008659643233600654],
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 1.96,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze, M. G. Ryskin and W. J. Stirling",
+      "title": "Central exclusive production of meson pairs in the perturbative regime",
+      "arxiv": "1105.1626",
+      "version": 2,
+      "figure": 9
+    },
+    "source": "https://arxiv.org/abs/1105.1626",
+    "fiducial": {
+      "observable_note": "The Figure 9 left panel is labelled dsigma/dMX [pb/GeV], although its LaTeX caption says dsigma/dln(MX^2)",
+      "beams":
+        ["p", "pbar"],
+      "pdf": "MRST99",
+      "meson_pt_min_gev": 2.0,
+      "meson_absolute_eta_max": 1.8,
+      "meson_masses_neglected": true,
+      "distribution_amplitude": "Chernyak-Zhitnitsky",
+      "paper_f_pi_gev": 0.133,
+      "paper_wavefunction_normalization": "integral_0^1 phi_M(x) dx = f_M / (2 sqrt(3))",
+      "superchic_wavefunction_normalization": "integral_0^1 phi_M(x) dx = f_M / (2 sqrt(6))",
+      "graniitti_equivalent_f_pi_gev": 0.09404520189781082,
+      "normalization_note": "SuperChic src/subamps/pipi.f and eta.f use an extra 1/sqrt(2) per meson relative to Eq. (3.4) of arXiv:1105.1626v2; steering GRANIITTI f_pi to 0.133/sqrt(2) reproduces the plotted implementation",
+      "f_eta8_over_fpi": 1.0,
+      "f_eta0_over_fpi": 1.0,
+      "eta_theta8_deg": -15.0,
+      "eta_theta1_deg": -15.0
+    },
+    "digitization": {
+      "provenance": "Step paths extracted from plots/tot99p.eps in the official arXiv:1105.1626v2 source archive",
+      "source_sha256": "1635aba51339f24c710121745090cc2a62e66228dcd746d4a357484b4c8fa436",
+      "coordinate_mapping": {
+        "log10_dsigma_pb_per_gev": "y_plot / 144 - 8"
+      },
+      "y_plot":
+        [1174, 1358, 1313, 1268, 1227, 1190, 1133, 1078, 1025, 976, 931, 888, 849, 811, 776, 742, 711]
+    },
+    "bins":
+      [3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 10.5, 11.5, 12.5, 13.5, 14.5, 15.5, 16.5, 17.5, 18.5, 19.5, 20.5],
+    "observable": "dsigma_dmx",
+    "dataset": "icepack/DURHAM/mmbar/dataset.json"
+  },
+  "figure9_etapetap": {
+    "type": "differential",
+    "result": "theory",
+    "gencard": "icepack/DURHAM/_common/gencard.json",
+    "python_cuts": "icepack/DURHAM/_common/cuts_inclusive.py",
+    "pid":
+      [331, 331],
+    "cuts": "SuperChic (arXiv:1105.1626) $\\eta\\prime\\eta\\prime$",
+    "channel": "etapetap",
+    "bibtex": null,
+    "measurement": {
+      "value":
+        [9.841369898850127, 189.57356524063792, 90.8517575651688, 44.241855538479236, 23.337565805823296, 12.710617996147432, 5.191319731924588, 2.1202588707518313, 0.9231616990210255, 0.4216965034285822, 0.2020949938191077, 0.1032497215000987, 0.05446419777411327, 0.03014162529877392, 0.01694988151390348, 0.01, 0.005994842503189409],
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 1.96,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze, M. G. Ryskin and W. J. Stirling",
+      "title": "Central exclusive production of meson pairs in the perturbative regime",
+      "arxiv": "1105.1626",
+      "version": 2,
+      "figure": 9
+    },
+    "source": "https://arxiv.org/abs/1105.1626",
+    "fiducial": {
+      "observable_note": "The Figure 9 left panel is labelled dsigma/dMX [pb/GeV], although its LaTeX caption says dsigma/dln(MX^2)",
+      "beams":
+        ["p", "pbar"],
+      "pdf": "MRST99",
+      "meson_pt_min_gev": 2.0,
+      "meson_absolute_eta_max": 1.8,
+      "meson_masses_neglected": true,
+      "distribution_amplitude": "Chernyak-Zhitnitsky",
+      "paper_f_pi_gev": 0.133,
+      "paper_wavefunction_normalization": "integral_0^1 phi_M(x) dx = f_M / (2 sqrt(3))",
+      "superchic_wavefunction_normalization": "integral_0^1 phi_M(x) dx = f_M / (2 sqrt(6))",
+      "graniitti_equivalent_f_pi_gev": 0.09404520189781082,
+      "normalization_note": "SuperChic src/subamps/pipi.f and eta.f use an extra 1/sqrt(2) per meson relative to Eq. (3.4) of arXiv:1105.1626v2; steering GRANIITTI f_pi to 0.133/sqrt(2) reproduces the plotted implementation",
+      "f_eta8_over_fpi": 1.0,
+      "f_eta0_over_fpi": 1.0,
+      "eta_theta8_deg": -15.0,
+      "eta_theta1_deg": -15.0
+    },
+    "digitization": {
+      "provenance": "Step paths extracted from plots/tot99p.eps in the official arXiv:1105.1626v2 source archive",
+      "source_sha256": "1635aba51339f24c710121745090cc2a62e66228dcd746d4a357484b4c8fa436",
+      "coordinate_mapping": {
+        "log10_dsigma_pb_per_gev": "y_plot / 144 - 8"
+      },
+      "y_plot":
+        [1295, 1480, 1434, 1389, 1349, 1311, 1255, 1199, 1147, 1098, 1052, 1010, 970, 933, 897, 864, 832]
+    },
+    "bins":
+      [3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 10.5, 11.5, 12.5, 13.5, 14.5, 15.5, 16.5, 17.5, 18.5, 19.5, 20.5],
+    "observable": "dsigma_dmx",
+    "dataset": "icepack/DURHAM/mmbar/dataset.json"
+  }
+}

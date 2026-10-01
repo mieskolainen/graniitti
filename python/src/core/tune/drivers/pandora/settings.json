@@ -1,0 +1,102 @@
+{
+  "resolution": {"resamples": 256, "seed": 12345},
+  "binning": {
+    "energy": [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200],
+    "pt": [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200],
+    "costheta": [-1, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+    "eta": [-5, -4.5, -4, -3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5],
+    "extend_factor": 2,
+    "subdivisions": 2,
+    "matching_bins": 40
+  },
+  "histogram": {"min_bins": 20, "max_bins": 80, "multiplier": 2},
+  "plots": {
+    "imperial_colors": [0, 1, 2, 3, 4],
+    "savefig": {"dpi": 140},
+    "grid": {"alpha": 0.25},
+    "legend": {"loc": "best"},
+    "reference": {"color": "black", "linestyle": ":"},
+    "rate_ticks": [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+    "histogram": {
+      "figure": {"figsize": [8, 5.4]},
+      "fill": {"fill": true, "alpha": 0.65},
+      "interval": {"color": "0.5", "alpha": 0.2},
+      "calibration_alpha": 0.15,
+      "annotation_position": [0.03, 0.04],
+      "annotation": {"ha": "left", "va": "bottom", "bbox": {"facecolor": "white", "edgecolor": "none", "alpha": 0.8}},
+      "format": ".4f"
+    },
+    "class_confusion": {
+      "figure": {"figsize": [12.4, 8.6], "constrained_layout": true},
+      "cmaps": ["Blues", "Greens"],
+      "colorbar_pads": [0.18, 0.92],
+      "colorbar_size": "3.6%",
+      "empty_color": "0.96",
+      "cell": {"edgecolor": "0.85", "linewidth": 0.6},
+      "diagonal": {"fill": false, "edgecolor": "0.15", "linewidth": 1.6},
+      "text": {"ha": "center", "va": "center", "fontsize": 7.2},
+      "text_offsets": [0.26, 0.25],
+      "text_threshold": 0.55,
+      "text_colors": ["black", "white"],
+      "tick_rotation": 35,
+      "rate_format": ".2f",
+      "count_format": ".4g"
+    },
+    "performance": {
+      "figure": {"figsize": [8, 6.2], "sharex": true, "constrained_layout": true, "gridspec_kw": {"height_ratios": [1, 1]}},
+      "errorbar": {"fmt": "o-", "capsize": 3, "markersize": 4}
+    },
+    "resolution": {
+      "figure": {"figsize": [11.2, 8.2], "sharex": true, "constrained_layout": true},
+      "errorbar": {"fmt": "o-"}
+    },
+    "matching": {
+      "figure": {"figsize": [12.4, 8.6], "constrained_layout": true},
+      "errorbar": {"fmt": "o-", "markersize": 3, "capsize": 2},
+      "legend": {"loc": "best", "fontsize": 8},
+      "cmap": "Blues",
+      "cut_linestyle": "--",
+      "angle_margin": 1.05
+    },
+    "composition": {
+      "figure": {"figsize": [13.2, 6.8], "constrained_layout": true},
+      "fraction_figure": {"figsize": [9.2, 5.4], "constrained_layout": true},
+      "formats": ["o-", "s-"],
+      "errorbar": {"linewidth": 1.8, "capsize": 3},
+      "grid": {"alpha": 0.22},
+      "cmap": "Blues",
+      "diagonal": {"linestyle": "--", "color": "0.4", "linewidth": 1},
+      "tick_rotation": 30,
+      "fraction_ticks": {"nbins": 8, "min_n_ticks": 5}
+    },
+    "loss": {"figure": {}, "format": ".4f"},
+    "contributions": {
+      "figure": {"figsize": [14, 7.6]},
+      "line": {"linewidth": 1.6},
+      "linestyles": ["-", "--", "-.", ":", "-"],
+      "reference": {"color": "0.4", "linewidth": 0.8},
+      "bar": {"height": 0.6},
+      "bar_label": {"fmt": "%.3g", "padding": 4, "fontsize": 9},
+      "bar_margin": 0.25,
+      "title": {"fontsize": 12, "pad": 10},
+      "grid": {"alpha": 0.2},
+      "ticks": {"labelsize": 10},
+      "legend": {"loc": "upper center", "frameon": false},
+      "label": {"fontsize": 12},
+      "energy_label": {"fontsize": 11},
+      "layout": {"h_pad": 2, "w_pad": 2},
+      "energy_rect": [0, 0, 1, 0.94],
+      "particle_rect": [0, 0, 1, 1]
+    },
+    "heatmap": {
+      "figure": {"figsize": [8.4, 6.5], "constrained_layout": true},
+      "residual_colors": ["#b9a3cf", "#ffffff", "#9acb9b"],
+      "energy_colors": ["#ffffff", "#fcae91", "#cb181d"],
+      "empty_scale": 1e-12,
+      "text": {"ha": "center", "va": "center", "fontsize": 8},
+      "format": ".3g",
+      "tick_rotation": 35,
+      "colorbar": {"fraction": 0.046, "pad": 0.04}
+    }
+  }
+}

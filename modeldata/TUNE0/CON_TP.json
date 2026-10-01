@@ -1,0 +1,193 @@
+// T-Pomeron exchange couplings and form factor parameters
+// 
+// (c) 2026 Mikael Mieskolainen
+// Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+
+{
+  // Pomeron couplings from arXiv:1309.3478, arXiv:1901.11490 and arXiv:2508.06334
+  "995": {
+    "[111,111]": {
+      // [REFERENCE: arXiv: 1309.3478, Sec. 3]
+      "g_tensor": [1.76],
+      "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5, "n": 1.0},
+      "FF_offshell": {"type": "power", "norm": "pole", "Lambda2": 0.4718, "n": 1.0}
+    },
+    "[211,211]": {
+      // [REFERENCE: arXiv: 1309.3478, Sec. 3]
+      "g_tensor": [1.76],
+      "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5, "n": 1.0},
+      "FF_offshell": {"type": "power", "norm": "pole", "Lambda2": 0.4705, "n": 1.0}
+    },
+    "[311,311]": {
+      // [REFERENCE: arXiv: 1804.04706, Eqs. (3.21)-(3.31)]
+      "g_tensor": [1.54],
+      "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5, "n": 1.0},
+      "FF_offshell": {"type": "power", "norm": "pole", "Lambda2": 0.2424, "n": 1.0}
+    },
+    "[321,321]": {
+      // [REFERENCE: arXiv: 1804.04706, Eqs. (3.21)-(3.31)]
+      "g_tensor": [1.54],
+      "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5, "n": 1.0},
+      "FF_offshell": {"type": "power", "norm": "pole", "Lambda2": 0.2463, "n": 1.0}
+    },
+    "[2212,2212]": {
+      // [REFERENCE: arXiv: 1309.3478, Sec. 3]
+      "g_tensor": [1.87],
+      // [REFERENCE: arXiv: 1309.3478, Eqs. (3.29)-(3.32)]
+      "FF_transfer": {"type": "dirac", "norm": "zero", "EM": "DIPOLE"},
+      "FF_offshell": {"type": "exp", "norm": "pole", "b": 1.0}
+    },
+    "[2112,2112]": {
+      "g_tensor":    {"$ref": "#/995/[2212,2212]/g_tensor"},
+      "FF_transfer": {"$ref": "#/995/[2212,2212]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/995/[2212,2212]/FF_offshell"}
+    },
+    "[3122,3122]": {
+      // [REFERENCE: arXiv: 1801.03902, Eq. (4.1)]
+      "g_tensor": [1.68],
+      "FF_transfer": {"$ref": "#/995/[2212,2212]/FF_transfer"},
+      "FF_offshell": {"type": "exp", "norm": "pole", "b": 1.0}
+    },
+    "[113,113]": {
+      // [REFERENCE: arXiv: 2508.06334v2, Appendix B, set B]
+      "g_tensor": [0.70,6.20],
+      "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5, "n": 1.0},
+      "FF_offshell": {"type": "exp", "norm": "pole", "b": 0.3906}
+    },
+    "[223,223]": {
+      // [REFERENCE: arXiv: 1409.8483, Eq. (B.88), isospin equality]
+      "g_tensor":    {"$ref": "#/995/[113,113]/g_tensor"},
+      "FF_transfer": {"$ref": "#/995/[113,113]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/995/[113,113]/FF_offshell"}
+    },
+    "[333,333]": {
+      // [REFERENCE: arXiv: 1804.04706, Table II]
+      "g_tensor": [0.49,4.27],
+      "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 1.0, "n": 1.0},
+      "FF_offshell": {"type": "exp", "norm": "pole", "b": 0.3906}
+    },
+    // Pomeron-phi-Odderon benchmark from arXiv:1901.11490
+    "[333,9993]": {
+      // [REFERENCE: arXiv: 1901.11490, Sec. III, a = 0 and b = 1 benchmark]
+      "g_tensor": [0.0,1.0],
+      "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 1.0, "n": 1.0},
+      "FF_offshell": {"type": "power", "norm": "zero", "Lambda2": 1.0, "n": 1.0},
+      "threshold": true
+    }
+  },
+  // Positive-C secondary Reggeons from arXiv:1309.3478, arXiv:1804.04706 and arXiv:2508.06334
+  "9915": {
+    "[111,111]": {
+      // [REFERENCE: arXiv: 1309.3478, Sec. 3]
+      "g_tensor": [9.30],
+      "FF_transfer": {"$ref": "#/995/[111,111]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/995/[111,111]/FF_offshell"}
+    },
+    "[211,211]": {
+      // [REFERENCE: arXiv: 1309.3478, Sec. 3]
+      "g_tensor": [9.30],
+      "FF_transfer": {"$ref": "#/995/[211,211]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/995/[211,211]/FF_offshell"}
+    },
+    "[311,311]": {
+      // [REFERENCE: arXiv: 1804.04706, Eqs. (3.21)-(3.31)]
+      "g_tensor": [4.47],
+      "FF_transfer": {"$ref": "#/995/[311,311]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/995/[311,311]/FF_offshell"}
+    },
+    "[321,321]": {
+      // [REFERENCE: arXiv: 1804.04706, Eqs. (3.21)-(3.31)]
+      "g_tensor": [4.47],
+      "FF_transfer": {"$ref": "#/995/[321,321]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/995/[321,321]/FF_offshell"}
+    },
+    "[2212,2212]": {
+      // [REFERENCE: arXiv: 1309.3478, Sec. 3]
+      "g_tensor": [11.04],
+      "FF_transfer": {"$ref": "#/995/[2212,2212]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/995/[2212,2212]/FF_offshell"}
+    },
+    "[113,113]": {
+      // [REFERENCE: arXiv: 2508.06334v2, Appendix B, set B]
+      "g_tensor": [0.0000,9.3000],
+      "FF_transfer": {"$ref": "#/995/[113,113]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/995/[113,113]/FF_offshell"}
+    }
+  },
+  "9925": {
+    "[311,311]": {
+      // [REFERENCE: arXiv: 1804.04706, Eqs. (3.21)-(3.31), neutral-kaon isospin partner]
+      "g_tensor": [-2.2800],
+      "FF_transfer": {"$ref": "#/995/[311,311]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/995/[311,311]/FF_offshell"}
+    },
+    "[321,321]": {
+      // [REFERENCE: arXiv: 1804.04706, Eqs. (3.21)-(3.31)]
+      "g_tensor": [2.28],
+      "FF_transfer": {"$ref": "#/995/[321,321]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/995/[321,321]/FF_offshell"}
+    },
+    "[2212,2212]": {
+      // [REFERENCE: arXiv: 1309.3478, Sec. 3]
+      "g_tensor": [1.68],
+      "FF_transfer": {"$ref": "#/995/[2212,2212]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/995/[2212,2212]/FF_offshell"}
+    }
+  },
+  // Vector Odderon proton coupling from arXiv:1911.01909
+  "9993": {
+    "[2212,2212]": {
+      // [REFERENCE: arXiv: 1911.01909, Sec. III, beta_Opp = 0.1 beta_Ppp]
+      "g_tensor": [0.1870],
+      "FF_transfer": {"$ref": "#/995/[2212,2212]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/995/[2212,2212]/FF_offshell"}
+    }
+  },
+  // Negative-C secondary Reggeons from arXiv:1309.3478 and arXiv:1804.04706
+  "9933": {
+    "[211,211]": {
+      // [REFERENCE: arXiv: 1309.3478, Sec. 3]
+      "g_tensor": [15.63],
+      "FF_transfer": {"$ref": "#/995/[211,211]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/995/[211,211]/FF_offshell"}
+    },
+    "[311,311]": {
+      // [REFERENCE: arXiv: 1804.04706, Eqs. (3.21)-(3.31), neutral-kaon isospin partner]
+      "g_tensor": [-7.1500],
+      "FF_transfer": {"$ref": "#/995/[311,311]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/995/[311,311]/FF_offshell"}
+    },
+    "[321,321]": {
+      // [REFERENCE: arXiv: 1804.04706, Eqs. (3.21)-(3.31)]
+      "g_tensor": [7.15],
+      "FF_transfer": {"$ref": "#/995/[321,321]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/995/[321,321]/FF_offshell"}
+    },
+    "[2212,2212]": {
+      // [REFERENCE: arXiv: 1309.3478, Sec. 3]
+      "g_tensor": [2.02],
+      "FF_transfer": {"$ref": "#/995/[2212,2212]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/995/[2212,2212]/FF_offshell"}
+    }
+  },
+  "9943": {
+    "[311,311]": {
+      // [REFERENCE: arXiv: 1804.04706, Eqs. (3.21)-(3.31)]
+      "g_tensor": [5.99],
+      "FF_transfer": {"$ref": "#/995/[311,311]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/995/[311,311]/FF_offshell"}
+    },
+    "[321,321]": {
+      // [REFERENCE: arXiv: 1804.04706, Eqs. (3.21)-(3.31)]
+      "g_tensor": [5.99],
+      "FF_transfer": {"$ref": "#/995/[321,321]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/995/[321,321]/FF_offshell"}
+    },
+    "[2212,2212]": {
+      // [REFERENCE: arXiv: 1309.3478, Sec. 3]
+      "g_tensor": [8.65],
+      "FF_transfer": {"$ref": "#/995/[2212,2212]/FF_transfer"},
+      "FF_offshell": {"$ref": "#/995/[2212,2212]/FF_offshell"}
+    }
+  }
+}

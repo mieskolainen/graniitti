@@ -1,0 +1,73 @@
+// GP continuum comparison for two, four and six charged pions
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "2pi",
+      "label": "GRANIITTI GP[CON] $2\\pi^{\\pm}$",
+      "gencard": "../_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "GP[CON]<F> -> pi+ pi-",
+        "GENCUTS.<F>.M": [0.0, 6.0],
+        "GENCUTS.<F>.Rap": [-0.9, 0.9],
+        "FIDCUTS.active": true,
+        "FIDCUTS.CENTRAL[\"*\"].Eta": [-0.9, 0.9],
+        "FIDCUTS.CENTRAL[\"*\"].Pt": [0.1, 1000.0]
+      }
+    },
+    {
+      "name": "4pi",
+      "label": "GRANIITTI GP[CON] $4\\pi^{\\pm}$",
+      "gencard": "../_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "GP[CON]<F> -> pi+ pi- pi+ pi-",
+        "GENCUTS.<F>.M": [0.0, 6.0],
+        "GENCUTS.<F>.Rap": [-0.9, 0.9],
+        "FIDCUTS.active": true,
+        "FIDCUTS.CENTRAL[\"*\"].Eta": [-0.9, 0.9],
+        "FIDCUTS.CENTRAL[\"*\"].Pt": [0.1, 1000.0]
+      }
+    },
+    {
+      "name": "6pi",
+      "label": "GRANIITTI GP[CON] $6\\pi^{\\pm}$",
+      "gencard": "../_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "GP[CON]<F> -> pi+ pi- pi+ pi- pi+ pi-",
+        "GENCUTS.<F>.M": [0.0, 6.0],
+        "GENCUTS.<F>.Rap": [-0.9, 0.9],
+        "FIDCUTS.active": true,
+        "FIDCUTS.CENTRAL[\"*\"].Eta": [-0.9, 0.9],
+        "FIDCUTS.CENTRAL[\"*\"].Pt": [0.1, 1000.0]
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "cross_section",
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "hist"
+  },
+  "fit": {"normalization": "cross_section"},
+  "sets": [
+    {
+      "name": "GP continuum charged pion multiplicities",
+      "title": "$|\\eta_{\\pi}|<0.9$, $p_{T,\\pi}>0.1$ GeV",
+      "plotname": "GP_CON_246pions",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SOFTCEP/processes/_common/obs.py",
+      "hist": [
+        {"obs": "M"},
+        {"obs": "Rap"},
+        {"obs": "Pt"},
+        {"obs": "t1"},
+        {"obs": "t2"},
+        {"obs": "Abs_t1t2"},
+        {"obs": "dPhi_pp"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+// Matched fiducial cross sections and decay distributions in F and C
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "F",
+      "label": "pipi F",
+      "gencard": "icepack/SPIN/_common/gencard_4body.json",
+      "parameters": {
+        "GENERIC.INTEGRATOR": "VEGAS",
+        "GENERIC.RNDSEED": 24681,
+        "SCATTERING.PROCESS": "GP[CON]<F> -> pi+ pi-",
+        "GENCUTS.<F>.M": [0.0, 4.0],
+        "GENCUTS.<F>.Rap": [-0.9, 0.9],
+        "FIDCUTS.active": true,
+        "FIDCUTS.CENTRAL[\"*\"].Eta": [-0.9, 0.9],
+        "FIDCUTS.CENTRAL[\"*\"].Rap": [-0.9, 0.9],
+        "FIDCUTS.CENTRAL[\"*\"].Pt": [0.15, 100000.0],
+        "FIDCUTS.CENTRAL[\"SYSTEM\"].M": [0.0, 4.0],
+        "FIDCUTS.CENTRAL[\"SYSTEM\"].Rap": [-0.9, 0.9],
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": true
+      }
+    },
+    {
+      "name": "C",
+      "label": "pipi C",
+      "gencard": "icepack/SPIN/_common/gencard_4body.json",
+      "parameters": {
+        "GENERIC.INTEGRATOR": "VEGAS",
+        "GENERIC.RNDSEED": 32600,
+        "SCATTERING.PROCESS": "GP[CON]<C> -> pi+ pi-",
+        "GENCUTS.<C>.M": [0.0, 4.0],
+        "GENCUTS.<C>.Rap": [-0.9, 0.9],
+        "FIDCUTS.active": true,
+        "FIDCUTS.CENTRAL[\"*\"].Eta": [-0.9, 0.9],
+        "FIDCUTS.CENTRAL[\"*\"].Rap": [-0.9, 0.9],
+        "FIDCUTS.CENTRAL[\"*\"].Pt": [0.15, 100000.0],
+        "FIDCUTS.CENTRAL[\"SYSTEM\"].M": [0.0, 4.0],
+        "FIDCUTS.CENTRAL[\"SYSTEM\"].Rap": [-0.9, 0.9],
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": true
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "cross_section",
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "hist"
+  },
+  "fit": {
+    "normalization": "cross_section"
+  },
+  "validation": {
+    "nevents": 50000,
+    "mc_reference": "F",
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "max_abs_integral_pull": 5.0,
+    "max_chi2_ndf": 3.0,
+    "max_shape_l1": 0.3,
+    "max_integral_factor": 1.12,
+    "min_mc_effective_events": 3000
+  },
+  "sets": [
+    {
+      "name": "pipi",
+      "title": "$|\\eta_{\\pi}|<0.9$, $|y_{\\pi}|<0.9$, $p_{T,\\pi}>0.15$ GeV, $M_X<4$ GeV, $|y_X|<0.9$",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "../_common/obs_two_body.py",
+      "hist": [
+        {
+          "obs": "cross_section"
+        },
+        {
+          "obs": "M"
+        },
+        {
+          "obs": "Rap"
+        },
+        {
+          "obs": "dPhi_pp"
+        },
+        {
+          "obs": "costheta_CS"
+        }
+      ]
+    }
+  ]
+}

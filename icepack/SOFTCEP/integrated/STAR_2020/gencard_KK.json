@@ -1,0 +1,141 @@
+// JSON(5) + single line/multiline comments allowed, trailing comma allowed
+//
+// The format is strictly upper/lower case sensitive
+//
+// mikael.mieskolainen@cern.ch, 2026
+{
+
+  // ----------------------------------------------------------------------
+  // Generic setup
+
+  "GENERIC" : {
+
+    "OUTPUT"     : "STAR_1792394_KK", // Output filename
+    "FORMAT"     : "hepmc3",     // hepmc3, hepmc2, hepevt
+    "CORES"      : 0,            // Number of CPU threads (0 for automatic)
+    "NEVENTS"    : 30000,        // Number of unweighted (weight = 1) events
+    "INTEGRATOR" : "VEGAS",         // "VEGAS" (default), "NEUROJAC", "FLAT" (for debug)
+    "WEIGHTED"   : false,        // Weighted events (default false)
+    "MODELPARAM" : "TUNE0",       // General model tune
+    "HIST"       : 1,            // On-the-flight histograms (0 = off,1,2)
+    "RNDSEED"    : 12468         // Random seed (uint)
+  },
+
+  // ----------------------------------------------------------------------
+  // Scattering setup
+
+  "SCATTERING" : {
+
+    
+    "BEAM"    : ["p+","p+"],     // Beam PDG-ID / Name
+    "ENERGY"  : [100, 100],      // Beam energy in the lab (GeV)
+    "PROCESS" : "GP[RES+CON]<F> -> K+ K-", // Process
+    "RES"     : ["f0_980", "phi_1020", "f2_1270", "f0_1500", "f2_1525", "f0_1710", "f2_1950"],
+    "LOOPSCREEN" : true,           // Initial state event-by-event screening loop
+    "NSTARS"  : 0,  // Forward dissociation (0 = elastic, 1 = single, 2 = double)
+    "BEAMFRAG": "none",  // Forward dissociation particle production ('none', 'fewbody', 'cylinder', 'diquark')
+    "LHAPDF"  : "NNPDF31_lo_as_0118"       // LHAPDF parton distribution set
+  },
+
+  // ----------------------------------------------------------------------
+  // Monte Carlo integrator setup
+
+  "INTEGRATOR" : {
+
+    // Integration targets after adaptation
+    "min_samples" : 1000000,
+    "max_samples" : 100000000,
+    "precision"   : 0.01,
+
+    // Loop integration
+    "LOOPSCREEN" : {
+      "extra_kt" : 0,  // Extra kT points relative to NUMERICS.json default
+      "extra_phi" : 0   // Extra phi points relative to NUMERICS.json default
+    },
+
+    // VEGAS integrator
+    "VEGAS" : {
+
+      "bins" : 128,      // Maximum number of bins per dimension (NOTE: EVEN NUMBER)
+      "alpha" : 1.25,    // Grid adaptation damping exponent
+      "rounds" : 8,      // Number of adaptation iterations
+      "ncall" : 40000,   // Number of function calls per iteration
+
+      "debug" : -1       // Debug output (default -1)
+    },
+
+    // NEUROJAC integrator
+    "NEUROJAC" : {},
+
+    // FLAT integrator
+    "FLAT" : {},
+
+    // Unweighting max weight
+    "max_w_value"  : null  // user can set here (default automatic)
+  },
+
+
+  // ----------------------------------------------------------------------
+  // Generation cuts
+
+  "GENCUTS" : {
+
+    "<C>" : {
+      "M" : [0.987, 3.0],
+      "Rap" : [-0.7, 0.7], // Rapidity boundaries of the final states (<C> class)
+      "Pt"  : [0.2, 0.5]   // Forward legs, |p_y| > 0.2 GeV implies pT > 0.2 GeV
+    },
+    "<F>" : {
+      "Rap" : [-0.7, 0.7], // Rapidity boundaries of the system (<F> class)
+      "M"   : [0.987, 3.0],
+      "Pt"  : [0.2, 0.5]   // Forward legs, |p_y| > 0.2 GeV implies pT > 0.2 GeV
+    },
+    "<Q>" : {
+      "Xi"  : [0.0, 0.05] // Invariant scale M^2/s (forward excitation)
+    }
+  },
+
+
+  // ----------------------------------------------------------------------
+  // [Quasi]-fiducial cuts (AND between all the cuts)
+
+  "FIDCUTS" : {
+
+    "active" : true,
+
+    // "*" for any final state
+    // "SYSTEM" for the full central system
+    // "[22]" for gammas
+    // "[211,-211]" for a pion pair etc
+
+    "CENTRAL" : {
+
+       // Any central system final states
+      "*" : {
+
+        "Eta"  : [-0.7, 0.7],     // Pseudorapidity
+        //"Rap"  : [-10.0, 10.0],   // Rapidity
+        "Pt"   : [0.3, 100000.0], // Transverse momentum
+        //"Et"   : [0.0, 100000.0]  // Transverse energy
+      },
+
+      // Central system
+      "SYSTEM" : {
+
+        //"M"    : [0.0, 100000.0], // Mass
+        //"Rap"  : [-10.0, 10.0],   // Rapidity
+        //"Pt"   : [0.0, 100000.0]  // Transverse momentum
+      },
+    },
+
+    // Forward system
+    "FORWARD" : {
+      //"M"    : [0.0, 100000.0], // Mass
+      //"t"    : [0.0, 100000.0], // Forward protons/N* Mandelstam t (absolute value) (GeV^2)
+    },
+
+    // Custom user cuts (default false, otherwise identifier ID)
+    "USERCUTS" : 1792394010
+  }
+
+}

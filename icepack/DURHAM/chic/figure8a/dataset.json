@@ -1,0 +1,120 @@
+// Durham chi_cJ helicity angle shapes compared with SuperChic Figure 8a
+{
+  "active": true,
+  "type": "SUPERCHIC_0909_4748_FIGURE8A",
+  "reader": "icepack/_common/reference_reader.py",
+  "datapath": "tests/references",
+  "reference_sample": "SuperChic Figure 8a at central chi_c rapidity",
+  "sqrts": 1960,
+  "samples": [
+    {
+      "name": "chic0",
+      "label": "GRANIITTI $\\chi_{c0}$",
+      "gencard": "../../_common/gencard.json",
+      "parameters": {
+        "SCATTERING.BEAM": ["p+", "p-"],
+        "SCATTERING.ENERGY": [980, 980],
+        "SCATTERING.PROCESS": "gg[chic(0)]<F> -> J/psi(1S)0 > {mu+ mu-} gamma",
+        "SCATTERING.LHAPDF": "MMHT2014lo68cl",
+        "GENERIC.RNDSEED": 12568,
+        "GENCUTS.<F>.M": [3.0, 4.0],
+        "GENCUTS.<F>.Rap": [-0.1, 0.1],
+        "FIDCUTS.active": false
+      }
+    },
+    {
+      "name": "chic1",
+      "label": "GRANIITTI $\\chi_{c1}$",
+      "gencard": "../../_common/gencard.json",
+      "parameters": {
+        "SCATTERING.BEAM": ["p+", "p-"],
+        "SCATTERING.ENERGY": [980, 980],
+        "SCATTERING.PROCESS": "gg[chic(1)]<F> -> J/psi(1S)0 > {mu+ mu-} gamma",
+        "SCATTERING.LHAPDF": "MMHT2014lo68cl",
+        "GENERIC.RNDSEED": 12569,
+        "GENCUTS.<F>.M": [3.0, 4.0],
+        "GENCUTS.<F>.Rap": [-0.1, 0.1],
+        "FIDCUTS.active": false
+      }
+    },
+    {
+      "name": "chic2",
+      "label": "GRANIITTI $\\chi_{c2}$",
+      "gencard": "../../_common/gencard.json",
+      "parameters": {
+        "SCATTERING.BEAM": ["p+", "p-"],
+        "SCATTERING.ENERGY": [980, 980],
+        "SCATTERING.PROCESS": "gg[chic(2)]<F> -> J/psi(1S)0 > {mu+ mu-} gamma",
+        "SCATTERING.LHAPDF": "MMHT2014lo68cl",
+        "GENERIC.RNDSEED": 12570,
+        "GENCUTS.<F>.M": [3.0, 4.0],
+        "GENCUTS.<F>.Rap": [-0.1, 0.1],
+        "FIDCUTS.active": false
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "unit_density",
+    "density_uncertainty": "shape",
+    "ratio_uncertainty": "numerator",
+    "stack": false,
+    "data_style": "hist", "data_linestyle": "--", "mc_linestyle": "-", "match_colors": true, "mc_first": true
+  },
+  "fit": {"normalization": "unit_density"},
+  "sets": [
+    {
+      "name": "SuperChic (arXiv:0909.4748) $\\chi_{c0}$",
+      "title": "$|\\eta_{\\mu}|<0.6$, $p_{T,\\mu}>1.4$ GeV",
+      "plotname": "SuperChic_Figure8a_chic0",
+      "sample": "chic0",
+      "pid": [-13, 13, 22],
+      "cuts": "../../_common/cuts_chic_cdf.py",
+      "obs": "../../_common/obs.py",
+      "hist": [
+        {
+          "file": "superchic_chic_0909_4748.json",
+          "file_filter": "figure8a_chic0",
+          "obs": "costheta_jpsi_boost",
+          "scale": 1.0,
+          "fitw": 1.0
+        }
+      ]
+    },
+    {
+      "name": "SuperChic (arXiv:0909.4748) $\\chi_{c1}$",
+      "title": "$|\\eta_{\\mu}|<0.6$, $p_{T,\\mu}>1.4$ GeV",
+      "plotname": "SuperChic_Figure8a_chic1",
+      "sample": "chic1",
+      "pid": [-13, 13, 22],
+      "cuts": "../../_common/cuts_chic_cdf.py",
+      "obs": "../../_common/obs.py",
+      "hist": [
+        {
+          "file": "superchic_chic_0909_4748.json",
+          "file_filter": "figure8a_chic1",
+          "obs": "costheta_jpsi_boost",
+          "scale": 1.0,
+          "fitw": 1.0
+        }
+      ]
+    },
+    {
+      "name": "SuperChic (arXiv:0909.4748) $\\chi_{c2}$",
+      "title": "$|\\eta_{\\mu}|<0.6$, $p_{T,\\mu}>1.4$ GeV",
+      "plotname": "SuperChic_Figure8a_chic2",
+      "sample": "chic2",
+      "pid": [-13, 13, 22],
+      "cuts": "../../_common/cuts_chic_cdf.py",
+      "obs": "../../_common/obs.py",
+      "hist": [
+        {
+          "file": "superchic_chic_0909_4748.json",
+          "file_filter": "figure8a_chic2",
+          "obs": "costheta_jpsi_boost",
+          "scale": 1.0,
+          "fitw": 1.0
+        }
+      ]
+    }
+  ]
+}

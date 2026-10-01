@@ -1,0 +1,74 @@
+// Pure Tensor Pomeron couplings for the pseudoscalar eta
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "g0",
+      "label": "GRANIITTI TP[RES] $g_0$",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[RES]<F> -> gamma gamma @RES{eta:1}",
+        "eta.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[0]": 1.0,
+        "eta.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[1]": 0.0,
+        "eta.json:PARAM_RES.MODELS.TP[\"[9915,9915]\"].g_tensor": [0.0, 0.0],
+        "GENCUTS.<F>.M": [0.54785938, 0.54786462]
+      }
+    },
+    {
+      "name": "g1",
+      "label": "GRANIITTI TP[RES] $g_1$",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[RES]<F> -> gamma gamma @RES{eta:1}",
+        "eta.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[0]": 0.0,
+        "eta.json:PARAM_RES.MODELS.TP[\"[995,995]\"].g_tensor[1]": 1.0,
+        "eta.json:PARAM_RES.MODELS.TP[\"[9915,9915]\"].g_tensor": [0.0, 0.0],
+        "GENCUTS.<F>.M": [0.54785938, 0.54786462]
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "unit_density",
+    "density_uncertainty": "shape",
+    "ratio_plot": true,
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "hist"
+  },
+  "fit": {"normalization": "unit_density"},
+  "sets": [
+    {
+      "name": "eta, g0",
+      "sample": "g0",
+      "plot_group": "TP_pseudoscalar_couplings",
+      "title": "TP eta couplings",
+      "data": false,
+      "pid": [22, 22],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "eta, g1",
+      "sample": "g1",
+      "plot_group": "TP_pseudoscalar_couplings",
+      "title": "TP eta couplings",
+      "data": false,
+      "pid": [22, 22],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    }
+  ]
+}

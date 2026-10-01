@@ -1,0 +1,150 @@
+// STAR 200 GeV publication integrated cross sections
+{
+  "active": true,
+  "type": "INTEGRATED_HEPDATA",
+  "reader": "../../STAR_1792394/_common/reader.py",
+  "datapath": "HEPData/CEP/HEPData-ins1792394-v1-json",
+  "samples": [
+    {"name": "pipi", "label": "GRANIITTI GP[RES+CON]", "gencard": "./gencard_pipi.json", "parameters": {}},
+    {"name": "KK", "label": "GRANIITTI GP[RES+CON]", "gencard": "./gencard_KK.json", "parameters": {}},
+    {"name": "ppbar", "label": "GRANIITTI GP[CON]", "gencard": "./gencard_ppbar.json", "parameters": {}}
+  ],
+  "plot": {
+    "normalization": "cross_section",
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "hist"
+  },
+  "fit": {
+    "normalization": "cross_section"
+  },
+  "validation": {
+    "loopscreen": 1,
+    "require_comparison": true,
+    "require_differential_comparison": false,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "STAR $pp$ 0.2 TeV ($\\pi^+\\pi^-$, $\\Delta\\phi < 90^\\circ$)",
+      "title": "$|\\eta_{\\pi}|<0.7$, $p_{T,\\pi}>0.2$ GeV, proton acceptance",
+      "sample": "pipi",
+      "pid": [211, -211],
+      "cuts": "../../STAR_1792394/_common/cuts_dPhi_pp_below_90.py",
+      "obs": "../../../_common/obs.py",
+      "hist": [
+        {
+          "file": "Table2.json",
+          "file_filter": "P P --> P PI+ PI- P",
+          "rows":
+              [0],
+          "obs": "cross_section",
+          "differential": false,
+          "scale": 1e-09,
+          "unit": "nb"
+        }
+      ]
+    },
+    {
+      "name": "STAR $pp$ 0.2 TeV ($\\pi^+\\pi^-$, $\\Delta\\phi > 90^\\circ$)",
+      "title": "$|\\eta_{\\pi}|<0.7$, $p_{T,\\pi}>0.2$ GeV, proton acceptance",
+      "sample": "pipi",
+      "pid": [211, -211],
+      "cuts": "../../STAR_1792394/_common/cuts_dPhi_pp_above_90.py",
+      "obs": "../../../_common/obs.py",
+      "hist": [
+        {
+          "file": "Table2.json",
+          "file_filter": "P P --> P PI+ PI- P",
+          "rows":
+              [1],
+          "obs": "cross_section",
+          "differential": false,
+          "scale": 1e-09,
+          "unit": "nb"
+        }
+      ]
+    },
+    {
+      "name": "STAR $pp$ 0.2 TeV ($K^+K^-$, $\\Delta\\phi < 90^\\circ$)",
+      "title": "$|\\eta_{K}|<0.7$, $p_{T,K}>0.3$ GeV, $\\min(p_{T,1},p_{T,2})<0.7$ GeV, proton acceptance",
+      "sample": "KK",
+      "pid": [321, -321],
+      "cuts": "../../STAR_1792394/_common/cuts_dPhi_pp_below_90.py",
+      "obs": "../../../_common/obs.py",
+      "hist": [
+        {
+          "file": "Table2.json",
+          "file_filter": "P P --> P K+ K- P",
+          "rows":
+              [0],
+          "obs": "cross_section",
+          "differential": false,
+          "scale": 1e-9,
+          "unit": "pb"
+        }
+      ]
+    },
+    {
+      "name": "STAR $pp$ 0.2 TeV ($K^+K^-$, $\\Delta\\phi > 90^\\circ$)",
+      "title": "$|\\eta_{K}|<0.7$, $p_{T,K}>0.3$ GeV, $\\min(p_{T,1},p_{T,2})<0.7$ GeV, proton acceptance",
+      "sample": "KK",
+      "pid": [321, -321],
+      "cuts": "../../STAR_1792394/_common/cuts_dPhi_pp_above_90.py",
+      "obs": "../../../_common/obs.py",
+      "hist": [
+        {
+          "file": "Table2.json",
+          "file_filter": "P P --> P K+ K- P",
+          "rows":
+              [1],
+          "obs": "cross_section",
+          "differential": false,
+          "scale": 1e-9,
+          "unit": "pb"
+        }
+      ]
+    },
+    {
+      "name": "STAR $pp$ 0.2 TeV ($p\\bar{p}$, $\\Delta\\phi < 90^\\circ$)",
+      "title": "$|\\eta_{p}|<0.7$, $p_{T,p}>0.4$ GeV, $\\min(p_{T,1},p_{T,2})<1.1$ GeV, proton acceptance",
+      "sample": "ppbar",
+      "pid": [2212, -2212],
+      "cuts": "../../STAR_1792394/_common/cuts_dPhi_pp_below_90.py",
+      "obs": "../../../_common/obs.py",
+      "hist": [
+        {
+          "file": "Table2.json",
+          "file_filter": "P P --> P P PBAR P",
+          "rows":
+              [0],
+          "obs": "cross_section",
+          "differential": false,
+          "scale": 1e-9,
+          "unit": "pb"
+        }
+      ]
+    },
+    {
+      "name": "STAR $pp$ 0.2 TeV ($p\\bar{p}$, $\\Delta\\phi > 90^\\circ$)",
+      "title": "$|\\eta_{p}|<0.7$, $p_{T,p}>0.4$ GeV, $\\min(p_{T,1},p_{T,2})<1.1$ GeV, proton acceptance",
+      "sample": "ppbar",
+      "pid": [2212, -2212],
+      "cuts": "../../STAR_1792394/_common/cuts_dPhi_pp_above_90.py",
+      "obs": "../../../_common/obs.py",
+      "hist": [
+        {
+          "file": "Table2.json",
+          "file_filter": "P P --> P P PBAR P",
+          "rows":
+              [1],
+          "obs": "cross_section",
+          "differential": false,
+          "scale": 1e-9,
+          "unit": "pb"
+        }
+      ]
+    }
+  ]
+}

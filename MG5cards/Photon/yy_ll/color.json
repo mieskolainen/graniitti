@@ -1,0 +1,142 @@
+{
+  "version": 1,
+  "process": "a a > e+ e- QED=2 QCD=0",
+  "incoming_pdgs": [
+    22,
+    22
+  ],
+  "final_pdgs": [
+    -11,
+    11
+  ],
+  "final_color_representations": [
+    1,
+    1
+  ],
+  "has_decay_chain": false,
+  "ncolor": 1,
+  "rank": 1,
+  "process_denominator": 4,
+  "final_symmetry_factor": 1,
+  "initial_state_denominator": 4,
+  "default_alpha_s": 0.118,
+  "default_alpha_qed": 0.0075467711139788835,
+  "coupling_orders": [
+    {
+      "QED": 2
+    }
+  ],
+  "alpha_s_power": 0,
+  "alpha_qed_power": 2,
+  "helicities": [
+    [
+      -1,
+      -1,
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1,
+      -1,
+      1
+    ],
+    [
+      -1,
+      -1,
+      1,
+      -1
+    ],
+    [
+      -1,
+      -1,
+      1,
+      1
+    ],
+    [
+      -1,
+      1,
+      -1,
+      -1
+    ],
+    [
+      -1,
+      1,
+      -1,
+      1
+    ],
+    [
+      -1,
+      1,
+      1,
+      -1
+    ],
+    [
+      -1,
+      1,
+      1,
+      1
+    ],
+    [
+      1,
+      -1,
+      -1,
+      -1
+    ],
+    [
+      1,
+      -1,
+      -1,
+      1
+    ],
+    [
+      1,
+      -1,
+      1,
+      -1
+    ],
+    [
+      1,
+      -1,
+      1,
+      1
+    ],
+    [
+      1,
+      1,
+      -1,
+      -1
+    ],
+    [
+      1,
+      1,
+      -1,
+      1
+    ],
+    [
+      1,
+      1,
+      1,
+      -1
+    ],
+    [
+      1,
+      1,
+      1,
+      1
+    ]
+  ],
+  "basis_sha256": "3d1193b743416e29f8632049dd27a7978cd0a7a8e9b17e645b0289b037ed9317",
+  "color_metric_residual": 0.0,
+  "factorization_residual": 0.0,
+  "projectors": [
+    [
+      [
+        1.0,
+        0.0
+      ]
+    ]
+  ],
+  "flow_candidates": [],
+  "flow_weights": []
+}

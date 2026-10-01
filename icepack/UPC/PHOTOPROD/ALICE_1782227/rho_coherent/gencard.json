@@ -1,0 +1,81 @@
+// ALICE coherent rho0 generation in PbPb UPCs at sqrt(sNN) = 5.02 TeV
+{
+  "GENERIC" : {
+    "OUTPUT"     : "UPC_ALICE_1782227_rho_coherent",
+    "FORMAT"     : "hepmc3",
+    "CORES"      : 0,
+    "NEVENTS"    : 30000,
+    "INTEGRATOR" : "VEGAS",
+    "WEIGHTED"   : true,
+    "MODELPARAM" : "TUNE0",
+    "HIST"       : 0,
+    "RNDSEED"    : 1782227
+  },
+
+  "SCATTERING" : {
+
+    "BEAM"    : ["Pb208","Pb208"],
+    "ENERGY"  : [2510,2510],  // Energy per nucleon [GeV]
+    "PROCESS" : "GP[RES]<F> -> pi+ pi- @RES{rho_770:1}",
+    "RES"     : [],
+    "LOOPSCREEN" : true,
+    "NSTARS"  : 0,  // Forward dissociation (0 = elastic, 1 = single, 2 = double)
+    "BEAMFRAG": "none",  // Forward dissociation particle production ('none', 'fewbody', 'cylinder', 'diquark')
+    "LHAPDF"  : "NNPDF31_lo_as_0118"
+  },
+
+  "NUCLEAR" : {
+    "emd": true,
+    "fragmentation": "internal",
+    "emission"     : ["coherent","coherent"],
+    // Neutron classes are determined after nuclear breakup and decay, using the emitted neutrons
+    // n == 0 = no neutrons, n > 0 = at least one neutron, * = unrestricted
+    // Supported comparisons: == (or =), !=, >, >=, <, <= with a nonnegative integer
+    // Neutron emission does not determine whether hard production is coherent or incoherent
+    "neutron_class": ["*","*"],
+    "screening"     : "optical",
+    "sigma_NN"     : null,
+    
+    "structure"    : "nucleon",
+    "photoproduction": {
+      "target": ["coherent","coherent"],
+      "target_model" : "glauber"
+    }
+  },
+
+  "INTEGRATOR" : {
+    "min_samples" : 10000,
+    "max_samples" : 10000000,
+    "precision"   : 0.05,
+    "LOOPSCREEN"     : {"extra_kt" : 1, "extra_phi" : 1},
+    "VEGAS" : {
+      "bins"  : 64,
+      "alpha" : 1.25,
+      "rounds": 8,
+      "ncall" : 10000,
+      "debug" : -1
+    },
+    "NEUROJAC" : {},
+    "FLAT"     : {},
+    "max_w_value" : null
+  },
+  
+  "GENCUTS" : {
+    // Published rho integral from 2 m_pi to m_rho + 5 Gamma_rho
+    // [REFERENCE: ALICE JHEP 06 (2020) 035, Sec. 3.3]
+    "<C>" : {"M" : [0.2791,1.5208], "Rap" : [-0.8,0.8]},
+    "<F>" : {"M" : [0.2791,1.5208], "Rap" : [-0.8,0.8]},
+    "<Q>" : {"Xi" : [0.0,0.01]}
+  },
+
+  "FIDCUTS" : {
+    "active"   : true,
+    "CENTRAL"  : {
+      "SYSTEM" : {"Rap" : [-0.8,0.8]}
+    },
+    "FORWARD"  : {},
+    "USERCUTS" : false
+  },
+
+  "VETOCUTS" : {"active" : false}
+}

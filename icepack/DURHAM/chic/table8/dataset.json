@@ -1,0 +1,120 @@
+// Durham chi_cJ fiducial cross sections compared with SuperChic 2 Table 8
+{
+  "active": true,
+  "type": "SUPERCHIC_1508_02718_TABLE8",
+  "reader": "icepack/_common/reference_reader.py",
+  "datapath": "tests/references",
+  "reference_sample": "SuperChic 2 MMHT2014lo68cl with screening model 1",
+  "sqrts": 7000,
+  "samples": [
+    {
+      "name": "chic0",
+      "label": "GRANIITTI $\\chi_{c0}$",
+      "gencard": "../../_common/gencard.json",
+      "parameters": {
+        "SCATTERING.ENERGY": [3500, 3500],
+        "SCATTERING.PROCESS": "gg[chic(0)]<F> -> J/psi(1S)0 > {mu+ mu-} gamma",
+        "SCATTERING.LHAPDF": "MMHT2014lo68cl",
+        "GENERIC.RNDSEED": 12468,
+        "GENCUTS.<F>.M": [3.0, 4.0],
+        "GENCUTS.<F>.Rap": [1.0, 5.0],
+        "FIDCUTS.active": true,
+        "FIDCUTS.CENTRAL[\"*\"].Eta": [2.0, 4.5],
+        "FIDCUTS.CENTRAL[\"SYSTEM\"].M": [3.0, 4.0]
+      }
+    },
+    {
+      "name": "chic1",
+      "label": "GRANIITTI $\\chi_{c1}$",
+      "gencard": "../../_common/gencard.json",
+      "parameters": {
+        "SCATTERING.ENERGY": [3500, 3500],
+        "SCATTERING.PROCESS": "gg[chic(1)]<F> -> J/psi(1S)0 > {mu+ mu-} gamma",
+        "SCATTERING.LHAPDF": "MMHT2014lo68cl",
+        "GENERIC.RNDSEED": 12469,
+        "GENCUTS.<F>.M": [3.0, 4.0],
+        "GENCUTS.<F>.Rap": [1.0, 5.0],
+        "FIDCUTS.active": true,
+        "FIDCUTS.CENTRAL[\"*\"].Eta": [2.0, 4.5],
+        "FIDCUTS.CENTRAL[\"SYSTEM\"].M": [3.0, 4.0]
+      }
+    },
+    {
+      "name": "chic2",
+      "label": "GRANIITTI $\\chi_{c2}$",
+      "gencard": "../../_common/gencard.json",
+      "parameters": {
+        "SCATTERING.ENERGY": [3500, 3500],
+        "SCATTERING.PROCESS": "gg[chic(2)]<F> -> J/psi(1S)0 > {mu+ mu-} gamma",
+        "SCATTERING.LHAPDF": "MMHT2014lo68cl",
+        "GENERIC.RNDSEED": 12470,
+        "GENCUTS.<F>.M": [3.0, 4.0],
+        "GENCUTS.<F>.Rap": [1.0, 5.0],
+        "FIDCUTS.active": true,
+        "FIDCUTS.CENTRAL[\"*\"].Eta": [2.0, 4.5],
+        "FIDCUTS.CENTRAL[\"SYSTEM\"].M": [3.0, 4.0]
+      }
+    }
+  ],
+  "plot": {"normalization": "cross_section", "ratio_uncertainty": "numerator", "stack": false, "data_style": "hist", "data_linestyle": "--", "mc_linestyle": "-", "match_colors": true, "mc_first": true},
+  "fit": {"normalization": "cross_section"},
+  "sets": [
+    {
+      "name": "SuperChic 2 (arXiv:1508.02718) $\\chi_{c0}$",
+      "title": "$2<\\eta_{h}<4.5$, $3<M_X<4$ GeV",
+      "plotname": "SuperChic2_Table8_chic0",
+      "sample": "chic0",
+      "pid": [-13, 13, 22],
+      "cuts": "../../_common/cuts_inclusive.py",
+      "obs": "../../_common/obs.py",
+      "hist": [
+        {
+          "file": "superchic2_1508_02718.json",
+          "file_filter": "table8_MMHT2014lo68cl_chic0",
+          "obs": "cross_section",
+          "differential": false,
+          "scale": 1e-12,
+          "fitw": 1.0
+        }
+      ]
+    },
+    {
+      "name": "SuperChic 2 (arXiv:1508.02718) $\\chi_{c1}$",
+      "title": "$2<\\eta_{h}<4.5$, $3<M_X<4$ GeV",
+      "plotname": "SuperChic2_Table8_chic1",
+      "sample": "chic1",
+      "pid": [-13, 13, 22],
+      "cuts": "../../_common/cuts_inclusive.py",
+      "obs": "../../_common/obs.py",
+      "hist": [
+        {
+          "file": "superchic2_1508_02718.json",
+          "file_filter": "table8_MMHT2014lo68cl_chic1",
+          "obs": "cross_section",
+          "differential": false,
+          "scale": 1e-12,
+          "fitw": 1.0
+        }
+      ]
+    },
+    {
+      "name": "SuperChic 2 (arXiv:1508.02718) $\\chi_{c2}$",
+      "title": "$2<\\eta_{h}<4.5$, $3<M_X<4$ GeV",
+      "plotname": "SuperChic2_Table8_chic2",
+      "sample": "chic2",
+      "pid": [-13, 13, 22],
+      "cuts": "../../_common/cuts_inclusive.py",
+      "obs": "../../_common/obs.py",
+      "hist": [
+        {
+          "file": "superchic2_1508_02718.json",
+          "file_filter": "table8_MMHT2014lo68cl_chic2",
+          "obs": "cross_section",
+          "differential": false,
+          "scale": 1e-12,
+          "fitw": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+// Parametric vector meson via Gamma-Pomeron
+//
+// MP/XP/GP coupling produced with develop/tools/HERA_couplings.py
+
+{
+  "PARAM_RES": {
+    "name": "RES_phi_1020",
+    "PDG": 333,
+    "spinX2": 2,
+    "P": -1,
+    "C": -1,
+    
+    "MODELS": {
+      "GP": {
+        "mass": 1.019461,
+        "width": 0.004249,
+        "BW": "fixed-width",
+        "phi": 2.4234502018205077,
+        "FF_transfer": {"type": "none"},
+        "FF_prod": {"type": "gaussian", "norm": "pole", "Lambda2": 5.188366818859823},
+        "[22,990]": {
+          "basis": "helicity",
+          "CP": [true,true],
+          "helicity": [[-1,0,0.133232525,0.0]]
+        }
+      },
+      "MP": {
+        "mass": 1.019461,
+        "width": 0.004249,
+        "BW": "fixed-width",
+        "phi": -2.7207,
+        "FF_transfer": {"type": "none"},
+        "FF_prod": {"type": "gaussian", "norm": "pole", "Lambda2": 12.0856},
+        "[22,991]": {
+          "basis": "helicity",
+          "Lambda": 1.0000,
+          "polarization": {"mode": "none"},
+          "CP": [true,true],
+          "helicity": [[-1,0,0.133232525,0.0]]
+        }
+      },
+      "XP": {
+        "mass": 1.019461,
+        "width": 0.004249,
+        "BW": "fixed-width",
+        "phi": 2.5894,
+        "FF_transfer": {"type": "none"},
+        "FF_prod": {"type": "gaussian", "norm": "pole", "Lambda2": 11.4439},
+        "[22,991]": {
+          "basis": "helicity",
+          "Lambda": 1.0,
+          "CP": [true,true],
+          "helicity": [[-1,0,0.133232525,0.0]]
+        }
+      },
+      "TP": {
+        "mass": 1.019461,
+        "width": 0.004249,
+        "phi": 0.0,
+        "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 1.0000, "n": 1.0000},
+        "FF_prod":     {"type": "vector", "norm": "pole", "Lambda2": 4.0000, "n": 0.5000},
+        "[22,995]": {
+          // [REFERENCE: arXiv: 1804.04706, Table II, zero omega-phi mixing]
+          "g_tensor": [0.49,4.27],
+          "VMD_MIXING": [
+            {
+              "PDG": 223,
+              // [REFERENCE: arXiv: 1804.04706, Table II, zero omega-phi mixing]
+              "g_tensor": [0.0,0.0]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

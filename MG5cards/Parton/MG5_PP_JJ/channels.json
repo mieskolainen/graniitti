@@ -1,0 +1,3490 @@
+{
+  "schema": 1,
+  "family": "MG5_PP_JJ",
+  "generation_setup": {
+    "model": "sm",
+    "model_import": "sm-lepton_masses",
+    "complex_mass_scheme": false,
+    "definitions": ["define p = g u d s c b u~ d~ s~ c~ b~", "define j = g u d s c b u~ d~ s~ c~ b~"],
+    "processes": ["p p > j j QED=0"],
+    "particle_pdgs": {"a": 22, "b": 5, "b~": -5, "c": 4, "c~": -4, "d": 1, "d~": -1, "e+": -11, "e-": 11, "g": 21, "h": 25, "mu+": -13, "mu-": 13, "s": 3, "s~": -3, "t": 6, "ta+": -15, "ta-": 15, "t~": -6, "u": 2, "u~": -2, "ve": 12, "ve~": -12, "vm": 14, "vm~": -14, "vt": 16, "vt~": -16, "w+": 24, "w-": -24, "z": 23},
+    "alpha_qed": {"charge": "mdl_ee", "charge_square": "mdl_ee__exp__2", "inverse_alpha_zero": 137.03599908},
+    "mass_overrides": {"5": 0.0}
+  },
+  "mg5_source": {"mg5_version": "2.9.27", "source_digest": "58489fb2c6a4138568bf2b5a951f2e2c5d1c2523a20f8027231f441f0aa3a61d"},
+  "subprocesses": [
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_bb_bb",
+      "channels": [
+        {
+          "initial": [5, 5],
+          "final": [5, 5],
+          "topology": [
+            {
+              "pdg": 5,
+              "daughters": []
+            },
+            {
+              "pdg": 5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 3, 3, 3],
+          "external_color_flows": [
+            [1, 0, 2, 0, 1, 0, 2, 0],
+            [2, 0, 1, 0, 1, 0, 2, 0]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_bbx_bbx",
+      "channels": [
+        {
+          "initial": [5, -5],
+          "final": [5, -5],
+          "topology": [
+            {
+              "pdg": 5,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-5, 5],
+          "final": [5, -5],
+          "topology": [
+            {
+              "pdg": 5,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_bbx_gg",
+      "channels": [
+        {
+          "initial": [5, -5],
+          "final": [21, 21],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": 21,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 8, 8],
+          "external_color_flows": [
+            [3, 0, 0, 1, 2, 1, 3, 2],
+            [2, 0, 0, 1, 2, 3, 3, 1]
+          ]
+        },
+        {
+          "initial": [-5, 5],
+          "final": [21, 21],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": 21,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 8, 8],
+          "external_color_flows": [
+            [0, 1, 3, 0, 2, 1, 3, 2],
+            [0, 1, 2, 0, 2, 3, 3, 1]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_bbx_uux",
+      "channels": [
+        {
+          "initial": [5, -5],
+          "final": [2, -2],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": -2,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-5, 5],
+          "final": [2, -2],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": -2,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [5, -5],
+          "final": [1, -1],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": -1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-5, 5],
+          "final": [1, -1],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": -1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [5, -5],
+          "final": [3, -3],
+          "topology": [
+            {
+              "pdg": 3,
+              "daughters": []
+            },
+            {
+              "pdg": -3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-5, 5],
+          "final": [3, -3],
+          "topology": [
+            {
+              "pdg": 3,
+              "daughters": []
+            },
+            {
+              "pdg": -3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [5, -5],
+          "final": [4, -4],
+          "topology": [
+            {
+              "pdg": 4,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-5, 5],
+          "final": [4, -4],
+          "topology": [
+            {
+              "pdg": 4,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_bxbx_bxbx",
+      "channels": [
+        {
+          "initial": [-5, -5],
+          "final": [-5, -5],
+          "topology": [
+            {
+              "pdg": -5,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, -3, -3, -3],
+          "external_color_flows": [
+            [0, 1, 0, 2, 0, 1, 0, 2],
+            [0, 1, 0, 2, 0, 2, 0, 1]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_gb_gb",
+      "channels": [
+        {
+          "initial": [21, 5],
+          "final": [21, 5],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": 5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [8, 3, 8, 3],
+          "external_color_flows": [
+            [1, 2, 3, 0, 3, 2, 1, 0],
+            [3, 2, 2, 0, 3, 1, 1, 0]
+          ]
+        },
+        {
+          "initial": [5, 21],
+          "final": [21, 5],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": 5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 8, 8, 3],
+          "external_color_flows": [
+            [3, 0, 1, 2, 3, 2, 1, 0],
+            [2, 0, 3, 2, 3, 1, 1, 0]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_gbx_gbx",
+      "channels": [
+        {
+          "initial": [21, -5],
+          "final": [21, -5],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [8, -3, 8, -3],
+          "external_color_flows": [
+            [1, 2, 0, 1, 3, 2, 0, 3],
+            [3, 2, 0, 1, 3, 1, 0, 2]
+          ]
+        },
+        {
+          "initial": [-5, 21],
+          "final": [21, -5],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 8, 8, -3],
+          "external_color_flows": [
+            [0, 1, 1, 2, 3, 2, 0, 3],
+            [0, 1, 3, 2, 3, 1, 0, 2]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_gg_bbx",
+      "channels": [
+        {
+          "initial": [21, 21],
+          "final": [5, -5],
+          "topology": [
+            {
+              "pdg": 5,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [8, 8, 3, -3],
+          "external_color_flows": [
+            [1, 2, 2, 3, 1, 0, 0, 3],
+            [3, 2, 1, 3, 1, 0, 0, 2]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_gg_gg",
+      "channels": [
+        {
+          "initial": [21, 21],
+          "final": [21, 21],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": 21,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [8, 8, 8, 8],
+          "external_color_flows": [
+            [4, 1, 1, 2, 3, 2, 4, 3],
+            [3, 1, 1, 2, 3, 4, 4, 2],
+            [4, 1, 3, 2, 3, 1, 4, 2],
+            [2, 1, 4, 2, 3, 1, 4, 3],
+            [3, 1, 4, 2, 3, 2, 4, 1],
+            [2, 1, 3, 2, 3, 4, 4, 1]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_gg_uux",
+      "channels": [
+        {
+          "initial": [21, 21],
+          "final": [2, -2],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": -2,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [8, 8, 3, -3],
+          "external_color_flows": [
+            [1, 2, 2, 3, 1, 0, 0, 3],
+            [3, 2, 1, 3, 1, 0, 0, 2]
+          ]
+        },
+        {
+          "initial": [21, 21],
+          "final": [1, -1],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": -1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [8, 8, 3, -3],
+          "external_color_flows": [
+            [1, 2, 2, 3, 1, 0, 0, 3],
+            [3, 2, 1, 3, 1, 0, 0, 2]
+          ]
+        },
+        {
+          "initial": [21, 21],
+          "final": [3, -3],
+          "topology": [
+            {
+              "pdg": 3,
+              "daughters": []
+            },
+            {
+              "pdg": -3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [8, 8, 3, -3],
+          "external_color_flows": [
+            [1, 2, 2, 3, 1, 0, 0, 3],
+            [3, 2, 1, 3, 1, 0, 0, 2]
+          ]
+        },
+        {
+          "initial": [21, 21],
+          "final": [4, -4],
+          "topology": [
+            {
+              "pdg": 4,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [8, 8, 3, -3],
+          "external_color_flows": [
+            [1, 2, 2, 3, 1, 0, 0, 3],
+            [3, 2, 1, 3, 1, 0, 0, 2]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_gu_gu",
+      "channels": [
+        {
+          "initial": [21, 2],
+          "final": [21, 2],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": 2,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [8, 3, 8, 3],
+          "external_color_flows": [
+            [1, 2, 3, 0, 3, 2, 1, 0],
+            [3, 2, 2, 0, 3, 1, 1, 0]
+          ]
+        },
+        {
+          "initial": [2, 21],
+          "final": [21, 2],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": 2,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 8, 8, 3],
+          "external_color_flows": [
+            [3, 0, 1, 2, 3, 2, 1, 0],
+            [2, 0, 3, 2, 3, 1, 1, 0]
+          ]
+        },
+        {
+          "initial": [21, 1],
+          "final": [21, 1],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": 1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [8, 3, 8, 3],
+          "external_color_flows": [
+            [1, 2, 3, 0, 3, 2, 1, 0],
+            [3, 2, 2, 0, 3, 1, 1, 0]
+          ]
+        },
+        {
+          "initial": [1, 21],
+          "final": [21, 1],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": 1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 8, 8, 3],
+          "external_color_flows": [
+            [3, 0, 1, 2, 3, 2, 1, 0],
+            [2, 0, 3, 2, 3, 1, 1, 0]
+          ]
+        },
+        {
+          "initial": [21, 3],
+          "final": [21, 3],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": 3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [8, 3, 8, 3],
+          "external_color_flows": [
+            [1, 2, 3, 0, 3, 2, 1, 0],
+            [3, 2, 2, 0, 3, 1, 1, 0]
+          ]
+        },
+        {
+          "initial": [3, 21],
+          "final": [21, 3],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": 3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 8, 8, 3],
+          "external_color_flows": [
+            [3, 0, 1, 2, 3, 2, 1, 0],
+            [2, 0, 3, 2, 3, 1, 1, 0]
+          ]
+        },
+        {
+          "initial": [21, 4],
+          "final": [21, 4],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": 4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [8, 3, 8, 3],
+          "external_color_flows": [
+            [1, 2, 3, 0, 3, 2, 1, 0],
+            [3, 2, 2, 0, 3, 1, 1, 0]
+          ]
+        },
+        {
+          "initial": [4, 21],
+          "final": [21, 4],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": 4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 8, 8, 3],
+          "external_color_flows": [
+            [3, 0, 1, 2, 3, 2, 1, 0],
+            [2, 0, 3, 2, 3, 1, 1, 0]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_gux_gux",
+      "channels": [
+        {
+          "initial": [21, -2],
+          "final": [21, -2],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": -2,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [8, -3, 8, -3],
+          "external_color_flows": [
+            [1, 2, 0, 1, 3, 2, 0, 3],
+            [3, 2, 0, 1, 3, 1, 0, 2]
+          ]
+        },
+        {
+          "initial": [-2, 21],
+          "final": [21, -2],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": -2,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 8, 8, -3],
+          "external_color_flows": [
+            [0, 1, 1, 2, 3, 2, 0, 3],
+            [0, 1, 3, 2, 3, 1, 0, 2]
+          ]
+        },
+        {
+          "initial": [21, -1],
+          "final": [21, -1],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": -1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [8, -3, 8, -3],
+          "external_color_flows": [
+            [1, 2, 0, 1, 3, 2, 0, 3],
+            [3, 2, 0, 1, 3, 1, 0, 2]
+          ]
+        },
+        {
+          "initial": [-1, 21],
+          "final": [21, -1],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": -1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 8, 8, -3],
+          "external_color_flows": [
+            [0, 1, 1, 2, 3, 2, 0, 3],
+            [0, 1, 3, 2, 3, 1, 0, 2]
+          ]
+        },
+        {
+          "initial": [21, -3],
+          "final": [21, -3],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": -3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [8, -3, 8, -3],
+          "external_color_flows": [
+            [1, 2, 0, 1, 3, 2, 0, 3],
+            [3, 2, 0, 1, 3, 1, 0, 2]
+          ]
+        },
+        {
+          "initial": [-3, 21],
+          "final": [21, -3],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": -3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 8, 8, -3],
+          "external_color_flows": [
+            [0, 1, 1, 2, 3, 2, 0, 3],
+            [0, 1, 3, 2, 3, 1, 0, 2]
+          ]
+        },
+        {
+          "initial": [21, -4],
+          "final": [21, -4],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [8, -3, 8, -3],
+          "external_color_flows": [
+            [1, 2, 0, 1, 3, 2, 0, 3],
+            [3, 2, 0, 1, 3, 1, 0, 2]
+          ]
+        },
+        {
+          "initial": [-4, 21],
+          "final": [21, -4],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 8, 8, -3],
+          "external_color_flows": [
+            [0, 1, 1, 2, 3, 2, 0, 3],
+            [0, 1, 3, 2, 3, 1, 0, 2]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_ub_ub",
+      "channels": [
+        {
+          "initial": [2, 5],
+          "final": [2, 5],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": 5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 3, 3, 3],
+          "external_color_flows": [
+            [1, 0, 2, 0, 1, 0, 2, 0],
+            [2, 0, 1, 0, 1, 0, 2, 0]
+          ]
+        },
+        {
+          "initial": [5, 2],
+          "final": [2, 5],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": 5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 3, 3, 3],
+          "external_color_flows": [
+            [2, 0, 1, 0, 1, 0, 2, 0],
+            [1, 0, 2, 0, 1, 0, 2, 0]
+          ]
+        },
+        {
+          "initial": [1, 5],
+          "final": [1, 5],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": 5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 3, 3, 3],
+          "external_color_flows": [
+            [1, 0, 2, 0, 1, 0, 2, 0],
+            [2, 0, 1, 0, 1, 0, 2, 0]
+          ]
+        },
+        {
+          "initial": [5, 1],
+          "final": [1, 5],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": 5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 3, 3, 3],
+          "external_color_flows": [
+            [2, 0, 1, 0, 1, 0, 2, 0],
+            [1, 0, 2, 0, 1, 0, 2, 0]
+          ]
+        },
+        {
+          "initial": [3, 5],
+          "final": [3, 5],
+          "topology": [
+            {
+              "pdg": 3,
+              "daughters": []
+            },
+            {
+              "pdg": 5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 3, 3, 3],
+          "external_color_flows": [
+            [1, 0, 2, 0, 1, 0, 2, 0],
+            [2, 0, 1, 0, 1, 0, 2, 0]
+          ]
+        },
+        {
+          "initial": [5, 3],
+          "final": [3, 5],
+          "topology": [
+            {
+              "pdg": 3,
+              "daughters": []
+            },
+            {
+              "pdg": 5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 3, 3, 3],
+          "external_color_flows": [
+            [2, 0, 1, 0, 1, 0, 2, 0],
+            [1, 0, 2, 0, 1, 0, 2, 0]
+          ]
+        },
+        {
+          "initial": [4, 5],
+          "final": [4, 5],
+          "topology": [
+            {
+              "pdg": 4,
+              "daughters": []
+            },
+            {
+              "pdg": 5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 3, 3, 3],
+          "external_color_flows": [
+            [1, 0, 2, 0, 1, 0, 2, 0],
+            [2, 0, 1, 0, 1, 0, 2, 0]
+          ]
+        },
+        {
+          "initial": [5, 4],
+          "final": [4, 5],
+          "topology": [
+            {
+              "pdg": 4,
+              "daughters": []
+            },
+            {
+              "pdg": 5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 3, 3, 3],
+          "external_color_flows": [
+            [2, 0, 1, 0, 1, 0, 2, 0],
+            [1, 0, 2, 0, 1, 0, 2, 0]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_ubx_ubx",
+      "channels": [
+        {
+          "initial": [2, -5],
+          "final": [2, -5],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-5, 2],
+          "final": [2, -5],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [1, -5],
+          "final": [1, -5],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-5, 1],
+          "final": [1, -5],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [3, -5],
+          "final": [3, -5],
+          "topology": [
+            {
+              "pdg": 3,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-5, 3],
+          "final": [3, -5],
+          "topology": [
+            {
+              "pdg": 3,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [4, -5],
+          "final": [4, -5],
+          "topology": [
+            {
+              "pdg": 4,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-5, 4],
+          "final": [4, -5],
+          "topology": [
+            {
+              "pdg": 4,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_ud_ud",
+      "channels": [
+        {
+          "initial": [2, 1],
+          "final": [2, 1],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": 1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 3, 3, 3],
+          "external_color_flows": [
+            [1, 0, 2, 0, 1, 0, 2, 0],
+            [2, 0, 1, 0, 1, 0, 2, 0]
+          ]
+        },
+        {
+          "initial": [1, 2],
+          "final": [2, 1],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": 1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 3, 3, 3],
+          "external_color_flows": [
+            [2, 0, 1, 0, 1, 0, 2, 0],
+            [1, 0, 2, 0, 1, 0, 2, 0]
+          ]
+        },
+        {
+          "initial": [2, 3],
+          "final": [2, 3],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": 3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 3, 3, 3],
+          "external_color_flows": [
+            [1, 0, 2, 0, 1, 0, 2, 0],
+            [2, 0, 1, 0, 1, 0, 2, 0]
+          ]
+        },
+        {
+          "initial": [3, 2],
+          "final": [2, 3],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": 3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 3, 3, 3],
+          "external_color_flows": [
+            [2, 0, 1, 0, 1, 0, 2, 0],
+            [1, 0, 2, 0, 1, 0, 2, 0]
+          ]
+        },
+        {
+          "initial": [2, 4],
+          "final": [2, 4],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": 4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 3, 3, 3],
+          "external_color_flows": [
+            [1, 0, 2, 0, 1, 0, 2, 0],
+            [2, 0, 1, 0, 1, 0, 2, 0]
+          ]
+        },
+        {
+          "initial": [4, 2],
+          "final": [2, 4],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": 4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 3, 3, 3],
+          "external_color_flows": [
+            [2, 0, 1, 0, 1, 0, 2, 0],
+            [1, 0, 2, 0, 1, 0, 2, 0]
+          ]
+        },
+        {
+          "initial": [1, 3],
+          "final": [1, 3],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": 3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 3, 3, 3],
+          "external_color_flows": [
+            [1, 0, 2, 0, 1, 0, 2, 0],
+            [2, 0, 1, 0, 1, 0, 2, 0]
+          ]
+        },
+        {
+          "initial": [3, 1],
+          "final": [1, 3],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": 3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 3, 3, 3],
+          "external_color_flows": [
+            [2, 0, 1, 0, 1, 0, 2, 0],
+            [1, 0, 2, 0, 1, 0, 2, 0]
+          ]
+        },
+        {
+          "initial": [1, 4],
+          "final": [1, 4],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": 4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 3, 3, 3],
+          "external_color_flows": [
+            [1, 0, 2, 0, 1, 0, 2, 0],
+            [2, 0, 1, 0, 1, 0, 2, 0]
+          ]
+        },
+        {
+          "initial": [4, 1],
+          "final": [1, 4],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": 4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 3, 3, 3],
+          "external_color_flows": [
+            [2, 0, 1, 0, 1, 0, 2, 0],
+            [1, 0, 2, 0, 1, 0, 2, 0]
+          ]
+        },
+        {
+          "initial": [3, 4],
+          "final": [3, 4],
+          "topology": [
+            {
+              "pdg": 3,
+              "daughters": []
+            },
+            {
+              "pdg": 4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 3, 3, 3],
+          "external_color_flows": [
+            [1, 0, 2, 0, 1, 0, 2, 0],
+            [2, 0, 1, 0, 1, 0, 2, 0]
+          ]
+        },
+        {
+          "initial": [4, 3],
+          "final": [3, 4],
+          "topology": [
+            {
+              "pdg": 3,
+              "daughters": []
+            },
+            {
+              "pdg": 4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 3, 3, 3],
+          "external_color_flows": [
+            [2, 0, 1, 0, 1, 0, 2, 0],
+            [1, 0, 2, 0, 1, 0, 2, 0]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_udx_udx",
+      "channels": [
+        {
+          "initial": [2, -1],
+          "final": [2, -1],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": -1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-1, 2],
+          "final": [2, -1],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": -1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [2, -3],
+          "final": [2, -3],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": -3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-3, 2],
+          "final": [2, -3],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": -3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [2, -4],
+          "final": [2, -4],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-4, 2],
+          "final": [2, -4],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [1, -2],
+          "final": [1, -2],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": -2,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-2, 1],
+          "final": [1, -2],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": -2,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [1, -3],
+          "final": [1, -3],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": -3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-3, 1],
+          "final": [1, -3],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": -3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [1, -4],
+          "final": [1, -4],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-4, 1],
+          "final": [1, -4],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [3, -2],
+          "final": [3, -2],
+          "topology": [
+            {
+              "pdg": 3,
+              "daughters": []
+            },
+            {
+              "pdg": -2,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-2, 3],
+          "final": [3, -2],
+          "topology": [
+            {
+              "pdg": 3,
+              "daughters": []
+            },
+            {
+              "pdg": -2,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [3, -1],
+          "final": [3, -1],
+          "topology": [
+            {
+              "pdg": 3,
+              "daughters": []
+            },
+            {
+              "pdg": -1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-1, 3],
+          "final": [3, -1],
+          "topology": [
+            {
+              "pdg": 3,
+              "daughters": []
+            },
+            {
+              "pdg": -1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [3, -4],
+          "final": [3, -4],
+          "topology": [
+            {
+              "pdg": 3,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-4, 3],
+          "final": [3, -4],
+          "topology": [
+            {
+              "pdg": 3,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [4, -2],
+          "final": [4, -2],
+          "topology": [
+            {
+              "pdg": 4,
+              "daughters": []
+            },
+            {
+              "pdg": -2,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-2, 4],
+          "final": [4, -2],
+          "topology": [
+            {
+              "pdg": 4,
+              "daughters": []
+            },
+            {
+              "pdg": -2,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [4, -1],
+          "final": [4, -1],
+          "topology": [
+            {
+              "pdg": 4,
+              "daughters": []
+            },
+            {
+              "pdg": -1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-1, 4],
+          "final": [4, -1],
+          "topology": [
+            {
+              "pdg": 4,
+              "daughters": []
+            },
+            {
+              "pdg": -1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [4, -3],
+          "final": [4, -3],
+          "topology": [
+            {
+              "pdg": 4,
+              "daughters": []
+            },
+            {
+              "pdg": -3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-3, 4],
+          "final": [4, -3],
+          "topology": [
+            {
+              "pdg": 4,
+              "daughters": []
+            },
+            {
+              "pdg": -3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_uu_uu",
+      "channels": [
+        {
+          "initial": [2, 2],
+          "final": [2, 2],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": 2,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 3, 3, 3],
+          "external_color_flows": [
+            [1, 0, 2, 0, 1, 0, 2, 0],
+            [2, 0, 1, 0, 1, 0, 2, 0]
+          ]
+        },
+        {
+          "initial": [1, 1],
+          "final": [1, 1],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": 1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 3, 3, 3],
+          "external_color_flows": [
+            [1, 0, 2, 0, 1, 0, 2, 0],
+            [2, 0, 1, 0, 1, 0, 2, 0]
+          ]
+        },
+        {
+          "initial": [3, 3],
+          "final": [3, 3],
+          "topology": [
+            {
+              "pdg": 3,
+              "daughters": []
+            },
+            {
+              "pdg": 3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 3, 3, 3],
+          "external_color_flows": [
+            [1, 0, 2, 0, 1, 0, 2, 0],
+            [2, 0, 1, 0, 1, 0, 2, 0]
+          ]
+        },
+        {
+          "initial": [4, 4],
+          "final": [4, 4],
+          "topology": [
+            {
+              "pdg": 4,
+              "daughters": []
+            },
+            {
+              "pdg": 4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, 3, 3, 3],
+          "external_color_flows": [
+            [1, 0, 2, 0, 1, 0, 2, 0],
+            [2, 0, 1, 0, 1, 0, 2, 0]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_uux_bbx",
+      "channels": [
+        {
+          "initial": [2, -2],
+          "final": [5, -5],
+          "topology": [
+            {
+              "pdg": 5,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-2, 2],
+          "final": [5, -5],
+          "topology": [
+            {
+              "pdg": 5,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [1, -1],
+          "final": [5, -5],
+          "topology": [
+            {
+              "pdg": 5,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-1, 1],
+          "final": [5, -5],
+          "topology": [
+            {
+              "pdg": 5,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [3, -3],
+          "final": [5, -5],
+          "topology": [
+            {
+              "pdg": 5,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-3, 3],
+          "final": [5, -5],
+          "topology": [
+            {
+              "pdg": 5,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [4, -4],
+          "final": [5, -5],
+          "topology": [
+            {
+              "pdg": 5,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-4, 4],
+          "final": [5, -5],
+          "topology": [
+            {
+              "pdg": 5,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_uux_ddx",
+      "channels": [
+        {
+          "initial": [2, -2],
+          "final": [1, -1],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": -1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-2, 2],
+          "final": [1, -1],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": -1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [2, -2],
+          "final": [3, -3],
+          "topology": [
+            {
+              "pdg": 3,
+              "daughters": []
+            },
+            {
+              "pdg": -3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-2, 2],
+          "final": [3, -3],
+          "topology": [
+            {
+              "pdg": 3,
+              "daughters": []
+            },
+            {
+              "pdg": -3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [2, -2],
+          "final": [4, -4],
+          "topology": [
+            {
+              "pdg": 4,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-2, 2],
+          "final": [4, -4],
+          "topology": [
+            {
+              "pdg": 4,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [1, -1],
+          "final": [2, -2],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": -2,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-1, 1],
+          "final": [2, -2],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": -2,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [1, -1],
+          "final": [3, -3],
+          "topology": [
+            {
+              "pdg": 3,
+              "daughters": []
+            },
+            {
+              "pdg": -3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-1, 1],
+          "final": [3, -3],
+          "topology": [
+            {
+              "pdg": 3,
+              "daughters": []
+            },
+            {
+              "pdg": -3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [1, -1],
+          "final": [4, -4],
+          "topology": [
+            {
+              "pdg": 4,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-1, 1],
+          "final": [4, -4],
+          "topology": [
+            {
+              "pdg": 4,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [3, -3],
+          "final": [2, -2],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": -2,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-3, 3],
+          "final": [2, -2],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": -2,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [3, -3],
+          "final": [1, -1],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": -1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-3, 3],
+          "final": [1, -1],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": -1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [3, -3],
+          "final": [4, -4],
+          "topology": [
+            {
+              "pdg": 4,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-3, 3],
+          "final": [4, -4],
+          "topology": [
+            {
+              "pdg": 4,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [4, -4],
+          "final": [2, -2],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": -2,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-4, 4],
+          "final": [2, -2],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": -2,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [4, -4],
+          "final": [1, -1],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": -1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-4, 4],
+          "final": [1, -1],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": -1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [4, -4],
+          "final": [3, -3],
+          "topology": [
+            {
+              "pdg": 3,
+              "daughters": []
+            },
+            {
+              "pdg": -3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-4, 4],
+          "final": [3, -3],
+          "topology": [
+            {
+              "pdg": 3,
+              "daughters": []
+            },
+            {
+              "pdg": -3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_uux_gg",
+      "channels": [
+        {
+          "initial": [2, -2],
+          "final": [21, 21],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": 21,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 8, 8],
+          "external_color_flows": [
+            [3, 0, 0, 1, 2, 1, 3, 2],
+            [2, 0, 0, 1, 2, 3, 3, 1]
+          ]
+        },
+        {
+          "initial": [-2, 2],
+          "final": [21, 21],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": 21,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 8, 8],
+          "external_color_flows": [
+            [0, 1, 3, 0, 2, 1, 3, 2],
+            [0, 1, 2, 0, 2, 3, 3, 1]
+          ]
+        },
+        {
+          "initial": [1, -1],
+          "final": [21, 21],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": 21,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 8, 8],
+          "external_color_flows": [
+            [3, 0, 0, 1, 2, 1, 3, 2],
+            [2, 0, 0, 1, 2, 3, 3, 1]
+          ]
+        },
+        {
+          "initial": [-1, 1],
+          "final": [21, 21],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": 21,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 8, 8],
+          "external_color_flows": [
+            [0, 1, 3, 0, 2, 1, 3, 2],
+            [0, 1, 2, 0, 2, 3, 3, 1]
+          ]
+        },
+        {
+          "initial": [3, -3],
+          "final": [21, 21],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": 21,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 8, 8],
+          "external_color_flows": [
+            [3, 0, 0, 1, 2, 1, 3, 2],
+            [2, 0, 0, 1, 2, 3, 3, 1]
+          ]
+        },
+        {
+          "initial": [-3, 3],
+          "final": [21, 21],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": 21,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 8, 8],
+          "external_color_flows": [
+            [0, 1, 3, 0, 2, 1, 3, 2],
+            [0, 1, 2, 0, 2, 3, 3, 1]
+          ]
+        },
+        {
+          "initial": [4, -4],
+          "final": [21, 21],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": 21,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 8, 8],
+          "external_color_flows": [
+            [3, 0, 0, 1, 2, 1, 3, 2],
+            [2, 0, 0, 1, 2, 3, 3, 1]
+          ]
+        },
+        {
+          "initial": [-4, 4],
+          "final": [21, 21],
+          "topology": [
+            {
+              "pdg": 21,
+              "daughters": []
+            },
+            {
+              "pdg": 21,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 8, 8],
+          "external_color_flows": [
+            [0, 1, 3, 0, 2, 1, 3, 2],
+            [0, 1, 2, 0, 2, 3, 3, 1]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_uux_uux",
+      "channels": [
+        {
+          "initial": [2, -2],
+          "final": [2, -2],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": -2,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-2, 2],
+          "final": [2, -2],
+          "topology": [
+            {
+              "pdg": 2,
+              "daughters": []
+            },
+            {
+              "pdg": -2,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [1, -1],
+          "final": [1, -1],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": -1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-1, 1],
+          "final": [1, -1],
+          "topology": [
+            {
+              "pdg": 1,
+              "daughters": []
+            },
+            {
+              "pdg": -1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [3, -3],
+          "final": [3, -3],
+          "topology": [
+            {
+              "pdg": 3,
+              "daughters": []
+            },
+            {
+              "pdg": -3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-3, 3],
+          "final": [3, -3],
+          "topology": [
+            {
+              "pdg": 3,
+              "daughters": []
+            },
+            {
+              "pdg": -3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [4, -4],
+          "final": [4, -4],
+          "topology": [
+            {
+              "pdg": 4,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, 3, -3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 2, 0, 0, 2],
+            [2, 0, 0, 1, 2, 0, 0, 1]
+          ]
+        },
+        {
+          "initial": [-4, 4],
+          "final": [4, -4],
+          "topology": [
+            {
+              "pdg": 4,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, 3, -3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 2, 0, 0, 2],
+            [0, 1, 2, 0, 2, 0, 0, 1]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_uxb_uxb",
+      "channels": [
+        {
+          "initial": [-2, 5],
+          "final": [-2, 5],
+          "topology": [
+            {
+              "pdg": -2,
+              "daughters": []
+            },
+            {
+              "pdg": 5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, -3, 3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 0, 2, 2, 0],
+            [0, 1, 2, 0, 0, 1, 2, 0]
+          ]
+        },
+        {
+          "initial": [5, -2],
+          "final": [-2, 5],
+          "topology": [
+            {
+              "pdg": -2,
+              "daughters": []
+            },
+            {
+              "pdg": 5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, -3, 3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 0, 2, 2, 0],
+            [2, 0, 0, 1, 0, 1, 2, 0]
+          ]
+        },
+        {
+          "initial": [-1, 5],
+          "final": [-1, 5],
+          "topology": [
+            {
+              "pdg": -1,
+              "daughters": []
+            },
+            {
+              "pdg": 5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, -3, 3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 0, 2, 2, 0],
+            [0, 1, 2, 0, 0, 1, 2, 0]
+          ]
+        },
+        {
+          "initial": [5, -1],
+          "final": [-1, 5],
+          "topology": [
+            {
+              "pdg": -1,
+              "daughters": []
+            },
+            {
+              "pdg": 5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, -3, 3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 0, 2, 2, 0],
+            [2, 0, 0, 1, 0, 1, 2, 0]
+          ]
+        },
+        {
+          "initial": [-3, 5],
+          "final": [-3, 5],
+          "topology": [
+            {
+              "pdg": -3,
+              "daughters": []
+            },
+            {
+              "pdg": 5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, -3, 3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 0, 2, 2, 0],
+            [0, 1, 2, 0, 0, 1, 2, 0]
+          ]
+        },
+        {
+          "initial": [5, -3],
+          "final": [-3, 5],
+          "topology": [
+            {
+              "pdg": -3,
+              "daughters": []
+            },
+            {
+              "pdg": 5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, -3, 3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 0, 2, 2, 0],
+            [2, 0, 0, 1, 0, 1, 2, 0]
+          ]
+        },
+        {
+          "initial": [-4, 5],
+          "final": [-4, 5],
+          "topology": [
+            {
+              "pdg": -4,
+              "daughters": []
+            },
+            {
+              "pdg": 5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, 3, -3, 3],
+          "external_color_flows": [
+            [0, 1, 1, 0, 0, 2, 2, 0],
+            [0, 1, 2, 0, 0, 1, 2, 0]
+          ]
+        },
+        {
+          "initial": [5, -4],
+          "final": [-4, 5],
+          "topology": [
+            {
+              "pdg": -4,
+              "daughters": []
+            },
+            {
+              "pdg": 5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [3, -3, -3, 3],
+          "external_color_flows": [
+            [1, 0, 0, 1, 0, 2, 2, 0],
+            [2, 0, 0, 1, 0, 1, 2, 0]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_uxbx_uxbx",
+      "channels": [
+        {
+          "initial": [-2, -5],
+          "final": [-2, -5],
+          "topology": [
+            {
+              "pdg": -2,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, -3, -3, -3],
+          "external_color_flows": [
+            [0, 1, 0, 2, 0, 1, 0, 2],
+            [0, 1, 0, 2, 0, 2, 0, 1]
+          ]
+        },
+        {
+          "initial": [-5, -2],
+          "final": [-2, -5],
+          "topology": [
+            {
+              "pdg": -2,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, -3, -3, -3],
+          "external_color_flows": [
+            [0, 2, 0, 1, 0, 1, 0, 2],
+            [0, 2, 0, 1, 0, 2, 0, 1]
+          ]
+        },
+        {
+          "initial": [-1, -5],
+          "final": [-1, -5],
+          "topology": [
+            {
+              "pdg": -1,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, -3, -3, -3],
+          "external_color_flows": [
+            [0, 1, 0, 2, 0, 1, 0, 2],
+            [0, 1, 0, 2, 0, 2, 0, 1]
+          ]
+        },
+        {
+          "initial": [-5, -1],
+          "final": [-1, -5],
+          "topology": [
+            {
+              "pdg": -1,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, -3, -3, -3],
+          "external_color_flows": [
+            [0, 2, 0, 1, 0, 1, 0, 2],
+            [0, 2, 0, 1, 0, 2, 0, 1]
+          ]
+        },
+        {
+          "initial": [-3, -5],
+          "final": [-3, -5],
+          "topology": [
+            {
+              "pdg": -3,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, -3, -3, -3],
+          "external_color_flows": [
+            [0, 1, 0, 2, 0, 1, 0, 2],
+            [0, 1, 0, 2, 0, 2, 0, 1]
+          ]
+        },
+        {
+          "initial": [-5, -3],
+          "final": [-3, -5],
+          "topology": [
+            {
+              "pdg": -3,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, -3, -3, -3],
+          "external_color_flows": [
+            [0, 2, 0, 1, 0, 1, 0, 2],
+            [0, 2, 0, 1, 0, 2, 0, 1]
+          ]
+        },
+        {
+          "initial": [-4, -5],
+          "final": [-4, -5],
+          "topology": [
+            {
+              "pdg": -4,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, -3, -3, -3],
+          "external_color_flows": [
+            [0, 1, 0, 2, 0, 1, 0, 2],
+            [0, 1, 0, 2, 0, 2, 0, 1]
+          ]
+        },
+        {
+          "initial": [-5, -4],
+          "final": [-4, -5],
+          "topology": [
+            {
+              "pdg": -4,
+              "daughters": []
+            },
+            {
+              "pdg": -5,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, -3, -3, -3],
+          "external_color_flows": [
+            [0, 2, 0, 1, 0, 1, 0, 2],
+            [0, 2, 0, 1, 0, 2, 0, 1]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_uxdx_uxdx",
+      "channels": [
+        {
+          "initial": [-2, -1],
+          "final": [-2, -1],
+          "topology": [
+            {
+              "pdg": -2,
+              "daughters": []
+            },
+            {
+              "pdg": -1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, -3, -3, -3],
+          "external_color_flows": [
+            [0, 1, 0, 2, 0, 1, 0, 2],
+            [0, 1, 0, 2, 0, 2, 0, 1]
+          ]
+        },
+        {
+          "initial": [-1, -2],
+          "final": [-2, -1],
+          "topology": [
+            {
+              "pdg": -2,
+              "daughters": []
+            },
+            {
+              "pdg": -1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, -3, -3, -3],
+          "external_color_flows": [
+            [0, 2, 0, 1, 0, 1, 0, 2],
+            [0, 2, 0, 1, 0, 2, 0, 1]
+          ]
+        },
+        {
+          "initial": [-2, -3],
+          "final": [-2, -3],
+          "topology": [
+            {
+              "pdg": -2,
+              "daughters": []
+            },
+            {
+              "pdg": -3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, -3, -3, -3],
+          "external_color_flows": [
+            [0, 1, 0, 2, 0, 1, 0, 2],
+            [0, 1, 0, 2, 0, 2, 0, 1]
+          ]
+        },
+        {
+          "initial": [-3, -2],
+          "final": [-2, -3],
+          "topology": [
+            {
+              "pdg": -2,
+              "daughters": []
+            },
+            {
+              "pdg": -3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, -3, -3, -3],
+          "external_color_flows": [
+            [0, 2, 0, 1, 0, 1, 0, 2],
+            [0, 2, 0, 1, 0, 2, 0, 1]
+          ]
+        },
+        {
+          "initial": [-2, -4],
+          "final": [-2, -4],
+          "topology": [
+            {
+              "pdg": -2,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, -3, -3, -3],
+          "external_color_flows": [
+            [0, 1, 0, 2, 0, 1, 0, 2],
+            [0, 1, 0, 2, 0, 2, 0, 1]
+          ]
+        },
+        {
+          "initial": [-4, -2],
+          "final": [-2, -4],
+          "topology": [
+            {
+              "pdg": -2,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, -3, -3, -3],
+          "external_color_flows": [
+            [0, 2, 0, 1, 0, 1, 0, 2],
+            [0, 2, 0, 1, 0, 2, 0, 1]
+          ]
+        },
+        {
+          "initial": [-1, -3],
+          "final": [-1, -3],
+          "topology": [
+            {
+              "pdg": -1,
+              "daughters": []
+            },
+            {
+              "pdg": -3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, -3, -3, -3],
+          "external_color_flows": [
+            [0, 1, 0, 2, 0, 1, 0, 2],
+            [0, 1, 0, 2, 0, 2, 0, 1]
+          ]
+        },
+        {
+          "initial": [-3, -1],
+          "final": [-1, -3],
+          "topology": [
+            {
+              "pdg": -1,
+              "daughters": []
+            },
+            {
+              "pdg": -3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, -3, -3, -3],
+          "external_color_flows": [
+            [0, 2, 0, 1, 0, 1, 0, 2],
+            [0, 2, 0, 1, 0, 2, 0, 1]
+          ]
+        },
+        {
+          "initial": [-1, -4],
+          "final": [-1, -4],
+          "topology": [
+            {
+              "pdg": -1,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, -3, -3, -3],
+          "external_color_flows": [
+            [0, 1, 0, 2, 0, 1, 0, 2],
+            [0, 1, 0, 2, 0, 2, 0, 1]
+          ]
+        },
+        {
+          "initial": [-4, -1],
+          "final": [-1, -4],
+          "topology": [
+            {
+              "pdg": -1,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, -3, -3, -3],
+          "external_color_flows": [
+            [0, 2, 0, 1, 0, 1, 0, 2],
+            [0, 2, 0, 1, 0, 2, 0, 1]
+          ]
+        },
+        {
+          "initial": [-3, -4],
+          "final": [-3, -4],
+          "topology": [
+            {
+              "pdg": -3,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, -3, -3, -3],
+          "external_color_flows": [
+            [0, 1, 0, 2, 0, 1, 0, 2],
+            [0, 1, 0, 2, 0, 2, 0, 1]
+          ]
+        },
+        {
+          "initial": [-4, -3],
+          "final": [-3, -4],
+          "topology": [
+            {
+              "pdg": -3,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, -3, -3, -3],
+          "external_color_flows": [
+            [0, 2, 0, 1, 0, 1, 0, 2],
+            [0, 2, 0, 1, 0, 2, 0, 1]
+          ]
+        }
+      ]
+    },
+    {
+      "generated_name": "P1_Sigma_sm_lepton_masses_uxux_uxux",
+      "channels": [
+        {
+          "initial": [-2, -2],
+          "final": [-2, -2],
+          "topology": [
+            {
+              "pdg": -2,
+              "daughters": []
+            },
+            {
+              "pdg": -2,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, -3, -3, -3],
+          "external_color_flows": [
+            [0, 1, 0, 2, 0, 1, 0, 2],
+            [0, 1, 0, 2, 0, 2, 0, 1]
+          ]
+        },
+        {
+          "initial": [-1, -1],
+          "final": [-1, -1],
+          "topology": [
+            {
+              "pdg": -1,
+              "daughters": []
+            },
+            {
+              "pdg": -1,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, -3, -3, -3],
+          "external_color_flows": [
+            [0, 1, 0, 2, 0, 1, 0, 2],
+            [0, 1, 0, 2, 0, 2, 0, 1]
+          ]
+        },
+        {
+          "initial": [-3, -3],
+          "final": [-3, -3],
+          "topology": [
+            {
+              "pdg": -3,
+              "daughters": []
+            },
+            {
+              "pdg": -3,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, -3, -3, -3],
+          "external_color_flows": [
+            [0, 1, 0, 2, 0, 1, 0, 2],
+            [0, 1, 0, 2, 0, 2, 0, 1]
+          ]
+        },
+        {
+          "initial": [-4, -4],
+          "final": [-4, -4],
+          "topology": [
+            {
+              "pdg": -4,
+              "daughters": []
+            },
+            {
+              "pdg": -4,
+              "daughters": []
+            }
+          ],
+          "external_color_representations": [-3, -3, -3, -3],
+          "external_color_flows": [
+            [0, 1, 0, 2, 0, 1, 0, 2],
+            [0, 1, 0, 2, 0, 2, 0, 1]
+          ]
+        }
+      ]
+    }
+  ]
+}

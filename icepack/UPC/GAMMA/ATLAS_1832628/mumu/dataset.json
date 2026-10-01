@@ -1,0 +1,102 @@
+// ATLAS PbPb exclusive dimuon differential cross sections
+{
+  "active": true,
+  "type": "HEPDATA_1832628",
+  "reader": "icepack/UPC/_common/upc_reader.py",
+  "datapath": "HEPData/UPC/HEPData-ins1832628-v1-json/",
+  "samples": [
+    {
+      "name": "coherent",
+      "label": "GRANIITTI $k_T$-EPA $\\gamma\\gamma \\to \\mu^+\\mu^-$ (coherent, no FSR)",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "RADIATIVE.FSR_QED": "none"
+      }
+    },
+    {
+      "name": "fsr",
+      "label": "GRANIITTI $k_T$-EPA $\\gamma\\gamma \\to \\mu^+\\mu^-$ (coherent, QED FSR)",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "RADIATIVE.FSR_QED": "YFS"
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "cross_section",
+    "unit": "ub",
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "errorbar"
+  },
+  "fit": {
+    "normalization": "cross_section"
+  },
+  "validation": {
+    "loopscreen": 1,
+    "nevents": 100000,
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "ATLAS $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($\\gamma\\gamma \\to \\mu^+\\mu^-$)",
+      "plotname": "ATLAS_5p02TeV_UPC_mumu_mass",
+      "title": "$p_{T,\\mu}>4$ GeV, $|\\eta_\\mu|<2.4$, $|y_{\\mu\\mu}|<0.8$",
+      "pid":
+          [-13, 13],
+      "samples":
+          ["fsr"],
+      "cuts": "./cuts_mass.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table7.json",
+          "obs": "mass",
+          "scale": 1e-06,
+          "fitw": 1.0
+        }
+      ]
+    },
+    {
+      "name": "ATLAS $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($\\gamma\\gamma \\to \\mu^+\\mu^-$)",
+      "plotname": "ATLAS_5p02TeV_UPC_mumu_abs_rapidity",
+      "title": "$10<M_{\\mu\\mu}<20$ GeV",
+      "pid":
+          [-13, 13],
+      "samples":
+          ["fsr"],
+      "cuts": "./cuts_rapidity.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table1.json",
+          "obs": "abs_rap",
+          "scale": 1e-06,
+          "fitw": 1.0
+        }
+      ]
+    },
+    {
+      "name": "ATLAS $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($\\gamma\\gamma \\to \\mu^+\\mu^-$)",
+      "plotname": "ATLAS_5p02TeV_UPC_mumu_acoplanarity_fsr",
+      "title": "$p_{T,\\mu}>4$ GeV, $|\\eta_\\mu|<2.4$, 0n0n",
+      "pid":
+          [-13, 13],
+      "samples":
+          ["coherent", "fsr"],
+      "cuts": "./cuts_0n0n.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table29.json",
+          "obs": "acoplanarity",
+          "scale": 1e-06,
+          "fitw": 1.0
+        }
+      ]
+    }
+  ]
+}

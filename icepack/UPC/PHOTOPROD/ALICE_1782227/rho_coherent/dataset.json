@@ -1,0 +1,138 @@
+// ALICE coherent rho0 photoproduction in PbPb at sqrt(sNN) = 5.02 TeV
+// [REFERENCE: arXiv:2002.10897, Sec. 3.3 and Table 4]
+// The observable is the fitted rho Breit-Wigner contribution integrated from 2 m_pi to m_rho + 5 Gamma_rho
+// HEPData d sigma/dy is folded to d sigma/d|y|, including both rapidity signs
+// Coherent refers to rho production on the whole nucleus, additional photon exchanges can emit neutrons
+// 0n0n has no forward neutrons, 0nXn includes either one-sided orientation, XnXn has neutrons on both sides
+// Total is neutron-inclusive coherent production, not coherent plus incoherent production
+// The total overlaps the exclusive classes and is excluded from their combined fit
+// Predictions use optical ion survival and ordinary Glauber shadowing
+{
+  "active": true,
+  "type": "HEPDATA_1782227",
+  "reader": "./reader.py",
+  "datapath": "HEPData/UPC/HEPData-ins1782227-v1-json/",
+  "samples": [
+    {
+      "name": "total",
+      "label": "GRANIITTI G-Pomeron (Glauber, total)",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "GENERIC.RNDSEED": 1782227
+      }
+    },
+    {
+      "name": "tp_total",
+      "label": "GRANIITTI T-Pomeron (Glauber, total)",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[RES]<F> -> pi+ pi- @RES{rho_770:1}",
+        "GENERIC.RNDSEED": 1782227
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "cross_section",
+    "unit": "mb",
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "errorbar"
+  },
+  "fit": {
+    "normalization": "cross_section"
+  },
+  "validation": {
+    "loopscreen": 1,
+    "nevents": 100000,
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "ALICE $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($\\rho^0$, coherent, total)",
+      "title": "$|y|<0.8$",
+      "plot_group": "ALICE_5p02TeV_coherent_rho_total",
+      "samples":
+          ["total", "tp_total"],
+      "mc_scale": 1.0,
+      "pid":
+          [-211, 211],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table1.json",
+          "file_filter": "total",
+          "obs": "rap",
+          "scale": 0.001,
+          "fitw": 0.0
+        }
+      ]
+    },
+    {
+      "name": "ALICE $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($\\rho^0$, coherent, 0n0n)",
+      "title": "$|y|<0.8$",
+      "plot_group": "ALICE_5p02TeV_coherent_rho_0n0n",
+      "samples":
+          ["total", "tp_total"],
+      "mc_scale": 1.0,
+      "pid":
+          [-211, 211],
+      "cuts": "./cuts_0n0n.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table1.json",
+          "file_filter": "0n0n",
+          "obs": "rap",
+          "scale": 0.001,
+          "fitw": 1.0
+        }
+      ]
+    },
+    {
+      "name": "ALICE $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($\\rho^0$, coherent, 0nXn)",
+      "title": "$|y|<0.8$",
+      "plot_group": "ALICE_5p02TeV_coherent_rho_0nxn",
+      "pid":
+          [-211, 211],
+      "cuts": "./cuts_0nxn.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table1.json",
+          "file_filter": "0nXn",
+          "obs": "rap",
+          "scale": 0.001,
+          "fitw": 1.0
+        }
+      ],
+      "samples":
+          ["total", "tp_total"],
+      "mc_scale": 1.0
+    },
+    {
+      "name": "ALICE $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($\\rho^0$, coherent, XnXn)",
+      "title": "$|y|<0.8$",
+      "plot_group": "ALICE_5p02TeV_coherent_rho_xnxn",
+      "samples":
+          ["total", "tp_total"],
+      "mc_scale": 1.0,
+      "pid":
+          [-211, 211],
+      "cuts": "./cuts_xnxn.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table1.json",
+          "file_filter": "XnXn",
+          "obs": "rap",
+          "scale": 0.001,
+          "fitw": 1.0
+        }
+      ]
+    }
+  ]
+}

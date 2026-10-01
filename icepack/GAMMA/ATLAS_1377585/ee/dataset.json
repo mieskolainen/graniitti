@@ -1,0 +1,76 @@
+// Compare original unfolded counts as a unit normalized acoplanarity density
+// Stack elastic and dissociative photon contributions by their cross sections
+{
+  "active": true,
+  "type": "HEPDATA_1377585",
+  "reader": "../_common/reader.py",
+  "datapath": "HEPData/CEP/HEPData-ins1377585-v1-json/",
+  "samples": [
+    {
+      "name": "elastic",
+      "label": "GRANIITTI $k_T$-EPA $\\gamma\\gamma \\to e^+e^-$",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.NSTARS": 0,
+        "GENERIC.RNDSEED": 12471
+      }
+    },
+    {
+      "name": "single_dissociation",
+      "label": "GRANIITTI $k_T$-EPA $\\gamma\\gamma \\to e^+e^-$ (SD)",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.NSTARS": 1,
+        "GENERIC.RNDSEED": 12472,
+        "SCATTERING.BEAMFRAG": "cylinder",
+        "VETOCUTS.active": true
+      }
+    },
+    {
+      "name": "double_dissociation",
+      "label": "GRANIITTI $k_T$-EPA $\\gamma\\gamma \\to e^+e^-$ (DD)",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.NSTARS": 2,
+        "GENERIC.RNDSEED": 12473,
+        "SCATTERING.BEAMFRAG": "cylinder",
+        "VETOCUTS.active": true
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "unit_density",
+    "ratio_uncertainty": "combined",
+    "stack": true,
+    "data_style": "errorbar",
+    "density_uncertainty": "shape"
+  },
+  "fit": {
+    "normalization": "unit_density"
+  },
+  "validation": {
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": false,
+    "measurement": {"$ref": "../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "ATLAS $pp$ 7 TeV ($e^+e^-$, semi-exclusive)",
+      "title": "$|\\eta_{e}|<2.4$, $p_{T,e}>12$ GeV, $M_X>24$ GeV, $p_{T,X}<1.5$ GeV, $M_X\\notin[70,105]$ GeV",
+      "plotname": "ATLAS_7TeV_semi_exclusive_ee",
+      "pid": [-11, 11],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table5.json",
+          "obs": "acoplanarity",
+          "differential": false,
+          "scale": 1.0,
+          "fitw": 1.0
+        }
+      ]
+    }
+  ]
+}

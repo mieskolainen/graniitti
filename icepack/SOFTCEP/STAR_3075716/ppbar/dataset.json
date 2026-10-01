@@ -1,0 +1,49 @@
+{
+  "active": true,
+  "type": "HEPDATA_3075716",
+  "reader": "../_common/reader.py",
+  "datapath": "HEPData/CEP/HEPData-ins3075716-v1-json/",
+  "samples": [{"name": "nominal", "label": "GRANIITTI GP[CON]", "gencard": "./gencard.json", "parameters": {}}],
+  "plot": {"normalization": "cross_section", "unit": "pb", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {"require_comparison": true, "require_differential_comparison": true, "require_fiducial_integral_comparison": true, "measurement": {"$ref": "../../../_common/SETTINGS.json#/measurement"}},
+  "sets": [
+    {
+      "name": "STAR $pp$ 0.51 TeV ($p\\bar{p}$)",
+      "title": "$|\\eta_{p}|<0.9$, $p_{T,p}>0.4$ GeV, $\\min(p_{T,1},p_{T,2})<1.1$ GeV, proton acceptance",
+      "pid":
+        [2212, -2212],
+      "cuts": "../_common/cuts.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {"file": "Figure7c.json", "obs": "dPhi_pp", "scale": 1e-12, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "STAR $pp$ 0.51 TeV ($p\\bar{p}$, $\\Delta\\phi < 90^\\circ$)",
+      "title": "$\\Delta\\phi_{pp}<90^\\circ$, $|\\eta_{p}|<0.9$, $p_{T,p}>0.4$ GeV, $\\min(p_{T,1},p_{T,2})<1.1$ GeV, proton acceptance",
+      "pid":
+        [2212, -2212],
+      "cuts": "../_common/cuts_phi0.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {"file": "Figure8e.json", "obs": "M", "scale": 1e-12, "fitw": 1.0},
+        {"file": "Figure9e.json", "obs": "Rap", "scale": 1e-12, "fitw": 1.0},
+        {"file": "Figure10e.json", "obs": "Abs_t1t2", "scale": 1e-12, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "STAR $pp$ 0.51 TeV ($p\\bar{p}$, $\\Delta\\phi > 90^\\circ$)",
+      "title": "$\\Delta\\phi_{pp}>90^\\circ$, $|\\eta_{p}|<0.9$, $p_{T,p}>0.4$ GeV, $\\min(p_{T,1},p_{T,2})<1.1$ GeV, proton acceptance",
+      "pid":
+        [2212, -2212],
+      "cuts": "../_common/cuts_phi1.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {"file": "Figure8f.json", "obs": "M", "scale": 1e-12, "fitw": 1.0},
+        {"file": "Figure9f.json", "obs": "Rap", "scale": 1e-12, "fitw": 1.0},
+        {"file": "Figure10f.json", "obs": "Abs_t1t2", "scale": 1e-12, "fitw": 1.0}
+      ]
+    }
+  ]
+}

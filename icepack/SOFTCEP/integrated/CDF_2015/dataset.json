@@ -1,0 +1,23 @@
+// CDF 1.96 TeV publication integrated pion pair sample
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {"name": "pipi", "label": "GRANIITTI GP[RES+CON]", "gencard": "./gencard.json", "parameters": {}}
+  ],
+  "plot": {"normalization": "cross_section", "ratio_uncertainty": "none", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "sets": [
+    {
+      "name": "CDF pi+pi- integrated sample",
+      "title": "$|\\eta_{\\pi}|<1.3$, $p_{T,\\pi}>0.4$ GeV, $|y_X|<1$",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "../../../_common/cuts_inclusive.py",
+      "obs": "../../../_common/obs.py",
+      "hist": [
+        {"obs": "cross_section"}
+      ]
+    }
+  ]
+}

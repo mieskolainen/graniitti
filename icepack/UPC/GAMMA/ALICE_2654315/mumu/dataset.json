@@ -1,0 +1,63 @@
+// ALICE exclusive dimuon differential cross sections in pPb UPCs
+{
+  "active": true,
+  "type": "HEPDATA_2654315_DIMUON",
+  "reader": "icepack/UPC/_common/upc_reader.py",
+  "datapath": "HEPData/UPC/HEPData-ins2654315-v1-json/",
+  "samples": [
+    {
+      "name": "exclusive",
+      "label": "GRANIITTI $k_T$-EPA $\\gamma\\gamma \\to \\mu^+\\mu^-$ (coherent, optical survival, QED FSR)",
+      "gencard": "./gencard.json",
+      "parameters": {}
+    }
+  ],
+  "plot": {"normalization": "cross_section", "unit": "ub", "ratio_uncertainty": "combined", "stack": false, "data_style": "errorbar"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "loopscreen": 1,
+    "nevents": 100000,
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "ALICE $p\\mathrm{Pb}$ $\\sqrt{s_{\\mathrm{NN}}}=8.16$ TeV ($\\mu^+\\mu^-$, exclusive)",
+      "plotname": "ALICE_8p16TeV_pPb_mumu_mass_2p5_4p0",
+      "title": "$1<M_{\\mu\\mu}<2.5$ GeV, $2.5<y_{\\mu\\mu}<4.0$, $p_{T,\\mu\\mu}<3$ GeV, Pb-side neutron veto",
+      "pid": [-13,13],
+      "sample": "exclusive",
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"file": "Table1.json", "file_filter": "2.5-4.0", "obs": "mass", "scale": 1e-6, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "ALICE $p\\mathrm{Pb}$ $\\sqrt{s_{\\mathrm{NN}}}=8.16$ TeV ($\\mu^+\\mu^-$, exclusive)",
+      "plotname": "ALICE_8p16TeV_pPb_mumu_mass_2p5_3p25",
+      "title": "$1<M_{\\mu\\mu}<2.5$ GeV, $2.5<y_{\\mu\\mu}<3.25$, $p_{T,\\mu\\mu}<3$ GeV, Pb-side neutron veto",
+      "pid": [-13,13],
+      "sample": "exclusive",
+      "cuts": "./cuts_low.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"file": "Table1.json", "file_filter": "2.5-3.25", "obs": "mass", "scale": 1e-6, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "ALICE $p\\mathrm{Pb}$ $\\sqrt{s_{\\mathrm{NN}}}=8.16$ TeV ($\\mu^+\\mu^-$, exclusive)",
+      "plotname": "ALICE_8p16TeV_pPb_mumu_mass_3p25_4p0",
+      "title": "$1<M_{\\mu\\mu}<2.5$ GeV, $3.25<y_{\\mu\\mu}<4.0$, $p_{T,\\mu\\mu}<3$ GeV, Pb-side neutron veto",
+      "pid": [-13,13],
+      "sample": "exclusive",
+      "cuts": "./cuts_high.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"file": "Table1.json", "file_filter": "3.25-4.0", "obs": "mass", "scale": 1e-6, "fitw": 1.0}
+      ]
+    }
+  ]
+}

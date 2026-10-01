@@ -1,0 +1,202 @@
+// Pure LS components for the 2^+ f2_1270 resonance in GP
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "ls_0_2",
+      "label": "GRANIITTI GP[RES] ($(\\ell,S)=(0,2)$)",
+      "gencard": "icepack/SPIN/_common/gencard_ls.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "GP[RES]<F> -> pi+ pi- @RES{f2_1270:1}",
+        "GENCUTS.<F>.M": [0.9022,1.6486],
+        "f2_1270.json:PARAM_RES.MODELS.GP[\"[990,990]\"]": {
+          "basis": "g_ls",
+          "Lambda": 1.0,
+          "CP": [true,true],
+          "g_ls":
+              [[0,2,1.0,0.0],
+               [2,0,0.0,0.0],
+               [2,2,0.0,0.0],
+               [2,4,0.0,0.0],
+               [4,2,0.0,0.0],
+               [4,4,0.0,0.0],
+               [6,4,0.0,0.0]]
+        }
+      }
+    },
+    {
+      "name": "ls_2_0",
+      "label": "GRANIITTI GP[RES] ($(\\ell,S)=(2,0)$)",
+      "gencard": "icepack/SPIN/_common/gencard_ls.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "GP[RES]<F> -> pi+ pi- @RES{f2_1270:1}",
+        "GENCUTS.<F>.M": [0.9022,1.6486],
+        "f2_1270.json:PARAM_RES.MODELS.GP[\"[990,990]\"]": {
+          "basis": "g_ls",
+          "Lambda": 1.0,
+          "CP": [true,true],
+          "g_ls":
+              [[0,2,0.0,0.0],
+               [2,0,1.0,0.0],
+               [2,2,0.0,0.0],
+               [2,4,0.0,0.0],
+               [4,2,0.0,0.0],
+               [4,4,0.0,0.0],
+               [6,4,0.0,0.0]]
+        }
+      }
+    },
+    {
+      "name": "ls_2_2",
+      "label": "GRANIITTI GP[RES] ($(\\ell,S)=(2,2)$)",
+      "gencard": "icepack/SPIN/_common/gencard_ls.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "GP[RES]<F> -> pi+ pi- @RES{f2_1270:1}",
+        "GENCUTS.<F>.M": [0.9022,1.6486],
+        "f2_1270.json:PARAM_RES.MODELS.GP[\"[990,990]\"]": {
+          "basis": "g_ls",
+          "Lambda": 1.0,
+          "CP": [true,true],
+          "g_ls":
+              [[0,2,0.0,0.0],
+               [2,0,0.0,0.0],
+               [2,2,1.0,0.0],
+               [2,4,0.0,0.0],
+               [4,2,0.0,0.0],
+               [4,4,0.0,0.0],
+               [6,4,0.0,0.0]]
+        }
+      }
+    },
+    {
+      "name": "ls_2_4",
+      "label": "GRANIITTI GP[RES] ($(\\ell,S)=(2,4)$)",
+      "gencard": "icepack/SPIN/_common/gencard_ls.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "GP[RES]<F> -> pi+ pi- @RES{f2_1270:1}",
+        "GENCUTS.<F>.M": [0.9022,1.6486],
+        "f2_1270.json:PARAM_RES.MODELS.GP[\"[990,990]\"]": {
+          "basis": "g_ls",
+          "Lambda": 1.0,
+          "CP": [true,true],
+          "g_ls":
+              [[0,2,0.0,0.0],
+               [2,0,0.0,0.0],
+               [2,2,0.0,0.0],
+               [2,4,1.0,0.0],
+               [4,2,0.0,0.0],
+               [4,4,0.0,0.0],
+               [6,4,0.0,0.0]]
+        }
+      }
+    },
+    {
+      "name": "ls_4_2",
+      "label": "GRANIITTI GP[RES] ($(\\ell,S)=(4,2)$)",
+      "gencard": "icepack/SPIN/_common/gencard_ls.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "GP[RES]<F> -> pi+ pi- @RES{f2_1270:1}",
+        "GENCUTS.<F>.M": [0.9022,1.6486],
+        "f2_1270.json:PARAM_RES.MODELS.GP[\"[990,990]\"]": {
+          "basis": "g_ls",
+          "Lambda": 1.0,
+          "CP": [true,true],
+          "g_ls":
+              [[0,2,0.0,0.0],
+               [2,0,0.0,0.0],
+               [2,2,0.0,0.0],
+               [2,4,0.0,0.0],
+               [4,2,1.0,0.0],
+               [4,4,0.0,0.0],
+               [6,4,0.0,0.0]]
+        }
+      }
+    },
+    {
+      "name": "ls_4_4",
+      "label": "GRANIITTI GP[RES] ($(\\ell,S)=(4,4)$)",
+      "gencard": "icepack/SPIN/_common/gencard_ls.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "GP[RES]<F> -> pi+ pi- @RES{f2_1270:1}",
+        "GENCUTS.<F>.M": [0.9022,1.6486],
+        "f2_1270.json:PARAM_RES.MODELS.GP[\"[990,990]\"]": {
+          "basis": "g_ls",
+          "Lambda": 1.0,
+          "CP": [true,true],
+          "g_ls":
+              [[0,2,0.0,0.0],
+               [2,0,0.0,0.0],
+               [2,2,0.0,0.0],
+               [2,4,0.0,0.0],
+               [4,2,0.0,0.0],
+               [4,4,1.0,0.0],
+               [6,4,0.0,0.0]]
+        }
+      }
+    },
+    {
+      "name": "ls_6_4",
+      "label": "GRANIITTI GP[RES] ($(\\ell,S)=(6,4)$)",
+      "gencard": "icepack/SPIN/_common/gencard_ls.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "GP[RES]<F> -> pi+ pi- @RES{f2_1270:1}",
+        "GENCUTS.<F>.M": [0.9022,1.6486],
+        "f2_1270.json:PARAM_RES.MODELS.GP[\"[990,990]\"]": {
+          "basis": "g_ls",
+          "Lambda": 1.0,
+          "CP": [true,true],
+          "g_ls":
+              [[0,2,0.0,0.0],
+               [2,0,0.0,0.0],
+               [2,2,0.0,0.0],
+               [2,4,0.0,0.0],
+               [4,2,0.0,0.0],
+               [4,4,0.0,0.0],
+               [6,4,1.0,0.0]]
+        }
+      }
+    }
+  ],
+  "validation": {
+    "nevents": 30000,
+    "loopscreen": 0
+  },
+  "plot": {
+    "normalization": "unit_density",
+    "density_uncertainty": "shape",
+    "ratio_plot": true,
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "hist"
+  },
+  "fit": {
+    "normalization": "unit_density"
+  },
+  "sets": [
+    {
+      "name": "GP tensor LS",
+      "samples": ["ls_0_2","ls_2_0","ls_2_2","ls_2_4","ls_4_2","ls_4_4","ls_6_4"],
+      "plot_group": "GP_tensor_LS",
+      "title": "GP $f_2(1270)$, $J^P=2^+$ LS couplings",
+      "data": false,
+      "pid": [211,-211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {
+          "obs": "costheta_CS"
+        },
+        {
+          "obs": "phi_CS"
+        },
+        {
+          "obs": "dPhi_pp"
+        },
+        {
+          "obs": "glueball_filter"
+        }
+      ]
+    }
+  ]
+}

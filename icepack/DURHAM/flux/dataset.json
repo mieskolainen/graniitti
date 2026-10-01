@@ -1,0 +1,36 @@
+// Durham unit amplitude gluon luminosity
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "durham",
+      "label": "GRANIITTI gg[FLUX]",
+      "gencard": "../_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "gg[FLUX]<F> -> g g",
+        "SCATTERING.LHAPDF": "MMHT2014lo68cl",
+        "GENCUTS.<F>.M": [50, 250],
+        "GENCUTS.<F>.Rap": [-2.5, 2.5],
+        "FIDCUTS.CENTRAL[\"*\"].Eta": [-2.5, 2.5],
+        "FIDCUTS.CENTRAL[\"*\"].Pt": [20, 100000],
+        "FIDCUTS.CENTRAL[\"SYSTEM\"].M": [50, 250]
+      }
+    }
+  ],
+  "plot": {"normalization": "cross_section", "ratio_uncertainty": "none", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "sets": [
+    {
+      "name": "Durham unit amplitude flux",
+      "title": "$|\\eta_{h}|<2.5$, $p_{T,h}>20$ GeV, $50<M_X<250$ GeV",
+      "data": false,
+      "pid": [21, 21],
+      "cuts": "../_common/cuts_inclusive.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {"obs": "M"}
+      ]
+    }
+  ]
+}

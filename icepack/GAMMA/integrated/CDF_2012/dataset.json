@@ -1,0 +1,54 @@
+// CDF 2012 exclusive dielectron integrated cross section
+{
+  "active": false,
+  // Comparison inactive until an original HEPData table is available
+  "type": "INTEGRATED_LITERATURE",
+  "reader": "icepack/_common/reference_reader.py",
+  "datapath": "tests/references",
+  "samples": [
+    {
+      "name": "ee",
+      "label": "GRANIITTI $k_T$-EPA $\\gamma\\gamma \\to e^+e^-$",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "yy[EPA]<F> -> e+ e-"
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "cross_section",
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "hist"
+  },
+  "fit": {
+    "normalization": "cross_section"
+  },
+  "validation": {
+    "nevents": 30000,
+    "loopscreen": 1,
+    "require_comparison": true,
+    "require_differential_comparison": false,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "CDF $p\\bar{p}$ 1.96 TeV ($e^+e^-$)",
+      "title": "$|\\eta_{e}|<1$, $E_{T,e}>2.5$ GeV",
+      "pid": [-11, 11],
+      "cuts": "../../../_common/cuts_inclusive.py",
+      "obs": "../../../_common/obs.py",
+      "hist": [
+        {
+          "file": "lhc_tevatron_rhic.json",
+          "file_filter": "CDF11_ee",
+          "obs": "cross_section",
+          "differential": false,
+          "scale": 1e-12,
+          "unit": "pb"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "maxiter": 200,
+  "history_size": 20,
+  "gradient_tolerance": 1e-07,
+  "relative_gradient_tolerance": 1e-09,
+  "learning_rate": 1.0,
+  "line_search_steps": 30,
+  "line_search_decay": 0.5,
+  "line_search_armijo": 0.0001,
+  "retry_failed_search": true,
+  "grad_step_rel": 0.001,
+  "grad_step_abs": 1e-06
+}

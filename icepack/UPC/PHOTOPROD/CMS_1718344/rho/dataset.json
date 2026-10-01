@@ -1,0 +1,123 @@
+// Disabled: HEPData record returned HTTP 404 when checked with HEPData/download.py on 2026-10-01
+// [REFERENCE: arXiv:1902.01339v3, Table 3]
+// Four independent rapidity slices, published gamma-p differential cross sections
+// Divide the pPb MC by each published mean photon flux and rapidity width in the reader
+// Full-range column overlaps these slices and is not fitted again
+// |t| = dipion pT^2 > 0.025 GeV^2 suppresses gamma-Pb coherent production
+// The extrapolated |t| < 0.5 GeV^2 totals are not compared to a two-direction pPb sample
+// TUNE0 rho -> pi+ pi- uses BR = 1, no additional decay correction
+// Statistical and systematic marginals retained, no covariance table is available
+{
+  "active": false,
+  "type": "PUBLISHED_1718344",
+  "reader": "./reader.py",
+  "datapath": "HEPData/PHOTOPROD/",
+  "samples": [
+    {
+      "name": "gp",
+      "label": "GRANIITTI GP",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "GP[RES]<F> -> pi+ pi- @RES{rho_770:1}"
+      }
+    },
+    {
+      "name": "tp",
+      "label": "GRANIITTI TP",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[RES]<F> -> pi+ pi- @RES{rho_770:1}"
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "cross_section",
+    "unit": "ub",
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "errorbar"
+  },
+  "fit": {
+    "normalization": "cross_section"
+  },
+  "validation": {
+    "loopscreen": 1,
+    "nevents": 100000,
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {
+      "$ref": "../../../../_common/SETTINGS.json#/measurement"
+    }
+  },
+  "sets": [
+    {
+      "name": "CMS pPb $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV, exclusive $\\rho^0$",
+      "plot_group": "CMS_5p02TeV_pPb_rho_t_y1",
+      "pid": [211, -211],
+      "cuts": "./cuts_y1.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "arxiv-1902.01339v3.pdf",
+          "obs": "pt2",
+          "scale": 1e-06,
+          "fitw": 1.0,
+          "file_filter": "1"
+        }
+      ],
+      "title": "$-2<y<-1.2$"
+    },
+    {
+      "name": "CMS pPb $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV, exclusive $\\rho^0$",
+      "plot_group": "CMS_5p02TeV_pPb_rho_t_y2",
+      "pid": [211, -211],
+      "cuts": "./cuts_y2.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "arxiv-1902.01339v3.pdf",
+          "obs": "pt2",
+          "scale": 1e-06,
+          "fitw": 1.0,
+          "file_filter": "2"
+        }
+      ],
+      "title": "$-1.2<y<0$"
+    },
+    {
+      "name": "CMS pPb $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV, exclusive $\\rho^0$",
+      "plot_group": "CMS_5p02TeV_pPb_rho_t_y3",
+      "pid": [211, -211],
+      "cuts": "./cuts_y3.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "arxiv-1902.01339v3.pdf",
+          "obs": "pt2",
+          "scale": 1e-06,
+          "fitw": 1.0,
+          "file_filter": "3"
+        }
+      ],
+      "title": "$0<y<1.2$"
+    },
+    {
+      "name": "CMS pPb $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV, exclusive $\\rho^0$",
+      "plot_group": "CMS_5p02TeV_pPb_rho_t_y4",
+      "pid": [211, -211],
+      "cuts": "./cuts_y4.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "arxiv-1902.01339v3.pdf",
+          "obs": "pt2",
+          "scale": 1e-06,
+          "fitw": 1.0,
+          "file_filter": "4"
+        }
+      ],
+      "title": "$1.2<y<2$"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "active": true,
+  "type": "HEPDATA_2825384",
+  "reader": "../reader.py",
+  "datapath": "HEPData/CEP/HEPData-ins2825384-v1-json/",
+  "samples": [
+    {
+      "name": "gp_res",
+      "label": "GRANIITTI GP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "GP[RES]<F> -> mu+ mu- @RES{jpsi:1}"},
+      "scale": 1.0
+    },
+    {
+      "name": "jmrt",
+      "label": "GRANIITTI ygg[$J/\\psi$]",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "ygg[jpsi]<F> -> mu+ mu-"},
+      "scale": 1.0
+    }
+  ],
+  "plot": {"normalization": "cross_section", "unit": "pb", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "LHCb $pp$ 13 TeV ($J/\\psi$)",
+      "plotname": "LHCb_13TeV_exclusive_Jpsi_central_system",
+      "title": "Central system: $2.0 < Y(J/\\psi) < 4.5$",
+      "state": "J/psi",
+      "region": "central_system",
+      // BR_JPSI_MUMU is the PDG value for J/psi -> mu+ mu-
+      // 1 / BR_JPSI_MUMU = 1 / 0.05961
+      "mc_scale": 16.7757087736957,
+      "pid": [-13, 13],
+      "cuts": "../cuts.py",
+      "obs": "../obs.py",
+      "hist": [
+        {"file": "Table4.json", "obs": "Rap", "scale": 1e-9, "unit": "nb", "fitw": 1.0}
+      ]
+    }
+  ]
+}

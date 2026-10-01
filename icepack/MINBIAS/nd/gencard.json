@@ -1,0 +1,98 @@
+// Process steering file
+// JSON(5) + single line/multiline comments allowed, trailing comma allowed
+//
+// The format is strictly upper/lower case sensitive
+//
+// mikael.mieskolainen@cern.ch, 2026
+{
+
+  // ----------------------------------------------------------------------
+  // Generic setup
+
+  "GENERIC" : {
+
+    "OUTPUT"  : "nd",        // Output filename
+    "FORMAT"  : "hepmc2",    // hepmc3, hepmc2, hepevt
+    "CORES"   : 0,           // Number of CPU threads (0 for automatic)
+    "NEVENTS" : 30000,        // Number of unweighted (weight = 1) events
+    "INTEGRATOR" : "VEGAS",        // "VEGAS" (default), "NEUROJAC", "FLAT" (for debug)
+    "WEIGHTED" : false,      // Weighted events (default false)
+    "MODELPARAM" : "TUNE0",   // General model tune
+    "HIST"    : 0,           // On-the-flight histograms (0 = off,1,2)
+    "RNDSEED" : 12468        // Random seed (uint)
+  },
+
+  // ----------------------------------------------------------------------
+  // Scattering setup
+
+  "SCATTERING" : {
+
+
+    "BEAM" :   ["p+","p+"],  // Beam PDG-ID / Name
+    "ENERGY" : [6500, 6500], // Beam energy in the lab (GeV)
+    "PROCESS" : "X[ND]<Q>",  // Process ID
+    "RES" : [],
+    "LOOPSCREEN" : true,        // Initial state event-by-event screening loop
+    "NSTARS" : 0,  // Forward dissociation (0 = elastic, 1 = single, 2 = double)
+    "BEAMFRAG": "none",  // Forward dissociation particle production ('none', 'fewbody', 'cylinder', 'diquark')
+    "LHAPDF" : "NNPDF31_lo_as_0118"    // LHAPDF parton distribution set
+  },
+
+  // ----------------------------------------------------------------------
+  // Monte Carlo integrator setup
+
+  "INTEGRATOR" : {
+
+    // Integration targets after adaptation
+    "min_samples" : 1000000,
+    "max_samples" : 100000000,
+    "precision"   : 0.01,
+
+    // Loop integration
+    "LOOPSCREEN" : {
+      "extra_kt" : 1,  // Extra kT points relative to NUMERICS.json default
+      "extra_phi" : 1   // Extra phi points relative to NUMERICS.json default
+    },
+
+    // VEGAS integrator
+    "VEGAS" : {
+
+      "bins" : 128,      // Maximum number of bins per dimension (NOTE: EVEN NUMBER)
+      "alpha" : 1.25,    // Grid adaptation damping exponent
+      "rounds" : 8,      // Number of adaptation iterations
+      "ncall" : 40000,   // Number of function calls per iteration
+
+      "debug" : -1       // Debug output (default -1)
+    },
+
+    // NEUROJAC integrator
+    "NEUROJAC" : {},
+
+    // FLAT integrator
+    "FLAT" : {},
+
+    // Unweighting max weight
+    "max_w_value"  : null  // user can set here (default automatic)
+  },
+
+
+  // ----------------------------------------------------------------------
+  // Generation cuts
+
+  "GENCUTS" : {
+
+    "<C>" : {
+      "M" : [0.0, 1000000.0],
+      "Rap" : [-2.5, 2.5] // Rapidity boundaries of the final states (<C> class)
+    },
+    "<F>" : {
+      "M" : [0.0, 1000000.0],
+      "Rap" : [-9.0, 9.0] // Rapidity boundaries of the system (<F> class)
+    },
+    "<Q>" : {
+      "Xi" : [0, 0.05]    // Invariant scale M^2/s (forward excitation)
+    }
+  }
+
+
+}

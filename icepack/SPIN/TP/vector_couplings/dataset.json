@@ -1,0 +1,78 @@
+// Pure Tensor Pomeron couplings for the vector rho(770)
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "g0",
+      "label": "GRANIITTI TP[RES] $g_0$",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[RES]<F> -> pi+ pi- @RES{rho_770:1}",
+        "rho_770.json:PARAM_RES.MODELS.TP[\"[22,995]\"].g_tensor[0]": 1.0,
+        "rho_770.json:PARAM_RES.MODELS.TP[\"[22,995]\"].g_tensor[1]": 0.0,
+        "rho_770.json:PARAM_RES.MODELS.TP[\"[22,9915]\"].g_tensor": [0.0, 0.0],
+        "rho_770.json:PARAM_RES.MODELS.TP[\"[22,9925]\"].g_tensor": [0.0, 0.0],
+        "rho_770.json:PARAM_RES.MODELS.TP[\"[22,9925]\"].VMD_MIXING": [],
+        "GENCUTS.<F>.M": [0.47706, 1.07346]
+      }
+    },
+    {
+      "name": "g1",
+      "label": "GRANIITTI TP[RES] $g_1$",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[RES]<F> -> pi+ pi- @RES{rho_770:1}",
+        "rho_770.json:PARAM_RES.MODELS.TP[\"[22,995]\"].g_tensor[0]": 0.0,
+        "rho_770.json:PARAM_RES.MODELS.TP[\"[22,995]\"].g_tensor[1]": 1.0,
+        "rho_770.json:PARAM_RES.MODELS.TP[\"[22,9915]\"].g_tensor": [0.0, 0.0],
+        "rho_770.json:PARAM_RES.MODELS.TP[\"[22,9925]\"].g_tensor": [0.0, 0.0],
+        "rho_770.json:PARAM_RES.MODELS.TP[\"[22,9925]\"].VMD_MIXING": [],
+        "GENCUTS.<F>.M": [0.47706, 1.07346]
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "unit_density",
+    "density_uncertainty": "shape",
+    "ratio_plot": true,
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "hist"
+  },
+  "fit": {"normalization": "unit_density"},
+  "sets": [
+    {
+      "name": "rho(770), g0",
+      "sample": "g0",
+      "plot_group": "TP_vector_couplings",
+      "title": "TP rho(770) couplings",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "rho(770), g1",
+      "sample": "g1",
+      "plot_group": "TP_vector_couplings",
+      "title": "TP rho(770) couplings",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    }
+  ]
+}

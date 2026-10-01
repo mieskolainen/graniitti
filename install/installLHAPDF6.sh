@@ -2,27 +2,23 @@
 #
 # LHAPDF 6.x compilation and install script
 #
-# Ubuntu requirements:
-#   sudo apt install cmake g++ python3-dev
-#
-# Run with:
-#
-#   INSTALLPATH=$HOME/local
-#   source installLHAPDF6.sh
-#
+# Run first: source setenv.sh
+# 
+# mikael.mieskolainen@cern.ch (2026)
 
-#wget http://www.hepforge.org/archive/lhapdf/LHAPDF-6.5.4.tar.gz
-tar -xf LHAPDF-6.5.4.tar.gz
-cd LHAPDF-6.5.4
+set -euo pipefail
+
+#wget http://www.hepforge.org/archive/lhapdf/LHAPDF-6.5.5.tar.gz
+tar -xf LHAPDF-6.5.5.tar.gz
+cd LHAPDF-6.5.5
 
 # Remove old
-rm ${INSTALLPATH}/LHAPDF -f -r
+rm ${GRANIITTI_IO_PATH}/LHAPDF -f -r
 
 # Compile and install new
-./configure --prefix=${INSTALLPATH}/LHAPDF
+./configure --prefix=${GRANIITTI_IO_PATH}/LHAPDF
 make -j4
 make install
 cd ..
 sleep 3
-rm LHAPDF-6.5.4 -f -r
-
+rm LHAPDF-6.5.5 -f -r

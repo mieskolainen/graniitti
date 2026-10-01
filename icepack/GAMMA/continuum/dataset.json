@@ -1,0 +1,88 @@
+// Photon induced dimuon continuum comparison
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "kt",
+      "label": "GRANIITTI $k_T$-EPA $\\gamma\\gamma \\to \\mu^+\\mu^-$",
+      "gencard": "./_common/gencard_kt.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "yy[EPA]<F> -> mu+ mu-",
+        "GENERAL.json:PARAM_SPIN.FORWARD_NOFLIP": false,
+        "GENCUTS.<F>.M": [20, 200],
+        "GENCUTS.<F>.Rap": [-2.5, 2.5]
+      }
+    },
+    {
+      "name": "qed",
+      "label": "GRANIITTI exact QED $\\gamma\\gamma \\to \\mu^+\\mu^-$",
+      "gencard": "./_common/gencard_kt.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "yy[QED]<F> -> mu+ mu-",
+        "GENERAL.json:PARAM_SPIN.FORWARD_NOFLIP": false,
+        "GENCUTS.<F>.M": [20, 200],
+        "GENCUTS.<F>.Rap": [-2.5, 2.5]
+      }
+    },
+    {
+      "name": "dz",
+      "label": "GRANIITTI Drees-Zeppenfeld $\\gamma\\gamma \\to \\mu^+\\mu^-$",
+      "gencard": "./_common/gencard_dz.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "yy_DZ[EPA]<P> -> mu+ mu-",
+        "SCATTERING.LOOPSCREEN": false,
+        "GENCUTS.<P>.M": [20, 200],
+        "GENCUTS.<P>.Rap": [-2.5, 2.5]
+      }
+    },
+    {
+      "name": "lux",
+      "label": "GRANIITTI LUXqed $\\gamma\\gamma \\to \\mu^+\\mu^-$",
+      "gencard": "./_common/gencard_lux.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "yy_LUX[EPA]<P> -> mu+ mu-",
+        "SCATTERING.LOOPSCREEN": false,
+        "GENCUTS.<P>.M": [20, 200],
+        "GENCUTS.<P>.Rap": [-2.5, 2.5],
+        "FIDCUTS.CENTRAL[\"SYSTEM\"].M":
+            [20, 200],
+        "FIDCUTS.CENTRAL[\"*\"].Pt":
+            [10.0, 100000.0]
+      }
+    }
+  ],
+  "plot": {"normalization": "cross_section", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "sets": [
+    {
+      "name": "Photon dimuon continuum",
+      "title": "$|\\eta_{\\mu}|<2.5$, $p_{T,\\mu}>10$ GeV",
+      "data": false,
+      "samples":
+          ["kt", "qed", "dz", "lux"],
+      "pid": [-13, 13],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"obs": "M"},
+        {"obs": "Rap"},
+        {"obs": "costheta_CS"}
+      ]
+    },
+    {
+      "name": "Photon dimuon forward proton azimuth",
+      "title": "$|\\eta_{\\mu}|<2.5$, $p_{T,\\mu}>10$ GeV",
+      "data": false,
+      "samples":
+          ["kt", "qed"],
+      "pid":
+          [-13, 13],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"obs": "dPhi_pp"}
+      ]
+    }
+  ]
+}

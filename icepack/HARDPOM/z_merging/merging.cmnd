@@ -1,0 +1,18 @@
+! CKKW-L merging of SD dimuons with zero and one additional parton
+ParticleDecays:limitTau0 = on
+ParticleDecays:tau0Max = 10.0
+PartonLevel:ISR = on
+PartonLevel:FSR = on
+TimeShower:QEDshowerByL = on
+BeamRemnants:primordialKT = off
+SpaceShower:MEcorrections = off
+TimeShower:MEcorrections = off
+PDF:pSet = LHAPDF6:NNPDF31_lo_as_0118
+PDF:PomSet = 13
+Merging:doKTMerging = on
+Merging:Process = pp>mu+mu-
+Merging:nJetMax = 1
+Merging:TMS = 15.0
+Merging:Dparameter = 1.0
+Merging:ktType = 1
+Merging:enforceCutOnLHE = on

@@ -1,0 +1,15 @@
+{
+  "driver": "graniitti",
+  "settings": {"$ref": "_defaults.json"},
+  "models": [
+    {
+      "model": "GP",
+      "select": ["f2_1270"],
+      "production": {"mode": "magnitude", "geometry": "projective", "relative_bounds": {"$ref": "_defaults.json#/icetune/resonance/production/relative_bounds/default"}, "active_only": true},
+      "decay": {"zeta": {"mode": "phase_raw", "resonances": ["f2_1270"], "final_states": [[321, -321]]}},
+      "phi": {"mode": "phase_raw", "resonances": ["f2_1270"]},
+      "res_fields": ["FF_prod"],
+      "datasets": {"$ref": "tune-gpom-res-con.json#/models/0/datasets"}
+    }
+  ]
+}

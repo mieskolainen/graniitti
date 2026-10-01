@@ -1,0 +1,48 @@
+{
+  "active": true,
+  "type": "HEPDATA_2825384",
+  "reader": "../reader.py",
+  "datapath": "HEPData/CEP/HEPData-ins2825384-v1-json/",
+  "samples": [
+    {
+      "name": "gp_res",
+      "label": "GRANIITTI GP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "GP[RES]<F> -> mu+ mu- @RES{psi2S:1}"},
+      "scale": 1.0
+    },
+    {
+      "name": "jmrt",
+      "label": "GRANIITTI ygg[$\\psi(2S)$]",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "ygg[psi(2S)]<F> -> mu+ mu-"},
+      "scale": 1.0
+    }
+  ],
+  "plot": {"normalization": "cross_section", "unit": "pb", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "LHCb $pp$ 13 TeV ($\\psi(2S)$)",
+      "plotname": "LHCb_13TeV_exclusive_psi2S_central_system",
+      "title": "Central system: $2.0 < Y(\\psi(2S)) < 4.5$",
+      "state": "psi(2S)",
+      "region": "central_system",
+      // BR_PSI2S_MUMU is the PDG value for psi(2S) -> mu+ mu-
+      // 1 / BR_PSI2S_MUMU = 1 / 0.008
+      "mc_scale": 125,
+      "pid": [-13, 13],
+      "cuts": "../cuts.py",
+      "obs": "../obs.py",
+      "hist": [
+        {"file": "Table5.json", "obs": "Rap", "scale": 1e-9, "unit": "nb", "fitw": 1.0}
+      ]
+    }
+  ]
+}

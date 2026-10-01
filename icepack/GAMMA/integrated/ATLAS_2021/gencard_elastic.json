@@ -1,0 +1,49 @@
+// ATLAS 13 TeV photon-induced WW generation
+{
+  "GENERIC": {
+    "OUTPUT": "ATLAS21_WW_emu_elastic",
+    "FORMAT": "hepmc3",
+    "CORES": 0,
+    "NEVENTS": 30000,
+    "INTEGRATOR": "VEGAS",
+    "WEIGHTED": false,
+    "MODELPARAM": "TUNE0",
+    "HIST": 0,
+    "RNDSEED": 1822077
+  },
+  "SCATTERING": {
+    "BEAM": ["p+","p+"],
+    "ENERGY": [6500,6500],
+    "PROCESS": "yy[WW]<F> -> W+ > {e+ ve} W- > {mu- vm~}",
+    "RES": [],
+    "LOOPSCREEN": true,
+    "NSTARS": 0,  // Forward dissociation (0 = elastic, 1 = single, 2 = double)
+    "BEAMFRAG": "diquark",  // Forward dissociation particle production ('none', 'fewbody', 'cylinder', 'diquark')
+    "LHAPDF": "NNPDF31_lo_as_0118"
+  },
+  "RADIATIVE": {
+    "ISR_QED": "none",
+    "FSR_QED": "none"
+  },
+  "INTEGRATOR": {
+    "min_samples": 1000000,
+    "max_samples": 100000000,
+    "precision": 0.01,
+    "LOOPSCREEN": {"extra_kt": 3, "extra_phi": 3},
+    "VEGAS": {"bins": 128, "alpha": 1.25, "rounds": 8, "ncall": 40000, "debug": -1},
+    "NEUROJAC": {},
+    "FLAT": {},
+    "max_w_value": null
+  },
+  "GENCUTS": {
+    "<F>": {"M": [20,13000], "Rap": [-9,9]},
+    "<Q>": {"Xi": [0,0.05]}
+  },
+  "FIDCUTS": {
+    "active": false,
+    "CENTRAL": {},
+    "FORWARD": {},
+    "USERCUTS": false
+  },
+  "VETOCUTS": {"active": false}
+}

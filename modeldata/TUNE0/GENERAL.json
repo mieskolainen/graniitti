@@ -1,273 +1,942 @@
-// Model parameters ("TUNE0")
+// Model parameters "TUNE0"
 //
-// m.mieskolainen@imperial.ac.uk, 2021
+// (c) 2026 Mikael Mieskolainen
+// Licensed under the MIT License <http://opensource.org/licenses/MIT>.
+
 {
-  
-  // ---------------------------------------------------------------------
-  // [Global soft model parameters]
 
-  // [IMPACT: eikonal screening, elastic, SD, DD, all soft processes proton vertices]
-  
-  "PARAM_SOFT" : {
+// Parameters used by yy->yy and gg->yy loop amplitudes
+// Light quarks use MSbar masses at 2 GeV,
+// charm and bottom at their own mass, top uses the pole mass
+"PARAM_SM": {
+  "alpha_em_inv": 127.9,
+  "mass": {
+    "e":   0.00051099895000,
+    "mu":  0.1056583755,
+    "tau": 1.77693,
+    "u":   0.00216,
+    "d":   0.00470,
+    "s":   0.0935,
+    "c":   1.2730,
+    "b":   4.183,
+    "t":   172.4,
+    "w":   80.3692
+  }
+},
 
-    // Pomeron trajectory
-    "DELTA_P"  : 0.098,       // Intercept
-    "ALPHA_P"  : 0.065,       // Bare slope, GeV^{-2} (+ pion loop insert)
+// Exponential slope convention:
+// Capital B in steering field names denotes a cross-section slope [GeV^-2]
+// An amplitude factor uses exp(B*t/2), while a squared weight or flux uses exp(B*t)
+// Lowercase form-factor parameters such as b and Regge trajectory slopes
+// follow the definitions of their respective models
 
-    // Couplings
-    "gN_P"     : 8.20,        // Pomeron-proton GeV^{-1}
-    "gN_O"     : 0.10,        // Odderon-proton GeV^{-1} (ANSATZ!)
-    "g3P"      : 0.15,        // Triple Pomeron coupling (N.B. normalized units g3P/gn_P) (for SD/DD/EXCITATION)
-    "gamma"    : 0.45,        // Eikonal matrix coupling [0 ... 1] (CURRENTLY NOT USED)
-    
-    // Form factor parameters
-    "fc1"      : 0.34,        // Proton form factor param 1 (GeV^2)
-    "fc2"      : 5.0,         // Proton form factor param 2 (GeV^2)
-    "fc3"      : 10.0,        // Pion loop form factor (GeV^2)
-    
-    // Odderon
-    "ODDERON_ON" : false
+// ---------------------------------------------------------------------
+// [Global soft model parameters]
+
+// [IMPACT: eikonal screening, elastic, SD, DD, all soft processes proton vertices]
+
+"PARAM_SOFT": {
+
+  // =====================================================
+  // Regenerate derived couplings after changing active_model:
+  //   python develop/tools/DL_couplings.py   --push
+  //   python develop/tools/HERA_couplings.py --push
+
+  "active_model": "single", // 'single', 'double', ...
+  // =====================================================
+
+  // Phenomenological proton-dissociation form factor
+  // [IMPACT: SD/DD dissociative CEP]
+  "FORWARD_EXCITATION": {
+    "s0": 1.0,    // GeV^2
+    "a":  0.5616  // GeV^2
   },
   
-  // ---------------------------------------------------------------------
-  // [Jacob-Wick helicity amplitudes etc.]
-  
-  // [IMPACT: "minimal pomeron" resonance processes]
-
-  "PARAM_SPIN" : {
-
-    // 2 -> 1 generation (fusion) spin correlations active
-    "SPINGEN" : true,
-
-    // 1 -> 2 decay spin correlations active
-    "SPINDEC" : true,
-
-    // Spin polarization frame
-    // ("CS" = Collins-Soper, "CM" = Non-Rotated Center of Momentum, "HX" = Helicity)
-    "FRAME" : "CS", // Default Collins-Soper
-
-    // Maximum angular momentum value for sliding Pomeron helicity trajectories
-    "JMAX" : 5,
+  "EXCHANGE_DEF": {
+    "P":     {"role": "pomeron", "trajectory_mode": "pion_loop", "tau":  1, "crossing":  1},
+    "O":     {"role": "odderon", "trajectory_mode": "linear",    "tau": -1, "crossing": -1},
+    "R_f2":  {"role": "reggeon", "trajectory_mode": "linear",    "tau":  1, "crossing":  1},
+    "R_rho": {"role": "reggeon", "trajectory_mode": "linear",    "tau": -1, "crossing": -1},
+    "O3g":   {"role": "odderon", "trajectory_mode": "linear",    "tau": -1, "crossing": -1}
   },
 
-  // ---------------------------------------------------------------------
-  // [Central production regge model parameters]
+  // GW.a_c defines only a resolved direction and is normalized after parsing
+  // It selects one coherent low mass Good Walker direction and the resolved 3P projector
+  // It supplies no coupling, normalization or forward mass dependence
+
+  // Real symmetric exchange matrices share an eigenbasis exactly when they commute
+
+  "MODEL": {
+
+    // N=1 channel (icetune done with elastic pp & ppbar)
+    "single": {
+      "GW": {"theta": [], "a_c": []},
+      "EIKONAL":  {"unitarization": "q_exp", "q": 0.41987956483588146, "screening_exchanges": ["P"], "excitation_exchanges": ["P"], "helicity": false},
+      "pion_loop_scale2": 6.331252661415344,
+
+      "EXCHANGE": {
+        "P":     {"on": true, "alpha": [1.090019284214603, 0.19022451576817273], "g": [[7.772096730400218]],  "sign": 1,  "eta_mode": "rotating", "ff": "P", "transition_ff": "geometric", "helicity": {"kappa": 0.0, "B_kappa": 0.0}},
+        "O":     {"on": true, "alpha": [1.0483688003133602, 0.06733770646227784], "g": [[0.7715114960370147]],  "sign": -1, "eta_mode": "rotating", "ff": "O", "transition_ff": "geometric", "helicity": {"kappa": 0.0, "B_kappa": 0.0}},
+        "R_f2":  {"on": true, "alpha": [0.4814415721662879, 0.9477136811222054], "g": [[14.49123873996377]], "sign": 1,  "eta_mode": "rotating", "ff": "R", "transition_ff": "geometric", "helicity": {"kappa": 0.0, "B_kappa": 0.0}},
+        "R_rho": {"on": true, "alpha": [0.5679995317172248, 0.934196413228639], "g": [[8.956886580922133]],  "sign": 1,  "eta_mode": "rotating", "ff": "R", "transition_ff": "geometric", "helicity": {"kappa": 0.0, "B_kappa": 0.0}},
+        "O3g":   {"on": true, "alpha": [1.0081182278990208, 0.043626011533083146], "g": [[0.2629194936235883]],  "sign": -1, "eta_mode": "rotating", "ff": "O3g", "transition_ff": "geometric", "helicity": {"kappa": 0.0, "B_kappa": 0.0}},
+      },
+
+      "FF": {
+        "P":   {"type": "DPOW", "param": [[0.8714829200348211, 0.911398050071061, 1.069096326828003]]},
+        "O":   {"type": "DPOW", "param": [[1.178621647255004, 1.9509638842374912, 0.9984206313310175]]},
+        "R":   {"type": "EXP",  "param": [[4.1301685501095555]]},
+        "O3g": {"type": "3G",   "param": [[0.3805690655162575]]}
+      },
+
+      // Use the rotating phase without unphysical spacelike signature poles
+      "3P": {"g": 0.20, "eta_mode": "rotating"} // Triple pomeron (SD,DD..)
+    },
+    
+    // N=2 channel (icetune done with elastic pp & ppbar, should include also low-mass dissociation)
+    "double": {
+      "GW":       {"theta": [0.4219083284081683], "a_c": [1.0]},
+      "EIKONAL":  {"unitarization": "q_exp", "q": 0.5147206127565073, "screening_exchanges": ["P"], "excitation_exchanges": ["P"], "helicity": false},
+      "pion_loop_scale2": 3.0017306056076594,
+
+      // Exchange trajectories and eigenstate couplings, with a diagonal Pomeron in the Good Walker basis
+      "EXCHANGE": {
+        "P":     {"on": true, "alpha": [1.0895149718571535, 0.1445356438892305], "g": [[8.115524648990098, 0.0000],  [0.0000, 7.25094794537803]],  "sign": 1,  "eta_mode": "rotating", "ff": "P", "transition_ff": "geometric", "helicity": {"kappa": 0.0, "B_kappa": 0.0}},
+        "O":     {"on": true, "alpha": [0.9971735248446801, 0.06924095138976091], "g": [[4.409946407567515, 0.30149226006687224], [0.30149226006687224, 1.1713566303589482]], "sign": -1, "eta_mode": "rotating", "ff": "O", "transition_ff": "geometric", "helicity": {"kappa": 0.0, "B_kappa": 0.0}},
+        "R_f2":  {"on": true, "alpha": [0.5188977883184492, 0.9033758667693106], "g": [[16.493714193624598, -0.08557383323382635], [-0.08557383323382635, 9.736970494513715]],  "sign": 1,  "eta_mode": "rotating", "ff": "R", "transition_ff": "geometric", "helicity": {"kappa": 0.0, "B_kappa": 0.0}},
+        "R_rho": {"on": true, "alpha": [0.5285548889768386, 0.9135624467193795], "g": [[9.64935254905644, 0.1832722824693173],  [0.1832722824693173, 4.994471640063182]],  "sign": 1,  "eta_mode": "rotating", "ff": "R", "transition_ff": "geometric", "helicity": {"kappa": 0.0, "B_kappa": 0.0}},
+        "O3g":   {"on": true, "alpha": [1.0318967293527634, 0.0710617952261157], "g": [[0.8005947720005694, 0.4222748234757083],  [0.4222748234757083, 1.3217644726312507]],  "sign": -1, "eta_mode": "rotating", "ff": "O3g", "transition_ff": "geometric", "helicity": {"kappa": 0.0, "B_kappa": 0.0}},
+      },
+
+      // Form factors for each exchange per eigenstate
+      "FF": {
+        "P":   {"type": "DPOW", "param": [[0.41727864729800096, 1.8258835744801944, 1.1239280326904109], [2.4083741199107322, 3.39970194158101, 2.0114116977343532]]},
+        "O":   {"type": "DPOW", "param": [[1.1003618547947185, 3.600165040598462, 1.3796210801170379], [1.3628058059633628, 4.111096310144165, 1.0501511318613064]]},
+        "R":   {"type": "EXP",  "param": [[3.6972917297942827], [4.019369549782414]]},
+        "O3g": {"type": "3G",   "param": [[0.6278252867844213], [0.09040490338116441]]}
+      },
+
+      "3P": {"g": 0.20, "eta_mode": "rotating"}
+    },
+
+    // N=3 channel (no tuning done)
+    "triple": {
+      "GW":       {"theta": [0.3200, 0.1200, 0.0800], "a_c": [0.8000, 0.6000]},
+      "EIKONAL":  {"unitarization": "q_exp", "q": 0.46, "screening_exchanges": ["P"], "excitation_exchanges": ["P"], "helicity": false},
+      "pion_loop_scale2": 6.0,
+
+      "EXCHANGE": {
+        "P":     {"on": true, "alpha": [1.0900, 0.1800], "g": [[8.4000, 0.0000, 0.0000],  [0.0000, 6.2000, 0.0000],  [0.0000, 0.0000, 4.5000]], "sign": 1,  "eta_mode": "rotating", "ff": "P", "transition_ff": "geometric", "helicity": {"kappa": 0.0, "B_kappa": 0.0}},
+        "O":     {"on": true, "alpha": [1.0300, 0.0800], "g": [[5.0000, -0.4000, 0.0000], [-0.4000, 0.3500, 0.0000], [0.0000, 0.0000, 0.2000]], "sign": -1, "eta_mode": "rotating", "ff": "O", "transition_ff": "geometric", "helicity": {"kappa": 0.0, "B_kappa": 0.0}},
+        "R_f2":  {"on": true, "alpha": [0.5475, 0.9000], "g": [[17.0000, 0.0000, 0.0000], [0.0000, 9.0000, 0.0000],  [0.0000, 0.0000, 5.0000]], "sign": 1,  "eta_mode": "rotating", "ff": "R", "transition_ff": "geometric", "helicity": {"kappa": 0.0, "B_kappa": 0.0}},
+        "R_rho": {"on": true, "alpha": [0.5475, 0.9000], "g": [[9.6000, 0.0000, 0.0000],  [0.0000, 5.0000, 0.0000],  [0.0000, 0.0000, 3.0000]], "sign": 1,  "eta_mode": "rotating", "ff": "R", "transition_ff": "geometric", "helicity": {"kappa": 0.0, "B_kappa": 0.0}},
+        "O3g":   {"on": true, "alpha": [1.0100, 0.0000], "g": [[0.3000, -0.1500, 0.0000], [-0.1500, 0.1200, 0.0000], [0.0000, 0.0000, 0.0800]], "sign": -1, "eta_mode": "rotating", "ff": "O3g", "transition_ff": "geometric", "helicity": {"kappa": 0.0, "B_kappa": 0.0}},
+      },
+
+      "FF": {
+        "P":   {"type": "DPOW", "param": [[0.4670, 1.9090, 1.1410], [1.6570, 1.7840, 1.4650], [2.0000, 1.7000, 1.3000]]},
+        "O":   {"type": "DPOW", "param": [[0.9000, 1.8000, 1.2000], [1.2000, 2.4000, 1.1000], [1.5000, 2.2000, 1.1000]]},
+        "R":   {"type": "EXP",   "param": [[4.0000], [4.0000], [4.0000]]},
+        "O3g": {"type": "3G",   "param": [[1.0000], [1.0000], [1.0000]]}
+      },
+
+      "3P": {"g": 0.20, "eta_mode": "rotating"}
+    }
+  }
+},
+
+// ---------------------------------------------------------------------
+// [Shared helicity and Jacob-Wick spin treatments]
+//
+
+"PARAM_SPIN" : {
+
+  "SPINGEN": true,  // Initial state spin correlations
+  "SPINDEC": true,  // Resonance decay spin correlations
+  "QMETRICS": false,  // Initialization references and integrated quantum metrics
+
+  // [MP/XP/GP and elastic QED sources] Forward proton spin treatment
+  // When true, drops forward proton helicity flip (+ > - and - > +) amplitudes
+  "FORWARD_NOFLIP": true,
+
+  // [All amplitudes using JW-decays] Decay tree coherent Boson/Fermion permutation sums
+  "DECAY_SYM": true
+},
+
+// ---------------------------------------------------------------------
+// [MP/XP/GP model processes]
+//
+// J^PC and PDG ids for different pomerons/odderons/reggeons are
+// defined in PDG_EXTRA.json
+
+"PARAM_REGGE" : {
+
+  // [MP] Central polarization frame for production and Jacob-Wick decay
+  // "CS" is Collins-Soper, "HX" is helicity, "CM" is the unrotated rest frame
+  "MP_FRAME": "CS",
+
+  // Resonance production LS (q/Lambda)^L factors
+  "DERIVATIVE_FACTOR": {"GP": false, "MP": false, "XP": false},
+
+  // Decay LS threshold q^L factors
+  "DECAY_BARRIERS":{"GP": false, "MP": false, "XP": false},
+
+  // Decay phase in resonance decays (set under DECAYS.json)
+  "use_zeta": {"GP": true, "MP": true, "XP": true},
+
+  // Elastic proton vertex
+  // 'helicity_residue' ~ Regge exchange helicity with qT^|m| barrier
+  // 'unit_residue'     ~ Regge exchange helicity without qT^|m| weights
+  "FORWARD_VERTEX": {"GP": "helicity_residue", "MP": "helicity_residue", "XP": "helicity_residue"},
+
+  // Photon source vertex treatment, "EPA" or "QED"
+  "PHOTON_VERTEX": {"GP": "EPA", "MP": "EPA", "XP": "EPA"},
+
+  // Continuum A_t + sign*A_u: "auto" uses Bose/Fermi statistics
+  // "positive" / "negative" force +/- for interference studies (debug option)
+  "TU_SIGN": {"GP": "auto", "MP": "auto", "XP": "auto"},
+  
+  // Pomeron-Pomeron-Resonance vertex energy dependence [s0/shat]^{omega} parameter
+  // Not applied when photon is involved in the process, like photoproduction
+  "omega": {"GP": 0.6349881157252373, "MP": 0.5, "XP": 0.5},
+  
+  // Each row maps one central PDG alias family to a complete PARAM_SOFT exchange
+  // pole_spin defines normalization reference point
+  "EXCHANGES": [
+    {"role": "pomeron", "pdg": [990,   991,  993,  995], "pole_spin": 2, "soft_exchange": "P"},
+    {"role": "reggeon", "pdg": [9910, 9915, 9920, 9925], "pole_spin": 2, "soft_exchange": "R_f2"},
+    {"role": "reggeon", "pdg": [9930, 9933, 9940, 9943], "pole_spin": 1, "soft_exchange": "R_rho"},
+    {"role": "odderon", "pdg": [9990, 9991, 9993, 9997], "pole_spin": 1, "soft_exchange": "O"}
+  ],
+
+  // Normalization scale (GeV^2)
+  "s0": 1.0,
+
+  // Continuum process parameters
+  "PARAM_CON": {
+
+    // Analytic Regge-helicity model exchange pairs
+    "GP": {
+      "[211,-211]":   [[990,990], [990,9910], [9910,9910]], //, [990,9930], // pi+,pi-
+      "[321,-321]":   [[990,990], [990,9910], [9910,9910]], //, [990,9930]], // K+,K-
+      "[2212,-2212]": [[990,990], [990,9910], [9910,9910]], //, [990,9910]], //[990,9930]], // p,pbar
+      "[2112,-2112]": [[990,990]], //, n,nbar
+      "[111,111]":    [[990,990]], //, [990,9910]], // pi0,pi0
+      "[311,-311]":   [[990,990]], //, [990,9910]], // K0,K0bar
+      "[113,113]":    [[990,990]], //, [990,9910]], // rho0,rho0
+      "[333,333]":    [[990,990]]                   // phi,phi
+    },
+
+    // Fixed-spin Jacob-Wick model exchange pairs
+    "MP": {
+      "[211,-211]":   [[995,995], [995,9915], [9915,9915]], // [995,9933], // pi+,pi-
+      "[321,-321]":   [[995,995], [995,9915], [9915,9915]], //[995,9933]], // K+,K-
+      "[2212,-2212]": [[995,995], [995,9915], [9915,9915]], // [995,9915]], //[995,9933]], // p,pbar
+      "[2112,-2112]": [[995,995]], // n,nbar
+      "[111,111]":    [[995,995]], // [995,9915]], // pi0,pi0
+      "[311,-311]":   [[995,995]], // [995,9915]], // K0,K0bar
+      "[113,113]":    [[995,995]], // [995,9915]], // rho0,rho0
+      "[333,333]":    [[995,995]]                  // phi,phi
+    },
+    
+    // Fixed-spin covariant LS model exchange pairs
+    "XP": {
+      "[211,-211]":   [[995,995], [995,9915], [9915,9915]], // [995,9933], // pi+,pi-
+      "[321,-321]":   [[995,995], [995,9915], [9915,9915]], //[995,9933]], // K+,K-
+      "[2212,-2212]": [[995,995], [995,9915], [9915,9915]], // [995,9915]], //[995,9933]], // p,pbar
+      "[2112,-2112]": [[995,995]], // n,nbar
+      "[111,111]":    [[995,995]], // [995,9915]], // pi0,pi0
+      "[311,-311]":   [[995,995]], // [995,9915]], // K0,K0bar
+      "[113,113]":    [[995,995]], // [995,9915]], // rho0,rho0
+      "[333,333]":    [[995,995]]                  // phi,phi
+    },
+    
+    // [GP/MP/XP] Four-body and six-body continuum Regge ladders (serial and parallel)
+    "MULTI": {
+
+      // Apply pomeron transfer form factors
+      "FF_transfer_ext": true,    // external lines
+      "FF_transfer_int": false,   // internal lines
+
+      // Include secondary f2/a2 and rho/omega trajectories in the ladder
+      "secondary_exchanges": false,
+
+      // Coherently summed serial and parallel production topologies
+      "partitions": {
+        "4": [[4], [2,2]],
+        "6": [[6], [4,2], [2,2,2]]
+      },
+
+      // auto: charged for charged states, all for states containing neutral particles
+      // charged: charge-balanced combinations, all: complete combinations
+      "permutations": "auto"
+    }
+  },
+
+  // Exchanged-meson rows [abs(PDG), pole spin J, alpha' [GeV^-2]]
+  // The trajectory is anchored by alpha(m^2)=J
+  "meson_trajectories": [[111, 0.0, 0.70],
+                          [211, 0.0, 0.70],
+                          [311, 0.0, 0.70],
+                          [321, 0.0, 0.70],
+                          [113, 1.0, 0.90],
+                          [333, 1.0, 0.90]],
+
+  // Photoproduction rows
+  // [abs(PDG), W0 [GeV], vector cross-section B_gammaPV [GeV^-2], alpha(0), alpha' [GeV^-2]]
+  // The vector side amplitude level factor is F(t) = exp(B_gammaPV * t / 2)
   //
-  // [IMPACT: "minimal pomeron" processes]
+  // B_gammaPV is derived with the physical SOFT proton profile held fixed
+  // The mapped SOFT Pomeron supplies the separate proton side vertex
 
-  "PARAM_REGGE" : {
-    
-    // Regge-trajectory parameters (pomeron, f2, a2)
-    "a0"  : [1.09, 0.55, 0.55],    // 1 + Intercept (alpha_0 = 1 + DELTA)
-    "ap"  : [0.20, 0.93, 0.93],    // Slope (alpha') [GeV^{-2}]
-    "sgn" : [1, -1, 1],            // Regge signature (sigma) (+-1)
-    "s0"  : 1.0,                   // Normalization scale (GeV^2)
-    
-    // Intermediate off-shell meson M* propagator "Reggeization" (NOT IMPLEMENTED CURRENTLY)
-    "reggeize" : false,
-    
-    // Pomeron-Pomeron-Resonance vertex flux [1/m^2]^{omega} parameter
-    "omega" : 0.5,
-    
-    // 4-body and 6-body continuum amplitude permutations construction:
-    // Set 0 for for charged (determinant like) +- combinations, 1 for all combinations
-    "ampcombs" : 0,
-    
-    // Poisson suppression factor (NOT IMPLEMENTED CURRENTLY)
-    // "poisson_scale": 0.7,
-    // "poisson_s0": 1.3,
+  // See: develop/tools/HERA_couplings.py
+  "photoprod_eta_mode": "rotating",
 
-    // -----------------------------------------------------------------
-    // IMPACT: [non-tensor pomeron AND tensor pomeron models]
-    
-    // Continuum amplitude t/u channel form factor:
-    //
-    // Note that with (interfering) resonances, the continuum parameters
-    // should be fitted together with the resonances + screening loop on.
-    "offshellFF" : "OREAR", // "OREAR", "POW", "EXP"
-    
-    // Form factor parameters
-    "a_OREAR" : 0.45,   // [GeV^1]
-    "b_OREAR" : 1.37,   // [GeV^-1]
+  "photoprod":
+      [[   113, 40.0000,   4.8717,  1.0633,  0.1771],
+       [   117, 40.0000,   4.0000,  1.0654,  0.2330],
+       [   121, 40.0000,   4.0000,  1.0654,  0.2330],
+       [   333, 70.0000,   3.7113,  1.0800,  0.2500],
+       [   443, 100.0000,  1.0906,  1.197,   0.1354],
+       [100443, 100.0000,  1.0906,  1.197,   0.1354],
+       [   553, 100.0000,  1.0021,  1.1143,  0.0600],
+       [100553, 100.0000,  1.0021,  1.1143,  0.0600],
+       [200553, 100.0000,  1.0021,  1.1143,  0.0600]],
 
-    "b_POW"   : 1.5,    // [GeV^2]
-    
-    "b_EXP"   : 0.5,    // [GeV^-2] 
+  // HERA target dissociation [PDG, W0, forward pd/el ratio at W0, delta, b, n, epsilon, M_max]
+  // Generated using develop/tools/HERA_couplings.py
+  // psi(2S) and Upsilon rows assume the J/psi proton transition with the elastic energy-power shift
+  "photoprod_diss":
+      [[   113, 40.0000,  0.2024, -0.1560,  4.8100,  8.5000,  0.0808, 10.0000],
+       [   333, 94.0000,  0.3315,  0.3200,  3.2622,  9.5758,  0.0808, 29.7254],
+       [   443, 90.0000,  0.2178,  0.3972,  1.8097,  3.5200,  0.0808, 10.0000],
+       [100443, 90.0000,  0.2178,  0.3972,  1.8097,  3.5200,  0.0808, 10.0000],
+       [   553, 90.0000,  0.2178,  0.0535,  1.8097,  3.5200,  0.0808, 10.0000],
+       [100553, 90.0000,  0.2178,  0.0535,  1.8097,  3.5200,  0.0808, 10.0000],
+       [200553, 90.0000,  0.2178,  0.0535,  1.8097,  3.5200,  0.0808, 10.0000]],
+
+  // Fixed-scale double-log energy curvature [PDG, scale^2 [GeV^2], coefficient]
+  // [REFERENCE: arXiv:1307.7099, Eq. (17)]
+  "photoprod_dlog":
+      [[443, 9.5908, 2.2004],
+       [100443, 9.5908, 2.2004]],
+  
+  // Signed curvature terms preserving the common J/psi proton transition
+  "photoprod_diss_dlog":
+      [[553, 9.5908, -2.2004],
+       [100553, 9.5908, -2.2004],
+       [200553, 9.5908, -2.2004]]
+},
+
+// ---------------------------------------------------------------------
+// [TP Tensor Pomeron model processes]
+
+"PARAM_TENSORPOM" : {
+
+  // High-energy forward helicity-conserving approximation
+  // false evaluates the exact proton-Pomeron-proton spinor currents including flips
+  "FORWARD_NOFLIP" : true,
+
+  // Apply the TP decay phases in DECAYS.json
+  "use_zeta" : true,
+
+  // Tensor, vector and secondary exchange propagator parameters
+  "EXCHANGES": {
+    // [REFERENCE: arXiv: 1309.3478, Eqs. (3.10)-(3.13)]
+    "995":  {"type": "P",  "delta":  0.0808, "ap": 0.25},
+    // [REFERENCE: arXiv: 1309.3478, Eqs. (3.10)-(3.13)]
+    "9915": {"type": "R2", "delta": -0.4525, "ap": 0.90},
+    // [REFERENCE: arXiv: 1309.3478, Eqs. (3.10)-(3.13)]
+    "9925": {"type": "R2", "delta": -0.4525, "ap": 0.90},
+    // [REFERENCE: arXiv: 1911.01909, Sec. III, Odderon benchmark]
+    "9993": {"type": "O",  "delta":  0.0500, "ap": 0.25, "eta": -1, "scale": 1.00},
+    // [REFERENCE: arXiv: 1309.3478, Eqs. (3.14)-(3.15)]
+    "9933": {"type": "R1", "delta": -0.4525, "ap": 0.90, "scale": 1.41},
+    // [REFERENCE: arXiv: 1309.3478, Eqs. (3.14)-(3.15)]
+    "9943": {"type": "R1", "delta": -0.4525, "ap": 0.90, "scale": 1.41}
+  },
+
+  // Tensor Pomeron continuum parameters
+  "PARAM_CON": {
+
+    // Selected Pomeron and f2 Reggeon terms, additional configured exchanges can be enabled
+    "TP": {
+        "[211,-211]":   [[995,995], [995,9915], [9915,9915]], // [995,9933], // pi+,pi-
+        "[321,-321]":   [[995,995], [995,9915], [9915,9915]], //[995,9925], [995,9933], [995,9943]], // K+,K-
+        "[2212,-2212]": [[995,995], [995,9915], [9915,9915]], // [995,9915]], //[995,9925], [995,9933], [995,9943]], // p,pbar
+        "[2112,-2112]": [[995,995]], // n,nbar
+        "[111,111]":    [[995,995]], // [995,9915]], // pi0,pi0
+        "[311,-311]":   [[995,995]], // [995,9915]], //[995,9925]], // K0,K0bar
+        "[113,113]":    [[995,995]], // [995,9915]], // rho0,rho0
+        "[333,333]":    [[995,995]],                 // phi,phi
+        "[*]":          [[995,995]]
+    }
   },
   
-  // ---------------------------------------------------------------------
-  // [Central production Regge model parameters]
-  // 
-  // [IMPACT: "minimal pomeron" processes]
-  // 
-  // For coupling constants see e.g.
-  //   pipi: Phys. Rev. D81 (2010) 036003
-  //   KK:   Phys. Rev. D85 (2012) 014026
-  // 
-  // Originating from fits by:
-  // A. Donnachie and P.V. Landshoff, Phys. Lett.B296 (1992) 227.
-  // Note that these couplings are technically only compatible with the
-  // same Pomeron/Reggeon linear trajectory parameters as used by Donnachie-Landshoff.
-  //
-  // Fixed final state couplings [in GeV^{-2}] (1 mb = 2.56819 GeV^{-2}]
-  //
-  // These DL-couplings are transformed inside the program by:
-  // gpi_P = PARAM_REGGE::c[i] / PARAM_SOFT::gN_P
-
-  // pion
-  "PARAM_PI" : {
-    "c" : [35.00184, 81.63672, 10.86264],
-    "active" : [true, true, true],  // Which Reggeons are exchanged (pomeron, f2, a2)
-  },
-
-  // kaon
-  "PARAM_K" : {
-    "c" : [30.35376, 44.31084, 23.38164],
-    "active" : [true, true, true]
-  },
-
-  // proton (ansatz)
-  "PARAM_P" : {
-    "c" : [35.00184, 81.63672, 10.86264],
-    "active" : [true, false, false]
-  },
-
-  // rho(770) (ansatz)
-  "PARAM_RHO" : {
-    "c" : [25.0, 0, 0],
-    "active" : [true, false, false]
-  },
-
-  // phi(1020) (ansatz)
-  "PARAM_PHI" : {
-    "c" : [18.0, 0, 0],
-    "active" : [true, false, false]
-  },
-
-  // f0(500) (ansatz)
-  "PARAM_F0500" : {
-    "c" : [35.0, 0, 0],
-    "active" : [true, false, false]
-  },
-
-  // other, such as lambda(1115) (ansatz)
-  "PARAM_X" : {
-    "c" : [15.0, 0, 0],
-    "active" : [true, false, false]
-  },
-  
-  // ---------------------------------------------------------------------
-  // [Tensor Pomeron model processes]
-
-  "PARAM_TENSORPOM" : {
-
-    // Trajectory parameters
-    "delta_P"   :  0.0808,
-    "delta_O"   :  0.0808,
-    "delta_1R"  : -0.5475,
-    "delta_2R"  : -0.5475,
-
-    "ap_P"      : 0.25,         // GeV^{-2}
-    "ap_O"      : 0.25,         // GeV^{-2}
-    "ap_1R"     : 0.9,          // GeV^{-2}
-    "ap_2R"     : 0.9,          // GeV^{-2}
-    "eta_O"     : 1.0,          // +- 1
-
-    // Couplings
-    "gPNN"      : 1.87,         // GeV^{-1}, Pomeron-Proton-Proton
-    "gPpipi"    : 1.76,         // GeV^{-1}, Pomeron-Pion-Pion
-    "gPKK"      : 1.54,         // GeV^{-1}, Pomeron-Kaon-Kaon
-    "gPrhorho"  : [0.70, 6.20], // [GeV^{-3}, GeV^{-1}], Pomeron-Rho-Rho
-    "gPphiphi"  : [0.49, 4.27], // [GeV^{-3}, GeV^{-1}], Pomeron-Phi-Phi
+  // Charged-meson continuum from arXiv:2508.06334
+  "PHOTO": {
+    "exchanges": [995,9915,9933],
+    "photon_exchange": true,
     
-    // Scales
-    "M_O"       : 1.00,         // GeV
-    "M_1R"      : 1.41,         // GeV
+    // [REFERENCE: arXiv: 2508.06334v2, Appendix A, Eq. (A.31)]
+    "M0_2": 0.5000,
+
+    // [REFERENCE: arXiv: 2508.06334v2, Sec. III and arXiv: 1804.04706, Table II]
+    "Lambda": {"211": 1.7000, "321": 1.0000},
+    
+    // [REFERENCE: arXiv: 2609.01285, Eqs. (2.2), (2.15)-(2.18)]
+    // FF_transfer supplies the full strong meson factor F in Eq. (2.2)
+    // Figs. 2-6 use this factor once, interpreting the G ansatz in Eq. (2.19) as F
+    // Use Lambda2/(Lambda2-t) for spacelike t as in arXiv:2508.06334v2, Eq. (A.31)
+    "offshell": {
+      "211": {"FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.7500, "n": 1.0000}, "FF_offshell": {"type": "gaussian", "norm": "pole", "Lambda2": 0.269}},
+      "321": {"FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5000, "n": 1.0000}, "FF_offshell": {"type": "none"}}
+    },
+    
+    // [REFERENCE: arXiv: 2508.06334v2, Sec. III, photon virtuality cut]
+    "q2_max": 0.5000,
+    "proton_pauli": false
+  },
+
+  // Rank two production couplings and transfer factors are stored in CON_TP.json
+  // rho and phi parameters from arXiv:2508.06334 and arXiv:1901.11490
+  // a0, ap and phase configure exchanged vectors in continuum amplitudes
+  // Wmode and dPDG configure vector propagation and decay in single-vector and cascade amplitudes
+  "VECTOR" : {
+    "PDG":   [113,          333,            223],
+    // [REFERENCE: arXiv: 1606.05126, Eq. (2.22) and arXiv: 1901.11490, Eqs. (3.21)-(3.24)]
+    "a0":    [0.50,         0.10,           0.50],
+    "ap":    [0.90,         0.90,           0.90],
+    "phase": ["NONE",       "EXPONENTIAL",  "NONE"],
+    "Wmode": ["RHO_OMEGA",  "P_WAVE_2BODY", "RHO_OMEGA"],
+    "dPDG":  [211,          321,            211]
+  },
+
+  // [REFERENCE: arXiv: 1409.8483, Eqs. (B.6)-(B.17)]
+  // Shared pion vertices for the rho-omega self-energies and decay currents
+  "RHO_OMEGA": {
+    "g": [11.5100,-0.3500],
+    "b": 0.0035
   },
   
-  // ---------------------------------------------------------------------
-  // [Proton structure functions and form factors]
-  // 
+  // Vector Meson Dominance gamma-vector transition parameters
+  "VMD" : {
+    "PDG"         : [113,   223,   333],
+    // [REFERENCE: arXiv: 1309.3478, Eqs. (3.23)-(3.25)]
+    "gammaV2"     : [0.496, 0.042, 0.0716], // 4*pi/gamma_V^2
+    "gammaV_sign" : [1,     1,     -1]
+  }
+},
+
+// ---------------------------------------------------------------------
+// [PhotoZ impact-factor and neutral-current production parameters]
+
+"PARAM_PHOTOZ": {
+
+  "xg_coefficient"       : 1.0,  // x = M^2 / W^2, skewness is included by the Shuvaev transform
+  "mu_MIN"               : 1.5,  // Minimum UGD hard scale [GeV]
+  "mu_over_m"            : 0.5,  // UGD hard scale coefficient mu = max(mu_MIN, mu_over_m M)
+  "light_quark_mass_MIN" : 1e-3, // Minimum light-quark mass used in the loop [GeV]
+  "real_part_delta"      : 0.20, // High-energy real-part correction rho = tan(pi delta / 2)
+
+  // Elastic target cross-section t-slope
+  "t_slope_B0"          : 3.5,   // [GeV^-2]
+  "t_slope_alpha_prime" : 0.164, // [GeV^-2]
+  "t_slope_W0"          : 95.0   // [GeV]
+},
+
+// ---------------------------------------------------------------------
+// [JMRT heavy-vector photoproduction physics parameters]
+
+"PARAM_PHOTOVM": {
+
+  // 'LHAPDF_SHUVAEV', 'JMRT_2013_LO' or 'JMRT_2013_NLO'
+  "gluon_source": "JMRT_2013_NLO",
+
+  // Published fits: [N,a,b], with the LO and NLO forms of Eqs. (16) and (17)
+  // [REFERENCE: arXiv: 1307.7099, Table 1]
+  "jmrt_2013": {
+    "lo_fit"         : [1.27, 0.05, 0.081],
+    "nlo_fit"        : [0.25, -0.10, -0.15],
+    "lo_scale2"      : 0.45,
+    "nlo_q02"        : 1.0,
+    "nlo_lambda_qcd" : 0.20,
+    "alpha_s_mz"     : 0.118,
+    "mz"             : 91.1876
+  },
+
+  // Non-relativistic family hard masses m_Q = M_1S/2 [GeV]
+  "heavy_quark_mass": {"4": 1.54845, "5": 4.73015},
+
+  // Rows: [abs(PDG), quark PDG, ground-state PDG, radial overlap,
+  //        Gamma(V -> e+e-) [GeV], cross-section B0 [GeV^-2], alpha' [GeV^-2], W0 [GeV]]
+
+  // [REFERENCE: arXiv: 1307.7099]
+  // [REFERENCE: arXiv: 2206.13343]
+  // [REFERENCE: arXiv: 0805.0717]
+  // [REFERENCE: arXiv: hep-ph/0005250]
+
+  // JMRT slopes use B(W)=B0+4 alpha' ln(W/W0); excited-state overlaps include node suppression
+  // The psi(2S) overlap reproduces the ZEUS ratio sigma(2S)/sigma(1S)=0.146 for |t|<1 GeV^2
+  // Bottomonium overlaps reproduce the potential-model hierarchy
+  "channels": [[443,    4,443, 1.000, 5.55e-6, 4.90, 0.06, 90.0],
+               [100443, 4,443, 0.425, 2.35e-6, 4.30, 0.06, 90.0],
+               [553,    5,553, 1.000, 1.34e-6, 4.63, 0.06, 90.0],
+               [100553, 5,553, 0.600, 6.12e-7, 4.63, 0.06, 90.0],
+               [200553, 5,553, 0.480, 4.43e-7, 4.63, 0.06, 90.0]]
+},
+
+// ---------------------------------------------------------------------
+// [Proton structure functions and form factors]
+
+"PARAM_STRUCTURE" : {
+
   // [IMPACT: yy-processes]
 
-  "PARAM_STRUCTURE" : {
+  // Proton structure functions (CKMT, DL)
+  "F2" : "CKMT",
 
-    // Proton structure functions (DL, CKMT)
-    "F2" : "CKMT",
+  // Coherent proton EM-form factors (DIPOLE, KELLY)
+  "EM" : "KELLY",
 
-    // Coherent proton EM-form factors (DIPOLE, KELLY)
-    "EM" : "KELLY",
+  // QED coupling choice for hard photon amplitudes and ygg[Z]
+  // ZERO means alpha(Q = 0 GeV) (Default)
+  // MG   means MadGraph C++ default value (typically Q = Z pole mass)
+  // LL   means one-loop lepton running at the process hard scale
+  "QED_alpha" : "ZERO"
+},
 
-    // QED coupling fixed scale (ZERO, MG) (in MadGraph yy -> X amplitudes)
-    // ZERO means alpha(Q = 0 GeV) (Default)
-    // MG   means MadGraph C++ default value (typically Q = Z pole mass)
-    "QED_alpha" : "ZERO"
+// ---------------------------------------------------------------------
+// [Hard diffractive Pomeron PDFs]
+//
+// For Showering + Hadronization in Pythia, set in Pythia:
+// 
+// PartonLevel:ISR = off
+// PartonLevel:MPI = off
+// PartonLevel:FSR = on
+// HadronLevel:Hadronize = on
+// 
+// [IMPACT: hard diffractive processes]
+
+"PARAM_HARDPOMERON" : {
+
+  // LHAPDF diffractive PDF set and member
+  "DPDF_SET"    : "GKG18_DPDF_FitB_LO",
+  "DPDF_MEMBER" : 0,
+
+  // Incoming quark and gluon flavours for hard diffraction
+  "parton_flavours" : [21, 1, 2, 3, 4, 5],
+
+  // Ordinary proton remnant invariant mass in GeV
+  "remnant_mass" : 6.0000,
+
+  // Regge flux f_IP/p(xi,t) = norm exp(B t) / xi^{2 alpha_P(t) - 1}
+  "alpha0"      : 1.0988,
+  "alpha_prime" : 0.0,
+  "B_flux"      : 7.0,
+  "norm"        : 1.0,
+
+  // Fiducial hard-diffraction phase-space support
+  "xi_range"   : [1.0e-4, 0.1],
+  "beta_range" : [1.0e-5, 1.0],
+  "t_range"    : [-2.0, 0.0],
+  "Q2_min"     : 1.0
+},
+
+// ---------------------------------------------------------------------
+// [Skewed unintegrated non-perturbative gluon boundary]
+//
+
+// [IMPACT: Durham QCD and perturbative Photoproduction processes]
+
+"PARAM_SKEWED_UGD" : {
+
+  "mode" : "IR_BASELINE", // PERTURBATIVE_ONLY: Q >= Q0, IR_BASELINE: matched IR, IR_RKHS: baseline + deformation
+
+  // PDF/UGD matching scale Q0 [GeV], must be at least LHAPDF QMin
+  "Q0" : 1.7,
+
+  // Baseline relaxation length in s = log(Q0^2/Q^2), used in both IR modes
+  "ir_logq2_length" : 1.0,
+
+  // Kernel controls used only in IR_RKHS
+  "rkhs_logq2_length"    : 1.0, // Correlation length in s
+  "rkhs_logx_length"     : 2.0, // Correlation length in log(x)
+  "rkhs_weight_exponent" : 0.5, // Damping exponent w in exp[-w(s+s')]
+  "rkhs_radius"          : 0.0, // RKHS norm bound R, zero disables deformations
+
+  // One deformation v(s,x) = sum_i c_i K((s,x),(s_i,x_i)), with paired centers
+  // Coefficients are not sampled automatically and must satisfy c^T K c <= R^2 and positivity
+  "member_s_anchors"    : [0.5, 1.0, 2.0, 4.0],
+  "member_x_anchors"    : [1e-5, 1e-4, 1e-3, 1e-2],
+  "member_coefficients" : [0.0, 0.0, 0.0, 0.0] // Signed c_i, all zero selects the baseline flux
+},
+
+// ---------------------------------------------------------------------
+// [Durham QCD model parameters]
+
+// [IMPACT: Durham processes]
+
+"PARAM_DURHAM" : {
+
+  // Gluon skewed PDF scale choice scheme [MIN (default), MAX, IN, EX, AVG]
+  "PDF_scale" : "MIN",
+
+  // Factorization and renormalization scales as multiples of M_X
+  // muF sets the Sudakov upper scale, Delta = kt/muF and the shower scale
+  "muF" : 1.0,
+  "muR" : 1.0,
+
+  // Common Q_t^2, q_1t^2 and q_2t^2 loop cutoff [GeV^2]
+  "loop_q2_cut" : 0.4,
+
+  // Gamma(chi_c0 -> gg) / Gamma_total used to normalize every chi_cJ hard vertex
+  // [REFERENCE: arXiv: 1508.02718v2, Eq. (35)]
+  "chic0_gg_width_fraction" : 0.667,
+
+  // Parton-level jet definition for Durham continuum amplitudes
+  // Regularizes e.g. ggg (which is singular by construction without)
+  // Use "none" to disable the parton level jet definition and cuts
+  "JET_ALGO"   : "anti-kt", // "none", "anti-kt", "kt", "CA"
+  "JET_R"      : 0.4,
+  "JET_pt_min" : 5.0,
+  "JET_rap_max": 10.0,      // Maximum jet |y| in the lab frame
+
+  // Angular |cos(theta*)| < MAXCOS cutoff for meson pair amplitudes [0,1)
+  "MAXCOS" : 0.9,
+
+  // Per-meson transverse-momentum cutoff in the hard gg frame [GeV]
+  "MESON_pt_min" : 2.0,
+
+  // Pion decay constant entering the leading-twist meson distribution [GeV]
+  "f_pi" : 0.1300,
+
+  // eta/eta' octet-singlet decay-constant mixing angles in the quark-Fock model
+  // Valence-gluon eta/eta' components are not included
+  "eta_theta8_deg" : -21.2,
+  "eta_theta1_deg" :  -9.2,
+
+  // eta8 and singlet f1 decay constants as ratios to f_pi
+  "f_eta8_over_fpi" : 1.26,
+  "f_eta0_over_fpi" : 1.17
+},
+
+// ---------------------------------------------------------------------
+// [Monopolium / Monopole pair process parameters]
+//
+// N.B. Monopole and monopolium pole properties are defined in 'PDG_EXTRA.json',
+// change their properties via input string @ syntax
+
+// [IMPACT: Monopole processes]
+
+"PARAM_MONOPOLE" : {
+
+  // Coupling scheme: "beta-dirac", "dirac"
+  "coupling" : "beta-dirac",
+
+  // Dirac charge n = 1,2,3,4,...
+  "gn" : 1,
+
+  // Bound-state wavefunction prescription
+  "wavefunction" : "COULOMB"
+},
+
+// ---------------------------------------------------------------------
+// [Parameters for flat (DEBUG/ANALYSIS) amplitudes]
+
+"PARAM_FLAT" : {
+  "B" : 6   // Cross-section t-slope [GeV^{-2}], |M|^2 ~ exp(Bt_1)exp(Bt_2)
+},
+
+// ---------------------------------------------------------------------
+// [IMPACT: All processes with forward proton excitation / dissociation]
+// [Under R&D]
+
+"PARAM_NSTAR" : {
+
+  // [*]: hadronic default, [22]: photon emitter side, [22,P]: Pomeron target in gamma-P production
+  // P denotes the configured Pomeron, independent of beam order
+  "MODEL": {
+    "GP":  {"[*]": "soft", "[22]": "structure", "[22,P]": "hera"},
+    "MP":  {"[*]": "soft", "[22]": "structure", "[22,P]": "hera"},
+    "XP":  {"[*]": "soft", "[22]": "structure", "[22,P]": "hera"},
+    "TP":  {"[*]": "soft", "[22]": "structure", "[22,P]": "hera"},
+    "ygg": {"[22]": "structure", "[22,P]": "hera"},
+    "yy":  "structure",
+    "gg":  "soft",
+    "X":   "triple_regge"
   },
-
-  // ---------------------------------------------------------------------
-  // [Durham QCD model parameters]
-
-  "PARAM_DURHAMQCD" : {
-
-    // Gluon loop momentum bounds (keep inside bounds set in NUMERICS.json)
-    "qt2_MIN" : 0.4,   // GeV^2
-    "qt2_MAX" : 100.0, // GeV^2
-
-    // Gluon skewed PDF scale choise scheme [MIN (default), MAX, IN, EX, AVG]
-    "PDF_scale" : "MIN",
-
-    // Alpha_s scale choise (Q^2 = M^2/value, default = 1.0, other common 4.0)
-    "alphas_scale" : 1.0,
-
-    // Technical parameters: Gluon loop numerical discretization (keep a factor of 3)
-    "N_phi" : 36,
-    "N_qt"  : 24,
-
-    // Angular |cos(theta*)| < MAXCOS cutoff for meson amplitudes [0,1]
-    "MAXCOS" : 0.9,
-  },
-
-  // ---------------------------------------------------------------------
-  // [Monopolium / Monopole pair process parameters]
-  //
-  // N.B. Monopole mass with PDG ID 992 is read from PDG file, change
-  // it via input string @ syntax
   
-  "PARAM_MONOPOLE" : {
+  // Single excitation side probability and continuum threshold margin
+  "single_side_prob" : 0.50,
+  "mass_margin"      : 0.01,
 
-    // Coupling scheme: "beta-dirac", "dirac"
-    "coupling" : "beta-dirac",
-
-    // Dirac charge n = 1,2,3,4,...
-    "gn" : 1,
-
-    // Monopolium bound state energy level (>= 13) controlling
-    // bound state (negative) binding energy
-    "En"  : 13,
-
-    // Monopolium (MMbar) bare width (GeV)
-    "Gamma0" : 10.0
-
+  // Low mass two body and three body relative decay probabilities
+  "FEWBODY" : {
+    "body_br" : [0.60, 0.40],
+    "two_body_br" : [0.6667, 0.3333],
+    "three_body_br" : [0.3333, 0.3333, 0.3333],
+    "unweight" : true
   },
 
-  // ---------------------------------------------------------------------
-  // [Parameters for flat (DEBUG/ANALYSIS) amplitudes]
-  
-  "PARAM_FLAT" : {
-    "b" : 6,  // t-slope [GeV^{-2}], |M|^2 ~ exp(bt_1)exp(b_t2)
+  // Cylinder fragmentation particle content, spectra and numerical controls [experimental]
+  "CYLINDER" : {
+    "charged_prob"    : 0.6667,
+    "pair_prob"       : 0.90,
+    "particle_prob"   : 0.50,
+    "species_ratio"   : [1.0, 0.10, 0.06],
+    "pt_distribution" : "exp",
+    "mult_a"        : 0.0,
+    "mult_b"        : 2.0,
+    "q2_ref"        : 1.0,
+    "mass_unit"     : 0.14,
+    "q_power"       : 0.0367,
+    "T"             : 0.065,
+    "impact_power"  : 0.10,
+    "max_pt"        : 15.0,
+    "exp_lambda"    : 2.0,
+    "outer_trials"  : 100,
+    "mult_trials"   : 1000,
+    "pick_trials"   : 10000,
+    "tube_trials"   : 30,
+    "pt_trials"     : 10000,
+    "pt_bins"       : 10000,
+    "alpha_iter"    : 20,
+    "alpha_tol"     : 1.0E-8
   },
 
-  // ---------------------------------------------------------------------
-  // [Central production with forward proton excitation]
+  // Valence quark and diquark string skeleton
+  "STRING" : {
+    "first_valence_prob"  : 0.6667,
+    "scalar_diquark_mass" : 0.5793,
+    "vector_diquark_mass" : 0.7713
+  }
+},
 
-  "PARAM_NSTAR" : {
+// ---------------------------------------------------------------------
+// [Nuclear eA, pA, AA processes]
 
-    // Forward system fragmentation mode
-    // "none" (only leg kinematics), "fewbody" (2/3-body decays) or "cylinder" (N-body tube)
-    "fragment" : "cylinder",
+"PARAM_NUCLEAR": {
+
+  // Forward diffractive variance, restricted here to the selected low-mass Good-Walker states
+  // [REFERENCE: arXiv:1301.0728, Eqs. (2)-(4)]
+  "GGCF": {
+    "eikonal": "double" // Multichannel (eikonal) model for GGCF survival
+  },
+
+  "FRAGMENTATION": {
+    "mass": {
+      // Ordered priority, preserve evaluated masses and use FRDM only for missing isotopes
+      // Original FRDM2012 data from IAEA RIPL-4, theoretical atomic mass excess column
+      // [REFERENCE: arXiv:1508.06294]
+      "tables":
+        [{"type":"ame2020", "file":"NUCLEAR/ame2020_mass.txt"},
+         {"type":"frdm2012", "file":"NUCLEAR/mass-frdm12.dat"}],
+      // BWM completion outside both tables is a model approximation without shell corrections
+      // [REFERENCE: arXiv:nucl-th/0405080, Eqs. (2)-(5), without the isotonic shift]
+      "bwm": {
+        // Volume, surface, Coulomb, asymmetry and pairing coefficients [MeV]
+        "coefficients": [15.7770,18.3400,0.7100,23.2100,12.0000],
+        "asymmetry_scale": 17.0000, // Mass-number scale k
+        "pairing_scale": 30.0000   // Mass-number scale c
+      }
+    },
+    "external": {"library": "", "config": {}}
+  },
+
+  "STRUCTURE": {
+
+    // Nuclear charge form factors
+    // [REFERENCE: arXiv:1710.07098, Table 4]
+    //
+    // Charge and matter arrays are [half-density radius fm, surface diffuseness fm]
+    // Pb charge uses Pb*, matter approximates Pb208 with the conventional Pb charge profile
+    //
+    // Add any isotope as {A,Z,charge,matter}
+    "nuclei":
+      [
+        {"A":208, "Z":82, "charge": [6.6240,0.5490], "matter": [6.6200,0.5460]},
+        
+        // O16 reservation (placeholder)
+        {"A":16, "Z":8,
+          "charge": {"$ref": "#/PARAM_NUCLEAR/STRUCTURE/nuclei/0/charge"},
+          "matter": {"$ref": "#/PARAM_NUCLEAR/STRUCTURE/nuclei/0/matter"}},
+        // Spherical charge and matter densities, deformation omitted
+        // [REFERENCE: arXiv:2011.13151, Eq. (12), arXiv:1408.2549, Table I]
+        {"A":197, "Z":79, "charge": [6.3800,0.5350],
+          "matter": {"$ref": "#/PARAM_NUCLEAR/STRUCTURE/nuclei/2/charge"}}
+      ],
     
-    // Good-Walker N*(**/***) (UNDER CONSTRUCTION, NOT ACTIVE)
-    "rc" : [0.5, 0.3, 0.2]
+    // Generic nuclear rule, when the isotope is not listed above
+    "radius_scale": 1.2000,    // Generic A^(1/3) radius coefficient [fm]
+    "skin": 0.5500,            // Generic Fermi surface diffuseness [fm]
+
+    // ----------
+    // Minimum-distance prescription, with d_min chosen by the tune
+    // [REFERENCE: arXiv:1408.2549, Sec. II]
+    // Minimum distance when sampling discrete nuclear configurations:
+    //  - emission is "incoherent" or "inclusive"
+    //  - photoproduction.target is "incoherent" or "inclusive"
+    //  - survival is "mc_ggcf" and screening is enabled
+    "nucleon_d_min": 0.8000,   // Minimum nucleon-center distance [fm]
+    // ----------
+
+    // Gaussian geometry and unit-mean lognormal strengths
+    // [REFERENCE: arXiv:1607.01711, Eqs. (20)-(21), (23)]
+    "hotspot": {
+      "count": 3,               // Hotspots per nucleon
+      "b_center": 3.3000,       // Hotspot-center width [GeV^-2]
+      "b_profile": 0.7000,      // Single-hotspot width [GeV^-2]
+      "strength_sigma": 0.5000  // Lognormal gluon-strength width
+    }
   },
+
+  // Leading Twist Approximation photoproduction target model (shadowing) parameters
+  // [REFERENCE: arXiv:1106.2091, Eq. (52)]
+  "LTA": {
+    // NLO inclusive and diffractive inputs, alpha_s(MZ) = 0.1180 and 0.1176 respectively
+    // [REFERENCE: arXiv:1007.2241]
+    "pdf_set": "CT10nlo",              // Inclusive proton gluon PDF
+    "pdf_member": 0,
+    // [REFERENCE: arXiv:1802.01363, Eq. (8), Table IV]
+    "dpdf_set": "GKG18_DPDF_FitB_NLO", // Diffractive Pomeron gluon PDF
+    "dpdf_member": 0,
+    "alpha0": 1.0988,                  // NLO Fit B Pomeron intercept
+    "alpha_prime": 0.0000,             // Pomeron trajectory slope [GeV^-2]
+    "flux_b": 7.0000,                  // GKG18 flux t slope [GeV^-2]
+    // Use the flux at t_min directly, with its normalization absorbed into the DPDF
+    // [REFERENCE: arXiv:1802.01363, Sec. III B]
+    "dpdf_diss": 1.2100,               // Divide out the fit's low-mass proton dissociation
+    // [REFERENCE: arXiv:1106.2091, Eq. (58)]
+    "b_diff": 6.0000,                  // Higher-rescattering elastic subtraction slope [GeV^-2]
+    "x_min": 1.0e-6,                   // Lower model gluon-x limit within the PDF grids
+    "x_max": 0.10,                     // Upper leading-twist x edge
+    "q2_min": 2.7225,                  // Input scale squared, above both PDF grid minima [GeV^2]
+    "q2_max": 4.0000,                  // Upper input scale squared, without nuclear DGLAP [GeV^2]
+    // FGS10_H continuation, evaluated here with the configured PDF pair
+    // [REFERENCE: arXiv:1106.2091, Eq. (106)]
+    "sigma3_anchor_x": 1.0e-4,         // FGS10_H lower-bound anchor
+    "sigma3_fade_x": 1.0e-2,           // Start of large-x linear fade
+    "sigma3_power": 0.06               // Intermediate-x continuation power
+  },
+
+  // Additional electromagnetic absorption and deposited excitation
+  "EMD": {
+    // Shared E1 inputs also apply to daughter nuclei during evaporation
+    "gdr": {
+      // RIPL-3 standard Lorentzian systematics
+      // [REFERENCE: doi:10.1016/j.nds.2009.10.004, Eqs. (173)-(174)]
+      "systematics": {
+        "energy_a": 27.4700,  // [MeV] A^(-1/3) energy coefficient
+        "energy_b": 22.0630,  // [MeV] A^(-1/6) energy coefficient
+        "width_norm": 0.0277, // [MeV^(1-p)] Width coefficient with p = width_power
+        "width_power": 1.9000,
+        "trk": 60.0000,       // [mb MeV] TRK sum coefficient
+        "strength": 1.2220
+      },
+      "isotopes":
+        [
+          // [REFERENCE: arXiv:1311.1938, Eqs. (3.1)-(3.2)]
+          // Energy and width [MeV], dimensionless TRK strength
+          {"A":208, "Z":82, "energy":13.3730, "width":3.9380, "strength":1.33716},
+          
+          // O16 reservation
+          {"A":16, "Z":8,
+            "energy": {"$ref": "#/PARAM_NUCLEAR/EMD/gdr/isotopes/0/energy"},
+            "width": {"$ref": "#/PARAM_NUCLEAR/EMD/gdr/isotopes/0/width"},
+            "strength": {"$ref": "#/PARAM_NUCLEAR/EMD/gdr/isotopes/0/strength"}},
+          
+          // Standard Lorentzian fit to the Saclay Au photoneutron data (1970Ve1)
+          // [REFERENCE: arXiv:1804.04445, Table 1, Au197 row 1970Ve1]
+          {"A":197, "Z":79, "energy":13.7100, "width":4.5100, "strength":1.3540}
+        ]
+    },
+    // Complete absorption and deposited-excitation response selected by target A and Z
+    "isotopes":
+      [
+        {"A":208, "Z":82,
+          "photoabsorption": {
+            "energy_min": 6.0, // [MeV] Integration cutoff, not a neutron separation energy
+            // [REFERENCE: arXiv:1311.1938, Eqs. (3.3)-(3.5)]
+            "quasi_deuteron": {
+              "deuteron": {
+                "threshold": 2.224, // [MeV] Deuteron breakup threshold
+                "norm": 61.20      // [mb MeV^(3/2)] Deuteron cross-section normalization
+              },
+              "levinger": 6.50,
+              "pauli": {
+                "low_edge": 20.00,   // [MeV] Low-energy boundary
+                "high_edge": 140.00, // [MeV] High-energy boundary
+                "low_exp": 73.30,    // [MeV] Low-energy exponential coefficient
+                "poly": [8.3714e-2,-9.8343e-3,4.1222e-4,-3.4762e-6,9.3537e-9], // [1, MeV^-1, ..., MeV^-4]
+                "high_exp": 24.20    // [MeV] High-energy exponential coefficient
+              }
+            },
+            // [REFERENCE: arXiv:1311.1938, Eq. (3.6)]
+            "resonance": {
+              "threshold": 100.00, // [MeV] Response threshold
+              "energy": 350.00,    // [MeV] Gaussian center
+              "width": 110.00,     // [MeV] Gaussian width
+              "area": 23000.00     // [mb MeV] Integrated strength
+            },
+            // Additive continuum with a cubic smooth onset fitted to Pb photoabsorption
+            // Reproduce the Pb fit with develop/tools/EMD_response.py using HEPData
+            "continuum": {
+              "threshold": 394.3776, // [MeV] Start of the fitted continuum onset
+              "match": 572.2552,     // [MeV] End of the fitted continuum onset
+              // Squared-log asymptote, smoothly extended into the fitted intermediate region
+              // [REFERENCE: arXiv:1311.1938, Eq. (3.7)]
+              "omega0": 80000.0000,  // [MeV] Logarithmic reference energy
+              "constant": 15.2000,   // [mb] Constant asymptotic term
+              "log2": 0.0600,        // [mb] Squared-log coefficient
+              // [REFERENCE: doi:10.1103/PhysRevC.54.1688, doi:10.1103/PhysRevD.7.1362]
+              "norm": 0.0906,        // [mb/MeV] Fitted decaying continuum normalization
+              "mean": 100.0000,      // [MeV] Fixed energy offset, a model convention
+              "width": 583.7729      // [MeV] Fitted continuum decay scale
+            }
+          },
+          // TCM excitation distribution with input-energy freezing at match
+          // The paper freezes neutron probabilities and uses GEMINI++ for nuclear decay
+          // [REFERENCE: arXiv:2411.17865, Eqs. (10), (12)-(13), Fig. 9]
+          "energy_transfer": {
+            "E0": 50.00,    // [MeV] Two-component thermalization scale
+            "match": 200.00 // [MeV] Input-energy freeze at the probability match
+          }
+        },
+        
+        // O16 reservation (placeholder)
+        // Replace a reference with an independent block when the isotope is fitted
+        {"A":16, "Z":8,
+          "photoabsorption": {"$ref": "#/PARAM_NUCLEAR/EMD/isotopes/0/photoabsorption"},
+          "energy_transfer": {"$ref": "#/PARAM_NUCLEAR/EMD/isotopes/0/energy_transfer"}},
+        {"A":197, "Z":79,
+          "photoabsorption": {
+            // Same absorption cutoff, actual particle thresholds use AME2020 masses
+            "energy_min": {"$ref": "#/PARAM_NUCLEAR/EMD/isotopes/0/photoabsorption/energy_min"},
+            // Shared QD model already scales with NZ/A for the selected isotope
+            "quasi_deuteron": {"$ref": "#/PARAM_NUCLEAR/EMD/isotopes/0/photoabsorption/quasi_deuteron"},
+            // First Au approximation: Pb resonance and continuum strengths times 197/208
+            // Shape and thermalization retained from Pb, these are not Au fits
+            "resonance": {
+              "threshold": {"$ref": "#/PARAM_NUCLEAR/EMD/isotopes/0/photoabsorption/resonance/threshold"},
+              "energy": {"$ref": "#/PARAM_NUCLEAR/EMD/isotopes/0/photoabsorption/resonance/energy"},
+              "width": {"$ref": "#/PARAM_NUCLEAR/EMD/isotopes/0/photoabsorption/resonance/width"},
+              "area": 21783.6538 // [mb MeV]
+            },
+            "continuum": {
+              "threshold": {"$ref": "#/PARAM_NUCLEAR/EMD/isotopes/0/photoabsorption/continuum/threshold"},
+              "match": {"$ref": "#/PARAM_NUCLEAR/EMD/isotopes/0/photoabsorption/continuum/match"},
+              "omega0": {"$ref": "#/PARAM_NUCLEAR/EMD/isotopes/0/photoabsorption/continuum/omega0"},
+              "constant": 14.3962, // [mb]
+              "log2": 0.056827,    // [mb]
+              "norm": 0.085809,    // [mb/MeV]
+              "mean": {"$ref": "#/PARAM_NUCLEAR/EMD/isotopes/0/photoabsorption/continuum/mean"},
+              "width": {"$ref": "#/PARAM_NUCLEAR/EMD/isotopes/0/photoabsorption/continuum/width"}
+            }
+          },
+          "energy_transfer": {"$ref": "#/PARAM_NUCLEAR/EMD/isotopes/0/energy_transfer"}}
+      ]
+  }
+}
 
 }

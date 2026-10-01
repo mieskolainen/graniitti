@@ -1,1503 +1,1435 @@
-// "Metaclass" for Spherical Harmonics Expansion - contains
-// dataprocessing/Minuit/ROOT plotting functions.
+// Detector aware spherical harmonics measurement model
 //
-// All mathematical spherical harmonic processing is separated to MSpherical namespace.
-//
-//
-// (c) 2017-2021 Mikael Mieskolainen
+// (c) 2026 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
+#include <algorithm>
+#include <cmath>
+#include <compare>
 #include <complex>
-#include <iostream>
+#include <functional>
+#include <limits>
+#include <map>
+#include <memory>
+#include <numeric>
 #include <random>
-#include <regex>
+#include <set>
+#include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
-
-// ROOT
-#include "TCanvas.h"
-#include "TColor.h"
-#include "TGraphErrors.h"
-#include "TH1.h"
-#include "TH2.h"
-#include "TLatex.h"
-#include "TLegend.h"
-#include "TLine.h"
-#include "TLorentzVector.h"
-#include "TMinuit.h"
-#include "TMultiGraph.h"
-#include "TProfile.h"
-#include "TStyle.h"
-
-// Own
-#include "Graniitti/Analysis/MHarmonic.h"
-#include "Graniitti/Analysis/MROOT.h"
-#include "Graniitti/M4Vec.h"
-#include "Graniitti/MAux.h"
-#include "Graniitti/MKinematics.h"
-#include "Graniitti/MMath.h"
-#include "Graniitti/MPDG.h"
-#include "Graniitti/MSpherical.h"
 
 // Eigen
 #include <Eigen/Dense>
 
+// ROOT
+#include "Math/Factory.h"
+#include "Math/Functor.h"
+#include "Math/Minimizer.h"
+
+// Own
+#include "Graniitti/Analysis/MHarmonic.h"
+#include "Graniitti/Math/MMath.h"
+#include "Graniitti/Math/MMatrix.h"
+#include "Graniitti/Math/MSpecialFunctions.h"
+#include "Graniitti/Math/MStatistics.h"
+#include "Graniitti/Analysis/MSpherical.h"
+#include "Graniitti/Tech/MAux.h"
+
 using gra::aux::indices;
-using gra::math::msqrt;
-using gra::math::PI;
-using gra::math::pow2;
-using gra::math::zi;
 
 namespace gra {
-// Constructor
-MHarmonic::MHarmonic() {}
+namespace harmonic {
 
-// Initialize
-void MHarmonic::Init(const HPARAM &hp) {
-  param = hp;
-  NCOEF = (param.LMAX + 1) * (param.LMAX + 1);
+namespace {
 
-  // ------------------------------------------------------------------
-  // SETUP parameters of the fit
-  ACTIVE.resize(NCOEF);  // Active moments
-  ACTIVENDF = 0;
+using BlockKey = std::pair<Cell, Cell>;
 
-  for (int l = 0; l <= param.LMAX; ++l) {
-    for (int m = -l; m <= l; ++m) {
-      const int index = gra::spherical::LinearInd(l, m);
-      ACTIVE[index]   = true;
+struct ResponseSums {
+  std::map<Cell, double> generated;
+  std::map<Cell, Eigen::MatrixXd> fiducial;
+  std::map<BlockKey, Eigen::MatrixXd> detector;
+};
 
-      // FIX ODD MOMENTS TO ZERO
-      if (param.REMOVEODD && ((l % 2) != 0)) { ACTIVE[index] = false; }
-      // FIX NEGATIVE M TO ZERO
-      if (param.REMOVENEGATIVEM && (m < 0)) { ACTIVE[index] = false; }
-      if (ACTIVE[index]) { ++ACTIVENDF; }
-    }
-  }
+struct LinearResponse {
+  Eigen::MatrixXd detector;
+  Eigen::MatrixXd fiducial;
+};
 
-  // ------------------------------------------------------------------
-  std::cout << std::endl;
-  param.Print();
-  std::cout << std::endl;
-  // ------------------------------------------------------------------
+struct DataSums {
+  Eigen::VectorXd values;
+  Eigen::MatrixXd covariance;
+  std::map<Cell, CellEstimate> cells;
+  std::size_t accepted = 0;
+  double sum_weight = 0.0;
+  double sum_weight2 = 0.0;
+  double effective_entries = 0.0;
+};
 
-  // Init arrays used by Minuit function
-  t_lm       = std::vector<double>(NCOEF, 0.0);
-  t_lm_error = std::vector<double>(NCOEF, 0.0);
-  errmat     = MMatrix<double>(NCOEF, NCOEF, 0.0);
-  covmat     = MMatrix<double>(NCOEF, NCOEF, 0.0);
+struct EMLCellData {
+  std::size_t detector_cell = 0;
+  Eigen::MatrixXd basis;
+  Eigen::VectorXd weight;
+};
 
-  // Test functions
-  gra::spherical::TestSphericalIntegrals(param.LMAX);
+struct EMLModel {
+  Eigen::MatrixXd response;
+  Eigen::MatrixXd angular_basis;
+  Eigen::MatrixXd detector_basis;
+  std::vector<EMLCellData> data;
+  std::size_t nactive = 0;
+  std::size_t nmoments = 0;
+  std::size_t zero_index = 0;
+};
 
-  std::cout << rang::fg::yellow
-            << "<Spherical Harmonic Based (costheta,phi)_r.f. "
-               "Decomposition and Efficiency inversion>"
-            << std::endl
-            << std::endl;
-  std::cout << "TERMINOLOGY:" << rang::fg::reset << std::endl;
-  std::cout << "  {G} Generated == Events in the angular flat phase space (no "
-               "cuts on final "
-               "states, only on the system)"
-            << std::endl;
-  std::cout << "  {F} Fiducial  == Events within the strict fiducial "
-               "(geometric-kinematic) "
-               "final state phase space (cuts on final states)"
-            << std::endl;
-  std::cout << "  {D} Detector  == Events after the detector efficiency losses, selection AND "
-               "fiducial cuts"
-            << std::endl;
-  std::cout << std::endl;
-  std::cout << "{D} subset of {F} subset of {G} (this strict hierarchy might "
-               "be violated in "
-               "some special cases)"
-            << std::endl;
-  std::cout << std::endl;
-  std::cout << "  The basic idea is to define {G} such that minimal extrapolation " << std::endl;
-  std::cout << "  is required from the strict fiducial (geometric) phase space {F}. " << std::endl;
-  std::cout << "  Flatness requirement of {G} is strictly required to represent "
-               "moments in "
-               "an unmixed basis (non-flat phase space <=> geometric moment mixing)."
-            << std::endl;
-  std::cout << std::endl;
-  std::cout << rang::fg::yellow << "EXAMPLE OF A FORMALLY VALID DEFINITION:" << rang::fg::reset
-            << std::endl;
-  std::cout << "  G = {|Y(system)| < 0.9}" << std::endl;
-  std::cout << "  F = {|eta(pi)|   < 0.9 && pt(pi) > 0.1 GeV}" << std::endl;
-  std::cout << std::endl << std::endl;
-  std::cout << "Note also the rotation between inactive coefficients and "
-               "active one, due to "
-               "moment mixing."
-            << std::endl;
-  std::cout << std::endl << std::endl;
+struct EstimatorResult {
+  Eigen::VectorXd flat;
+  Eigen::MatrixXd flat_covariance;
+  double objective = 0.0;
+  double minimum_flat_intensity = 0.0;
+  double minimum_detector_intensity = 0.0;
+};
 
-  // pause(5);
+struct HarmonicPseudoInverse {
+  Eigen::MatrixXd value;
+  std::size_t numerical_rank = 0;
+  std::size_t retained_rank = 0;
+  double condition_number = 0.0;
+};
+
+// Build one harmonic fit pseudoinverse through the shared matrix algebra
+HarmonicPseudoInverse PseudoInverse(const Eigen::MatrixXd &matrix,
+                                    const double relative_cut) {
+  PseudoInverseDiagnostics diagnostics;
+  const MMatrix<double> inverse =
+      MMatrix<double>::FromEigen(matrix).PseudoInverse(relative_cut,
+                                                       &diagnostics);
+  return {inverse.ToEigen(), diagnostics.numerical_rank,
+          diagnostics.retained_rank, diagnostics.condition_number};
 }
 
-// Destructor
-MHarmonic::~MHarmonic() {}
-
-bool MHarmonic::PrintLoop(const std::string &output) const {
-  // Add here code to print output to files ...
-
-  return true;
+// Mix an event key into a deterministic random seed
+std::uint64_t MixSeed(std::uint64_t seed, std::uint64_t event_key) {
+  std::uint64_t value = seed + 0x9e3779b97f4a7c15ULL + event_key;
+  value = (value ^ (value >> 30U)) * 0xbf58476d1ce4e5b9ULL;
+  value = (value ^ (value >> 27U)) * 0x94d049bb133111ebULL;
+  return value ^ (value >> 31U);
 }
 
-// Plot all figures
-void MHarmonic::PlotAll(const std::string &outputpath) const {
-  for (const auto &OBSERVABLE : {0, 1, 2}) {
-    // **** EFFICIENCY DECOMPOSITION ****
-    Plot1DEfficiency(OBSERVABLE, outputpath);
-
-    // **** ALGEBRAIC INVERSE MOMENTS ****
-    PlotFigures(det, OBSERVABLE, "h_{Moments}[MPP]<det>", 33, outputpath);
-    PlotFigures(fid, OBSERVABLE, "h_{Moments}[MPP]<fid>", 33, outputpath);
-    PlotFigures(fla, OBSERVABLE, "h_{Moments}[MPP]<fla>", 33, outputpath);
-
-    // **** EXTENDED MAXIMUM LIKELIHOOD INVERSE MOMENTS ****
-    if (param.EML) {
-      PlotFigures(det, OBSERVABLE, "h_{Moments}[EML]<det>", 33, outputpath);
-      PlotFigures(fid, OBSERVABLE, "h_{Moments}[EML]<fid>", 33, outputpath);
-      PlotFigures(fla, OBSERVABLE, "h_{Moments}[EML]<fla>", 33, outputpath);
-    }
-  }
-
-  // 2D
-  std::vector<std::vector<int>> OBSERVABLES = {{0, 1}, {0, 2}, {1, 2}};  // Different pairs
-
-  for (const auto &OBSERVABLE2 : OBSERVABLES) {
-    // **** EFFICIENCY DECOMPOSITION ****
-    PlotFigures2D(fla, OBSERVABLE2, "{Response}[FLAT_REFERENCE]<fla>", 17, outputpath);
-    PlotFigures2D(fid, OBSERVABLE2, "{Response}[FIDUCIAL_ACCEPTANCE]<fid>", 33, outputpath);
-    PlotFigures2D(det, OBSERVABLE2, "{Response}[ACCEPTANCE_x_EFFICIENCY]<det>", 29, outputpath);
-
-    // **** ALGEBRAIC INVERSE MOMENTS ****
-    PlotFigures2D(fla, OBSERVABLE2, "{Moments}[MPP]<fla>", 17, outputpath);
-    PlotFigures2D(fid, OBSERVABLE2, "{Moments}[MPP]<fid>", 33, outputpath);
-    PlotFigures2D(det, OBSERVABLE2, "{Moments}[MPP]<det>", 29, outputpath);
-
-    // **** EXTENDED MAXIMUM LIKELIHOOD INVERSE MOMENTS ****
-    if (param.EML) {
-      PlotFigures2D(fla, OBSERVABLE2, "{Moments}[EML]<fla>", 17, outputpath);
-      PlotFigures2D(fid, OBSERVABLE2, "{Moments}[EML]<fid>", 33, outputpath);
-      PlotFigures2D(det, OBSERVABLE2, "{Moments}[EML]<det>", 29, outputpath);
-    }
-  }
-
-  const int OBSERVABLE = 0;
-  Plot2DExpansion(fid, OBSERVABLE, "h_{Moments}[MPP]<fid>", 33, outputpath);
-  Plot2DExpansion(fla, OBSERVABLE, "h_{Moments}[MPP]<fla>", 33, outputpath);
-  if (param.EML) {
-    Plot2DExpansion(fid, OBSERVABLE, "h_{Moments}[EML]<fid>", 33, outputpath);
-    Plot2DExpansion(fla, OBSERVABLE, "h_{Moments}[EML]<fla>", 33, outputpath);
-  }
-}
-
-// Synthesized (costheta,phi) plots
-//
-void MHarmonic::Plot2DExpansion(
-    const std::map<gra::spherical::Meta, MTensor<gra::spherical::SH>> &tensor,
-    unsigned int OBSERVABLE, const std::string &TYPESTRING, int barcolor,
-    const std::string &outputpath) const {
-  // ------------------------------------------------------------------
-  // Extract name strings
-
-  // find {string}
-  std::smatch sma;
-  std::regex_search(TYPESTRING, sma, std::regex(R"(\{.*?\})"));  // R"()" for Raw string literals
-  std::string DATAMODE = sma[0];
-  DATAMODE             = DATAMODE.substr(1, DATAMODE.size() - 2);
-
-  // find <string>
-  std::smatch smb;
-  std::regex_search(TYPESTRING, smb, std::regex(R"(\<.*?\>)"));  // R"()" for Raw string literals
-  std::string SPACE = smb[0];
-  SPACE             = SPACE.substr(1, SPACE.size() - 2);
-
-  // find [string]
-  std::smatch smc;
-  std::regex_search(TYPESTRING, smc, std::regex(R"(\[.*?\])"));  // R"()" for Raw string literals
-  std::string ALGO = smc[0];
-  ALGO             = ALGO.substr(1, ALGO.size() - 2);
-
-  // ------------------------------------------------------------------
-  // f(cos(theta),phi; M) synthesis
-
-  std::size_t N = 50;
-
-  // Cos(theta) and phi
-  std::vector<double> costheta;
-  std::vector<double> phi;
-
-  std::size_t BINS = 0;
-
-  // TH2 for each
-  std::vector<std::vector<TH2D *>> h2;
-
-  // Loop over fla
-  std::size_t source_ind = 0;
-  for (const auto &source : tensor) {
-    // legendstrs[ind] = source.first.LEGEND;
-    BINS = source.second.size(OBSERVABLE);
-
-    // Add histograms
-    h2.push_back(std::vector<TH2D *>(BINS, NULL));
-
-    // Loop over observable
-
-    for (std::size_t bin = 0; bin < BINS; ++bin) {
-      // Get x-axis point
-      // const double value = grid[OBSERVABLE][bin].center();
-
-      // Set indices {0,0,0, ..., 0}
-      std::vector<std::size_t> cell(grid.size(), 0);
-      cell[OBSERVABLE] = bin;
-
-      // Synthesize distribution
-      MMatrix<double> Z;
-
-      if (ALGO == "MPP") {
-        Z = spherical::Y_real_synthesize(source.second(cell).t_lm_MPP, ACTIVE, N, costheta, phi,
-                                         true);
-      } else if (ALGO == "EML") {
-        Z = spherical::Y_real_synthesize(source.second(cell).t_lm_EML, ACTIVE, N, costheta, phi,
-                                         true);
-      }
-
-      // Create histogram
-      const double      EPS  = 1e-3;
-      const std::string name = "h2_" + std::to_string(source_ind) + "_" + std::to_string(bin);
-      h2[source_ind][bin]    = new TH2D(name.c_str(), "; cos #theta; #phi (rad)", N, -(1 + EPS),
-                                     1 + EPS, N, -(math::PI + EPS), math::PI + EPS);
-
-      for (std::size_t i = 0; i < N; ++i) {
-        for (std::size_t j = 0; j < N; ++j) {
-          h2[source_ind][bin]->Fill(costheta[i], phi[j], Z[i][j]);
-        }
-      }
-    }
-
-    ++source_ind;
-  }  // loop over sources
-
-  // Loop over bins
-  for (std::size_t bin = 0; bin < BINS; ++bin) {
-    TCanvas *c1 = new TCanvas("c1", "c1", 200 + tensor.size() * 400, 500);  // horizontal, vertical
-    c1->Divide(tensor.size(), 1, 0.002, 0.001);
-
-    std::size_t source_ind = 0;
-    std::string FRAME;
-    for (const auto &source : tensor) {
-      c1->cd(source_ind + 1);
-      c1->cd(source_ind + 1)->SetRightMargin(0.13);
-      //
-      FRAME = source.first.FRAME;
-      h2[source_ind][bin]->SetTitle(source.first.LEGEND.c_str());
-      //
-      h2[source_ind][bin]->GetXaxis()->CenterTitle();
-      h2[source_ind][bin]->GetZaxis()->SetRangeUser(0.1, 1.0);
-      h2[source_ind][bin]->Draw("COLZ");
-      //
-
-      // --------------------------------------------------------------
-      // Draw Lorentz FRAME string on left
-      TText *t2 = new TText(0.4, 0.85,
-                            Form("%s : [%0.2f, %0.2f] %s", FRAME.c_str(), grid[OBSERVABLE][bin].min,
-                                 grid[OBSERVABLE][bin].max, xlabels[OBSERVABLE].c_str()));
-      t2->SetNDC();
-      t2->SetTextAlign(22);
-      t2->SetTextColor(kBlack);
-      t2->SetTextFont(43);
-      t2->SetTextSize(18);
-      // t2->SetTextAngle(45);
-      t2->Draw("same");
-      // --------------------------------------------------------------
-
-      ++source_ind;
-    }
-    //
-    aux::CreateDirectory("./figs");
-    aux::CreateDirectory("./figs/harmonicfit");
-    aux::CreateDirectory("./figs/harmonicfit/" + outputpath + "/synthesis");
-    //
-    const std::string subpath =
-        SPACE + "_OBS_" + std::to_string(OBSERVABLE) + "_" + FRAME + "_" + ALGO;
-    const std::string fullpath = "./figs/harmonicfit/" + outputpath + "/synthesis/" + subpath;
-    aux::CreateDirectory(fullpath);
-    c1->Print(Form("%s/%04lu.pdf", fullpath.c_str(), bin));
-    //
-    delete c1;
-  }
-
-  // Delete all histograms
-  for (std::size_t i = 0; i < h2.size(); ++i) {
-    for (std::size_t j = 0; j < h2[i].size(); ++j) { delete h2[i][j]; }
-  }
-}
-
-void GetLegendPosition2(unsigned int N, double &x1, double &x2, double &y1, double &y2,
-                        const std::string &legendposition) {
-  // North-East
-  x1 = 0.63;
-  x2 = x1 + 0.18;
-  y1 = 0.75 - 0.01 * N;
-
-  // South-East
-  if (legendposition.compare("southeast") == 0) { y1 = 0.10 - 0.01 * N; }
-  y2 = y1 + 0.05 * N;  // Scale by the number of histograms
-}
-
-// LM-Expansion plots as a function of observables
-//
-void MHarmonic::PlotFigures(
-    const std::map<gra::spherical::Meta, MTensor<gra::spherical::SH>> &tensor,
-    unsigned int OBSERVABLE, const std::string &TYPESTRING, int barcolor,
-    const std::string &outputpath) const {
-  // ------------------------------------------------------------------
-  std::shared_ptr<TCanvas> c1;
-  gra::rootstyle::AutoGridCanvas(c1, ACTIVENDF);
-  // ------------------------------------------------------------------
-
-  if (OBSERVABLE > xlabels.size() - 1) {
-    throw std::invalid_argument("MHarmonic::PlotFigures: Unknown observable " +
-                                std::to_string(OBSERVABLE));
-  }
-  const std::string xlabel = xlabels[OBSERVABLE];
-
-  // ------------------------------------------------------------------
-  // Extract name strings
-
-  // find {string}
-  std::smatch sma;
-  std::regex_search(TYPESTRING, sma, std::regex(R"(\{.*?\})"));  // R"()" for Raw string literals
-  std::string DATAMODE = sma[0];
-  DATAMODE             = DATAMODE.substr(1, DATAMODE.size() - 2);
-
-  // find <string>
-  std::smatch smb;
-  std::regex_search(TYPESTRING, smb, std::regex(R"(\<.*?\>)"));  // R"()" for Raw string literals
-  std::string SPACE = smb[0];
-  SPACE             = SPACE.substr(1, SPACE.size() - 2);
-
-  // find [string]
-  std::smatch smc;
-  std::regex_search(TYPESTRING, smc, std::regex(R"(\[.*?\])"));  // R"()" for Raw string literals
-  std::string ALGO = smc[0];
-  ALGO             = ALGO.substr(1, ALGO.size() - 2);
-
-  // ------------------------------------------------------------------
-
-  // Loop over data sources
-  std::size_t BINS = 0;
-  int         ind  = 0;
-
-  // Graphs for each data [source] x [lm-moment]
-  std::vector<std::vector<TGraphErrors *>> gr(tensor.size(),
-                                              std::vector<TGraphErrors *>(ACTIVENDF, NULL));
-
-  // Legend titles
-  std::vector<std::string> legendstrs(tensor.size());
-
-  // Minimum and maximum y-values for each plot
-  std::vector<double> MINVAL(ACTIVENDF, 1e32);
-  std::vector<double> MAXVAL(ACTIVENDF, -1e32);
-
-  // Turn of horizontal errors
-  gStyle->SetErrorX(0);
-
-  std::vector<TMultiGraph *> mg(ACTIVENDF, NULL);
-  for (std::size_t k = 0; k < ACTIVENDF; ++k) { mg[k] = new TMultiGraph(); }
-
-  std::string              FRAME;
-  std::vector<std::string> TITLES;
-
-  // Y-axis title
-  std::string yaxis_label = "Events / bin";
-
-  for (const auto &source : tensor) {
-    legendstrs[ind] = source.first.LEGEND;
-    BINS            = source.second.size(OBSERVABLE);
-
-    // Loop over moments
-    int k = 0;
-
-    double SCALE = source.first.SCALE;
-
-    if (SCALE < 0 && source.first.YAXIS == "") { yaxis_label = "Normalized to 1"; }
-    if (source.first.YAXIS != "") { yaxis_label = source.first.YAXIS; }
-
-    for (int l = 0; l <= param.LMAX; ++l) {
-      for (int m = -l; m <= l; ++m) {
-        const int index = gra::spherical::LinearInd(l, m);
-
-        if (!ACTIVE[index]) { continue; }  // Not active
-
-        // Set canvas position
-        c1->cd(k + 1);
-
-        // Loop over observable
-        double x[BINS]     = {0.0};
-        double y[BINS]     = {0.0};
-        double x_err[BINS] = {0.0};
-        double y_err[BINS] = {0.0};
-
-        for (std::size_t bin = 0; bin < BINS; ++bin) {
-          // Get x-axis point
-          x[bin] = grid[OBSERVABLE][bin].center();
-
-          // Set indices {0,0,0, ..., 0}
-          std::vector<std::size_t> cell(grid.size(), 0);
-          cell[OBSERVABLE] = bin;
-
-          // CHOOSE DATAMODE
-          if (ALGO == "MPP") {
-            y[bin]     = source.second(cell).t_lm_MPP[index];
-            y_err[bin] = source.second(cell).t_lm_MPP_error[index];
-          } else if (ALGO == "EML") {
-            y[bin]     = source.second(cell).t_lm_EML[index];
-            y_err[bin] = source.second(cell).t_lm_EML_error[index];
-          } else {
-            throw std::invalid_argument(
-                "MHarmonic::PlotFigures: Unknown input: "
-                "DATAMODE = " +
-                DATAMODE + " ALGO = " + ALGO);
-          }
-        }
-
-        // ------------------------------------------------------
-        // Scaling (e.g. luminosity)
-        // Normalize lm = 00 to sum to 1 -> then apply to all
-        if ((l == 0 && m == 0) && SCALE < 0.0) {
-          double sum = 0.0;
-          for (std::size_t bin = 0; bin < BINS; ++bin) { sum += y[bin]; }
-          if (sum > 0) { SCALE = 1.0 / sum; }
-        }
-
-        // Apply scale by user
-        for (std::size_t bin = 0; bin < BINS; ++bin) {
-          y[bin] *= SCALE;
-          y_err[bin] *= SCALE;
-        }
-        // ------------------------------------------------------
-
-        // Save maximum for visualization
-        for (std::size_t bin = 0; bin < BINS; ++bin) {
-          MAXVAL[k] = y[bin] > MAXVAL[k] ? y[bin] : MAXVAL[k];
-          MINVAL[k] = y[bin] < MINVAL[k] ? y[bin] : MINVAL[k];
-        }
-        // Data displayed using TGraphErrors
-        gr[ind][k] = new TGraphErrors(BINS, x, y, x_err, y_err);
-
-        // Colors
-        gr[ind][k]->SetMarkerColor(colors[ind]);
-        gr[ind][k]->SetLineColor(colors[ind]);
-        gr[ind][k]->SetFillColor(colors[ind]);
-        gr[ind][k]->SetLineWidth(2.0);
-        gr[ind][k]->SetMarkerStyle(21);  // square
-        gr[ind][k]->SetMarkerSize(0.3);
-
-        FRAME  = source.first.FRAME;
-        TITLES = source.first.TITLES;
-
-        // Add to the multigraph
-        mg[k]->Add(gr[ind][k]);
-
-        ++k;
-
-      }  // over m
-    }    // over l
-
-    ++ind;
-  }  // Loop over sources
-
-  // Draw multigraph
-  unsigned int k = 0;
-
-  // Aux variables
-  std::shared_ptr<TPad>   tpad;
-  std::shared_ptr<TLatex> l1;
-  std::shared_ptr<TLatex> l2;
-
-  for (int l = 0; l <= param.LMAX; ++l) {
-    for (int m = -l; m <= l; ++m) {
-      const int index = gra::spherical::LinearInd(l, m);
-
-      if (!ACTIVE[index]) { continue; }  // Not active
-
-      // Set canvas position
-      c1->cd(k + 1);
-
-      // First draw, then setup (otherwise crash)
-      mg[k]->Draw("AC*");
-
-      // Title and y-axis
-      if (k == 0) {
-        // Title
-        if (SPACE == "det") {
-          mg[k]->SetTitle(Form("%s | #it{lm} = <%d,%d>", TITLES[0].c_str(), l, m));
-        }
-        if (SPACE == "fid") {
-          mg[k]->SetTitle(Form("%s | #it{lm} = <%d,%d>", TITLES[1].c_str(), l, m));
-        }
-        if (SPACE == "fla") {
-          mg[k]->SetTitle(Form("%s | #it{lm} = <%d,%d>", TITLES[2].c_str(), l, m));
-        }
-
-        // y-axis (for some ROOT reason, this needs to be always after SetTitle)
-        mg[k]->GetYaxis()->SetTitle(yaxis_label.c_str());
-        gPad->SetLeftMargin(0.15);  // 15 per cent of pad for left margin, default is 10%
-        mg[k]->GetYaxis()->SetTitleOffset(1.25);
-
-      } else {
-        mg[k]->SetTitle(Form("Moment #it{lm} = <%d,%d>", l, m));
-      }
-
-      // Set x-axis
-      mg[k]->GetXaxis()->SetTitle(xlabel.c_str());
-      // gStyle->SetBarWidth(0.5);
-      // mg[k]->SetFillStyle(0);
-
-      mg[k]->GetXaxis()->SetTitleSize(0.05);
-      mg[k]->GetXaxis()->SetLabelSize(0.05);
-
-      mg[k]->GetYaxis()->SetTitleSize(0.05);
-      mg[k]->GetYaxis()->SetLabelSize(0.05);
-
-      // Set y-axis
-      // mg[k]->GetYaxis()->SetTitle("Intensity");
-
-      gStyle->SetTitleFontSize(0.08);
-
-      if (k == 0) {
-        gStyle->SetTitleW(0.95);  // width percentage
-      }
-
-      // Y-axis range
-      if (k == 0) {
-        mg[k]->GetHistogram()->SetMaximum(MAXVAL[k] * 1.1);
-        mg[k]->GetHistogram()->SetMinimum(0.0);
-      } else {
-        // Skip the first element (lm=00)
-        const double maxval = *std::max_element(std::begin(MAXVAL) + 1, std::end(MAXVAL));
-        const double minval = *std::min_element(std::begin(MINVAL) + 1, std::end(MINVAL));
-        const double bound  = std::max(std::abs(minval), std::abs(maxval));
-
-        mg[k]->GetHistogram()->SetMaximum(bound * 1.1);
-        mg[k]->GetHistogram()->SetMinimum(-bound * 1.1);
-      }
-
-      // --------------------------------------------------------------
-      // Draw Lorentz FRAME string on left
-      TText *t2 = new TText(0.225, 0.825, FRAME.c_str());
-      t2->SetNDC();
-      t2->SetTextAlign(22);
-      t2->SetTextColor(kRed + 2);
-      t2->SetTextFont(43);
-      t2->SetTextSize(std::ceil(1.0 / msqrt(ACTIVENDF)) * 16);
-      // t2->SetTextAngle(45);
-      t2->Draw("same");
-      // --------------------------------------------------------------
-
-      // --------------------------------------------------------------
-      // Draw horizontal line
-      if (k != 0) {
-        TLine *line = new TLine(grid[OBSERVABLE][0].min, 0.0,
-                                grid[OBSERVABLE][grid[OBSERVABLE].size() - 1].max, 0.0);
-        line->SetLineColor(kBlack);
-        line->SetLineWidth(1.0);
-        line->Draw("same");
-      }
-      // --------------------------------------------------------------
-
-      // --------------------------------------------------------------
-      // Who made it
-      if (k == ACTIVENDF - 1) {
-        // New pad on top of all
-        c1->cd();  // Important!
-        gra::rootstyle::TransparentPad(tpad);
-
-        const double xpos = 0.99;
-        gra::rootstyle::MadeInFinland(l1, l2, xpos);
-      }
-      // --------------------------------------------------------------
-
-      ++k;
-    }
-  }
-
-  // ------------------------------------------------------------------
-  // Draw legend to the upper left most
-  c1->cd(1);
-
-  // Create legend
-  double            x1, x2, y1, y2 = 0.0;
-  const std::string legendposition = "northeast";
-  GetLegendPosition2(tensor.size(), x1, x2, y1, y2, legendposition);
-  TLegend *legend = new TLegend(x1, y1, x2, y2);
-  legend->SetFillColor(0);   // White background
-  legend->SetBorderSize(0);  // No box
-  legend->SetTextSize(0.035);
-
-  // Add legend entries
-  for (const auto &i : indices(gr)) { legend->AddEntry(gr[i][0], legendstrs[i].c_str()); }
-
-  // Draw legend
-  legend->Draw("same");
-  // ------------------------------------------------------------------
-
-  // Require that we have data
-  if (BINS > 1) {
-    aux::CreateDirectory("./figs");
-    aux::CreateDirectory("./figs/harmonicfit");
-    aux::CreateDirectory("./figs/harmonicfit/" + outputpath);
-    const std::string subpath  = "OBS_" + std::to_string(OBSERVABLE) + "_" + FRAME;
-    const std::string fullpath = "./figs/harmonicfit/" + outputpath + "/" + subpath;
-    aux::CreateDirectory(fullpath);
-    c1->Print(Form("%s/%s.pdf", fullpath.c_str(), TYPESTRING.c_str()));
-
-    // Merge pdfs using Ghostscript (gs)
-    const std::string cmd = "gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=" + fullpath +
-                            "/" + FRAME + "_merged.pdf " + fullpath + "/h*.pdf";
-    if (system(cmd.c_str()) == -1) {
-      throw std::invalid_argument("Error: Problem executing Ghostscript merge on pdfs!");
-    }
-  }
-
-  /*
-  for (std::size_t i = 0; i < gr.size(); ++i) {
-                  delete gr[i];
-  }
-  */
-}
-
-// LM-Efficiency figures
-//
-void MHarmonic::Plot1DEfficiency(unsigned int OBSERVABLE, const std::string &outputpath) const {
-  // ------------------------------------------------------------------
-  std::shared_ptr<TCanvas> c1;
-  gra::rootstyle::AutoGridCanvas(c1, ACTIVENDF);
-  // ------------------------------------------------------------------
-
-  if (OBSERVABLE > xlabels.size() - 1) {
-    throw std::invalid_argument("MHarmonic::PlotFigures: Unknown observable " +
-                                std::to_string(OBSERVABLE));
-  }
-  const std::string xlabel = xlabels[OBSERVABLE];
-
-  // Graphs for each efficiency [level] x [lm-moment]
-  std::vector<std::vector<TGraphErrors *>> gr(3, std::vector<TGraphErrors *>(ACTIVENDF, NULL));
-
-  // Legend titles
-  std::vector<std::string> legendstrs(3);
-
-  // Minimum and maximum y-values for each plot
-  std::vector<double> MINVAL(ACTIVENDF, 1e32);
-  std::vector<double> MAXVAL(ACTIVENDF, -1e32);
-
-  // Turn of horizontal errors
-  gStyle->SetErrorX(0);
-
-  std::vector<TMultiGraph *> mg(ACTIVENDF, NULL);
-  for (std::size_t k = 0; k < ACTIVENDF; ++k) { mg[k] = new TMultiGraph(); }
-
-  std::size_t BINS = det_DET.size(OBSERVABLE);
-
-  // Read data
-  std::string              FRAME;
-  std::vector<std::string> TITLES;
-
-  for (const auto &source : det) {
-    FRAME  = source.first.FRAME;
-    TITLES = source.first.TITLES;
-    break;
-  }
-
-  for (std::size_t level = 0; level < 3; ++level) {
-    // Loop over moments
-    int k = 0;
-    for (int l = 0; l <= param.LMAX; ++l) {
-      for (int m = -l; m <= l; ++m) {
-        const int index = gra::spherical::LinearInd(l, m);
-
-        if (!ACTIVE[index]) { continue; }  // Not active
-
-        // Set canvas position
-        c1->cd(k + 1);
-
-        // Loop over mass
-        double x[BINS]     = {0.0};
-        double y[BINS]     = {0.0};
-        double x_err[BINS] = {0.0};
-        double y_err[BINS] = {0.0};
-
-        for (std::size_t bin = 0; bin < BINS; ++bin) {
-          // Get x-axis point
-          x[bin] = grid[OBSERVABLE][bin].center();
-
-          // Set indices {0,0,0, ..., 0}
-          std::vector<std::size_t> cell(grid.size(), 0);
-          cell[OBSERVABLE] = bin;
-
-          // CHOOSE DATAMODE
-          if (level == 0) {
-            y[bin]     = det_DET(cell).E_lm[index];
-            y_err[bin] = det_DET(cell).E_lm_error[index];
-          } else if (level == 1) {
-            y[bin]     = fid_DET(cell).E_lm[index];
-            y_err[bin] = fid_DET(cell).E_lm_error[index];
-          } else if (level == 2) {
-            y[bin]     = fla_DET(cell).E_lm[index];
-            y_err[bin] = fla_DET(cell).E_lm_error[index];
-          }
-
-          // Save maximum for visualization
-          MAXVAL[k] = y[bin] > MAXVAL[k] ? y[bin] : MAXVAL[k];
-          MINVAL[k] = y[bin] < MINVAL[k] ? y[bin] : MINVAL[k];
-        }
-
-        // Data displayed using TGraphErrors
-        gr[level][k] = new TGraphErrors(BINS, x, y, x_err, y_err);
-
-        // Colors
-        gr[level][k]->SetMarkerColor(colors[level]);
-        gr[level][k]->SetLineColor(colors[level]);
-        gr[level][k]->SetFillColor(colors[level]);
-        gr[level][k]->SetLineWidth(2.0);
-        gr[level][k]->SetMarkerStyle(21);  // square
-        gr[level][k]->SetMarkerSize(0.3);
-
-        // Add to the multigraph
-        mg[k]->Add(gr[level][k]);
-
-        ++k;
-
-      }  // over m
-    }    // over l
-
-  }  // Loop over level
-
-  // Draw multigraph
-  unsigned int k = 0;
-
-  std::shared_ptr<TPad>   tpad;
-  std::shared_ptr<TLatex> l1;
-  std::shared_ptr<TLatex> l2;
-
-  for (int l = 0; l <= param.LMAX; ++l) {
-    for (int m = -l; m <= l; ++m) {
-      const int index = gra::spherical::LinearInd(l, m);
-
-      if (!ACTIVE[index]) { continue; }  // Not active
-
-      // Set canvas position
-      c1->cd(k + 1);
-
-      // First draw, then setup (otherwise crash)
-      mg[k]->Draw("AC*");
-
-      // Title
-      if (k == 0) {
-        mg[k]->SetTitle(Form("Acceptance decomposition: #it{lm} = <%d,%d>", l, m));
-      } else {
-        mg[k]->SetTitle(Form("Moment #it{lm} = <%d,%d>", l, m));
-      }
-
-      // Set x-axis
-      mg[k]->GetXaxis()->SetTitle(xlabel.c_str());
-      // gStyle->SetBarWidth(0.5);
-      // mg[k]->SetFillStyle(0);
-
-      mg[k]->GetXaxis()->SetTitleSize(0.05);
-      mg[k]->GetXaxis()->SetLabelSize(0.05);
-
-      mg[k]->GetYaxis()->SetTitleSize(0.05);
-      mg[k]->GetYaxis()->SetLabelSize(0.05);
-
-      // Set y-axis
-      // mg[k]->GetYaxis()->SetTitle("");
-
-      gStyle->SetTitleFontSize(0.08);
-
-      if (k == 0) {
-        gStyle->SetTitleW(0.95);  // width percentage
-      }
-      // Y-axis range
-      if (k == 0) {
-        mg[k]->GetHistogram()->SetMaximum(1.2);
-        mg[k]->GetHistogram()->SetMinimum(0.0);
-      } else {
-        // Skip the first element (lm=00)
-        const double maxval = *std::max_element(std::begin(MAXVAL) + 1, std::end(MAXVAL));
-        const double minval = *std::min_element(std::begin(MINVAL) + 1, std::end(MINVAL));
-        const double bound  = std::max(std::abs(minval), std::abs(maxval));
-
-        mg[k]->GetHistogram()->SetMaximum(bound * 1.1);
-        mg[k]->GetHistogram()->SetMinimum(-bound * 1.1);
-      }
-
-      // Draw Lorentz FRAME string on left
-      TText *t2 = new TText(0.225, 0.825, FRAME.c_str());
-      t2->SetNDC();
-      t2->SetTextAlign(22);
-      t2->SetTextColor(kRed + 2);
-      t2->SetTextFont(43);
-      t2->SetTextSize(std::ceil(1.0 / msqrt(ACTIVENDF)) * 16);
-      // t2->SetTextAngle(45);
-      t2->Draw("same");
-
-      // Draw horizontal line
-      if (k != 0) {
-        TLine *line = new TLine(grid[OBSERVABLE][0].min, 0.0,
-                                grid[OBSERVABLE][grid[OBSERVABLE].size() - 1].max, 0.0);
-        line->SetLineColor(kBlack);
-        line->SetLineWidth(1.0);
-        line->Draw("same");
-      }
-
-      // Who made it
-      if (k == ACTIVENDF - 1) {
-        // New pad on top of all
-        c1->cd();  // Important!
-        gra::rootstyle::TransparentPad(tpad);
-
-        const double xpos = 0.99;
-        gra::rootstyle::MadeInFinland(l1, l2, xpos);
-      }
-      ++k;
-    }
-  }
-
-  // ------------------------------------------------------------------
-  // Draw legend to the upper left most
-
-  c1->cd(1);
-
-  // Create legend
-  double            x1, x2, y1, y2 = 0.0;
-  const std::string legendposition = "southeast";
-  GetLegendPosition2(3, x1, x2, y1, y2, legendposition);
-  TLegend *legend = new TLegend(x1 - 0.3, y1 + 0.1, x2 - 0.3, y2 + 0.1);
-  legend->SetFillColor(0);   // White background
-  legend->SetBorderSize(0);  // No box
-  legend->SetTextSize(0.04);
-
-  // Add legend entries
-  legend->AddEntry(gr[0][0], TITLES[0].c_str());
-  legend->AddEntry(gr[1][0], TITLES[1].c_str());
-  legend->AddEntry(gr[2][0], TITLES[2].c_str());
-
-  // Draw legend
-  legend->Draw("same");
-
-  // ------------------------------------------------------------------
-
-  // Require that we have data
-  if (BINS > 1) {
-    aux::CreateDirectory("./figs");
-    aux::CreateDirectory("./figs/harmonicfit");
-    aux::CreateDirectory("./figs/harmonicfit/" + outputpath);
-    const std::string subpath  = "OBS_" + std::to_string(OBSERVABLE) + "_" + FRAME;
-    const std::string fullpath = "./figs/harmonicfit/" + outputpath + "/" + subpath;
-    aux::CreateDirectory(fullpath);
-    c1->Print(Form("%s/h_Response.pdf", fullpath.c_str()));
-  }
-
-  /*
-  for (std::size_t i = 0; i < gr.size(); ++i) {
-                  delete gr[i];
-  }
-  */
-}
-
-// Print 2D-figures
-void MHarmonic::PlotFigures2D(
-    const std::map<gra::spherical::Meta, MTensor<gra::spherical::SH>> &tensor,
-    const std::vector<int> &OBSERVABLE2, const std::string &TYPESTRING, int barcolor,
-    const std::string &outputpath) const {
-  /* Implement here ... */
-}
-
-// Loop over system mass, pt, rapidity
-//
-void MHarmonic::HyperLoop(void (*fitfunc)(int &, double *, double &, double *, int),
-                          const std::vector<gra::spherical::Omega> &MC,
-                          const std::vector<gra::spherical::Data> &DATA, const HPARAM &hp) {
-  // Initialize detector expansion tensors
-  fla_DET = MTensor<gra::spherical::SH_DET>(
-      {(unsigned int)hp.M[0], (unsigned int)hp.PT[0], (unsigned int)hp.Y[0]});
-  fid_DET = fla_DET;
-  det_DET = fla_DET;
-
-  // ------------------------------------------------------------------
-  // Create grid discretization
-
-  grid.resize(3);
-  grid[0].resize(hp.M[0]);
-  grid[1].resize(hp.PT[0]);
-  grid[2].resize(hp.Y[0]);
-
-  // Mass steps
-  const double M_STEP  = (hp.M[2] - hp.M[1]) / hp.M[0];
-  const double PT_STEP = (hp.PT[2] - hp.PT[1]) / hp.PT[0];
-  const double Y_STEP  = (hp.Y[2] - hp.Y[1]) / hp.Y[0];
-
-  for (std::size_t i = 0; i < hp.M[0]; ++i) {
-    grid[0][i].min = i * M_STEP + hp.M[1];
-    grid[0][i].max = grid[0][i].min + M_STEP;
-  }
-  for (std::size_t j = 0; j < hp.PT[0]; ++j) {
-    grid[1][j].min = j * PT_STEP + hp.PT[1];
-    grid[1][j].max = grid[1][j].min + PT_STEP;
-  }
-  for (std::size_t k = 0; k < hp.Y[0]; ++k) {
-    grid[2][k].min = k * Y_STEP + hp.Y[1];
-    grid[2][k].max = grid[2][k].min + Y_STEP;
-  }
-
-  // ------------------------------------------------------------------
-  // Expand the detector transfer function
-
-  for (const auto &i : indices(grid[0])) {
-    for (const auto &j : indices(grid[1])) {
-      for (const auto &k : indices(grid[2])) {
-        const std::vector<std::size_t> MC_ind = gra::spherical::GetIndices(
-            MC, {grid[0][i].min, grid[0][i].max}, {grid[1][j].min, grid[1][j].max},
-            {grid[2][k].min, grid[2][k].max});
-
-        // Acceptance mixing matrices
-        fla_DET({i, j, k}).MIXlm = gra::spherical::GetGMixing(MC, MC_ind, param.LMAX, "fla");
-        fid_DET({i, j, k}).MIXlm = gra::spherical::GetGMixing(MC, MC_ind, param.LMAX, "fid");
-        det_DET({i, j, k}).MIXlm = gra::spherical::GetGMixing(MC, MC_ind, param.LMAX, "det");
-
-        // Get efficiency decomposition for this interval
-        std::pair<std::vector<double>, std::vector<double>> E0 =
-            gra::spherical::GetELM(MC, MC_ind, param.LMAX, "fla");
-        std::pair<std::vector<double>, std::vector<double>> E1 =
-            gra::spherical::GetELM(MC, MC_ind, param.LMAX, "fid");
-        std::pair<std::vector<double>, std::vector<double>> E2 =
-            gra::spherical::GetELM(MC, MC_ind, param.LMAX, "det");
-
-        fla_DET({i, j, k}).E_lm       = E0.first;
-        fla_DET({i, j, k}).E_lm_error = E0.second;
-
-        fid_DET({i, j, k}).E_lm       = E1.first;
-        fid_DET({i, j, k}).E_lm_error = E1.second;
-
-        det_DET({i, j, k}).E_lm       = E2.first;
-        det_DET({i, j, k}).E_lm_error = E2.second;
-      }
-    }
-  }
-
-  // ------------------------------------------------------------------
-
-  // Loop over data sources
-  for (const auto &ind : indices(DATA)) {
-    // --------------------------------------------------------
-    // Pre-Calculate once Spherical Harmonics for the MINUIT fit
-    DATA_events = DATA[ind].EVENTS;
-    Y_lm        = gra::spherical::YLM(DATA_events, param.LMAX);
-    // --------------------------------------------------------
-
-    double chi2 = 0.0;
-
-    // Data source identifier string
-    const gra::spherical::Meta META = DATA[ind].META;
-
-    // Initialize tensor arrays
-    MTensor<gra::spherical::SH> temp(
-        {(unsigned int)hp.M[0], (unsigned int)hp.PT[0], (unsigned int)hp.Y[0]});
-    fla[META] = temp;
-    fid[META] = temp;
-    det[META] = temp;
-
-    // Expand Data
-    for (const auto &i : indices(grid[0])) {
-      for (const auto &j : indices(grid[1])) {
-        for (const auto &k : indices(grid[2])) {
-          // Data indices
-          DATA_ind = gra::spherical::GetIndices(DATA_events, {grid[0][i].min, grid[0][i].max},
-                                                {grid[1][j].min, grid[1][j].max},
-                                                {grid[2][k].min, grid[2][k].max});
-
-          const unsigned int MINEVENTS = 75;
-          if (DATA_ind.size() < MINEVENTS) {
-            std::cout << rang::fg::red << "WARNING: Less than " << MINEVENTS << " in the cell!"
-                      << rang::fg::reset << std::endl;
-          }
-
-          // ==============================================================
-          // ALGORITHM 1: DIRECT / OBSERVED / ALGEBRAIC decomposition
-
-          fid[META]({i, j, k}).t_lm_MPP =
-              gra::spherical::SphericalMoments(DATA_events, DATA_ind, param.LMAX, "fid");
-          det[META]({i, j, k}).t_lm_MPP =
-              gra::spherical::SphericalMoments(DATA_events, DATA_ind, param.LMAX, "det");
-
-          // Forward matrix
-          Eigen::MatrixXd M = gra::aux::Matrix2Eigen(det_DET({i, j, k}).MIXlm);
-
-          // Matrix pseudoinverse
-          Eigen::VectorXd b = gra::aux::Vector2Eigen(det[META]({i, j, k}).t_lm_MPP);
-          Eigen::VectorXd x = gra::math::PseudoInverse(M, param.SVDREG) * b;
-
-          // Collect the inversion result
-          fla[META]({i, j, k}).t_lm_MPP = gra::aux::Eigen2Vector(x);
-
-          // ==============================================================
-
-          // Update these to proper errors (TBD. PUT NAIVE POISSON
-          // COUNTING FOR NOW)
-          fla[META]({i, j, k}).t_lm_MPP_error =
-              std::vector<double>(fla[META]({i, j, k}).t_lm_MPP.size(), 0.0);
-          for (const auto &z : indices(fla[META]({i, j, k}).t_lm_MPP)) {
-            fla[META]({i, j, k}).t_lm_MPP_error[z] =
-                msqrt(std::abs(fla[META]({i, j, k}).t_lm_MPP[z]));
-          }
-
-          // Propagate errors assuming no error on mixing matrix
-          // (infinite reference MC statistics limit)
-          fid[META]({i, j, k}).t_lm_MPP_error =
-              spherical::ErrorProp(fid_DET({i, j, k}).MIXlm, fla[META]({i, j, k}).t_lm_MPP_error);
-          det[META]({i, j, k}).t_lm_MPP_error =
-              spherical::ErrorProp(det_DET({i, j, k}).MIXlm, fla[META]({i, j, k}).t_lm_MPP_error);
-
-          std::cout << "Algebraic Moore-Penrose/SVD inverted "
-                       "(unmixed) moments in the (angular flat) "
-                       "reference phase space:"
-                    << std::endl;
-          gra::spherical::PrintOutMoments(fla[META]({i, j, k}).t_lm_MPP,
-                                          fla[META]({i, j, k}).t_lm_MPP_error, ACTIVE, param.LMAX);
-
-          std::cout << "Algebraic (mixed) moments in the fiducial "
-                       "phase space:"
-                    << std::endl;
-          gra::spherical::PrintOutMoments(fid[META]({i, j, k}).t_lm_MPP,
-                                          fid[META]({i, j, k}).t_lm_MPP_error, ACTIVE, param.LMAX);
-
-          std::cout << "Algebraic (mixed) moments in the detector space:" << std::endl;
-          gra::spherical::PrintOutMoments(det[META]({i, j, k}).t_lm_MPP,
-                                          det[META]({i, j, k}).t_lm_MPP_error, ACTIVE, param.LMAX);
-
-          // ==============================================================
-          // ALGORITHM 2: Extended Maximum Likelihood Fit
-
-          if (param.EML) {
-            // *** Get TMinuit based fit decomposition ***
-            MomentFit(META, {i, j, k}, fitfunc);
-
-            // Save result
-            fla[META]({i, j, k}).t_lm_EML = t_lm;
-            fid[META]({i, j, k}).t_lm_EML =
-                fid_DET({i, j, k}).MIXlm * t_lm;  // Moment forward rotation: Matrix *
-            // Vector
-            det[META]({i, j, k}).t_lm_EML =
-                det_DET({i, j, k}).MIXlm * t_lm;  // Moment forward rotation: Matrix *
-            // Vector
-
-            // Uncertanties
-            fla[META]({i, j, k}).t_lm_EML_error = t_lm_error;
-
-            // Propagate errors assuming no error on mixing
-            // matrix (infinite reference MC statistics limit)
-            fid[META]({i, j, k}).t_lm_EML_error =
-                spherical::ErrorProp(fid_DET({i, j, k}).MIXlm, t_lm_error);
-            det[META]({i, j, k}).t_lm_EML_error =
-                spherical::ErrorProp(det_DET({i, j, k}).MIXlm, t_lm_error);
-            // ==============================================================
-
-            std::cout << "Extended Maximum-Likelihood inverse "
-                         "fitted (unmixed) moments in the "
-                         "(angular flat)  phase space:"
-                      << std::endl;
-            gra::spherical::PrintOutMoments(fla[META]({i, j, k}).t_lm_EML,
-                                            fla[META]({i, j, k}).t_lm_EML_error, ACTIVE,
-                                            param.LMAX);
-
-            std::cout << "Extended Maximum-Likelihood "
-                         "Re-Back-Projected (mixed) moments in "
-                         "the fiducial phase space:"
-                      << std::endl;
-            gra::spherical::PrintOutMoments(fid[META]({i, j, k}).t_lm_EML,
-                                            fid[META]({i, j, k}).t_lm_EML_error, ACTIVE,
-                                            param.LMAX);
-
-            std::cout << "Extended Maximum-Likelihood "
-                         "Re-Back-Projected (mixed) moments in "
-                         "the detector space:"
-                      << std::endl;
-            gra::spherical::PrintOutMoments(det[META]({i, j, k}).t_lm_EML,
-                                            det[META]({i, j, k}).t_lm_EML_error, ACTIVE,
-                                            param.LMAX);
-          }
-
-          // --------------------------------------------------------------
-          // Print results
-          chi2 += PrintOutHyperCell(META, {i, j, k});
-
-          // --------------------------------------------------------------
-          // Make comparison of synthetic MC data vs estimate
-
-          if (DATA[ind].META.MODE == "MC") {
-            int fiducial = 0;
-            int selected = 0;
-            for (const auto &l : DATA_ind) {
-              if (DATA_events[l].fiducial) { ++fiducial; }
-              if (DATA_events[l].fiducial && DATA_events[l].selected) { ++selected; }
-            }
-            std::cout << std::endl;
-
-            std::cout << rang::fg::yellow << "MC GROUND TRUTH: " << rang::fg::reset << std::endl;
-            printf(
-                "   MC 'synthetic data' events generated       "
-                "      = %u \n",
-                (unsigned int)DATA_ind.size());
-            printf(
-                "   MC 'synthetic data' events fiducial        "
-                "      = %d (acceptance %0.1f percent) \n",
-                fiducial, fiducial / (double)DATA_ind.size() * 100);
-            printf(
-                "   MC 'synthetic data' events fiducial and "
-                "selected = %d (efficiency %0.1f percent) \n",
-                selected, selected / (double)fiducial * 100);
-            std::cout << std::endl;
-          }
-        }
-      }
-    }
-
-    if (param.EML) {
-      gra::aux::PrintBar("=");
-      double reducedchi2 = chi2 / (double)(ACTIVENDF * hp.M[0] * hp.PT[0] * hp.Y[0]);
-      if (reducedchi2 < 3) {
-        std::cout << rang::fg::green;
-      } else {
-        std::cout << rang::fg::red;
-      }
-      printf(
-          "Total chi2(MPP - EML) / (ACTIVENDF x BINS) = %0.2f / (%d x %d) = "
-          "%0.2f \n",
-          chi2, ACTIVENDF, (int)(hp.M[0] * hp.PT[0] * hp.Y[0]), reducedchi2);
-
-      std::cout << rang::fg::reset;
-      gra::aux::PrintBar("=");
-      std::cout << std::endl << std::endl;
-    }
-
-  }  // Loop over data sources
-}
-
-// Print out results for the hypercell
-//
-double MHarmonic::PrintOutHyperCell(const gra::spherical::Meta &    META,
-                                    const std::vector<std::size_t> &cell) {
-  double chi2 = 0;
-
-  // Print information
-  META.Print();
-
-  // Extended Maximum Likelihood
-  if (param.EML == true) {
-    // Loop over moments
-    for (int l = 0; l <= param.LMAX; ++l) {
-      for (int m = -l; m <= l; ++m) {
-        const int index = gra::spherical::LinearInd(l, m);
-
-        const double obs = det[META](cell).t_lm_MPP[index];
-        const double fit = det[META](cell).t_lm_EML[index];
-
-        // Moment active
-        if (ACTIVE[index]) { chi2 += pow2(obs - fit) / pow2(obs); }
-      }
-    }
-    std::cout << std::endl;
-
-    const double reducedchi2 = chi2 / (double)ACTIVENDF;
-    if (reducedchi2 < 3) {
-      std::cout << rang::fg::green;
-    } else {
-      std::cout << rang::fg::red;
-    }
-    printf("chi2(MPP - EML) / ndf = %0.3f / %d = %0.3f \n", chi2, ACTIVENDF, reducedchi2);
-    std::cout << rang::fg::reset << std::endl;
-
-    const double sum_fla = fla[META](cell).t_lm_EML[gra::spherical::LinearInd(0, 0)];
-    printf(
-        "EML: Estimate of events in this hyperbin in the flat phase space = "
-        "%0.1f +- %0.1f "
-        "\n",
-        sum_fla, msqrt(sum_fla));  // Poisson error
-
-    const double sum_FID = gra::spherical::HarmDotProd(fid_DET(cell).E_lm, fla[META](cell).t_lm_EML,
-                                                       ACTIVE, param.LMAX);
-    printf(
-        "EML: Estimate of events in this hyperbin in the fiducial  phase "
-        "space = %0.1f "
-        "+- %0.1f \n",
-        sum_FID, msqrt(sum_FID));  // Poisson error
-
-    const double sum_DET = gra::spherical::HarmDotProd(det_DET(cell).E_lm, fla[META](cell).t_lm_EML,
-                                                       ACTIVE, param.LMAX);
-    printf(
-        "EML: Estimate of events in this hyperbin in the detector        "
-        "space = %0.1f "
-        "+- %0.1f \n",
-        sum_DET, msqrt(sum_DET));  // Poisson error
-  }
-  std::cout << std::endl;
-
-  // Algebraic inverse
-  const double sum_fla = fla[META](cell).t_lm_MPP[gra::spherical::LinearInd(0, 0)];
-  printf(
-      "MPP: Estimate of events in this hyperbin in the flat phase space = %0.1f "
-      "+- %0.1f \n",
-      sum_fla, msqrt(sum_fla));  // Poisson error
-
-  const double sum_FID =
-      gra::spherical::HarmDotProd(fid_DET(cell).E_lm, fla[META](cell).t_lm_MPP, ACTIVE, param.LMAX);
-  printf(
-      "MPP: Estimate of events in this hyperbin in the fiducial  phase "
-      "space = %0.1f +- "
-      "%0.1f \n",
-      sum_FID, msqrt(sum_FID));  // Poisson error
-
-  const double sum_DET =
-      gra::spherical::HarmDotProd(det_DET(cell).E_lm, fla[META](cell).t_lm_MPP, ACTIVE, param.LMAX);
-  printf(
-      "MPP: Estimate of events in this hyperbin in the detector        "
-      "space = %0.1f +- "
-      "%0.1f \n",
-      sum_DET, msqrt(sum_DET));  // Poisson error
-
-  return chi2;
-}
-
-// MINUIT based fit routine for the Extended Maximum Likelihood formalism
-//
-void MHarmonic::MomentFit(const gra::spherical::Meta &META, const std::vector<std::size_t> &cell,
-                          void (*fitfunc)(int &, double *, double &, double *, int)) {
-  std::cout << "MomentFit: Starting ..." << std::endl << std::endl;
-
-  // **** This must be set for the loss function ****
-  activecell = cell;
-
-  // Init TMinuit
-  TMinuit *gMinuit = new TMinuit(NCOEF);  // initialize TMinuit with a maximum of N params
-  gMinuit->SetFCN(fitfunc);
-
-  // Set Print Level
-  // -1 no output
-  // 1 standard output
-  gMinuit->SetPrintLevel(-1);
-
-  // Set error Definition
-  // 1 for Chi square
-  // 0.5 for negative log likelihood
-  //    gMinuit->SetErrorDef(0.5);
-  double arglist[2];
-  int    ierflg = 0;
-  arglist[0]    = 0.5;  // 0.5 <=> We use negative log likelihood cost function
-  gMinuit->mnexcm("SET ERR", arglist, 1, ierflg);
-
-  // double fminbest = 1e32;
-  // Try different initial values to find out true minimum
-  const std::size_t TRIALMAX = 1;
-
-  for (std::size_t trials = 0; trials < TRIALMAX; ++trials) {
-    for (int l = 0; l <= param.LMAX; ++l) {
-      for (int m = -l; m <= l; ++m) {
-        const int index = gra::spherical::LinearInd(l, m);
-
-        const std::string str = "t_" + std::to_string(l) + std::to_string(m);
-
-        const double max = 1e9;  // Physically bounded ultimately by the number of events
-        const double min = -1e5;
-
-        // ======================================================
-        // *** Use the algebraic inverse solution as a good starting value
-        // ***
-        const double start_value = fla[META](activecell).t_lm_MPP[index];
-        // ======================================================
-
-        const double step_value = 0.1;  // in units of Events
-
-        gMinuit->mnparm(index, str, start_value, step_value, min, max, ierflg);
-
-        // After first trial, fix t_00 (error are not estimated with
-        // constant parameters)
-        // if (trials > 0) {
-        //	gMinuit->mnparm(0, "t_00", t_lm[0], 0, 0, 0, ierflg);
-        //	gMinuit->FixParameter(0);
-        //}
-        // FIX ODD MOMENTS TO ZERO
-        if (param.REMOVEODD && ((l % 2) != 0)) {
-          gMinuit->mnparm(index, str, 0, 0, 0, 0, ierflg);
-          gMinuit->FixParameter(index);
-        }
-        // FIX NEGATIVE M TO ZERO
-        if (param.REMOVENEGATIVEM && (m < 0)) {
-          gMinuit->mnparm(index, str, 0, 0, 0, 0, ierflg);
-          gMinuit->FixParameter(index);
-        }
-      }
-    }
-    // Scan main parameter
-    // gMinuit->mnscan();
-    arglist[0] = 100000;   // Minimum number of function calls
-    arglist[1] = 0.00001;  // Minimum tolerance
-
-    // First simplex to find approximate answers
-    gMinuit->mnexcm("SIMPLEX", arglist, 2, ierflg);
-
-    // Numerical Hessian (2nd derivatives matrix), inverse of this -> covariance
-    // matrix
-    gMinuit->mnexcm("MIGRAD", arglist, 2, ierflg);
-
-    // Confidence intervals based on the profile likelihood ratio
-    gMinuit->mnexcm("MINOS", arglist, 2, ierflg);
-
-    // Calculate error & covariance matrix
-    gMinuit->mnemat(&errmat[0][0], NCOEF);
-
-    for (int i = 0; i < NCOEF; ++i) {
-      for (int j = 0; j < NCOEF; ++j) {
-        covmat[i][j] = sqrt(errmat[i][i] * errmat[j][j]);
-        if (covmat[i][j] > 1E-80) {
-          covmat[i][j] = errmat[i][j] / covmat[i][j];
-        } else
-          covmat[i][j] = 0.0;
-      }
-    }
-    errmat.Print("Error matrix");
-    covmat.Print("Covariance matrix");
-
-    // Print results
-    double fmin, fedm, errdef  = 0.0;
-    int    nvpar, nparx, istat = 0;
-    gMinuit->mnstat(fmin, fedm, errdef, nvpar, nparx, istat);
-
-    // Collect fit result
-    for (int l = 0; l <= param.LMAX; ++l) {
-      for (int m = -l; m <= l; ++m) {
-        const int index = gra::spherical::LinearInd(l, m);
-
-        // Set results into t_lm[], t_lm_error[]
-        gMinuit->GetParameter(index, t_lm[index], t_lm_error[index]);
-      }
-    }
-
-  }  // TRIALS LOOP END
-
-  // Sum of N random variables Y = X_1 + X_2 + ... X_N
-  // sigma_Y^2 = \sum_i^N \sigma_i^2 + 2 \sum_i \sum_i < j
-  // covariance(X_i, X_j)
-
-  // Print out results (see MINUIT manual for these parameters)
-  double fmin, fedm, errdef  = 0.0;
-  int    nvpar, nparx, istat = 0;
-  gMinuit->mnstat(fmin, fedm, errdef, nvpar, nparx, istat);
-  gMinuit->mnprin(4, fmin);
-
-  std::cout << "<MINUIT (MIGRAD+MINOS)> done." << std::endl << std::endl;
-
-  delete gMinuit;
-}
-
-// Unbinned Extended Maximum Likelihood function
-// Extended means that the number of events (itself) is a Poisson distributed
-// random variable and that is incorporated to the fit.
-void MHarmonic::logLfunc(int &npar, double *gin, double &f, double *par, int iflag) const {
-  // Collect fit t_LM coefficients from MINUIT
-  std::vector<double> T(NCOEF, 0.0);
-
-  for (const auto &i : indices(T)) {
-    T[i] = par[i];
-    // printf("T[%d] = %0.5f \n", i);
-  }
-  // This is the number of events in the current phase space point at detector
-  // level
-  const int METHOD = 2;
-  double    nhat   = 0.0;
-
-  // Equivalent estimator 1
-  if (METHOD == 1) {
-    const std::vector<double> t_lm_det = det_DET(activecell).MIXlm * T;  // Matrix * Vector
-    nhat                               = t_lm_det[0];
-  }
-  // Equivalent estimator 2
-  if (METHOD == 2) {
-    nhat = gra::spherical::HarmDotProd(det_DET(activecell).E_lm, T, ACTIVE, param.LMAX);
-  }
-
-  // For each event, calculate \sum_{LM} t_{lm}
-  // Re[Y_{lm}(costheta,phi_k)], k is the event index
-  std::vector<double> I0;
-  const double        V = msqrt(4.0 * PI);  // Normalization volume
-
-  for (const auto &k : DATA_ind) {
-    // Event is accepted
-    if (DATA_events[k].fiducial && DATA_events[k].selected) {
-      // fine
-    } else {
+// Compute active full-basis coefficient indices
+std::vector<std::size_t> ActiveIndices(const FitConfig &config) {
+  std::vector<std::size_t> indices;
+  for (int l = 0; l <= config.lmax; ++l) {
+    if (config.remove_odd && l % 2 != 0) {
       continue;
     }
+    for (int m = -l; m <= l; ++m) {
+      if (config.remove_negative_m && m < 0) {
+        continue;
+      }
+      indices.push_back(static_cast<std::size_t>(spherical::LinearInd(l, m)));
+    }
+  }
+  return indices;
+}
 
-    // Loop over (l,m) terms
-    double sum = 0.0;
-    for (int l = 0; l <= param.LMAX; ++l) {
-      for (int m = -l; m <= l; ++m) {
-        const int index = gra::spherical::LinearInd(l, m);
+// Evaluate the normalized real spherical basis used by the response integral
+// B_lm = sqrt(4pi) Y_lm^R(cos(theta),phi)
+Eigen::VectorXd Basis(const Observation &event,
+                      const std::vector<std::size_t> &active, int lmax) {
+  const std::size_t ncoef = static_cast<std::size_t>((lmax + 1) * (lmax + 1));
+  std::vector<double> full(ncoef, 0.0);
+  const double normalization = std::sqrt(4.0 * gra::math::PI);
+  for (int l = 0; l <= lmax; ++l) {
+    for (int m = -l; m <= l; ++m) {
+      const std::size_t index =
+          static_cast<std::size_t>(spherical::LinearInd(l, m));
+      full[index] = normalization * gra::math::Y_real_basis(event.costheta, event.phi, l, m);
+    }
+  }
+  Eigen::VectorXd output(static_cast<Eigen::Index>(active.size()));
+  for (const auto &index : indices(active)) {
+    output[static_cast<Eigen::Index>(index)] = full[active[index]];
+  }
+  return output;
+}
 
-        if (ACTIVE[index]) {
-          // Calculate here
-          // const std::complex<double> Y =
-          //	gra::math::Y_complex_basis(DATA_events[k].costheta,DATA_events[k].phi,
-          // l,m);
-          // const double ReY = gra::math::NReY(Y,l,m);
+// Add one weighted outer product to a sparse response block
+// R += w b_left b_right^T
+void AddOuter(std::map<Cell, Eigen::MatrixXd> &blocks, const Cell &key,
+              const Eigen::VectorXd &left, const Eigen::VectorXd &right,
+              double weight) {
+  auto iterator =
+      blocks.try_emplace(key, Eigen::MatrixXd::Zero(left.size(), right.size()))
+          .first;
+  iterator->second.noalias() += weight * left * right.transpose();
+}
 
-          // Pre-calculated for speed
-          const double ReY = Y_lm[k][index];
+// Add one weighted outer product to a migration response block
+// R += w b_left b_right^T
+void AddOuter(std::map<BlockKey, Eigen::MatrixXd> &blocks, const BlockKey &key,
+              const Eigen::VectorXd &left, const Eigen::VectorXd &right,
+              double weight) {
+  auto iterator =
+      blocks.try_emplace(key, Eigen::MatrixXd::Zero(left.size(), right.size()))
+          .first;
+  iterator->second.noalias() += weight * left * right.transpose();
+}
 
-          // Add
-          sum += T[index] * ReY;
+// Validate the response observations and compute a separate weight scale per truth cell
+std::map<Cell, double> ResponseScales(const std::vector<ResponseEvent> &response,
+                                      const PhaseSpaceGrid &grid) {
+  std::map<Cell, statistics::ScaledWeightSums> weights;
+  for (const auto &event : response) {
+    event.truth.Validate(grid.Axes().size(), "harmonic::HarmonicMeasurement response truth");
+    if (std::fpclassify(event.truth.weight) == FP_ZERO) { continue; }
+    const auto cell = grid.Locate(event.truth.z);
+    if (event.DetectorAccepted()) {
+      event.reco->Validate(grid.Axes().size(), "harmonic::HarmonicMeasurement response reco");
+      if (!cell && grid.Locate(event.reco->z)) {
+        throw std::invalid_argument(
+            "harmonic::HarmonicMeasurement has detector feed-in from outside "
+            "the truth grid, add truth guard bins");
+      }
+    }
+    if (cell) { weights[*cell].Add(event.truth.weight); }
+  }
+  std::map<Cell, double> scales;
+  for (const auto &[cell, sum] : weights) {
+    if (!(sum.ScaledSum() > 0.0L) || !sum.HasSignificantSignedSum(std::numeric_limits<double>::epsilon())) {
+      throw std::invalid_argument("harmonic::HarmonicMeasurement response truth cell has non-positive or cancelling weights");
+    }
+    scales[cell] = static_cast<double>(sum.Scale());
+  }
+  return scales;
+}
+
+// Fold production coefficients into all fiducial and detector moments
+// Acceptance can break production symmetries even within the same l truncation
+// [REFERENCE: https://arxiv.org/abs/1503.04100, Sec. III B]
+void AddResponseEvent(ResponseSums &sums, const ResponseEvent &event,
+                      const PhaseSpaceGrid &grid,
+                      const std::vector<std::size_t> &active,
+                      const std::vector<std::size_t> &moments, int lmax,
+                      const std::map<Cell, double> &scales) {
+  if (std::fpclassify(event.truth.weight) == FP_ZERO) { return; }
+  const std::optional<Cell> truth_cell = grid.Locate(event.truth.z);
+  if (!truth_cell) { return; }
+  const double weight = event.truth.weight / scales.at(*truth_cell);
+  sums.generated[*truth_cell] += weight;
+  const Eigen::VectorXd truth_basis = Basis(event.truth, active, lmax);
+
+  if (event.fiducial.Pass(grid.Mode())) {
+    const Eigen::VectorXd fiducial_basis = Basis(event.truth, moments, lmax);
+    AddOuter(sums.fiducial, *truth_cell, fiducial_basis, truth_basis, weight);
+  }
+  if (!event.DetectorAccepted()) {
+    return;
+  }
+  const std::optional<Cell> reco_cell = grid.Locate(event.reco->z);
+  if (!reco_cell.has_value()) {
+    return;
+  }
+  const Eigen::VectorXd reco_basis = Basis(*event.reco, moments, lmax);
+  AddOuter(sums.detector, {*reco_cell, *truth_cell}, reco_basis, truth_basis,
+           weight);
+}
+
+// Compute a stable ordered set of cells from map keys
+template <typename T>
+std::vector<Cell> MapCells(const std::map<Cell, T> &input) {
+  std::vector<Cell> cells;
+  cells.reserve(input.size());
+  for (const auto &[cell, value] : input) {
+    static_cast<void>(value);
+    cells.push_back(cell);
+  }
+  return cells;
+}
+
+// Compute a cell to contiguous-block lookup
+std::map<Cell, std::size_t> CellOffsets(const std::vector<Cell> &cells) {
+  std::map<Cell, std::size_t> offsets;
+  for (const auto &index : indices(cells)) {
+    offsets.emplace(cells[index], index);
+  }
+  return offsets;
+}
+
+// Assemble normalized global detector and truth-fiducial response matrices
+// R_ab = sum_i w_i B_ia^reco B_ib^truth / sum_i w_i by truth cell
+LinearResponse AssembleResponse(const ResponseSums &sums,
+                                const std::vector<Cell> &truth_cells,
+                                const std::vector<Cell> &detector_cells,
+                                std::size_t nactive, std::size_t nmoments) {
+  const std::map<Cell, std::size_t> truth_offset = CellOffsets(truth_cells);
+  const std::map<Cell, std::size_t> detector_offset =
+      CellOffsets(detector_cells);
+  LinearResponse response{
+      Eigen::MatrixXd::Zero(
+          static_cast<Eigen::Index>(detector_cells.size() * nmoments),
+          static_cast<Eigen::Index>(truth_cells.size() * nactive)),
+      Eigen::MatrixXd::Zero(
+          static_cast<Eigen::Index>(truth_cells.size() * nmoments),
+          static_cast<Eigen::Index>(truth_cells.size() * nactive))};
+
+  for (const auto &[cell, index] : truth_offset) {
+    const auto weight = sums.generated.find(cell);
+    if (weight == sums.generated.end() || !(weight->second > 0.0) ||
+        !std::isfinite(weight->second)) {
+      throw std::invalid_argument(
+          "harmonic::HarmonicMeasurement has a non-positive response truth "
+          "cell weight");
+    }
+    const auto block = sums.fiducial.find(cell);
+    if (block != sums.fiducial.end()) {
+      response.fiducial.block(static_cast<Eigen::Index>(index * nmoments),
+                              static_cast<Eigen::Index>(index * nactive),
+                              static_cast<Eigen::Index>(nmoments),
+                              static_cast<Eigen::Index>(nactive)) =
+          block->second / weight->second;
+    }
+  }
+
+  for (const auto &[cells, block] : sums.detector) {
+    const auto reco = detector_offset.find(cells.first);
+    const auto truth = truth_offset.find(cells.second);
+    if (reco == detector_offset.end() || truth == truth_offset.end()) {
+      continue;
+    }
+    const double weight = sums.generated.at(cells.second);
+    response.detector.block(static_cast<Eigen::Index>(reco->second * nmoments),
+                            static_cast<Eigen::Index>(truth->second * nactive),
+                            static_cast<Eigen::Index>(nmoments),
+                            static_cast<Eigen::Index>(nactive)) =
+        block / weight;
+  }
+  return response;
+}
+
+// Require a positive response truth weight in every delete-group replica
+void ValidateResponseJackknife(const ResponseSums &total,
+                               const std::vector<ResponseSums> &deleted) {
+  for (const auto &group : indices(deleted)) {
+    for (const auto &[cell, weight] : deleted[group].generated) {
+      const double retained = total.generated.at(cell) - weight;
+      if (!(retained > 0.0) || !std::isfinite(retained)) {
+        throw std::invalid_argument(
+            "harmonic::HarmonicMeasurement response jackknife group " +
+            std::to_string(group) + " leaves truth cell " + gra::aux::dvec2str(cell) +
+            " without a positive finite weight, increase response statistics "
+            "or use coarser truth bins");
+      }
+    }
+  }
+}
+
+// Build detector-level moments and their exact weighted-event covariance
+// m = sum_i w_i B_i, Cov(m) = sum_i w_i^2 B_i B_i^T
+DataSums BuildDataSums(const std::vector<DataEvent> &data,
+                       const PhaseSpaceGrid &grid,
+                       const std::vector<Cell> &detector_cells,
+                       const std::vector<std::size_t> &active, int lmax) {
+  const std::size_t nactive = active.size();
+  const std::map<Cell, std::size_t> offsets = CellOffsets(detector_cells);
+  DataSums output{
+      Eigen::VectorXd::Zero(
+          static_cast<Eigen::Index>(detector_cells.size() * nactive)),
+      Eigen::MatrixXd::Zero(
+          static_cast<Eigen::Index>(detector_cells.size() * nactive),
+          static_cast<Eigen::Index>(detector_cells.size() * nactive)),
+      {},
+      0,
+      0.0,
+      0.0};
+  std::map<Cell, statistics::WeightedVectorSums> sums;
+  statistics::ScaledWeightSums weights;
+  for (const DataEvent &event : data) {
+    event.reco.Validate(grid.Axes().size(), "harmonic::HarmonicMeasurement data reco");
+    const auto cell = grid.Locate(event.reco.z);
+    if (!cell || std::fpclassify(event.reco.weight) == FP_ZERO) { continue; }
+    if (!offsets.contains(*cell)) {
+      throw std::invalid_argument("harmonic::HarmonicMeasurement data occupy a cell without response");
+    }
+    sums.try_emplace(*cell, nactive).first->second.Add(Basis(event.reco, active, lmax), event.reco.weight);
+    weights.Add(event.reco.weight);
+  }
+  for (const auto &[cell, sum] : sums) {
+    const Eigen::Index start = static_cast<Eigen::Index>(offsets.at(cell) * nactive);
+    const auto values = sum.Sum();
+    output.values.segment(start, nactive) = Eigen::Map<const Eigen::VectorXd>(values.data(), nactive);
+    output.covariance.block(start, start, nactive, nactive) = sum.Covariance().ToEigen();
+    CellEstimate &estimate = output.cells[cell];
+    estimate.sum_weight = static_cast<double>(sum.Weights().Sum());
+    estimate.sum_weight2 = static_cast<double>(sum.Weights().SquareSum());
+    estimate.entries = sum.Weights().Count();
+  }
+  output.accepted = weights.Count();
+  output.sum_weight = static_cast<double>(weights.Sum());
+  output.sum_weight2 = static_cast<double>(weights.SquareSum());
+  output.effective_entries = static_cast<double>(weights.EffectiveSampleSize());
+  return output;
+}
+
+// Expand an active cell vector and covariance into the full harmonic basis
+CellEstimate ExpandCell(const Eigen::VectorXd &values,
+                        const Eigen::MatrixXd &covariance,
+                        const std::vector<std::size_t> &active,
+                        std::size_t ncoef) {
+  CellEstimate output;
+  output.value.assign(ncoef, 0.0);
+  output.covariance = MMatrix<double>(ncoef, ncoef, 0.0);
+  for (const auto &row : indices(active)) {
+    output.value[active[row]] = values[static_cast<Eigen::Index>(row)];
+    for (const auto &col : indices(active)) {
+      output.covariance[active[row]][active[col]] = covariance(
+          static_cast<Eigen::Index>(row), static_cast<Eigen::Index>(col));
+    }
+  }
+  output.valid = true;
+  return output;
+}
+
+// Add delete-group jackknife covariance around the replica mean
+Eigen::MatrixXd
+JackknifeCovariance(const std::vector<Eigen::VectorXd> &replicas) {
+  if (replicas.empty()) { return {}; }
+  std::vector<std::vector<double>> sample;
+  sample.reserve(replicas.size());
+  for (const Eigen::VectorXd &replica : replicas) {
+    std::vector<double> value(static_cast<std::size_t>(replica.size()), 0.0);
+    for (std::size_t i = 0; i < value.size(); ++i) { value[i] = replica[static_cast<Eigen::Index>(i)]; }
+    sample.push_back(std::move(value));
+  }
+  const MMatrix<double> covariance = statistics::JackknifeCovariance(sample);
+  Eigen::MatrixXd       output(static_cast<Eigen::Index>(covariance.size_row()),
+                               static_cast<Eigen::Index>(covariance.size_col()));
+  for (std::size_t row = 0; row < covariance.size_row(); ++row) {
+    for (std::size_t col = 0; col < covariance.size_col(); ++col) {
+      output(static_cast<Eigen::Index>(row), static_cast<Eigen::Index>(col)) = covariance[row][col];
+    }
+  }
+  return output;
+}
+
+// Build the angular grid used to reject non-physical fitted intensities
+Eigen::MatrixXd PositivityBasis(const FitConfig &config,
+                                const std::vector<std::size_t> &active) {
+  const std::size_t rows =
+      config.eml_positivity_costheta * config.eml_positivity_phi;
+  Eigen::MatrixXd output(static_cast<Eigen::Index>(rows),
+                         static_cast<Eigen::Index>(active.size()));
+  std::size_t row = 0;
+  for (std::size_t i = 0; i < config.eml_positivity_costheta; ++i) {
+    const double costheta =
+        -1.0 + 2.0 * static_cast<double>(i) /
+                   static_cast<double>(config.eml_positivity_costheta - 1);
+    for (std::size_t j = 0; j < config.eml_positivity_phi; ++j) {
+      const double phi = -gra::math::PI +
+                         2.0 * gra::math::PI * (static_cast<double>(j) + 0.5) /
+                             static_cast<double>(config.eml_positivity_phi);
+      const Observation point{costheta, phi, {}, 1.0};
+      output.row(static_cast<Eigen::Index>(row)) =
+          Basis(point, active, config.lmax).transpose();
+      ++row;
+    }
+  }
+  return output;
+}
+
+// Compute the active-vector location of the yield coefficient
+std::size_t YieldIndex(const std::vector<std::size_t> &active) {
+  const auto iterator = std::find(active.begin(), active.end(), 0);
+  if (iterator == active.end()) {
+    throw std::invalid_argument(
+        "harmonic::HarmonicMeasurement requires the l=0,m=0 coefficient");
+  }
+  return static_cast<std::size_t>(std::distance(active.begin(), iterator));
+}
+
+// Group selected data by reconstructed conditional cell for the EML objective
+EMLModel BuildEMLModel(const std::vector<DataEvent> &data,
+                       const PhaseSpaceGrid &grid,
+                       const std::vector<Cell> &detector_cells,
+                       const std::vector<std::size_t> &active,
+                       const std::vector<std::size_t> &moments,
+                       const LinearResponse &response,
+                       const FitConfig &config) {
+  const std::map<Cell, std::size_t> offsets = CellOffsets(detector_cells);
+  std::vector<std::vector<const DataEvent *>> grouped(detector_cells.size());
+  for (const DataEvent &event : data) {
+    event.reco.Validate(grid.Axes().size(),
+                        "harmonic::HarmonicMeasurement EML data");
+    const std::optional<Cell> cell = grid.Locate(event.reco.z);
+    if (!cell.has_value() || std::fpclassify(event.reco.weight) == FP_ZERO) {
+      continue;
+    }
+    if (event.reco.weight < 0.0) {
+      throw std::invalid_argument(
+          "harmonic::HarmonicMeasurement EML does not accept signed data "
+          "weights, use ALGEBRAIC");
+    }
+    const auto offset = offsets.find(*cell);
+    if (offset == offsets.end()) {
+      throw std::invalid_argument(
+          "harmonic::HarmonicMeasurement data occupy a cell without response");
+    }
+    grouped[offset->second].push_back(&event);
+  }
+
+  EMLModel model;
+  model.response = response.detector;
+  model.angular_basis = PositivityBasis(config, active);
+  model.detector_basis = PositivityBasis(config, moments);
+  model.nactive = active.size();
+  model.nmoments = moments.size();
+  model.zero_index = YieldIndex(active);
+  for (const auto &cell : indices(grouped)) {
+    if (grouped[cell].empty()) {
+      continue;
+    }
+    EMLCellData selected;
+    selected.detector_cell = cell;
+    selected.basis =
+        Eigen::MatrixXd(static_cast<Eigen::Index>(grouped[cell].size()),
+                        static_cast<Eigen::Index>(moments.size()));
+    selected.weight =
+        Eigen::VectorXd(static_cast<Eigen::Index>(grouped[cell].size()));
+    for (const auto &row : indices(grouped[cell])) {
+      selected.basis.row(static_cast<Eigen::Index>(row)) =
+          Basis(grouped[cell][row]->reco, moments, config.lmax).transpose();
+      selected.weight[static_cast<Eigen::Index>(row)] =
+          grouped[cell][row]->reco.weight;
+    }
+    model.data.push_back(std::move(selected));
+  }
+  return model;
+}
+
+// Compute the lowest angular-flat and reconstructed intensities on the grid
+std::pair<double, double> MinimumIntensities(const EMLModel &model,
+                                             const Eigen::VectorXd &flat) {
+  double minimum_flat = std::numeric_limits<double>::infinity();
+  for (Eigen::Index start = 0; start < flat.size();
+       start += static_cast<Eigen::Index>(model.nactive)) {
+    minimum_flat =
+        std::min(minimum_flat,
+                 (model.angular_basis *
+                  flat.segment(start, static_cast<Eigen::Index>(model.nactive)))
+                     .minCoeff());
+  }
+  const Eigen::VectorXd detector = model.response * flat;
+  double minimum_detector = std::numeric_limits<double>::infinity();
+  for (Eigen::Index start = 0; start < detector.size();
+       start += static_cast<Eigen::Index>(model.nmoments)) {
+    minimum_detector = std::min(
+        minimum_detector,
+        (model.detector_basis *
+         detector.segment(start, static_cast<Eigen::Index>(model.nmoments)))
+            .minCoeff());
+  }
+  return {minimum_flat, minimum_detector};
+}
+
+// Evaluate the weighted detector-space extended negative log likelihood
+// NLL = sum_c mu_c-sum_i w_i log I_c(Omega_i)
+double EMLObjective(const EMLModel &model, const Eigen::VectorXd &flat,
+                    double minimum_intensity) {
+  if (!flat.allFinite()) {
+    return 1e100;
+  }
+  const auto minimum = MinimumIntensities(model, flat);
+  if (minimum.first < -minimum_intensity ||
+      minimum.second < -minimum_intensity) {
+    return 1e100;
+  }
+  const Eigen::VectorXd detector = model.response * flat;
+  double objective = 0.0;
+  for (Eigen::Index start = 0; start < detector.size();
+       start += static_cast<Eigen::Index>(model.nmoments)) {
+    objective += detector[start + static_cast<Eigen::Index>(model.zero_index)];
+  }
+  if (!(objective > 0.0) || !std::isfinite(objective)) {
+    return 1e100;
+  }
+  for (const EMLCellData &cell : model.data) {
+    const Eigen::Index start =
+        static_cast<Eigen::Index>(cell.detector_cell * model.nmoments);
+    const Eigen::VectorXd intensity =
+        cell.basis *
+        detector.segment(start, static_cast<Eigen::Index>(model.nmoments));
+    if ((intensity.array() <= minimum_intensity).any() ||
+        !intensity.allFinite()) {
+      return 1e100;
+    }
+    objective -= (cell.weight.array() * intensity.array().log()).matrix().sum();
+  }
+  return std::isfinite(objective) ? objective : 1e100;
+}
+
+// Evaluate the analytic EML gradient in the physical parameter region
+// grad NLL = R^T[e_00-sum_i w_i B_i/I_i]
+Eigen::VectorXd EMLGradient(const EMLModel &model, const Eigen::VectorXd &flat,
+                            double minimum_intensity) {
+  Eigen::VectorXd gradient = Eigen::VectorXd::Zero(flat.size());
+  if (EMLObjective(model, flat, minimum_intensity) >= 1e99) {
+    return gradient;
+  }
+  const Eigen::VectorXd detector = model.response * flat;
+  Eigen::VectorXd detector_gradient = Eigen::VectorXd::Zero(detector.size());
+  for (Eigen::Index start = 0; start < detector.size();
+       start += static_cast<Eigen::Index>(model.nmoments)) {
+    detector_gradient[start + static_cast<Eigen::Index>(model.zero_index)] =
+        1.0;
+  }
+  for (const EMLCellData &cell : model.data) {
+    const Eigen::Index start =
+        static_cast<Eigen::Index>(cell.detector_cell * model.nmoments);
+    const Eigen::VectorXd intensity =
+        cell.basis *
+        detector.segment(start, static_cast<Eigen::Index>(model.nmoments));
+    detector_gradient.segment(start, static_cast<Eigen::Index>(model.nmoments))
+        .noalias() -= cell.basis.transpose() *
+                      (cell.weight.array() / intensity.array()).matrix();
+  }
+  gradient.noalias() = model.response.transpose() * detector_gradient;
+  return gradient;
+}
+
+// Dampen algebraic anisotropies until they define a physical EML start
+Eigen::VectorXd FeasibleStart(const EMLModel &model,
+                              const Eigen::VectorXd &algebraic,
+                              double data_weight, double minimum_intensity) {
+  Eigen::VectorXd start = algebraic;
+  const std::size_t truth_cells =
+      static_cast<std::size_t>(start.size()) / model.nactive;
+  const double average_yield =
+      std::max(1.0, data_weight / static_cast<double>(truth_cells));
+  for (std::size_t cell = 0; cell < truth_cells; ++cell) {
+    const Eigen::Index zero =
+        static_cast<Eigen::Index>(cell * model.nactive + model.zero_index);
+    start[zero] = std::max(
+        {minimum_intensity * 100.0, average_yield, std::abs(start[zero])});
+  }
+  for (std::size_t iteration = 0; iteration < 64; ++iteration) {
+    if (EMLObjective(model, start, minimum_intensity) < 1e99) {
+      return start;
+    }
+    for (std::size_t cell = 0; cell < truth_cells; ++cell) {
+      for (std::size_t coefficient = 0; coefficient < model.nactive;
+           ++coefficient) {
+        if (coefficient != model.zero_index) {
+          start[static_cast<Eigen::Index>(cell * model.nactive +
+                                          coefficient)] *= 0.5;
         }
       }
     }
-    I0.push_back(V * sum);
   }
-  // Fidelity term
-  double logL = 0;
-
-  for (const auto &k : indices(I0)) {
-    if (I0[k] > 0) {
-      logL += std::log(I0[k]);
-      // Positivity is not satisfied, make strong penalty
-    } else {
-      logL = -1e32;
-      // The Re[Y_lm] (purely real) formulation here does
-      // not, explicitly, enforce non-negativity.
-      // Where as |A|^2 formulation would enforce it by
-      // construction,
-      // but that would have -l <= m <= l parameters, i.e.,
-      // over redundant representation problem
-      // on the other hand.
-    }
-  }
-
-  // Note the minus sign on logL term
-  f = -logL + nhat;
-
-  // High penalty, total event count estimate has gone out of physical
-  if (nhat < 0) { f = 1e32; }
-
-  // L1-norm regularization (Laplace prior), -> + ln(P_laplace)
-  double             l1term = 0.0;
-  const unsigned int START  = 1;
-  for (std::size_t i = START; i < T.size(); ++i) { l1term += std::abs(T[i]); }
-  f += l1term * param.L1REG * nhat;  // nhat for scale normalization
-
-  // printf("MHarmonic:: cost-functional = %0.4E, nhat = %0.1f \n", f, nhat);
+  throw std::invalid_argument(
+      "harmonic::HarmonicMeasurement cannot construct a positive EML model "
+      "from this truncated response");
 }
 
-}  // namespace gra
+// Calculate the weighted sandwich covariance of one converged EML fit
+// Cov = H^+ J H^{+T}
+Eigen::MatrixXd EMLCovariance(const EMLModel &model,
+                              const Eigen::VectorXd &flat) {
+  const Eigen::Index parameters = flat.size();
+  Eigen::MatrixXd hessian = Eigen::MatrixXd::Zero(parameters, parameters);
+  Eigen::MatrixXd score = Eigen::MatrixXd::Zero(parameters, parameters);
+  const Eigen::VectorXd detector = model.response * flat;
+  for (const EMLCellData &cell : model.data) {
+    const Eigen::Index start =
+        static_cast<Eigen::Index>(cell.detector_cell * model.nmoments);
+    const Eigen::MatrixXd block = model.response.block(
+        start, 0, static_cast<Eigen::Index>(model.nmoments), parameters);
+    const Eigen::VectorXd intensity =
+        cell.basis *
+        detector.segment(start, static_cast<Eigen::Index>(model.nmoments));
+    const Eigen::ArrayXd inverse_square = intensity.array().square().inverse();
+    const Eigen::MatrixXd local_hessian =
+        cell.basis.transpose() *
+        (cell.weight.array() * inverse_square).matrix().asDiagonal() *
+        cell.basis;
+    const Eigen::MatrixXd local_score =
+        cell.basis.transpose() *
+        (cell.weight.array().square() * inverse_square).matrix().asDiagonal() *
+        cell.basis;
+    hessian.noalias() += block.transpose() * local_hessian * block;
+    score.noalias() += block.transpose() * local_score * block;
+  }
+  const HarmonicPseudoInverse inverse = PseudoInverse(hessian, 0.0);
+  if (inverse.numerical_rank < static_cast<std::size_t>(parameters)) {
+    throw std::runtime_error(
+        "harmonic::HarmonicMeasurement EML covariance is not identifiable");
+  }
+  return inverse.value * score * inverse.value.transpose();
+}
+
+// Fit the global flat-space coefficients with the detector response folded in
+EstimatorResult FitEML(const EMLModel &model,
+                       const Eigen::VectorXd &algebraic_start,
+                       double data_weight, const FitConfig &config,
+                       bool calculate_covariance) {
+  const Eigen::VectorXd start = FeasibleStart(
+      model, algebraic_start, data_weight, config.eml_min_intensity);
+  std::unique_ptr<ROOT::Math::Minimizer> minimizer(
+      ROOT::Math::Factory::CreateMinimizer("Minuit2", "Migrad"));
+  if (!minimizer) {
+    throw std::runtime_error(
+        "harmonic::HarmonicMeasurement failed to create Minuit2");
+  }
+  const std::function<double(const double *)> value =
+      [&model, &config](const double *parameters) {
+        const Eigen::Map<const Eigen::VectorXd> values(parameters,
+                                                       model.response.cols());
+        return EMLObjective(model, values, config.eml_min_intensity);
+      };
+  const std::function<void(const double *, double *)> gradient =
+      [&model, &config](const double *parameters, double *output) {
+        const Eigen::Map<const Eigen::VectorXd> values(parameters,
+                                                       model.response.cols());
+        Eigen::Map<Eigen::VectorXd> mapped(output, model.response.cols());
+        mapped = EMLGradient(model, values, config.eml_min_intensity);
+      };
+  ROOT::Math::GradFunctor objective(
+      value, static_cast<unsigned int>(start.size()), gradient);
+  minimizer->SetFunction(objective);
+  minimizer->SetMaxFunctionCalls(
+      static_cast<unsigned int>(config.eml_max_calls));
+  minimizer->SetMaxIterations(static_cast<unsigned int>(config.eml_max_calls));
+  minimizer->SetTolerance(1e-6);
+  minimizer->SetPrintLevel(-1);
+  minimizer->SetErrorDef(0.5);
+
+  for (const auto &index : indices(start)) {
+    const auto zero = static_cast<Eigen::Index>(
+        static_cast<std::size_t>(index) / model.nactive * model.nactive + model.zero_index);
+    const double step = std::max(1e-4, 1e-3 * start[zero]);
+    const auto parameter = static_cast<unsigned int>(index);
+    const std::string name = "t_" + std::to_string(index);
+    const bool configured = index == zero
+        ? minimizer->SetLowerLimitedVariable(parameter, name, start[index], step,
+                                             config.eml_min_intensity)
+        : minimizer->SetVariable(parameter, name, start[index], step);
+    if (!configured) {
+      throw std::runtime_error(
+          "harmonic::HarmonicMeasurement failed to configure EML parameter");
+    }
+  }
+  if (!minimizer->Minimize() || minimizer->Status() != 0 ||
+      !std::isfinite(minimizer->MinValue())) {
+    throw std::runtime_error(
+        "harmonic::HarmonicMeasurement EML did not converge, status " +
+        std::to_string(minimizer->Status()));
+  }
+
+  EstimatorResult output;
+  output.flat = Eigen::Map<const Eigen::VectorXd>(minimizer->X(), start.size());
+  output.objective = minimizer->MinValue();
+  const auto minimum = MinimumIntensities(model, output.flat);
+  output.minimum_flat_intensity = minimum.first;
+  output.minimum_detector_intensity = minimum.second;
+  if (minimum.first < -config.eml_min_intensity ||
+      minimum.second < -config.eml_min_intensity) {
+    throw std::runtime_error(
+        "harmonic::HarmonicMeasurement EML violated positivity");
+  }
+  if (calculate_covariance) {
+    output.flat_covariance = EMLCovariance(model, output.flat);
+  }
+  return output;
+}
+
+// Require every fitted truth coefficient to be identifiable in the response
+void ValidateResponseInverse(const HarmonicPseudoInverse &inverse,
+                             Eigen::Index rows, Eigen::Index columns) {
+  if (rows < columns ||
+      inverse.numerical_rank < static_cast<std::size_t>(columns)) {
+    throw std::invalid_argument(
+        "harmonic::HarmonicMeasurement response is not identifiable");
+  }
+  if (inverse.retained_rank == 0) {
+    throw std::invalid_argument(
+        "harmonic::HarmonicMeasurement regularization removed all modes");
+  }
+}
+
+// Solve the weighted moment equations with the shared pseudoinverse
+EstimatorResult FitAlgebraic(const HarmonicPseudoInverse &inverse,
+                             const DataSums &observed) {
+  EstimatorResult output;
+  output.flat = inverse.value * observed.values;
+  output.flat_covariance =
+      inverse.value * observed.covariance * inverse.value.transpose();
+  return output;
+}
+
+// Insert one active global level into per-cell full-basis estimates
+void FillCellEstimates(const std::vector<Cell> &cells,
+                       const Eigen::VectorXd &values,
+                       const Eigen::MatrixXd &covariance,
+                       const std::vector<std::size_t> &active,
+                       std::size_t ncoef,
+                       std::map<Cell, CellEstimate> &output) {
+  const std::size_t nactive = active.size();
+  for (const auto &cell : indices(cells)) {
+    const Eigen::Index start = static_cast<Eigen::Index>(cell * nactive);
+    output[cells[cell]] = ExpandCell(
+        values.segment(start, static_cast<Eigen::Index>(nactive)),
+        covariance.block(start, start, static_cast<Eigen::Index>(nactive),
+                         static_cast<Eigen::Index>(nactive)),
+        active, ncoef);
+  }
+}
+
+// Compute active global values in the stored cell order
+Eigen::VectorXd GlobalValues(const std::vector<Cell> &cells,
+                             const std::map<Cell, CellEstimate> &estimates,
+                             const std::vector<std::size_t> &active) {
+  Eigen::VectorXd output = Eigen::VectorXd::Zero(
+      static_cast<Eigen::Index>(cells.size() * active.size()));
+  for (const auto &cell : indices(cells)) {
+    const CellEstimate &estimate = estimates.at(cells[cell]);
+    for (const auto &index : indices(active)) {
+      output[static_cast<Eigen::Index>(cell * active.size() + index)] =
+          estimate.value[active[index]];
+    }
+  }
+  return output;
+}
+
+// Scale one per-cell level and add its normalization covariance
+void NormalizeCells(std::map<Cell, CellEstimate> &estimates, double divisor,
+                    double relative_uncertainty) {
+  for (auto &[cell, estimate] : estimates) {
+    static_cast<void>(cell);
+    for (double &value : estimate.value) { value /= divisor; }
+    estimate.covariance = estimate.covariance / divisor / divisor;
+    estimate.covariance.AddOuterProduct(
+        estimate.value, estimate.value,
+        relative_uncertainty * relative_uncertainty);
+  }
+}
+
+// Scale one global covariance and add its normalization covariance
+void NormalizeGlobal(MMatrix<double> &covariance,
+                     const Eigen::VectorXd &scaled_values, double divisor,
+                     double relative_uncertainty) {
+  covariance = covariance / divisor / divisor;
+  covariance.AddOuterProduct(scaled_values, scaled_values,
+                             relative_uncertainty * relative_uncertainty);
+}
+
+} // namespace
+
+// Compute the canonical coordinate ordering for one measurement mode
+std::vector<Coordinate> Coordinates(MeasurementMode mode) {
+  if (mode == MeasurementMode::Central) {
+    return {Coordinate::Mass, Coordinate::Momentum, Coordinate::Rapidity};
+  }
+  return {Coordinate::Mass, Coordinate::Rapidity, Coordinate::AbsT1,
+          Coordinate::AbsT2, Coordinate::DeltaPhiPP};
+}
+
+// Compute a stable printable measurement-mode name
+std::string ToString(MeasurementMode mode) {
+  return mode == MeasurementMode::Central ? "CENTRAL" : "TAGGED";
+}
+
+// Parse a measurement mode without accepting implicit aliases
+MeasurementMode ParseMeasurementMode(const std::string &value) {
+  if (value == "CENTRAL") {
+    return MeasurementMode::Central;
+  }
+  if (value == "TAGGED") {
+    return MeasurementMode::Tagged;
+  }
+  throw std::invalid_argument(
+      "harmonic::ParseMeasurementMode expects CENTRAL or TAGGED");
+}
+
+// Compute a stable printable sample-type name
+std::string ToString(SampleType type) {
+  if (type == SampleType::Data) {
+    return "DATA";
+  }
+  if (type == SampleType::ResponseMC) {
+    return "RESPONSE_MC";
+  }
+  return "CLOSURE_MC";
+}
+
+// Parse an input sample type without accepting implicit aliases
+SampleType ParseSampleType(const std::string &value) {
+  if (value == "DATA") {
+    return SampleType::Data;
+  }
+  if (value == "RESPONSE_MC") {
+    return SampleType::ResponseMC;
+  }
+  if (value == "CLOSURE_MC") {
+    return SampleType::ClosureMC;
+  }
+  throw std::invalid_argument(
+      "harmonic::ParseSampleType expects DATA, RESPONSE_MC or CLOSURE_MC");
+}
+
+// Compute a stable printable phase-space-level name
+std::string ToString(PhaseSpaceLevel level) {
+  if (level == PhaseSpaceLevel::Flat) {
+    return "ANGULAR_FLAT";
+  }
+  if (level == PhaseSpaceLevel::Fiducial) {
+    return "FIDUCIAL";
+  }
+  return "DETECTOR";
+}
+
+// Compute a stable printable estimator name
+std::string ToString(HarmonicEstimator estimator) {
+  return estimator == HarmonicEstimator::Algebraic ? "ALGEBRAIC" : "EML";
+}
+
+// Parse an estimator without accepting implicit aliases
+HarmonicEstimator ParseHarmonicEstimator(const std::string &value) {
+  if (value == "ALGEBRAIC") {
+    return HarmonicEstimator::Algebraic;
+  }
+  if (value == "EML") {
+    return HarmonicEstimator::EML;
+  }
+  throw std::invalid_argument(
+      "harmonic::ParseHarmonicEstimator expects ALGEBRAIC or EML");
+}
+
+// Compute a stable printable coordinate name
+std::string ToString(Coordinate coordinate) {
+  if (coordinate == Coordinate::Mass) {
+    return "M";
+  }
+  if (coordinate == Coordinate::Momentum) {
+    return "PT";
+  }
+  if (coordinate == Coordinate::Rapidity) {
+    return "Y";
+  }
+  if (coordinate == Coordinate::AbsT1) {
+    return "ABST1";
+  }
+  if (coordinate == Coordinate::AbsT2) {
+    return "ABST2";
+  }
+  return "DPHI_PP";
+}
+
+// Parse a conditional coordinate without accepting implicit aliases
+Coordinate ParseCoordinate(const std::string &value) {
+  if (value == "M") {
+    return Coordinate::Mass;
+  }
+  if (value == "PT") {
+    return Coordinate::Momentum;
+  }
+  if (value == "Y") {
+    return Coordinate::Rapidity;
+  }
+  if (value == "ABST1") {
+    return Coordinate::AbsT1;
+  }
+  if (value == "ABST2") {
+    return Coordinate::AbsT2;
+  }
+  if (value == "DPHI_PP") {
+    return Coordinate::DeltaPhiPP;
+  }
+  throw std::invalid_argument(
+      "harmonic::ParseCoordinate received an unknown coordinate");
+}
+
+// Validate the finite non-empty axis definition
+void Axis::Validate() const {
+  const double width = (max - min) / static_cast<double>(bins);
+  if (bins == 0 || !std::isfinite(width) || !(min + width > min) || !(max - width < max) ||
+      !std::isfinite(min) || !std::isfinite(max) || !(min < max)) {
+    throw std::invalid_argument("harmonic::Axis has invalid binning");
+  }
+  if (coordinate == Coordinate::DeltaPhiPP &&
+      (min < -gra::math::PI || max > gra::math::PI)) {
+    throw std::invalid_argument(
+        "harmonic::Axis DPHI_PP must use the signed [-pi,pi] convention");
+  }
+}
+
+// Validate all angular, kinematic and weight components
+void Observation::Validate(std::size_t dimensions,
+                           const std::string &context) const {
+  if (z.size() != dimensions || !std::isfinite(costheta) || costheta < -1.0 ||
+      costheta > 1.0 || !std::isfinite(phi) || phi < -gra::math::PI ||
+      phi > gra::math::PI || !std::isfinite(weight)) {
+    throw std::invalid_argument(context + " has invalid dimensions or angles");
+  }
+  if (!gra::AllFinite(z)) {
+    throw std::invalid_argument(context + " has non-finite coordinates");
+  }
+}
+
+// Apply only the forward requirement present in the tagged mode
+bool FiducialDecision::Pass(MeasurementMode mode) const {
+  return central && (mode == MeasurementMode::Central || forward);
+}
+
+// Test reconstructed detector selection independently of truth fiducial cuts
+bool ResponseEvent::DetectorAccepted() const {
+  return reco.has_value() && reco_selected;
+}
+
+// Validate particle efficiencies and momentum resolutions
+void ToyResponseConfig::Validate() const {
+  for (const double efficiency : {pion_efficiency, proton_efficiency}) {
+    if (!std::isfinite(efficiency) || efficiency < 0.0 || efficiency > 1.0) {
+      throw std::invalid_argument("harmonic::ToyResponseConfig has invalid particle efficiency");
+    }
+  }
+  for (const double sigma : {pion_logpt_sigma, pion_eta_sigma, pion_phi_sigma,
+                              proton_pt_sigma, proton_logpz_sigma}) {
+    if (!std::isfinite(sigma) || sigma < 0.0) {
+      throw std::invalid_argument("harmonic::ToyResponseConfig has invalid momentum resolution");
+    }
+  }
+}
+
+// Compute unit efficiency
+double IdentityResponse::Efficiency(const EventKinematics &truth) const {
+  static_cast<void>(truth);
+  return 1.0;
+}
+
+// Compute the unchanged generated particle momenta
+EventKinematics IdentityResponse::Reconstruct(const EventKinematics &truth,
+                                               std::uint64_t event_key) const {
+  static_cast<void>(event_key);
+  return truth;
+}
+
+// Construct a validated analytic response
+ToyResponse::ToyResponse(const ToyResponseConfig &config) : config_(config) {
+  config_.Validate();
+}
+
+// Compute the efficiency to reconstruct all required charged particles
+double ToyResponse::Efficiency(const EventKinematics &truth) const {
+  const double central = config_.pion_efficiency * config_.pion_efficiency;
+  return truth.mode == MeasurementMode::Tagged
+      ? central * config_.proton_efficiency * config_.proton_efficiency
+      : central;
+}
+
+namespace {
+
+// Recompute a measured energy from finite spatial momentum and the input mass
+M4Vec MeasuredMomentum(const M4Vec &truth, double px, double py, double pz) {
+  if (!std::isfinite(truth.E()) || !(truth.E() > 0.0) ||
+      !std::isfinite(truth.M2()) || truth.M2() < 0.0 ||
+      !std::isfinite(px) || !std::isfinite(py) || !std::isfinite(pz)) {
+    throw std::invalid_argument("harmonic::ToyResponse has invalid particle momentum");
+  }
+  M4Vec reco;
+  reco.SetPxPyPzM(px, py, pz, truth.M());
+  if (!std::isfinite(reco.E())) {
+    throw std::invalid_argument("harmonic::ToyResponse momentum resolution overflow");
+  }
+  return reco;
+}
+
+// Smear central tracks in log(pT), eta and phi without angular clipping
+M4Vec SmearPion(const M4Vec &truth, const ToyResponseConfig &config,
+                std::mt19937_64 &generator, std::normal_distribution<double> &normal) {
+  const double sigma = config.pion_logpt_sigma;
+  const double scale = std::exp(sigma * normal(generator) - 0.5 * sigma * sigma);
+  const double eta = config.pion_eta_sigma * normal(generator);
+  const double phi = config.pion_phi_sigma * normal(generator);
+  M4Vec rotated = truth;
+  rotated.RotateZ(phi);
+  // Use pT sinh(eta + delta_eta) in a form also defined on the beam axis
+  const double pz = scale * (truth.Pz() * std::cosh(eta) + truth.P3mod() * std::sinh(eta));
+  return MeasuredMomentum(truth, scale * rotated.Px(), scale * rotated.Py(), pz);
+}
+
+// Smear forward transverse momentum and longitudinal magnitude in a fixed arm
+M4Vec SmearProton(const M4Vec &truth, const ToyResponseConfig &config,
+                  std::mt19937_64 &generator, std::normal_distribution<double> &normal) {
+  const double px = truth.Px() + config.proton_pt_sigma * normal(generator);
+  const double py = truth.Py() + config.proton_pt_sigma * normal(generator);
+  const double sigma = config.proton_logpz_sigma;
+  const double pz = truth.Pz() * std::exp(sigma * normal(generator) - 0.5 * sigma * sigma);
+  return MeasuredMomentum(truth, px, py, pz);
+}
+
+} // namespace
+
+// Smear measured momenta while preserving particle masses
+EventKinematics ToyResponse::Reconstruct(const EventKinematics &truth,
+                                           std::uint64_t event_key) const {
+  // Keep the smearing stream independent of the acceptance decision
+  std::mt19937_64 generator(MixSeed(MixSeed(config_.seed, 0x736d656172ULL), event_key));
+  std::normal_distribution<double> normal(0.0, 1.0);
+  EventKinematics reco = truth;
+  reco.pip = SmearPion(truth.pip, config_, generator, normal);
+  reco.pim = SmearPion(truth.pim, config_, generator, normal);
+  if (truth.mode == MeasurementMode::Tagged && truth.has_forward_protons) {
+    reco.proton_plus = SmearProton(truth.proton_plus, config_, generator, normal);
+    reco.proton_minus = SmearProton(truth.proton_minus, config_, generator, normal);
+  }
+  return reco;
+}
+
+// Apply detector efficiency and response without shared random state
+std::optional<EventKinematics> SimulateDetector(const DetectorResponseModel &model,
+                                                const EventKinematics &truth,
+                                                std::uint64_t event_key,
+                                                std::uint64_t seed) {
+  const double efficiency = model.Efficiency(truth);
+  if (!std::isfinite(efficiency) || efficiency < 0.0 || efficiency > 1.0) {
+    throw std::invalid_argument(
+        "harmonic::SimulateDetector received an invalid efficiency");
+  }
+  // Use a distinct stream even when the response uses the same seed
+  std::mt19937_64 generator(MixSeed(MixSeed(seed, 0x616363657074ULL), event_key));
+  std::uniform_real_distribution<double> uniform(0.0, 1.0);
+  if (uniform(generator) >= efficiency) {
+    return std::nullopt;
+  }
+  return model.Reconstruct(truth, event_key);
+}
+
+// Construct and validate a mode-specific conditional grid
+PhaseSpaceGrid::PhaseSpaceGrid(MeasurementMode mode,
+                               const std::vector<Axis> &axes)
+    : mode_(mode), axes_(axes) {
+  const std::vector<Coordinate> expected = Coordinates(mode_);
+  if (axes_.size() != expected.size()) {
+    throw std::invalid_argument(
+        "harmonic::PhaseSpaceGrid has incompatible dimensionality");
+  }
+  for (const auto &index : indices(axes_)) {
+    axes_[index].Validate();
+    if (axes_[index].coordinate != expected[index]) {
+      throw std::invalid_argument(
+          "harmonic::PhaseSpaceGrid axes are not in canonical order");
+    }
+  }
+}
+
+// Locate one point and reject coordinates outside the analysis range
+std::optional<Cell> PhaseSpaceGrid::Locate(const std::vector<double> &z) const {
+  if (z.size() != axes_.size()) {
+    throw std::invalid_argument(
+        "harmonic::PhaseSpaceGrid received incompatible coordinates");
+  }
+  Cell cell(axes_.size(), 0);
+  for (const auto &index : indices(axes_)) {
+    if (!std::isfinite(z[index]) || z[index] < axes_[index].min ||
+        z[index] > axes_[index].max) {
+      return std::nullopt;
+    }
+    if (std::is_eq(z[index] <=> axes_[index].max)) {
+      cell[index] = axes_[index].bins - 1;
+      continue;
+    }
+    const double fraction =
+        (z[index] - axes_[index].min) / (axes_[index].max - axes_[index].min);
+    cell[index] =
+        std::min(axes_[index].bins - 1,
+                 static_cast<std::size_t>(
+                     fraction * static_cast<double>(axes_[index].bins)));
+    // Resolve rounding against the same bin boundaries used in the measurement output
+    const double width = (axes_[index].max - axes_[index].min) / static_cast<double>(axes_[index].bins);
+    if (cell[index] + 1 < axes_[index].bins &&
+        z[index] >= axes_[index].min + width * static_cast<double>(cell[index] + 1)) { ++cell[index]; }
+    if (cell[index] > 0 &&
+        z[index] < axes_[index].min + width * static_cast<double>(cell[index])) { --cell[index]; }
+  }
+  return cell;
+}
+
+// Compute the measurement mode
+MeasurementMode PhaseSpaceGrid::Mode() const { return mode_; }
+
+// Compute the ordered axes
+const std::vector<Axis> &PhaseSpaceGrid::Axes() const { return axes_; }
+
+// Validate truncation, regularization and memory bounds
+void FitConfig::Validate() const {
+  if (lmax < 0 || !std::isfinite(svd_relative_cut) ||
+      svd_relative_cut < 0.0 || response_jackknife_bins == 1 ||
+      max_parameters == 0 || eml_max_calls == 0 ||
+      eml_positivity_costheta < 2 || eml_positivity_phi < 2 ||
+      !std::isfinite(eml_min_intensity) || eml_min_intensity <= 0.0) {
+    throw std::invalid_argument("harmonic::FitConfig has invalid parameters");
+  }
+  const std::size_t side = static_cast<std::size_t>(lmax) + 1;
+  if (side > static_cast<std::size_t>(std::numeric_limits<int>::max()) / side) {
+    throw std::invalid_argument("harmonic::FitConfig harmonic basis exceeds integer indexing");
+  }
+  // Bound the full measured basis even when production symmetries reduce the fit
+  if (side * side > max_parameters) {
+    throw std::invalid_argument("harmonic::FitConfig one angular basis exceeds max_parameters");
+  }
+  if (eml_max_calls > std::numeric_limits<unsigned int>::max() ||
+      eml_positivity_costheta > static_cast<std::size_t>(std::numeric_limits<Eigen::Index>::max()) /
+                                    eml_positivity_phi) {
+    throw std::invalid_argument("harmonic::FitConfig EML dimensions exceed integer indexing");
+  }
+}
+
+// Convert event yields to a normalized measurement with correlated uncertainty
+void ApplyNormalization(MeasurementResult &result, double divisor,
+                        double relative_uncertainty) {
+  if (!std::isfinite(divisor) || divisor <= 0.0 ||
+      !std::isfinite(relative_uncertainty) || relative_uncertainty < 0.0) {
+    throw std::invalid_argument(
+        "harmonic::ApplyNormalization has invalid normalization");
+  }
+  const Eigen::VectorXd flat_values =
+      GlobalValues(result.truth_cells, result.flat, result.active_indices) /
+      divisor;
+  const Eigen::VectorXd fiducial_values =
+      GlobalValues(result.truth_cells, result.fiducial, result.moment_indices) /
+      divisor;
+  const Eigen::VectorXd detector_values =
+      GlobalValues(result.detector_cells, result.detector,
+                   result.moment_indices) /
+      divisor;
+  NormalizeGlobal(result.flat_covariance, flat_values, divisor,
+                  relative_uncertainty);
+  NormalizeGlobal(result.fiducial_covariance, fiducial_values, divisor,
+                  relative_uncertainty);
+  NormalizeGlobal(result.detector_covariance, detector_values, divisor,
+                  relative_uncertainty);
+  NormalizeCells(result.flat, divisor, relative_uncertainty);
+  NormalizeCells(result.fiducial, divisor, relative_uncertainty);
+  NormalizeCells(result.detector, divisor, relative_uncertainty);
+}
+
+// Construct an immutable measurement definition
+HarmonicMeasurement::HarmonicMeasurement(const PhaseSpaceGrid &grid,
+                                         const FitConfig &config)
+    : grid_(grid), config_(config) {
+  config_.Validate();
+}
+
+// Unfold detector moments to angular-flat space and project to fiducial space
+MeasurementResult
+HarmonicMeasurement::Fit(const std::vector<ResponseEvent> &response,
+                         const std::vector<DataEvent> &data) const {
+  if (response.empty() || data.empty()) {
+    throw std::invalid_argument(
+        "harmonic::HarmonicMeasurement requires response and data events");
+  }
+  const std::vector<std::size_t> active = ActiveIndices(config_);
+  const std::size_t nactive = active.size();
+  const std::size_t ncoef =
+      static_cast<std::size_t>((config_.lmax + 1) * (config_.lmax + 1));
+
+  std::vector<std::size_t> moments(ncoef);
+  std::iota(moments.begin(), moments.end(), 0);
+
+  const auto scales = ResponseScales(response, grid_);
+  ResponseSums total;
+  std::vector<ResponseSums> deleted(config_.response_jackknife_bins);
+  for (const ResponseEvent &event : response) {
+    AddResponseEvent(total, event, grid_, active, moments, config_.lmax, scales);
+    if (!deleted.empty()) {
+      AddResponseEvent(deleted[event.event_key % deleted.size()], event, grid_,
+                       active, moments, config_.lmax, scales);
+    }
+  }
+  if (!deleted.empty() &&
+      std::any_of(deleted.begin(), deleted.end(),
+                  [](const ResponseSums &block) {
+                    return block.generated.empty();
+                  })) {
+    throw std::invalid_argument(
+        "harmonic::HarmonicMeasurement has an empty response jackknife "
+        "group, reduce response_jackknife_bins");
+  }
+  const std::vector<Cell> truth_cells = MapCells(total.generated);
+  if (truth_cells.empty()) {
+    throw std::invalid_argument(
+        "harmonic::HarmonicMeasurement response does not cover the grid");
+  }
+
+  std::set<Cell> detector_cell_set;
+  for (const auto &[cells, block] : total.detector) {
+    static_cast<void>(block);
+    detector_cell_set.insert(cells.first);
+  }
+  const std::vector<Cell> detector_cells(detector_cell_set.begin(),
+                                         detector_cell_set.end());
+  if (detector_cells.empty()) {
+    throw std::invalid_argument(
+        "harmonic::HarmonicMeasurement has no selected detector cells");
+  }
+  if (truth_cells.size() > config_.max_parameters / ncoef ||
+      detector_cells.size() > config_.max_parameters / ncoef) {
+    throw std::invalid_argument(
+        "harmonic::HarmonicMeasurement exceeds the configured fit size");
+  }
+
+  const LinearResponse nominal =
+      AssembleResponse(total, truth_cells, detector_cells, nactive, ncoef);
+  ValidateResponseJackknife(total, deleted);
+  const DataSums observed =
+      BuildDataSums(data, grid_, detector_cells, moments, config_.lmax);
+  if (observed.accepted == 0) {
+    throw std::invalid_argument(
+        "harmonic::HarmonicMeasurement has no data events inside the grid");
+  }
+  const HarmonicPseudoInverse inverse =
+      PseudoInverse(nominal.detector, config_.svd_relative_cut);
+  ValidateResponseInverse(inverse, nominal.detector.rows(),
+                          nominal.detector.cols());
+  EstimatorResult estimate = FitAlgebraic(inverse, observed);
+  if (config_.estimator == HarmonicEstimator::EML) {
+    if (!(observed.sum_weight > 0.0) ||
+        observed.effective_entries <= static_cast<double>(nominal.detector.cols())) {
+      throw std::invalid_argument(
+          "harmonic::HarmonicMeasurement EML requires positive total weight "
+          "and more effective events than fitted coefficients");
+    }
+    const EMLModel model =
+        BuildEMLModel(data, grid_, detector_cells, active, moments, nominal, config_);
+    estimate = FitEML(model, estimate.flat, observed.sum_weight, config_, true);
+  }
+  const Eigen::VectorXd flat_values = estimate.flat;
+  const Eigen::MatrixXd flat_data_covariance = estimate.flat_covariance;
+  const Eigen::VectorXd fiducial_values = nominal.fiducial * flat_values;
+  const Eigen::MatrixXd fiducial_data_covariance =
+      nominal.fiducial * flat_data_covariance * nominal.fiducial.transpose();
+  const Eigen::VectorXd detector_values =
+      config_.estimator == HarmonicEstimator::EML
+          ? nominal.detector * flat_values
+          : observed.values;
+  const Eigen::MatrixXd detector_data_covariance =
+      config_.estimator == HarmonicEstimator::EML
+          ? nominal.detector * flat_data_covariance *
+                nominal.detector.transpose()
+          : observed.covariance;
+
+  std::vector<Eigen::VectorXd> flat_replicas;
+  std::vector<Eigen::VectorXd> fiducial_replicas;
+  std::vector<Eigen::VectorXd> detector_replicas;
+  flat_replicas.reserve(deleted.size());
+  fiducial_replicas.reserve(deleted.size());
+  detector_replicas.reserve(deleted.size());
+  for (const ResponseSums &block : deleted) {
+    if (block.generated.empty()) {
+      continue;
+    }
+    ResponseSums retained = total;
+    for (const auto &[cell, weight] : block.generated) {
+      retained.generated[cell] -= weight;
+    }
+    for (const auto &[cell, matrix] : block.fiducial) {
+      retained.fiducial[cell] -= matrix;
+    }
+    for (const auto &[cells, matrix] : block.detector) {
+      retained.detector[cells] -= matrix;
+    }
+    const LinearResponse replica =
+        AssembleResponse(retained, truth_cells, detector_cells, nactive, ncoef);
+    const HarmonicPseudoInverse replica_inverse =
+        PseudoInverse(replica.detector, config_.svd_relative_cut);
+    ValidateResponseInverse(replica_inverse, replica.detector.rows(),
+                            replica.detector.cols());
+    EstimatorResult replica_estimate = FitAlgebraic(replica_inverse, observed);
+    if (config_.estimator == HarmonicEstimator::EML) {
+      const EMLModel replica_model =
+          BuildEMLModel(data, grid_, detector_cells, active, moments, replica, config_);
+      replica_estimate = FitEML(replica_model, flat_values, observed.sum_weight,
+                                config_, false);
+    }
+    flat_replicas.push_back(replica_estimate.flat);
+    fiducial_replicas.push_back(replica.fiducial * replica_estimate.flat);
+    if (config_.estimator == HarmonicEstimator::EML) {
+      detector_replicas.push_back(replica.detector * replica_estimate.flat);
+    }
+  }
+  if (config_.response_jackknife_bins >= 2 && flat_replicas.size() < 2) {
+    throw std::invalid_argument(
+        "harmonic::HarmonicMeasurement has fewer than two usable response "
+        "jackknife replicas");
+  }
+
+  Eigen::MatrixXd flat_covariance = flat_data_covariance;
+  Eigen::MatrixXd fiducial_covariance = fiducial_data_covariance;
+  Eigen::MatrixXd detector_covariance = detector_data_covariance;
+  const Eigen::MatrixXd flat_response_covariance =
+      JackknifeCovariance(flat_replicas);
+  const Eigen::MatrixXd fiducial_response_covariance =
+      JackknifeCovariance(fiducial_replicas);
+  const Eigen::MatrixXd detector_response_covariance =
+      JackknifeCovariance(detector_replicas);
+  if (flat_response_covariance.size() != 0) {
+    flat_covariance += flat_response_covariance;
+  }
+  if (fiducial_response_covariance.size() != 0) {
+    fiducial_covariance += fiducial_response_covariance;
+  }
+  if (detector_response_covariance.size() != 0) {
+    detector_covariance += detector_response_covariance;
+  }
+
+  MeasurementResult result;
+  result.mode = grid_.Mode();
+  result.estimator = config_.estimator;
+  result.truth_cells = truth_cells;
+  result.detector_cells = detector_cells;
+  result.flat_covariance = MMatrix<double>::FromEigen(flat_covariance);
+  result.fiducial_covariance = MMatrix<double>::FromEigen(fiducial_covariance);
+  result.detector_covariance =
+      MMatrix<double>::FromEigen(detector_covariance);
+  result.active_indices = active;
+  result.moment_indices = moments;
+  result.active_coefficients = nactive;
+  result.response_rows = static_cast<std::size_t>(nominal.detector.rows());
+  result.response_columns = static_cast<std::size_t>(nominal.detector.cols());
+  result.response_rank = inverse.numerical_rank;
+  result.retained_singular_values = inverse.retained_rank;
+  result.response_condition_number = inverse.condition_number;
+  result.response_events = response.size();
+  result.response_jackknife_replicas = flat_replicas.size();
+  result.data_events = observed.accepted;
+  result.data_sum_weight = observed.sum_weight;
+  result.data_sum_weight2 = observed.sum_weight2;
+  result.objective = estimate.objective;
+  result.minimum_flat_intensity = estimate.minimum_flat_intensity;
+  result.minimum_detector_intensity = estimate.minimum_detector_intensity;
+  FillCellEstimates(truth_cells, flat_values, flat_covariance, active, ncoef,
+                    result.flat);
+  FillCellEstimates(truth_cells, fiducial_values, fiducial_covariance, moments,
+                    ncoef, result.fiducial);
+
+  for (const auto &cell : indices(detector_cells)) {
+    const Eigen::Index start = static_cast<Eigen::Index>(cell * ncoef);
+    CellEstimate estimate = ExpandCell(
+        detector_values.segment(start, static_cast<Eigen::Index>(ncoef)),
+        detector_covariance.block(start, start,
+                                  static_cast<Eigen::Index>(ncoef),
+                                  static_cast<Eigen::Index>(ncoef)),
+        moments, ncoef);
+    const auto summary = observed.cells.find(detector_cells[cell]);
+    if (summary != observed.cells.end()) {
+      estimate.sum_weight = summary->second.sum_weight;
+      estimate.sum_weight2 = summary->second.sum_weight2;
+      estimate.entries = summary->second.entries;
+    }
+    result.detector[detector_cells[cell]] = std::move(estimate);
+  }
+  return result;
+}
+
+} // namespace harmonic
+} // namespace gra

@@ -1,0 +1,54 @@
+// Transverse EPA flux without VMD suppression, hep-ex/9601004 Eq. (2), calculated from the cuts and PDG masses by _common/flux.py
+// TP[PHOTO] retains the configured Q2 validity limit, no model changes or acceptance corrections are hidden
+// [REFERENCE: H1, hep-ex/9601004, Sections 6.2-6.4, mass-tail fraction xi=0.15]
+// Apply the published mass-tail correction uniformly in angle, as in the t analysis
+{
+  "active": true,
+  "type": "HEPDATA_415281",
+  "reader": "./reader.py",
+  "datapath": "HEPData/PHOTOPROD/HEPData-ins415281-v1-json/",
+  "samples": [
+    {
+      "name": "total",
+      "label": "TP[PHOTO] + $\\rho+\\omega$",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[PHOTO]<F> -> pi+ pi- @RES{rho_770:1,omega_782:1}",
+        "SCATTERING.RES": ["rho_770","omega_782"]
+      }
+    },
+    {
+      "name": "gp",
+      "label": "GP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "GP[RES]<F> -> pi+ pi- @RES{rho_770:1}","SCATTERING.RES": ["rho_770"]}
+    }
+  ],
+  "plot": {
+    "normalization": "cross_section",
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "errorbar",
+    "unit": "ub"
+  },
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "loopscreen": 0,
+    "nevents": 50000,
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "measurement": {"$ref": "../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "H1 pion helicity angles",
+      "plotname": "H1_415281_angles",
+      "title": "$40<W_{\\gamma p}<80$ GeV, $Q^2<0.5$ GeV$^2$, $|t|<0.5$ GeV$^2$, $0.52<M_{\\pi\\pi}<1.17$ GeV",
+      "pid": [211,-211],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [{"file": "Table6.json","obs": "costheta_HX","scale": 1e-06}],
+      "mc_scale": 1.1764705882352942
+    }
+  ]
+}

@@ -1,0 +1,128 @@
+// Synthetic rho rho comparison of LS couplings and Bose symmetrization
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "ls00_no_sym",
+      "label": "GRANIITTI GP[RES] ($(l,S)=(0,0)$, no sym, control)",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "GP[RES]<F> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-} @RES{f0_1710:1} @R[f0_1710]{M:2.5}", // Synthetic pole for the LS and Bose symmetrization comparison
+        "DECAYS.json:[\"10331\"][\"[113,113]\"].alpha_ls[0][2]": 1,
+        "DECAYS.json:[\"10331\"][\"[113,113]\"].alpha_ls[1][2]": 0,
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": false
+      }
+    },
+    {
+      "name": "ls00_sym",
+      "label": "GRANIITTI GP[RES] ($(l,S)=(0,0)$, sym)",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "GP[RES]<F> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-} @RES{f0_1710:1} @R[f0_1710]{M:2.5}", // Synthetic pole for the LS and Bose symmetrization comparison
+        "DECAYS.json:[\"10331\"][\"[113,113]\"].alpha_ls[0][2]": 1,
+        "DECAYS.json:[\"10331\"][\"[113,113]\"].alpha_ls[1][2]": 0,
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": true
+      }
+    },
+    {
+      "name": "ls22_no_sym",
+      "label": "GRANIITTI GP[RES] ($(l,S)=(2,2)$, no sym, control)",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "GP[RES]<F> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-} @RES{f0_1710:1} @R[f0_1710]{M:2.5}", // Synthetic pole for the LS and Bose symmetrization comparison
+        "DECAYS.json:[\"10331\"][\"[113,113]\"].alpha_ls[0][2]": 0,
+        "DECAYS.json:[\"10331\"][\"[113,113]\"].alpha_ls[1][2]": 1,
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": false
+      }
+    },
+    {
+      "name": "ls22_sym",
+      "label": "GRANIITTI GP[RES] ($(l,S)=(2,2)$, sym)",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "GP[RES]<F> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-} @RES{f0_1710:1} @R[f0_1710]{M:2.5}", // Synthetic pole for the LS and Bose symmetrization comparison
+        "DECAYS.json:[\"10331\"][\"[113,113]\"].alpha_ls[0][2]": 0,
+        "DECAYS.json:[\"10331\"][\"[113,113]\"].alpha_ls[1][2]": 1,
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": true
+      }
+    },
+    {
+      "name": "mixed_no_sym",
+      "label": "GRANIITTI GP[RES] (equal $(0,0)$ and $(2,2)$, no sym, control)",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "GP[RES]<F> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-} @RES{f0_1710:1} @R[f0_1710]{M:2.5}", // Synthetic pole for the LS and Bose symmetrization comparison
+        "DECAYS.json:[\"10331\"][\"[113,113]\"].alpha_ls[0][2]": 0.7071067811865476,
+        "DECAYS.json:[\"10331\"][\"[113,113]\"].alpha_ls[1][2]": 0.7071067811865476,
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": false
+      }
+    },
+    {
+      "name": "mixed_sym",
+      "label": "GRANIITTI GP[RES] (equal $(0,0)$ and $(2,2)$, sym)",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "GP[RES]<F> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-} @RES{f0_1710:1} @R[f0_1710]{M:2.5}", // Synthetic pole for the LS and Bose symmetrization comparison
+        "DECAYS.json:[\"10331\"][\"[113,113]\"].alpha_ls[0][2]": 0.7071067811865476,
+        "DECAYS.json:[\"10331\"][\"[113,113]\"].alpha_ls[1][2]": 0.7071067811865476,
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": true
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "unit_density",
+    "density_uncertainty": "shape",
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "hist"
+  },
+  "fit": {
+    "normalization": "unit_density"
+  },
+  "sets": [
+    {
+      "name": "f0 rho pair decay couplings",
+      "title": "$|\\eta_{h}|<5.5$, $|y_{h}|<0.9$, $p_{T,h}>0.15$ GeV, $M_X<4$ GeV, $|y_X|<0.9$",
+      "data": false,
+      "pid": [
+        [211, -211],
+        [211, -211]
+      ],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SOFTCEP/processes/_common/obs.py",
+      "hist": [
+        {
+          "obs": "M"
+        },
+        {
+          "obs": "Rap"
+        },
+        {
+          "obs": "Pt"
+        },
+        {
+          "obs": "t1"
+        },
+        {
+          "obs": "t2"
+        },
+        {
+          "obs": "Abs_t1t2"
+        },
+        {
+          "obs": "dPhi_pp"
+        },
+        {
+          "obs": "4body_cos1"
+        },
+        {
+          "obs": "4body_cos2"
+        },
+        {
+          "obs": "4body_phi12"
+        }
+      ]
+    }
+  ]
+}

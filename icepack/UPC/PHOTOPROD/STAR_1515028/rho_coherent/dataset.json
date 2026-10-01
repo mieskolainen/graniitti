@@ -1,0 +1,90 @@
+// Disabled: refreshed HEPData v1 has no Table 7 coherent totals and Figure 8 has invalid
+// or overlapping t bounds
+// [REFERENCE: arXiv:1702.07705v1, Table 7]
+// Published coherent cross sections after subtraction of the incoherent t component
+// XnXn includes 1n1n, their comparisons must not be interpreted as independent
+// Spin-averaged Au currents with measured geometry and GDR inputs
+// Higher-energy absorption and thermalization are approximate, see PARAM_NUCLEAR.EMD
+// Original HEPData is retained, its malformed Figure 8 bounds are not used or edited
+{
+  "active": false,
+  "type": "PUBLISHED_1515028",
+  "reader": "./reader.py",
+  "datapath": "HEPData/PHOTOPROD/",
+  "samples": [
+    {
+      "name": "gp",
+      "label": "GRANIITTI GP",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "GP[RES]<F> -> pi+ pi- @RES{rho_770:1}"
+      }
+    },
+    {
+      "name": "tp",
+      "label": "GRANIITTI TP",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[RES]<F> -> pi+ pi- @RES{rho_770:1}"
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "cross_section",
+    "unit": "mb",
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "errorbar"
+  },
+  "fit": {
+    "normalization": "cross_section"
+  },
+  "validation": {
+    "loopscreen": 1,
+    "nevents": 100000,
+    "require_comparison": true,
+    "require_differential_comparison": false,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {
+      "$ref": "../../../../_common/SETTINGS.json#/measurement"
+    }
+  },
+  "sets": [
+    {
+      "name": "STAR AuAu 200 GeV, coherent rho, XnXn",
+      "plot_group": "STAR_200GeV_coherent_rho_xnxn",
+      "pid": [211, -211],
+      "cuts": "./cuts_xnxn.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "arxiv-1702.07705v1.pdf",
+          "obs": "cross_section",
+          "scale": 0.001,
+          "fitw": 1.0,
+          "file_filter": "XnXn",
+          "differential": false
+        }
+      ],
+      "title": "$|y|<1$"
+    },
+    {
+      "name": "STAR AuAu 200 GeV, coherent rho, 1n1n",
+      "plot_group": "STAR_200GeV_coherent_rho_1n1n",
+      "pid": [211, -211],
+      "cuts": "./cuts_1n1n.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "arxiv-1702.07705v1.pdf",
+          "obs": "cross_section",
+          "scale": 0.001,
+          "fitw": 0.0,
+          "file_filter": "1n1n",
+          "differential": false
+        }
+      ],
+      "title": "$|y|<1$"
+    }
+  ]
+}

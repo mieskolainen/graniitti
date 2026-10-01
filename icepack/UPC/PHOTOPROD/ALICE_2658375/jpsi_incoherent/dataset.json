@@ -1,0 +1,64 @@
+// ALICE incoherent J/psi photonuclear momentum transfer comparison
+{
+  "active": true,
+  "type": "HEPDATA_2658375",
+  "reader": "icepack/UPC/_common/upc_reader.py",
+  "datapath": "HEPData/UPC/HEPData-ins2658375-v1-json/",
+  "samples": [
+    {
+      "name": "impulse",
+      "label": "GRANIITTI GP[RES] (impulse)",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "NUCLEAR.photoproduction.target_model":
+            "impulse"
+      }
+    },
+    {
+      "name": "glauber",
+      "label": "GRANIITTI GP[RES] (Glauber)",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "NUCLEAR.photoproduction.target_model":
+            "glauber"
+      }
+    },
+    {
+      "name": "lta",
+      "label": "GRANIITTI GP[RES] (LTA)",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "NUCLEAR.photoproduction.target_model":
+            "LTA"
+      }
+    }
+  ],
+  "plot": {"normalization": "cross_section", "unit": "ub", "ratio_uncertainty": "combined", "stack": false, "data_style": "errorbar"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "loopscreen": 1,
+    "nevents": 100000,
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "ALICE $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($J/\\psi$, incoherent)",
+      "plotname": "ALICE_5p02TeV_incoherent_Jpsi_abs_t",
+      "title": "$|y_{J/\\psi}|<0.8$",
+      // [REFERENCE: ALICE, https://arxiv.org/pdf/2305.06169, Eq. (1)]
+      // N_GAMMA counts the two photon directions, PHOTON_FLUX is at y = 0, DY is the selected rapidity width
+      // BR_JPSI_MUMU is the PDG value for J/psi -> mu+ mu-
+      // 1 / (N_GAMMA * PHOTON_FLUX * DY * BR_JPSI_MUMU) = 1 / (2 * 84.9 * 1.6 * 0.05961)
+      "mc_scale": 0.0617480446617185,
+      "pid": [-13,13],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"file": "Table1.json", "obs": "abs_t", "scale": 1e-6, "fitw": 1.0}
+      ]
+    }
+  ]
+}

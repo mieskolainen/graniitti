@@ -1,0 +1,54 @@
+// Light rho photoproduction model comparison
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "mp",
+      "label": "GRANIITTI MP[RES]",
+      "gencard": "../_common/gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "MP[RES]<F> -> pi+ pi- @RES{rho_770:1}"}
+    },
+    {
+      "name": "xp",
+      "label": "GRANIITTI XP[RES]",
+      "gencard": "../_common/gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "XP[RES]<F> -> pi+ pi- @RES{rho_770:1}"}
+    },
+    {
+      "name": "gp",
+      "label": "GRANIITTI GP[RES]",
+      "gencard": "../_common/gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "GP[RES]<F> -> pi+ pi- @RES{rho_770:1}"}
+    },
+    {
+      "name": "tp",
+      "label": "GRANIITTI TP[RES]",
+      "gencard": "../_common/gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "TP[RES]<F> -> pi+ pi- @RES{rho_770:1}"}
+    }
+  ],
+  "plot": {"normalization": "cross_section", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "sets": [
+    {
+      "name": "rho(770) photoproduction",
+      "title": "Generation: $M_X<4$ GeV, $|y_X|<2.5$",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SOFTCEP/processes/_common/obs.py",
+      "hist": [
+        {"obs": "M"},
+        {"obs": "Rap"},
+        {"obs": "Pt"},
+        {"obs": "t1"},
+        {"obs": "t2"},
+        {"obs": "Abs_t1t2"},
+        {"obs": "dPhi_pp"},
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"}
+      ]
+    }
+  ]
+}

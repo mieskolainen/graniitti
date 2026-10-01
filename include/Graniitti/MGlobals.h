@@ -1,33 +1,31 @@
-// GRANIITTI Monte Carlo all global variables collected here
-//
-// (c) 2017-2021 Mikael Mieskolainen
+// GRANIITTI modeldata path resolution and output lock
+// 
+// (c) 2026 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 #ifndef MGLOBALS_H
 #define MGLOBALS_H
 
-// Own
-#include "Graniitti/MSudakov.h"
-
-// LHAPDF
-#include "LHAPDF/LHAPDF.h"
-
+// C++
+#include <mutex>
+#include <string>
 
 namespace gra {
 // ======================================================================
-// These variables are initialized by MGraniitti.cc
+// Model-data paths are resolved independently of the generator frontend
 
 // Model tune
 extern std::string MODELPARAM;
+bool IsExplicitModelTunePath(const std::string &modelparam);
+std::string ResolveModelTuneDir(const std::string &modelparam);
+std::string ResolveModelDataFile(const std::string &modelparam,
+                                 const std::string &filename);
 
 // Multithreading lock
 extern std::mutex g_mutex;
 
-// For multithreaded VEGAS, to handle the exceptions from forked threads
-extern std::exception_ptr globalExceptionPtr;
-
 // ======================================================================
 
-}  // namespace gra
+} // namespace gra
 
 #endif

@@ -1,0 +1,36 @@
+{
+  "GENERIC": {
+    "OUTPUT": "ZEUS_452353",
+    "FORMAT": "hepmc3",
+    "CORES": 0,
+    "NEVENTS": 30000,
+    "INTEGRATOR": "VEGAS",
+    "WEIGHTED": true,
+    "MODELPARAM": "TUNE0",
+    "HIST": 0,
+    "RNDSEED": 452353
+  },
+  "SCATTERING": {
+    "BEAM": ["e+","p+"],
+    "ENERGY": [27.5,820.0],
+    "PROCESS": "TP[PHOTO]<F> -> pi+ pi- @RES{rho_770:1}",
+    "RES": ["rho_770"],
+    "LOOPSCREEN": false,
+    "NSTARS": 0,  // Forward dissociation (0 = elastic, 1 = single, 2 = double)
+    "BEAMFRAG": "none",  // Forward dissociation particle production ('none', 'fewbody', 'cylinder', 'diquark')
+    "LHAPDF": "NNPDF31_lo_as_0118"
+  },
+  "INTEGRATOR": {
+    "min_samples": 200000,
+    "max_samples": 100000000,
+    "precision": 0.02,
+    "LOOPSCREEN": {"extra_kt": 0,"extra_phi": 0},
+    "VEGAS": {"bins": 128,"alpha": 1.25,"rounds": 8,"ncall": 40000,"debug": -1},
+    "NEUROJAC": {},
+    "FLAT": {},
+    "max_w_value": null
+  },
+  "GENCUTS": {"<C>": {"M": [0.55,1.2],"Rap": [-10.0,10.0]},"<F>": {"M": [0.55,1.2],"Rap": [-10.0,10.0]}},
+  "FIDCUTS": {"active": false,"CENTRAL": {},"FORWARD": {},"USERCUTS": false},
+  "VETOCUTS": {"active": false}
+}

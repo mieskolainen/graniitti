@@ -1,0 +1,83 @@
+// Photon and hard diffractive Z production comparison
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "ygg_z",
+      "label": "GRANIITTI ygg[Z]",
+      "gencard": "./gencard_ygg_Z_mumu.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "ygg[Z]<F> -> mu+ mu-"
+      }
+    },
+    {
+      "name": "yy_zjj",
+      "label": "GRANIITTI $k_T$-EPA $\\gamma\\gamma \\to Zjj$",
+      "gencard": "./gencard_yy_ZJJ_mumu_uu.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "yy[Zjj]<F> -> Z > {mu+ mu-} u u~"
+      }
+    },
+    {
+      "name": "yy_dz_zjj",
+      "label": "GRANIITTI Drees-Zeppenfeld $\\gamma\\gamma \\to Zjj$",
+      "gencard": "./gencard_yy_DZ_ZJJ_mumu_uu.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "yy_DZ[Zjj]<P> -> Z > {mu+ mu-} u u~",
+        "SCATTERING.LOOPSCREEN": false
+      }
+    },
+    {
+      "name": "yy_lux_zjj",
+      "label": "GRANIITTI LUXqed $\\gamma\\gamma \\to Zjj$",
+      "gencard": "./gencard_yy_LUX_ZJJ_mumu_uu.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "yy_LUX[Zjj]<P> -> Z > {mu+ mu-} u u~",
+        "SCATTERING.LOOPSCREEN": false
+      }
+    },
+    {
+      "name": "ipp_z",
+      "label": "GRANIITTI IPp[Z]",
+      "gencard": "./gencard_IPp_Z_mumu.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "IPp[Z]<F> -> mu+ mu-"
+      }
+    },
+    {
+      "name": "ipip_z",
+      "label": "GRANIITTI IPIP[Z]",
+      "gencard": "./gencard_IPIP_Z_mumu.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "IPIP[Z]<F> -> mu+ mu-"
+      }
+    },
+    {
+      "name": "ipp_zj",
+      "label": "GRANIITTI IPp[Zj]",
+      "gencard": "./gencard_IPp_ZJ_mumu_u.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "IPp[Zj]<F> -> Z > {mu+ mu-} u"
+      }
+    }
+  ],
+  "plot": {"normalization": "cross_section", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {"nevents": 30000},
+  "sets": [
+    {
+      "name": "Neutral current production",
+      "title": "$|\\eta_{\\mu}|<2.5$, $p_{T,\\mu}>10$ GeV",
+      "data": false,
+      "pid": [-13, 13],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"obs": "m_mumu"},
+        {"obs": "y_mumu"},
+        {"obs": "pt_mumu"}
+      ]
+    }
+  ]
+}

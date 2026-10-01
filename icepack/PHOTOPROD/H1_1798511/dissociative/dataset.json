@@ -1,0 +1,98 @@
+// Published gamma p cross sections
+{
+  "active": true,
+  "type": "HEPDATA_1798511",
+  "reader": "icepack/PHOTOPROD/_common/diss_reader.py",
+  "datapath": "HEPData/PHOTOPROD/HEPData-ins1798511-v1-json/",
+  "samples": [
+    {
+      "name": "mp_res",
+      "label": "GRANIITTI MP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> pi+ pi- @RES{rho_770:1}"
+      }
+    },
+    {
+      "name": "xp_res",
+      "label": "GRANIITTI XP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "XP[RES]<F> -> pi+ pi- @RES{rho_770:1}"
+      }
+    },
+    {
+      "name": "gp_res",
+      "label": "GRANIITTI GP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "GP[RES]<F> -> pi+ pi- @RES{rho_770:1}"
+      }
+    },
+    {
+      "name": "tp_res",
+      "label": "GRANIITTI TP[RES]",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[RES]<F> -> pi+ pi- @RES{rho_770:1}"
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "cross_section",
+    "unit": "ub",
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "errorbar"
+  },
+  "fit": {
+    "normalization": "cross_section"
+  },
+  "validation": {
+    "loopscreen": 0,
+    "nevents": 100000,
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "H1 $e^+p \\to e^+\\rho^0Y$, $M_Y<10$ GeV",
+      "title": "$20<W_{\\gamma p}<80$ GeV, $Q^2<2.5$ GeV$^2$, $|t|<1.5$ GeV$^2$, $0.2792<M_{\\pi\\pi}<1.53$ GeV, $m_p<M_Y<10$ GeV",
+      "pid": [211, -211],
+      "cuts": "./cuts.py",
+      "obs": "../../_common/diss_obs.py",
+      "plotname": "H1_1798511_dissociative_abs_t",
+      "hist": [
+        {
+          "file": "Table10.json",
+          "covariance": "Table10_statCorr.json",
+          "obs": "abs_t",
+          "scale": 1e-06,
+          "fitw": 1.0,
+          "file_filter": "pd_t"
+        }
+      ]
+    },
+    {
+      "name": "H1 $e^+p \\to e^+\\rho^0Y$, $M_Y<10$ GeV",
+      "title": "$20<W_{\\gamma p}<80$ GeV, $Q^2<2.5$ GeV$^2$, $|t|<1.5$ GeV$^2$, $0.2792<M_{\\pi\\pi}<1.53$ GeV, $m_p<M_Y<10$ GeV",
+      "pid": [211, -211],
+      "cuts": "./cuts.py",
+      "obs": "../../_common/diss_obs.py",
+      "plotname": "H1_1798511_dissociative_w",
+      "hist": [
+        {
+          "file": "Table7.json",
+          "covariance": "Table7_statCorr.json",
+          "obs": "w",
+          "scale": 1e-06,
+          "fitw": 1.0,
+          "file_filter": "pd_W",
+          "differential": false
+        }
+      ]
+    }
+  ]
+}

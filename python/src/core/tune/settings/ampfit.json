@@ -1,0 +1,23 @@
+{
+  "starts": 64,
+  "start_relative_range": 0.1,
+  "maxiter": 250,
+  "history_size": 20,
+  "gradient_tolerance": 1e-07,
+  "relative_gradient_tolerance": 1e-09,
+  "learning_rate": 1.0,
+  "line_search_steps": 30,
+  "line_search_decay": 0.5,
+  "line_search_armijo": 0.0001,
+  "retry_failed_search": true,
+  "covariance": true,
+  "covariance_interval": 300.0,
+  "bank": {
+    "nodes": 13,
+    "closure_rtol": 0.001,
+    "batch_events": 1024,
+    "decay_zero": 1e-12,
+    "decay_steps": 3,
+    "mc_stat": "reweighted"
+  }
+}

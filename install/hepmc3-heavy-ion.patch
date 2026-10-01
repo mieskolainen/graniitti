@@ -1,0 +1,14 @@
+--- a/src/GenHeavyIon.cc
++++ b/src/GenHeavyIon.cc
+@@ -86,7 +86,10 @@
+ #ifndef HEPMC3_NO_DEPRECATED
+        << eccentricity << " "
+ #endif
+-       << sigma_inel_NN << " " << centrality << " " << user_cent_estimate << " "
++       << sigma_inel_NN << " " << centrality << " "
++#ifdef HEPMC3_NO_DEPRECATED
++       << user_cent_estimate << " "
++#endif
+        << Nspec_proj_n << " " << Nspec_targ_n << " "
+        << Nspec_proj_p << " " << Nspec_targ_p << " ";
+ 

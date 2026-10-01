@@ -1,9 +1,27 @@
+# Conda environment
+
 name: graniitti
+
 channels:
   - conda-forge
-  - defaults
+  - nvidia
+#  - defaults
+
 dependencies:
-  - python==3.8.13
-  - cmake==3.26.4
-  - gxx_linux-64==10.3.0
-  - sysroot_linux-64==2.17
+  - conda-forge::python==3.12.13
+  - conda-forge::cmake==4.4.2
+  - conda-forge::make==4.4.1
+  - conda-forge::ccache==4.13.6
+  - conda-forge::clang-tools==22.1.8  # Provides clang-tidy required by WITH_TEST=ON
+  - conda-forge::gcc_linux-64==16.1.0
+  - conda-forge::gxx_linux-64==16.1.0
+  
+  # Target the glibc 2.28 system ABI
+  - conda-forge::sysroot_linux-64==2.28
+  
+  - conda-forge::poppler==26.07.0
+  - conda-forge::wget==1.25.0
+  
+  # Rely on pip
+  #- nvidia::cuda-toolkit==13.3.1
+  #- nvidia::cudnn==9.25.0.15

@@ -1,0 +1,49 @@
+// H1 proton dissociation in positron-proton photoproduction
+{
+  "GENERIC": {
+    "OUTPUT": "H1_1228913_dissociative_low_energy",
+    "FORMAT": "hepmc3",
+    "CORES": 0,
+    "NEVENTS": 30000,
+    "INTEGRATOR": "VEGAS",
+    "WEIGHTED": true,
+    "MODELPARAM": "TUNE0",
+    "HIST": 0,
+    "RNDSEED": 1228914
+  },
+  "SCATTERING": {
+    "BEAM": ["e+","p+"],
+    "ENERGY": [27.6,460.0],
+    "PROCESS": "GP[RES]<F> -> mu+ mu- @RES{jpsi:1}",
+    "RES": [],
+    "LOOPSCREEN": false,
+    "NSTARS": 1,  // Forward dissociation (0 = elastic, 1 = single, 2 = double)
+    "BEAMFRAG": "none",  // Forward dissociation particle production ('none', 'fewbody', 'cylinder', 'diquark')
+    "LHAPDF": "NNPDF31_lo_as_0118"
+  },
+  "INTEGRATOR": {
+    "min_samples": 100000,
+    "max_samples": 100000000,
+    "precision": 0.02,
+    "LOOPSCREEN": {"extra_kt": 0, "extra_phi": 0},
+    "VEGAS": {"bins": 128, "alpha": 1.25, "rounds": 8, "ncall": 40000, "debug": -1},
+    "NEUROJAC": {},
+    "FLAT": {},
+    "max_w_value": null
+  },
+  // Full lab rapidity support, exact W, Q2 and t cuts are applied by the Python selection
+  "GENCUTS": {
+    "<C>": {"M": [3.0, 3.2], "Rap": [-10.0, 10.0]},
+    // Xi = M_Y^2/s allows M_Y above 10 GeV, Pt covers both Q2 and t fiducial limits
+    "<F>": {"M": [3.0, 3.2], "Rap": [-10.0,10.0], "Pt": [0.0,3.0], "Xi": [0.0,0.0021]}
+  },
+  "FIDCUTS": {
+    "active": false,
+    "CENTRAL": {},
+    "FORWARD": {},
+    "USERCUTS": false
+  },
+  "VETOCUTS": {
+    "active": false
+  }
+}

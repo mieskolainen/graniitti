@@ -1,0 +1,140 @@
+// Charge conjugate Kstar K cascades are separate spin controls, not a summed KKpi amplitude
+// CS angles use the reconstructed Kpi vector, with identical cuts on both charge channels
+// Pure LS components for the 1^+ f1_1420 resonance in XP
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "ls_2_2",
+      "label": "GRANIITTI XP[RES] ($(\\ell,S)=(2,2)$), $K^{*+}K^-$",
+      "gencard": "icepack/SPIN/_common/gencard_ls.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "XP[RES]<F> -> K*(892)+ > {K+ pi0} K- @RES{f1_1420:1}",
+        "GENCUTS.<F>.M": [1.3174, 1.5354],
+        "f1_1420.json:PARAM_RES.MODELS.XP[\"[995,995]\"]": {
+          "basis": "g_ls",
+          "Lambda": 1.0,
+          "CP": [true, true],
+          "g_ls":
+            [[2, 2, 1.0, 0.0],
+             [4, 4, 0.0, 0.0]]
+        }
+      }
+    },
+    {
+      "name": "ls_4_4",
+      "label": "GRANIITTI XP[RES] ($(\\ell,S)=(4,4)$), $K^{*+}K^-$",
+      "gencard": "icepack/SPIN/_common/gencard_ls.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "XP[RES]<F> -> K*(892)+ > {K+ pi0} K- @RES{f1_1420:1}",
+        "GENCUTS.<F>.M": [1.3174, 1.5354],
+        "f1_1420.json:PARAM_RES.MODELS.XP[\"[995,995]\"]": {
+          "basis": "g_ls",
+          "Lambda": 1.0,
+          "CP": [true, true],
+          "g_ls":
+            [[2, 2, 0.0, 0.0],
+             [4, 4, 1.0, 0.0]]
+        }
+      }
+    },
+    {
+      "name": "ls_2_2_cc",
+      "label": "GRANIITTI XP[RES] ($(\\ell,S)=(2,2)$), $K^{*-}K^+$",
+      "gencard": "icepack/SPIN/_common/gencard_ls.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "XP[RES]<F> -> K*(892)- > {K- pi0} K+ @RES{f1_1420:1}",
+        "GENCUTS.<F>.M": [1.3174, 1.5354],
+        "f1_1420.json:PARAM_RES.MODELS.XP[\"[995,995]\"]": {
+          "basis": "g_ls",
+          "Lambda": 1.0,
+          "CP": [true, true],
+          "g_ls":
+            [[2, 2, 1.0, 0.0],
+             [4, 4, 0.0, 0.0]]
+        },
+        "DECAYS.json:[\"20333\"][\"[-323,321]\"]": {"$ref": "../../../../modeldata/TUNE0/DECAYS.json#/20333/[323,-321]"},
+        "DECAYS.json:[\"-323\"]": {"[-321,111]": {"$ref": "../../../../modeldata/TUNE0/DECAYS.json#/323/[321,111]"}}
+      }
+    },
+    {
+      "name": "ls_4_4_cc",
+      "label": "GRANIITTI XP[RES] ($(\\ell,S)=(4,4)$), $K^{*-}K^+$",
+      "gencard": "icepack/SPIN/_common/gencard_ls.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "XP[RES]<F> -> K*(892)- > {K- pi0} K+ @RES{f1_1420:1}",
+        "GENCUTS.<F>.M": [1.3174, 1.5354],
+        "f1_1420.json:PARAM_RES.MODELS.XP[\"[995,995]\"]": {
+          "basis": "g_ls",
+          "Lambda": 1.0,
+          "CP": [true, true],
+          "g_ls":
+            [[2, 2, 0.0, 0.0],
+             [4, 4, 1.0, 0.0]]
+        },
+        "DECAYS.json:[\"20333\"][\"[-323,321]\"]": {"$ref": "../../../../modeldata/TUNE0/DECAYS.json#/20333/[323,-321]"},
+        "DECAYS.json:[\"-323\"]": {"[-321,111]": {"$ref": "../../../../modeldata/TUNE0/DECAYS.json#/323/[321,111]"}}
+      }
+    }
+  ],
+  "validation": {
+    "nevents": 30000,
+    "loopscreen": 0
+  },
+  "plot": {
+    "normalization": "unit_density",
+    "density_uncertainty": "shape",
+    "ratio_plot": true,
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "hist"
+  },
+  "fit": {"normalization": "unit_density"},
+  "sets": [
+    {
+      "name": "XP axialvector LS Kstar+",
+      "samples": ["ls_2_2", "ls_4_4"],
+      "plot_group": "XP_axialvector_LS",
+      "title": "Reconstructed $K^*(892)\\to K\\pi^0$ CS angles in $f_1(1420)$ decay",
+      "data": false,
+      "pid": [321, 111, -321],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {
+          "obs": "costheta_CS",
+          "args": {"daughter": [321, 111]}
+        },
+        {
+          "obs": "phi_CS",
+          "args": {"daughter": [321, 111]}
+        },
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "XP axialvector LS Kstar-",
+      "samples": ["ls_2_2_cc", "ls_4_4_cc"],
+      "plot_group": "XP_axialvector_LS",
+      "title": "Reconstructed $K^*(892)\\to K\\pi^0$ CS angles in $f_1(1420)$ decay",
+      "data": false,
+      "pid": [321, 111, -321],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {
+          "obs": "costheta_CS",
+          "args": {"daughter": [-321, 111]}
+        },
+        {
+          "obs": "phi_CS",
+          "args": {"daughter": [-321, 111]}
+        },
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    }
+  ]
+}

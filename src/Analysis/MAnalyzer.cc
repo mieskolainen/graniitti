@@ -1,12 +1,17 @@
 // Fast MC analysis class
 //
-// (c) 2017-2021 Mikael Mieskolainen
+// (c) 2026 Mikael Mieskolainen
 // Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 
 // C++
 #include <algorithm>
+#include <cmath>
+#include <exception>
+#include <filesystem>
 #include <iostream>
+#include <limits>
 #include <memory>
+#include <utility>
 #include <vector>
 
 // C-file processing
@@ -38,22 +43,93 @@
 #include "HepMC3/GenParticle.h"
 #include "HepMC3/GenVertex.h"
 #include "HepMC3/Print.h"
-#include "HepMC3/ReaderAscii.h"
 #include "HepMC3/Relatives.h"
 #include "HepMC3/Selector.h"
 
 // Own
 #include "Graniitti/Analysis/MAnalyzer.h"
+#include "Graniitti/Analysis/MHepMCReader.h"
 #include "Graniitti/Analysis/MMultiplet.h"
-#include "Graniitti/M4Vec.h"
-#include "Graniitti/MKinematics.h"
-#include "Graniitti/MMath.h"
-#include "Graniitti/MPDG.h"
-
-const bool DEBUG = false;
+#include "Graniitti/Kinematics/M4Vec.h"
+#include "Graniitti/Tech/MAux.h"
+#include "Graniitti/Kinematics/MKinematics.h"
+#include "Graniitti/Math/MMath.h"
+#include "Graniitti/Math/MSpecialFunctions.h"
+#include "Graniitti/Particle/MPDG.h"
+#include "Graniitti/Math/MStatistics.h"
 
 using gra::aux::indices;
 using gra::math::msqrt;
+
+namespace {
+
+// Recognize central decays from a system record or the two exchanged momenta
+bool IsCentralDecay(const HepMC3::ConstGenParticlePtr &particle) {
+  for (const auto &ancestor : HepMC3::Relatives::ANCESTORS(particle)) {
+    if (ancestor->pid() == gra::PDG::PDG_system || ancestor->pid() == -gra::PDG::PDG_system) {
+      return true;
+    }
+    const auto parents = ancestor->parents();
+    if (parents.size() == 2 &&
+        std::all_of(parents.begin(), parents.end(), [](const auto &parent) {
+          return parent->pid() == gra::PDG::PDG_propagator;
+        })) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Identify forward excitation descendants through the full decay cascade
+bool IsNStarDecay(const HepMC3::ConstGenParticlePtr &particle) {
+  const auto ancestors = HepMC3::Relatives::ANCESTORS(particle);
+  return std::any_of(ancestors.begin(), ancestors.end(), [](const auto &ancestor) {
+    return ancestor->pid() == gra::PDG::PDG_NSTAR || ancestor->pid() == -gra::PDG::PDG_NSTAR;
+  });
+}
+
+// Create a histogram with explicit C++ ownership outside ROOT directories
+template <typename Histogram, typename... Args>
+std::shared_ptr<Histogram> MakeDetachedHistogram(Args &&...args) {
+  auto histogram = std::make_shared<Histogram>(std::forward<Args>(args)...);
+  histogram->SetDirectory(nullptr);
+  return histogram;
+}
+
+// Validate every histogram required by the selected final-state multiplicity
+template <typename Multiplet>
+void RequireHistograms(const std::map<std::string, std::shared_ptr<Multiplet>> &histograms,
+                       const std::vector<std::string> &names, unsigned int sample) {
+  for (const auto &name : names) {
+    const auto found = histograms.find(name);
+    if (found == histograms.end() || !found->second ||
+        sample >= found->second->h.size() || !found->second->h[sample]) {
+      throw std::invalid_argument("MAnalyzer::HepMC3Read: missing histogram or invalid sample for " + name);
+    }
+  }
+}
+
+// Check the histogram set before reading or filling any events
+void ValidateHistograms(const std::map<std::string, std::shared_ptr<gra::h1Multiplet>> &h1,
+                        const std::map<std::string, std::shared_ptr<gra::h2Multiplet>> &h2,
+                        const std::map<std::string, std::shared_ptr<gra::hProfMultiplet>> &hP,
+                        unsigned int sample, unsigned int multiplicity) {
+  RequireHistograms(h1, {"h1_1B_eta", "h1_1B_pt", "h1_PP_dphi", "h1_PP_dpt", "h1_PP_t1",
+                         "h1_S_M", "h1_S_Pt", "h1_S_Pt2", "h1_S_Y"}, sample);
+  RequireHistograms(h2, {"h2_S_M_Pt", "h2_S_M_dphipp", "h2_S_M_dpt", "h2_S_M_pt", "h2_S_M_t"}, sample);
+  RequireHistograms(hP, {"hP_S_M_Pt"}, sample);
+  if (multiplicity != 2) { return; }
+  RequireHistograms(h1, {"h1_2B_acop", "h1_2B_diffrap"}, sample);
+  RequireHistograms(h2, {"h2_2B_M_dphi", "h2_2B_eta1_eta2"}, sample);
+  RequireHistograms(hP, {"hP_2B_M_dphi", "hP_S_M_PL2_CM", "hP_S_M_PL4_CM"}, sample);
+  for (const auto &frame : gra::analyzer::Frames()) {
+    RequireHistograms(h1, {"h1_costheta_" + frame, "h1_phi_" + frame}, sample);
+    RequireHistograms(h2, {"h2_2B_M_costheta_" + frame, "h2_2B_M_phi_" + frame,
+                           "h2_2B_costheta_phi_" + frame}, sample);
+  }
+}
+
+}  // namespace
 
 namespace gra {
 
@@ -63,62 +139,64 @@ MAnalyzer::MAnalyzer(const std::string &ID) {
   const int NBINS = 150;
 
   // Energy
-  hE_Pions        = std::make_shared<TH1D>(Form("%s_%s", "Energy #pi (GeV)", ID.c_str()),
-                                    ";Energy (GeV);Events", NBINS, 0, sqrts / 2.0);
-  hE_Gamma        = std::make_shared<TH1D>(Form("%s_%s", "Energy #gamma (GeV)", ID.c_str()),
-                                    ";Energy (GeV);Events", NBINS, 0, sqrts / 2.0);
-  hE_Neutron      = std::make_shared<TH1D>(Form("%s_%s", "Energy n (GeV)", ID.c_str()),
-                                      ";Energy (GeV);Events", NBINS, 0, sqrts / 2.0);
-  hE_GammaNeutron = std::make_shared<TH1D>(Form("%s_%s", "Energy y+n (GeV)", ID.c_str()),
-                                           ";Energy (GeV);Events", NBINS, 0, sqrts / 2.0);
+  hE_Pions = MakeDetachedHistogram<TH1D>(Form("%s_%s", "Energy #pi (GeV)", ID.c_str()),
+                                         ";Energy (GeV);Events", NBINS, 0, 1.0);
+  hE_Gamma = MakeDetachedHistogram<TH1D>(Form("%s_%s", "Energy #gamma (GeV)", ID.c_str()),
+                                         ";Energy (GeV);Events", NBINS, 0, 1.0);
+  hE_Neutron = MakeDetachedHistogram<TH1D>(Form("%s_%s", "Energy n (GeV)", ID.c_str()),
+                                           ";Energy (GeV);Events", NBINS, 0, 1.0);
+  hE_GammaNeutron =
+      MakeDetachedHistogram<TH1D>(Form("%s_%s", "Energy y+n (GeV)", ID.c_str()),
+                                  ";Energy (GeV);Events", NBINS, 0, 1.0);
 
   // Feynman-x
-  hXF_Pions   = std::make_shared<TH1D>(Form("%s_%s", "xF #pi", ID.c_str()), ";Feynman-x;Events",
-                                     NBINS, -1.0, 1.0);
-  hXF_Gamma   = std::make_shared<TH1D>(Form("%s_%s", "xF #gamma", ID.c_str()), ";Feynman-x;Events",
-                                     NBINS, -1.0, 1.0);
-  hXF_Neutron = std::make_shared<TH1D>(Form("%s_%s", "xF n", ID.c_str()), ";Feynman-x;Events",
-                                       NBINS, -1.0, 1.0);
+  hXF_Pions = MakeDetachedHistogram<TH1D>(Form("%s_%s", "xF #pi", ID.c_str()),
+                                          ";Feynman-x;Events", NBINS, -1.0, 1.0);
+  hXF_Gamma = MakeDetachedHistogram<TH1D>(Form("%s_%s", "xF #gamma", ID.c_str()),
+                                          ";Feynman-x;Events", NBINS, -1.0, 1.0);
+  hXF_Neutron = MakeDetachedHistogram<TH1D>(Form("%s_%s", "xF n", ID.c_str()),
+                                            ";Feynman-x;Events", NBINS, -1.0, 1.0);
 
   // Forward systems
-  hEta_Pions =
-      std::make_shared<TH1D>(Form("%s_%s", "#eta pi", ID.c_str()), ";#eta;Events", NBINS, -12, 12);
-  hEta_Gamma =
-      std::make_shared<TH1D>(Form("%s_%s", "#eta y", ID.c_str()), ";#eta;Events", NBINS, -12, 12);
-  hEta_Neutron =
-      std::make_shared<TH1D>(Form("%s_%s", "#eta n", ID.c_str()), ";#eta;Events", NBINS, -12, 12);
-  hM_NSTAR =
-      std::make_shared<TH1D>(Form("%s_%s", "M (GeV)", ID.c_str()), ";M (GeV);Events", NBINS, 0, 10);
+  hEta_Pions = MakeDetachedHistogram<TH1D>(Form("%s_%s", "#eta pi", ID.c_str()), ";#eta;Events",
+                                           NBINS, -12, 12);
+  hEta_Gamma = MakeDetachedHistogram<TH1D>(Form("%s_%s", "#eta y", ID.c_str()), ";#eta;Events",
+                                           NBINS, -12, 12);
+  hEta_Neutron = MakeDetachedHistogram<TH1D>(Form("%s_%s", "#eta n", ID.c_str()), ";#eta;Events",
+                                             NBINS, -12, 12);
+  hM_NSTAR = MakeDetachedHistogram<TH1D>(Form("%s_%s", "M (GeV)", ID.c_str()),
+                                         ";M (GeV);Events", NBINS, 0, 10);
 
   // Legendre polynomials, DO NOT CHANGE THE Y-RANGE [-1,1]
   for (std::size_t i = 0; i < 8; ++i) {
-    hPl[i] =
-        std::make_shared<TProfile>(Form("hPl%lu_%s", i + 1, ID.c_str()), "", 100, 0.0, 4.0, -1, 1);
+    hPl[i] = MakeDetachedHistogram<TProfile>(Form("hPl%lu_%s", i + 1, ID.c_str()), "", 100, 0.0,
+                                             4.0, -1, 1);
     hPl[i]->Sumw2();  // Error saving on
     hPl[i]->SetXTitle(Form("System M (GeV)"));
     hPl[i]->SetYTitle(Form("Legendre #LTP_{l}(cos #theta)#GT [CM frame]"));
   }
 
   // Costheta correlations between different frames
-  for (std::size_t i = 0; i < analyzer::FRAMES.size(); ++i) {
-    for (std::size_t j = 0; j < analyzer::FRAMES.size(); ++j) {
-      h2CosTheta[i][j] = std::make_shared<TH2D>(
-          Form("%s^{+} cos(theta) %s vs %s_%s", pstr.c_str(), analyzer::FRAMES[i].c_str(),
-               analyzer::FRAMES[j].c_str(), ID.c_str()),
+  const auto frames = analyzer::Frames();
+  for (const auto &i : indices(frames)) {
+    for (const auto &j : indices(frames)) {
+      h2CosTheta[i][j] = MakeDetachedHistogram<TH2D>(
+          Form("%s^{+} cos(theta) %s vs %s_%s", pstr.c_str(), frames[i].data(),
+               frames[j].data(), ID.c_str()),
           Form(";%s^{+} cos(#theta) %s;%s^{+} cos(#theta) %s", pstr.c_str(),
-               analyzer::FRAMES[i].c_str(), pstr.c_str(), analyzer::FRAMES[j].c_str()),
+               frames[i].data(), pstr.c_str(), frames[j].data()),
           NBINS, -1, 1, NBINS, -1, 1);
     }
   }
 
   // Phi correlations between different frames
-  for (std::size_t i = 0; i < analyzer::FRAMES.size(); ++i) {
-    for (std::size_t j = 0; j < analyzer::FRAMES.size(); ++j) {
-      h2Phi[i][j] = std::make_shared<TH2D>(
-          Form("%s^{+} #phi %s vs %s_%s", pstr.c_str(), analyzer::FRAMES[i].c_str(),
-               analyzer::FRAMES[j].c_str(), ID.c_str()),
+  for (const auto &i : indices(frames)) {
+    for (const auto &j : indices(frames)) {
+      h2Phi[i][j] = MakeDetachedHistogram<TH2D>(
+          Form("%s^{+} #phi %s vs %s_%s", pstr.c_str(), frames[i].data(),
+               frames[j].data(), ID.c_str()),
           Form(";%s^{+} #phi %s (rad);%s^{+} #phi %s (rad)", pstr.c_str(),
-               analyzer::FRAMES[i].c_str(), pstr.c_str(), analyzer::FRAMES[j].c_str()),
+               frames[i].data(), pstr.c_str(), frames[j].data()),
           NBINS, -gra::math::PI, gra::math::PI, NBINS, -gra::math::PI, gra::math::PI);
     }
   }
@@ -127,49 +205,71 @@ MAnalyzer::MAnalyzer(const std::string &ID) {
 // Destructor
 MAnalyzer::~MAnalyzer() {}
 
-// "Oracle" histogram filler:
-//
-// Oracle here means that in this function we (may) use event tree information,
-// not just pure fiducial final state information based on purely physical observables.
-//
+// Configure energy axes once the collider energy is known
+void MAnalyzer::ConfigureColliderEnergy(const M4Vec &collision) {
+  const double collider_energy = collision.M();
+  if (!std::isfinite(collider_energy) || collider_energy <= 0.0 ||
+      !std::isfinite(collision.E()) || collision.E() <= 0.0) {
+    throw std::invalid_argument("MAnalyzer::ConfigureColliderEnergy: invalid collider energy");
+  }
+  if (energy_range_initialized) {
+    const double tolerance =
+        1e-9 * std::max({1.0, std::abs(sqrts), std::abs(collider_energy)});
+    if (std::abs(collider_energy - sqrts) > tolerance) {
+      throw std::invalid_argument(
+          "MAnalyzer::ConfigureColliderEnergy: collider energy changes within one sample");
+    }
+    return;
+  }
+  sqrts = collider_energy;
+  constexpr int energy_bins = 150;
+  for (const auto &histogram : {hE_Pions, hE_Gamma, hE_Neutron, hE_GammaNeutron}) {
+    histogram->SetBins(energy_bins, 0.0, collision.E());
+  }
+  energy_range_initialized = true;
+}
+
+// Fill histograms using generator ancestry and final-state momenta
 double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multiplicity,
                                     int finalPDG, unsigned int MAXEVENTS,
                                     std::map<std::string, std::shared_ptr<h1Multiplet>> &   h1,
                                     std::map<std::string, std::shared_ptr<h2Multiplet>> &   h2,
                                     std::map<std::string, std::shared_ptr<hProfMultiplet>> &hP,
                                     unsigned int                                            SID) {
-  inputfile                     = input;
-  const std::string   totalpath = gra::aux::GetBasePath(2) + "/output/" + input + ".hepmc3";
-  HepMC3::ReaderAscii input_file(totalpath);
-
-  if (input_file.failed()) {
-    throw std::invalid_argument("MAnalyzer::HepMC3Read: Cannot open file " + totalpath);
+  if (multiplicity == 0 || finalPDG == 0 || finalPDG == std::numeric_limits<int>::min()) {
+    throw std::invalid_argument("MAnalyzer::HepMC3Read: invalid multiplicity or PDG code");
   }
+  ValidateHistograms(h1, h2, hP, SID, multiplicity);
+
+  inputfile                     = input;
+  const std::string totalpath = (std::filesystem::path(gra::aux::GetBasePath(2)) / "output" /
+                                 (input + ".hepmc3")).lexically_normal().string();
+  MHepMCReader input_file(totalpath);
 
   // Event loop
   unsigned int events_read = 0;
 
   // Variables for calculating selection efficiency
-  double totalW = 0;
-  double selecW = 0;
+  statistics::ScaledWeightSums total_weights;
+  statistics::ScaledWeightSums selected_weights;
+  std::size_t selected_events = 0;
+  bool cross_section_seen = false;
 
   // ---------------------------------------------------------------------
   // Set final state [charged pair or neutral pair]
   MPDG PDG;
-  PDG.ReadParticleData(gra::aux::GetBasePath(2) + "/modeldata/mass_width_2020.mcd");
+  PDG.ReadParticleData();
 
   // Try to find the particle from PDG table, will throw exception if fails
-  MParticle p           = PDG.FindByPDG(finalPDG);
-  const int NEGfinalPDG = (p.chargeX3 != 0) ? -finalPDG : 0;  // Do not double count neutral
+  PDG.FindByPDG(finalPDG);
+  const bool has_antiparticle = PDG.PDG_table.contains(-finalPDG);
+  const int NEGfinalPDG = has_antiparticle ? -finalPDG : 0;
   // ---------------------------------------------------------------------
 
-  while (true) {
+  while (events_read < MAXEVENTS) {
     // Read event from input file
     HepMC3::GenEvent evt(HepMC3::Units::GEV, HepMC3::Units::MM);
-    input_file.read_event(evt);
-
-    // Reading failed
-    if (input_file.failed()) {
+    if (!input_file.Read(evt)) {
       if (events_read == 0) {
         throw std::invalid_argument("MAnalyzer::HepMC3Read: File " + totalpath + " is empty!");
       } else {
@@ -186,18 +286,37 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
     std::shared_ptr<HepMC3::GenCrossSection> cs =
         evt.attribute<HepMC3::GenCrossSection>("GenCrossSection");
     if (cs) {
-      cross_section = 1E-12 * cs->xsec(0);  // turn into barns
+      const double event_cross_section = 1E-12 * cs->xsec(0);
+      if (!std::isfinite(event_cross_section) || event_cross_section < 0.0) {
+        throw std::invalid_argument(
+            "MAnalyzer::HepMC3Read: invalid GenCrossSection in " + totalpath);
+      }
+      if (cross_section_seen) {
+        const double tolerance = 1e-2 * std::max(event_cross_section, cross_section);
+        if (std::abs(event_cross_section - cross_section) > tolerance) {
+          throw std::invalid_argument(
+              "MAnalyzer::HepMC3Read: inconsistent GenCrossSection in " + totalpath);
+        }
+      } else {
+        cross_section = event_cross_section;
+      }
+      cross_section_seen = true;
     } else {
-      std::cout << "Problem accessing 'GenCrossSection' attribute!" << std::endl;
+      throw std::invalid_argument(
+          "MAnalyzer::HepMC3Read: missing GenCrossSection in " + totalpath);
     }
     // --------------------------------------------------------------
 
-    // *** Get event weight (always in barn units) ***
+    // Get the nominal event weight before cross-section normalization
     double W = 1.0;
     if (evt.weights().size() != 0) {  // check do we have weights saved
       W = evt.weights()[0];           // take the first one
     }
-    totalW += W;
+    if (!std::isfinite(W)) {
+      throw std::invalid_argument(
+          "MAnalyzer::HepMC3Read: non-finite event weight in " + totalpath);
+    }
+    total_weights.Add(W);
     // --------------------------------------------------------------
 
     // Central particles
@@ -205,27 +324,30 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
     std::vector<M4Vec> pim;
 
     for (HepMC3::ConstGenParticlePtr p1 :
-         HepMC3::applyFilter(HepMC3::StandardSelector::PDG_ID == finalPDG, evt.particles())) {
+         HepMC3::applyFilter(HepMC3::StandardSelector::STATUS == PDG::PDG_STABLE &&
+                                 HepMC3::StandardSelector::PDG_ID == finalPDG,
+                             evt.particles())) {
       M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
 
-      // Check that ancestor is a central system
-      std::vector<HepMC3::ConstGenParticlePtr> results =
-          HepMC3::applyFilter(*abs(HepMC3::StandardSelector::PDG_ID) == PDG::PDG_system,
-                              HepMC3::Relatives::ANCESTORS(p1));
-      if (results.size() != 0) { pip.push_back(pvec); }
+      if (IsCentralDecay(p1)) { pip.push_back(pvec); }
     }
     for (HepMC3::ConstGenParticlePtr p1 :
-         HepMC3::applyFilter(HepMC3::StandardSelector::PDG_ID == NEGfinalPDG, evt.particles())) {
+         HepMC3::applyFilter(HepMC3::StandardSelector::STATUS == PDG::PDG_STABLE &&
+                                 HepMC3::StandardSelector::PDG_ID == NEGfinalPDG,
+                             evt.particles())) {
       M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
 
-      // Check that ancestor is a central system
-      std::vector<HepMC3::ConstGenParticlePtr> results = HepMC3::applyFilter(
-          HepMC3::StandardSelector::PDG_ID == PDG::PDG_system, HepMC3::Relatives::ANCESTORS(p1));
-      if (results.size() != 0) { pim.push_back(pvec); }
+      if (IsCentralDecay(p1)) { pim.push_back(pvec); }
     }
 
     // CHECK CONDITION
-    if (pip.size() + pim.size() != (unsigned int)multiplicity) {
+    const bool valid_topology =
+        (multiplicity == 1 || !has_antiparticle)
+            ? pip.size() == multiplicity && pim.empty()
+            : (multiplicity == 2
+                   ? pip.size() == 1 && pim.size() == 1
+                   : pip.size() + pim.size() == multiplicity && !pip.empty() && !pim.empty());
+    if (!valid_topology) {
       printf(
           "MAnalyzer::ReadHepMC3:: Multiplicity condition not filled +[%lu] "
           "-[%lu] %d! \n",
@@ -241,33 +363,32 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
 
     std::vector<HepMC3::GenParticlePtr> beam_protons =
         HepMC3::applyFilter(HepMC3::StandardSelector::STATUS == PDG::PDG_BEAM &&
-                                HepMC3::StandardSelector::PDG_ID == PDG::PDG_p,
+                                *abs(HepMC3::StandardSelector::PDG_ID) == PDG::PDG_p,
                             evt.particles());
 
     std::vector<HepMC3::GenParticlePtr> final_protons =
         HepMC3::applyFilter(HepMC3::StandardSelector::STATUS == PDG::PDG_STABLE &&
-                                HepMC3::StandardSelector::PDG_ID == PDG::PDG_p,
+                                *abs(HepMC3::StandardSelector::PDG_ID) == PDG::PDG_p,
                             evt.particles());
 
     M4Vec p_beam_plus;
     M4Vec p_beam_minus;
     M4Vec p_final_plus;
     M4Vec p_final_minus;
-
-    // If we have full event, check energy-momentum
-    if (beam_protons.size()) {
-      // ==============================================================
-      sqrts = CheckEnergyMomentum(evt);
-      // ==============================================================
-    }
+    std::size_t beam_plus_count  = 0;
+    std::size_t beam_minus_count = 0;
+    std::size_t final_plus_count  = 0;
+    std::size_t final_minus_count = 0;
 
     // Beam (initial state ) protons
     for (const HepMC3::GenParticlePtr &p1 : beam_protons) {
       M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
       if (pvec.Rap() > 0) {
         p_beam_plus = pvec;
+        ++beam_plus_count;
       } else {
         p_beam_minus = pvec;
+        ++beam_minus_count;
       }
     }
 
@@ -275,59 +396,64 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
     for (const HepMC3::GenParticlePtr &p1 : final_protons) {
       M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
 
-      // Check that ancestor is NOT excited forward system or central system
-      std::vector<HepMC3::GenParticlePtr> results =
-          HepMC3::applyFilter(HepMC3::StandardSelector::PDG_ID == PDG::PDG_NSTAR ||
-                                  HepMC3::StandardSelector::PDG_ID == -PDG::PDG_NSTAR ||
-                                  HepMC3::StandardSelector::PDG_ID == PDG::PDG_system,
-                              HepMC3::Relatives::ANCESTORS(p1));
-
-      if (results.size() == 0) {
+      // Select intact forward protons outside central and N* decays
+      if (!IsNStarDecay(p1) && !IsCentralDecay(p1)) {
         if (pvec.Rap() > 0) {
           p_final_plus = pvec;
+          ++final_plus_count;
         } else {
           p_final_minus = pvec;
+          ++final_minus_count;
         }
       }
+    }
+    const bool has_beams = beam_plus_count == 1 && beam_minus_count == 1;
+    const bool has_forward_protons =
+        final_plus_count == 1 && final_minus_count == 1;
+    if (has_beams) {
+      CheckEnergyMomentum(evt);
+      ConfigureColliderEnergy(p_beam_plus + p_beam_minus);
+    }
+    if (!has_beams) {
+      p_beam_plus = M4Vec();
+      p_beam_minus = M4Vec();
+    }
+    if (!has_forward_protons) {
+      p_final_plus = M4Vec();
+      p_final_minus = M4Vec();
     }
 
     // Observables for 2-body case only
     if (multiplicity == 2) {
-      FrameObservables(W, evt, p_beam_plus, p_beam_minus, p_final_plus, p_final_minus, pip, pim);
+      FrameObservables(W, p_beam_plus, p_beam_minus, p_final_plus, p_final_minus, pip, pim);
     }
 
     // Observables for N stars
-    NStarObservables(W, evt);
+    if (sqrts > 0.0) { NStarObservables(W, evt); }
 
     // **************************************************************
     // SUPERPLOTTER >>
     try {
-      M4Vec a = pip[0];
-      M4Vec b;
-      if (pim.size() != 0) {  // Charged pair
-        b = pim[0];
-      } else {  // Neutral pair
-        b = pip[1];
-      }
+      const M4Vec &a = pip.front();
 
       const double M  = system.M();
       const double Pt = system.Pt();
       const double Y  = system.Rap();
 
       // 1D: System
-      h1["h1_S_M"]->h[SID]->Fill(M, W);
-      h1["h1_S_Pt"]->h[SID]->Fill(Pt, W);
-      h1["h1_S_Pt2"]->h[SID]->Fill(math::pow2(Pt), W);
-      h1["h1_S_Y"]->h[SID]->Fill(Y, W);
-      hP["hP_S_M_Pt"]->h[SID]->Fill(M, Pt, W);
+      h1.at("h1_S_M")->h.at(SID)->Fill(M, W);
+      h1.at("h1_S_Pt")->h.at(SID)->Fill(Pt, W);
+      h1.at("h1_S_Pt2")->h.at(SID)->Fill(math::pow2(Pt), W);
+      h1.at("h1_S_Y")->h.at(SID)->Fill(Y, W);
+      hP.at("hP_S_M_Pt")->h.at(SID)->Fill(M, Pt, W);
 
       // 1D: 1-Body
-      h1["h1_1B_pt"]->h[SID]->Fill(a.Pt(), W);
-      h1["h1_1B_eta"]->h[SID]->Fill(a.Eta(), W);
+      h1.at("h1_1B_pt")->h.at(SID)->Fill(a.Pt(), W);
+      h1.at("h1_1B_eta")->h.at(SID)->Fill(a.Eta(), W);
 
       // 1D: Forward proton pair
       double deltaphi_pp = -1.0;
-      if (p_final_plus.M() > 0) {
+      if (has_beams && has_forward_protons) {
         // Mandelstam -t_1,2
         const double t1 = -(p_beam_plus - p_final_plus).M2();
         // const double t2 = -(p_beam_minus - p_final_minus).M2();
@@ -337,26 +463,28 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
         M4Vec        pp_diff = p_final_plus - p_final_minus;
         const double pp_dpt  = pp_diff.Pt();
 
-        h1["h1_PP_dphi"]->h[SID]->Fill(deltaphi_pp, W);
-        h1["h1_PP_t1"]->h[SID]->Fill(t1, W);
-        h1["h1_PP_dpt"]->h[SID]->Fill(pp_dpt, W);
+        h1.at("h1_PP_dphi")->h.at(SID)->Fill(deltaphi_pp, W);
+        h1.at("h1_PP_t1")->h.at(SID)->Fill(t1, W);
+        h1.at("h1_PP_dpt")->h.at(SID)->Fill(pp_dpt, W);
 
-        h2["h2_S_M_dphipp"]->h[SID]->Fill(M, deltaphi_pp, W);
-        h2["h2_S_M_dpt"]->h[SID]->Fill(M, pp_dpt, W);
-        h2["h2_S_M_t"]->h[SID]->Fill(M, std::abs(t1), W);
+        h2.at("h2_S_M_dphipp")->h.at(SID)->Fill(M, deltaphi_pp, W);
+        h2.at("h2_S_M_dpt")->h.at(SID)->Fill(M, pp_dpt, W);
+        h2.at("h2_S_M_t")->h.at(SID)->Fill(M, std::abs(t1), W);
       }
 
       // 2D
-      h2["h2_S_M_Pt"]->h[SID]->Fill(M, Pt, W);
-      h2["h2_S_M_pt"]->h[SID]->Fill(M, a.Pt(), W);
+      h2.at("h2_S_M_Pt")->h.at(SID)->Fill(M, Pt, W);
+      h2.at("h2_S_M_pt")->h.at(SID)->Fill(M, a.Pt(), W);
 
       // 2-Body only
       if (multiplicity == 2) {
-        hP["hP_2B_M_dphi"]->h[SID]->Fill(M, a.DeltaPhi(b), W);
-        h1["h1_2B_acop"]->h[SID]->Fill(1.0 - a.DeltaPhi(b) / gra::math::PI, W);
-        h1["h1_2B_diffrap"]->h[SID]->Fill(b.Rap() - a.Rap(), W);
-        h2["h2_2B_M_dphi"]->h[SID]->Fill(M, a.DeltaPhi(b), W);
-        h2["h2_2B_eta1_eta2"]->h[SID]->Fill(a.Eta(), b.Eta(), W);
+        const M4Vec &b = pim.empty() ? pip[1] : pim.front();
+        const double delta_phi = a.DeltaPhiAbs(b);
+        hP.at("hP_2B_M_dphi")->h.at(SID)->Fill(M, delta_phi, W);
+        h1.at("h1_2B_acop")->h.at(SID)->Fill(1.0 - delta_phi / gra::math::PI, W);
+        h1.at("h1_2B_diffrap")->h.at(SID)->Fill(a.Rap() - b.Rap(), W);
+        h2.at("h2_2B_M_dphi")->h.at(SID)->Fill(M, delta_phi, W);
+        h2.at("h2_2B_eta1_eta2")->h.at(SID)->Fill(a.Eta(), b.Eta(), W);
 
 
         // Frame transform
@@ -369,61 +497,61 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
         std::vector<M4Vec> HX = {a, b};
         gra::kinematics::HXframe(HX, X);
 
-        std::vector<M4Vec> CS = {a, b};
-        gra::kinematics::CSframe(CS, X, p_beam_plus, p_beam_minus);
-
-        std::vector<M4Vec> GJ = {a, b};
-        gra::kinematics::GJframe(GJ, X, direction, p_beam_plus - p_final_plus,
-                                 p_beam_minus - p_final_minus);
-
-        std::vector<M4Vec> PG = {a, b};
-        gra::kinematics::PGframe(PG, X, direction, p_beam_plus, p_beam_minus);
+        h1.at("h1_costheta_CM")->h.at(SID)->Fill(CM[0].CosTheta(), W);
+        h1.at("h1_costheta_HX")->h.at(SID)->Fill(HX[0].CosTheta(), W);
+        h1.at("h1_costheta_LAB")->h.at(SID)->Fill(a.CosTheta(), W);
 
 
-        h1["h1_costheta_CM"]->h[SID]->Fill(CM[0].CosTheta(), W);
-        h1["h1_costheta_HX"]->h[SID]->Fill(HX[0].CosTheta(), W);
-        h1["h1_costheta_CS"]->h[SID]->Fill(CS[0].CosTheta(), W);
-        h1["h1_costheta_GJ"]->h[SID]->Fill(GJ[0].CosTheta(), W);
-        h1["h1_costheta_PG"]->h[SID]->Fill(PG[0].CosTheta(), W);
-        h1["h1_costheta_LAB"]->h[SID]->Fill(a.CosTheta(), W);
+        h1.at("h1_phi_CM")->h.at(SID)->Fill(CM[0].Phi(), W);
+        h1.at("h1_phi_HX")->h.at(SID)->Fill(HX[0].Phi(), W);
+        h1.at("h1_phi_LAB")->h.at(SID)->Fill(a.Phi(), W);
 
 
-        h1["h1_phi_CM"]->h[SID]->Fill(CM[0].Phi(), W);
-        h1["h1_phi_HX"]->h[SID]->Fill(HX[0].Phi(), W);
-        h1["h1_phi_CS"]->h[SID]->Fill(CS[0].Phi(), W);
-        h1["h1_phi_GJ"]->h[SID]->Fill(GJ[0].Phi(), W);
-        h1["h1_phi_PG"]->h[SID]->Fill(PG[0].Phi(), W);
-        h1["h1_phi_LAB"]->h[SID]->Fill(a.Phi(), W);
+        h2.at("h2_2B_costheta_phi_CM")->h.at(SID)->Fill(CM[0].CosTheta(), CM[0].Phi(), W);
+        h2.at("h2_2B_costheta_phi_HX")->h.at(SID)->Fill(HX[0].CosTheta(), HX[0].Phi(), W);
+        h2.at("h2_2B_costheta_phi_LAB")->h.at(SID)->Fill(a.CosTheta(), a.Phi(), W);
 
 
-        h2["h2_2B_costheta_phi_CM"]->h[SID]->Fill(CM[0].CosTheta(), CM[0].Phi(), W);
-        h2["h2_2B_costheta_phi_HX"]->h[SID]->Fill(HX[0].CosTheta(), HX[0].Phi(), W);
-        h2["h2_2B_costheta_phi_CS"]->h[SID]->Fill(CS[0].CosTheta(), CS[0].Phi(), W);
-        h2["h2_2B_costheta_phi_GJ"]->h[SID]->Fill(GJ[0].CosTheta(), GJ[0].Phi(), W);
-        h2["h2_2B_costheta_phi_PG"]->h[SID]->Fill(PG[0].CosTheta(), PG[0].Phi(), W);
-        h2["h2_2B_costheta_phi_LAB"]->h[SID]->Fill(a.CosTheta(), a.Phi(), W);
+        h2.at("h2_2B_M_costheta_CM")->h.at(SID)->Fill(M, CM[0].CosTheta(), W);
+        h2.at("h2_2B_M_costheta_HX")->h.at(SID)->Fill(M, HX[0].CosTheta(), W);
+        h2.at("h2_2B_M_costheta_LAB")->h.at(SID)->Fill(M, a.CosTheta(), W);
 
 
-        h2["h2_2B_M_costheta_CM"]->h[SID]->Fill(M, CM[0].CosTheta(), W);
-        h2["h2_2B_M_costheta_HX"]->h[SID]->Fill(M, HX[0].CosTheta(), W);
-        h2["h2_2B_M_costheta_CS"]->h[SID]->Fill(M, CS[0].CosTheta(), W);
-        h2["h2_2B_M_costheta_GJ"]->h[SID]->Fill(M, GJ[0].CosTheta(), W);
-        h2["h2_2B_M_costheta_PG"]->h[SID]->Fill(M, PG[0].CosTheta(), W);
-        h2["h2_2B_M_costheta_LAB"]->h[SID]->Fill(M, a.CosTheta(), W);
+        h2.at("h2_2B_M_phi_CM")->h.at(SID)->Fill(M, CM[0].Phi(), W);
+        h2.at("h2_2B_M_phi_HX")->h.at(SID)->Fill(M, HX[0].Phi(), W);
+        h2.at("h2_2B_M_phi_LAB")->h.at(SID)->Fill(M, a.Phi(), W);
 
-
-        h2["h2_2B_M_phi_CM"]->h[SID]->Fill(M, CM[0].Phi(), W);
-        h2["h2_2B_M_phi_HX"]->h[SID]->Fill(M, HX[0].Phi(), W);
-        h2["h2_2B_M_phi_CS"]->h[SID]->Fill(M, CS[0].Phi(), W);
-        h2["h2_2B_M_phi_GJ"]->h[SID]->Fill(M, GJ[0].Phi(), W);
-        h2["h2_2B_M_phi_PG"]->h[SID]->Fill(M, PG[0].Phi(), W);
-        h2["h2_2B_M_phi_LAB"]->h[SID]->Fill(M, a.Phi(), W);
+        if (has_beams) {
+          std::vector<M4Vec> CS = {a, b};
+          gra::kinematics::CSframe(CS, X, p_beam_plus, p_beam_minus);
+          std::vector<M4Vec> PG = {a, b};
+          gra::kinematics::PGframe(PG, X, direction, p_beam_plus, p_beam_minus);
+          h1.at("h1_costheta_CS")->h.at(SID)->Fill(CS[0].CosTheta(), W);
+          h1.at("h1_costheta_PG")->h.at(SID)->Fill(PG[0].CosTheta(), W);
+          h1.at("h1_phi_CS")->h.at(SID)->Fill(CS[0].Phi(), W);
+          h1.at("h1_phi_PG")->h.at(SID)->Fill(PG[0].Phi(), W);
+          h2.at("h2_2B_costheta_phi_CS")->h.at(SID)->Fill(CS[0].CosTheta(), CS[0].Phi(), W);
+          h2.at("h2_2B_costheta_phi_PG")->h.at(SID)->Fill(PG[0].CosTheta(), PG[0].Phi(), W);
+          h2.at("h2_2B_M_costheta_CS")->h.at(SID)->Fill(M, CS[0].CosTheta(), W);
+          h2.at("h2_2B_M_costheta_PG")->h.at(SID)->Fill(M, PG[0].CosTheta(), W);
+          h2.at("h2_2B_M_phi_CS")->h.at(SID)->Fill(M, CS[0].Phi(), W);
+          h2.at("h2_2B_M_phi_PG")->h.at(SID)->Fill(M, PG[0].Phi(), W);
+        }
+        if (has_beams && has_forward_protons) {
+          std::vector<M4Vec> GJ = {a, b};
+          gra::kinematics::GJframe(GJ, X, direction, p_beam_plus - p_final_plus,
+                                   p_beam_minus - p_final_minus);
+          h1.at("h1_costheta_GJ")->h.at(SID)->Fill(GJ[0].CosTheta(), W);
+          h1.at("h1_phi_GJ")->h.at(SID)->Fill(GJ[0].Phi(), W);
+          h2.at("h2_2B_costheta_phi_GJ")->h.at(SID)->Fill(GJ[0].CosTheta(), GJ[0].Phi(), W);
+          h2.at("h2_2B_M_costheta_GJ")->h.at(SID)->Fill(M, GJ[0].CosTheta(), W);
+          h2.at("h2_2B_M_phi_GJ")->h.at(SID)->Fill(M, GJ[0].Phi(), W);
+        }
 
 
         // ---------------------------------------------------------------------------
-        hP["hP_S_M_PL2_CM"]->h[SID]->Fill(M, math::LegendrePl(2, CM[0].CosTheta()), W);
-        hP["hP_S_M_PL4_CM"]->h[SID]->Fill(M, math::LegendrePl(4, CM[0].CosTheta()), W);
-        h2["h2_2B_eta1_eta2"]->h[SID]->Fill(a.Eta(), b.Eta(), W);
+        hP.at("hP_S_M_PL2_CM")->h.at(SID)->Fill(M, math::LegendrePl(2, CM[0].CosTheta()), W);
+        hP.at("hP_S_M_PL4_CM")->h.at(SID)->Fill(M, math::LegendrePl(4, CM[0].CosTheta()), W);
         // ---------------------------------------------------------------------------
       }
 
@@ -431,43 +559,54 @@ double MAnalyzer::HepMC3_OracleFill(const std::string input, unsigned int multip
       if (multiplicity == 4) {
         // ...
       }
+    } catch (const std::exception &e) {
+      throw std::invalid_argument("MAnalyzer::HepMC3Read: Problem filling histogram: " +
+                                  std::string(e.what()));
     } catch (...) {
-      throw std::invalid_argument("MAnalyzer::HepMC3Read: Problem filling histogram!");
+      std::throw_with_nested(
+          std::runtime_error("MAnalyzer::HepMC3Read: Unknown problem filling histogram"));
     }
 
     // << SUPERPLOTTER
     // **************************************************************
 
-    if (events_read >= MAXEVENTS) {
-      std::cout << "MAnalyzer::HepMC3Read: Maximum event count " << MAXEVENTS << " reached!";
-      break;  // Enough events
-    }
-
     if (events_read % 10000 == 0) {
       std::cout << std::endl << "Events processed: " << events_read << std::endl;
     }
-    // [THIS AS LAST!] Sum selected event weights
-    selecW += W;
+
+    // Sum weights only after the event has passed the analysis selection
+    selected_weights.Add(W);
+    ++selected_events;
+  }
+  if (events_read >= MAXEVENTS) {
+    std::cout << "MAnalyzer::HepMC3Read: Maximum event count " << MAXEVENTS << " reached!";
   }
   std::cout << std::endl;
   std::cout << "MAnalyzer::HepMC3Read: Events processed in total: " << events_read << std::endl;
 
-  // Close HepMC3 file
-  input_file.close();
-
-  if (selecW == 0.0) {
+  if (selected_events == 0) {
     throw std::invalid_argument("MAnalyzer::HepMC3Read:: Valid events in <" + totalpath + ">" +
                                 " == 0 out of " + std::to_string(events_read));
   }
+  if (!cross_section_seen ||
+      !total_weights.HasSignificantSignedSum(
+          std::numeric_limits<double>::epsilon())) {
+    throw std::invalid_argument(
+        "MAnalyzer::HepMC3Read: invalid cross-section normalization weight sum in <" +
+        totalpath + ">");
+  }
   // Take into account extra fiducial cut efficiency here
-  double efficiency = selecW / totalW;
+  const long double total_weight = total_weights.Sum();
+  const double efficiency =
+      static_cast<double>(selected_weights.Sum() / total_weight);
   printf("MAnalyzer::HepMC3Read: Fiducial cut efficiency: %0.3f \n", efficiency);
   std::cout << std::endl;
 
-  return cross_section * efficiency;
+  return static_cast<double>(
+      static_cast<long double>(cross_section) / total_weight);
 }
 
-// Sanity check
+// Check event four-momentum conservation and compute the collision mass
 double MAnalyzer::CheckEnergyMomentum(HepMC3::GenEvent &evt) const {
   std::vector<HepMC3::GenParticlePtr> all_init = HepMC3::applyFilter(
       HepMC3::StandardSelector::STATUS == PDG::PDG_BEAM, evt.particles());  // Beam
@@ -494,16 +633,18 @@ double MAnalyzer::CheckEnergyMomentum(HepMC3::GenEvent &evt) const {
 }
 
 // 2-body angular observables
-void MAnalyzer::FrameObservables(double W, HepMC3::GenEvent &evt, const M4Vec &p_beam_plus,
+void MAnalyzer::FrameObservables(double W, const M4Vec &p_beam_plus,
                                  const M4Vec &p_beam_minus, const M4Vec &p_final_plus,
                                  const M4Vec &p_final_minus, const std::vector<M4Vec> &pip,
                                  const std::vector<M4Vec> &pim) {
+  const auto frames = analyzer::Frames();
   // Find index
-  const auto ind = [&](const std::string str) {
-    for (const auto &i : indices(analyzer::FRAMES)) {
-      if (analyzer::FRAMES[i] == str) { return i; }
+  const auto ind = [&](const std::string &str) {
+    for (const auto &i : indices(frames)) {
+      if (frames[i] == str) { return i; }
     }
-    throw std::invalid_argument("MAnalyzer::FrameObservables: Unknown Lorentz frame: " + str);
+    throw std::invalid_argument(
+        "MAnalyzer::FrameObservables: unknown Lorentz frame " + std::string(str));
   };
 
   std::vector<M4Vec> pf;
@@ -514,28 +655,41 @@ void MAnalyzer::FrameObservables(double W, HepMC3::GenEvent &evt, const M4Vec &p
   if (pip.size() == 2 && pim.size() == 0) {  // Neutral pair
     pf = {pip[0], pip[1]};
   }
+  if (pf.size() != 2) {
+    throw std::invalid_argument("MAnalyzer::FrameObservables: invalid two-body topology");
+  }
 
   // ---------------------------------------------------------------------
   // Lorentz frame transformations
 
   // Make copies
-  std::vector<std::vector<M4Vec>> pions;
-  for (std::size_t i = 0; i < analyzer::FRAMES.size(); ++i) { pions.push_back(pf); }
+  std::vector<std::vector<M4Vec>> pions(frames.size(), pf);
+  std::vector<bool> valid(frames.size(), false);
 
   // System
   const M4Vec X         = pf[0] + pf[1];
   const int   direction = 1;  // PG and GJ
 
   gra::kinematics::CMframe(pions[ind("CM")], X);
+  valid[ind("CM")] = true;
   gra::kinematics::HXframe(pions[ind("HX")], X);
-  gra::kinematics::CSframe(pions[ind("CS")], X, p_beam_plus, p_beam_minus);
-  gra::kinematics::GJframe(pions[ind("GJ")], X, direction, p_beam_plus - p_final_plus,
-                           p_beam_minus - p_final_minus);
-  gra::kinematics::PGframe(pions[ind("PG")], X, direction, p_beam_plus, p_beam_minus);
-  pions[ind("LAB")] = pions[ind("LAB")];  // already there, do nothing
-
-  // No forward protons -> set zero
-  if (p_final_plus.M() < 0.5) { pions[ind("GJ")] = {M4Vec(0, 0, 0, 0), M4Vec(0, 0, 0, 0)}; }
+  valid[ind("HX")] = true;
+  valid[ind("LAB")] = true;
+  const bool has_beams = p_beam_plus.E() > 0.0 && p_beam_minus.E() > 0.0;
+  const bool has_forward =
+      p_final_plus.E() > 0.0 && p_final_minus.E() > 0.0;
+  if (has_beams) {
+    gra::kinematics::CSframe(pions[ind("CS")], X, p_beam_plus, p_beam_minus);
+    gra::kinematics::PGframe(pions[ind("PG")], X, direction, p_beam_plus, p_beam_minus);
+    valid[ind("CS")] = true;
+    valid[ind("PG")] = true;
+  }
+  if (has_beams && has_forward) {
+    gra::kinematics::GJframe(pions[ind("GJ")], X, direction,
+                             p_beam_plus - p_final_plus,
+                             p_beam_minus - p_final_minus);
+    valid[ind("GJ")] = true;
+  }
 
   // ---------------------------------------------------------------------
 
@@ -549,8 +703,9 @@ void MAnalyzer::FrameObservables(double W, HepMC3::GenEvent &evt, const M4Vec &p
   }
 
   // FRAME correlations
-  for (std::size_t i = 0; i < analyzer::FRAMES.size(); ++i) {
-    for (std::size_t j = 0; j < analyzer::FRAMES.size(); ++j) {
+  for (const auto &i : indices(frames)) {
+    for (const auto &j : indices(frames)) {
+      if (!valid[i] || !valid[j]) { continue; }
       h2CosTheta[i][j]->Fill(pions[i][0].CosTheta(), pions[j][0].CosTheta(), W);
       h2Phi[i][j]->Fill(pions[i][0].Phi(), pions[j][0].Phi(), W);
     }
@@ -559,19 +714,6 @@ void MAnalyzer::FrameObservables(double W, HepMC3::GenEvent &evt, const M4Vec &p
 
 // Forward system observables
 void MAnalyzer::NStarObservables(double W, HepMC3::GenEvent &evt) {
-  // Excite forward system particles
-  std::vector<HepMC3::GenParticlePtr> search_gammas =
-      HepMC3::applyFilter(HepMC3::StandardSelector::PDG_ID == PDG::PDG_gamma, evt.particles());
-
-  std::vector<HepMC3::GenParticlePtr> search_neutrons =
-      HepMC3::applyFilter(HepMC3::StandardSelector::PDG_ID == PDG::PDG_n, evt.particles());
-
-  std::vector<HepMC3::GenParticlePtr> search_pip =
-      HepMC3::applyFilter(HepMC3::StandardSelector::PDG_ID == PDG::PDG_pip, evt.particles());
-
-  std::vector<HepMC3::GenParticlePtr> search_pim =
-      HepMC3::applyFilter(HepMC3::StandardSelector::PDG_ID == PDG::PDG_pim, evt.particles());
-
   std::vector<HepMC3::GenParticlePtr> search_nstar =
       HepMC3::applyFilter(HepMC3::StandardSelector::PDG_ID == PDG::PDG_NSTAR ||
                               HepMC3::StandardSelector::PDG_ID == -PDG::PDG_NSTAR,
@@ -589,89 +731,51 @@ void MAnalyzer::NStarObservables(double W, HepMC3::GenEvent &evt) {
   }
   // Excited system found
   if (excited_plus || excited_minus) { N_STAR_ON = true; }
+  if (!excited_plus && !excited_minus) { return; }
 
-  // N* system decay products
-
-  // Gammas
-  double gamma_e_plus  = 0;
-  double gamma_e_minus = 0;
-
-  // Gammas
-  for (const HepMC3::GenParticlePtr &p1 : search_gammas) {
-    M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
-
-    // Check that ancestor is excited forward system
-    std::vector<HepMC3::GenParticlePtr> ancestor =
-        HepMC3::applyFilter(HepMC3::StandardSelector::PDG_ID == PDG::PDG_NSTAR ||
-                                HepMC3::StandardSelector::PDG_ID == -PDG::PDG_NSTAR,
-                            HepMC3::Relatives::ANCESTORS(p1));
-
-    if (ancestor.size() != 0) {
-      hEta_Gamma->Fill(pvec.Eta(), W);
-      hE_Gamma->Fill(pvec.E(), W);
-      hXF_Gamma->Fill(pvec.Pz() / (sqrts / 2), W);
-
-      if (excited_plus && pvec.Rap() > 0) { gamma_e_plus += pvec.E(); }
-      if (excited_minus && pvec.Rap() < 0) { gamma_e_minus += pvec.E(); }
+  // Define Feynman x in the collision CM even for asymmetric beam energies
+  M4Vec collision;
+  for (const auto &particle : evt.particles()) {
+    if (particle->status() == PDG::PDG_BEAM) {
+      collision += gra::aux::HepMC2M4Vec(particle->momentum());
     }
   }
+  ConfigureColliderEnergy(collision);
 
-  // Pi+
-  for (const HepMC3::GenParticlePtr &p1 : search_pip) {
-    // HepMC3::Print::line(p1);
-
-    // Check that parent is the excited system
-    std::vector<HepMC3::GenParticlePtr> parents = p1->parents();
-    bool                                found   = false;
-    for (const auto &k : indices(parents)) {
-      if (std::abs(parents[k]->pid()) == PDG::PDG_NSTAR) { found = true; }
+  // Count stable particles from every stage of the forward decay cascade
+  double gamma_e_plus = 0.0;
+  double gamma_e_minus = 0.0;
+  double neutron_e_plus = 0.0;
+  double neutron_e_minus = 0.0;
+  for (const auto &particle : evt.particles()) {
+    if (particle->status() != PDG::PDG_STABLE) { continue; }
+    const int pdg = particle->pid();
+    const bool neutron = pdg == PDG::PDG_n || pdg == -PDG::PDG_n;
+    if (pdg != PDG::PDG_gamma && !neutron &&
+        pdg != PDG::PDG_pip && pdg != PDG::PDG_pim) {
+      continue;
     }
-    if (found) {
-      M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
-      hEta_Pions->Fill(pvec.Eta(), W);
-      hE_Pions->Fill(pvec.E(), W);
-      hXF_Pions->Fill(pvec.Pz() / (sqrts / 2), W);
-    }
-  }
-
-  // Pi-
-  for (const HepMC3::GenParticlePtr &p1 : search_pim) {
-    // HepMC3::Print::line(p1);
-
-    // Check that parent is the excited system
-    std::vector<HepMC3::GenParticlePtr> parents = p1->parents();
-    bool                                found   = false;
-    for (const auto &k : indices(parents)) {
-      if (std::abs(parents[k]->pid()) == PDG::PDG_NSTAR) { found = true; }
-    }
-    if (found) {
-      M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
-      hEta_Pions->Fill(pvec.Eta(), W);
-      hE_Pions->Fill(pvec.E(), W);
-      hXF_Pions->Fill(pvec.Pz() / (sqrts / 2), W);
-    }
-  }
-
-  // Neutrons
-  double neutron_e_plus  = 0;
-  double neutron_e_minus = 0;
-
-  for (const HepMC3::GenParticlePtr &p1 : search_neutrons) {
-    M4Vec pvec = gra::aux::HepMC2M4Vec(p1->momentum());
-
-    // Check that parent is the excited system
-    std::vector<HepMC3::GenParticlePtr> parents = p1->parents();
-    bool                                found   = false;
-    for (const auto &k : indices(parents)) {
-      if (std::abs(parents[k]->pid()) == PDG::PDG_NSTAR) { found = true; }
-    }
-    if (found) {
-      hEta_Neutron->Fill(pvec.Eta(), W);
-      hE_Neutron->Fill(pvec.E(), W);
-      hXF_Neutron->Fill(pvec.Pz() / (sqrts / 2), W);
-
-      if (excited_plus && pvec.Rap() > 0) { neutron_e_plus += pvec.E(); }
-      if (excited_minus && pvec.Rap() < 0) { neutron_e_minus += pvec.E(); }
+    if (!IsNStarDecay(particle)) { continue; }
+    const M4Vec p = gra::aux::HepMC2M4Vec(particle->momentum());
+    M4Vec cm = p;
+    gra::kinematics::LorentzBoost(collision, sqrts, cm, -1);
+    const double xf = 2.0 * cm.Pz() / sqrts;
+    if (pdg == PDG::PDG_gamma) {
+      hEta_Gamma->Fill(p.Eta(), W);
+      hE_Gamma->Fill(p.E(), W);
+      hXF_Gamma->Fill(xf, W);
+      if (excited_plus && p.Pz() > 0.0) { gamma_e_plus += p.E(); }
+      if (excited_minus && p.Pz() < 0.0) { gamma_e_minus += p.E(); }
+    } else if (neutron) {
+      hEta_Neutron->Fill(p.Eta(), W);
+      hE_Neutron->Fill(p.E(), W);
+      hXF_Neutron->Fill(xf, W);
+      if (excited_plus && p.Pz() > 0.0) { neutron_e_plus += p.E(); }
+      if (excited_minus && p.Pz() < 0.0) { neutron_e_minus += p.E(); }
+    } else {
+      hEta_Pions->Fill(p.Eta(), W);
+      hE_Pions->Fill(p.E(), W);
+      hXF_Pions->Fill(xf, W);
     }
   }
 
@@ -680,10 +784,12 @@ void MAnalyzer::NStarObservables(double W, HepMC3::GenEvent &evt) {
   if (excited_minus) { hE_GammaNeutron->Fill(gamma_e_minus + neutron_e_minus, W); }
 }
 
+// Evaluate the transverse-momentum power-law fit function
 double powerlaw(double *x, double *par) {
   return par[0] / std::pow(1.0 + std::pow(x[0], 2) / (std::pow(par[1], 2) * par[2]), par[2]);
 }
 
+// Evaluate an exponential momentum-transfer fit function
 double exponential(double *x, double *par) { return par[0] * exp(par[1] * x[0]); }
 
 // Custom plotter
@@ -763,18 +869,19 @@ void MAnalyzer::PlotAll(const std::string &titlestr) {
   // -------------------------------------------------------------------------------------
   // FRAME correlations
 
+  const auto frames = analyzer::Frames();
   TCanvas c2("c", "c", 800, 800);
-  c2.Divide(analyzer::FRAMES.size(), analyzer::FRAMES.size(), 0.0001, 0.0002);
+  c2.Divide(frames.size(), frames.size(), 0.0001, 0.0002);
 
   int k = 1;
-  for (std::size_t i = 0; i < analyzer::FRAMES.size(); ++i) {
-    for (std::size_t j = 0; j < analyzer::FRAMES.size(); ++j) {
+  for (const auto &i : indices(frames)) {
+    for (const auto &j : indices(frames)) {
       c2.cd(k);
       ++k;
       if (j >= i) { h2CosTheta[i][j]->Draw("COLZ"); }
 
       // Titlestr
-      if ((i == 0) & (j == 0)) { h2CosTheta[i][j]->SetTitle(titlestr.c_str()); }
+      if (i == 0 && j == 0) { h2CosTheta[i][j]->SetTitle(titlestr.c_str()); }
     }
   }
   c2.SaveAs(Form("%s/figs/%s/h2_frame_correlations_costheta.pdf", gra::aux::GetBasePath(2).c_str(),
@@ -783,17 +890,17 @@ void MAnalyzer::PlotAll(const std::string &titlestr) {
   // -------------------------------------------------------------------------------------
 
   TCanvas c3("c", "c", 800, 800);
-  c3.Divide(analyzer::FRAMES.size(), analyzer::FRAMES.size(), 0.0001, 0.0002);
+  c3.Divide(frames.size(), frames.size(), 0.0001, 0.0002);
 
   k = 1;
-  for (std::size_t i = 0; i < analyzer::FRAMES.size(); ++i) {
-    for (std::size_t j = 0; j < analyzer::FRAMES.size(); ++j) {
+  for (const auto &i : indices(frames)) {
+    for (const auto &j : indices(frames)) {
       c3.cd(k);
       ++k;
       if (j >= i) { h2Phi[i][j]->Draw("COLZ"); }
 
       // Titlestr
-      if ((i == 0) & (j == 0)) { h2Phi[i][j]->SetTitle(titlestr.c_str()); }
+      if (i == 0 && j == 0) { h2Phi[i][j]->SetTitle(titlestr.c_str()); }
     }
   }
   c3.SaveAs(Form("%s/figs/%s/h2_frame_correlations_phi.pdf", gra::aux::GetBasePath(2).c_str(),

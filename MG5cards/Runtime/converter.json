@@ -1,0 +1,97 @@
+{
+  "schema": 1,
+  "converter_source_digest": "5030e9f3bff9b44a08da490b7c1a7b602ab708914ea29cd87754523a71b29e1f",
+  "manifest_digest": "b4c57cbe16adca917c4e82b89c5d00357f1d0297a44084c5010850a9d59ca270",
+  "standalones": [
+    {
+      "name": "gg_ddbar",
+      "model": "sm",
+      "files": {"include/Graniitti/Amplitude/MG5/Durham/AMP_MG5_gg_ddbar.h": "ed15e95f421dec83ce26a1de1bdee0fa3aec8b1a76dff3dc697feb4098596435", "src/Amplitude/MG5/Durham/AMP_MG5_gg_ddbar.cc": "f9c063ad49f7f843e8aa61762ded6e47620e4a3d0789b14adbda1ded686a3ef3"}
+    },
+    {
+      "name": "gg_ssbar",
+      "model": "sm",
+      "files": {"include/Graniitti/Amplitude/MG5/Durham/AMP_MG5_gg_ssbar.h": "5c52650867457714c14ea552e9e7ff49472b2b0850ca0677bfe4471dc9271f31", "src/Amplitude/MG5/Durham/AMP_MG5_gg_ssbar.cc": "b94b96082a4af492840d9d91f200a619231190ffe89e2d3e93bd883ce7586805"}
+    },
+    {
+      "name": "gg_ccbar",
+      "model": "sm",
+      "files": {"include/Graniitti/Amplitude/MG5/Durham/AMP_MG5_gg_ccbar.h": "815144ae89c6827b3fae2a80042d244bea85432c036ee5053bfa1edb6521b567", "src/Amplitude/MG5/Durham/AMP_MG5_gg_ccbar.cc": "5789c9836606bc58a1e39cb9bffced77dc2ef8de1655e1735451ac5f8a8ee272"}
+    },
+    {
+      "name": "gg_bbbar",
+      "model": "sm",
+      "files": {"include/Graniitti/Amplitude/MG5/Durham/AMP_MG5_gg_bbbar.h": "4a415335322dec388549bc9f5eeac17b203ce04e2bebd4cce246d1c2dc8a0a81", "src/Amplitude/MG5/Durham/AMP_MG5_gg_bbbar.cc": "199dbef222408d4d32b4d1a58ca497226b6ace863ce135152a7852088702dc97"}
+    },
+    {
+      "name": "gg_uubar",
+      "model": "sm",
+      "files": {"include/Graniitti/Amplitude/MG5/Durham/AMP_MG5_gg_uubar.h": "ddd8ba4424af04a821538a326ce7e63573a9d33eacab15a7e8a4782e79328fbf", "src/Amplitude/MG5/Durham/AMP_MG5_gg_uubar.cc": "7c70cc6aa36b6004b6b2b7cdb51575d02ccc7d249a2be21f7ea1af06851b03a9"}
+    },
+    {
+      "name": "gg_uubarg",
+      "model": "sm",
+      "files": {"include/Graniitti/Amplitude/MG5/Durham/AMP_MG5_gg_uubarg.h": "c20229cd518175e0cb34811330f0b722fd17fd6e83c7d803aa3887e902c92624", "src/Amplitude/MG5/Durham/AMP_MG5_gg_uubarg.cc": "504554c7e94cfe0b8b8dbc598ce823a4862e30053269f1a1d84cf7da8c499b05"}
+    },
+    {
+      "name": "gg_ddbarg",
+      "model": "sm",
+      "files": {"include/Graniitti/Amplitude/MG5/Durham/AMP_MG5_gg_ddbarg.h": "8fb5f83f74a0b30f1ab89aa1048ab513a1690ad59712890f769c1f65b0d848f1", "src/Amplitude/MG5/Durham/AMP_MG5_gg_ddbarg.cc": "c51da35f0b8a171f1882de90a8b6a309955d7591fee128acf0009cca56d1aafc"}
+    },
+    {
+      "name": "gg_ssbarg",
+      "model": "sm",
+      "files": {"include/Graniitti/Amplitude/MG5/Durham/AMP_MG5_gg_ssbarg.h": "96881d4821d7d5ddd2404bd8e5a2fd53e63dcbeddbc3b8549e0a4b0acb800a78", "src/Amplitude/MG5/Durham/AMP_MG5_gg_ssbarg.cc": "1ec3f594eea16c110c98a983043d2ec8aeda16bb938c7bdd472bdf95edf71777"}
+    },
+    {
+      "name": "gg_ccbarg",
+      "model": "sm",
+      "files": {"include/Graniitti/Amplitude/MG5/Durham/AMP_MG5_gg_ccbarg.h": "4d607c66d9e2f042e3b3fa126fd8a19f5c7a1acb25ba5c9bdd2cfc001ec56a67", "src/Amplitude/MG5/Durham/AMP_MG5_gg_ccbarg.cc": "cffc1238cecd414bdf70d199511aee32b82f8bb51b3579fabf2cbbc11c56783a"}
+    },
+    {
+      "name": "gg_bbbarg",
+      "model": "sm",
+      "files": {"include/Graniitti/Amplitude/MG5/Durham/AMP_MG5_gg_bbbarg.h": "09acda08467010650f2401fb5d3b6e7dfd37734293df1e1dfab9e4303665615f", "src/Amplitude/MG5/Durham/AMP_MG5_gg_bbbarg.cc": "aa577b31da3921cb239b6e3699168e5267ac5055c2ba87cf8016a11253fb1cbc"}
+    },
+    {
+      "name": "gg_gg",
+      "model": "sm",
+      "files": {"include/Graniitti/Amplitude/MG5/Durham/AMP_MG5_gg_gg.h": "552306dab54eeceed9787760651eb0e970186e63725fd2c3aae788f868c1fe43", "src/Amplitude/MG5/Durham/AMP_MG5_gg_gg.cc": "51dc601908b9a32b7365d0c2dde90a8d0806cd72e2ad9a19703924fafdb92236"}
+    },
+    {
+      "name": "gg_ggg",
+      "model": "sm",
+      "files": {"include/Graniitti/Amplitude/MG5/Durham/AMP_MG5_gg_ggg.h": "de33bc253e88d3f1d09559cad8053feff7155a903a4ef85f59b71a3bab5f221f", "src/Amplitude/MG5/Durham/AMP_MG5_gg_ggg.cc": "e6e2730efea5b506b0ced47ce47766d4a49526d4a0576322c4ff93df1b50219c"}
+    },
+    {
+      "name": "yy_ll",
+      "model": "sm",
+      "files": {"include/Graniitti/Amplitude/MG5/Photon/AMP_MG5_yy_ll.h": "9145e170aadd38e1ba16f77ebeb44e4d56cdeebe803f52e4e894fc034218d9f0", "src/Amplitude/MG5/Photon/AMP_MG5_yy_ll.cc": "22d8c471e5fb50e75e319a93d61f0ed5709d8bfc2336ff0bc02bb6dce903bc41"}
+    },
+    {
+      "name": "yy_uubarg",
+      "model": "sm",
+      "files": {"include/Graniitti/Amplitude/MG5/Photon/AMP_MG5_yy_uubarg.h": "43434c60ae796c97cfe77fbc569f09e371752af380ed41912a102cb751874e31", "src/Amplitude/MG5/Photon/AMP_MG5_yy_uubarg.cc": "50c722cdb4958587d5f087e9c7b5ad31dda21df086ac5eb18d4595fd065f7bba"}
+    },
+    {
+      "name": "gg_gggg",
+      "model": "sm",
+      "files": {"include/Graniitti/Amplitude/MG5/Durham/AMP_MG5_gg_gggg.h": "7a2624eaf06f833a85f40a84c77b09d455afbbb9f832a00411d59d42e9b9744d", "src/Amplitude/MG5/Durham/AMP_MG5_gg_gggg.cc": "94ef5ddf3bd1e6c15ec64a70d95c06b7a3004a012c80b40e953c6885abd7b48e"}
+    },
+    {
+      "name": "yy_uubargg",
+      "model": "sm",
+      "files": {"include/Graniitti/Amplitude/MG5/Photon/AMP_MG5_yy_uubargg.h": "dfc9fda3d1220ecddebe9049d1205a908645b7e211766cdd8128940dcfefdf75", "src/Amplitude/MG5/Photon/AMP_MG5_yy_uubargg.cc": "582f17cbfcd0dcd752fe6ccebe39fb7c06e7bca1dad5703dfffaaa0d357a348e"}
+    }
+  ],
+  "models": [
+    {
+      "model": "sm",
+      "model_suffix": "sm_lepton_masses",
+      "files": {"include/Graniitti/Amplitude/MG5/Runtime/Models/sm/HelAmps_sm_lepton_masses.h": "91f08cb2cb464d2aff8735cdcce1d4203a76025217d421d4f2e1944ab5deb424", "include/Graniitti/Amplitude/MG5/Runtime/Models/sm/Parameters_sm_lepton_masses.h": "59cd2a7323e56cb30cbba5d018f43a9aff8fe3bb7a1ac768ef5fc278b98bb46d", "src/Amplitude/MG5/Runtime/Models/sm/HelAmps_sm_lepton_masses.cc": "bb2c966ad69e132f19e4220bde22bd9810a3dd49969d07999bd4fcc134df5cf8", "src/Amplitude/MG5/Runtime/Models/sm/Parameters_sm_lepton_masses.cc": "c072feee763eec6745ed6c042815f2caab513d1e981a1de0bd72fb54e2747d50"}
+    }
+  ],
+  "read_slha": {"include/Graniitti/Amplitude/MG5/Runtime/read_slha.h": "0af52c4bf3e7ffda94939df98c44233136ce25fcaa8e80a800b63c3241091a35", "src/Amplitude/MG5/Runtime/read_slha.cc": "f1ae4714b5c1de57e3bf00ad7e60feba066cc498fcd7de1c37261ae3596b6760"},
+  "sidecars": {"MG5cards/Durham/gg_bbbar/color.json": "af26f5921d1a25df06ac80843448f4cdbbd6cd6e2065ee2f570ccc8cc2efbd5f", "MG5cards/Durham/gg_bbbarg/color.json": "bd724e938da6138273b30906dd6534762881e3b56685b52170ac6590376788b2", "MG5cards/Durham/gg_ccbar/color.json": "ee029ab70daabc70d00eb86ed540037ee1b4a6e65ced173c12091900e8318006", "MG5cards/Durham/gg_ccbarg/color.json": "091c3bb932fec9de65924c01e16c040e21eff9a00e0d3a238c3a8fe186df5d3e", "MG5cards/Durham/gg_ddbar/color.json": "76e477dfe493c6a27c82b320b3579970d8b9670e5ffea38b9905d368140c84f5", "MG5cards/Durham/gg_ddbarg/color.json": "996bc5a6f73d1d07ffbc500a4b79daf2e9c0c468b689de486a3c1bb5041e1d4d", "MG5cards/Durham/gg_gg/color.json": "ce1e0905d28b7c5d249c72136b90384d7a8af05d2eca63e815ce22e2f40ac53f", "MG5cards/Durham/gg_ggg/color.json": "0eef988236a74038cf6210b41c1d308715c860c02b112f894618d43022083007", "MG5cards/Durham/gg_gggg/color.json": "ea27c10c2a88224e4d9a15fe506676ccddf9dcceeeaab701131c13738098bcfd", "MG5cards/Durham/gg_ssbar/color.json": "f4efe88b9bfcf5672bd51f5e4e841f63dc63e8cbd32fa20bb1c76002cc8cd225", "MG5cards/Durham/gg_ssbarg/color.json": "bc96238061b2ef09c52c572eb692a059f2e347920cb7b52a5d4795199651cd63", "MG5cards/Durham/gg_uubar/color.json": "58ebfe872b496e0b815a14cf2fa4dd4e1961d0fe8f504d37ebb21761ef29faf2", "MG5cards/Durham/gg_uubarg/color.json": "c5a90716d933d0d68197e9a24abdf494c0a71aceb2b9e1e9f50774b9907f7f26", "MG5cards/Parton/MG5_PP_JJ/channels.json": "e9d67f739db5e0819cd9b8415a845bba774b25ac8051b32fa9ccc26250b4e2f5", "MG5cards/Parton/MG5_PP_W/channels.json": "7d637b809d3fe2bd7f3563a1b690c1384898fbd900f385c7d16257b07166a1cd", "MG5cards/Parton/MG5_PP_Z/channels.json": "9655706ee7d90c3031ff3ced5e9b1c65ed8349f5ce03324d69ca4bb21aec3de8", "MG5cards/Parton/MG5_PP_ZJ/channels.json": "0790635d309675e7a11d9d2968ceb9c9cf85f362844a9621e4092118e648e288", "MG5cards/Photon/MG5_YY_JJ/channels.json": "78d4d22c94902db8a42644a42ebc40c4e242f558de2335dfb5cc3fe8952c81d6", "MG5cards/Photon/MG5_YY_WW/channels.json": "d0996e4a5fc2dd5012d05607e567416a249af122f90257d03adfc91a6ebb94a6", "MG5cards/Photon/MG5_YY_ZJJ/channels.json": "99fa84cdbe89fcd7a7eccf1810aef6444f90e656fbc8196de6c3b8df9d5c3c8e", "MG5cards/Photon/yy_ll/color.json": "ba5b83739acd6677ad1957a608e6de1094d793aa37bf3d3ef35bd2035150306c", "MG5cards/Photon/yy_uubarg/color.json": "8d8a24b1477de214116cfacee7aab0bdc683b6ec6ce83f50fccdd2274b7789d3", "MG5cards/Photon/yy_uubargg/color.json": "153f615e0c177e72a20edf381105aab0dc0586e9998f485894ee39dc113a0908"},
+  "photon": {"include/Graniitti/Amplitude/MG5/Photon/AMP_MG5_PhotonRegistry.h": "43779748a63fe3f2bd18371459de49ed3c5ff37d55ee50c2a057c4dee4f2a360", "include/Graniitti/Amplitude/MG5/Photon/AMP_MG5_yy_jj.h": "6c0545aa6d0289501df2c20443ad0ac7b5c7e7c022b330ce6b03beafe9342167", "include/Graniitti/Amplitude/MG5/Photon/AMP_MG5_yy_ww.h": "a11e60619e1a5e3e57342eb1f1ac36bf4e7eaccb6528005f1534fce72bf1586c", "include/Graniitti/Amplitude/MG5/Photon/AMP_MG5_yy_zjj.h": "61a46f66ce7ddf48b0c19a9a2f151c83746588452d6b382035bab8f6385fb84f", "src/Amplitude/MG5/Photon/AMP_MG5_PhotonRegistry.cc": "83ab65c381fdc4afeb0e38786a5281095a2f139a4f3631d0ddc894980142a852", "src/Amplitude/MG5/Photon/AMP_MG5_yy_jj.cc": "f56fb9b1c79113d69a3436e3c7d49fef10e50859f6b4710cb4da3b7d3e13909c", "src/Amplitude/MG5/Photon/AMP_MG5_yy_ww.cc": "f33eb4c6d219fa2860336d9864bff367ce37edd35477689fe33148cd40faa694", "src/Amplitude/MG5/Photon/AMP_MG5_yy_zjj.cc": "582b8fc3e8906750861c7b049c1f2e26ad939a7e7bfa2bb4dde92c48730a3b04"}
+}

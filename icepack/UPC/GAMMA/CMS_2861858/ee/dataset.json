@@ -1,0 +1,87 @@
+// CMS PbPb Breit-Wheeler differential cross sections
+{
+  "active": true,
+  "type": "HEPDATA_2861858_EE",
+  "reader": "icepack/UPC/_common/upc_reader.py",
+  "datapath": "HEPData/UPC/HEPData-ins2861858-v2-json/",
+  "samples": [
+    {
+      "name": "optical",
+      "label": "GRANIITTI $k_T$-EPA $\\gamma\\gamma \\to e^+e^-$ (optical survival, QED YFS)",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "GENERIC.RNDSEED": 2861858,
+        "NUCLEAR.survival": "optical"
+      }
+    },
+    {
+      "name": "optical_ggcf",
+      "label": "GRANIITTI $k_T$-EPA $\\gamma\\gamma \\to e^+e^-$ (optical GGCF survival, QED YFS)",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "GENERIC.RNDSEED": 2861859,
+        "NUCLEAR.survival": "optical_ggcf"
+      }
+    }
+  ],
+  "plot": {"normalization": "cross_section", "unit": "ub", "ratio_uncertainty": "combined", "stack": false, "data_style": "errorbar"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "loopscreen": 1,
+    "nevents": 200000,
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "CMS $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($\\gamma\\gamma \\to e^+e^-$)",
+      "plotname": "CMS_5p02TeV_UPC_ee_pair_pt",
+      "title": "$E_{T,e}>2$ GeV, $|\\eta_e|<2.2$, $m_{ee}>5$ GeV, $p_T^{ee}<1$ GeV, $A_{\\phi}^{ee}<0.01$",
+      "pid": [-11,11],
+      "samples": ["optical","optical_ggcf"],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"file": "Figure4_upper_left.json", "file_filter": "d$\\sigma^{ee}/dp_{T}^{ee}$ ($\\mu$b / GeV)", "obs": "pair_pt", "scale": 1e-6, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "CMS $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($\\gamma\\gamma \\to e^+e^-$)",
+      "plotname": "CMS_5p02TeV_UPC_ee_rapidity",
+      "title": "$E_{T,e}>2$ GeV, $|\\eta_e|<2.2$, $m_{ee}>5$ GeV, $p_T^{ee}<1$ GeV, $A_{\\phi}^{ee}<0.01$",
+      "pid": [-11,11],
+      "samples": ["optical","optical_ggcf"],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"file": "Figure4_upper_right.json", "file_filter": "d$\\sigma^{ee}/dy^{ee}$ ($\\mu$b)", "obs": "rapidity", "scale": 1e-6, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "CMS $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($\\gamma\\gamma \\to e^+e^-$)",
+      "plotname": "CMS_5p02TeV_UPC_ee_mass",
+      "title": "$E_{T,e}>2$ GeV, $|\\eta_e|<2.2$, $m_{ee}>5$ GeV, $p_T^{ee}<1$ GeV, $A_{\\phi}^{ee}<0.01$",
+      "pid": [-11,11],
+      "samples": ["optical","optical_ggcf"],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"file": "Figure4_lower_left.json", "file_filter": "d$\\sigma^{ee}/dm^{ee}$ ($\\mu$b / GeV)", "obs": "mass", "scale": 1e-6, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "CMS $\\mathrm{PbPb}$ $\\sqrt{s_{\\mathrm{NN}}}=5.02$ TeV ($\\gamma\\gamma \\to e^+e^-$)",
+      "plotname": "CMS_5p02TeV_UPC_ee_abs_costheta",
+      "title": "$E_{T,e}>2$ GeV, $|\\eta_e|<2.2$, $m_{ee}>5$ GeV, $p_T^{ee}<1$ GeV, $A_{\\phi}^{ee}<0.01$",
+      "pid": [-11,11],
+      "samples": ["optical","optical_ggcf"],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"file": "Figure4_lower_right.json", "file_filter": "d$\\sigma^{ee}/d|cos \\theta ^*|^{ee}$ ($\\mu$b)", "obs": "abs_costheta", "scale": 1e-6, "fitw": 1.0}
+      ]
+    }
+  ]
+}

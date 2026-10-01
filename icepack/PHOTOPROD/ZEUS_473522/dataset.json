@@ -1,0 +1,59 @@
+// ZEUS unresolved Upsilon(1S,2S,3S) dimuon ep cross section
+{
+  "active": true,
+  "type": "INTEGRATED_HEPDATA",
+  "reader": "../_common/ep_reader.py",
+  "datapath": "HEPData/PHOTOPROD/HEPData-ins473522-v1-json",
+  "samples": [
+    {
+      "name": "Y1S", "label": "GP[RES] $\\Upsilon(1S)$",
+      "gencard": "./gencard.json",
+      "parameters": {
+        // t1 = (p_e - p_e')^2 = -Q2, so |t1| = Q2 for electron beam 1 (GeV^2)
+        "FIDCUTS.FORWARD.t1": [0.0,1.0],
+        "SCATTERING.PROCESS": "GP[RES]<F> -> mu+ mu- @RES{Y1S:1}",
+        "GENCUTS.<F>.M": [9.3,9.7], "GENERIC.RNDSEED": 473522
+      }
+    },
+    {
+      "name": "Y2S", "label": "GP[RES] $\\Upsilon(2S)$",
+      "gencard": "./gencard.json",
+      "parameters": {
+        // t1 = (p_e - p_e')^2 = -Q2, so |t1| = Q2 for electron beam 1 (GeV^2)
+        "FIDCUTS.FORWARD.t1": [0.0,1.0],
+        "SCATTERING.PROCESS": "GP[RES]<F> -> mu+ mu- @RES{Y2S:1}",
+        "GENCUTS.<F>.M": [9.8,10.2], "GENERIC.RNDSEED": 473523
+      }
+    },
+    {
+      "name": "Y3S", "label": "GP[RES] $\\Upsilon(3S)$",
+      "gencard": "./gencard.json",
+      "parameters": {
+        // t1 = (p_e - p_e')^2 = -Q2, so |t1| = Q2 for electron beam 1 (GeV^2)
+        "FIDCUTS.FORWARD.t1": [0.0,1.0],
+        "SCATTERING.PROCESS": "GP[RES]<F> -> mu+ mu- @RES{Y3S:1}",
+        "GENCUTS.<F>.M": [10.2,10.5], "GENERIC.RNDSEED": 473524
+      }
+    }
+  ],
+  "plot": {"normalization": "cross_section", "unit": "pb", "stack": true, "ratio_uncertainty": "combined", "data_style": "errorbar"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "loopscreen": 0, "nevents": 50000, "require_comparison": true,
+    "measurement": {"$ref": "../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "ZEUS $e^+p \\to e^+\\Upsilon(1S,2S,3S)(\\mu^+\\mu^-)p$",
+      "plotname": "ZEUS_473522_Upsilon_ep",
+      "title": "$80<W_{\\gamma p}<160$ GeV, $Q^2<1$ GeV$^2$",
+      // [REFERENCE: ZEUS, arXiv:hep-ex/9807020, Table 1, HEPData Table 1 ep column]
+      // The measurement includes dimuon branching fractions, as do the generated decays
+      "mc_scale": 1.0,
+      "pid": [-13,13], "cuts": "./cuts.py", "obs": "../../_common/obs.py",
+      "hist": [
+        {"file": "Table1.json", "file_filter": "SIG(Q=E P)", "obs": "cross_section", "differential": false, "scale": 1e-12, "unit": "pb"}
+      ]
+    }
+  ]
+}

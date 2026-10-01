@@ -1,0 +1,68 @@
+// Parametric vector meson via Gamma-Pomeron
+//
+// MP/XP/GP coupling produced with develop/tools/HERA_couplings.py
+
+{
+  "PARAM_RES": {
+    "name": "RES_jpsi",
+    "PDG": 443,
+    "spinX2": 2,
+    "P": -1,
+    "C": -1,
+    
+    "MODELS": {
+      "GP": {
+        "mass": 3.0969,
+        "width": 9.29e-05,
+        "BW": "fixed-width",
+        "phi": 0.0,
+        "FF_transfer": {"type": "none"},
+        "FF_prod": {"type": "gaussian", "norm": "pole", "Lambda2": 2.0},
+        "[22,990]": {
+          "basis": "helicity",
+          "CP": [true,true],
+          "helicity": [[-1,0,0.030156601,0.0]]
+        }
+      },
+      "MP": {
+        "mass": 3.0969,
+        "width": 9.29e-05,
+        "BW": "fixed-width",
+        "phi": 0.0,
+        "FF_transfer": {"type": "none"},
+        "FF_prod": {"type": "gaussian", "norm": "pole", "Lambda2": 2.0},
+        "[22,991]": {
+          "basis": "helicity",
+          "Lambda": 1.0000,
+          "polarization": {"mode": "none"},
+          "CP": [true,true],
+          "helicity": [[-1,0,0.030156601,0.0]]
+        }
+      },
+      "XP": {
+        "mass": 3.0969,
+        "width": 9.29e-05,
+        "BW": "fixed-width",
+        "phi": 0.0,
+        "FF_transfer": {"type": "none"},
+        "FF_prod": {"type": "gaussian", "norm": "pole", "Lambda2": 2.0},
+        "[22,991]": {
+          "basis": "helicity",
+          "Lambda": 1.0,
+          "CP": [true,true],
+          "helicity": [[-1,0,0.030156601,0.0]]
+        }
+      },
+      "TP": {
+        "mass": 3.0969,
+        "width": 9.29e-05,
+        "phi": 0.0,
+        "FF_transfer": {"type": "none"},
+        "FF_prod": {"type": "none"},
+        "[22,995]": {
+          "g_tensor": [0,0]
+        }
+      }
+    }
+  }
+}

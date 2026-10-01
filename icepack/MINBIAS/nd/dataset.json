@@ -1,0 +1,34 @@
+// Non-diffractive cut Pomeron event distributions
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "nd",
+      "label": "GRANIITTI X[ND]",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "X[ND]<Q>"}
+    }
+  ],
+  "plot": {
+    "normalization": "unit_density",
+    "density_uncertainty": "shape",
+    "ratio_uncertainty": "none",
+    "stack": false,
+    "data_style": "hist"
+  },
+  "fit": {"normalization": "unit_density"},
+  "sets": [
+    {
+      "name": "Non-diffractive charged particles",
+      "data": false,
+      "pid": [],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"obs": "n_charged"},
+        {"obs": "n_charged_midrapidity"}
+      ]
+    }
+  ]
+}

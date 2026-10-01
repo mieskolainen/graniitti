@@ -1,0 +1,38 @@
+// SuperChic 2 Table 6 screened fiducial dimuon cross section
+{
+  "active": true,
+  "type": "SUPERCHIC2",
+  "reader": "icepack/_common/reference_reader.py",
+  "datapath": "tests/references",
+  "samples": [
+    {
+      "name": "mumu",
+      "label": "GRANIITTI $\\mu^+\\mu^-$ (screened)",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "yy[EPA]<F> -> mu+ mu-"
+      }
+    }
+  ],
+  "plot": {"normalization": "cross_section", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist", "data_linestyle": "--", "mc_linestyle": "-", "match_colors": true, "mc_first": true},
+  "fit": {"normalization": "cross_section"},
+  "validation": {"loopscreen": 1, "require_comparison": true, "max_integral_factor": 1.75},
+  "sets": [
+    {
+      "name": "SuperChic 2 (arXiv:1508.02718) $\\mu^+\\mu^-$",
+      "title": "$|\\eta_{\\mu}|<2.4$, $p_{T,\\mu}>10$ GeV, $M_X>20$ GeV",
+      "pid": [-13, 13],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/_common/obs.py",
+      "hist": [
+        {
+          "file": "superchic2_1508_02718.json",
+          "file_filter": "table6_mumu_pt10_eta2p4_screened",
+          "obs": "cross_section",
+          "differential": false,
+          "scale": 1e-12
+        }
+      ]
+    }
+  ]
+}

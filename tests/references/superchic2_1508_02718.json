@@ -1,0 +1,1886 @@
+{
+  "table1_gg_m75": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "SuperChic 2 Table 1 parton selection",
+    "channel": "gg",
+    "bibtex": null,
+    "measurement": {
+      "value": 120.0,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_1"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "pdf": "MMHT2014lo68cl",
+      "screening_model": 4,
+      "two_parton_jet_algorithm": "none",
+      "three_parton_jet_algorithm": "anti-kt",
+      "three_parton_jet_radius": 0.6,
+      "absolute_eta_max": 2.5,
+      "mass_min_gev": 75.0,
+      "parton_pt_min_gev": 20.0
+    }
+  },
+  "table1_gg_m150": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "SuperChic 2 Table 1 parton selection",
+    "channel": "gg",
+    "bibtex": null,
+    "measurement": {
+      "value": 4.0,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_1"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "pdf": "MMHT2014lo68cl",
+      "screening_model": 4,
+      "two_parton_jet_algorithm": "none",
+      "three_parton_jet_algorithm": "anti-kt",
+      "three_parton_jet_radius": 0.6,
+      "absolute_eta_max": 2.5,
+      "mass_min_gev": 150.0,
+      "parton_pt_min_gev": 20.0
+    }
+  },
+  "table1_gg_m250": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "SuperChic 2 Table 1 parton selection",
+    "channel": "gg",
+    "bibtex": null,
+    "measurement": {
+      "value": 0.13,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_1"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "pdf": "MMHT2014lo68cl",
+      "screening_model": 4,
+      "two_parton_jet_algorithm": "none",
+      "three_parton_jet_algorithm": "anti-kt",
+      "three_parton_jet_radius": 0.6,
+      "absolute_eta_max": 2.5,
+      "mass_min_gev": 250.0,
+      "parton_pt_min_gev": 40.0
+    }
+  },
+  "table1_qqbar_one_massless_flavour_m75": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "SuperChic 2 Table 1 parton selection",
+    "channel": "qqbar_one_massless_flavour",
+    "bibtex": null,
+    "measurement": {
+      "value": 0.073,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_1"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "pdf": "MMHT2014lo68cl",
+      "screening_model": 4,
+      "two_parton_jet_algorithm": "none",
+      "three_parton_jet_algorithm": "anti-kt",
+      "three_parton_jet_radius": 0.6,
+      "absolute_eta_max": 2.5,
+      "mass_min_gev": 75.0,
+      "parton_pt_min_gev": 20.0
+    }
+  },
+  "table1_qqbar_one_massless_flavour_m150": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "SuperChic 2 Table 1 parton selection",
+    "channel": "qqbar_one_massless_flavour",
+    "bibtex": null,
+    "measurement": {
+      "value": 0.0014,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_1"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "pdf": "MMHT2014lo68cl",
+      "screening_model": 4,
+      "two_parton_jet_algorithm": "none",
+      "three_parton_jet_algorithm": "anti-kt",
+      "three_parton_jet_radius": 0.6,
+      "absolute_eta_max": 2.5,
+      "mass_min_gev": 150.0,
+      "parton_pt_min_gev": 20.0
+    }
+  },
+  "table1_qqbar_one_massless_flavour_m250": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "SuperChic 2 Table 1 parton selection",
+    "channel": "qqbar_one_massless_flavour",
+    "bibtex": null,
+    "measurement": {
+      "value": 5.2e-05,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_1"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "pdf": "MMHT2014lo68cl",
+      "screening_model": 4,
+      "two_parton_jet_algorithm": "none",
+      "three_parton_jet_algorithm": "anti-kt",
+      "three_parton_jet_radius": 0.6,
+      "absolute_eta_max": 2.5,
+      "mass_min_gev": 250.0,
+      "parton_pt_min_gev": 40.0
+    }
+  },
+  "table1_bbbar_m75": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "SuperChic 2 Table 1 parton selection",
+    "channel": "bbbar",
+    "bibtex": null,
+    "measurement": {
+      "value": 0.12,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_1"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "pdf": "MMHT2014lo68cl",
+      "screening_model": 4,
+      "two_parton_jet_algorithm": "none",
+      "three_parton_jet_algorithm": "anti-kt",
+      "three_parton_jet_radius": 0.6,
+      "absolute_eta_max": 2.5,
+      "mass_min_gev": 75.0,
+      "parton_pt_min_gev": 20.0
+    }
+  },
+  "table1_bbbar_m150": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "SuperChic 2 Table 1 parton selection",
+    "channel": "bbbar",
+    "bibtex": null,
+    "measurement": {
+      "value": 0.0017,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_1"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "pdf": "MMHT2014lo68cl",
+      "screening_model": 4,
+      "two_parton_jet_algorithm": "none",
+      "three_parton_jet_algorithm": "anti-kt",
+      "three_parton_jet_radius": 0.6,
+      "absolute_eta_max": 2.5,
+      "mass_min_gev": 150.0,
+      "parton_pt_min_gev": 20.0
+    }
+  },
+  "table1_bbbar_m250": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "SuperChic 2 Table 1 parton selection",
+    "channel": "bbbar",
+    "bibtex": null,
+    "measurement": {
+      "value": 5.2e-05,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_1"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "pdf": "MMHT2014lo68cl",
+      "screening_model": 4,
+      "two_parton_jet_algorithm": "none",
+      "three_parton_jet_algorithm": "anti-kt",
+      "three_parton_jet_radius": 0.6,
+      "absolute_eta_max": 2.5,
+      "mass_min_gev": 250.0,
+      "parton_pt_min_gev": 40.0
+    }
+  },
+  "table1_ggg_m75": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "SuperChic 2 Table 1 parton selection",
+    "channel": "ggg",
+    "bibtex": null,
+    "measurement": {
+      "value": 6.0,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_1"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "pdf": "MMHT2014lo68cl",
+      "screening_model": 4,
+      "two_parton_jet_algorithm": "none",
+      "three_parton_jet_algorithm": "anti-kt",
+      "three_parton_jet_radius": 0.6,
+      "absolute_eta_max": 2.5,
+      "mass_min_gev": 75.0,
+      "parton_pt_min_gev": 20.0
+    }
+  },
+  "table1_ggg_m150": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "SuperChic 2 Table 1 parton selection",
+    "channel": "ggg",
+    "bibtex": null,
+    "measurement": {
+      "value": 0.78,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_1"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "pdf": "MMHT2014lo68cl",
+      "screening_model": 4,
+      "two_parton_jet_algorithm": "none",
+      "three_parton_jet_algorithm": "anti-kt",
+      "three_parton_jet_radius": 0.6,
+      "absolute_eta_max": 2.5,
+      "mass_min_gev": 150.0,
+      "parton_pt_min_gev": 20.0
+    }
+  },
+  "table1_ggg_m250": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "SuperChic 2 Table 1 parton selection",
+    "channel": "ggg",
+    "bibtex": null,
+    "measurement": {
+      "value": 0.018,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_1"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "pdf": "MMHT2014lo68cl",
+      "screening_model": 4,
+      "two_parton_jet_algorithm": "none",
+      "three_parton_jet_algorithm": "anti-kt",
+      "three_parton_jet_radius": 0.6,
+      "absolute_eta_max": 2.5,
+      "mass_min_gev": 250.0,
+      "parton_pt_min_gev": 40.0
+    }
+  },
+  "table1_g_qqbar_one_massless_flavour_m75": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "SuperChic 2 Table 1 parton selection",
+    "channel": "g_qqbar_one_massless_flavour",
+    "bibtex": null,
+    "measurement": {
+      "value": 0.14,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_1"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "pdf": "MMHT2014lo68cl",
+      "screening_model": 4,
+      "two_parton_jet_algorithm": "none",
+      "three_parton_jet_algorithm": "anti-kt",
+      "three_parton_jet_radius": 0.6,
+      "absolute_eta_max": 2.5,
+      "mass_min_gev": 75.0,
+      "parton_pt_min_gev": 20.0
+    }
+  },
+  "table1_g_qqbar_one_massless_flavour_m150": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "SuperChic 2 Table 1 parton selection",
+    "channel": "g_qqbar_one_massless_flavour",
+    "bibtex": null,
+    "measurement": {
+      "value": 0.02,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_1"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "pdf": "MMHT2014lo68cl",
+      "screening_model": 4,
+      "two_parton_jet_algorithm": "none",
+      "three_parton_jet_algorithm": "anti-kt",
+      "three_parton_jet_radius": 0.6,
+      "absolute_eta_max": 2.5,
+      "mass_min_gev": 150.0,
+      "parton_pt_min_gev": 20.0
+    }
+  },
+  "table1_g_qqbar_one_massless_flavour_m250": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "SuperChic 2 Table 1 parton selection",
+    "channel": "g_qqbar_one_massless_flavour",
+    "bibtex": null,
+    "measurement": {
+      "value": 0.0005,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_1"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "pdf": "MMHT2014lo68cl",
+      "screening_model": 4,
+      "two_parton_jet_algorithm": "none",
+      "three_parton_jet_algorithm": "anti-kt",
+      "three_parton_jet_radius": 0.6,
+      "absolute_eta_max": 2.5,
+      "mass_min_gev": 250.0,
+      "parton_pt_min_gev": 40.0
+    }
+  },
+  "table8_CTEQ6L1_chic0": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "LHCb decay product pseudorapidity selection",
+    "channel": "chic0",
+    "bibtex": null,
+    "measurement": {
+      "value": 19.0,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 7.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_8_chic_lhcb_7tev"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "screened": true,
+      "decay": "chi_cJ to J/psi gamma, J/psi to mu+mu-",
+      "decay_product_eta":
+        [2.0, 4.5],
+      "pdf": "CTEQ6L1"
+    }
+  },
+  "table8_CTEQ6L1_chic1": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "LHCb decay product pseudorapidity selection",
+    "channel": "chic1",
+    "bibtex": null,
+    "measurement": {
+      "value": 8.3,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 7.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_8_chic_lhcb_7tev"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "screened": true,
+      "decay": "chi_cJ to J/psi gamma, J/psi to mu+mu-",
+      "decay_product_eta":
+        [2.0, 4.5],
+      "pdf": "CTEQ6L1"
+    }
+  },
+  "table8_CTEQ6L1_chic2": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "LHCb decay product pseudorapidity selection",
+    "channel": "chic2",
+    "bibtex": null,
+    "measurement": {
+      "value": 15.0,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 7.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_8_chic_lhcb_7tev"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "screened": true,
+      "decay": "chi_cJ to J/psi gamma, J/psi to mu+mu-",
+      "decay_product_eta":
+        [2.0, 4.5],
+      "pdf": "CTEQ6L1"
+    }
+  },
+  "table8_MMHT2014lo68cl_chic0": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": "icepack/DURHAM/_common/gencard.json",
+    "python_cuts": "icepack/DURHAM/_common/cuts_inclusive.py",
+    "pid":
+      [-13, 13, 22],
+    "cuts": "LHCb decay product pseudorapidity selection",
+    "channel": "chic0",
+    "bibtex": null,
+    "measurement": {
+      "value": 51.0,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 7.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_8_chic_lhcb_7tev"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "screened": true,
+      "decay": "chi_cJ to J/psi gamma, J/psi to mu+mu-",
+      "decay_product_eta":
+        [2.0, 4.5],
+      "pdf": "MMHT2014lo68cl"
+    },
+    "dataset": "icepack/DURHAM/chic/table8/dataset.json"
+  },
+  "table8_MMHT2014lo68cl_chic1": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": "icepack/DURHAM/_common/gencard.json",
+    "python_cuts": "icepack/DURHAM/_common/cuts_inclusive.py",
+    "pid":
+      [-13, 13, 22],
+    "cuts": "LHCb decay product pseudorapidity selection",
+    "channel": "chic1",
+    "bibtex": null,
+    "measurement": {
+      "value": 17.0,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 7.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_8_chic_lhcb_7tev"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "screened": true,
+      "decay": "chi_cJ to J/psi gamma, J/psi to mu+mu-",
+      "decay_product_eta":
+        [2.0, 4.5],
+      "pdf": "MMHT2014lo68cl"
+    },
+    "dataset": "icepack/DURHAM/chic/table8/dataset.json"
+  },
+  "table8_MMHT2014lo68cl_chic2": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": "icepack/DURHAM/_common/gencard.json",
+    "python_cuts": "icepack/DURHAM/_common/cuts_inclusive.py",
+    "pid":
+      [-13, 13, 22],
+    "cuts": "LHCb decay product pseudorapidity selection",
+    "channel": "chic2",
+    "bibtex": null,
+    "measurement": {
+      "value": 41.0,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 7.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_8_chic_lhcb_7tev"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "screened": true,
+      "decay": "chi_cJ to J/psi gamma, J/psi to mu+mu-",
+      "decay_product_eta":
+        [2.0, 4.5],
+      "pdf": "MMHT2014lo68cl"
+    },
+    "dataset": "icepack/DURHAM/chic/table8/dataset.json"
+  },
+  "table8_NNPDF30_lo_as_0130_chic0": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "LHCb decay product pseudorapidity selection",
+    "channel": "chic0",
+    "bibtex": null,
+    "measurement": {
+      "value": 23.0,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 7.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_8_chic_lhcb_7tev"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "screened": true,
+      "decay": "chi_cJ to J/psi gamma, J/psi to mu+mu-",
+      "decay_product_eta":
+        [2.0, 4.5],
+      "pdf": "NNPDF30_lo_as_0130"
+    }
+  },
+  "table8_NNPDF30_lo_as_0130_chic1": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "LHCb decay product pseudorapidity selection",
+    "channel": "chic1",
+    "bibtex": null,
+    "measurement": {
+      "value": 7.1,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 7.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_8_chic_lhcb_7tev"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "screened": true,
+      "decay": "chi_cJ to J/psi gamma, J/psi to mu+mu-",
+      "decay_product_eta":
+        [2.0, 4.5],
+      "pdf": "NNPDF30_lo_as_0130"
+    }
+  },
+  "table8_NNPDF30_lo_as_0130_chic2": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "LHCb decay product pseudorapidity selection",
+    "channel": "chic2",
+    "bibtex": null,
+    "measurement": {
+      "value": 19.0,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 7.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_8_chic_lhcb_7tev"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "screened": true,
+      "decay": "chi_cJ to J/psi gamma, J/psi to mu+mu-",
+      "decay_product_eta":
+        [2.0, 4.5],
+      "pdf": "NNPDF30_lo_as_0130"
+    }
+  },
+  "table8_LHCb_preliminary_chic0": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "LHCb decay product pseudorapidity selection",
+    "channel": "chic0",
+    "bibtex": null,
+    "measurement": {
+      "value": 9.3,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 7.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_8_chic_lhcb_7tev"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "screened": true,
+      "decay": "chi_cJ to J/psi gamma, J/psi to mu+mu-",
+      "decay_product_eta":
+        [2.0, 4.5],
+      "pdf": "LHCb_preliminary"
+    }
+  },
+  "table8_LHCb_preliminary_chic1": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "LHCb decay product pseudorapidity selection",
+    "channel": "chic1",
+    "bibtex": null,
+    "measurement": {
+      "value": 16.4,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 7.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_8_chic_lhcb_7tev"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "screened": true,
+      "decay": "chi_cJ to J/psi gamma, J/psi to mu+mu-",
+      "decay_product_eta":
+        [2.0, 4.5],
+      "pdf": "LHCb_preliminary"
+    }
+  },
+  "table8_LHCb_preliminary_chic2": {
+    "type": "integrated",
+    "result": "measurement",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "LHCb decay product pseudorapidity selection",
+    "channel": "chic2",
+    "bibtex": null,
+    "measurement": {
+      "value": 28.0,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 7.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_8_chic_lhcb_7tev"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "screened": true,
+      "decay": "chi_cJ to J/psi gamma, J/psi to mu+mu-",
+      "decay_product_eta":
+        [2.0, 4.5],
+      "pdf": "LHCb_preliminary"
+    }
+  },
+  "table9_CTEQ6L1_chic0": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "LHCb decay product pseudorapidity selection",
+    "channel": "chic0",
+    "bibtex": null,
+    "measurement": {
+      "value": 30.0,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_9_chic_lhcb_13tev"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "screened": true,
+      "decay": "chi_cJ to J/psi gamma, J/psi to mu+mu-",
+      "decay_product_eta":
+        [2.0, 4.5],
+      "pdf": "CTEQ6L1"
+    }
+  },
+  "table9_CTEQ6L1_chic1": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "LHCb decay product pseudorapidity selection",
+    "channel": "chic1",
+    "bibtex": null,
+    "measurement": {
+      "value": 14.0,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_9_chic_lhcb_13tev"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "screened": true,
+      "decay": "chi_cJ to J/psi gamma, J/psi to mu+mu-",
+      "decay_product_eta":
+        [2.0, 4.5],
+      "pdf": "CTEQ6L1"
+    }
+  },
+  "table9_CTEQ6L1_chic2": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "LHCb decay product pseudorapidity selection",
+    "channel": "chic2",
+    "bibtex": null,
+    "measurement": {
+      "value": 26.0,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_9_chic_lhcb_13tev"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "screened": true,
+      "decay": "chi_cJ to J/psi gamma, J/psi to mu+mu-",
+      "decay_product_eta":
+        [2.0, 4.5],
+      "pdf": "CTEQ6L1"
+    }
+  },
+  "table9_MMHT2014lo68cl_chic0": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "LHCb decay product pseudorapidity selection",
+    "channel": "chic0",
+    "bibtex": null,
+    "measurement": {
+      "value": 77.0,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_9_chic_lhcb_13tev"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "screened": true,
+      "decay": "chi_cJ to J/psi gamma, J/psi to mu+mu-",
+      "decay_product_eta":
+        [2.0, 4.5],
+      "pdf": "MMHT2014lo68cl"
+    }
+  },
+  "table9_MMHT2014lo68cl_chic1": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "LHCb decay product pseudorapidity selection",
+    "channel": "chic1",
+    "bibtex": null,
+    "measurement": {
+      "value": 24.0,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_9_chic_lhcb_13tev"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "screened": true,
+      "decay": "chi_cJ to J/psi gamma, J/psi to mu+mu-",
+      "decay_product_eta":
+        [2.0, 4.5],
+      "pdf": "MMHT2014lo68cl"
+    }
+  },
+  "table9_MMHT2014lo68cl_chic2": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "LHCb decay product pseudorapidity selection",
+    "channel": "chic2",
+    "bibtex": null,
+    "measurement": {
+      "value": 68.0,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_9_chic_lhcb_13tev"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "screened": true,
+      "decay": "chi_cJ to J/psi gamma, J/psi to mu+mu-",
+      "decay_product_eta":
+        [2.0, 4.5],
+      "pdf": "MMHT2014lo68cl"
+    }
+  },
+  "table9_NNPDF30_lo_as_0130_chic0": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "LHCb decay product pseudorapidity selection",
+    "channel": "chic0",
+    "bibtex": null,
+    "measurement": {
+      "value": 39.0,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_9_chic_lhcb_13tev"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "screened": true,
+      "decay": "chi_cJ to J/psi gamma, J/psi to mu+mu-",
+      "decay_product_eta":
+        [2.0, 4.5],
+      "pdf": "NNPDF30_lo_as_0130"
+    }
+  },
+  "table9_NNPDF30_lo_as_0130_chic1": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "LHCb decay product pseudorapidity selection",
+    "channel": "chic1",
+    "bibtex": null,
+    "measurement": {
+      "value": 11.0,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_9_chic_lhcb_13tev"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "screened": true,
+      "decay": "chi_cJ to J/psi gamma, J/psi to mu+mu-",
+      "decay_product_eta":
+        [2.0, 4.5],
+      "pdf": "NNPDF30_lo_as_0130"
+    }
+  },
+  "table9_NNPDF30_lo_as_0130_chic2": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "LHCb decay product pseudorapidity selection",
+    "channel": "chic2",
+    "bibtex": null,
+    "measurement": {
+      "value": 35.0,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_9_chic_lhcb_13tev"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "screened": true,
+      "decay": "chi_cJ to J/psi gamma, J/psi to mu+mu-",
+      "decay_product_eta":
+        [2.0, 4.5],
+      "pdf": "NNPDF30_lo_as_0130"
+    }
+  },
+  "table5_mumu_pt5_eta2p5_bare": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "mumu_pt5_eta2p5_bare",
+    "channel": "mumu",
+    "bibtex": null,
+    "measurement": {
+      "value": 6240.0,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 15,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_5"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {}
+  },
+  "table5_mumu_pt5_eta2p5_screened": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "mumu_pt5_eta2p5_screened",
+    "channel": "mumu",
+    "bibtex": null,
+    "measurement": {
+      "value": 5990.0,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 15,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_5"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {}
+  },
+  "table5_mumu_m_gt_2mw_bare": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "mumu_m_gt_2mw_bare",
+    "channel": "mumu",
+    "bibtex": null,
+    "measurement": {
+      "value": 11.2,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 15,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_5"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {}
+  },
+  "table5_mumu_m_gt_2mw_screened": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "mumu_m_gt_2mw_screened",
+    "channel": "mumu",
+    "bibtex": null,
+    "measurement": {
+      "value": 9.58,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 15,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_5"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {}
+  },
+  "table5_ww_no_cuts_bare": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "ww_no_cuts_bare",
+    "channel": "ww",
+    "bibtex": null,
+    "measurement": {
+      "value": 87.5,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 15,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_5"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {}
+  },
+  "table5_ww_no_cuts_screened": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "ww_no_cuts_screened",
+    "channel": "ww",
+    "bibtex": null,
+    "measurement": {
+      "value": 71.9,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 15,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_5"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {}
+  },
+  "table6_mumu_pt10_eta2p4_bare": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": "icepack/GAMMA/superchic2/table6/bare/gencard.json",
+    "python_cuts": "icepack/_common/cuts_inclusive.py",
+    "pid":
+      [-13, 13],
+    "cuts": "mumu_pt10_eta2p4_bare",
+    "channel": "mumu",
+    "bibtex": null,
+    "measurement": {
+      "value": 0.795,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 7.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_6"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {},
+    "dataset": "icepack/GAMMA/superchic2/table6/bare/dataset.json"
+  },
+  "table6_mumu_pt10_eta2p4_screened": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": "icepack/GAMMA/superchic2/table6/screened/gencard.json",
+    "python_cuts": "icepack/_common/cuts_inclusive.py",
+    "pid":
+      [-13, 13],
+    "cuts": "mumu_pt10_eta2p4_screened",
+    "channel": "mumu",
+    "bibtex": null,
+    "measurement": {
+      "value": 0.742,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 7.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_6"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {},
+    "dataset": "icepack/GAMMA/superchic2/table6/screened/dataset.json"
+  },
+  "table6_ee_pt12_eta2p4_bare": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "ee_pt12_eta2p4_bare",
+    "channel": "ee",
+    "bibtex": null,
+    "measurement": {
+      "value": 0.497,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 7.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_6"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {}
+  },
+  "table6_ee_pt12_eta2p4_screened": {
+    "type": "integrated",
+    "result": "theory",
+    "gencard": null,
+    "python_cuts": null,
+    "pid": null,
+    "cuts": "ee_pt12_eta2p4_screened",
+    "channel": "ee",
+    "bibtex": null,
+    "measurement": {
+      "value": 0.459,
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 7.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8",
+      "table": "table_6"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {}
+  },
+  "figure3_gg": {
+    "type": "differential",
+    "result": "theory",
+    "gencard": "icepack/DURHAM/_common/gencard.json",
+    "python_cuts": "icepack/DURHAM/_common/cuts_inclusive.py",
+    "pid":
+      [21, 21],
+    "cuts": "SuperChic 2 (arXiv:1508.02718) $g g$",
+    "channel": "gg",
+    "bibtex": null,
+    "measurement": {
+      "value":
+        [50.47957589964672, 52.936437780805385, 36.46009710579172, 24.299222595148095, 16.135384587695718, 10.91199971828977, 7.488241415031412, 5.252681017765288, 3.7388038829529298, 2.690587944180927, 1.9647720214674513, 1.4665701384393237, 1.0987050665225024, 0.8413663063002009, 0.6490293522775531, 0.4988338814290583, 0.3904681655281771, 0.31014571612128755, 0.24277025544730255, 0.19638744185133963, 0.1606182169998718, 0.12898458334544002, 0.10822614987368726, 0.0813763328182624, 0.0692856003978519, 0.056873726977896284, 0.0468563019315592, 0.04004059257467946, 0.03203729823571447, 0.027679052567778816],
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "pdf": "MMHT2014lo68cl",
+      "parton_pt_min_gev": 20.0,
+      "absolute_eta_max": 2.5,
+      "generation_mass_range_gev":
+        [40.0, 200.0],
+      "histogram_mass_range_gev":
+        [40.0, 200.0],
+      "histogram_bins": 30,
+      "two_parton_jet_algorithm": "none",
+      "three_parton_jet_algorithm": "anti-kt",
+      "three_parton_jet_radius": 0.6
+    },
+    "digitization": {
+      "provenance": "Step paths extracted from plots/dsigdmj.eps in the official arXiv:1508.02718v2 source archive",
+      "source_sha256": "20ee78b11eea42052adb34e14dc3a3c9b653c9a9570bd3a2e59913a12779bcd9",
+      "native_mass_range_gev":
+        [40.0, 200.0],
+      "coordinate_mapping": {
+        "x_plot":
+          [0.0, 7199.0],
+        "x_gev":
+          [40.0, 200.0],
+        "y_plot":
+          [0.0, 5039.0],
+        "log10_dsigma_pb_per_gev":
+          [-6.0, 2.0]
+      },
+      "x_lower_plot":
+        [0, 240, 480, 720, 960, 1200, 1440, 1680, 1920, 2160, 2400, 2640, 2880, 3120, 3360, 3600, 3839, 4079, 4319, 4559, 4799, 5039, 5279, 5519, 5759, 5999, 6239, 6479, 6719, 6959],
+      "y_plot":
+        [4852, 4865, 4763, 4652, 4540, 4433, 4330, 4233, 4140, 4050, 3964, 3884, 3805, 3732, 3661, 3589, 3522, 3459, 3392, 3334, 3279, 3219, 3171, 3093, 3049, 2995, 2942, 2899, 2838, 2798]
+    },
+    "bins":
+      [40.0, 45.333333333333336, 50.666666666666664, 56.0, 61.33333333333333, 66.66666666666666, 72.0, 77.33333333333333, 82.66666666666666, 88.0, 93.33333333333333, 98.66666666666666, 104.0, 109.33333333333333, 114.66666666666666, 120.0, 125.33333333333333, 130.66666666666666, 136.0, 141.33333333333331, 146.66666666666666, 152.0, 157.33333333333331, 162.66666666666666, 168.0, 173.33333333333331, 178.66666666666666, 184.0, 189.33333333333331, 194.66666666666666, 200.0],
+    "observable": "dsigma_dmx",
+    "dataset": "icepack/DURHAM/partons/dataset.json"
+  },
+  "figure3_qqbar_one_massless_flavour": {
+    "type": "differential",
+    "result": "theory",
+    "gencard": "icepack/DURHAM/_common/gencard.json",
+    "python_cuts": "icepack/DURHAM/_common/cuts_inclusive.py",
+    "pid":
+      [2, -2],
+    "cuts": "SuperChic 2 (arXiv:1508.02718) $u\\bar{u}$",
+    "channel": "qqbar_one_massless_flavour",
+    "bibtex": null,
+    "measurement": {
+      "value":
+        [0.04737299684103888, 0.05096630995735141, 0.03335182985793799, 0.02096487897122017, 0.013082472165758334, 0.008283955277073353, 0.005381446014612219, 0.0035215630093529413, 0.002364205672492559, 0.0016224104918860524, 0.0011215314860207068, 0.0007838357090323604, 0.0005640785061117723, 0.00040445149191605434, 0.0003030014669490281, 0.00022699851727167944, 0.00016098561125401544, 0.00012833787153622374, 0.00010156577119975094, 7.282395490035602e-05, 5.869551018956633e-05, 4.445760071682348e-05, 3.479971678337367e-05, 2.7339654030344704e-05, 2.293968331593985e-05, 1.8489196551581267e-05, 1.4847763585867442e-05, 1.1328630611694601e-05, 9.19778535687913e-06, 8.004861829640537e-06],
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "pdf": "MMHT2014lo68cl",
+      "parton_pt_min_gev": 20.0,
+      "absolute_eta_max": 2.5,
+      "generation_mass_range_gev":
+        [40.0, 200.0],
+      "histogram_mass_range_gev":
+        [40.0, 200.0],
+      "histogram_bins": 30,
+      "two_parton_jet_algorithm": "none",
+      "three_parton_jet_algorithm": "anti-kt",
+      "three_parton_jet_radius": 0.6
+    },
+    "digitization": {
+      "provenance": "Step paths extracted from plots/dsigdmj.eps in the official arXiv:1508.02718v2 source archive",
+      "source_sha256": "20ee78b11eea42052adb34e14dc3a3c9b653c9a9570bd3a2e59913a12779bcd9",
+      "native_mass_range_gev":
+        [40.0, 200.0],
+      "coordinate_mapping": {
+        "x_plot":
+          [0.0, 7199.0],
+        "x_gev":
+          [40.0, 200.0],
+        "y_plot":
+          [0.0, 5039.0],
+        "log10_dsigma_pb_per_gev":
+          [-6.0, 2.0]
+      },
+      "x_lower_plot":
+        [0, 240, 480, 720, 960, 1200, 1440, 1680, 1920, 2160, 2400, 2640, 2880, 3120, 3360, 3600, 3839, 4079, 4319, 4559, 4799, 5039, 5279, 5519, 5759, 5999, 6239, 6479, 6719, 6959],
+      "y_plot":
+        [2945, 2965, 2849, 2722, 2593, 2468, 2350, 2234, 2125, 2022, 1921, 1823, 1733, 1642, 1563, 1484, 1390, 1328, 1264, 1173, 1114, 1038, 971, 905, 857, 798, 738, 664, 607, 569]
+    },
+    "bins":
+      [40.0, 45.333333333333336, 50.666666666666664, 56.0, 61.33333333333333, 66.66666666666666, 72.0, 77.33333333333333, 82.66666666666666, 88.0, 93.33333333333333, 98.66666666666666, 104.0, 109.33333333333333, 114.66666666666666, 120.0, 125.33333333333333, 130.66666666666666, 136.0, 141.33333333333331, 146.66666666666666, 152.0, 157.33333333333331, 162.66666666666666, 168.0, 173.33333333333331, 178.66666666666666, 184.0, 189.33333333333331, 194.66666666666666, 200.0],
+    "observable": "dsigma_dmx",
+    "dataset": "icepack/DURHAM/partons/dataset.json"
+  },
+  "figure3_bbbar": {
+    "type": "differential",
+    "result": "theory",
+    "gencard": "icepack/DURHAM/_common/gencard.json",
+    "python_cuts": "icepack/DURHAM/_common/cuts_inclusive.py",
+    "pid":
+      [5, -5],
+    "cuts": "SuperChic 2 (arXiv:1508.02718) $b\\bar{b}$",
+    "channel": "bbbar",
+    "bibtex": null,
+    "measurement": {
+      "value":
+        [0.11601039993712435, 0.14712687222247556, 0.08786948137509297, 0.050043204078432844, 0.028814759755252238, 0.017021515081546774, 0.010277964763331983, 0.00639023703173677, 0.004105966107538618, 0.002647898717861164, 0.001777670072160201, 0.0011934409968696346, 0.0008249956847488393, 0.0005808185579562103, 0.00041797950861206123, 0.0002964278687557784, 0.0002180515800144886, 0.00015749303831720973, 0.00011885429598403699, 9.035322105900703e-05, 6.670700813076858e-05, 5.2025173165331464e-05, 3.969446077794972e-05, 3.152899019916947e-05, 2.405616721067035e-05, 1.9037896963814534e-05, 1.4367211813473284e-05, 1.232232325955463e-05, 9.680770014980372e-06, 7.495088088728079e-06],
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "pdf": "MMHT2014lo68cl",
+      "parton_pt_min_gev": 20.0,
+      "absolute_eta_max": 2.5,
+      "generation_mass_range_gev":
+        [40.0, 200.0],
+      "histogram_mass_range_gev":
+        [40.0, 200.0],
+      "histogram_bins": 30,
+      "two_parton_jet_algorithm": "none",
+      "three_parton_jet_algorithm": "anti-kt",
+      "three_parton_jet_radius": 0.6
+    },
+    "digitization": {
+      "provenance": "Step paths extracted from plots/dsigdmj.eps in the official arXiv:1508.02718v2 source archive",
+      "source_sha256": "20ee78b11eea42052adb34e14dc3a3c9b653c9a9570bd3a2e59913a12779bcd9",
+      "native_mass_range_gev":
+        [40.0, 200.0],
+      "coordinate_mapping": {
+        "x_plot":
+          [0.0, 7199.0],
+        "x_gev":
+          [40.0, 200.0],
+        "y_plot":
+          [0.0, 5039.0],
+        "log10_dsigma_pb_per_gev":
+          [-6.0, 2.0]
+      },
+      "x_lower_plot":
+        [0, 240, 480, 720, 960, 1200, 1440, 1680, 1920, 2160, 2400, 2640, 2880, 3120, 3360, 3600, 3839, 4079, 4319, 4559, 4799, 5039, 5279, 5519, 5759, 5999, 6239, 6479, 6719, 6959],
+      "y_plot":
+        [3190, 3255, 3114, 2960, 2809, 2665, 2527, 2397, 2276, 2156, 2047, 1938, 1837, 1741, 1651, 1557, 1473, 1384, 1307, 1232, 1149, 1081, 1007, 944, 870, 806, 729, 687, 621, 551]
+    },
+    "bins":
+      [40.0, 45.333333333333336, 50.666666666666664, 56.0, 61.33333333333333, 66.66666666666666, 72.0, 77.33333333333333, 82.66666666666666, 88.0, 93.33333333333333, 98.66666666666666, 104.0, 109.33333333333333, 114.66666666666666, 120.0, 125.33333333333333, 130.66666666666666, 136.0, 141.33333333333331, 146.66666666666666, 152.0, 157.33333333333331, 162.66666666666666, 168.0, 173.33333333333331, 178.66666666666666, 184.0, 189.33333333333331, 194.66666666666666, 200.0],
+    "observable": "dsigma_dmx",
+    "dataset": "icepack/DURHAM/partons/dataset.json"
+  },
+  "figure3_ggg": {
+    "type": "differential",
+    "result": "theory",
+    "gencard": "icepack/DURHAM/_common/gencard.json",
+    "python_cuts": "icepack/DURHAM/_common/cuts_inclusive.py",
+    "pid":
+      [21, 21, 21],
+    "cuts": "SuperChic 2 (arXiv:1508.02718) $g g g$",
+    "channel": "ggg",
+    "bibtex": null,
+    "measurement": {
+      "value":
+        [0.0010310893211360802, 0.006115973127972599, 0.015309370476141088, 0.0267832127537412, 0.0404821291343957, 0.055436827995153315, 0.06511087064870448, 0.06852990581627527, 0.06655477234207006, 0.06163668227006477, 0.05563985496839822, 0.0504104229612575, 0.04484526662568891, 0.03888656334059171, 0.03409144158680796, 0.028604856261795805, 0.02489489732016279, 0.021666108261805393, 0.018925139745155303, 0.01671322004011597, 0.014230003306329517, 0.011983592189216966, 0.011057563861041671, 0.009311968034329725, 0.007928414488583932, 0.007157034026284782, 0.006274496547942368, 0.005480713128791917, 0.005075713759435159, 0.004121003437436581],
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "pdf": "MMHT2014lo68cl",
+      "parton_pt_min_gev": 20.0,
+      "absolute_eta_max": 2.5,
+      "generation_mass_range_gev":
+        [40.0, 200.0],
+      "histogram_mass_range_gev":
+        [40.0, 200.0],
+      "histogram_bins": 30,
+      "two_parton_jet_algorithm": "none",
+      "three_parton_jet_algorithm": "anti-kt",
+      "three_parton_jet_radius": 0.6
+    },
+    "digitization": {
+      "provenance": "Step paths extracted from plots/dsigdmj.eps in the official arXiv:1508.02718v2 source archive",
+      "source_sha256": "20ee78b11eea42052adb34e14dc3a3c9b653c9a9570bd3a2e59913a12779bcd9",
+      "native_mass_range_gev":
+        [60.0, 200.0],
+      "coordinate_mapping": {
+        "x_plot":
+          [0.0, 7199.0],
+        "x_gev":
+          [40.0, 200.0],
+        "y_plot":
+          [0.0, 5039.0],
+        "log10_dsigma_pb_per_gev":
+          [-6.0, 2.0]
+      },
+      "x_lower_plot":
+        [900, 1110, 1320, 1530, 1740, 1950, 2160, 2370, 2580, 2790, 3000, 3210, 3420, 3629, 3839, 4049, 4259, 4469, 4679, 4889, 5099, 5309, 5519, 5729, 5939, 6149, 6359, 6569, 6779, 6989],
+      "y_plot":
+        [1898, 2385, 2636, 2789, 2902, 2988, 3032, 3046, 3038, 3017, 2989, 2962, 2930, 2891, 2855, 2807, 2769, 2731, 2694, 2660, 2616, 2569, 2547, 2500, 2456, 2428, 2392, 2355, 2334, 2277]
+    },
+    "bins":
+      [60.0, 64.66666666666667, 69.33333333333333, 74.0, 78.66666666666667, 83.33333333333334, 88.0, 92.66666666666667, 97.33333333333334, 102.0, 106.66666666666667, 111.33333333333334, 116.0, 120.66666666666667, 125.33333333333334, 130.0, 134.66666666666669, 139.33333333333334, 144.0, 148.66666666666669, 153.33333333333334, 158.0, 162.66666666666669, 167.33333333333334, 172.0, 176.66666666666669, 181.33333333333334, 186.0, 190.66666666666669, 195.33333333333334, 200.0],
+    "observable": "dsigma_dmx",
+    "dataset": "icepack/DURHAM/partons/dataset.json"
+  },
+  "figure3_g_qqbar_one_massless_flavour": {
+    "type": "differential",
+    "result": "theory",
+    "gencard": "icepack/DURHAM/_common/gencard.json",
+    "python_cuts": "icepack/DURHAM/_common/cuts_inclusive.py",
+    "pid":
+      [2, -2, 21],
+    "cuts": "SuperChic 2 (arXiv:1508.02718) $u\\bar{u} g$",
+    "channel": "g_qqbar_one_massless_flavour",
+    "bibtex": null,
+    "measurement": {
+      "value":
+        [1.0263884782441133e-05, 9.002352679569602e-05, 0.00023891843027247015, 0.0004335419802617949, 0.0007584666602148074, 0.0012933870776696524, 0.0016463084698958696, 0.0018038550114869978, 0.0018038550114869978, 0.001713858627455661, 0.0015641722625248265, 0.0014017032572793185, 0.001242409418554275, 0.0010971999293968619, 0.0009514122172114162, 0.0008249956847488393, 0.0007179963665410982, 0.0006248745198263225, 0.0005378987509611638, 0.0004698494490877362, 0.0004074193719260041, 0.000353284536020779, 0.00031199358455448505, 0.00026856745492902776, 0.000237178009266316, 0.00020566357108125122, 0.00017964517559721792, 0.00015577526961766864, 0.00014010628913891835, 0.00012193494874088363],
+      "stat": null,
+      "syst": null,
+      "lumi": null
+    },
+    "unit": 12,
+    "sqrts": 13.0,
+    "reference": {
+      "authors": "L. A. Harland-Lang, V. A. Khoze and M. G. Ryskin",
+      "title": "Exclusive physics at the LHC with SuperChic 2",
+      "journal": "Eur. Phys. J. C 76 (2016) 9",
+      "arxiv": "1508.02718",
+      "doi": "10.1140/epjc/s10052-015-3832-8"
+    },
+    "source": "https://arxiv.org/abs/1508.02718",
+    "fiducial": {
+      "pdf": "MMHT2014lo68cl",
+      "parton_pt_min_gev": 20.0,
+      "absolute_eta_max": 2.5,
+      "generation_mass_range_gev":
+        [40.0, 200.0],
+      "histogram_mass_range_gev":
+        [40.0, 200.0],
+      "histogram_bins": 30,
+      "two_parton_jet_algorithm": "none",
+      "three_parton_jet_algorithm": "anti-kt",
+      "three_parton_jet_radius": 0.6
+    },
+    "digitization": {
+      "provenance": "Step paths extracted from plots/dsigdmj.eps in the official arXiv:1508.02718v2 source archive",
+      "source_sha256": "20ee78b11eea42052adb34e14dc3a3c9b653c9a9570bd3a2e59913a12779bcd9",
+      "native_mass_range_gev":
+        [60.0, 200.0],
+      "coordinate_mapping": {
+        "x_plot":
+          [0.0, 7199.0],
+        "x_gev":
+          [40.0, 200.0],
+        "y_plot":
+          [0.0, 5039.0],
+        "log10_dsigma_pb_per_gev":
+          [-6.0, 2.0]
+      },
+      "x_lower_plot":
+        [900, 1110, 1320, 1530, 1740, 1950, 2160, 2370, 2580, 2790, 3000, 3210, 3420, 3629, 3839, 4049, 4259, 4469, 4679, 4889, 5099, 5309, 5519, 5729, 5939, 6149, 6359, 6569, 6779, 6989],
+      "y_plot":
+        [637, 1231, 1498, 1661, 1814, 1960, 2026, 2051, 2051, 2037, 2012, 1982, 1949, 1915, 1876, 1837, 1799, 1761, 1720, 1683, 1644, 1605, 1571, 1530, 1496, 1457, 1420, 1381, 1352, 1314]
+    },
+    "bins":
+      [60.0, 64.66666666666667, 69.33333333333333, 74.0, 78.66666666666667, 83.33333333333334, 88.0, 92.66666666666667, 97.33333333333334, 102.0, 106.66666666666667, 111.33333333333334, 116.0, 120.66666666666667, 125.33333333333334, 130.0, 134.66666666666669, 139.33333333333334, 144.0, 148.66666666666669, 153.33333333333334, 158.0, 162.66666666666669, 167.33333333333334, 172.0, 176.66666666666669, 181.33333333333334, 186.0, 190.66666666666669, 195.33333333333334, 200.0],
+    "observable": "dsigma_dmx",
+    "dataset": "icepack/DURHAM/partons/dataset.json"
+  }
+}

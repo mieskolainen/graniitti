@@ -1,0 +1,80 @@
+{
+  "active": true,
+  "type": "HEPDATA_1373746",
+  "reader": "./reader.py",
+  "datapath": "HEPData/CEP/HEPData-ins1373746-v1-json/",
+  "reference_sample": "combined 7 and 8 TeV data with predictions at each measured energy",
+  // [REFERENCE: LHCb JHEP 09 (2015) 084, Fig. 4, arXiv:1505.08139]
+  "samples": [
+    {
+      "name": "gp_res_7tev",
+      "label": "GRANIITTI GP[RES] 7 TeV",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "GP[RES]<F> -> mu+ mu- @RES{Y1S:1}", "SCATTERING.ENERGY": [3500,3500]},
+      "scale": 1.0
+    },
+    {
+      "name": "gp_res_8tev",
+      "label": "GRANIITTI GP[RES] 8 TeV",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "GP[RES]<F> -> mu+ mu- @RES{Y1S:1}", "SCATTERING.ENERGY": [4000,4000]},
+      "scale": 1.0
+    },
+    {
+      "name": "jmrt_7tev",
+      "label": "GRANIITTI ygg[$\\Upsilon(1S)$] 7 TeV",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "ygg[Upsilon(1S)]<F> -> mu+ mu-", "SCATTERING.ENERGY": [3500,3500]},
+      "scale": 1.0
+    },
+    {
+      "name": "jmrt_8tev",
+      "label": "GRANIITTI ygg[$\\Upsilon(1S)$] 8 TeV",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "ygg[Upsilon(1S)]<F> -> mu+ mu-", "SCATTERING.ENERGY": [4000,4000]},
+      "scale": 1.0
+    }
+  ],
+  "plot": {"normalization": "cross_section", "unit": "pb", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "LHCb $pp$ 7 and 8 TeV ($\\Upsilon(1S) \\to \\mu^+\\mu^-$)",
+      "plotname": "LHCb_7and8TeV_combined_exclusive_Upsilon1S_fiducial",
+      "title": "Fiducial: $2.0 < Y(\\Upsilon(1S)) < 4.5$, $2.0 < \\eta(\\mu^\\pm) < 4.5$",
+      "state": "Upsilon(1S)",
+      "region": "fiducial",
+      // BR_UPSILON_MUMU is the PDG value for Upsilon(1S) -> mu+ mu-
+      // 1 / BR_UPSILON_MUMU = 1 / 0.0248
+      "mc_scale": 40.3225806451613,
+      "pid": [-13, 13],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"file": "Table1.json", "obs": "Rap", "scale": 1e-12, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "LHCb $pp$ 7 and 8 TeV ($\\Upsilon(1S)$)",
+      "plotname": "LHCb_7and8TeV_combined_exclusive_Upsilon1S_central_system",
+      "title": "Central system: $2.0 < Y(\\Upsilon(1S)) < 4.5$",
+      "state": "Upsilon(1S)",
+      "region": "central_system",
+      // BR_UPSILON_MUMU is the PDG value for Upsilon(1S) -> mu+ mu-
+      // 1 / BR_UPSILON_MUMU = 1 / 0.0248
+      "mc_scale": 40.3225806451613,
+      "pid": [-13, 13],
+      "cuts": "./cuts_central_system.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"file": "Table2.json", "obs": "Rap", "scale": 1e-12, "fitw": 0.0}
+      ]
+    }
+  ]
+}

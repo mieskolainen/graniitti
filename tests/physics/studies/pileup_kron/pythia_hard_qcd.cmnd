@@ -1,0 +1,20 @@
+! Inclusive hard QCD dijets at sqrt(s) = 13 TeV
+Beams:idA = 2212
+Beams:idB = 2212
+Beams:eCM = 13000.0
+
+! A simple hard-scattering sample for pile-up mitigation studies
+HardQCD:all = on
+PhaseSpace:pTHatMin = 100.0
+
+! Use the same local LHAPDF stack as the GRANIITTI Pythia examples
+PDF:pSet = LHAPDF6:NNPDF31_lo_as_0118
+
+! Keep the full visible final state for eta-phi and pT-sum observables
+PartonLevel:ISR = on
+PartonLevel:FSR = on
+PartonLevel:MPI = on
+HadronLevel:all = on
+ParticleDecays:limitTau0 = on
+ParticleDecays:tau0Max = 10.0
+Print:quiet = on

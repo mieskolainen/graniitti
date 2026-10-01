@@ -1,0 +1,59 @@
+{
+  "GENERIC": {
+    "OUTPUT": "STAR_3075716_ppbar",
+    "FORMAT": "hepmc3",
+    "CORES": 0,
+    "NEVENTS": 30000,
+    "INTEGRATOR": "VEGAS",
+    "WEIGHTED": false,
+    "MODELPARAM": "TUNE0",
+    "HIST": 1,
+    "RNDSEED": 12468
+  },
+  "SCATTERING": {
+    "BEAM":
+      ["p+", "p+"],
+    "ENERGY":
+      [255, 255],
+    "PROCESS": "GP[CON]<F> -> p+ p-",
+    "RES":
+      [],
+    "LOOPSCREEN": true,
+    "NSTARS": 0,  // Forward dissociation (0 = elastic, 1 = single, 2 = double)
+    "BEAMFRAG": "none",  // Forward dissociation particle production ('none', 'fewbody', 'cylinder', 'diquark')
+    "LHAPDF": "NNPDF31_lo_as_0118"
+  },
+  "INTEGRATOR": {
+    "min_samples": 100000,
+    "max_samples": 100000000,
+    "precision": 0.02,
+    "LOOPSCREEN": {"extra_kt": 0, "extra_phi": 0},
+    "VEGAS": {"bins": 128, "alpha": 1.25, "rounds": 8, "ncall": 40000, "debug": -1},
+    "NEUROJAC": {},
+    "FLAT": {},
+    "max_w_value": null
+  },
+  "GENCUTS": {
+    "<F>": {
+      "Rap":
+        [-0.9, 0.9],
+      "M":
+        [1.876, 4.0],
+      "Pt":
+        [0.4, 1.3]
+    }
+  },
+  "FIDCUTS": {
+    "active": true,
+    "CENTRAL": {
+      "*": {
+        "Eta":
+          [-0.9, 0.9],
+        "Pt":
+          [0.4, 100000.0]
+      }
+    },
+    "FORWARD": {},
+    "USERCUTS": 3075716020
+  }
+}

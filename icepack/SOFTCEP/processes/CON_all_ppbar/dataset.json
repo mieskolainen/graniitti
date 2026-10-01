@@ -1,0 +1,55 @@
+// Proton antiproton continuum amplitude comparison
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "mp_con",
+      "label": "GRANIITTI MP[CON]",
+      "gencard": "../_common/gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "MP[CON]<F> -> p+ p-"}
+    },
+    {
+      "name": "xp_con",
+      "label": "GRANIITTI XP[CON]",
+      "gencard": "../_common/gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "XP[CON]<F> -> p+ p-"}
+    },
+    {
+      "name": "gp_con",
+      "label": "GRANIITTI GP[CON]",
+      "gencard": "../_common/gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "GP[CON]<F> -> p+ p-"}
+    },
+    {
+      "name": "tp_con",
+      "label": "GRANIITTI TP[CON]",
+      "gencard": "../_common/gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "TP[CON]<F> -> p+ p-"}
+    }
+  ],
+  "plot": {"normalization": "cross_section", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "sets": [
+    {
+      "name": "Proton antiproton continuum amplitudes",
+      "title": "Generation: $M_X<4$ GeV, $|y_X|<2.5$",
+      "plotname": "CON_all_ppbar",
+      "data": false,
+      "pid": [2212, -2212],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SOFTCEP/processes/_common/obs.py",
+      "hist": [
+        {"obs": "M"},
+        {"obs": "Rap"},
+        {"obs": "Pt"},
+        {"obs": "t1"},
+        {"obs": "t2"},
+        {"obs": "Abs_t1t2"},
+        {"obs": "dPhi_pp"},
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"}
+      ]
+    }
+  ]
+}

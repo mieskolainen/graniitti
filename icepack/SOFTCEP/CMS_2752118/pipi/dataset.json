@@ -1,0 +1,36 @@
+{
+  // This card uses post-generator fiducial cuts in the Python code
+  "active": true,
+  "type": "HEPDATA_2752118",
+  "reader": "../_common/reader.py",
+  "datapath": "HEPData/CEP/HEPData-ins2752118-v1-json/",
+  "samples": [
+    {"name": "nominal", "label": "GRANIITTI GP[RES+CON]", "gencard": "./gencard.json", "parameters": {}}
+  ],
+  "plot": {"normalization": "cross_section", "unit": "ub", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "nevents": 30000,
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "CMS $pp$ 13 TeV ($\\pi^+\\pi^-$)",
+      "title": "$|y_{\\pi}|<2$, $0.279<M_X<2.5$ GeV, $0.2<p_{T,p}<0.8$ GeV",
+      "pid": [211, -211],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"file": "Figures19-20-21.json",
+         "obs": "fp1pt_fp2pt_M",
+         "scale": 1E-6,
+         "fitw": 1.0,
+         "rebin_factor": 1
+        }
+      ]
+    }
+  ]
+}

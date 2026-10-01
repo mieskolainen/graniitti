@@ -1,0 +1,159 @@
+// Process steering file
+// JSON(5) + single line/multiline comments allowed, trailing comma allowed
+//
+// The format is strictly upper/lower case sensitive
+//
+// mikael.mieskolainen@cern.ch, 2026
+{
+
+  // ----------------------------------------------------------------------
+  // Generic setup
+
+  "GENERIC" : {
+
+    "OUTPUT"  : "ATLAS17_mumu",         // Output filename
+    "FORMAT"  : "hepmc3",               // hepmc3, hepmc2, hepevt
+    "CORES"   : 0,                      // Number of CPU threads (0 for automatic)
+    "NEVENTS" : 30000,                      // Number of unweighted (weight = 1) events
+    "INTEGRATOR" : "VEGAS",        // "VEGAS" (default), "NEUROJAC", "FLAT" (for debug)
+    "WEIGHTED" : false,       // Weighted events (default false)
+    "MODELPARAM" : "TUNE0",    // General model tune
+    "HIST"    : 0,              // On-the-flight histograms (0 = off,1,2)
+    "RNDSEED" : 12468           // Random seed (uint)
+  },
+
+  // ----------------------------------------------------------------------
+  // Scattering setup
+
+  "SCATTERING" : {
+
+
+    "BEAM" :   ["p+","p+"],     // Beam PDG-ID / Name
+    "ENERGY" : [6500, 6500],    // Beam energy in the lab (GeV)
+    "PROCESS" : "yy[EPA]<C> -> mu+ mu-", // Process ID
+    "RES" : [],
+    "LOOPSCREEN" : true,           // Initial state event-by-event screening loop
+    "NSTARS" : 0,  // Forward dissociation (0 = elastic, 1 = single, 2 = double)
+    "BEAMFRAG": "none",  // Forward dissociation particle production ('none', 'fewbody', 'cylinder', 'diquark')
+    "LHAPDF" : "NNPDF31_lo_as_0118"       // LHAPDF parton distribution set
+  },
+
+  // ----------------------------------------------------------------------
+  // Monte Carlo integrator setup
+
+  "RADIATIVE" : {"ISR_QED" : "none", "FSR_QED" : "YFS"},
+
+  "INTEGRATOR" : {
+
+    // Integration targets after adaptation
+    "min_samples" : 1000000,
+    "max_samples" : 100000000,
+    "precision"   : 0.01,
+
+    // Loop integration
+    "LOOPSCREEN" : {
+      "extra_kt" : 3,  // Extra kT points relative to NUMERICS.json default
+      "extra_phi" : 3   // Extra phi points relative to NUMERICS.json default
+    },
+
+    // VEGAS integrator
+    "VEGAS" : {
+
+      "bins" : 128,      // Maximum number of bins per dimension (NOTE: EVEN NUMBER)
+      "alpha" : 1.25,    // Grid adaptation damping exponent
+      "rounds" : 8,      // Number of adaptation iterations
+      "ncall" : 40000,   // Number of function calls per iteration
+
+      "debug" : -1       // Debug output (default -1)
+    },
+
+    // NEUROJAC integrator
+    "NEUROJAC" : {},
+
+    // FLAT integrator
+    "FLAT" : {},
+
+    // Unweighting max weight
+    "max_w_value"  : null  // user can set here (default automatic)
+  },
+
+  // ----------------------------------------------------------------------
+  // Generation cuts
+
+  "GENCUTS" : {
+
+    "<C>" : {
+      "Rap" : [-10.0,10.0], "M": [12,13000.0]},
+    "<F>" : {
+      "Rap" : [-10.0,10.0], "M": [12,13000.0]},
+    "<Q>" : {
+      "Xi": [0, 0.05]     // Invariant scale M^2/s (forward excitation)
+    }
+  },
+
+  // ----------------------------------------------------------------------
+  // [Quasi]-fiducial cuts (AND between all the cuts)
+
+  "FIDCUTS" : {
+
+    "active" : true,
+
+    // "*" for any final state
+    // "SYSTEM" for the full central system
+    // "[22]" for gammas
+    // "[211,-211]" for a pion pair etc
+
+    "CENTRAL" : {
+
+       // Any central system final states
+      "*" : {
+
+        "Eta"  : [-2.4, 2.4],     // Pseudorapidity
+        //"Rap"  : [-10.0, 10.0],   // Rapidity
+        "Pt"   : [0.1, 100000.0], // Transverse momentum
+        //"Et"   : [0.0, 100000.0]  // Transverse energy
+      },
+
+      // Central system
+      "[13,-13]" : {
+
+        // [REFERENCE: arXiv:1708.04053, Table 2]
+        "M"    : [12.0, 70.0]     // Fiducial mass, without the reconstructed pair-pT selection
+      },
+    },
+
+    // Forward system
+    "FORWARD" : {
+      //"M"    : [0.0, 100000.0], // Mass
+      //"t"    : [0.0, 100000.0], // Forward protons/N* Mandelstam t (absolute value) (GeV^2)
+    },
+
+    // Custom user cuts (default false, otherwise identifier ID)
+    "USERCUTS" : 170804053
+  },
+
+  // ----------------------------------------------------------------------
+  // Veto cuts
+  // A single particle filling the conditions VETO (reject) the event
+  // Particles can originate from any leg of the scattering process
+
+  "VETOCUTS" : {
+
+    "active" : false,
+
+    // Domain 0
+    "0" : {
+      "Eta" : [-7.0, -2.5],
+      "Pt"  : [0.05, 100000.0]
+    },
+
+    // Domain 1
+    "1" : {
+
+      "Eta" : [2.5, 7.0],
+      "Pt"  : [0.05, 100000.0]
+    }
+    // Domain 2 (add arbitrary one more here) ...
+  }
+
+}

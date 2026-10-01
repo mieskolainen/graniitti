@@ -1,0 +1,71 @@
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "jets_0",
+      "label": "SD Z + 0 partons, CKKW-L",
+      "gencard": "./gencard_0.json",
+      "parameters": {},
+      "fragmentation": {
+        "engine": "pythia",
+        "card": "icepack/HARDPOM/z_merging/merging.cmnd",
+        "mode": "shower",
+        "seed": 24680,
+        "attempts": 100
+      }
+    },
+    {
+      "name": "jets_1",
+      "label": "SD Z + 1 partons, CKKW-L",
+      "gencard": "./gencard_1.json",
+      "parameters": {},
+      "fragmentation": {
+        "engine": "pythia",
+        "card": "icepack/HARDPOM/z_merging/merging.cmnd",
+        "mode": "shower",
+        "seed": 24680,
+        "attempts": 100
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "cross_section",
+    "ratio_uncertainty": "combined",
+    "stack": true,
+    "data_style": "hist"
+  },
+  "fit": {
+    "normalization": "cross_section"
+  },
+  "validation": {
+    "nevents": 30000
+  },
+  "sets": [
+    {
+      "name": "SD Z merging",
+      "title": "$|\\eta_\\mu|<2.5$, $p_{T,\\mu}>25$ GeV, $80<M_{\\mu\\mu}<100$ GeV, one forward proton with $0.0001<\\xi<0.1$, $-2<t<0$ GeV$^2$",
+      "data": false,
+      "pid": [
+        -13,
+        13
+      ],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "obs": "m_mumu"
+        },
+        {
+          "obs": "pt_mumu"
+        },
+        {
+          "obs": "y_mumu"
+        },
+        {
+          "obs": "kt01"
+        }
+      ]
+    }
+  ]
+}

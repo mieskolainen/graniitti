@@ -1,0 +1,154 @@
+{
+  "active": true,
+  "type": "HEPDATA_3075716",
+  "reader": "../_common/reader.py",
+  "datapath": "HEPData/CEP/HEPData-ins3075716-v1-json/",
+  "samples": [{"name": "nominal", "label": "GRANIITTI GP[RES+CON]", "gencard": "./gencard.json", "parameters": {}}],
+  "plot": {"normalization": "cross_section", "unit": "nb", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {"require_comparison": true, "require_differential_comparison": true, "require_fiducial_integral_comparison": true, "measurement": {"$ref": "../../../_common/SETTINGS.json#/measurement"}},
+  "sets": [
+    {
+      "name": "STAR $pp$ 0.51 TeV ($\\pi^+\\pi^-$)",
+      "title": "$|\\eta_{\\pi}|<0.9$, $p_{T,\\pi}>0.25$ GeV, proton acceptance",
+      "pid":
+        [211, -211],
+      "cuts": "../_common/cuts.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {"file": "Figure7a.json", "obs": "dPhi_pp", "scale": 1e-12, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "STAR $pp$ 0.51 TeV ($\\pi^+\\pi^-$, $\\Delta\\phi < 90^\\circ$)",
+      "title": "$\\Delta\\phi_{pp}<90^\\circ$, $|\\eta_{\\pi}|<0.9$, $p_{T,\\pi}>0.25$ GeV, proton acceptance",
+      "pid":
+        [211, -211],
+      "cuts": "../_common/cuts_phi0.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {"file": "Figure8a.json", "obs": "M", "scale": 1e-09, "fitw": 1.0},
+        {"file": "Figure9a.json", "obs": "Rap", "scale": 1e-09, "fitw": 1.0},
+        {"file": "Figure10a.json", "obs": "Abs_t1t2", "scale": 1e-09, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "STAR $pp$ 0.51 TeV ($\\pi^+\\pi^-$, $\\Delta\\phi > 90^\\circ$)",
+      "title": "$\\Delta\\phi_{pp}>90^\\circ$, $|\\eta_{\\pi}|<0.9$, $p_{T,\\pi}>0.25$ GeV, proton acceptance",
+      "pid":
+        [211, -211],
+      "cuts": "../_common/cuts_phi1.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {"file": "Figure8b.json", "obs": "M", "scale": 1e-09, "fitw": 1.0},
+        {"file": "Figure9b.json", "obs": "Rap", "scale": 1e-09, "fitw": 1.0},
+        {"file": "Figure10b.json", "obs": "Abs_t1t2", "scale": 1e-09, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "STAR $pp$ 0.51 TeV ($\\pi^+\\pi^-$, $M \\in [0,1)$ GeV)",
+      "title": "$M_X<1$ GeV, $|\\eta_{\\pi}|<0.9$, $p_{T,\\pi}>0.25$ GeV, proton acceptance",
+      "pid":
+        [211, -211],
+      "cuts": "../_common/cuts_M0.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {"file": "Figure11a.json", "obs": "dPhi_pp", "scale": 1e-12, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "STAR $pp$ 0.51 TeV ($\\pi^+\\pi^-$, $M \\in [0,1)$ GeV, $\\Delta\\phi < 90^\\circ$)",
+      "title": "$M_X<1$ GeV, $\\Delta\\phi_{pp}<90^\\circ$, $|\\eta_{\\pi}|<0.9$, $p_{T,\\pi}>0.25$ GeV, proton acceptance",
+      "pid":
+        [211, -211],
+      "cuts": "../_common/cuts_M0_phi0.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {"file": "Figure12a.json", "obs": "Rap", "scale": 1e-09, "fitw": 1.0},
+        {"file": "Figure13a.json", "obs": "Abs_t1t2", "scale": 1e-09, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "STAR $pp$ 0.51 TeV ($\\pi^+\\pi^-$, $M \\in [0,1)$ GeV, $\\Delta\\phi > 90^\\circ$)",
+      "title": "$M_X<1$ GeV, $\\Delta\\phi_{pp}>90^\\circ$, $|\\eta_{\\pi}|<0.9$, $p_{T,\\pi}>0.25$ GeV, proton acceptance",
+      "pid":
+        [211, -211],
+      "cuts": "../_common/cuts_M0_phi1.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {"file": "Figure12d.json", "obs": "Rap", "scale": 1e-09, "fitw": 1.0},
+        {"file": "Figure13d.json", "obs": "Abs_t1t2", "scale": 1e-09, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "STAR $pp$ 0.51 TeV ($\\pi^+\\pi^-$, $M \\in [1,1.5)$ GeV)",
+      "title": "$1\\leq M_X<1.5$ GeV, $|\\eta_{\\pi}|<0.9$, $p_{T,\\pi}>0.25$ GeV, proton acceptance",
+      "pid":
+        [211, -211],
+      "cuts": "../_common/cuts_M1.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {"file": "Figure11b.json", "obs": "dPhi_pp", "scale": 1e-12, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "STAR $pp$ 0.51 TeV ($\\pi^+\\pi^-$, $M \\in [1,1.5)$ GeV, $\\Delta\\phi < 90^\\circ$)",
+      "title": "$1\\leq M_X<1.5$ GeV, $\\Delta\\phi_{pp}<90^\\circ$, $|\\eta_{\\pi}|<0.9$, $p_{T,\\pi}>0.25$ GeV, proton acceptance",
+      "pid":
+        [211, -211],
+      "cuts": "../_common/cuts_M1_phi0.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {"file": "Figure12b.json", "obs": "Rap", "scale": 1e-09, "fitw": 1.0},
+        {"file": "Figure13b.json", "obs": "Abs_t1t2", "scale": 1e-09, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "STAR $pp$ 0.51 TeV ($\\pi^+\\pi^-$, $M \\in [1,1.5)$ GeV, $\\Delta\\phi > 90^\\circ$)",
+      "title": "$1\\leq M_X<1.5$ GeV, $\\Delta\\phi_{pp}>90^\\circ$, $|\\eta_{\\pi}|<0.9$, $p_{T,\\pi}>0.25$ GeV, proton acceptance",
+      "pid":
+        [211, -211],
+      "cuts": "../_common/cuts_M1_phi1.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {"file": "Figure12e.json", "obs": "Rap", "scale": 1e-09, "fitw": 1.0},
+        {"file": "Figure13e.json", "obs": "Abs_t1t2", "scale": 1e-09, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "STAR $pp$ 0.51 TeV ($\\pi^+\\pi^-$, $M \\in [1.5,\\infty)$ GeV)",
+      "title": "$M_X\\geq1.5$ GeV, $|\\eta_{\\pi}|<0.9$, $p_{T,\\pi}>0.25$ GeV, proton acceptance",
+      "pid":
+        [211, -211],
+      "cuts": "../_common/cuts_M2.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {"file": "Figure11c.json", "obs": "dPhi_pp", "scale": 1e-12, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "STAR $pp$ 0.51 TeV ($\\pi^+\\pi^-$, $M \\in [1.5,\\infty)$ GeV, $\\Delta\\phi < 90^\\circ$)",
+      "title": "$M_X\\geq1.5$ GeV, $\\Delta\\phi_{pp}<90^\\circ$, $|\\eta_{\\pi}|<0.9$, $p_{T,\\pi}>0.25$ GeV, proton acceptance",
+      "pid":
+        [211, -211],
+      "cuts": "../_common/cuts_M2_phi0.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {"file": "Figure12c.json", "obs": "Rap", "scale": 1e-09, "fitw": 1.0},
+        {"file": "Figure13c.json", "obs": "Abs_t1t2", "scale": 1e-09, "fitw": 1.0}
+      ]
+    },
+    {
+      "name": "STAR $pp$ 0.51 TeV ($\\pi^+\\pi^-$, $M \\in [1.5,\\infty)$ GeV, $\\Delta\\phi > 90^\\circ$)",
+      "title": "$M_X\\geq1.5$ GeV, $\\Delta\\phi_{pp}>90^\\circ$, $|\\eta_{\\pi}|<0.9$, $p_{T,\\pi}>0.25$ GeV, proton acceptance",
+      "pid":
+        [211, -211],
+      "cuts": "../_common/cuts_M2_phi1.py",
+      "obs": "../_common/obs.py",
+      "hist": [
+        {"file": "Figure12f.json", "obs": "Rap", "scale": 1e-09, "fitw": 1.0},
+        {"file": "Figure13f.json", "obs": "Abs_t1t2", "scale": 1e-09, "fitw": 1.0}
+      ]
+    }
+  ]
+}

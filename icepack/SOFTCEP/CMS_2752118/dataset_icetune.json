@@ -1,0 +1,42 @@
+// Dataset for icetune with rebinning
+{
+  "active": true,
+  "type": "HEPDATA_2752118",
+  "reader": "icepack/SOFTCEP/CMS_2752118/_common/reader.py",
+  "datapath": "HEPData/CEP/HEPData-ins2752118-v1-json/",
+  "samples": [
+    {"name": "nominal", "label": "GRANIITTI", "gencard": "icepack/SOFTCEP/CMS_2752118/pipi/gencard.json", "parameters": {}}
+  ],
+  "plot": {"normalization": "cross_section", "unit": "ub", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {"nevents": 30000},
+  "sets": [
+    {
+      "name": "CMS $pp$ 13 TeV ($\\pi^+\\pi^-$)",
+      "pid": [211, -211],
+      "cuts": "icepack/SOFTCEP/CMS_2752118/pipi/cuts.py",
+      "obs": "icepack/SOFTCEP/CMS_2752118/pipi/obs.py",
+      "hist": [
+        {"file": "Figures19-20-21.json", "obs": "fp1pt_fp2pt_M", "scale": 1E-6, "fitw": 1.0, "rebin_factor": 5, "file_filter": "`p_{1,T} [GeV]` in [0.275, 0.375, 0.475, 0.625, 0.725] and `p_{2,T} [GeV]` in [0.275, 0.375, 0.475, 0.625, 0.725]"}
+      ]
+    },
+    {
+      "name": "CMS $pp$ 13 TeV ($\\pi^+\\pi^-$, $M \\in [0.35,0.65]$ GeV)",
+      "pid": [211, -211],
+      "cuts": "icepack/SOFTCEP/CMS_2752118/pipi_0p7/cuts_0p35--0p65.py",
+      "obs": "icepack/SOFTCEP/CMS_2752118/pipi_0p7/obs.py",
+      "hist": [
+        {"file": "Figures9-10-1115-16-17.json", "obs": "fp1pt_fp2pt_dPhi_pp", "scale": 1E-6, "fitw": 1.0, "rebin_factor": 4, "file_filter": "`p_{1,T} [GeV]` in [0.275, 0.375, 0.475, 0.625, 0.725] and `p_{2,T} [GeV]` in [0.275, 0.375, 0.475, 0.625, 0.725]"}
+      ]
+    },
+    {
+      "name": "CMS $pp$ 13 TeV ($\\pi^+\\pi^-$, $M \\in [1.8,2.2]$ GeV)",
+      "pid": [211, -211],
+      "cuts": "icepack/SOFTCEP/CMS_2752118/pipi_1p8--2p2/cuts.py",
+      "obs": "icepack/SOFTCEP/CMS_2752118/pipi_1p8--2p2/obs.py",
+      "hist": [
+        {"file": "Figures22-23.json", "obs": "fp1pt_fp2pt_max_hat_tu", "scale": 1E-6, "fitw": 1.0, "rebin_factor": 4, "file_filter": "`p_{1,T} [GeV]` in [0.275, 0.375, 0.475, 0.625, 0.725] and `p_{2,T} [GeV]` in [0.275, 0.375, 0.475, 0.625, 0.725]"}
+      ]
+    }
+  ]
+}

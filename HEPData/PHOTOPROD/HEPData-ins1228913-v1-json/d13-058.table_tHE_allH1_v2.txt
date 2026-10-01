@@ -1,0 +1,93 @@
+# Elastic and proton-dissociative photoproduction of J/psi mesons at HERA
+#  [arXiv:1304.5162]
+# and
+# Diffractive Photoproduction of J/psi Mesons with Large Momentum Transfer at HERA
+#  [hep-ex/0306013]
+#
+# In this document, the differential cross sections as a function of t
+#  are given for the high energy dataset together with a decomposition
+#  of the error matrix. Additional points from an older measurements,
+#  extending the reach in t, are also included
+#
+# The table has 27 rows, corresponding to 27 cross section
+#  measurements. Each row has 23 columns, as explained below.
+# Rows 1-17 correspond to table 5 of [arXiv:1304.5162].
+# Rows 18-27 correspond to table 1 of [hep-ex/0306013].
+#
+# Version 1, date: 20.6.2013
+# Version 2, date: 7.2.2016 [fixed typo in row 6, column 'tavg']
+#
+# Column 1-8: differential cross section measurement
+# column    comment
+# =====================
+#  1 (n)    row number
+#  2 (pd)   pd=0 if the reaction is elastic, pd=1 if proton dissociative
+#  3 (|tmin|) lower bound on the modulus of the momentum transfer [GeV^2]
+#  4 (|tmax|) upper bound on the modulus of the momentum transfer [GeV^2]
+#  5 (|tavg|) average modulus of the momentum transfer [GeV^2]
+#  6 (PhiT) transverse polarized photon flux
+#  7 (sigm) measured differential cross section [nanobarn/GeV^2]
+#  8 (dsig) total uncertainty on the differential cross section [nanobarn/GeV^2]
+#
+# Column 9-22: error sources
+# column    comment
+# ===================
+#  9 (dunc) uncorrelated uncertainty [nanobarn/GeV^2]
+# 10 (dc1)  1st correlated uncertainty from data combination [nanobarn/GeV^2]
+# 11 (dc2)  2nd correlated uncertainty from data combination [nanobarn/GeV^2]
+# 12 (dc3)  3rd correlated uncertainty from data combination [nanobarn/GeV^2]
+# 13 (dc4)  4th correlated uncertainty from data combination [nanobarn/GeV^2]
+# 14 (dc5)  5th correlated uncertainty from data combination [nanobarn/GeV^2]
+# 15 (rnor) normalisation uncertainty from trigger, track and psi(2S) [percent]
+# 16 (rlhe) luminosity uncertainty for this (high energy) data set [percent]
+# 17 (rlar) LAr tagging uncertainty [percent]
+# 18 (rplu) PLUG tagging uncertainty [percent]
+# 19 (rfts) FTS tagging uncertainty [percent]
+# 20 (rmod) model uncertainty [percent]
+# 21 (rq2)  Q^2 dependence uncertainty [percent]
+# 22 (rec)  empty calorimeter cut uncertainty [percent]
+# 23 (rhe1) hera 1 data correlated uncertainty [percent]
+#
+# Note 1: the uncertainties from col=8 to col=14 are absolute uncertainties
+#  measured in nanobarn/GeV^2, whereas the uncertainties from col=15 to col=23
+#  are given in percent, relative to col=7.
+#
+# Note 2: when adding all uncertainty sources corresponding col=9 up to
+#  col=23 quadratically, the result is equal to the total uncertainty
+#  given in col=8 (sanity check).
+#
+# Note 3: the uncertainties given in col=10 up to col=23 are correlated
+#  across the rows of the table, i.e. they contribute to the
+#  off-diagonals of the covariance matrix. In contrast, the
+#  uncertainties given in col=9 are uncorrelated, so they contribute only
+#  to the diagonals of the covariance matrix.
+#
+#n pd tmin tmax tavg PhiT   sigm  dsig   dunc   dc1   dc2    dc3   dc4   dc5  rnor rlhe rlar rplu rfts  rmod   rq2   rec  rhe1
+#=================================================================================================================================
+ 1 0 0.00  0.05 0.02 0.0953  336.0  18.4   6.2   8.8  -2.3    0.5    0.1   0.0 3.2 2.7  -1.0  0.2 -0.1  -0.6  -0.1   0.5   0.
+ 2 0 0.05  0.11 0.08 0.0953  240.5  12.9   4.9   4.2   3.2    0.7   -0.1  -0.1 3.2 2.7  -1.2  0.3 -0.1  -0.7  -0.1   0.6   0.
+ 3 0 0.11  0.17 0.14 0.0953  161.2   9.3   4.4   2.6   1.9   -0.4    0.3   0.2 3.2 2.7  -1.6  0.3 -0.1  -1.0  -0.1   0.8   0.
+ 4 0 0.17  0.25 0.21 0.0953  111.4   7.0   2.0   2.0   0.1   -3.0    0.1   0.0 3.2 2.7  -2.2  0.5 -0.1  -1.4  -0.1   1.0   0.
+ 5 0 0.25  0.35 0.30 0.0953   70.4   5.1   2.7   1.2   0.1   -0.2   -1.0  -0.5 3.2 2.7  -2.9  0.6 -0.2  -1.9  -0.1   1.4   0.
+ 6 0 0.35  0.49 0.41 0.0953   41.2   3.7   1.8   0.7   0.2    0.1   -1.0   0.3 3.2 2.7  -4.6  1.0 -0.3  -3.0   0.0   2.3   0.
+ 7 0 0.49  0.69 0.58 0.0953  18.00  2.74  0.97  0.32  0.08  -0.05  -0.23  0.92 3.2 2.7  -9.2  2.1 -0.6  -6.5   0.1   4.7   0.
+ 8 0 0.69   1.2  0.9 0.0953   4.83  1.75  0.63  0.08  0.02   0.01   0.04  0.20 3.2 2.7 -24.0  5.8 -1.4 -18.0   0.8  13.0   0.
+ 9 1  0.0   0.2  0.1 0.0953   47.3   6.7   2.1   0.5  -0.0   -0.3   -0.8   0.2 3.2 2.7  11.0 -2.2  0.6   3.6  -0.1  -4.6   0.
+10 1  0.2   0.4 0.29 0.0953   43.8   6.0   1.6   0.7   0.3    0.3    0.6   0.3 3.2 2.7  11.0 -2.4  0.6   2.2  -0.0  -4.7   0.
+11 1  0.4  0.64 0.52 0.0953   36.7   5.1   1.3   0.6   0.3   -0.1    0.5  -0.4 3.2 2.7  11.0 -2.6  0.7   2.0  -0.1  -5.0   0.
+12 1 0.64  0.93 0.78 0.0953   27.8   4.2   1.0   0.5   0.2   -0.2   -0.2  -0.6 3.2 2.7  12.0 -2.9  0.7   2.8  -0.1  -5.7   0.
+13 1 0.93  1.31 1.12 0.0953  16.80  2.59  0.82  0.23  0.07  -0.05  -0.13 -0.05 3.2 2.7  12.0 -3.1  0.7   2.0  -0.1  -5.9   0.
+14 1 1.31  1.83 1.55 0.0953  10.05  1.56  0.47  0.20  0.07  -0.03  -0.06  0.05 3.2 2.7  12.0 -3.1  0.5   1.7   0.0  -6.2   0.
+15 1 1.83  2.63 2.21 0.0953   6.04  0.68  0.31  0.11  0.04  -0.02  -0.03  0.01 3.2 2.7   6.0 -1.7  0.3  -5.5   0.5  -3.0   0.
+16 1 2.63  4.13 3.30 0.0953   2.80  0.38  0.15  0.04  0.01  -0.01  -0.01  0.00 3.2 2.7   6.7 -1.9  0.3  -8.7   0.5  -3.6   0.
+17 1 4.13  8.0  5.71 0.0953  0.875 0.178 0.047 0.039 0.015 -0.006 -0.010 0.004 3.2 2.7   9.0 -2.5  0.3 -15.0   0.2  -5.4   0.
+18 1  2.0  3.0  2.43 0.0000  4.753 0.663 0.270   0.    0.    0.      0.    0.   0.  0.    0.   0.   0.    0.    0.    0. 12.7
+19 1  3.0  4.0  3.45 0.0000  2.871 0.422 0.214   0.    0.    0.      0.    0.   0.  0.    0.   0.   0.    0.    0.    0. 12.7
+20 1  4.0  5.0  4.46 0.0000  1.370 0.218 0.140   0.    0.    0.      0.    0.   0.  0.    0.   0.   0.    0.    0.    0. 12.2
+21 1  5.0  6.0  5.47 0.0000  0.811 0.152 0.112   0.    0.    0.      0.    0.   0.  0.    0.   0.   0.    0.    0.    0. 12.6
+22 1  6.0  7.0  6.47 0.0000  0.569 0.115 0.092   0.    0.    0.      0.    0.   0.  0.    0.   0.   0.    0.    0.    0. 12.1
+23 1  7.0  9.0  7.92 0.0000  0.266 0.053 0.043   0.    0.    0.      0.    0.   0.  0.    0.   0.   0.    0.    0.    0. 11.9
+24 1  9.0  12.  10.4 0.0000  0.141 0.029 0.024   0.    0.    0.      0.    0.   0.  0.    0.   0.   0.    0.    0.    0. 11.3
+25 1 12.0  15.  13.4 0.0000  0.087 0.021 0.019   0.    0.    0.      0.    0.   0.  0.    0.   0.   0.    0.    0.    0. 10.8
+26 1 15.0  21.  17.7 0.0000 0.0220 0.0067 0.0062 0.    0.    0.      0.    0.   0.  0.    0.   0.   0.    0.    0.    0. 11.4
+27 1 21.0  30.  25.0 0.0000 0.0042 0.0022 0.0021 0.    0.    0.      0.    0.   0.  0.    0.   0.   0.    0.    0.    0. 11.1

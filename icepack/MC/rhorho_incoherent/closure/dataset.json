@@ -1,0 +1,123 @@
+// Matched F/C and BW/flat proposal closure with incoherent decay assignments
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "F_BW",
+      "label": "rhorho_incoherent F_BW",
+      "gencard": "icepack/SPIN/_common/gencard_4body.json",
+      "parameters": {
+        "GENERIC.INTEGRATOR": "VEGAS",
+        "GENERIC.RNDSEED": 24681,
+        "SCATTERING.PROCESS": "GP[CON]<F> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-} @OFFSHELL:3 @FLATMASS2:false",
+        "GENCUTS.<F>.M": [0.0, 4.0],
+        "GENCUTS.<F>.Rap": [-0.9, 0.9],
+        "FIDCUTS.active": true,
+        "FIDCUTS.CENTRAL[\"*\"].Eta": [-0.9, 0.9],
+        "FIDCUTS.CENTRAL[\"*\"].Rap": [-0.9, 0.9],
+        "FIDCUTS.CENTRAL[\"*\"].Pt": [0.15, 100000.0],
+        "FIDCUTS.CENTRAL[\"SYSTEM\"].M": [0.0, 4.0],
+        "FIDCUTS.CENTRAL[\"SYSTEM\"].Rap": [-0.9, 0.9],
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": false
+      }
+    },
+    {
+      "name": "C_BW",
+      "label": "rhorho_incoherent C_BW",
+      "gencard": "icepack/SPIN/_common/gencard_4body.json",
+      "parameters": {
+        "GENERIC.INTEGRATOR": "VEGAS",
+        "GENERIC.RNDSEED": 32600,
+        "SCATTERING.PROCESS": "GP[CON]<C> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-} @OFFSHELL:3 @FLATMASS2:false",
+        "GENCUTS.<C>.M": [0.0, 4.0],
+        "GENCUTS.<C>.Rap": [-0.9, 0.9],
+        "FIDCUTS.active": true,
+        "FIDCUTS.CENTRAL[\"*\"].Eta": [-0.9, 0.9],
+        "FIDCUTS.CENTRAL[\"*\"].Rap": [-0.9, 0.9],
+        "FIDCUTS.CENTRAL[\"*\"].Pt": [0.15, 100000.0],
+        "FIDCUTS.CENTRAL[\"SYSTEM\"].M": [0.0, 4.0],
+        "FIDCUTS.CENTRAL[\"SYSTEM\"].Rap": [-0.9, 0.9],
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": false
+      }
+    },
+    {
+      "name": "F_flat",
+      "label": "rhorho_incoherent F_flat",
+      "gencard": "icepack/SPIN/_common/gencard_4body.json",
+      "parameters": {
+        "GENERIC.INTEGRATOR": "VEGAS",
+        "GENERIC.RNDSEED": 40519,
+        "SCATTERING.PROCESS": "GP[CON]<F> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-} @OFFSHELL:3 @FLATMASS2:true",
+        "GENCUTS.<F>.M": [0.0, 4.0],
+        "GENCUTS.<F>.Rap": [-0.9, 0.9],
+        "FIDCUTS.active": true,
+        "FIDCUTS.CENTRAL[\"*\"].Eta": [-0.9, 0.9],
+        "FIDCUTS.CENTRAL[\"*\"].Rap": [-0.9, 0.9],
+        "FIDCUTS.CENTRAL[\"*\"].Pt": [0.15, 100000.0],
+        "FIDCUTS.CENTRAL[\"SYSTEM\"].M": [0.0, 4.0],
+        "FIDCUTS.CENTRAL[\"SYSTEM\"].Rap": [-0.9, 0.9],
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": false
+      }
+    },
+    {
+      "name": "C_flat",
+      "label": "rhorho_incoherent C_flat",
+      "gencard": "icepack/SPIN/_common/gencard_4body.json",
+      "parameters": {
+        "GENERIC.INTEGRATOR": "VEGAS",
+        "GENERIC.RNDSEED": 48438,
+        "SCATTERING.PROCESS": "GP[CON]<C> -> rho(770)0 > {pi+ pi-} rho(770)0 > {pi+ pi-} @OFFSHELL:3 @FLATMASS2:true",
+        "GENCUTS.<C>.M": [0.0, 4.0],
+        "GENCUTS.<C>.Rap": [-0.9, 0.9],
+        "FIDCUTS.active": true,
+        "FIDCUTS.CENTRAL[\"*\"].Eta": [-0.9, 0.9],
+        "FIDCUTS.CENTRAL[\"*\"].Rap": [-0.9, 0.9],
+        "FIDCUTS.CENTRAL[\"*\"].Pt": [0.15, 100000.0],
+        "FIDCUTS.CENTRAL[\"SYSTEM\"].M": [0.0, 4.0],
+        "FIDCUTS.CENTRAL[\"SYSTEM\"].Rap": [-0.9, 0.9],
+        "GENERAL.json:PARAM_SPIN.DECAY_SYM": false
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "cross_section",
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "hist"
+  },
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "nevents": 50000,
+    "mc_reference": "F_BW",
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "max_abs_integral_pull": 5.0,
+    "max_chi2_ndf": 3.0,
+    "max_shape_l1": 0.3,
+    "max_integral_factor": 1.12,
+    "min_mc_effective_events": 3000
+  },
+  "sets": [
+    {
+      "name": "rhorho_incoherent",
+      "title": "$|\\eta_{\\pi}|<0.9$, $|y_{\\pi}|<0.9$, $p_{T,\\pi}>0.15$ GeV, $M_X<4$ GeV, $|y_X|<0.9$",
+      "data": false,
+      "pid": [211, -211, 211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "../../_common/obs_four_body.py",
+      "hist": [
+        {"obs": "cross_section"},
+        {"obs": "M"},
+        {"obs": "Rap"},
+        {"obs": "dPhi_pp"},
+        {"obs": "4body_M_A"},
+        {"obs": "4body_M_B"},
+        {"obs": "4body_cos1"},
+        {"obs": "4body_cos2"},
+        {"obs": "4body_phi12"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "output": {
+    "transform": "power"
+  },
+  "gp": {
+    "lr": 0.01,
+    "num_epochs": 100,
+    "optimizer": "psgld",
+    "noise_lb": 0.0008,
+    "noise_guess": 0.01,
+    "pred_likeli": false,
+    "ard_kernel": true,
+    "max_exact_trials": 3000,
+    "verbose": false
+  },
+  "sparse_gp": {
+    "lr": 0.01,
+    "lr_vp": 0.1,
+    "num_epochs": 30,
+    "batch_size": 4096,
+    "num_inducing": 128,
+    "learn_u": true
+  },
+  "topology": {
+    "enabled": true,
+    "nu": 1.5,
+    "lengthscale_scale": 1.0,
+    "outputscale_prior_shape": 0.5,
+    "outputscale_prior_rate": 0.5
+  },
+  "acquisition": {
+    "population": 100,
+    "generations": 100,
+    "eps": 0.0001,
+    "kappa_scale": 0.5,
+    "delta": 0.01
+  },
+  "pending": {
+    "lie": "worst",
+    "penalty_scale": 1.0
+  }
+}

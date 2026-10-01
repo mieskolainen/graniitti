@@ -1,0 +1,621 @@
+// Compare f2 spin filters for Pomeron spins 0, 1 and 2
+// Spin-zero exchange has only (L,S)=(2,0), retained once per pure |Jz| state
+// Mixed Jz=0,+/-2 states test phase interference or diagonal density weights
+// Spin-one and spin-two exchange retain the three distinct automatic basis prescriptions
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "p0_jz0_min_ls",
+      "label": "GRANIITTI MP[RES] ($J_z=0$, $(L,S)=(2,0)$)",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:1,JZ1:0,JZ2:0}",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_min_L",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].@key": "[991,991]",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[991,991]\"].polarization.mode": "rho"
+      }
+    },
+    {
+      "name": "p0_jz1_min_ls",
+      "label": "GRANIITTI MP[RES] ($|J_z|=1$, $(L,S)=(2,0)$)",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:0,JZ1:1,JZ2:0}",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_min_L",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].@key": "[991,991]",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[991,991]\"].polarization.mode": "rho"
+      }
+    },
+    {
+      "name": "p0_jz2_min_ls",
+      "label": "GRANIITTI MP[RES] ($|J_z|=2$, $(L,S)=(2,0)$)",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:0,JZ1:0,JZ2:1}",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_min_L",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].@key": "[991,991]",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[991,991]\"].polarization.mode": "rho"
+      }
+    },
+    {
+      "name": "p1_jz0_flat_hel",
+      "label": "GRANIITTI MP[RES] ($J_z=0$, flat helicity)",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:1,JZ1:0,JZ2:0}",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_equal_helicity",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].@key": "[993,993]",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[993,993]\"].polarization.mode": "rho"
+      }
+    },
+    {
+      "name": "p1_jz0_flat_ls",
+      "label": "GRANIITTI MP[RES] ($J_z=0$, flat LS)",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:1,JZ1:0,JZ2:0}",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_equal_ls",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].@key": "[993,993]",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[993,993]\"].polarization.mode": "rho"
+      }
+    },
+    {
+      "name": "p1_jz0_min_ls",
+      "label": "GRANIITTI MP[RES] ($J_z=0$, minimal LS)",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:1,JZ1:0,JZ2:0}",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_min_L",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].@key": "[993,993]",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[993,993]\"].polarization.mode": "rho"
+      }
+    },
+    {
+      "name": "p1_jz1_flat_hel",
+      "label": "GRANIITTI MP[RES] ($|J_z|=1$, flat helicity)",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:0,JZ1:1,JZ2:0}",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_equal_helicity",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].@key": "[993,993]",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[993,993]\"].polarization.mode": "rho"
+      }
+    },
+    {
+      "name": "p1_jz1_flat_ls",
+      "label": "GRANIITTI MP[RES] ($|J_z|=1$, flat LS)",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:0,JZ1:1,JZ2:0}",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_equal_ls",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].@key": "[993,993]",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[993,993]\"].polarization.mode": "rho"
+      }
+    },
+    {
+      "name": "p1_jz1_min_ls",
+      "label": "GRANIITTI MP[RES] ($|J_z|=1$, minimal LS)",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:0,JZ1:1,JZ2:0}",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_min_L",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].@key": "[993,993]",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[993,993]\"].polarization.mode": "rho"
+      }
+    },
+    {
+      "name": "p1_jz2_flat_hel",
+      "label": "GRANIITTI MP[RES] ($|J_z|=2$, flat helicity)",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:0,JZ1:0,JZ2:1}",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_equal_helicity",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].@key": "[993,993]",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[993,993]\"].polarization.mode": "rho"
+      }
+    },
+    {
+      "name": "p1_jz2_flat_ls",
+      "label": "GRANIITTI MP[RES] ($|J_z|=2$, flat LS)",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:0,JZ1:0,JZ2:1}",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_equal_ls",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].@key": "[993,993]",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[993,993]\"].polarization.mode": "rho"
+      }
+    },
+    {
+      "name": "p1_jz2_min_ls",
+      "label": "GRANIITTI MP[RES] ($|J_z|=2$, minimal LS)",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:0,JZ1:0,JZ2:1}",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_min_L",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].@key": "[993,993]",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[993,993]\"].polarization.mode": "rho"
+      }
+    },
+    {
+      "name": "p2_jz0_flat_hel",
+      "label": "GRANIITTI MP[RES] ($J_z=0$, flat helicity)",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:1,JZ1:0,JZ2:0}",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_equal_helicity",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].polarization.mode": "rho"
+      }
+    },
+    {
+      "name": "p2_jz0_flat_ls",
+      "label": "GRANIITTI MP[RES] ($J_z=0$, flat LS)",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:1,JZ1:0,JZ2:0}",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_equal_ls",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].polarization.mode": "rho"
+      }
+    },
+    {
+      "name": "p2_jz0_min_ls",
+      "label": "GRANIITTI MP[RES] ($J_z=0$, minimal LS)",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:1,JZ1:0,JZ2:0}",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_min_L",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].polarization.mode": "rho"
+      }
+    },
+    {
+      "name": "p2_jz1_flat_hel",
+      "label": "GRANIITTI MP[RES] ($|J_z|=1$, flat helicity)",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:0,JZ1:1,JZ2:0}",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_equal_helicity",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].polarization.mode": "rho"
+      }
+    },
+    {
+      "name": "p2_jz1_flat_ls",
+      "label": "GRANIITTI MP[RES] ($|J_z|=1$, flat LS)",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:0,JZ1:1,JZ2:0}",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_equal_ls",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].polarization.mode": "rho"
+      }
+    },
+    {
+      "name": "p2_jz1_min_ls",
+      "label": "GRANIITTI MP[RES] ($|J_z|=1$, minimal LS)",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:0,JZ1:1,JZ2:0}",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_min_L",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].polarization.mode": "rho"
+      }
+    },
+    {
+      "name": "p2_jz2_flat_hel",
+      "label": "GRANIITTI MP[RES] ($|J_z|=2$, flat helicity)",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:0,JZ1:0,JZ2:1}",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_equal_helicity",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].polarization.mode": "rho"
+      }
+    },
+    {
+      "name": "p2_jz2_flat_ls",
+      "label": "GRANIITTI MP[RES] ($|J_z|=2$, flat LS)",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:0,JZ1:0,JZ2:1}",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_equal_ls",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].polarization.mode": "rho"
+      }
+    },
+    {
+      "name": "p2_jz2_min_ls",
+      "label": "GRANIITTI MP[RES] ($|J_z|=2$, minimal LS)",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> pi+ pi- @RES{f2_1270:1} @R[f2_1270]{JZ0:0,JZ1:0,JZ2:1}",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_min_L",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].polarization.mode": "rho"
+      }
+    },
+    {
+      "name": "p0_mix02",
+      "label": "GRANIITTI MP[RES] ($J_z=0,\\pm2$, diagonal mixture)",
+      "gencard": "icepack/SPIN/_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> pi+ pi- @RES{f2_1270:1}",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].basis": "auto_min_L",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[995,995]\"].@key": "[991,991]",
+        "f2_1270.json:PARAM_RES.MODELS.MP[\"[991,991]\"].polarization": {
+          "mode": "rho",
+          "rho_mag":
+            [[0.25, 0.0, 0.0, 0.0, 0.0],
+             [0.0, 0.0, 0.0, 0.0, 0.0],
+             [0.0, 0.0, 0.5, 0.0, 0.0],
+             [0.0, 0.0, 0.0, 0.0, 0.0],
+             [0.0, 0.0, 0.0, 0.0, 0.25]],
+          "rho_phase":
+            [[0.0, 0.0, 0.0, 0.0, 0.0],
+             [0.0, 0.0, 0.0, 0.0, 0.0],
+             [0.0, 0.0, 0.0, 0.0, 0.0],
+             [0.0, 0.0, 0.0, 0.0, 0.0],
+             [0.0, 0.0, 0.0, 0.0, 0.0]],
+          "random_rho": false
+        }
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "unit_density",
+    "density_uncertainty": "shape",
+    "ratio_plot": true,
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "hist"
+  },
+  "fit": {"normalization": "unit_density"},
+  "sets": [
+    {
+      "name": "Pomeron spin 0, Jz = 0, min LS",
+      "sample": "p0_jz0_min_ls",
+      "plot_group": "MP_pom012_incoherent_polarization_P0",
+      "title": "MP incoherent Jz, Pomeron spin 0",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "Pomeron spin 0, |Jz| = 1, min LS",
+      "sample": "p0_jz1_min_ls",
+      "plot_group": "MP_pom012_incoherent_polarization_P0",
+      "title": "MP incoherent Jz, Pomeron spin 0",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "Pomeron spin 0, |Jz| = 2, min LS",
+      "sample": "p0_jz2_min_ls",
+      "plot_group": "MP_pom012_incoherent_polarization_P0",
+      "title": "MP incoherent Jz, Pomeron spin 0",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "Pomeron spin 1, Jz = 0, flat hel",
+      "sample": "p1_jz0_flat_hel",
+      "plot_group": "MP_pom012_incoherent_polarization_P1",
+      "title": "MP incoherent Jz, Pomeron spin 1",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "Pomeron spin 1, Jz = 0, flat LS",
+      "sample": "p1_jz0_flat_ls",
+      "plot_group": "MP_pom012_incoherent_polarization_P1",
+      "title": "MP incoherent Jz, Pomeron spin 1",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "Pomeron spin 1, Jz = 0, min LS",
+      "sample": "p1_jz0_min_ls",
+      "plot_group": "MP_pom012_incoherent_polarization_P1",
+      "title": "MP incoherent Jz, Pomeron spin 1",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "Pomeron spin 1, |Jz| = 1, flat hel",
+      "sample": "p1_jz1_flat_hel",
+      "plot_group": "MP_pom012_incoherent_polarization_P1",
+      "title": "MP incoherent Jz, Pomeron spin 1",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "Pomeron spin 1, |Jz| = 1, flat LS",
+      "sample": "p1_jz1_flat_ls",
+      "plot_group": "MP_pom012_incoherent_polarization_P1",
+      "title": "MP incoherent Jz, Pomeron spin 1",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "Pomeron spin 1, |Jz| = 1, min LS",
+      "sample": "p1_jz1_min_ls",
+      "plot_group": "MP_pom012_incoherent_polarization_P1",
+      "title": "MP incoherent Jz, Pomeron spin 1",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "Pomeron spin 1, |Jz| = 2, flat hel",
+      "sample": "p1_jz2_flat_hel",
+      "plot_group": "MP_pom012_incoherent_polarization_P1",
+      "title": "MP incoherent Jz, Pomeron spin 1",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "Pomeron spin 1, |Jz| = 2, flat LS",
+      "sample": "p1_jz2_flat_ls",
+      "plot_group": "MP_pom012_incoherent_polarization_P1",
+      "title": "MP incoherent Jz, Pomeron spin 1",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "Pomeron spin 1, |Jz| = 2, min LS",
+      "sample": "p1_jz2_min_ls",
+      "plot_group": "MP_pom012_incoherent_polarization_P1",
+      "title": "MP incoherent Jz, Pomeron spin 1",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "Pomeron spin 2, Jz = 0, flat hel",
+      "sample": "p2_jz0_flat_hel",
+      "plot_group": "MP_pom012_incoherent_polarization_P2",
+      "title": "MP incoherent Jz, Pomeron spin 2",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "Pomeron spin 2, Jz = 0, flat LS",
+      "sample": "p2_jz0_flat_ls",
+      "plot_group": "MP_pom012_incoherent_polarization_P2",
+      "title": "MP incoherent Jz, Pomeron spin 2",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "Pomeron spin 2, Jz = 0, min LS",
+      "sample": "p2_jz0_min_ls",
+      "plot_group": "MP_pom012_incoherent_polarization_P2",
+      "title": "MP incoherent Jz, Pomeron spin 2",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "Pomeron spin 2, |Jz| = 1, flat hel",
+      "sample": "p2_jz1_flat_hel",
+      "plot_group": "MP_pom012_incoherent_polarization_P2",
+      "title": "MP incoherent Jz, Pomeron spin 2",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "Pomeron spin 2, |Jz| = 1, flat LS",
+      "sample": "p2_jz1_flat_ls",
+      "plot_group": "MP_pom012_incoherent_polarization_P2",
+      "title": "MP incoherent Jz, Pomeron spin 2",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "Pomeron spin 2, |Jz| = 1, min LS",
+      "sample": "p2_jz1_min_ls",
+      "plot_group": "MP_pom012_incoherent_polarization_P2",
+      "title": "MP incoherent Jz, Pomeron spin 2",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "Pomeron spin 2, |Jz| = 2, flat hel",
+      "sample": "p2_jz2_flat_hel",
+      "plot_group": "MP_pom012_incoherent_polarization_P2",
+      "title": "MP incoherent Jz, Pomeron spin 2",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "Pomeron spin 2, |Jz| = 2, flat LS",
+      "sample": "p2_jz2_flat_ls",
+      "plot_group": "MP_pom012_incoherent_polarization_P2",
+      "title": "MP incoherent Jz, Pomeron spin 2",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "Pomeron spin 2, |Jz| = 2, min LS",
+      "sample": "p2_jz2_min_ls",
+      "plot_group": "MP_pom012_incoherent_polarization_P2",
+      "title": "MP incoherent Jz, Pomeron spin 2",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    },
+    {
+      "name": "p0_mix02",
+      "sample": "p0_mix02",
+      "plot_group": "MP_pom012_incoherent_polarization_P0",
+      "title": "MP incoherent Jz, Pomeron spin 0",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"},
+        {"obs": "dPhi_pp"},
+        {"obs": "glueball_filter"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+// Double hard-Pomeron neutral-current Drell-Yan to muons
+{
+  "GENERIC" : {
+    "OUTPUT"     : "run_Z_IPIP_Z_mumu",
+    "FORMAT"     : "hepmc3",
+    "CORES"      : 0,
+    "NEVENTS"    : 30000,
+    "INTEGRATOR" : "VEGAS",        // "VEGAS" (default), "NEUROJAC", "FLAT" (for debug)
+    "WEIGHTED"   : true,
+    "MODELPARAM" : "TUNE0",
+    "HIST"       : 0,
+    "RNDSEED"    : 12475
+  },
+
+  "SCATTERING" : {
+
+    "BEAM"    : ["p+","p+"],
+    "ENERGY"  : [6500, 6500],
+    "PROCESS" : "IPIP[Z]<F> -> mu+ mu-",
+    "RES"     : [],
+    "LOOPSCREEN" : false,
+    "NSTARS"  : 0,  // Forward dissociation (0 = elastic, 1 = single, 2 = double)
+    "BEAMFRAG": "none",  // Forward dissociation particle production ('none', 'fewbody', 'cylinder', 'diquark')
+    "LHAPDF"  : "NNPDF31_lo_as_0118"
+  },
+
+  "INTEGRATOR" : {
+
+    // Integration targets after adaptation
+    "min_samples" : 100000,
+    "max_samples" : 100000000,
+    "precision"   : 0.01,
+
+    "LOOPSCREEN" : {"extra_kt" : 1, "extra_phi" : 1},
+    // VEGAS integrator
+    "VEGAS" : {
+
+      "bins" : 128,      // Maximum number of bins per dimension (NOTE: EVEN NUMBER)
+      "alpha" : 1.25,    // Grid adaptation damping exponent
+      "rounds" : 8,      // Number of adaptation iterations
+      "ncall" : 40000,   // Number of function calls per iteration
+
+      "debug" : -1       // Debug output (default -1)
+    },
+
+    "NEUROJAC" : {},
+
+    "FLAT" : {},
+
+    // Unweighting max weight
+    "max_w_value"  : null  // user can set here (default automatic)
+  },
+
+  "GENCUTS" : {
+    "<C>" : {"Rap":[-6,6],"M":[80,100],"Xi":[0,0.2]},
+    "<F>" : {"Rap":[-6,6],"M":[80,100],"Xi":[0,0.2]},
+    "<Q>" : {"Xi" : [0, 0.2]}
+  },
+
+  "FIDCUTS" : {
+    "active" : true,
+    "CENTRAL" : {
+      "*" : {"Eta" : [-6.0, 6.0], "Pt" : [1.0, 100000.0]},
+      "ABS(13)" : {"Eta" : [-2.5, 2.5], "Pt" : [10.0, 100000.0]},
+      "[ABS(13),ABS(13)]" : {"M" : [80.0, 100.0]}
+    },
+    "FORWARD" : {},
+    "USERCUTS" : false
+  },
+
+  "VETOCUTS" : {"active" : false}
+}

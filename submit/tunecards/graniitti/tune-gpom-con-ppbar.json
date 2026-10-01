@@ -1,0 +1,14 @@
+{
+  "driver": "graniitti",
+  "settings": {"$ref": "_defaults.json"},
+  "models": [
+    {
+      "model": "GP",
+      "continuum_options": {"FF_offshell": true, "FF_transfer": true, "ff_type": "exp", "tune_couplings": true, "production_mode": "magnitude", "pveto": true, "production_geometry": "projective", "production_active_only": false, "production_m": [0,1,2], "production_relative_range": 0.25},
+      "datasets": [
+        {"datacard": "icepack/SOFTCEP/STAR_1792394/ppbar/dataset.json", "nevents": 50000, "weighted": true, "loopscreen": true, "xsmode": "sample", "swap_process": "GP[CON]<F>", "integrator": "VEGAS"},
+        {"datacard": "icepack/SOFTCEP/STAR_3075716/ppbar/dataset.json", "nevents": 50000, "weighted": true, "loopscreen": true, "xsmode": "sample", "swap_process": "GP[CON]<F>", "integrator": "VEGAS"}
+      ]
+    }
+  ]
+}

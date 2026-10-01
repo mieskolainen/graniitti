@@ -1,0 +1,84 @@
+// Parametric vector meson via Gamma-Pomeron
+//
+// MP/XP/GP coupling produced with develop/tools/HERA_couplings.py
+
+{
+  "PARAM_RES": {
+    "name": "RES_rho_770",
+    "PDG": 113,
+    "spinX2": 2,
+    "P": -1,
+    "C": -1,
+    
+    "MODELS": {
+      "GP": {
+        "mass": 0.77526,
+        "width": 0.1491,
+        "BW": "fixed-width",
+        "phi": 1.302695721116713,
+        "FF_transfer": {"type": "none"},
+        "FF_prod": {"type": "gaussian", "norm": "pole", "Lambda2": 1.5809468964953715},
+        "[22,990]": {
+          "basis": "helicity",
+          "CP": [true,true],
+          "helicity": [[-1,0,0.45744359,0.0]]
+        }
+      },
+      "MP": {
+        "mass": 0.77526,
+        "width": 0.1491,
+        "BW": "fixed-width",
+        "phi": 1.3695,
+        "FF_transfer": {"type": "none"},
+        "FF_prod": {"type": "gaussian", "norm": "pole", "Lambda2": 2.9773},
+        "[22,991]": {
+          "basis": "helicity",
+          "Lambda": 1.0000,
+          "polarization": {"mode": "none"},
+          "CP": [true,true],
+          "helicity": [[-1,0,0.45744359,0.0]]
+        }
+      },
+      "XP": {
+        "mass": 0.77526,
+        "width": 0.1491,
+        "BW": "fixed-width",
+        "phi": 1.6670,
+        "FF_transfer": {"type": "none"},
+        "FF_prod": {"type": "gaussian", "norm": "pole", "Lambda2": 5.5565},
+        "[22,991]": {
+          "basis": "helicity",
+          "Lambda": 1.0,
+          "CP": [true,true],
+          "helicity": [[-1,0,0.45744359,0.0]]
+        }
+      },
+      "TP": {
+        "mass": 0.77526,
+        "width": 0.1491,
+        "phi": 0.0,
+        "FF_transfer": {"type": "power", "norm": "zero", "Lambda2": 0.5000, "n": 1.0000},
+        // [REFERENCE: arXiv: 2609.01285, Eq. (3.1), Figs. 3-6]
+        "FF_prod":     {"type": "vector", "norm": "pole", "Lambda2": 1.4992, "n": 2.0000},
+        "[22,995]": {
+          // [REFERENCE: arXiv: 2508.06334v2, Appendix B, set A]
+          "g_tensor": [0.4389,6.3391]
+        },
+        "[22,9925]": {
+          "g_tensor": [0.0000,0.0000],
+          "VMD_MIXING": [
+            {
+              "PDG": 223,
+              // [REFERENCE: arXiv: 1409.8483, Eq. (B.94), positive benchmark]
+              "g_tensor": [2.4966,4.5642]
+            }
+          ]
+        },
+        "[22,9915]": {
+          // [REFERENCE: arXiv: 2508.06334v2, Appendix B, set A]
+          "g_tensor": [2.8477,4.8957]
+        }
+      }
+    }
+  }
+}

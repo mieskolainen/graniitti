@@ -1,0 +1,62 @@
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "gg",
+      "label": "GRANIITTI gg to gg + Pythia",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "gg[QCD]<F> -> g g",
+        "SCATTERING.NSTARS": 0
+      },
+      "fragmentation": {
+        "engine": "pythia",
+        "card": "tests/external/pythia/drivers/lhe_converter/shower.cmnd",
+        "mode": "fragment",
+        "seed": 12345,
+        "attempts": 50
+      }
+    },
+    {
+      "name": "uubar",
+      "label": "GRANIITTI gg to u ubar + Pythia",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "gg[QCD]<F> -> u u~",
+        "SCATTERING.NSTARS": 0
+      },
+      "fragmentation": {
+        "engine": "pythia",
+        "card": "tests/external/pythia/drivers/lhe_converter/shower.cmnd",
+        "mode": "fragment",
+        "seed": 12345,
+        "attempts": 50
+      }
+    }
+  ],
+  "plot": {"normalization": "cross_section", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {"nevents": 30000},
+  "sets": [
+    {
+      "name": "Particle level Durham dijets",
+      "title": "anti-$k_T$, $R=0.6$, $p_{T,j}>20$ GeV, $|\\eta_j|<2.5$, $40<M_{jj}<200$ GeV, visible constituents: $p_T>0.1$ GeV, $|\\eta|<5$",
+      "data": false,
+      "pid": [21, 2, -2],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {"obs": "m_jj"},
+        {"obs": "pt_j1"},
+        {"obs": "abs_eta_j1"},
+        {"obs": "dphi_jj"},
+        {"obs": "n_constituents_jj"},
+        {"obs": "mean_jet_mass"},
+        {"obs": "mean_jet_width"},
+        {"obs": "mean_ptd"},
+        {"obs": "mean_z_leading"}
+      ]
+    }
+  ]
+}

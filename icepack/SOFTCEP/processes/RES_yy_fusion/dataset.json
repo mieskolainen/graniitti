@@ -1,0 +1,93 @@
+// Explicit gamma gamma resonance channels in the soft CEP models
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "mres",
+      "label": "GRANIITTI MP[RES] ($\\gamma\\gamma$ channel)",
+      "gencard": "../_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "MP[RES]<F> -> pi+ pi- @RES{f2_1270_yy:1}",
+        "f2_1270_yy.json:PARAM_RES.MODELS.MP[\"[22,22]\"]": {
+          "basis": "auto_min_L",
+          "Lambda": 1.0,
+          "g": [null, 0.0],
+          "polarization": {
+            "mode": "a_Jz",
+            "a_Jz":
+                [[-2, 0.7071067811865475, 0.0],
+                 [-1, 0.0, 0.0],
+                 [0, 0.0, 0.0]]
+          },
+          "CP": [true, true]
+        }
+      }
+    },
+    {
+      "name": "xres",
+      "label": "GRANIITTI XP[RES] ($\\gamma\\gamma$ channel)",
+      "gencard": "../_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "XP[RES]<F> -> pi+ pi- @RES{f2_1270_yy:1}",
+        "f2_1270_yy.json:PARAM_RES.MODELS.XP[\"[22,22]\"]": {
+          "basis": "g_ls",
+          "Lambda": 1.0,
+          "g_ls":
+              [[2, 0, 0.0, 0.0],
+               [0, 2, null, 0.0],
+               [2, 2, 0.0, 0.0],
+               [4, 2, 0.0, 0.0]],
+          "CP": [true, true]
+        }
+      }
+    },
+    {
+      "name": "gres",
+      "label": "GRANIITTI GP[RES] ($\\gamma\\gamma$ channel)",
+      "gencard": "../_common/gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "GP[RES]<F> -> pi+ pi- @RES{f2_1270_yy:1}",
+        "f2_1270_yy.json:PARAM_RES.MODELS.GP[\"[22,22]\"]": {
+          "basis": "g_ls",
+          "Lambda": 1.0,
+          "g_ls":
+              [[2, 0, 0.0, 0.0],
+               [0, 2, null, 0.0],
+               [2, 2, 0.0, 0.0],
+               [4, 2, 0.0, 0.0]],
+          "CP": [true, true]
+        }
+      }
+    }
+  ],
+  "plot": {
+    "normalization": "unit_density",
+    "density_uncertainty": "shape",
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "hist"
+  },
+  "fit": {"normalization": "unit_density"},
+  "sets": [
+    {
+      "name": "Soft CEP gamma gamma resonance channels",
+      "title": "Generation: $M_X<4$ GeV, $|y_X|<2.5$",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SOFTCEP/processes/_common/obs.py",
+      "hist": [
+        {"obs": "M"},
+        {"obs": "Rap"},
+        {"obs": "Pt"},
+        {"obs": "t1"},
+        {"obs": "t2"},
+        {"obs": "Abs_t1t2"},
+        {"obs": "dPhi_pp"},
+        {"obs": "costheta_CS"},
+        {"obs": "phi_CS"}
+      ]
+    }
+  ]
+}

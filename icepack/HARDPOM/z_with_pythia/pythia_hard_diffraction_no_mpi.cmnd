@@ -1,0 +1,41 @@
+! Native Pythia hard diffraction pp -> gamma*/Z -> mu+ mu- without MPI at sqrt(s) = 13 TeV
+Beams:idA = 2212
+Beams:idB = 2212
+Beams:eCM = 13000.0
+
+! Neutral-current Drell-Yan in the Z mass window
+WeakSingleBoson:ffbar2gmZ = on
+PhaseSpace:mHatMin = 80.0
+PhaseSpace:mHatMax = 100.0
+
+! Keep only Z decays to muons; the gamma* contribution is kept by the hard process
+23:onMode = off
+23:onIfAny = 13
+
+! Match the GRANIITTI LO proton PDF
+PDF:pSet = LHAPDF6:NNPDF31_lo_as_0118
+
+! Generate only hard-diffractive events without the MPI gap-survival check
+Diffraction:doHard = on
+Diffraction:sampleType = 3
+Diffraction:hardDiffSide = 0
+
+! Match the GRANIITTI GKG18 LO Fit B Pomeron PDF
+PDF:PomSet = 13
+PDF:PomRescale = 1.0
+
+! Match PARAM_HARDPOMERON: alpha0=1.0988, alpha'=0, B_flux=7 and norm=1
+SigmaDiffractive:PomFlux = 8
+SigmaDiffractive:PomFluxEpsilon = 0.0988
+SigmaDiffractive:PomFluxAlphaPrime force= 0.0
+SigmaDiffractive:PomFluxB0 = 7.0
+
+! Cancel Pythia's option-8 normalization at xPom=0.003 so the flux prefactor is one
+Diffraction:PomFluxRescale = 0.449782353593
+
+! Keep showers and hadronization but disable all multiparton interactions
+PartonLevel:MPI = off
+HadronLevel:all = on
+ParticleDecays:limitTau0 = on
+ParticleDecays:tau0Max = 10.0
+Print:quiet = on

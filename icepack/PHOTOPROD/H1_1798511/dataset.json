@@ -1,0 +1,239 @@
+// H1 elastic pion pair photoproduction at HERA
+// All measured values and errors come from the original HEPData JSON tables
+// Tables 22-23 provide no statistical covariance, retain diagonal statistics and signed systematic variations
+{
+  "active": true,
+  "type": "H1_1798511",
+  "reader": "./reader.py",
+  "datapath": "HEPData/PHOTOPROD/HEPData-ins1798511-v1-json/",
+  "samples": [
+    {
+      "name": "ds",
+      "label": "TP[PHOTO]",
+      "gencard": "./gencard.json",
+      "parameters": {"SCATTERING.PROCESS": "TP[PHOTO]<F> -> pi+ pi-", "SCATTERING.RES": []}
+    },
+    {
+      "name": "rho_ds",
+      "label": "TP[PHOTO] + $\\rho+\\omega$",
+      "gencard": "./gencard.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[PHOTO]<F> -> pi+ pi- @RES{rho_770:1,omega_782:1}",
+        "SCATTERING.RES": ["rho_770","omega_782"]
+      }
+    },
+    {
+      "name": "rho3_ds",
+      "label": "TP[PHOTO] + $\\rho+\\omega+\\rho_3$",
+      "gencard": "./gencard.json",
+      // Effective spin-three contribution to the dipion spectrum
+      "parameters": {
+        "SCATTERING.PROCESS": "TP[PHOTO]<F> -> pi+ pi- @RES{rho_770:1,omega_782:1,rho3_1690:1}",
+        "SCATTERING.RES": ["rho_770","omega_782","rho3_1690"]
+      }
+    }
+  ],
+  "plot": {"normalization": "cross_section", "unit": "ub", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "validation": {
+    "loopscreen": 0,
+    "require_comparison": true,
+    "require_differential_comparison": true,
+    "require_fiducial_integral_comparison": true,
+    "measurement": {"$ref": "../../_common/SETTINGS.json#/measurement"}
+  },
+  "sets": [
+    {
+      "name": "H1 $e^+p$ 319 GeV ($\\gamma p \\to \\pi^+\\pi^-p$)",
+      "plotname": "H1_1798511_elastic_pipi_mass",
+      "title": "$20<W_{\\gamma p}<80$ GeV, $Q^2<2.5$ GeV$^2$, $|t|<1.5$ GeV$^2$, $0.5<M_{\\pi\\pi}<2.2$ GeV",
+      "pid": [211,-211],
+      "cuts": "./cuts.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table17.json",
+          "covariance": "Table17_statCorr.json",
+          "file_filter": "elastic",
+          "obs": "M",
+          "scale": 1e-6,
+          "fitw": 1.0
+        }
+      ]
+    },
+    {
+      "name": "H1 $\\gamma p \\to \\pi^+\\pi^-p$",
+      "plotname": "H1_1798511_M_W20_25",
+      "title": "$20<W_{\\gamma p}<25$ GeV, $Q^2<2.5$ GeV$^2$, $|t|<1.5$ GeV$^2$, $0.5<M_{\\pi\\pi}<1.2$ GeV",
+      "pid": [211,-211],
+      "cuts": "./cuts_W20_25.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table18-19,PI+PI-photoproductioncrosssectionwrtMandW.json",
+          "file_filter": "elastic",
+          "obs": "M",
+          "scale": 1e-06,
+          "rows": [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],
+          "covariance": "Table18-19statisticalcorrelations.json"
+        }
+      ]
+    },
+    {
+      "name": "H1 $\\gamma p \\to \\pi^+\\pi^-p$",
+      "plotname": "H1_1798511_M_W40_45",
+      "title": "$40<W_{\\gamma p}<45$ GeV, $Q^2<2.5$ GeV$^2$, $|t|<1.5$ GeV$^2$, $0.5<M_{\\pi\\pi}<1.2$ GeV",
+      "pid": [211,-211],
+      "cuts": "./cuts_W40_45.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table18-19,PI+PI-photoproductioncrosssectionwrtMandW.json",
+          "file_filter": "elastic",
+          "obs": "M",
+          "scale": 1e-06,
+          "rows": [72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88],
+          "covariance": "Table18-19statisticalcorrelations.json"
+        }
+      ]
+    },
+    {
+      "name": "H1 $\\gamma p \\to \\pi^+\\pi^-p$",
+      "plotname": "H1_1798511_M_W50_56",
+      "title": "$50<W_{\\gamma p}<56$ GeV, $Q^2<2.5$ GeV$^2$, $|t|<1.5$ GeV$^2$, $0.5<M_{\\pi\\pi}<1.2$ GeV",
+      "pid": [211,-211],
+      "cuts": "./cuts_W50_56.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table18-19,PI+PI-photoproductioncrosssectionwrtMandW.json",
+          "file_filter": "elastic",
+          "obs": "M",
+          "scale": 1e-06,
+          "rows": [108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124],
+          "covariance": "Table18-19statisticalcorrelations.json"
+        }
+      ]
+    },
+    {
+      "name": "H1 $\\gamma p \\to \\pi^+\\pi^-p$",
+      "plotname": "H1_1798511_M_W66_80",
+      "title": "$66<W_{\\gamma p}<80$ GeV, $Q^2<2.5$ GeV$^2$, $|t|<1.5$ GeV$^2$, $0.5<M_{\\pi\\pi}<1.2$ GeV",
+      "pid": [211,-211],
+      "cuts": "./cuts_W66_80.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table18-19,PI+PI-photoproductioncrosssectionwrtMandW.json",
+          "file_filter": "elastic",
+          "obs": "M",
+          "scale": 1e-06,
+          "rows": [144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160],
+          "covariance": "Table18-19statisticalcorrelations.json"
+        }
+      ]
+    },
+    {
+      "name": "H1 $\\gamma p \\to \\pi^+\\pi^-p$",
+      "plotname": "H1_1798511_M_W20_28_t0_0.016",
+      "title": "$20<W_{\\gamma p}<28$ GeV, $Q^2<2.5$ GeV$^2$, $|t|<0.016$ GeV$^2$, $0.5<M_{\\pi\\pi}<1.2$ GeV",
+      "pid": [211,-211],
+      "cuts": "./cuts_W20_28_t0_0p016.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table22-23,PI+PI-photoproductioncrosssectionwrtM,T,W.json",
+          "file_filter": "elastic",
+          "obs": "M_t",
+          "scale": 1e-06,
+          "rows": [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
+        }
+      ]
+    },
+    {
+      "name": "H1 $\\gamma p \\to \\pi^+\\pi^-p$",
+      "plotname": "H1_1798511_M_W20_28_t0.1_0.15",
+      "title": "$20<W_{\\gamma p}<28$ GeV, $Q^2<2.5$ GeV$^2$, $0.1<|t|<0.15$ GeV$^2$, $0.5<M_{\\pi\\pi}<1.2$ GeV",
+      "pid": [211,-211],
+      "cuts": "./cuts_W20_28_t0p1_0p15.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table22-23,PI+PI-photoproductioncrosssectionwrtM,T,W.json",
+          "file_filter": "elastic",
+          "obs": "M_t",
+          "scale": 1e-06,
+          "rows": [288,289,290,291,292,293,294,295,296,297,298,299,300,301,302,303,304]
+        }
+      ]
+    },
+    {
+      "name": "H1 $\\gamma p \\to \\pi^+\\pi^-p$",
+      "plotname": "H1_1798511_M_W20_28_t0.23_1.5",
+      "title": "$20<W_{\\gamma p}<28$ GeV, $Q^2<2.5$ GeV$^2$, $0.23<|t|<1.5$ GeV$^2$, $0.5<M_{\\pi\\pi}<1.2$ GeV",
+      "pid": [211,-211],
+      "cuts": "./cuts_W20_28_t0p23_1p5.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table22-23,PI+PI-photoproductioncrosssectionwrtM,T,W.json",
+          "file_filter": "elastic",
+          "obs": "M_t",
+          "scale": 1e-06,
+          "rows": [432,433,434,435,436,437,438,439,440,441,442,443,444,445,446,447,448]
+        }
+      ]
+    },
+    {
+      "name": "H1 $\\gamma p \\to \\pi^+\\pi^-p$",
+      "plotname": "H1_1798511_M_W50_80_t0_0.016",
+      "title": "$50<W_{\\gamma p}<80$ GeV, $Q^2<2.5$ GeV$^2$, $|t|<0.016$ GeV$^2$, $0.5<M_{\\pi\\pi}<1.2$ GeV",
+      "pid": [211,-211],
+      "cuts": "./cuts_W50_80_t0_0p016.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table22-23,PI+PI-photoproductioncrosssectionwrtM,T,W.json",
+          "file_filter": "elastic",
+          "obs": "M_t",
+          "scale": 1e-06,
+          "rows": [54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70]
+        }
+      ]
+    },
+    {
+      "name": "H1 $\\gamma p \\to \\pi^+\\pi^-p$",
+      "plotname": "H1_1798511_M_W50_80_t0.1_0.15",
+      "title": "$50<W_{\\gamma p}<80$ GeV, $Q^2<2.5$ GeV$^2$, $0.1<|t|<0.15$ GeV$^2$, $0.5<M_{\\pi\\pi}<1.2$ GeV",
+      "pid": [211,-211],
+      "cuts": "./cuts_W50_80_t0p1_0p15.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table22-23,PI+PI-photoproductioncrosssectionwrtM,T,W.json",
+          "file_filter": "elastic",
+          "obs": "M_t",
+          "scale": 1e-06,
+          "rows": [342,343,344,345,346,347,348,349,350,351,352,353,354,355,356,357,358]
+        }
+      ]
+    },
+    {
+      "name": "H1 $\\gamma p \\to \\pi^+\\pi^-p$",
+      "plotname": "H1_1798511_M_W50_80_t0.23_1.5",
+      "title": "$50<W_{\\gamma p}<80$ GeV, $Q^2<2.5$ GeV$^2$, $0.23<|t|<1.5$ GeV$^2$, $0.5<M_{\\pi\\pi}<1.2$ GeV",
+      "pid": [211,-211],
+      "cuts": "./cuts_W50_80_t0p23_1p5.py",
+      "obs": "./obs.py",
+      "hist": [
+        {
+          "file": "Table22-23,PI+PI-photoproductioncrosssectionwrtM,T,W.json",
+          "file_filter": "elastic",
+          "obs": "M_t",
+          "scale": 1e-06,
+          "rows": [486,487,488,489,490,491,492,493,494,495,496,497,498,499,500,501,502]
+        }
+      ]
+    }
+  ]
+}

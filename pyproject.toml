@@ -1,0 +1,26 @@
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+include = ["**/*.py"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "B", "UP", "SIM"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["E402"]
+
+[tool.ruff.lint.isort]
+split-on-trailing-comma = false
+
+[tool.ruff.format]
+skip-magic-trailing-comma = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests/technical", "tests/physics"]
+addopts = ["--import-mode=importlib"]
+markers = [
+    "closure: internal analytic or physics closures",
+    "integration: generator integration tests that must be requested explicitly",
+    "literature: physics comparisons with published numerical results",
+    "physics: generator driven physics validation that must be requested explicitly",
+]

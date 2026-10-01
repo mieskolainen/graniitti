@@ -1,0 +1,82 @@
+// Pure LS components for the 0^- eta resonance in XP
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {
+      "name": "ls_1_1",
+      "label": "GRANIITTI XP[RES] ($(\\ell,S)=(1,1)$)",
+      "gencard": "icepack/SPIN/_common/gencard_ls.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "XP[RES]<F> -> gamma gamma @RES{eta:1}",
+        "GENCUTS.<F>.M": [0.54785938,0.54786462],
+        "eta.json:PARAM_RES.MODELS.XP[\"[995,995]\"]": {
+          "basis": "g_ls",
+          "Lambda": 1.0,
+          "CP": [true,true],
+          "g_ls":
+              [[1,1,1.0,0.0],
+               [3,3,0.0,0.0]]
+        }
+      }
+    },
+    {
+      "name": "ls_3_3",
+      "label": "GRANIITTI XP[RES] ($(\\ell,S)=(3,3)$)",
+      "gencard": "icepack/SPIN/_common/gencard_ls.json",
+      "parameters": {
+        "SCATTERING.PROCESS": "XP[RES]<F> -> gamma gamma @RES{eta:1}",
+        "GENCUTS.<F>.M": [0.54785938,0.54786462],
+        "eta.json:PARAM_RES.MODELS.XP[\"[995,995]\"]": {
+          "basis": "g_ls",
+          "Lambda": 1.0,
+          "CP": [true,true],
+          "g_ls":
+              [[1,1,0.0,0.0],
+               [3,3,1.0,0.0]]
+        }
+      }
+    }
+  ],
+  "validation": {
+    "nevents": 30000,
+    "loopscreen": 0
+  },
+  "plot": {
+    "normalization": "unit_density",
+    "density_uncertainty": "shape",
+    "ratio_plot": true,
+    "ratio_uncertainty": "combined",
+    "stack": false,
+    "data_style": "hist"
+  },
+  "fit": {
+    "normalization": "unit_density"
+  },
+  "sets": [
+    {
+      "name": "XP pseudoscalar LS",
+      "samples": ["ls_1_1","ls_3_3"],
+      "plot_group": "XP_pseudoscalar_LS",
+      "title": "XP $\\eta$, $J^P=0^-$ LS couplings",
+      "data": false,
+      "pid": [22,22],
+      "cuts": "icepack/_common/cuts_inclusive.py",
+      "obs": "icepack/SPIN/_common/obs.py",
+      "hist": [
+        {
+          "obs": "costheta_CS"
+        },
+        {
+          "obs": "phi_CS"
+        },
+        {
+          "obs": "dPhi_pp"
+        },
+        {
+          "obs": "glueball_filter"
+        }
+      ]
+    }
+  ]
+}

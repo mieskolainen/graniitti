@@ -1,0 +1,26 @@
+// ALICE 7 TeV publication integrated pion pair samples
+{
+  "active": true,
+  "type": "MC_ONLY",
+  "samples": [
+    {"name": "elastic", "label": "GRANIITTI GP[RES+CON] (EL)", "gencard": "./gencard_E0.json", "parameters": {}},
+    {"name": "single", "label": "GRANIITTI GP[RES+CON] (SD)", "gencard": "./gencard_E1.json", "parameters": {}},
+    {"name": "double", "label": "GRANIITTI GP[RES+CON] (DD)", "gencard": "./gencard_E2.json", "parameters": {}},
+    {"name": "pwa", "label": "GRANIITTI GP[RES+CON] (PWA fiducial)", "gencard": "./gencard_PWA.json", "parameters": {}}
+  ],
+  "plot": {"normalization": "cross_section", "ratio_uncertainty": "combined", "stack": false, "data_style": "hist"},
+  "fit": {"normalization": "cross_section"},
+  "sets": [
+    {
+      "name": "ALICE pi+pi- integrated samples",
+      "title": "$|y_X|<0.9$",
+      "data": false,
+      "pid": [211, -211],
+      "cuts": "../../../_common/cuts_inclusive.py",
+      "obs": "../../../_common/obs.py",
+      "hist": [
+        {"obs": "cross_section"}
+      ]
+    }
+  ]
+}
